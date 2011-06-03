@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_title %}User Evaluations{% endblock %}
+
+{% block body %}
+    {% if object_list %}
+            <ul>
+            {% for ct in object_list %}
+                <li>{{ ct }}</li>
+            {% endfor %}
+            </ul>
+    {% else %}
+            <p>No  open evaluations.</p>
+    {% endif %}
+    <a href="/evaluation/open/request_evaluation/request_evaluation">{% trans "open evaluation" %}</a>
+{% endblock %}

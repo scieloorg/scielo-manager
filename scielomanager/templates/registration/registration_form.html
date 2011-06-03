@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block body %}
+
+/ <a href="{% url evaluation.evaluations.index %}">{% trans 'Home' %}</a> / {% trans 'Register' %}
+
+{% if form.errors %}
+    <p>{% trans "Please correct the errors below." %}</p>
+{% endif %}
+
+<h3>{% trans "You will receive an email with a link to activate your account." %}</h3>
+
+<form method="post" action="{% url registration_register %}">{% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    <br/>
+    <input  class="addNew" type="submit" value="{% trans "Register" %}" />
+</form>
+
+{% endblock %}

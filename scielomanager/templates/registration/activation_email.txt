@@ -1,0 +1,13 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% trans 'Please click on the link below to activate your account.' %}
+
+http://{{ site.domain }}{% url registration_activate activation_key %}
+
+{% blocktrans %}
+    This key will expire in {{ expiration_days }} days.
+{% endblocktrans %}
+
+{{ site.name }}
+http://{{ site.domain }}
+

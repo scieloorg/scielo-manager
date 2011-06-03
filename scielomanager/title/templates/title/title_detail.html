@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_title %}Ingress History{% endblock %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+        / <a href="{% url evaluation.user_index %}">{% trans 'Ingress' %}</a>
+    / {% trans 'About Ingress' %}   #{{ object.pk }}
+{% endblock %}
+
+{% block body %}
+
+<script type="text/javascript">
+
+    function effectFadeIn(classname) {
+        $("#attention").fadeOut(6000).fadeIn(50, effectFadeOut(classname))
+    }
+    function effectFadeOut(classname) {
+        $("#attention").fadeIn(50).fadeOut(6000, effectFadeIn(classname))
+    }
+    $(document).ready(function(){
+        effectFadeIn('attention');
+    });
+
+</script> 
+
+<fieldset>
+    <legend>{% trans "Ingress" %}</legend>
+    {% if object %}
+        <table class="table">
+            <tr>
+                <th>{% trans "Creation date" %}</th>
+                <th>{% trans "ISSN" %}</th>
+                <th>{% trans "Journal Title" %}</th>
+                <th>{% trans "Institution" %}</th>
+                <th>{% trans "Process" %}</th>
+                <th>{% trans "Description" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Update" %}</th>
+                <th>{% trans "Creator" %}</th>
+            </tr>
+            <tr>
+                <td>{{ object.created }}</td>
+                <td>{{ object.issn }}</td>
+                <td>{{ object.journal_title }}</td>
+                <td>{{ object.institution }}</td>
+                <td>{{ object.type }}</td>
+                <td width="25%">{{ object.description }}</td>
+                <td><span style="color:red">{{object.followup_set.latest.status|default:"None"}}</span></td>
+                <td>{{ object.followup_set.latest.iteration_date|default:object.created }}</td>
+                <td>{{ object.creator }}</td>
+                <!--td>
+                    <ul>
+                        {% if object.is_closed or object.is_resolved %}
+                        <li><a href="/evaluation/reopen/{{ object.pk }}/">{% trans "reopen" %}</a></li>
+                        {% endif %}
+                        {% if not object.is_closed %} {% if not object.is_resolved %}
+                        <li><a href="/evaluation/resolve/{{ object.pk }}/">{% trans "resolved" %}</a></li>
+                        {% endif %} {% endif %}
+                        {% if not object.is_closed %} {% if not object.is_resolved %}
+                        <li><a href="/evaluation/close/{{ object.pk }}/">{% trans "closed" %}</a></li>
+                        {% endif %} {% endif %}
+                    </ul>
+                </td-->
+            </tr>
+        </table>
+    {% else %}
+    <p>{% trans "Evaluation not found" %}.</p>
+    {% endif %}
+</fieldset>
+{% if not object.followup_set.latest.status %}
+    <div id="attention" style="color:red">{% trans "Please click on link 'Add iteration' to send files to SciELO Team" %}</div>
+{% endif %}
+{% if object.followup_set.all %}
+    <fieldset>
+        <legend>{% trans "History" %}</legend>
+        <table class="table">
+            <tr>
+                <th>{% trans "Update date" %}</th>
+                <th>{% trans "Description" %}</th>
+                <th>{% trans "Context" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Files" %}</th>
+                <th>{% trans "Reported by" %}</th>
+            </tr>
+            {% for fw in object.followup_set.all %}
+            <tr>
+                <td>{{ fw.iteration_date }}</td>
+                <td width="25%">{{ fw.description }}</td>
+                <td>{{ fw.context }}</td>
+                <td><span style="color:red">{{ fw.status }}</span></td>
+                <td>
+                {% if fw.evaluation_media.all %}
+                    {% for med in fw.evaluation_media.all %}
+                        <a href="/static/{{ med.file }}">{{ med.file|cut:"files/" }}</a><br/>
+                    {% endfor %}
+                {% else %}
+                    -----
+                {% endif %}
+                </td>
+                <td>{{ fw.reported_by }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </fieldset>
+{% endif %}
+{% if object.is_closed or object.is_resolved %} <p>{% trans 'To show the "add iteration button" the evaluation must be diferente from "closed".' %}</p> {% else %} <a class="buttonadd" href="/evaluation/newiteration/{{ object.pk }}/">Add Iteration</a> {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+.multilingual {
+    overflow: hidden;
+    width: 100%
+}
+
+.multilingual .multilingual-value {
+    display: none;
+    float: left;
+    width: 49%
+}
+
+.multilingual .multilingual-value input {
+    width: 95%;
+}
+
+.multilingual .multilingual-value textarea {
+    width: 98%;
+}
+
+.multilingual .multilingual-value b {
+    margin: 0;
+    display: block;
+}
+
+.multilingual .en, .multilingual .default-second-language {
+    display: block;
+}
+
+.multilingual .sel {
+    padding: 5px;
+    background-color: #f8f8f8;
+    text-align: right;
+}
+
+.multilingual .sel h4 {
+    margin: 0;
+}
+
+.multilingual .sel ul {
+    margin: 0;
+    padding: 0;
+}
+
+.multilingual .sel ul li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+

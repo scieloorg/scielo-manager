@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block body_title %}{% trans "User Evaluations" %}{% endblock %}
+{% block body %}
+    {% if fw_waiting %}
+            <table>
+                <tr>
+                    <th>{% trans "creation date" %}</th>
+                    <th>{% trans "context" %}</th>
+                    <th>{% trans "type" %}</th>
+                    <th>{% trans "owner" %}</th>
+                    <th>{% trans "subject" %}</th>
+                    <th>{% trans "description" %}</th>
+                    <th>mark as</th>
+                </tr>
+            {% for tk in fw_waiting %}
+            <tr>
+                <td>{{ tk.evaluation.created }}</td>
+                <td>{{ tk.evaluation.context }}</td>
+                <td>{{ tk.evaluation.type }}</td>
+                <td>{{ tk.evaluation.creator.username }}</td>
+                <td>{{ tk.subject }}</td>
+                <td>{{ tk.description }}</td>
+                <td><a href="/evaluation/accept/{{ tk.pk }}/">{% trans "accepted" %}</a></td>
+            </tr>
+            {% endfor %}
+            </table>
+    {% else %}
+            <p>{% trans "Have no  evaluations waiting acceptance" %}</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
+<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // call the tablesorter plugin
+        $("#table_evaluations").tablesorter({
+            sortList: [[0,1]],
+            dateFormat: 'uk',
+            textExtraction: 'complex',
+            headers: { 6: { sorter: false}},
+        });
+
+        $(".dataTable td > select").change(function() {
+
+            $('#transationMessage').fadeIn('slow');
+            
+            $.ajax({
+             type:"GET",
+             url:"/title/meeting/" + $(this).attr('id') + "/" +  $(this).val(),
+             success:function(result){
+                if(result == 'updated'){
+                    $('#transationMessage').fadeOut('slow');
+                }else{
+                    $('#transationMessage').fadeOut('slow');
+                    alert("You don't have permission to set meeting")
+                }
+             },
+             error:function(){
+                $('#transationMessage').hide();
+                $('#errorMessage').fadeIn('slow');
+            }
+         });
+        });
+     
+    });
+</script>
+{% endblock %}
+
+{% block body_title %}{% trans "User Titles" %}{% endblock %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+/ <a href="{% url index %}">{% trans 'Home' %}</a>
+/ {% trans 'Title Manager' %}
+{% endblock %}
+
+{% block body %}
+<br/>
+<span id="transationMessage" style="color:red;display:none;">{% trans 'Updating title...' %}</span><span id="errorMessage" style="color:red;display:none;">{% trans 'Error while update title.' %}</span>
+<div class="actions"><a href="{% url title.open %}" class="addNew">{% trans 'New Title' %}</a></div>
+<table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
+    <thead>
+        <tr>
+            <th>{% trans "ISSN" %}</th>
+            <th>{% trans "Journal Title" %}</th>
+            <th>{% trans "Publisher" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Actions" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ct in titles.object_list %}
+        <tr class="{% cycle 'even' 'odd' %}">
+            <td class="subject">{{ ct.issn }}</td>
+            <td class="subject">{{ ct.title }}</td>
+            <td class="subject">{{ ct.publisher }}</td>
+            <td class="subject">{{ ct.status }}</td>            
+            <td>
+                <ul>
+                    <li><a class="history" href="/title/show/{{ ct.pk }}/" title="{% trans 'view title' %}"><span>{% trans "view title" %}</span></a></li>
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    <tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if titles.has_previous %}
+        {% if search %}
+        <a href="?page={{ titles.previous_page_number }}&q={{q}}">{% trans "Previous" %}</a>
+        {% else %}
+        <a href="?page={{ titles.previous_page_number }}">{% trans "Previous" %}</a>
+        {% endif %}
+        {% endif %}
+
+        <span class="current">
+            Page {{ titles.number }} of {{ titles.paginator.num_pages }}.
+        </span>
+
+        {% if titles.has_next %}
+        {% if search %}
+        <a href="?page={{ titles.next_page_number }}&q={{q}}">{% trans "Next" %}</a>
+        {% else %}
+        <a href="?page={{ titles.next_page_number }}">{% trans "Next" %}</a>
+        {% endif %}
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

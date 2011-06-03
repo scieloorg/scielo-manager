@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+        / <a href="{% url evaluation.user_index %}">{% trans 'Ingress' %}</a>
+    / {% trans 'Add iteration' %}
+{% endblock %}
+
+{% block body %}
+<form action="/evaluation/{{ mode }}/{{ evaluation.id }}/" method="POST"
+                            enctype="multipart/form-data">{% csrf_token %}
+    {{ forms_media.management_form }}
+      <fieldset>
+        <legend>{% trans 'Ingress info' %}</legend>
+        <table>
+            <col width="20%">
+            <col width="80%">
+            <tr>
+                <th>{% trans "Author" %}</th>
+                <td>{{ evaluation.creator.username }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Date of Registration" %}</th>
+                <td>{{ evaluation.created }}</td>
+            </tr>
+            {{ form_followup }}
+        </table>
+      </fieldset>
+
+    {% if not mode == "resolve" %}
+      <fieldset>
+        <legend>{% trans 'Iteration File' %}</legend>
+        <table>
+            {{ forms_media }}
+        </table>
+      </fieldset>
+    {% endif %}
+    <input class="addNew" type="submit" value="{% trans "Add Iteration" %}">
+</form>
+{% endblock %}

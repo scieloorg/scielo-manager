@@ -1,0 +1,15 @@
+This directory contains local copies of JS libraries for off-line development.
+
+For production, clients should fetch these libraries from the Google Content
+Delivery Network, as described in:
+http://code.google.com/apis/ajaxlibs/documentation/
+
+URLs for the JQuery libraries:
+
+jquery.js
+--> http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js
+
+jquery-ui.js
+--> http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js
+
+Note: remote URLs point to minified libs, while local ones are uncompressed.
