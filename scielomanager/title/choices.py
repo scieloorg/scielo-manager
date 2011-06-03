@@ -10,90 +10,96 @@ SUBJECTS = [
 ]
 
 PUBLICATION_STATUS = [
-    ('current','Current'),
-    ('ceased','Ceased'),
-    ('reportsonly','Reports Only'),
-    ('suspended','Suspended'),
-    ('unknow','Unknow'),   
+    ('C','Current'),
+    ('D','Ceased'),
+    ('R','Reports Only'),
+    ('S','Suspended'),
+    ('?','Unknow'),   
 ]
 
 ALPHABET = [
-    ('extensiveroman','Extensive Roman'),
-    ('anotheralphabet','Another Alphabet'),
-    ('basicroman','Basic Roman'),
-    ('chinese','Chinese'),
-    ('cirilic','Cirilic'),
-    ('japanese','japanese'),
-    ('korean','Korean'),    
+    ('B','Extensive Roman'),
+    ('O','Another Alphabet'),
+    ('A','Basic Roman'),
+    ('E','Chinese'),
+    ('C','Cirilic'),
+    ('D','japanese'),
+    ('K','Korean'),    
+]
+
+LANGUAGE = [
+    ('pt','português'),
+    ('en','inglês'),
+    ('es','espanhol'),
 ]
 
 FREQUENCY = [
-    ('annual','Annual'),
-    ('biennial','Biennial (every two years)'),
-    ('bimonthly','Bimonthly (every two months)'),
-    ('biweekly','Biweekly (every two weeks)'),
-    ('daily','Daily'),
-    ('irregular','Irregular (know to be so)'),
-    ('nonthly','Monthly'),
-    ('other','Other Frequencies'),
-    ('quaterly','Quaterly'),
-    ('Semiannual','Semiannual (twice a year)'),
-    ('Semimonthly','Semimonthly (twice a month)'),
-    ('Semiweekly','Semiweekly (twice a week)'),
-    ('three times a month','Three times a month'),
-    ('three times a week','Three times a week'),
-    ('three times a year','Three times a year'),
-    ('triennial','Triennial (Every three years)'),
-    ('unknow','Unknow'),
-    ('weekly','Weekly'),
+    ('A','Annual'),
+    ('G','Biennial (every two years)'),
+    ('B','Bimonthly (every two months)'),
+    ('E','Biweekly (every two weeks)'),
+    ('D','Daily'),
+    ('K','Irregular (know to be so)'),
+    ('M','Monthly'),
+    ('Z','Other Frequencies'),
+    ('Q','Quaterly'),
+    ('F','Semiannual (twice a year)'),
+    ('S','Semimonthly (twice a month)'),
+    ('C','Semiweekly (twice a week)'),
+    ('J','Three times a month'),
+    ('I','Three times a week'),
+    ('T','Three times a year'),
+    ('H','Triennial (Every three years)'),
+    ('?','Unknow'),
+    ('W','Weekly'),
 ]
 
 STANDARD = [
-    ('iso690/87','iso 690/87 - international standard'),
-    ('nbr 6023/89','nbr 6023/89 - associação nacional'),
+    ('iso690','iso 690/87 - international standard'),
+    ('nbr6023','nbr 6023/89 - associação nacional'),
     ('other','other standard'),
-    ('vancouver','the vancouver group - uniform'),
-    ('American Psychological Association','American Psychological Association')
+    ('vancouv','the vancouver group - uniform'),
+    ('apa','American Psychological Association')
 ]
 
 CTRL_VOCABULARY = [
-    ('no_descriptor','No Descriptor'),
-    ('health_sciences','Health Sciences Descriptors'),
+    ('nd','No Descriptor'),
+    ('decs','Health Sciences Descriptors'),
 ]
 
 LITERATURE_TYPE = [
-    ('1','Conference'),
-    ('2','Conference and Project papers as periodical'),
-    ('3','Conference papers as Monograph'),
-    ('4','Conference papers as Monograph Series'),
-    ('5','Conference papers as Periodical Series'),
-    ('6','Conference papers in a non conventional form'),
-    ('7','Document in a non conventional form'),
-    ('8','Monograph'),
-    ('9','Monograph Series'),
-    ('10','Project'),
-    ('11','Project and Conference papers as Monograph'),
-    ('12','Project papers as Monograph'),
-    ('13','Project papers as Monograph Series'),
-    ('14','Project papers as Periodical Series'),
-    ('15','Project papers in a non conventional form'),
-    ('16','Serial'),
-    ('17','Thesis and Dissertation'),
-    ('18','Thesis Series'),
+    ('C','Conference'),
+    ('SCP','Conference and Project papers as periodical series'),
+    ('MC','Conference papers as Monograph'),
+    ('MSC','Conference papers as Monograph Series'),
+    ('SC','Conference papers as Periodical Series'),
+    ('NC','Conference papers in a non conventional form'),
+    ('N','Document in a non conventional form'),
+    ('M','Monograph'),
+    ('MS','Monograph Series'),
+    ('P','Project'),
+    ('MCP','Project and Conference papers as Monograph'),
+    ('MO','Project papers as Monograph'),
+    ('MSP','Project papers as Monograph Series'),
+    ('SP','Project papers as Periodical Series'),
+    ('NP','Project papers in a non conventional form'),
+    ('S','Serial'),
+    ('T','Thesis and Dissertation'),
+    ('TS','Thesis Series'),
 ]
 
 TREATMENT_LEVEL = [
-    ('1','analytical of a monograph'),
-    ('2','analytical of a monograph in collection'),
-    ('3','analytical of a monograph in a serial'),
-    ('4','analytical of a serial'),
-    ('5','collective level'),
-    ('6','monographic in a collection'),
-    ('7','monographic level'),
-    ('8','monographic series level'),
+    ('am','analytical of a monograph'),
+    ('amc','analytical of a monograph in collection'),
+    ('ams','analytical of a monograph in a serial'),
+    ('as','analytical of a serial'),
+    ('c','collective level'),
+    ('mc','monographic in a collection'),
+    ('m','monographic level'),
+    ('ms','monographic series level'),
 ]
 
 PUBLICATION_LEVEL = [
-    ('scientific_technical','Scientific Technical'),
-    ('Divulgation','Divulgation')
+    ('CT','Scientific Technical'),
+    ('DI','Divulgation')
 ]
