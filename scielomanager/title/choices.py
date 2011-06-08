@@ -1,12 +1,18 @@
 # coding: utf-8
 
 SUBJECTS = [
-    ('Health Sciences','Health Sciences'),
-    ('Social Sciences','Social Sciences'),
-    ('Human Sciences','Human Sciences'),
-    ('Matematics','Matematics'),
+    ('Agricultural Sciences','Agricultural Sciences'),
+    ('Applied Social Sciences','Applied Social Sciences'),
+    ('Biological Sciences','Biological Sciences'),
+    ('Chemistry','Chemistry'),
     ('Engineering','Engineering'),
-    ('Exact and Earth Sciences','Exact and Earth Sciences'),    
+    ('Exact and Earth Sciences','Exact and Earth Sciences'),
+    ('Geosciences','Geosciences'),
+    ('Health Sciences','Health Sciences'),
+    ('Humanities','Humanities'),
+    ('Linguistics, Letters and Arts','Linguistics, Letters and Arts'),
+    ('Mathematics','Mathematics'),
+    ('Social Sciences','Social Sciences'),    
 ]
 
 PUBLICATION_STATUS = [

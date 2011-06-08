@@ -26,7 +26,7 @@ from scielomanager.title.models import *
 def index(request):
     t = loader.get_template('title/home_title.html')
     c = RequestContext(request)
-    return HttpResponse(t.render(c))
+    return HttpResponse(t.render(c),)
     
 def user_login(request):
 
@@ -67,24 +67,51 @@ def user_logout(request):
     
 @login_required
 def user_index(request):
-    titles = Title.objects.all()
-    t = loader.get_template('title/home_title.html')
+    user_collection = Collection.objects.get(manager=request.user)    
+    titles = Title.objects.filter(creator=user_collection.manager)
+    t = loader.get_template('title/title_dashboard.html')
     c = RequestContext(request, {
-                       'user_titles': titles,
+                       'titles': titles,
+                       'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
 
 @login_required
 def title_index(request):
-    titles = Title.objects.all()
+    user_collection = Collection.objects.get(manager=request.user)
+    titles = Title.objects.filter(collection=user_collection)
     t = loader.get_template('title/title_dashboard.html')
     c = RequestContext(request, {
                        'titles': titles,
+                       'collection': user_collection,                       
                        })
     return HttpResponse(t.render(c))
+
     
 @login_required
 def publisher_index(request):
+    publishers = Publisher.objects.filter(creator=request.user)
+    t = loader.get_template('title/title_dashboard.html')
+    c = RequestContext(request, {
+                       'titles': publishers,
+                       })
+    return HttpResponse(t.render(c))
+
+
+@login_required
+def show_title(request,title_id):
+    user_collection = Collection.objects.get(manager=request.user)    
+    title = Title.objects.get(id=title_id)
+    t = loader.get_template('title/show_title.html')
+    c = RequestContext(request, {
+                       'title': title,
+                       'collection': user_collection,                       
+                       })
+    return HttpResponse(t.render(c))
+    
+    
+@login_required
+def add_title(request):
     titles = Title.objects.all()
     t = loader.get_template('title/title_dashboard.html')
     c = RequestContext(request, {

@@ -7,7 +7,9 @@ from scielomanager.title.views import *
 
 urlpatterns = patterns('',
     url(r'^$', title_index, name="title.index"),
-    url(r'^open/$', open_title, name='title.open' ),
+    url(r'^show/(?P<title_id>\d+)/$', show_title, name='title.show' ),
+    url(r'^add/$', add_title, name='title.add' ),
+    url(r'^open/$', open_title, name='title.open' ),        
     url(r'^publisher/$', publisher_index, name='publisher.index' ),    
     #url(r'^search/$', search, name="title.search"),
     #url(r'^list/$', login_required(object_list), info_dict, name="title.list"),

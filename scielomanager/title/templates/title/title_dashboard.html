@@ -14,28 +14,6 @@
             textExtraction: 'complex',
             headers: { 6: { sorter: false}},
         });
-
-        $(".dataTable td > select").change(function() {
-
-            $('#transationMessage').fadeIn('slow');
-            
-            $.ajax({
-             type:"GET",
-             url:"/title/meeting/" + $(this).attr('id') + "/" +  $(this).val(),
-             success:function(result){
-                if(result == 'updated'){
-                    $('#transationMessage').fadeOut('slow');
-                }else{
-                    $('#transationMessage').fadeOut('slow');
-                    alert("You don't have permission to set meeting")
-                }
-             },
-             error:function(){
-                $('#transationMessage').hide();
-                $('#errorMessage').fadeIn('slow');
-            }
-         });
-        });
      
     });
 </script>
@@ -46,30 +24,32 @@
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Title Manager' %}
+/ {% trans 'Titles DashBoard' %}
 {% endblock %}
 
 {% block body %}
-<br/>
-<span id="transationMessage" style="color:red;display:none;">{% trans 'Updating title...' %}</span><span id="errorMessage" style="color:red;display:none;">{% trans 'Error while update title.' %}</span>
 <div class="actions"><a href="{% url title.open %}" class="addNew">{% trans 'New Title' %}</a></div>
 <table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
     <thead>
         <tr>
-            <th>{% trans "ISSN" %}</th>
             <th>{% trans "Journal Title" %}</th>
+            <th>{% trans "Print ISSN" %}</th>
+            <th>{% trans "Electronic ISSN" %}</th>            
             <th>{% trans "Publisher" %}</th>
             <th>{% trans "Status" %}</th>
-            <th>{% trans "Actions" %}</th>
+            <th>{% trans "Validated" %}</th>
+            <th>{% trans "Options" %}</th>
         </tr>
     </thead>
     <tbody>
-        {% for ct in titles.object_list %}
+        {% for ct in titles %}
         <tr class="{% cycle 'even' 'odd' %}">
-            <td class="subject">{{ ct.issn }}</td>
             <td class="subject">{{ ct.title }}</td>
+            <td class="subject">{{ ct.print_issn }}</td>
+            <td class="subject">{{ ct.eletronic_issn }}</td>            
             <td class="subject">{{ ct.publisher }}</td>
-            <td class="subject">{{ ct.status }}</td>            
+            <td class="subject">{{ ct.pub_status }}</td>
+            <td class="subject">{{ ct.validated }}</td>            
             <td>
                 <ul>
                     <li><a class="history" href="/title/show/{{ ct.pk }}/" title="{% trans 'view title' %}"><span>{% trans "view title" %}</span></a></li>

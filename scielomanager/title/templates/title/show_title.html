@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+    / <a href="{% url title.index %}">{% trans 'Titles DashBoard' %}</a> / {% trans 'Journal Details' %}
+{% endblock %}
+
+{% block body %}
+
+<h1>{{ title.title }}</h1>
+<fieldset>
+    <legend>{% trans "About the Journal Part-1" %}</legend>
+    <div class="show">
+    <table>
+        <tr>
+            <th>{% trans "Title" %}</th>
+            <td>{{ title.title }}</td>
+        </tr>        
+        <tr>
+            <th>{% trans "Publisher" %}</th>
+            <td>{{ title.publisher }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Short Title" %}</th>
+            <td>{{ title.abbreviated_title }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "ISO Title" %}</th>
+            <td>{{ title.iso_title }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Acronym" %}</th>
+            <td>{{ title.acronym }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Print ISSN" %}</th>
+            <td>{{ title.print_issn }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Electronic ISSN" %}</th>
+            <td>{{ title.eletronic_issn }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Mission Portuguese" %}</th>
+            <td>{{ title.mission_pt }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Mission English" %}</th>
+            <td>{{ title.mission_en }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Mission Spanish" %}</th>
+            <td>{{ title.mission_es }}</td>
+        </tr>        
+        <tr>
+            <th>{% trans "Subject Descriptors" %}</th>
+            <td>{{ title.subject_descriptors }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Study Area" %}</th>
+            <td>{{ title.study_area }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Indexation Range" %}</th>
+            <td>{{ title.indexation_range }}</td>
+        </tr>
+    </table>
+    </div>
+</fieldset>    
+<fieldset>
+    <legend>{% trans "About the Journal Part-2" %}</legend>
+    <div class="show">
+    <table>
+        <tr>
+            <th>{% trans "Initial Date" %}</th>
+            <td>{{ title.init_year }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Initial Volume" %}</th>
+            <td>{{ title.init_vol }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Initial Number" %}</th>
+            <td>{{ title.init_num }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Final Date" %}</th>
+            <td>{{ title.final_year }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Final Volume" %}</th>
+            <td>{{ title.final_vol }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Final Number" %}</th>
+            <td>{{ title.final_num }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Frequency" %}</th>
+            <td>{{ title.get_frequency_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Publication Status" %}</th>
+            <td>{{ title.get_pub_status_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Language" %}</th>
+            <td>{{ title.get_alphabet_display }}</td>
+        </tr>        
+        <tr>
+            <th>{% trans "Classification" %}</th>
+            <td>{{ title.get_classification_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "National Code" %}</th>
+            <td>{{ title.national_code }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Text Language" %}</th>
+            <td>{{ title.text_language }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Abstract Language" %}</th>
+            <td>{{ title.abst_language }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Standard" %}</th>
+            <td>{{ title.get_standard_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Controlled Vocabulary" %}</th>
+            <td>{{ title.get_ctrl_vocabulary_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Literature Type" %}</th>
+            <td>{{ title.get_literature_type_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Treatment Level" %}</th>
+            <td>{{ title.get_treatment_level_display }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Publication Level" %}</th>
+            <td>{{ title.get_publication_level_display }}</td>
+        </tr>
+    </table>
+    </div>
+</fieldset>
+<fieldset>
+    <legend>{% trans "For Health Sciences and Biological Sciences Journals" %}</legend>    
+    <div class="show">
+    <table>
+        <tr>
+            <th>{% trans "SECS Code" %}</th>
+            <td>{{ title.secs_code }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Medline Code" %}</th>
+            <td>{{ title.medline_code }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Medline Short Title" %}</th>
+            <td>{{ title.medline_short_title }}</td>
+        </tr>
+    </table>
+    </div>
+</fieldset>
+{% endblock %}

@@ -52,7 +52,7 @@
 {% block body %}
 <br/>
 <span id="transationMessage" style="color:red;display:none;">{% trans 'Updating title...' %}</span><span id="errorMessage" style="color:red;display:none;">{% trans 'Error while update title.' %}</span>
-<div class="actions"><a href="{% url title.open %}" class="addNew">{% trans 'New Title' %}</a></div>
+<div class="actions"><a href="{% url title.add %}" class="addNew">{% trans 'New Title' %}</a></div>
 <table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
     <thead>
         <tr>

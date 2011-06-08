@@ -7,10 +7,23 @@ from django.utils.translation import ugettext_lazy as _
 import choices
 #import scielomanager.tools
 
+class Collection (models.Model):
+    class Meta:
+        ordering = ['name']
+    name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
+    manager = models.ForeignKey(User, related_name='collection_user')
+    url = models.URLField(_('Instance URL'), )    
+    validated = models.BooleanField(_('Validated'), default=False, )
+    def __unicode__(self):
+        return u'%s' % (self.name)
+    class Meta:
+        ordering = ['name']
+        
 class Publisher (models.Model):
     class Meta:
-        ordering = ['name','sponsor']    
+        ordering = ['name','sponsor']
     name = models.CharField(_('Publisher Name'), max_length=128, db_index=True,)
+    collection = models.ForeignKey(Collection, related_name='publisher_collection')    
     country = models.CharField(_('Country'), max_length=32)
     state = models.CharField(_('State'), max_length=32, null=False,blank=True,)
     city = models.CharField(_('City'), max_length=32, null=False,blank=True,)
@@ -30,7 +43,7 @@ class Publisher (models.Model):
         
 class Title (models.Model):
     def __unicode__(self):
-        return u'%s' % (self.title)
+        return u'%s' % (self.title)       
     class Meta:
         ordering = ['title']         
     # PART 1
@@ -39,6 +52,7 @@ class Title (models.Model):
         editable=False)
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
+    collection = models.ForeignKey(Collection, related_name='title_collection')
     publisher = models.ForeignKey(Publisher, related_name='title_publisher',null=False,blank=True)    
     title = models.CharField(_('Publication Title'),max_length=256, db_index=True,)
     abbreviated_title = models.CharField(_('Short Title'),max_length=128)
@@ -49,10 +63,10 @@ class Title (models.Model):
     mission_es = models.TextField(_('Mission (Spanish)'),null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=16,null=False,blank=True)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=16,null=False,blank=True)
-    subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=64,null=False,blank=True)
+    subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=256,null=False,blank=True)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
-    indexation_range = models.CharField(_('Indexation Range'),max_length=64,null=False,blank=True)
+    indexation_range = models.CharField(_('Indexation Range'),max_length=256,null=False,blank=True)
     
     #PART 2
     init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
@@ -67,7 +81,7 @@ class Title (models.Model):
         choices=choices.PUBLICATION_STATUS,null=False,blank=True)
     alphabet =  models.CharField(_('Alphabet'),max_length=16,
         choices=choices.ALPHABET,null=False,blank=True)
-    classification = models.CharField(_('Initial Number'), max_length=16,null=False,blank=True)
+    classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)    
     text_language = models.CharField(_('Text Language'), max_length=259,null=False,blank=True)
     abst_language = models.CharField(_('Abstract Language'), max_length=256,null=False,blank=True)
