@@ -107,11 +107,14 @@
                         <ul>
                             {% if user.is_authenticated %}
                             <li>
-                               <a href="{% url title.index %}">{% trans 'Title' %}</a>
+                                <a href="{% url title.index %}">{% trans 'Title' %}</a>
                             </li>
                             <li>
-                               <a href="{% url publisher.index %}">{% trans 'Publisher' %}</a>
-                            </li>                            
+                                <a href="{% url user.index %}">{% trans 'User' %}</a>
+                            </li>
+                            <li>
+                                <a href="{% url publisher.index %}">{% trans 'Publisher' %}</a>
+                            </li>
                             {% endif %}
                         </ul>
                     </div>

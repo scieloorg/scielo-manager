@@ -14,15 +14,22 @@ class Collection (models.Model):
     manager = models.ForeignKey(User, related_name='collection_user')
     url = models.URLField(_('Instance URL'), )    
     validated = models.BooleanField(_('Validated'), default=False, )
+
     def __unicode__(self):
         return u'%s' % (self.name)
+
     class Meta:
         ordering = ['name']
-        
+
+class UserProfile (models.Model):
+    user = models.ForeignKey(User, unique=True)
+    collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
+
 class Publisher (models.Model):
     class Meta:
         ordering = ['name','sponsor']
-    name = models.CharField(_('Publisher Name'), max_length=128, db_index=True,)
+
+    name = models.CharField(_('Publisher Name'), max_length=128, db_index=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')    
     country = models.CharField(_('Country'), max_length=32)
     state = models.CharField(_('State'), max_length=32, null=False,blank=True,)
@@ -30,22 +37,28 @@ class Publisher (models.Model):
     Address = models.TextField(_('Address'), )
     Address_number = models.CharField(_('Number'), max_length=8)
     Address_complement = models.CharField(_('Complement'), max_length=128, null=False,blank=True,)
-    zip = models.CharField(_('Zip Code'), max_length=16)
+    zip = models.CharField(_('Zip Code'), max_length=16,)
     phone = models.CharField(_('Phone Number'), max_length=16, null=False,blank=True,)
     fax =  models.CharField(_('Fax Number'), max_length=16, null=False,blank=True,)
     cel = models.CharField(_('Cel Number'), max_length=16, null=False,blank=True,)
     mail = models.EmailField(_('Email'),)
     sponsor = models.CharField(_('Sponsor'), max_length=128, null=False,blank=True,)
-    validated = models.BooleanField(_('Validated'), default=False, )
+    validated = models.BooleanField(_('Validated'), default=False,)
     
     def __unicode__(self):
         return u'%s' % (self.name)
-        
+
 class Title (models.Model):
     def __unicode__(self):
-        return u'%s' % (self.title)       
+        return u'%s' % (self.title)
+
     class Meta:
-        ordering = ['title']         
+        ordering = ['title']
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("/title")
+ 
     # PART 1
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     created = models.DateTimeField(_('Date of Registration'),default=datetime.now,
@@ -54,13 +67,15 @@ class Title (models.Model):
         editable=False)
     collection = models.ForeignKey(Collection, related_name='title_collection')
     publisher = models.ForeignKey(Publisher, related_name='title_publisher',null=False,blank=True)    
-    title = models.CharField(_('Publication Title'),max_length=256, db_index=True,)
+    title = models.CharField(_('Publication Title'),max_length=256, db_index=True)
     abbreviated_title = models.CharField(_('Short Title'),max_length=128)
     iso_title = models.CharField(_('ISO Short Title'),max_length=128,null=False,blank=True)
     acronym = models.CharField(_('Acronym'),max_length=8)
     mission_en = models.TextField(_('Mission (English)'),null=False,blank=True)
     mission_pt = models.TextField(_('Mission (Portuguese)'),null=False,blank=True)
     mission_es = models.TextField(_('Mission (Spanish)'),null=False,blank=True)
+    scielo_issn = models.CharField(_('SciELO ISSN'),max_length=8,
+        choices=choices.SCIELO_ISSN,null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=16,null=False,blank=True)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=16,null=False,blank=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=256,null=False,blank=True)
@@ -74,7 +89,7 @@ class Title (models.Model):
     init_num = models.CharField(_('Initial Number'), max_length=4,null=False,blank=True)    
     final_year = models.CharField(_('Final Date'),max_length=10,null=True,blank=True)
     final_vol = models.CharField(_('Final Volume'),max_length=4,null=False,blank=True)
-    final_num = models.CharField(_('Final Numbert'),max_length=4,null=False,blank=True)
+    final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True)
     frequency = models.CharField(_('Frequency'),max_length=16,
         choices=choices.FREQUENCY,null=False,blank=True)
     pub_status = models.CharField(_('Publication Status'),max_length=16,

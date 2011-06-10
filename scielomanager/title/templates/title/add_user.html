@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+    / <a href="{% url user.index %}">{% trans 'User Dashboard' %}</a> / {% trans 'New User' %}
+{% endblock %}
+
+{% block body %}
+
+<fieldset>
+    <legend>{% trans "New User" %} - {{ user_collection.name }}</legend>
+    <form method="post" action="/title/user/add/">{% csrf_token %}
+        <table class="table">
+            <col width="10%"/>
+            <col width="85%"/>
+            {% if form.errors %}
+                {% for field in form %}
+                        <tr><td colspan="2">{{ field.errors }}</td></tr>
+                        <tr><td>{{ field.label_tag }}</td><td>{{ field }}</td></tr>
+                {% endfor %}
+            {% else %}
+                {{ add_user_form.as_table }}
+            {% endif %}
+        </table>
+    <input class="addNew" name="submit" type="submit" value="{% trans "Add User" %}">
+    </form>
+</fieldset>
+{% endblock %}

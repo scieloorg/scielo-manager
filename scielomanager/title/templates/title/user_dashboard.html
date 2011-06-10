@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
+<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // call the tablesorter plugin
+        $("#table_evaluations").tablesorter({
+            sortList: [[0,1]],
+            dateFormat: 'uk',
+            textExtraction: 'complex',
+            headers: { 6: { sorter: false}},
+        });
+     
+    });
+</script>
+{% endblock %}
+
+{% block body_title %}{% trans "User Titles" %}{% endblock %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+/ <a href="{% url index %}">{% trans 'Home' %}</a>
+/ {% trans 'Users DashBoard' %}
+{% endblock %}
+
+{% block body %}
+<div class="actions"><a href="{% url user.add %}" class="addNew">{% trans 'New User' %}</a></div>
+<table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
+    <thead>
+        <tr>
+            <th>{% trans "User Name" %}</th>
+            <th>{% trans "User Login" %}</th>
+            <th>{% trans "User Email" %}</th>
+            <th>{% trans "Enable?" %}</th>
+            <th>{% trans "Options" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ct in users %}
+        <tr class="{% cycle 'even' 'odd' %}">
+            <td class="subject">{{ ct.first_name }} {{ ct.last_name }}</td>
+            <td class="subject">{{ ct.username }}</td>
+            <td class="subject">{{ ct.email }}</td>            
+            <td class="subject">{{ ct.is_active }}</td>
+            <td>
+                <ul>
+                    <li><a class="history" href="/title/user/show/{{ ct.pk }}/" title="{% trans 'view user' %}"><span>{% trans "view user" %}</span></a></li>
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    <tbody>
+</table>
+{% endblock %}
