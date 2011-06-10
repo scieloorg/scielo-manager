@@ -1,5 +1,9 @@
 # coding: utf-8
 
+SCIELO_ISSN = [
+    ('print','print'),
+    ('electronic','electronic'),
+]
 SUBJECTS = [
     ('Agricultural Sciences','Agricultural Sciences'),
     ('Applied Social Sciences','Applied Social Sciences'),

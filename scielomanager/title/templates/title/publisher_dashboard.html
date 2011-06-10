@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
+<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // call the tablesorter plugin
+        $("#table_evaluations").tablesorter({
+            sortList: [[0,1]],
+            dateFormat: 'uk',
+            textExtraction: 'complex',
+            headers: { 6: { sorter: false}},
+        });
+     
+    });
+</script>
+{% endblock %}
+
+{% block body_title %}{% trans "User Titles" %}{% endblock %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+/ <a href="{% url index %}">{% trans 'Home' %}</a>
+/ {% trans 'Publishers DashBoard' %}
+{% endblock %}
+
+{% block body %}
+<div class="actions"><a href="{% url publisher.add %}" class="addNew">{% trans 'New Publisher' %}</a></div>
+<table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
+    <thead>
+        <tr>
+            <th>{% trans "Publisher Name" %}</th>
+            <th>{% trans "Publisher Sponsor" %}</th>
+            <th>{% trans "Enable?" %}</th>
+            <th>{% trans "Options" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ct in publishers %}
+        <tr class="{% cycle 'even' 'odd' %}">
+            <td class="subject">{{ ct.name }}</td>
+            <td class="subject">{{ ct.sponsor }}</td>       
+            <td class="subject">{{ ct.is_active }}</td>
+            <td>
+                <ul>
+                    <li><a class="history" href="/title/publisher/show/{{ ct.pk }}/" title="{% trans 'view publisher' %}"><span>{% trans "view publisher" %}</span></a></li>
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    <tbody>
+</table>
+{% endblock %}
