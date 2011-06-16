@@ -66,7 +66,7 @@ class Title (models.Model):
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
     collection = models.ForeignKey(Collection, related_name='title_collection')
-    publisher = models.ForeignKey(Publisher, related_name='title_publisher',null=False,blank=True)    
+    publisher = models.ForeignKey(Publisher, related_name='title_publisher',null=False)    
     title = models.CharField(_('Publication Title'),max_length=256, db_index=True)
     abbreviated_title = models.CharField(_('Short Title'),max_length=128)
     iso_title = models.CharField(_('ISO Short Title'),max_length=128,null=False,blank=True)

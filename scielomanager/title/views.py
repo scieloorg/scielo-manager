@@ -235,7 +235,7 @@ def add_publisher(request):
             return render_to_response('title/add_publisher.html', {
                                       'add_publisher_form': add_publisher_form,
                                       'type': type,
-                                      'mode': 'publisher_user',
+                                      'mode': 'add_publisher',
                                       'form': form,
                                       'user_name': request.user.pk,
                                       'collection': user_collection},

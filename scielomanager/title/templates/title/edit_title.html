@@ -18,8 +18,7 @@
             <col width="85%"/>
             {% if edit_title_form.errors %}
                 {% for field in edit_title_form %}
-                        <tr><td colspan="2">{{ field.errors }}</td></tr>
-                        <tr><td>{{ field.label_tag }}</td><td>{{ field }}</td></tr>
+                        <tr><td>{{ field.label_tag }}</td><td>{{ field }} {% if field.errors %}<span class="field_errors"><img src="/static/images/error.png" border="0" width="20px" height="20px" /> {% trans "field required!" %}</span></td>{%endif%}</tr>
                 {% endfor %}
             {% else %}
                 {{ edit_title_form.as_table }}
