@@ -3,7 +3,9 @@
 
 {% block stepmenu_top %}
     {{ block.super }}
-    / <a href="{% url index %}">{% trans 'Home' %}</a> / <a href="{% url publisher.index %}">{% trans 'Publisher DashBoard' %}</a> / {% trans 'Publisher Details' %}
+    / <a href="{% url index %}">{% trans 'Home' %}</a>
+    / <a href="{% url publisher.index %}">{% trans 'Publisher DashBoard' %}</a>
+    / {% trans 'Publisher Details' %}
 {% endblock %}
 
 {% block body %}
