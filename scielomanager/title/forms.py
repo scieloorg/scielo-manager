@@ -10,7 +10,12 @@ class TitleForm(ModelForm):
             'init_year': SelectDateWidget(),
             'final_year': SelectDateWidget(),            
         }
-        
+
+class PublisherForm(ModelForm):
+    class Meta:
+        model = Publisher
+        exclude = ('collection',)
+
 class UserForm(ModelForm):
     class Meta:
         model = User

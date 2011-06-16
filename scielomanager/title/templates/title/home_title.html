@@ -3,34 +3,50 @@
 {% block body_title %}{% trans "User Evaluations" %}{% endblock %}
 {% block body %}
 
-<h2>Procedimentos para inclusão de periódicos na coleção SciELO Brasil</h2>
-
-<h5><br><b><font color="#333333">Versão Janeiro 2011</font></b></h5>
-
-<p>Para ser incluído na SciELO Brasil, o periódico deve aceitar os critérios para admissão e permanência na coleção, descritos no documento "Critérios SciELO Brasil: critérios, política e procedimentos para a admissão e a permanência de periódicos científicos na coleção SciELO Brasil" <http://www.scielo.br/criteria/scielo_brasil_pt.html>.</p>
-
-<p>A Coleção SciELO Brasil indexa e disponibiliza online em acesso aberto textos completos de periódicos científicos brasileiros de todas as áreas do conhecimento que publicam, predominantemente, artigos originais resultantes de pesquisa científica e que utilizam o procedimento de avaliação por pares do conteúdo e da relevância dos artigos.</p>
-
-<p>O processo de admissão inicia-se com a submissão voluntária do pedido de avaliação por parte do editor responsável pelo periódico, por meio de uma carta ao Comitê Consultivo justificando a submissão, acompanhada da seguinte documentação:</p>
-<p>
+{% if user.is_authenticated %}
+<div class="tools">
     <ul>
-        <li>a. um exemplar dos três últimos fascículos publicados ou, no caso de periódicos eletrônicos, o endereço eletrônico (URL) do periódico e as especificações dos 3 últimos números publicados, com sua respectiva localização;</li>
-        <li>b. o formulário utilizado pelo periódico no processo de análise e aprovação dos manuscritos;</li>
-        <li>c. o formulário de avaliação &lt;<a href="http://www.scielo.br/avaliacao/formulario_avaliacao.xls"style="text-decoration:none">http://www.scielo.br/avaliacao/formulario_avaliacao.xls</a>&gt; preenchido com os dados do periódico.</li>
-   </ul>
+        <li class="toolbox">
+            <a href="{% url title.index %}" ><img src="/static/images/title_manager.png" border="0" /></a>
+            <h1><a href="{% url title.index %}" >Title Manager</a></h1>
+        </li>
+        <li class="toolbox">
+            <a href="{% url publisher.index %}" ><img src="/static/images/publisher_manager.png" border="0" /></a>
+            <h1><a href="{% url publisher.index %}" >Publisher Manager</a></h1>
+        </li>
+        <li class="toolbox">
+            <a href="{% url user.index %}" ><img src="/static/images/user_manager.png" border="0" /></a>
+            <h1><a href="{% url user.index %}" >User Manager</a></h1> 
+        </li>      
+    </ul>
+    <div class="spacer">&#160;</div>    
+</div>
+{%endif%}
+<h1>{% trans "About SciELO Manager Tools" %}</h1>
+<h2><img src="/static/images/title_manager.png" border="0" width="30px" height="30px" /> {% trans "Title Manager" %}</h2>
+<p>
+Nulla facilisi. Aliquam tincidunt mi et libero volutpat lacinia. Sed ante lectus, dapibus venenatis facilisis eget,
+bibendum eu lectus. Proin felis lacus, porta sed posuere non, sollicitudin nec arcu. Sed dignissim ultrices faucibus.
+Duis nec ante sit amet ligula laoreet gravida. Ut a rhoncus enim. Proin id est nunc, in pretium augue. Pellentesque
+hendrerit sapien nec elit elementum gravida. In vulputate porta turpis sed sodales. Nam ultrices urna non tellus malesuada
+tincidunt. Donec at quam ac felis condimentum congue. Curabitur commodo nulla eget nibh mattis et aliquam tortor blandit.
+Donec sed ipsum a lorem euismod semper. Nullam non scelerisque leo.
 </p>
-<p>O pedido de avaliação deve ser submedido a partir do Sistema SciELO de Seleção de Periódicos, com cadastro do editor e periódico, juntamente com o formulário de avaliação preenchido e o formulário utilizado no processo de análise e aprovação dos manuscritos.</p>
-
-    Os fascículos impressos do periódico poderão ser enviados para:<br/>
-        <ul>
-            <li>SciELO - Scientific Electronic Library Online</li>
-            <li>Processo de Avaliação de Periódicos</li>
-            <li>Rua Dr. Diogo de Faria, 1087 - 8o. andar, cj. 810 - Vila Clementino</li>
-            <li>04037-004 - São Paulo - SP - Brasil</li>
-        </ul>
-
-<p>Com a documentação reunida, o processo de avaliação segue as etapas de pré-avaliação do periódico sobre o cumprimento das condições formais para a avaliação para o ingresso na Coleção SciELO Brasil, avaliação de formato e endogenia, avaliação de mérito científico por pares e a avaliação final do Comitê Consultivo. Todas as decisões relativas ao ingresso e permanência de periódicos na Coleção SciELO Brasil são tomadas exclusivamente pelo Comitê Consultivo .</p>
-
-<p>Para esclarecimento de dúvidas, entre em contato com a Unidade SciELO a partir do e-mail &lt;<a href="mailto:scielo.avaliacao@scielo.org"style="text-decoration:none">scielo.avaliacao@scielo.org</a>&gt;.</p>
-
+<h2><img src="/static/images/publisher_manager.png" border="0" width="30px" height="30px" /> {% trans "Publisher Manager" %}</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quam arcu, porta vel dictum et, accumsan
+vel lectus. Donec et neque diam, a ultrices sapien. Nunc hendrerit venenatis orci nec imperdiet. Donec bibendum,
+ligula nec pretium interdum, ante ante ornare augue, id interdum sem neque eu magna. Fusce neque massa, feugiat
+id convallis id, viverra sit amet lectus. Aenean eleifend, eros sollicitudin accumsan dictum, orci enim auctor purus,
+eu egestas risus libero ac leo. Praesent vitae sem ante. Nam euismod nulla varius nulla cursus varius. Ut elit justo,
+bibendum vel vestibulum eget, eleifend quis nunc. Phasellus imperdiet dignissim imperdiet. Suspendisse sit amet quam enim.
+Suspendisse at odio non justo aliquam commodo. Praesent eu dui vitae libero pulvinar blandit vel sed leo. Sed auctor, dui
+in euismod condimentum, lacus nisl sagittis arcu, sit amet pharetra leo dolor nec erat. Proin gravida accumsan nisl a lobortis.</p>
+<h2><img src="/static/images/user_manager.png" border="0" width="30px" height="30px" /> {% trans "User Manager" %}</h2>
+<p>
+Phasellus rhoncus vehicula neque eu tincidunt. Etiam vestibulum purus eget tortor convallis gravida. Proin semper semper
+eleifend. Morbi euismod quam a lacus sagittis accumsan. Quisque consectetur, mauris eget commodo condimentum, quam ipsum
+rutrum libero, id ullamcorper augue odio et ante. Praesent et quam lacus. Morbi a metus quis purus tincidunt elementum et
+ac nunc. Donec a lorem sit amet urna dictum porttitor. Nulla lacus ligula, gravida id sagittis in, tincidunt sit amet lectus.
+Donec pretium luctus felis eu egestas.
+</p>
 {% endblock %}

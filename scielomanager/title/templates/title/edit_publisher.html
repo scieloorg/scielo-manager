@@ -4,28 +4,28 @@
 {% block stepmenu_top %}
     {{ block.super }}
     / <a href="{% url index %}">{% trans 'Home' %}</a>
-    / <a href="{% url title.index %}">{% trans 'Title Dashboard' %}</a>
-    / {% trans 'New Title' %}
+    / <a href="{% url title.index %}">{% trans 'Publisher Dashboard' %}</a>
+    / {% trans 'Edit Publisher' %}
     {% endblock %}
 
 {% block body %}
 
 <fieldset>
-    <legend>{% trans "New Title" %}</legend>
-    <form method="post" action="/title/add/">{% csrf_token %}
+    <legend>{% trans "Edit Publisher" %}</legend>
+    <form method="post" action="/title/publisher/edit/{{ publisher_id }}/">{% csrf_token %}
         <table class="table">
             <col width="10%"/>
             <col width="85%"/>
-            {% if form.errors %}
-                {% for field in form %}
+            {% if edit_publisher_form.errors %}
+                {% for field in edit_publisher_form %}
                         <tr><td colspan="2">{{ field.errors }}</td></tr>
                         <tr><td>{{ field.label_tag }}</td><td>{{ field }}</td></tr>
                 {% endfor %}
             {% else %}
-                {{ add_title_form.as_table }}
+                {{ edit_publisher_form.as_table }}
             {% endif %}
         </table>
-    <input class="addNew" name="submit" type="submit" value="{% trans "Add Title" %}">
+    <input class="addNew" name="submit" type="submit" value="{% trans "Save Publisher" %}">
     </form>
 </fieldset>
 {% endblock %}

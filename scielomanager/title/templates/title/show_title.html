@@ -3,7 +3,7 @@
 
 {% block stepmenu_top %}
     {{ block.super }}
-    / <a href="{% url title.index %}">{% trans 'Titles DashBoard' %}</a> / {% trans 'Journal Details' %}
+    / <a href="{% url index %}">{% trans 'Home' %}</a> / <a href="{% url title.index %}">{% trans 'Titles DashBoard' %}</a> / {% trans 'Journal Details' %}
 {% endblock %}
 
 {% block body %}
@@ -13,6 +13,16 @@
     <legend>{% trans "About the Journal Part-1" %}</legend>
     <div class="show">
     <table>
+        <tr>
+            <th>{% trans "Validated" %}</th>
+            <td>
+                {%if title.validated %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>
+        </tr>        
         <tr>
             <th>{% trans "Title" %}</th>
             <td>{{ title.title }}</td>

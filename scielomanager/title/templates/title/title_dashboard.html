@@ -3,20 +3,6 @@
 
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
-<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        // call the tablesorter plugin
-        $("#table_evaluations").tablesorter({
-            sortList: [[0,1]],
-            dateFormat: 'uk',
-            textExtraction: 'complex',
-            headers: { 6: { sorter: false}},
-        });
-     
-    });
-</script>
 {% endblock %}
 
 {% block body_title %}{% trans "User Titles" %}{% endblock %}
@@ -24,12 +10,12 @@
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Titles DashBoard' %}
+/ {% trans 'Titles DashBoard' %} ({{ titles|length }})
 {% endblock %}
 
 {% block body %}
 <div class="actions"><a href="{% url title.add %}" class="addNew">{% trans 'New Title' %}</a></div>
-<table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
+<table class="dataTable" cellspacing="0" border="0">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
@@ -49,37 +35,24 @@
             <td class="subject">{{ ct.eletronic_issn }}</td>            
             <td class="subject">{{ ct.publisher }}</td>
             <td class="subject">{{ ct.pub_status }}</td>
-            <td class="subject">{{ ct.validated }}</td>            
+            <td class="subject">
+                {%if ct.validated %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>            
             <td>
-                <ul>
-                    <li><a class="history" href="/title/show/{{ ct.pk }}/" title="{% trans 'view title' %}"><span>{% trans "view title" %}</span></a></li>
-                </ul>
+                <div class="options">
+                    <ul>
+                        <li><a href="/title/show/{{ ct.pk }}/" title="{% trans 'view title' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/title/edit/{{ ct.pk }}/" title="{% trans 'edit title' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/title/delete/{{ ct.pk }}/" title="{% trans 'delete title' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                    </ul>
+                </div>
             </td>
         </tr>
         {% endfor %}
     <tbody>
 </table>
-<div class="pagination">
-    <span class="step-links">
-        {% if titles.has_previous %}
-        {% if search %}
-        <a href="?page={{ titles.previous_page_number }}&q={{q}}">{% trans "Previous" %}</a>
-        {% else %}
-        <a href="?page={{ titles.previous_page_number }}">{% trans "Previous" %}</a>
-        {% endif %}
-        {% endif %}
-
-        <span class="current">
-            Page {{ titles.number }} of {{ titles.paginator.num_pages }}.
-        </span>
-
-        {% if titles.has_next %}
-        {% if search %}
-        <a href="?page={{ titles.next_page_number }}&q={{q}}">{% trans "Next" %}</a>
-        {% else %}
-        <a href="?page={{ titles.next_page_number }}">{% trans "Next" %}</a>
-        {% endif %}
-        {% endif %}
-    </span>
-</div>
 {% endblock %}

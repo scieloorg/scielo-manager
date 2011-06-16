@@ -3,20 +3,6 @@
 
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
-<script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        // call the tablesorter plugin
-        $("#table_evaluations").tablesorter({
-            sortList: [[0,1]],
-            dateFormat: 'uk',
-            textExtraction: 'complex',
-            headers: { 6: { sorter: false}},
-        });
-     
-    });
-</script>
 {% endblock %}
 
 {% block body_title %}{% trans "User Titles" %}{% endblock %}
@@ -24,18 +10,18 @@
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Users DashBoard' %}
+/ {% trans 'Users DashBoard' %} ({{ users|length }})
 {% endblock %}
 
 {% block body %}
 <div class="actions"><a href="{% url user.add %}" class="addNew">{% trans 'New User' %}</a></div>
-<table class="dataTable" id="table_evaluations" cellspacing="0" border="0">
+<table class="dataTable" cellspacing="0" border="0">
     <thead>
         <tr>
             <th>{% trans "User Name" %}</th>
             <th>{% trans "User Login" %}</th>
             <th>{% trans "User Email" %}</th>
-            <th>{% trans "Enable?" %}</th>
+            <th>{% trans "Enable" %}</th>
             <th>{% trans "Options" %}</th>
         </tr>
     </thead>
@@ -45,11 +31,21 @@
             <td class="subject">{{ ct.first_name }} {{ ct.last_name }}</td>
             <td class="subject">{{ ct.username }}</td>
             <td class="subject">{{ ct.email }}</td>            
-            <td class="subject">{{ ct.is_active }}</td>
+            <td class="subject">
+                {%if ct.is_active %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>
             <td>
-                <ul>
-                    <li><a class="history" href="/title/user/show/{{ ct.pk }}/" title="{% trans 'view user' %}"><span>{% trans "view user" %}</span></a></li>
-                </ul>
+                <div class="options">
+                    <ul>
+                        <li><a href="/title/user/show/{{ ct.pk }}/" title="{% trans 'view user' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/title/user/edit/{{ ct.pk }}/" title="{% trans 'edit user' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/title/user/delete/{{ ct.pk }}/" title="{% trans 'delete user' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                    </ul>
+                </div>
             </td>
         </tr>
         {% endfor %}

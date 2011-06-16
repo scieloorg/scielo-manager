@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+    / <a href="{% url index %}">{% trans 'Home' %}</a>
+    / <a href="{% url user.index %}">{% trans 'User DashBoard' %}</a>
+    / {% trans 'User Details' %}
+{% endblock %}
+
+{% block body %}
+<fieldset>
+    <legend>
+        {% trans "User Details" %}
+    </legend>
+    <div class="show">
+    <table>
+        <tr>
+            <th>{% trans "Activated" %}</th>
+            <td>
+                {%if user.is_active %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "user activated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "user not activated" %}"/>
+                {%endif%}
+            </td>
+        </tr>
+        <tr>
+            <th>{% trans "Name" %}</th>
+            <td>{{ user.first_name}} {{user.last_name }}</td>
+        </tr>        
+        <tr>
+            <th>{% trans "login" %}</th>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Email" %}</th>
+            <td>{{ user.email }}</td>
+        </tr>
+    </table>
+    </div>
+</fieldset>
+{% endblock %}

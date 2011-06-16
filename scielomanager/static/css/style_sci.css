@@ -29,6 +29,7 @@ H2 {
     color: #b00303;
     text-transform: uppercase;
     margin: 0px;
+    margin-bottom: 10px;
 }
 IMG {
     border: none;
@@ -555,9 +556,10 @@ table.dataTable TH, table.dataTable TD {
 table.dataTable TH {
     color: #990000;
     font-size: 120%;
-    background: #dedede;
+    background: url(/static/images/back_table_header.png) repeat-x;
     font-size: 110%;
     vertical-align: top;
+    border-top: 1px solid #c9c9c9;
 
 }
 table.dataTable .even TD {
@@ -902,4 +904,57 @@ legend{
 
 .show td {
     vertical-align: top;
+}
+
+/*Tool Boxes*/
+
+.tools {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tools ul {
+    list-style: none;
+}
+
+.tools ul li {
+    list-style: none;
+}
+
+.toolbox {
+    font: #CCCCCC;
+    float: left;
+    text-align: center;
+    border: 1px solid #CCCCCC;
+    height: 160px;
+    padding: 20px;
+    margin: 20px;
+    width: 150px;
+    border-radius: 5px 10px 5px 10px / 10px 5px 10px 5px;
+    border-radius: 5px;
+    border-radius: 5px 10px / 10px;
+    box-shadow:inset 0 0 30px #CCCCCC;
+    -moz-box-shadow:inset 0 0 30px #CCCCCC;    
+}
+
+.toolbox A {
+    color: #1298aD;    
+}
+
+.toolbox :hover {
+    color: #154362;    
+}
+
+.toolbox h1 {
+    color: #1298aD;
+    font-size: 16px;
+}
+
+.options {
+    width: 100px;
+}
+
+.options li {
+    float: left;
 }

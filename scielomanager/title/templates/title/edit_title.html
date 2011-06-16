@@ -5,27 +5,27 @@
     {{ block.super }}
     / <a href="{% url index %}">{% trans 'Home' %}</a>
     / <a href="{% url title.index %}">{% trans 'Title Dashboard' %}</a>
-    / {% trans 'New Title' %}
+    / {% trans 'Edit Title' %}
     {% endblock %}
 
 {% block body %}
 
 <fieldset>
-    <legend>{% trans "New Title" %}</legend>
-    <form method="post" action="/title/add/">{% csrf_token %}
+    <legend>{% trans "Edit Title" %}</legend>
+    <form method="post" action="/title/edit/{{ title_id }}/">{% csrf_token %}
         <table class="table">
             <col width="10%"/>
             <col width="85%"/>
-            {% if form.errors %}
-                {% for field in form %}
+            {% if edit_title_form.errors %}
+                {% for field in edit_title_form %}
                         <tr><td colspan="2">{{ field.errors }}</td></tr>
                         <tr><td>{{ field.label_tag }}</td><td>{{ field }}</td></tr>
                 {% endfor %}
             {% else %}
-                {{ add_title_form.as_table }}
+                {{ edit_title_form.as_table }}
             {% endif %}
         </table>
-    <input class="addNew" name="submit" type="submit" value="{% trans "Add Title" %}">
+    <input class="addNew" name="submit" type="submit" value="{% trans "Save Title" %}">
     </form>
 </fieldset>
 {% endblock %}
