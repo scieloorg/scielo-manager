@@ -26,9 +26,9 @@ from scielomanager.title.forms import *
 # Create your views here.
 def index(request):
     t = loader.get_template('title/home_title.html')    
-    try:
+    if request.user.is_authenticated():
         user_collection = request.user.userprofile_set.get().collection
-    except():
+    else:
         user_collection = ""
     c = RequestContext(request,{'collection':user_collection,})               
     return HttpResponse(t.render(c),)
@@ -67,7 +67,8 @@ def user_login(request):
         else:
             c = RequestContext(request, {'next': next,})
         return HttpResponse(t.render(c))
-    
+  
+@login_required  
 def user_logout(request):
     logout(request)
     t = loader.get_template('title/home_title.html')
