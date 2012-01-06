@@ -2,16 +2,12 @@
 from django.contrib import admin
 from scielomanager.title.models import *
 from django.contrib.auth.admin import UserAdmin
-from polyglot.admin import TranslationInline, TranslationAdmin
 
 admin.site.unregister(User)
 
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
-
-class SectionTranslationsInline(TranslationInline):
-    model = SectionTranslations
     
 class TitleMissionInline(admin.StackedInline):
     model = TitleMission
@@ -25,7 +21,7 @@ class ShortTitleOtherFormsInline(admin.StackedInline):
 class TitleAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [TitleMissionInline,TitleOtherFormsInline,ShortTitleOtherFormsInline,SectionTranslationsInline]
+    inlines = [TitleMissionInline,TitleOtherFormsInline,ShortTitleOtherFormsInline]
    
 class PublisherAdmin(admin.ModelAdmin):
     list_display = ('name','sponsor','validated')    
