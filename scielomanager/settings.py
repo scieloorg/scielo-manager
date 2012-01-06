@@ -124,7 +124,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'title',
-    'polyglot'
+    #'polyglot'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(

@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
-from polyglot.models import Translation
 from django.contrib.contenttypes import generic
 
 import choices
@@ -114,14 +113,6 @@ class Title (models.Model):
     medline_code = models.CharField(_('Medline Code'), max_length=64,null=False,blank=True)
     medline_short_title = models.CharField(_('Medline Short Title'), max_length=128,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
-
-class Section (models.Model):
-    name = models.CharField(_('Section Name'), max_length=128)
-    title = models.ForeignKey(Title, null=False)
-    translations = generic.GenericRelation('SectionTranslations')
-
-class SectionTranslations (Translation):
-    name = models.CharField(_('Section Name'), max_length=128)
 
 class TitleMission (models.Model):
     title = models.ForeignKey(Title,null=False)    
