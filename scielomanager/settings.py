@@ -19,7 +19,7 @@ DATABASES = {
         'NAME': 'scielomanager',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': '192.168.1.76',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -124,7 +124,17 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'title',
+    'polyglot'
 )
+
+TEMPLATE_CONTEXT_PROCESSORS =(
+    'django.core.context_processors.auth',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.csrf',
+    'django.core.context_processors.media',
+    #'context_processors.scielomanager.polyglot',
+)
+
 
 FIXTURE_DIRS = ('fixtures',)
 
@@ -152,3 +162,10 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'title.UserProfile'
+
+MANAGED_LANGUAGES_CHOICES = (
+    (u'en',u'English'),
+    (u'es',u'Español'),
+    (u'pt-BR',u'Português'),
+)
+TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language

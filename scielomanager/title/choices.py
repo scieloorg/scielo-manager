@@ -4,6 +4,16 @@ SCIELO_ISSN = [
     ('print','print'),
     ('electronic','electronic'),
 ]
+
+TITLE_TYPE = [
+    ('scielo','SciELO Pattern'),
+    ('issn','ISSN Pattern'),
+    ('medline','MedLine Pattern'),
+    ('vancouver','Vancouver Pattern'),
+    ('iso','ISO Pattern'),
+    ('other','Other'),    
+]
+
 SUBJECTS = [
     ('Agricultural Sciences','Agricultural Sciences'),
     ('Applied Social Sciences','Applied Social Sciences'),

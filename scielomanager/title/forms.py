@@ -1,5 +1,6 @@
 from django.forms import ModelForm, DateField
 from django.forms.extras.widgets import SelectDateWidget
+from django.forms.models import inlineformset_factory
 from title.models import *
 
 class TitleForm(ModelForm):

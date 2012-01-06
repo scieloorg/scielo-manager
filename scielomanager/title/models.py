@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
+from polyglot.models import Translation
+from django.contrib.contenttypes import generic
 
 import choices
 #import scielomanager.tools
@@ -47,7 +49,8 @@ class Publisher (models.Model):
     
     def __unicode__(self):
         return u'%s' % (self.name)
-
+        
+   
 class Title (models.Model):
     def __unicode__(self):
         return u'%s' % (self.title)
@@ -68,12 +71,9 @@ class Title (models.Model):
     collection = models.ForeignKey(Collection, related_name='title_collection')
     publisher = models.ForeignKey(Publisher, related_name='title_publisher',null=False)    
     title = models.CharField(_('Publication Title'),max_length=256, db_index=True)
-    abbreviated_title = models.CharField(_('Short Title'),max_length=128)
+    short_title = models.CharField(_('Short Title'),max_length=128)
     iso_title = models.CharField(_('ISO Short Title'),max_length=128,null=False,blank=True)
     acronym = models.CharField(_('Acronym'),max_length=8)
-    mission_en = models.TextField(_('Mission (English)'),null=False,blank=True)
-    mission_pt = models.TextField(_('Mission (Portuguese)'),null=False,blank=True)
-    mission_es = models.TextField(_('Mission (Spanish)'),null=False,blank=True)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=8,
         choices=choices.SCIELO_ISSN,null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=16,null=False,blank=True)
@@ -114,3 +114,29 @@ class Title (models.Model):
     medline_code = models.CharField(_('Medline Code'), max_length=64,null=False,blank=True)
     medline_short_title = models.CharField(_('Medline Short Title'), max_length=128,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
+
+class Section (models.Model):
+    name = models.CharField(_('Section Name'), max_length=128)
+    title = models.ForeignKey(Title, null=False)
+    translations = generic.GenericRelation('SectionTranslations')
+
+class SectionTranslations (Translation):
+    name = models.CharField(_('Section Name'), max_length=128)
+
+class TitleMission (models.Model):
+    title = models.ForeignKey(Title,null=False)    
+    description = models.TextField(_('Mission'),null=False)
+    language = models.CharField(_('Language'),null=False, max_length=2)
+
+class TitleOtherForms (models.Model):
+    title = models.ForeignKey(Title,null=False)    
+    form = models.CharField(_('Title'),null=False,max_length=128)
+    form_sub = models.CharField(_('Sub Title'),null=False,max_length=128)
+    type = models.CharField(_('Title Type'),max_length=16,
+        choices=choices.TITLE_TYPE,null=False,)
+
+class ShortTitleOtherForms (models.Model):
+    title = models.ForeignKey(Title,null=False)    
+    form = models.CharField(_('Short Title'),null=False,max_length=128)
+    type = models.CharField(_('Short Title Type'),max_length=16,
+        choices=choices.TITLE_TYPE,null=False,)

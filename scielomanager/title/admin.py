@@ -2,23 +2,42 @@
 from django.contrib import admin
 from scielomanager.title.models import *
 from django.contrib.auth.admin import UserAdmin
+from polyglot.admin import TranslationInline, TranslationAdmin
 
 admin.site.unregister(User)
 
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
+
+class SectionTranslationsInline(TranslationInline):
+    model = SectionTranslations
     
+class TitleMissionInline(admin.StackedInline):
+    model = TitleMission
+    
+class TitleOtherFormsInline(admin.StackedInline):
+    model = TitleOtherForms
+
+class ShortTitleOtherFormsInline(admin.StackedInline):
+    model = ShortTitleOtherForms
+
 class TitleAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-
+    inlines = [TitleMissionInline,TitleOtherFormsInline,ShortTitleOtherFormsInline,SectionTranslationsInline]
+   
 class PublisherAdmin(admin.ModelAdmin):
     list_display = ('name','sponsor','validated')    
     search_fields = ('name','sponsor')
     
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+
+class UserProfileAdmin(UserAdmin):
+    list_display = ('username', 'email',  )
+    search_fields = ['username','email', 'collection']
+    inlines = [UserProfileInline]
     
 if Title not in admin.site._registry:
     admin.site.register(Title, TitleAdmin)
@@ -28,10 +47,5 @@ if Publisher not in admin.site._registry:
 
 if Collection not in admin.site._registry:
     admin.site.register(Collection, CollectionAdmin)
-
-class UserProfileAdmin(UserAdmin):
-    list_display = ('username', 'email',  )
-    search_fields = ['username','email', 'collection']
-    inlines = [UserProfileInline]
 
 admin.site.register(User, UserProfileAdmin)
