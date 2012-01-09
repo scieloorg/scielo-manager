@@ -5,24 +5,13 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
-SITE_ROOT = os.path.dirname(os.path.abspath(__file__)) 
+SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 ADMINS = (
-    ('Fabio Batalha', 'fabio.batalha@scielo.org'),
+    ('Admin SciELO', 'dev@scielo.org'),
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'scielomanager',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '192.168.1.76',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -31,7 +20,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/Sao_Paulo'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -124,7 +113,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'title',
-    #'polyglot'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -132,7 +120,6 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.i18n',
     'django.core.context_processors.csrf',
     'django.core.context_processors.media',
-    #'context_processors.scielomanager.polyglot',
 )
 
 
@@ -169,3 +156,16 @@ MANAGED_LANGUAGES_CHOICES = (
     (u'pt-BR',u'Português'),
 )
 TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
+
+### END App customization settings
+#################################################################
+
+# Local deployment settings: there *must* be an unversioned
+# 'settings_local.include' file in the current directory.
+# See sample file at settings_local-SAMPLE.include.
+# NOTE: in the next line we do not use a simple...
+# try: from settings_local import * except ImportError: pass
+# ...because (1) we want to be able to add to settings in this file, and
+# not only overwrite them, and (2) we do not want the app to launch if the
+# 'settings_local.include' file is not provided
+execfile(os.path.join(PROJECT_PATH,'settings_local.include'))
