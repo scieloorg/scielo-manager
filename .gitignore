@@ -1,2 +1,4 @@
 scielomanager-env/
+settings_local.include
 *.pyc
+*.sqlite
