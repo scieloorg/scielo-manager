@@ -6,11 +6,9 @@ SCIELO_ISSN = [
 ]
 
 TITLE_TYPE = [
-    ('scielo','SciELO Pattern'),
-    ('issn','ISSN Pattern'),
-    ('medline','MedLine Pattern'),
-    ('vancouver','Vancouver Pattern'),
-    ('iso','ISO Pattern'),
+    ('medline','Medline'),
+    ('lilacs','LILACS'),
+    ('iso','ISO'),
     ('other','Other'),    
 ]
 

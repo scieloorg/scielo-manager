@@ -5,32 +5,32 @@
 <link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
 {% endblock %}
 
-{% block body_title %}{% trans "User Titles" %}{% endblock %}
+{% block body_title %}{% trans "User Journals" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Publishers DashBoard' %} ({{ publishers|length }})
+/ {% trans 'Institutions DashBoard' %} ({{ institution|length }})
 {% endblock %}
 
 {% block body %}
-<div class="actions"><a href="{% url publisher.add %}" class="addNew">{% trans 'New Publisher' %}</a></div>
+<div class="actions"><a href="{% url institution.add %}" class="addNew">{% trans 'New Institution' %}</a></div>
 <table class="dataTable" cellspacing="0" border="0">
     <thead>
         <tr>
-            <th>{% trans "Publisher Name" %}</th>
-            <th>{% trans "Publisher Sponsor" %}</th>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Sponsor" %}</th>
             <th>{% trans "Validated" %}</th>
             <th>{% trans "Options" %}</th>
         </tr>
     </thead>
     <tbody>
-        {% for ct in publishers %}
+        {% for ct in institutions %}
         <tr class="{% cycle 'even' 'odd' %}">
             <td class="subject">{{ ct.name }}</td>
             <td class="subject">{{ ct.sponsor }}</td>       
             <td class="subject">
-                {%if publisher.validated %}
+                {%if ct.validated %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
                 {%else%}
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
@@ -39,9 +39,9 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a href="/title/publisher/show/{{ ct.pk }}/" title="{% trans 'view publisher' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/title/publisher/edit/{{ ct.pk }}/" title="{% trans 'edit publisher' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/title/publisher/delete/{{ ct.pk }}/" title="{% trans 'delete publisher' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/institution/show/{{ ct.pk }}/" title="{% trans 'view institution' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/institution/edit/{{ ct.pk }}/" title="{% trans 'edit institution' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/institution/delete/{{ ct.pk }}/" title="{% trans 'delete institution' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
                     </ul>
                 </div>
             </td>

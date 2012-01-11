@@ -7,12 +7,12 @@
 <div class="tools">
     <ul>
         <li class="toolbox">
-            <a href="{% url title.index %}" ><img src="/static/images/title_manager.png" border="0" /></a>
-            <h1><a href="{% url title.index %}" >Title Manager</a></h1>
+            <a href="{% url journal.index %}" ><img src="/static/images/title_manager.png" border="0" /></a>
+            <h1><a href="{% url journal.index %}" >Journal Manager</a></h1>
         </li>
         <li class="toolbox">
-            <a href="{% url publisher.index %}" ><img src="/static/images/publisher_manager.png" border="0" /></a>
-            <h1><a href="{% url publisher.index %}" >Publisher Manager</a></h1>
+            <a href="{% url institution.index %}" ><img src="/static/images/publisher_manager.png" border="0" /></a>
+            <h1><a href="{% url institution.index %}" >Institution Manager</a></h1>
         </li>
         <li class="toolbox">
             <a href="{% url user.index %}" ><img src="/static/images/user_manager.png" border="0" /></a>
@@ -23,7 +23,7 @@
 </div>
 {%endif%}
 <h1>{% trans "About SciELO Manager Tools" %}</h1>
-<h2><img src="/static/images/title_manager.png" border="0" width="30px" height="30px" /> {% trans "Title Manager" %}</h2>
+<h2><img src="/static/images/title_manager.png" border="0" width="30px" height="30px" /> {% trans "Journal Manager" %}</h2>
 <p>
 Nulla facilisi. Aliquam tincidunt mi et libero volutpat lacinia. Sed ante lectus, dapibus venenatis facilisis eget,
 bibendum eu lectus. Proin felis lacus, porta sed posuere non, sollicitudin nec arcu. Sed dignissim ultrices faucibus.
@@ -32,7 +32,7 @@ hendrerit sapien nec elit elementum gravida. In vulputate porta turpis sed sodal
 tincidunt. Donec at quam ac felis condimentum congue. Curabitur commodo nulla eget nibh mattis et aliquam tortor blandit.
 Donec sed ipsum a lorem euismod semper. Nullam non scelerisque leo.
 </p>
-<h2><img src="/static/images/publisher_manager.png" border="0" width="30px" height="30px" /> {% trans "Publisher Manager" %}</h2>
+<h2><img src="/static/images/publisher_manager.png" border="0" width="30px" height="30px" /> {% trans "Institution Manager" %}</h2>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quam arcu, porta vel dictum et, accumsan
 vel lectus. Donec et neque diam, a ultrices sapien. Nunc hendrerit venenatis orci nec imperdiet. Donec bibendum,
 ligula nec pretium interdum, ante ante ornare augue, id interdum sem neque eu magna. Fusce neque massa, feugiat
