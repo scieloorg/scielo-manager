@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from scielomanager.title.models import *
+from scielomanager.journalmanager.models import *
 from django.contrib.auth.admin import UserAdmin
 
 admin.site.unregister(User)
