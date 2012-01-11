@@ -8,7 +8,7 @@ from django.contrib.contenttypes import generic
 import choices
 #import scielomanager.tools
 
-class Collection (models.Model):
+class Collection(models.Model):
     class Meta:
         ordering = ['name']
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
@@ -22,11 +22,11 @@ class Collection (models.Model):
     class Meta:
         ordering = ['name']
 
-class UserProfile (models.Model):
+class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
 
-class Publisher (models.Model):
+class Publisher(models.Model):
     class Meta:
         ordering = ['name','sponsor']
 
@@ -50,7 +50,7 @@ class Publisher (models.Model):
         return u'%s' % (self.name)
 
 
-class Title (models.Model):
+class Title(models.Model):
     def __unicode__(self):
         return u'%s' % (self.title)
 
@@ -99,7 +99,7 @@ class Title (models.Model):
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
     text_language = models.CharField(_('Text Language'), max_length=259,null=False,blank=True)
     abst_language = models.CharField(_('Abstract Language'), max_length=256,null=False,blank=True)
-    standard = models.CharField(_('Standard'),max_length=64,
+    editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
         choices=choices.CTRL_VOCABULARY,null=False,blank=True)
@@ -114,20 +114,66 @@ class Title (models.Model):
     medline_short_title = models.CharField(_('Medline Short Title'), max_length=128,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
-class TitleMission (models.Model):
+class TitleMission(models.Model):
     title = models.ForeignKey(Title,null=False)
     description = models.TextField(_('Mission'),null=False)
     language = models.CharField(_('Language'),null=False, max_length=2)
 
-class TitleOtherForms (models.Model):
+class TitleOtherForms(models.Model):
     title = models.ForeignKey(Title,null=False)
     form = models.CharField(_('Title'),null=False,max_length=128)
     form_sub = models.CharField(_('Sub Title'),null=False,max_length=128)
+    #FIXME - FOR GOD!!
     type = models.CharField(_('Title Type'),max_length=16,
         choices=choices.TITLE_TYPE,null=False,)
 
-class ShortTitleOtherForms (models.Model):
+class ShortTitleOtherForms(models.Model):
     title = models.ForeignKey(Title,null=False)
     form = models.CharField(_('Short Title'),null=False,max_length=128)
+    #FIXME - FOR GOD!!
     type = models.CharField(_('Short Title Type'),max_length=16,
         choices=choices.TITLE_TYPE,null=False,)
+
+class UseLicense(models.Model):
+    license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
+    reference_url = models.URLField(_('License Reference URL'), null=False, blank=False)
+    disclaimer = models.TextField(_('Disclaimer'), null=False, blank=False, max_length=512)
+
+    def __unicode__(self):
+        return self.license_code
+
+class Section(models.Model):
+    title = models.CharField(_('Title'), null=True, blank=True, max_length=256) #l10n
+    code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.title
+
+class Issue(models.Model):
+    section = models.ManyToManyField(Section)
+    journal = models.ForeignKey(Title, null=True, blank=False)
+    title = models.CharField(_('Issue Title'), null=True, blank=True, max_length=256)
+    volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
+    number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
+    is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    publication_date = models.DateField(null=False, blank=False)
+    is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True) #status v42
+    is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
+    bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128) #l10n
+    use_license = models.ForeignKey(UseLicense, null=False)
+    publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128)
+    total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0)
+    ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
+        choices=choices.CTRL_VOCABULARY, null=False, blank=True)
+    editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
+        choices=choices.STANDARD, null=False, blank=True)
+
+    def __unicode__(self):
+        return self.title
+
+class Supplement(Issue):
+    suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
