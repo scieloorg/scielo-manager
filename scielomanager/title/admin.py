@@ -8,10 +8,10 @@ admin.site.unregister(User)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
-    
+
 class TitleMissionInline(admin.StackedInline):
     model = TitleMission
-    
+
 class TitleOtherFormsInline(admin.StackedInline):
     model = TitleOtherForms
 
@@ -22,11 +22,11 @@ class TitleAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
     inlines = [TitleMissionInline,TitleOtherFormsInline,ShortTitleOtherFormsInline]
-   
+
 class PublisherAdmin(admin.ModelAdmin):
-    list_display = ('name','sponsor','validated')    
+    list_display = ('name','sponsor','validated')
     search_fields = ('name','sponsor')
-    
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
 
@@ -34,7 +34,10 @@ class UserProfileAdmin(UserAdmin):
     list_display = ('username', 'email',  )
     search_fields = ['username','email', 'collection']
     inlines = [UserProfileInline]
-    
+
+class IssueAdmin(admin.ModelAdmin):
+    list_display = ('title', 'volume', 'number', 'is_available', 'is_marked_up')
+
 if Title not in admin.site._registry:
     admin.site.register(Title, TitleAdmin)
 
@@ -45,3 +48,7 @@ if Collection not in admin.site._registry:
     admin.site.register(Collection, CollectionAdmin)
 
 admin.site.register(User, UserProfileAdmin)
+admin.site.register(UseLicense)
+admin.site.register(Section)
+admin.site.register(Issue, IssueAdmin)
+admin.site.register(Supplement)
