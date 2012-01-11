@@ -74,7 +74,7 @@
                     {% else %}
                     <div class="login">
                         <div class="loginForm">
-                            <form action="{% url title.user_login %}" method="post">
+                            <form action="{% url journalmanager.user_login %}" method="post">
                                 {% csrf_token %}
                                 <div class="formSegment">
                                     <label for="id_username">{% trans 'Username' %}</label>
