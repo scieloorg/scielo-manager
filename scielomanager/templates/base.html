@@ -107,10 +107,10 @@
                         <ul>
                             {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url title.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Title' %} </a>
+                                <a href="{% url journal.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Journal' %} </a>
                             </li>
                             <li>
-                                <a href="{% url publisher.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Publisher' %} </a>
+                                <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institution' %} </a>
                             </li>
                             <li>
                                 <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'User' %} </a>
@@ -120,7 +120,7 @@
                     </div>
                     {% if user.is_authenticated %}
                     <div class="search">
-                        <form action="{ url title.search }" method="get">
+                        <form action="{ url journal.search }" method="get">
                             <input type="text" name="q" class="textEntrySearch" id="search" onblur="this.className = 'textEntrySearch';" onfocus="this.className = 'textEntryFocusSearch';" />
                             <input type="submit" class="submit" value="{% trans 'Search' %}" />
                         </form>
