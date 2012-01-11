@@ -5,16 +5,16 @@
 <link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
 {% endblock %}
 
-{% block body_title %}{% trans "User Titles" %}{% endblock %}
+{% block body_title %}{% trans "User Journals" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Titles DashBoard' %} ({{ titles|length }})
+/ {% trans 'Journals DashBoard' %} ({{ journal|length }})
 {% endblock %}
 
 {% block body %}
-<div class="actions"><a href="{% url title.add %}" class="addNew">{% trans 'New Title' %}</a></div>
+<div class="actions"><a href="{% url journal.add %}" class="addNew">{% trans 'New Journal' %}</a></div>
 <table class="dataTable" cellspacing="0" border="0">
     <thead>
         <tr>
@@ -28,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in titles %}
+        {% for ct in journals %}
         <tr class="{% cycle 'even' 'odd' %}">
             <td class="subject">{{ ct.title }}</td>
             <td class="subject">{{ ct.print_issn }}</td>
@@ -45,11 +45,11 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a href="/title/show/{{ ct.pk }}/" title="{% trans 'view title' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/title/edit/{{ ct.pk }}/" title="{% trans 'edit title' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/title/issue/{{ ct.pk }}/" title="{% trans 'issue manager' %}"><img src="/static/images/issue_manager.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/title/section/{{ ct.pk }}/" title="{% trans 'section manager' %}"><img src="/static/images/section_manager.png" border="0" width="20px" heigth="20px"/></a></li>                        
-                        <li><a href="/title/delete/{{ ct.pk }}/" title="{% trans 'delete title' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/show/{{ ct.pk }}/" title="{% trans 'view journal' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/edit/{{ ct.pk }}/" title="{% trans 'edit journal' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/issue/{{ ct.pk }}/" title="{% trans 'issue manager' %}"><img src="/static/images/issue_manager.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a href="/journal/section/{{ ct.pk }}/" title="{% trans 'section manager' %}"><img src="/static/images/section_manager.png" border="0" width="20px" heigth="20px"/></a></li>                        
+                        <li><a href="/journal/delete/{{ ct.pk }}/" title="{% trans 'delete journal' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
                     </ul>
                 </div>
             </td>

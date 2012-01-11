@@ -6,17 +6,17 @@ from scielomanager.title.views import *
 
 
 urlpatterns = patterns('',   
-    # Title Tools
-    url(r'^$', title_index, name="title.index"),
-    url(r'^add/$', add_title, name='title.add'),
-    url(r'^show/(?P<title_id>\d+)/$', show_title, name='title.show'),
-    url(r'^edit/(?P<title_id>\d+)/$', edit_title, name='title.edit'),    
+    # Journal Tools
+    url(r'^$', journal_index, name="journal.index"),
+    url(r'^add/$', add_journal, name='journal.add'),
+    url(r'^show/(?P<journal_id>\d+)/$', show_journal, name='journal.show'),
+    url(r'^edit/(?P<journal_id>\d+)/$', edit_journal, name='journal.edit'),    
     
-    # Publisher Tools
-    url(r'^publisher/$', publisher_index, name='publisher.index' ),
-    url(r'^publisher/add/$', add_publisher, name='publisher.add' ),
-    url(r'^publisher/show/(?P<publisher_id>\d+)/$', show_publisher, name='publisher.show' ),    
-    url(r'^publisher/edit/(?P<publisher_id>\d+)/$', edit_publisher, name='publisher.edit' ),
+    # Institution Tools
+    url(r'^institution/$', institution_index, name='institution.index' ),
+    url(r'^institution/add/$', add_institution, name='institution.add' ),
+    url(r'^institution/show/(?P<institution_id>\d+)/$', show_institution, name='institution.show' ),    
+    url(r'^institution/edit/(?P<institution_id>\d+)/$', edit_institution, name='institution.edit' ),
     
     # Users Tools
     url(r'^user/$', user_index, name="user.index"),

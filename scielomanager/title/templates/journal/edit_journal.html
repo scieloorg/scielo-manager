@@ -4,27 +4,27 @@
 {% block stepmenu_top %}
     {{ block.super }}
     / <a href="{% url index %}">{% trans 'Home' %}</a>
-    / <a href="{% url title.index %}">{% trans 'Title Dashboard' %}</a>
-    / {% trans 'Edit Title' %}
+    / <a href="{% url journal.index %}">{% trans 'Journal Dashboard' %}</a>
+    / {% trans 'Edit Journal' %}
     {% endblock %}
 
 {% block body %}
 
 <fieldset>
-    <legend>{% trans "Edit Title" %}</legend>
-    <form method="post" action="/title/edit/{{ title_id }}/">{% csrf_token %}
+    <legend>{% trans "Edit Journal" %}</legend>
+    <form method="post" action="/journal/edit/{{ journal_id }}/">{% csrf_token %}
         <table class="table">
             <col width="10%"/>
             <col width="85%"/>
-            {% if edit_title_form.errors %}
-                {% for field in edit_title_form %}
+            {% if edit_journal_form.errors %}
+                {% for field in edit_journal_form %}
                         <tr><td>{{ field.label_tag }}</td><td>{{ field }} {% if field.errors %}<span class="field_errors"><img src="/static/images/error.png" border="0" width="20px" height="20px" /> {% trans "field required!" %}</span></td>{%endif%}</tr>
                 {% endfor %}
             {% else %}
-                {{ edit_title_form.as_table }}
+                {{ edit_journal_form.as_table }}
             {% endif %}
         </table>
-    <input class="addNew" name="submit" type="submit" value="{% trans "Save Title" %}">
+    <input class="addNew" name="submit" type="submit" value="{% trans "Save Journal" %}">
     </form>
 </fieldset>
 {% endblock %}

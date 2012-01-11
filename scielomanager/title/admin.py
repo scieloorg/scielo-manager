@@ -8,25 +8,25 @@ admin.site.unregister(User)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
-    
-class TitleMissionInline(admin.StackedInline):
-    model = TitleMission
-    
-class TitleOtherFormsInline(admin.StackedInline):
-    model = TitleOtherForms
 
-class ShortTitleOtherFormsInline(admin.StackedInline):
-    model = ShortTitleOtherForms
+class JournalMissionInline(admin.StackedInline):
+    model = JournalMission
 
-class TitleAdmin(admin.ModelAdmin):
+class JournalTitleOtherFormsInline(admin.StackedInline):
+    model = JournalTitleOtherForms
+
+class JournalShortTitleOtherFormsInline(admin.StackedInline):
+    model = JournalShortTitleOtherForms
+
+class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [TitleMissionInline,TitleOtherFormsInline,ShortTitleOtherFormsInline]
-   
-class PublisherAdmin(admin.ModelAdmin):
-    list_display = ('name','sponsor','validated')    
+    inlines = [JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
+
+class InstitutionAdmin(admin.ModelAdmin):
+    list_display = ('name','sponsor','validated')
     search_fields = ('name','sponsor')
-    
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
 
@@ -34,14 +34,21 @@ class UserProfileAdmin(UserAdmin):
     list_display = ('username', 'email',  )
     search_fields = ['username','email', 'collection']
     inlines = [UserProfileInline]
-    
-if Title not in admin.site._registry:
-    admin.site.register(Title, TitleAdmin)
 
-if Publisher not in admin.site._registry:
-    admin.site.register(Publisher, PublisherAdmin)
+class IssueAdmin(admin.ModelAdmin):
+    list_display = ('title', 'volume', 'number', 'is_available', 'is_marked_up')
+
+if Journal not in admin.site._registry:
+    admin.site.register(Journal, JournalAdmin)
+
+if Institution not in admin.site._registry:
+    admin.site.register(Institution, InstitutionAdmin)
 
 if Collection not in admin.site._registry:
     admin.site.register(Collection, CollectionAdmin)
 
 admin.site.register(User, UserProfileAdmin)
+admin.site.register(UseLicense)
+admin.site.register(Section)
+admin.site.register(Issue, IssueAdmin)
+admin.site.register(Supplement)
