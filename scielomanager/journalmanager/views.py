@@ -20,12 +20,12 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
-from scielomanager.title.models import *
-from scielomanager.title.forms import *
+from scielomanager.journalmanager.models import *
+from scielomanager.journalmanager.forms import *
 
 # Create your views here.
 def index(request):
-    t = loader.get_template('journal/home_journal.html')    
+    t = loader.get_template('journalmanager/home_journal.html')    
     if request.user.is_authenticated():
         user_collection = request.user.userprofile_set.get().collection
     else:
@@ -47,21 +47,21 @@ def user_login(request):
                 if next != '':
                     t = loader.get_template(next)
                 else:
-                    t = loader.get_template('journal/home_journal.html')
+                    t = loader.get_template('journalmanager/home_journal.html')
                 c = RequestContext(request, {'active': True,
                                              'collection': user_collection,})
                 return HttpResponse(t.render(c))
             else: #Login Success User inactive
-                t = loader.get_template('journal/home_journal.html')
+                t = loader.get_template('journalmanager/home_journal.html')
                 c = RequestContext(request, {'active': True,})
                 return HttpResponse(t.render(c))
         else: #Login Failed
-            t = loader.get_template('journal/home_journal.html')
+            t = loader.get_template('journalmanager/home_journal.html')
             c = RequestContext(request, {
                                'invalid': True, 'next': next,})
             return HttpResponse(t.render(c))
     else:
-        t = loader.get_template('journal/home_journal.html')
+        t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
         else:
@@ -71,7 +71,7 @@ def user_login(request):
 @login_required  
 def user_logout(request):
     logout(request)
-    t = loader.get_template('journal/home_journal.html')
+    t = loader.get_template('journalmanager/home_journal.html')
     c = RequestContext(request)
     return HttpResponse(t.render(c))
     
@@ -79,7 +79,7 @@ def user_logout(request):
 def user_index(request):
     user_collection = request.user.userprofile_set.get().collection
     users = User.objects.get_query_set().filter(userprofile__collection=user_collection)
-    t = loader.get_template('journal/user_dashboard.html')
+    t = loader.get_template('journalmanager/user_dashboard.html')
     c = RequestContext(request, {
                        'users': users,
                        'collection': user_collection,
@@ -90,7 +90,7 @@ def user_index(request):
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
     journals = Journal.objects.filter(collection=user_collection)
-    t = loader.get_template('journal/journal_dashboard.html')
+    t = loader.get_template('journalmanager/journal_dashboard.html')
     c = RequestContext(request, {
                        'journals': journals,
                        'collection': user_collection,                       
@@ -101,7 +101,7 @@ def journal_index(request):
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
     institution = Institution.objects.filter(collection=user_collection)
-    t = loader.get_template('journal/institution_dashboard.html')
+    t = loader.get_template('journalmanager/institution_dashboard.html')
     c = RequestContext(request, {
                        'institutions': institution,
                        'collection': user_collection,
@@ -112,7 +112,7 @@ def institution_index(request):
 def show_user(request,user_id):
     user_collection = request.user.userprofile_set.get().collection   
     user = Institution.objects.get(id=user_id)
-    t = loader.get_template('journal/show_user.html')
+    t = loader.get_template('journalmanager/show_user.html')
     c = RequestContext(request, {
                        'user': user,
                        'collection': user_collection,                       
@@ -123,7 +123,7 @@ def show_user(request,user_id):
 def show_journal(request,journal_id):
     user_collection = request.user.userprofile_set.get().collection   
     journal = Journal.objects.get(id=journal_id)
-    t = loader.get_template('journal/show_journal.html')
+    t = loader.get_template('journalmanager/show_journal.html')
     c = RequestContext(request, {
                        'journal': journal,
                        'collection': user_collection,                       
@@ -135,7 +135,7 @@ def show_institution(request,institution_id):
     user_collection = request.user.userprofile_set.get().collection   
     institution = Institution.objects.get(id=institution_id)
     journals = Journal.objects.filter(institution=institution_id)
-    t = loader.get_template('journal/show_institution.html')
+    t = loader.get_template('journalmanager/show_institution.html')
     c = RequestContext(request, {
                        'institution': institution,
                        'journals': journals,
@@ -160,10 +160,10 @@ def add_user(request):
             uprof.collection = user_collection;
             uprof.user = fuser
             uprof.save()
-            return HttpResponseRedirect("/journal/user")
+            return HttpResponseRedirect("/journalmanager/user")
         else:
             add_user_form = UserForm() # An unbound form
-            return render_to_response('journal/add_user.html', {
+            return render_to_response('journalmanager/add_user.html', {
                                       'add_user_form': add_user_form,
                                       'type': type,
                                       'mode': 'add_user',
@@ -174,7 +174,7 @@ def add_user(request):
     else:
         #recovering Evaluation Data to input form fields
         add_user_form = UserForm() # An unbound form
-    return render_to_response('journal/add_user.html', {
+    return render_to_response('journalmanager/add_user.html', {
                               'add_user_form': add_user_form,
                               'type': type,
                               'mode': 'user_journal',
@@ -199,7 +199,7 @@ def add_journal(request):
             return HttpResponseRedirect("/journal")
         else:
             add_journal_form = JournalForm() # An unbound form
-            return render_to_response('journal/add_journal.html', {
+            return render_to_response('journalmanager/add_journal.html', {
                                       'add_journal_form': add_journal_form,
                                       'type': type,
                                       'mode': 'add_journal',
@@ -210,7 +210,7 @@ def add_journal(request):
     else:
         #recovering Evaluation Data to input form fields
         add_journal_form = JournalForm() # An unbound form
-    return render_to_response('journal/add_journal.html', {
+    return render_to_response('journalmanager/add_journal.html', {
                               'add_journal_form': add_journal_form,
                               'type': type,
                               'mode': 'add_journal',
@@ -230,10 +230,10 @@ def add_institution(request):
             finstitution = form.save(commit=False)
             finstitution.collection = user_collection
             finstitution.save()
-            return HttpResponseRedirect("/journal/institution")
+            return HttpResponseRedirect("/journalmanager/institution")
         else:
             add_institution_form = UserForm() # An unbound form
-            return render_to_response('journl/add_institution.html', {
+            return render_to_response('journalmanager/add_institution.html', {
                                       'add_institution_form': add_institution_form,
                                       'type': type,
                                       'mode': 'add_institution',
@@ -244,7 +244,7 @@ def add_institution(request):
     else:
         #recovering Evaluation Data to input form fields
         add_institution_form = InstitutionForm() # An unbound form
-    return render_to_response('journal/add_institution.html', {
+    return render_to_response('journalmanager/add_institution.html', {
                               'add_institution_form': add_institution_form,
                               'type': type,
                               'mode': 'institution_journal',
@@ -261,10 +261,10 @@ def edit_user(request,user_id):
         form = UserForm(request.POST,instance=formFilled)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/journal/user")
+            return HttpResponseRedirect("/journalmanager/user")
         else:
             edit_user_form = UserForm(request.POST,instance=formFilled)
-            return render_to_response('journal/edit_user.html', {
+            return render_to_response('journalmanager/edit_user.html', {
                                       'edit_user_form': edit_user_form,
                                       'type': type,
                                       'mode': 'edit_user',
@@ -274,7 +274,7 @@ def edit_user(request,user_id):
                                       context_instance=RequestContext(request))
     else:
         edit_user_form = UserForm(instance=formFilled)
-    return render_to_response('journal/edit_user.html', {
+    return render_to_response('journalmanager/edit_user.html', {
                               'edit_user_form': edit_user_form,
                               'type': type,
                               'mode': 'edit_user',
@@ -298,7 +298,7 @@ def edit_journal(request,journal_id):
             return HttpResponseRedirect("/journal")
         else:
             edit_journal_form = JournalForm(request.POST,instance=formFilled)
-            return render_to_response('journal/edit_journal.html', {
+            return render_to_response('journalmanager/edit_journal.html', {
                                       'edit_journal_form': edit_journal_form,
                                       'type': type,
                                       'mode': 'edit_journal',
@@ -308,7 +308,7 @@ def edit_journal(request,journal_id):
                                       context_instance=RequestContext(request))
     else:
         edit_journal_form = JournalForm(instance=formFilled)
-    return render_to_response('journal/edit_journal.html', {
+    return render_to_response('journalmanager/edit_journal.html', {
                               'edit_journal_form': edit_journal_form,
                               'type': type,
                               'mode': 'edit_journal',
@@ -326,10 +326,10 @@ def edit_institution(request,institution_id):
         form = InstitutionForm(request.POST,instance=formFilled)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/journal/institution")
+            return HttpResponseRedirect("/journalmanager/institution")
         else:
             edit_institution_form = UserForm(request.POST,instance=formFilled)
-            return render_to_response('journal/edit_institution.html', {
+            return render_to_response('journalmanager/edit_institution.html', {
                                       'edit_institution_form': edit_institution_form,
                                       'type': type,
                                       'mode': 'edit_institution',
@@ -339,7 +339,7 @@ def edit_institution(request,institution_id):
                                       context_instance=RequestContext(request))
     else:
         edit_institution_form = InstitutionForm(instance=formFilled)
-    return render_to_response('journal/edit_institution.html', {
+    return render_to_response('journalmanager/edit_institution.html', {
                               'edit_institution_form': edit_institution_form,
                               'type': type,
                               'mode': 'edit_institution',
@@ -351,7 +351,7 @@ def edit_institution(request,institution_id):
 @login_required
 def open_journal(request):
     journals = Journal.objects.all()
-    t = loader.get_template('journal/journal_dashboard.html')
+    t = loader.get_template('journalmanager/journal_dashboard.html')
     c = RequestContext(request, {
                        'journals': journals,
                        })

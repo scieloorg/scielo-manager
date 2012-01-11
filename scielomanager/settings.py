@@ -113,7 +113,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'south',
-    'title',
+    'journalmanager',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -149,7 +149,7 @@ LOGGING = {
     }
 }
 
-AUTH_PROFILE_MODULE = 'title.UserProfile'
+AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
 
 MANAGED_LANGUAGES_CHOICES = (
     (u'en',u'English'),

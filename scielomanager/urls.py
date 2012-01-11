@@ -3,7 +3,7 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.contrib.auth.views import *
 from django.conf import settings
-from scielomanager.title.views import index, user_login, user_logout
+from scielomanager.journalmanager.views import index, user_login, user_logout
 
 admin.autodiscover()
 
@@ -12,13 +12,13 @@ urlpatterns = patterns('',
     url(r'^$', index, name='index'),
     
     # Journal Manager APP
-    url(r'^journal/', include('scielomanager.title.urls')), 
+    url(r'^journal/', include('scielomanager.journalmanager.urls')), 
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     
     
-    url(r'^accounts/logout/$', user_logout, name='title.user_logout'),
-    url(r'^accounts/login/$', user_login, name='title.user_login'),
+    url(r'^accounts/logout/$', user_logout, name='journalmanager.user_logout'),
+    url(r'^accounts/login/$', user_login, name='journalmanager.user_login'),
     url(r'^accounts/password/reset/$', password_reset, {
         'template_name': 'registration/password_reset_form.html',
         'email_template_name': 'registration/password_reset_email.html',
