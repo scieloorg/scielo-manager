@@ -68,7 +68,7 @@ class Journal(models.Model):
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
     collection = models.ForeignKey(Collection, related_name='journal_collection')
-    publisher = models.ForeignKey(Institution, related_name='journal_institution',null=False)
+    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
     acronym = models.CharField(_('Acronym'),max_length=8)
