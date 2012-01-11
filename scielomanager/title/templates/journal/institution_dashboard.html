@@ -30,7 +30,7 @@
             <td class="subject">{{ ct.name }}</td>
             <td class="subject">{{ ct.sponsor }}</td>       
             <td class="subject">
-                {%if institution.validated %}
+                {%if ct.validated %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
                 {%else%}
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
