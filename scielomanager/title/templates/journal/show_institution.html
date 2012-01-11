@@ -4,24 +4,24 @@
 {% block stepmenu_top %}
     {{ block.super }}
     / <a href="{% url index %}">{% trans 'Home' %}</a>
-    / <a href="{% url publisher.index %}">{% trans 'Publisher DashBoard' %}</a>
-    / {% trans 'Publisher Details' %}
+    / <a href="{% url institution.index %}">{% trans 'Institution DashBoard' %}</a>
+    / {% trans 'Institution Details' %}
 {% endblock %}
 
 {% block body %}
 
-<h1>{{ publisher.name }}</h1>
-<h2>{{ publisher.sponsor }}</h2>
+<h1>{{ institution.name }}</h1>
+<h2>{{ institution.sponsor }}</h2>
 <fieldset>
     <legend>
-        {% trans "Publisher Details" %}
+        {% trans "Institution Details" %}
     </legend>
     <div class="show">
     <table>
         <tr>
             <th>{% trans "Validated" %}</th>
             <td>
-                {%if publisher.validated %}
+                {%if institution.validated %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
                 {%else%}
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
@@ -30,41 +30,41 @@
         </tr>
         <tr>
             <th>{% trans "Country" %}</th>
-            <td>{{ publisher.country }}</td>
+            <td>{{ institution.country }}</td>
         </tr>        
         <tr>
             <th>{% trans "State" %}</th>
-            <td>{{ publisher.state }}</td>
+            <td>{{ institution.state }}</td>
         </tr>
         <tr>
             <th>{% trans "City" %}</th>
-            <td>{{ publisher.city }}</td>
+            <td>{{ institution.city }}</td>
         </tr>
         <tr>
             <th>{% trans "Address" %}</th>
             <td>
-                {{ publisher.Address }} - {{ publisher.Address_number }} - {{ publisher.Address_complement }}
+                {{ institution.Address }} - {{ institution.Address_number }} - {{ institution.Address_complement }}
             </td>
         </tr>
         <tr>
             <th>{% trans "Zip" %}</th>
-            <td>{{ publisher.zip }}</td>
+            <td>{{ institution.zip }}</td>
         </tr>
         <tr>
             <th>{% trans "Phone" %}</th>
-            <td>{{ publisher.phone }}</td>
+            <td>{{ institution.phone }}</td>
         </tr>
         <tr>
             <th>{% trans "Fax" %}</th>
-            <td>{{ publisher.fax }}</td>
+            <td>{{ institution.fax }}</td>
         </tr>
         <tr>
             <th>{% trans "Cel" %}</th>
-            <td>{{ publisher.cel }}</td>
+            <td>{{ institution.cel }}</td>
         </tr>
         <tr>
             <th>{% trans "E-mail" %}</th>
-            <td>{{ publisher.mail }}</td>
+            <td>{{ institution.mail }}</td>
         </tr>
     </table>
     </div>
@@ -72,7 +72,7 @@
 
 <fieldset>
     <legend>
-        {% trans "Titles of this Publisher" %}
+        {% trans "Journals of this Institution" %}
     </legend>
 <table class="dataTable" cellspacing="0" border="0">
     <thead>
@@ -85,7 +85,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in titles %}
+        {% for ct in journals %}
         <tr class="{% cycle 'even' 'odd' %}">
             <td class="subject">{{ ct.title }}</td>
             <td class="subject">{{ ct.print_issn }}</td>

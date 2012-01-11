@@ -9,21 +9,21 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
 
-class TitleMissionInline(admin.StackedInline):
-    model = TitleMission
+class JournalMissionInline(admin.StackedInline):
+    model = JournalMission
 
-class TitleOtherFormsInline(admin.StackedInline):
-    model = TitleOtherForms
+class JournalTitleOtherFormsInline(admin.StackedInline):
+    model = JournalTitleOtherForms
 
-class ShortTitleOtherFormsInline(admin.StackedInline):
-    model = ShortTitleOtherForms
+class JournalShortTitleOtherFormsInline(admin.StackedInline):
+    model = JournalShortTitleOtherForms
 
-class TitleAdmin(admin.ModelAdmin):
+class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [TitleMissionInline,TitleOtherFormsInline,ShortTitleOtherFormsInline]
+    inlines = [JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
 
-class PublisherAdmin(admin.ModelAdmin):
+class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','sponsor','validated')
     search_fields = ('name','sponsor')
 
@@ -38,11 +38,11 @@ class UserProfileAdmin(UserAdmin):
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('title', 'volume', 'number', 'is_available', 'is_marked_up')
 
-if Title not in admin.site._registry:
-    admin.site.register(Title, TitleAdmin)
+if Journal not in admin.site._registry:
+    admin.site.register(Journal, JournalAdmin)
 
-if Publisher not in admin.site._registry:
-    admin.site.register(Publisher, PublisherAdmin)
+if Institution not in admin.site._registry:
+    admin.site.register(Institution, InstitutionAdmin)
 
 if Collection not in admin.site._registry:
     admin.site.register(Collection, CollectionAdmin)

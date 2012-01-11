@@ -3,18 +3,18 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
 from title.models import *
 
-class TitleForm(ModelForm):
+class JournalForm(ModelForm):
     class Meta:
-        model = Title
+        model = Journal
         exclude = ('collection',)
         widgets = {
             'init_year': SelectDateWidget(),
             'final_year': SelectDateWidget(),            
         }
 
-class PublisherForm(ModelForm):
+class InstitutionForm(ModelForm):
     class Meta:
-        model = Publisher
+        model = Institution
         exclude = ('collection',)
 
 class UserForm(ModelForm):

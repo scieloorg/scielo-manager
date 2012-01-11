@@ -26,11 +26,11 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
 
-class Publisher(models.Model):
+class Institution(models.Model):
     class Meta:
         ordering = ['name','sponsor']
 
-    name = models.CharField(_('Publisher Name'), max_length=128, db_index=True)
+    name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
     country = models.CharField(_('Country'), max_length=32)
     state = models.CharField(_('State'), max_length=32, null=False,blank=True,)
@@ -50,7 +50,7 @@ class Publisher(models.Model):
         return u'%s' % (self.name)
 
 
-class Title(models.Model):
+class Journal(models.Model):
     def __unicode__(self):
         return u'%s' % (self.title)
 
@@ -67,11 +67,10 @@ class Title(models.Model):
         editable=False)
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
-    collection = models.ForeignKey(Collection, related_name='title_collection')
-    publisher = models.ForeignKey(Publisher, related_name='title_publisher',null=False)
-    title = models.CharField(_('Publication Title'),max_length=256, db_index=True)
+    collection = models.ForeignKey(Collection, related_name='journal_collection')
+    publisher = models.ForeignKey(Institution, related_name='journal_institution',null=False)
+    title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
-    iso_title = models.CharField(_('ISO Short Title'),max_length=128,null=False,blank=True)
     acronym = models.CharField(_('Acronym'),max_length=8)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=8,
         choices=choices.SCIELO_ISSN,null=False,blank=True)
@@ -110,29 +109,25 @@ class Title(models.Model):
     pub_level = models.CharField(_('Publication Level'),max_length=64,
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
-    medline_code = models.CharField(_('Medline Code'), max_length=64,null=False,blank=True)
-    medline_short_title = models.CharField(_('Medline Short Title'), max_length=128,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
-class TitleMission(models.Model):
-    title = models.ForeignKey(Title,null=False)
+class JournalMission(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
     description = models.TextField(_('Mission'),null=False)
     language = models.CharField(_('Language'),null=False, max_length=2)
 
-class TitleOtherForms(models.Model):
-    title = models.ForeignKey(Title,null=False)
+class JournalTitleOtherForms(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Title'),null=False,max_length=128)
     form_sub = models.CharField(_('Sub Title'),null=False,max_length=128)
-    #FIXME - FOR GOD!!
-    type = models.CharField(_('Title Type'),max_length=16,
-        choices=choices.TITLE_TYPE,null=False,)
+    title_type = models.CharField(_('Title Type'),max_length=16,
+        choices=choices.TITLE_TYPE,null=True,)
 
-class ShortTitleOtherForms(models.Model):
-    title = models.ForeignKey(Title,null=False)
+class JournalShortTitleOtherForms(models.Model):
+    title = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Short Title'),null=False,max_length=128)
-    #FIXME - FOR GOD!!
-    type = models.CharField(_('Short Title Type'),max_length=16,
-        choices=choices.TITLE_TYPE,null=False,)
+    title_type = models.CharField(_('Short Title Type'),max_length=16,
+        choices=choices.TITLE_TYPE,null=True,)
 
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
@@ -153,7 +148,7 @@ class Section(models.Model):
 
 class Issue(models.Model):
     section = models.ManyToManyField(Section)
-    journal = models.ForeignKey(Title, null=True, blank=False)
+    journal = models.ForeignKey(Journal, null=True, blank=False)
     title = models.CharField(_('Issue Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
