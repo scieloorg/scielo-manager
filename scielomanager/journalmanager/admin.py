@@ -24,8 +24,8 @@ class JournalAdmin(admin.ModelAdmin):
     inlines = [JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
-    list_display = ('name','sponsor','validated')
-    search_fields = ('name','sponsor')
+    list_display = ('name','validated')
+    search_fields = ('name',)
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
