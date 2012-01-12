@@ -31,6 +31,7 @@ class Institution(models.Model):
         ordering = ['name','sponsor']
 
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
+    acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
     country = models.CharField(_('Country'), max_length=32)
     state = models.CharField(_('State'), max_length=32, null=False,blank=True,)
