@@ -9,6 +9,7 @@ from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.core.paginator import EmptyPage
 from django.core.paginator import InvalidPage
+from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
@@ -25,14 +26,14 @@ from scielomanager.journalmanager.forms import *
 
 # Create your views here.
 def index(request):
-    t = loader.get_template('journalmanager/home_journal.html')    
+    t = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
         user_collection = request.user.userprofile_set.get().collection
     else:
         user_collection = ""
-    c = RequestContext(request,{'collection':user_collection,})               
+    c = RequestContext(request,{'collection':user_collection,})
     return HttpResponse(t.render(c),)
-    
+
 def user_login(request):
     next = request.GET.get('next', None)
     if request.method == 'POST':
@@ -67,14 +68,14 @@ def user_login(request):
         else:
             c = RequestContext(request, {'next': next,})
         return HttpResponse(t.render(c))
-  
-@login_required  
+
+@login_required
 def user_logout(request):
     logout(request)
     t = loader.get_template('journalmanager/home_journal.html')
     c = RequestContext(request)
     return HttpResponse(t.render(c))
-    
+
 @login_required
 def user_index(request):
     user_collection = request.user.userprofile_set.get().collection
@@ -89,14 +90,24 @@ def user_index(request):
 @login_required
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    journals = Journal.objects.filter(collection=user_collection)
+    all_journals = Journal.objects.filter(collection=user_collection)
+    paginator = Paginator(all_journals, 20)
+
+    page = request.GET.get('page', 1)
+    try:
+      journals = paginator.page(page)
+    except PageNotAnInteger:
+      journals = paginator.page(1)
+    except EmptyPage:
+      journals = paginator.page(paginator.num_pages)
+
     t = loader.get_template('journalmanager/journal_dashboard.html')
     c = RequestContext(request, {
                        'journals': journals,
-                       'collection': user_collection,                       
+                       'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
-    
+
 @login_required
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
@@ -110,36 +121,36 @@ def institution_index(request):
 
 @login_required
 def show_user(request,user_id):
-    user_collection = request.user.userprofile_set.get().collection   
+    user_collection = request.user.userprofile_set.get().collection
     user = Institution.objects.get(id=user_id)
     t = loader.get_template('journalmanager/show_user.html')
     c = RequestContext(request, {
                        'user': user,
-                       'collection': user_collection,                       
+                       'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
-    
+
 @login_required
 def show_journal(request,journal_id):
-    user_collection = request.user.userprofile_set.get().collection   
+    user_collection = request.user.userprofile_set.get().collection
     journal = Journal.objects.get(id=journal_id)
     t = loader.get_template('journalmanager/show_journal.html')
     c = RequestContext(request, {
                        'journal': journal,
-                       'collection': user_collection,                       
+                       'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
-     
+
 @login_required
 def show_institution(request,institution_id):
-    user_collection = request.user.userprofile_set.get().collection   
+    user_collection = request.user.userprofile_set.get().collection
     institution = Institution.objects.get(id=institution_id)
     journals = Journal.objects.filter(institution=institution_id)
     t = loader.get_template('journalmanager/show_institution.html')
     c = RequestContext(request, {
                        'institution': institution,
                        'journals': journals,
-                       'collection': user_collection,                       
+                       'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
 
@@ -181,7 +192,7 @@ def add_user(request):
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
-    
+
 @login_required
 def add_journal(request):
     user_collection = request.user.userprofile_set.get().collection
@@ -256,7 +267,7 @@ def add_institution(request):
 def edit_user(request,user_id):
     #recovering Journal Data to input form fields
     formFilled = User.objects.get(pk=user_id)
-    user_collection = request.user.userprofile_set.get().collection 
+    user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
         form = UserForm(request.POST,instance=formFilled)
         if form.is_valid():
@@ -282,12 +293,12 @@ def edit_user(request,user_id):
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
-    
+
 @login_required
 def edit_journal(request,journal_id):
     #recovering Journal Data to input form fields
     formFilled = Journal.objects.get(pk=journal_id)
-    user_collection = request.user.userprofile_set.get().collection 
+    user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
         form = JournalForm(request.POST,instance=formFilled)
         if form.is_valid():
@@ -319,7 +330,7 @@ def edit_journal(request,journal_id):
 
 @login_required
 def edit_institution(request,institution_id):
-    #recovering Institution Data to input form fields    
+    #recovering Institution Data to input form fields
     formFilled = Institution.objects.get(pk=institution_id)
     user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
@@ -347,7 +358,7 @@ def edit_institution(request,institution_id):
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
-    
+
 @login_required
 def open_journal(request):
     journals = Journal.objects.all()
