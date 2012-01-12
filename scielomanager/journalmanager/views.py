@@ -160,7 +160,7 @@ def add_user(request):
             uprof.collection = user_collection;
             uprof.user = fuser
             uprof.save()
-            return HttpResponseRedirect("/journalmanager/user")
+            return HttpResponseRedirect("/journal/user")
         else:
             add_user_form = UserForm() # An unbound form
             return render_to_response('journalmanager/add_user.html', {
@@ -230,7 +230,7 @@ def add_institution(request):
             finstitution = form.save(commit=False)
             finstitution.collection = user_collection
             finstitution.save()
-            return HttpResponseRedirect("/journalmanager/institution")
+            return HttpResponseRedirect("/journal/institution")
         else:
             add_institution_form = UserForm() # An unbound form
             return render_to_response('journalmanager/add_institution.html', {
@@ -261,7 +261,7 @@ def edit_user(request,user_id):
         form = UserForm(request.POST,instance=formFilled)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/journalmanager/user")
+            return HttpResponseRedirect("/journal/user")
         else:
             edit_user_form = UserForm(request.POST,instance=formFilled)
             return render_to_response('journalmanager/edit_user.html', {
@@ -326,7 +326,7 @@ def edit_institution(request,institution_id):
         form = InstitutionForm(request.POST,instance=formFilled)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/journalmanager/institution")
+            return HttpResponseRedirect("/journal/institution")
         else:
             edit_institution_form = UserForm(request.POST,instance=formFilled)
             return render_to_response('journalmanager/edit_institution.html', {
