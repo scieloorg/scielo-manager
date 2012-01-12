@@ -22,10 +22,19 @@ class LoggedInViewsTest(TestCase):
 
         self.client.login(username='dummyuser', password='123456')
 
-    def test_title_index(self):
+    def test_journal_index(self):
+        """
+        View: journal_index
+
+        Tests url dispatch and values returned by the view to the template
+        """
         response = self.client.get('/journal/')
+        #url dispatcher
         self.assertEqual(response.status_code, 200)
 
+        #values passed to template
+        self.assertTrue('journals' in response.context)
+        self.assertTrue('collection' in response.context)
 
 class LoggedOutViewsTest(TestCase):
     pass
