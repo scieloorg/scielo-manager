@@ -28,7 +28,7 @@ class UserProfile(models.Model):
 
 class Institution(models.Model):
     class Meta:
-        ordering = ['name','sponsor']
+        ordering = ['name']
 
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
@@ -44,7 +44,6 @@ class Institution(models.Model):
     fax =  models.CharField(_('Fax Number'), max_length=16, null=False,blank=True,)
     cel = models.CharField(_('Cel Number'), max_length=16, null=False,blank=True,)
     mail = models.EmailField(_('Email'),)
-    sponsor = models.CharField(_('Sponsor'), max_length=128, null=False,blank=True,)
     validated = models.BooleanField(_('Validated'), default=False,)
 
     def __unicode__(self):
