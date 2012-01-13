@@ -65,7 +65,9 @@ def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER
     """
     paginator = Paginator(items, items_per_page)
 
-    if not isinstance(page_num, int):
+    try:
+        page_num = int(page_num)
+    except ValueError:
         raise TypeError('page_num must be integer')
 
     try:
