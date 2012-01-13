@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from scielomanager.journalmanager.models import Collection, UserProfile
 
 class LoggedInViewsTest(TestCase):
-    
+
     """
     Set fixture
     """
@@ -59,30 +59,29 @@ class LoggedInViewsTest(TestCase):
 
 
 class LoggedOutViewsTest(TestCase):
-    
+
     def test_page_index(self):
         """
         View: journal_index (Not Logged)
 
         """
-
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
-    def test_password_reset(self):
-        """
-        View: password_reset (Not Logged)
+    # def test_password_reset(self):
+    #     """
+    #     View: password_reset (Not Logged)
 
-        """
+    #     """
 
-        response = self.client.get('/accounts/password/reset/')
-        self.assertEqual(response.status_code, 200)
+    #     response = self.client.get('/accounts/password/reset/')
+    #     self.assertEqual(response.status_code, 200)
 
-    def test_account_register(self):
-        """
-        View: account_register (Not Logged)
+    # def test_account_register(self):
+    #     """
+    #     View: account_register (Not Logged)
 
-        """
+    #     """
 
-        response = self.client.get('/accounts/register/')
-        self.assertEqual(response.status_code, 200)
+    #     response = self.client.get('/accounts/register/')
+    #     self.assertEqual(response.status_code, 200)
