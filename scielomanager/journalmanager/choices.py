@@ -122,11 +122,6 @@ PUBLICATION_LEVEL = [
     ('DI','Divulgation')
 ]
 
-LANGUAGES = [
-    ('en', 'English'),
-    ('it','Italian'),
-]
-
 INDEXING_COVERAGE = [
     ('medline','Medline'),
     ('lilacs','LILACS'),

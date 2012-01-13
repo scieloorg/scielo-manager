@@ -4,23 +4,17 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.conf.global_settings import LANGUAGES
 
 import choices
 #import scielomanager.tools
 
-class TextLanguage(models.Model):
-    language = models.CharField(_('Text Languages'),max_length=64,choices=choices.LANGUAGES,null=False,blank=False)
+class IndexingCoverage(models.Model):
+    database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
+    database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=False,blank=True)
 
     def __unicode__(self):
-        return self.language
-
-class AbstrLanguage(models.Model):
-    language = models.CharField(_('Abstract Languages'), max_length=8, choices=choices.LANGUAGES,null=False)
-
-class IndexingCoverage(models.Model):
-    index_coverage = models.CharField(_('Indexing Coverage'),max_length=64,choices=choices.INDEXING_COVERAGE,null=False,blank=True)
-
-
+        return u'%s' % (self.database_name)
 
 class Collection(models.Model):
     class Meta:
@@ -93,7 +87,6 @@ class Journal(models.Model):
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=256,null=False,blank=True)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
-    indexation_range = models.CharField(_('Indexing Coverage'),max_length=256,null=False,blank=True)
 
     #PART 2
     init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
@@ -110,8 +103,6 @@ class Journal(models.Model):
         choices=choices.ALPHABET,null=False,blank=True)
     classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
-    text_language = models.ManyToManyField(TextLanguage)
-    abst_language = models.CharField(_('Abstract Language'), max_length=256,null=False,blank=True)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
@@ -122,6 +113,7 @@ class Journal(models.Model):
         choices=choices.TREATMENT_LEVEL,null=False,blank=True)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
+    indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
@@ -186,3 +178,12 @@ class Issue(models.Model):
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
+
+class JournalTextLanguage(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,null=False,blank=False)
+
+class JournalAbstrLanguage(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
+
