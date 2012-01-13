@@ -4,15 +4,20 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.conf.global_settings import LANGUAGES
 
 import choices
 #import scielomanager.tools
 
+class IndexingCoverage(models.Model):
+    database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
+    database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=False,blank=True)
+
+    def __unicode__(self):
+        return u'%s' % (self.database_name)
+
 class Collection(models.Model):
-    class Meta:
-        ordering = ['name']
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
-    manager = models.ForeignKey(User, related_name='collection_user')
     url = models.URLField(_('Instance URL'), )
     validated = models.BooleanField(_('Validated'), default=False, )
 
@@ -25,11 +30,9 @@ class Collection(models.Model):
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
 
 class Institution(models.Model):
-    class Meta:
-        ordering = ['name']
-
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
@@ -49,18 +52,10 @@ class Institution(models.Model):
     def __unicode__(self):
         return u'%s' % (self.name)
 
+    class Meta:
+        ordering = ['name']
 
 class Journal(models.Model):
-    def __unicode__(self):
-        return u'%s' % (self.title)
-
-    class Meta:
-        ordering = ['title']
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("/title")
-
     # PART 1
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     created = models.DateTimeField(_('Date of Registration'),default=datetime.now,
@@ -79,7 +74,6 @@ class Journal(models.Model):
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=256,null=False,blank=True)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
-    indexation_range = models.CharField(_('Indexing Coverage'),max_length=256,null=False,blank=True)
 
     #PART 2
     init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
@@ -96,8 +90,6 @@ class Journal(models.Model):
         choices=choices.ALPHABET,null=False,blank=True)
     classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
-    text_language = models.CharField(_('Text Language'), max_length=259,null=False,blank=True)
-    abst_language = models.CharField(_('Abstract Language'), max_length=256,null=False,blank=True)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
@@ -108,8 +100,19 @@ class Journal(models.Model):
         choices=choices.TREATMENT_LEVEL,null=False,blank=True)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
+    indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
+
+    def __unicode__(self):
+        return u'%s' % (self.title)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("/title")
+
+    class Meta:
+        ordering = ['title']
 
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal,null=False)
@@ -172,3 +175,12 @@ class Issue(models.Model):
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
+
+class JournalTextLanguage(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,null=False,blank=False)
+
+class JournalAbstrLanguage(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
+
