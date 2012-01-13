@@ -1,9 +1,13 @@
 from django.db import models
 from django import forms
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
+from scielomanager import settings
 
 class MultiSelectFormField(forms.MultipleChoiceField):
     widget = forms.CheckboxSelectMultiple
-    
+
     def __init__(self, *args, **kwargs):
         self.max_choices = kwargs.pop('max_choices', 0)
         super(MultiSelectFormField, self).__init__(*args, **kwargs)
@@ -31,7 +35,7 @@ class MultiSelectField(models.Field):
 
     def formfield(self, **kwargs):
         # don't call super, as that overrides default widget if it has choices
-        defaults = {'required': not self.blank, 'label': capfirst(self.verbose_name), 
+        defaults = {'required': not self.blank, 'label': capfirst(self.verbose_name),
                     'help_text': self.help_text, 'choices':self.choices}
         if self.has_default():
             defaults['initial'] = self.get_default()
@@ -54,3 +58,19 @@ class MultiSelectField(models.Field):
         if self.choices:
             func = lambda self, fieldname = name, choicedict = dict(self.choices):",".join([choicedict.get(value,value) for value in getattr(self,fieldname)])
             setattr(cls, 'get_%s_display' % self.name, func)
+
+def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER_PAGE):
+    """
+    Wraps django core pagination object
+    """
+    paginator = Paginator(items, items_per_page)
+
+    if not isinstance(page_num, int):
+        raise TypeError('page_num must be integer')
+
+    try:
+      paginated = paginator.page(page_num)
+    except EmptyPage:
+      paginated = paginator.page(paginator.num_pages)
+
+    return paginated

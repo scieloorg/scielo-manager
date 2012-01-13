@@ -121,3 +121,8 @@ PUBLICATION_LEVEL = [
     ('CT','Scientific Technical'),
     ('DI','Divulgation')
 ]
+
+INDEXING_COVERAGE = [
+    ('medline','Medline'),
+    ('lilacs','LILACS'),
+]
