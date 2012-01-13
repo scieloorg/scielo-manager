@@ -8,6 +8,20 @@ from django.contrib.contenttypes import generic
 import choices
 #import scielomanager.tools
 
+class TextLanguage(models.Model):
+    language = models.CharField(_('Text Languages'),max_length=64,choices=choices.LANGUAGES,null=False,blank=False)
+
+    def __unicode__(self):
+        return self.language
+
+class AbstrLanguage(models.Model):
+    language = models.CharField(_('Abstract Languages'), max_length=8, choices=choices.LANGUAGES,null=False)
+
+class IndexingCoverage(models.Model):
+    index_coverage = models.CharField(_('Indexing Coverage'),max_length=64,choices=choices.INDEXING_COVERAGE,null=False,blank=True)
+
+
+
 class Collection(models.Model):
     class Meta:
         ordering = ['name']
@@ -96,7 +110,7 @@ class Journal(models.Model):
         choices=choices.ALPHABET,null=False,blank=True)
     classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
-    text_language = models.CharField(_('Text Language'), max_length=259,null=False,blank=True)
+    text_language = models.ManyToManyField(TextLanguage)
     abst_language = models.CharField(_('Abstract Language'), max_length=256,null=False,blank=True)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True)
