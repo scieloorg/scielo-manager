@@ -10,14 +10,16 @@ urlpatterns = patterns('',
     url(r'^$', journal_index, name="journal.index"),
     url(r'^add/$', add_journal, name='journal.add'),
     url(r'^show/(?P<journal_id>\d+)/$', show_journal, name='journal.show'),
-    url(r'^edit/(?P<journal_id>\d+)/$', edit_journal, name='journal.edit'),    
+    url(r'^edit/(?P<journal_id>\d+)/$', edit_journal, name='journal.edit'),
+    url(r'^delete/(?P<journal_id>\d+)/$', delete_journal, name='journal.delete'),   
     
     # Institution Tools
     url(r'^institution/$', institution_index, name='institution.index' ),
     url(r'^institution/add/$', add_institution, name='institution.add' ),
     url(r'^institution/show/(?P<institution_id>\d+)/$', show_institution, name='institution.show' ),    
     url(r'^institution/edit/(?P<institution_id>\d+)/$', edit_institution, name='institution.edit' ),
-    
+    url(r'^institution/delete/(?P<institution_id>\d+)/$', delete_institution, name='institution.delete' ),
+
     # Users Tools
     url(r'^user/$', user_index, name="user.index"),
     url(r'^user/add/$', add_user, name="user.add"),
