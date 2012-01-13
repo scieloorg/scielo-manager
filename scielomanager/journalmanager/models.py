@@ -9,9 +9,17 @@ from django.conf.global_settings import LANGUAGES
 import choices
 #import scielomanager.tools
 
+class UseLicense(models.Model):
+    license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
+    reference_url = models.URLField(_('License Reference URL'), null=False, blank=False)
+    disclaimer = models.TextField(_('Disclaimer'), null=False, blank=False, max_length=512)
+
+    def __unicode__(self):
+        return self.license_code
+
 class IndexingCoverage(models.Model):
-    database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
-    database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=False,blank=True)
+    database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=False)
+    database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=True,blank=True)
 
     def __unicode__(self):
         return u'%s' % (self.database_name)
@@ -71,6 +79,9 @@ class Journal(models.Model):
         choices=choices.SCIELO_ISSN,null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=16,null=False,blank=True)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=16,null=False,blank=True)
+    #previous_title = models.ForeignKey('Journal', null=True, blank=True)
+    next_title = models.ForeignKey('Journal', null=True, blank=True)
+    
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=256,null=False,blank=True)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
@@ -102,6 +113,13 @@ class Journal(models.Model):
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
     indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
+    #journal_copyrighter = models.ForeignKey(Institution,null=False)
+    use_license = models.ForeignKey(UseLicense,null=True)   
+    copyrighter = models.CharField(_('Copyrighter'), max_length=254,null=True,blank=True)
+    url_submission = models.CharField(_('Online submission URL'), max_length=64,null=False,blank=True)
+    url_journal = models.CharField(_('Journal URL'), max_length=64,null=False,blank=True)
+    notes = models.CharField(_('Notes'), max_length=256,null=True)
+    center = models.ForeignKey(Institution,null=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
@@ -114,31 +132,29 @@ class Journal(models.Model):
     class Meta:
         ordering = ['title']
 
+class JournalHist(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    d = models.DateField(_('Date'),default=datetime.now,        editable=True)
+    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False, max_length=2)
+
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     description = models.TextField(_('Mission'),null=False)
-    language = models.CharField(_('Language'),null=False, max_length=2)
+    language = models.CharField(_('Language'),choices=LANGUAGES,null=False, max_length=2)
+
+class JournalParallelTitles(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    form = models.CharField(_('Parallel Title'),null=False,max_length=128)
 
 class JournalTitleOtherForms(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Title'),null=False,max_length=128)
-    form_sub = models.CharField(_('Sub Title'),null=False,max_length=128)
-    title_type = models.CharField(_('Title Type'),max_length=16,
-        choices=choices.TITLE_TYPE,null=True,)
 
 class JournalShortTitleOtherForms(models.Model):
     title = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Short Title'),null=False,max_length=128)
     title_type = models.CharField(_('Short Title Type'),max_length=16,
         choices=choices.TITLE_TYPE,null=True,)
-
-class UseLicense(models.Model):
-    license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
-    reference_url = models.URLField(_('License Reference URL'), null=False, blank=False)
-    disclaimer = models.TextField(_('Disclaimer'), null=False, blank=False, max_length=512)
-
-    def __unicode__(self):
-        return self.license_code
 
 class Section(models.Model):
     title = models.CharField(_('Title'), null=True, blank=True, max_length=256) #l10n
