@@ -17,10 +17,7 @@ class IndexingCoverage(models.Model):
         return u'%s' % (self.database_name)
 
 class Collection(models.Model):
-    class Meta:
-        ordering = ['name']
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
-    manager = models.ForeignKey(User, related_name='collection_user')
     url = models.URLField(_('Instance URL'), )
     validated = models.BooleanField(_('Validated'), default=False, )
 
@@ -33,11 +30,9 @@ class Collection(models.Model):
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
 
 class Institution(models.Model):
-    class Meta:
-        ordering = ['name']
-
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
@@ -57,18 +52,10 @@ class Institution(models.Model):
     def __unicode__(self):
         return u'%s' % (self.name)
 
+    class Meta:
+        ordering = ['name']
 
 class Journal(models.Model):
-    def __unicode__(self):
-        return u'%s' % (self.title)
-
-    class Meta:
-        ordering = ['title']
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("/title")
-
     # PART 1
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     created = models.DateTimeField(_('Date of Registration'),default=datetime.now,
@@ -116,6 +103,16 @@ class Journal(models.Model):
     indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
+
+    def __unicode__(self):
+        return u'%s' % (self.title)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("/title")
+
+    class Meta:
+        ordering = ['title']
 
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal,null=False)
