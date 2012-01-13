@@ -319,6 +319,11 @@ def edit_journal(request,journal_id):
                               context_instance=RequestContext(request))
 
 @login_required
+def delete_journal(request,journal_id):
+  Journal.objects.get(pk=journal_id).delete()
+  return HttpResponseRedirect("/journal")
+
+@login_required
 def edit_institution(request,institution_id):
     #recovering Institution Data to input form fields
     formFilled = Institution.objects.get(pk=institution_id)
@@ -348,6 +353,11 @@ def edit_institution(request,institution_id):
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
+
+@login_required
+def delete_institution(request,institution_id):
+  Institution.objects.get(pk=institution_id).delete()
+  return HttpResponseRedirect("/journal/institution")
 
 @login_required
 def open_journal(request):
