@@ -66,7 +66,7 @@ class Journal(models.Model):
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=256,null=False,blank=True)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
-    indexation_range = models.CharField(_('Indexation Range'),max_length=256,null=False,blank=True)
+    indexation_range = models.CharField(_('Indexing Coverage'),max_length=256,null=False,blank=True)
 
     #PART 2
     init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
