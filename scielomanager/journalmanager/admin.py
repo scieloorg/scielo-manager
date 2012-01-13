@@ -18,10 +18,16 @@ class JournalTitleOtherFormsInline(admin.StackedInline):
 class JournalShortTitleOtherFormsInline(admin.StackedInline):
     model = JournalShortTitleOtherForms
 
+class JournalTextLanguageInline(admin.StackedInline):
+    model = JournalTextLanguage
+
+class JournalAbstrLanguageInline(admin.StackedInline):
+    model = JournalAbstrLanguage
+
 class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
+    inlines = [JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
@@ -52,3 +58,6 @@ admin.site.register(UseLicense)
 admin.site.register(Section)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
+
+if IndexingCoverage not in admin.site._registry:
+    admin.site.register(IndexingCoverage)
