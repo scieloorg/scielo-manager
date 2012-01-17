@@ -7,10 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
-from django.core.paginator import EmptyPage
-from django.core.paginator import InvalidPage
-from django.core.paginator import PageNotAnInteger
-from django.core.paginator import Paginator
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
@@ -23,6 +19,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from scielomanager.journalmanager.models import *
 from scielomanager.journalmanager.forms import *
+from scielomanager.tools import get_paginated
 
 # Create your views here.
 def index(request):
@@ -91,15 +88,8 @@ def user_index(request):
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
     all_journals = Journal.objects.filter(collection=user_collection)
-    paginator = Paginator(all_journals, 20)
 
-    page = request.GET.get('page', 1)
-    try:
-      journals = paginator.page(page)
-    except PageNotAnInteger:
-      journals = paginator.page(1)
-    except EmptyPage:
-      journals = paginator.page(paginator.num_pages)
+    journals = get_paginated(all_journals, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/journal_dashboard.html')
     c = RequestContext(request, {
@@ -329,6 +319,11 @@ def edit_journal(request,journal_id):
                               context_instance=RequestContext(request))
 
 @login_required
+def delete_journal(request,journal_id):
+  Journal.objects.get(pk=journal_id).delete()
+  return HttpResponseRedirect("/journal")
+
+@login_required
 def edit_institution(request,institution_id):
     #recovering Institution Data to input form fields
     formFilled = Institution.objects.get(pk=institution_id)
@@ -358,6 +353,11 @@ def edit_institution(request,institution_id):
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
+
+@login_required
+def delete_institution(request,institution_id):
+  Institution.objects.get(pk=institution_id).delete()
+  return HttpResponseRedirect("/journal/institution")
 
 @login_required
 def open_journal(request):

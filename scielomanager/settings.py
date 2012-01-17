@@ -158,6 +158,8 @@ MANAGED_LANGUAGES_CHOICES = (
 )
 TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
 
+PAGINATION__ITEMS_PER_PAGE = 20
+
 ### END App customization settings
 #################################################################
 
