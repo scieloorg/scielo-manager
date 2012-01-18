@@ -187,3 +187,12 @@ class JournalAbstrLanguage(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
+class JournalHist(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    d = models.DateField(_('Date'),default=datetime.now,        editable=True,blank=True)
+    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
+
+class JournalParallelTitles(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
+
