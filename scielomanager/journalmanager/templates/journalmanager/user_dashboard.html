@@ -8,30 +8,32 @@
 {% block body_title %}{% trans "User Titles" %}{% endblock %}
 
 {% block stepmenu_top %}
-{{ block.super }}
-/ <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Users DashBoard' %} ({{ users|length }})
+    {{ block.super }}
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'Users DashBoard' %}</li>
+    </ul>
 {% endblock %}
 
 {% block body %}
-<div class="actions"><a href="{% url user.add %}" class="addNew">{% trans 'New User' %}</a></div>
-<table class="dataTable" cellspacing="0" border="0">
+<div class="actions"><a href="{% url user.add %}" class="btn large primary">{% trans 'New User' %}</a></div>
+<table class="bordered-table zebra-striped">
     <thead>
         <tr>
-            <th>{% trans "User Name" %}</th>
-            <th>{% trans "User Login" %}</th>
-            <th>{% trans "User Email" %}</th>
-            <th>{% trans "Enable" %}</th>
+            <th>{% trans "Login" %}</th>
+            <th>{% trans "E-mail" %}</th>
+            <th>{% trans "Full name" %}</th>
+            <th>{% trans "Active" %}</th>
             <th>{% trans "Options" %}</th>
         </tr>
     </thead>
     <tbody>
         {% for ct in users %}
         <tr class="{% cycle 'even' 'odd' %}">
-            <td class="subject">{{ ct.first_name }} {{ ct.last_name }}</td>
-            <td class="subject">{{ ct.username }}</td>
-            <td class="subject">{{ ct.email }}</td>            
-            <td class="subject">
+            <td><a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a></td>
+            <td>{{ ct.email }}</td>
+            <td>{{ ct.first_name }} {{ ct.last_name }}</td>
+            <td>
                 {%if ct.is_active %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
                 {%else%}
@@ -41,9 +43,12 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a href="/journal/user/show/{{ ct.pk }}/" title="{% trans 'view user' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/user/edit/{{ ct.pk }}/" title="{% trans 'edit user' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/user/delete/{{ ct.pk }}/" title="{% trans 'delete user' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li>
+                            <a class="label" href="/journal/user/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a>
+                        </li>
+                        <li>
+                            <a class="label important" href="/journal/user/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a>
+                        </li>
                     </ul>
                 </div>
             </td>

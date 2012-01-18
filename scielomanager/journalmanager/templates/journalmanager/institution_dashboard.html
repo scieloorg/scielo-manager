@@ -9,12 +9,17 @@
 
 {% block stepmenu_top %}
 {{ block.super }}
-/ <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Institutions DashBoard' %} - {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'Institutions DashBoard' %}</li>
+    </ul>
+    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
 {% endblock %}
 
 {% block body %}
-<div class="actions"><a href="{% url institution.add %}" class="addNew">{% trans 'New Institution' %}</a></div>
+<div class="actions">
+    <a href="{% url institution.add %}" class="btn large primary">{% trans 'New Institution' %}</a>
+</div>
 <table class="bordered-table zebra-striped">
     <thead>
         <tr>
@@ -26,10 +31,10 @@
     </thead>
     <tbody>
         {% for ct in institutions.object_list %}
-        <tr class="{% cycle 'even' 'odd' %}">
-            <td class="subject">{{ ct.name }}</td>
-            <td class="subject">{{ ct.sponsor }}</td>
-            <td class="subject">
+        <tr>
+            <td><a href="/journal/institution/show/{{ ct.pk }}/">{{ ct.name }}</a></td>
+            <td>{{ ct.sponsor }}</td>
+            <td>
                 {%if ct.validated %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
                 {%else%}
@@ -37,11 +42,10 @@
                 {%endif%}
             </td>
             <td>
-                <div class="options">
+                <div>
                     <ul>
-                        <li><a href="/journal/institution/show/{{ ct.pk }}/" title="{% trans 'view institution' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/institution/edit/{{ ct.pk }}/" title="{% trans 'edit institution' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/institution/delete/{{ ct.pk }}/" title="{% trans 'delete institution' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a class="label" href="/journal/institution/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
+                        <li><a class="label important" href="/journal/institution/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
                     </ul>
                 </div>
             </td>
