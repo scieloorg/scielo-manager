@@ -126,3 +126,9 @@ INDEXING_COVERAGE = [
     ('medline','Medline'),
     ('lilacs','LILACS'),
 ]
+JOURNAL_HIST_STATUS = [
+    ('C','CURRENT'),
+    ('D','Deceased'),
+    ('S','Suspended'),
+]
+

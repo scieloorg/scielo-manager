@@ -22,7 +22,7 @@ class Collection(models.Model):
     validated = models.BooleanField(_('Validated'), default=False, )
 
     def __unicode__(self):
-        return unicode(self.name)
+        return u'%s' % (self.name)
 
     class Meta:
         ordering = ['name']
@@ -62,7 +62,7 @@ class Journal(models.Model):
         editable=False)
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
-    collections = models.ManyToManyField('Collection')
+    collection = models.ForeignKey(Collection, related_name='journal_collection')
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
@@ -185,7 +185,6 @@ class JournalAbstrLanguage(models.Model):
     language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
 class JournalHist(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
-    d = models.DateField(_('Date'),default=datetime.now,        editable=True,blank=True)
-    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
-
+    journal = models.ForeignKey('Journal',null=False) 
+    d = models.DateField(_('Date'),default=datetime.now, editable=True)
+    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False, max_length=2)

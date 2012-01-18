@@ -24,10 +24,13 @@ class JournalTextLanguageInline(admin.StackedInline):
 class JournalAbstrLanguageInline(admin.StackedInline):
     model = JournalAbstrLanguage
 
+class JournalHistoryInline(admin.StackedInline):
+    model = JournalHist
+
 class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
+    inlines = [JournalHistoryInline,JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
