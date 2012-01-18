@@ -19,6 +19,7 @@
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
+            <th>{% trans "SciELO ISSN" %}</th>
             <th>{% trans "Print ISSN" %}</th>
             <th>{% trans "Electronic ISSN" %}</th>
             <th>{% trans "Publisher" %}</th>
@@ -31,6 +32,7 @@
         {% for ct in journals.object_list %}
         <tr class="{% cycle 'even' 'odd' %}">
             <td class="subject">{{ ct.title }}</td>
+            <td class="subject">{{ ct.scielo_issn }}</td>
             <td class="subject">{{ ct.print_issn }}</td>
             <td class="subject">{{ ct.eletronic_issn }}</td>
             <td class="subject">{{ ct.publisher }}</td>
