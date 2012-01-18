@@ -25,10 +25,10 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in institutions %}
+        {% for ct in institutions.object_list %}
         <tr class="{% cycle 'even' 'odd' %}">
             <td class="subject">{{ ct.name }}</td>
-            <td class="subject">{{ ct.sponsor }}</td>       
+            <td class="subject">{{ ct.sponsor }}</td>
             <td class="subject">
                 {%if ct.validated %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
@@ -49,4 +49,19 @@
         {% endfor %}
     <tbody>
 </table>
+<div class="pagination">
+    <span class="step-links">
+        {% if institutions.has_previous %}
+            <a href="?page={{ institutions.previous_page_number }}">{% trans 'previous<<' %}</a>
+        {% endif %}
+
+        <span class="current">
+            {% trans 'Page' %} {{ institutions.number }} {% trans 'of' %} {{ institutions.paginator.num_pages }}
+        </span>
+
+        {% if institutions.has_next %}
+            <a href="?page={{ institutions.next_page_number }}">{% trans '>>next' %}</a>
+        {% endif %}
+    </span>
+</div>
 {% endblock %}

@@ -3,14 +3,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ LANGUAGE_CODE }}" lang="{{ LANGUAGE_CODE }}">
     {% load i18n %}
     <head>
+    {% load static %}
         <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
-        <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
+        <title>{{ flatpage.title }}</title>
         <link rel="shortcut icon" href="/static/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/style_sci.css"/>
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style_sci.css"/>
+        
         <!--Script-->
         <script type="text/javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/languages.js"></script>
+        <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
         <!--Script-->
+
         {% block extrahead %}{% endblock %}
     </head>
     <body>
@@ -71,7 +74,7 @@
                     {% else %}
                     <div class="login">
                         <div class="loginForm">
-                            <form action="{% url title.user_login %}" method="post">
+                            <form action="{% url journalmanager.user_login %}" method="post">
                                 {% csrf_token %}
                                 <div class="formSegment">
                                     <label for="id_username">{% trans 'Username' %}</label>
@@ -107,10 +110,10 @@
                         <ul>
                             {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url title.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Title' %} </a>
+                                <a href="{% url journal.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Journal' %} </a>
                             </li>
                             <li>
-                                <a href="{% url publisher.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Publisher' %} </a>
+                                <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institution' %} </a>
                             </li>
                             <li>
                                 <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'User' %} </a>
@@ -120,7 +123,7 @@
                     </div>
                     {% if user.is_authenticated %}
                     <div class="search">
-                        <form action="{ url title.search }" method="get">
+                        <form action="{ url journal.search }" method="get">
                             <input type="text" name="q" class="textEntrySearch" id="search" onblur="this.className = 'textEntrySearch';" onfocus="this.className = 'textEntryFocusSearch';" />
                             <input type="submit" class="submit" value="{% trans 'Search' %}" />
                         </form>
@@ -133,7 +136,8 @@
             </div>
             <div class="middle">
                 <div class="mainContent">
-                {{ flatpage.content }}
+                    {% block stepmenu_top %}{% endblock %}
+                    {{ flatpage.content }}
                 </div>
                 <div class="spacer">&#160;</div>
             </div>

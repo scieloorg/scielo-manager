@@ -54,8 +54,8 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue('collection' in response.context)
 
         #testing content
-        self.assertEqual(u'SciELO Publisher', unicode(response.context['institutions'][0].name))
-        self.assertTrue(1, len(response.context['institutions']))
+        self.assertEqual(u'SciELO Publisher', unicode(response.context['institutions'].object_list[0].name))
+        self.assertTrue(1, len(response.context['institutions'].object_list))
 
 
 class LoggedOutViewsTest(TestCase):
