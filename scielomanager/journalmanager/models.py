@@ -22,7 +22,7 @@ class Collection(models.Model):
     validated = models.BooleanField(_('Validated'), default=False, )
 
     def __unicode__(self):
-        return u'%s' % (self.name)
+        return unicode(self.name)
 
     class Meta:
         ordering = ['name']
@@ -62,7 +62,7 @@ class Journal(models.Model):
         editable=False)
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
-    collection = models.ForeignKey(Collection, related_name='journal_collection')
+    collections = models.ManyToManyField('Collection')
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
