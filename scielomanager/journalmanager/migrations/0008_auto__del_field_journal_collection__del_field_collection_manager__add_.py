@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Deleting field 'Journal.collection'
         db.delete_column('journalmanager_journal', 'collection_id')
 
@@ -20,14 +20,14 @@ class Migration(SchemaMigration):
         db.create_unique('journalmanager_journal_collections', ['journal_id', 'collection_id'])
 
         # Deleting field 'Collection.manager'
-        db.delete_column('journalmanager_collection', 'manager_id')
+        #db.delete_column('journalmanager_collection', 'manager_id')
 
         # Adding field 'UserProfile.is_manager'
-        db.add_column('journalmanager_userprofile', 'is_manager', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        #db.add_column('journalmanager_userprofile', 'is_manager', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
 
     def backwards(self, orm):
-        
+
         # User chose to not deal with backwards NULL issues for 'Journal.collection'
         raise RuntimeError("Cannot reverse this migration. 'Journal.collection' and its values cannot be restored.")
 
