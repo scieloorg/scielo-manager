@@ -10,12 +10,12 @@
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Institutions DashBoard' %} ({{ institution|length }})
+/ {% trans 'Institutions DashBoard' %} - {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
 {% endblock %}
 
 {% block body %}
 <div class="actions"><a href="{% url institution.add %}" class="addNew">{% trans 'New Institution' %}</a></div>
-<table class="dataTable" cellspacing="0" border="0">
+<table class="bordered-table zebra-striped">
     <thead>
         <tr>
             <th>{% trans "Name" %}</th>
@@ -50,18 +50,16 @@
     <tbody>
 </table>
 <div class="pagination">
-    <span class="step-links">
-        {% if institutions.has_previous %}
-            <a href="?page={{ institutions.previous_page_number }}">{% trans 'previous<<' %}</a>
-        {% endif %}
-
-        <span class="current">
-            {% trans 'Page' %} {{ institutions.number }} {% trans 'of' %} {{ institutions.paginator.num_pages }}
-        </span>
-
-        {% if institutions.has_next %}
-            <a href="?page={{ institutions.next_page_number }}">{% trans '>>next' %}</a>
-        {% endif %}
-    </span>
+    <ul>
+        <li class="prev {% if not institutions.has_previous %}disabled{% endif %}">
+            <a href="?page={{ institutions.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in institutions.paginator.page_range %}
+        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not institutions.has_next %}disabled{% endif %}">
+            <a href="?page={{ institutions.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
 </div>
 {% endblock %}
