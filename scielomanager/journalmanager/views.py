@@ -101,10 +101,13 @@ def journal_index(request):
 @login_required
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    institution = Institution.objects.filter(collection=user_collection)
+    all_institutions = Institution.objects.filter(collection=user_collection)
+
+    institutions = get_paginated(all_institutions, request.GET.get('page', 1))
+
     t = loader.get_template('journalmanager/institution_dashboard.html')
     c = RequestContext(request, {
-                       'institutions': institution,
+                       'institutions': institutions,
                        'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
