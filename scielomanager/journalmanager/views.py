@@ -87,7 +87,7 @@ def user_index(request):
 @login_required
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_journals = Journal.objects.filter(collection=user_collection)
+    all_journals = Journal.objects.filter(collections=user_collection)
 
     journals = get_paginated(all_journals, request.GET.get('page', 1))
 
