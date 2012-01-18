@@ -60,8 +60,7 @@ for reg in json_parsed:
     journal.title =  reg['100'][0]
     journal.institution = inst_relationship
     journal.creator_id = 1
-    journal.collection = collection
-
     journal.save(force_insert=True)
+    journal.collections.add(collection)
 
-print Done!
+print "Done!"

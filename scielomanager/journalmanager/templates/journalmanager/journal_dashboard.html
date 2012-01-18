@@ -10,7 +10,7 @@
 {% block stepmenu_top %}
 {{ block.super }}
 / <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Journals DashBoard' %} ({{ journal|length }})
+/ {% trans 'Journals DashBoard' %} ({{ journals|length }})
 {% endblock %}
 
 {% block body %}
