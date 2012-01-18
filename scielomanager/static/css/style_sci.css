@@ -4,15 +4,11 @@ body {
     text-align: left;
     font-size: 78%;
     font-family: Trebuchet MS, Arial, sans-serif;
-    background: url(../images/top_bg.jpg) repeat-x;    
+    background: url(../images/top_bg.jpg) repeat-x;
 }
 
 a{
     text-decoration: none;
-}
-
-P {
-    font-family: arial;
 }
 
 pre {
@@ -31,6 +27,7 @@ H2 {
     margin: 0px;
     margin-bottom: 10px;
 }
+
 IMG {
     border: none;
 }
@@ -38,10 +35,12 @@ IMG {
 FORM {
     margin: 0px;
 }
+
 blockquote {
     font-weight: bold;
     font-style: italic;
 }
+
 .spacer {
     clear: both;
     display: block;
@@ -50,6 +49,7 @@ blockquote {
     padding: 0px;
     height: 1px;
 }
+
 .textEntry {
     width: 110px;
     border: 1px solid #848484;
@@ -103,7 +103,7 @@ blockquote {
    height:30px;
    width:100%;
 }
- 
+
 .identification {
     position: absolute;
     /*top: 4em;*/
@@ -478,139 +478,9 @@ blockquote {
     text-decoration: underline;
 }
 
-
-/* TABLES */
-table.dataTable {
-    margin-bottom: 10px;
-    clear: both;
-    width: 100%;
-}
-
-form table.dataTable {
-    width: 100%;
-}
-
-form table.dataTable th {
-    width: 15%;
-}
-
-form table.dataTable img {
-    margin-right: 0.5em;
-    vertical-align: middle;
-    display:block;
-    float: left;
-}
-
-form table.dataTable label {
-    display:block;
-    float: left;
-    width: 81%;
-}
-
-form table.dataTable th,
-form table.dataTable td {
-    border: none;
-}
-
-form table.odd th {
-    background-color: #DEEEDE;
-}
-
-form table.odd td {
-    background-color: #EFFFEF;
-}
-
-
-.table{
-    width: 100%;
-}
-
-table.dataTable, table.dataTable td {
-    color:#333;
-}
-table.dataTable td {
-    font-family: arial;
-    font-size: 100%;
-    line-height: 120%;
-    vertical-align: top;
-}
-table.dataTable td.title, table.dataTable td.subject {
-    font-weight: bold;
-}
-table.dataTable td.date {
-
-}
-table.dataTable td A {
-    color: #333;
-    text-decoration: none;
-}
-table.dataTable td A:hover {
-    color: #333;
-    text-decoration: underline;
-}
-table.dataTable TH, table.dataTable TD {
-    border-bottom: 1px solid #c9c9c9;
-    padding: 6px 4px;
-}
-
-table.dataTable TH {
-    color: #990000;
-    font-size: 120%;
-    background: url(/static/images/back_table_header.png) repeat-x;
-    font-size: 110%;
-    vertical-align: top;
-    border-top: 1px solid #c9c9c9;
-
-}
-table.dataTable .even TD {
-    /*background: #f5f5f5;*/
-}
-table.dataTable .odd TD {
-    background: #EFEFEF;
-}
-
-table.dataTable textarea {
-    width: 60%;
-}
-
-table.dataTable td.help div.issue {
-}
-
-table.trialsummary {
-    width: 100%;
-}
-.dataTable UL {
-    margin: 0px;
-    padding: 0px;
-}
-.dataTable TD LI {
-    float: left;
-    margin-right: 4px;
-}
-
-.dataTable td li.asmListItem {
-    float: none;
-}
-
-.dataTable A.history, .dataTable A.iteraction {
-    display: block;
-    width: 16px;
-    height: 16px;
-
-}
-.dataTable A.history {
-    background: url(../images/icon_history.gif) no-repeat;
-}
-.dataTable A.iteraction {
-    background: url(../images/icon_iteraction.gif) no-repeat;
-}
-.dataTable TD LI A SPAN {
-    display: none;
-}
 .actions {
-    padding: 8px 0px;
-    float: right;
-    width: 91px;
+    background-color: #FFFFFF !important;
+    border: 0 !important;
     text-align: right;
 }
 
@@ -635,35 +505,6 @@ table.trialsummary {
     float: left;
     left: 100%;
     width: 81%;
-}
-
-#rebracmenu {
-    float: left;
-    width: 16%;
-    left: 1%;
-}
-
-#rebracmenu #usermenu div {
-    padding: 3em;
-    border-bottom: 1px dotted #D4D4FF;
-    line-height: 100%;
-    text-align: center;
-}
-
-#rebracmenu #usermenu div * {
-    text-transform: capitalize;
-    font-weight: bold;
-}
-
-#rebracmenu ul {
-    list-style-type: none;
-    padding-left: 1em;
-}
-
-#rebracmenu li {
-    text-transform: capitalize;
-    margin-bottom: 0.5em;
-    border-bottom: 1px dotted #D4D4FF;
 }
 
 /* STEPS NAVIGATION*/
@@ -761,25 +602,6 @@ table.trialsummary {
     line-height: 150%;
 }
 
-
-/* AJAX DeCS Tools */
-td div.decstool {
-    display: none;
-}
-
-td div select {
-    display: block;
-}
-
-/*td select,*/
-td div.decstool input {
-    width: 46%;
-}
-
-td.showdecs div.decstool {
-    display: block;
-}
-
 .issue{
     font-size:10px;
     color:#5d5d5d;
@@ -811,51 +633,6 @@ legend{
     padding:5px 2em 5px 1em;
 }
 
-/* BARRA GOVERNO FEDERAL */
-.barra_MSaude {
-    width: 100%;
-    height: 30px;
-    background:#ffcc00;
-}
-
-.barra_MSaude .barra1000 {
-    width:100%;
-    margin: 0 auto;
-}
-.barra_MSaude .barra1000 .minSaude a {
-    width: 152px;
-    height: 21px;
-    float: left;
-    margin: 1px;
-    background: url(../images/ms.gif) top left no-repeat;
-}
-.barra_MSaude .barra1000 .brasilGov a {
-    margin: 1px;
-    width: 96px;
-    height: 21px;
-    float: right;
-    background: url(../images/brasil.gif) top left no-repeat;
-}
-.barra_MSaude .barra1000 .minSaude, .barra_MSaude .barra1000 .form  {
-    float: left;
-}
-
-.barra_MSaude .barra1000 .form {
-    margin: 2px 0px 0px 50px;
-
-}
-.barra_MSaude .barra1000 .form .pr{
-    background: #ffcc00 !important;
-    font-size: 10px;
-}
-
-.barra_MSaude .barra1000 .brasilGov  {
-    float: right;
-}
-.barra_MSaude .barra1000 DIV a span  {
-    display: none;
-}
-
 .languages {
    float: right;
    margin: 5px 12px 0px 2px;
@@ -885,12 +662,6 @@ legend{
 .selected_language {
    font-weight: bold;
    text-decoration: underline;
-}
-
-/*paginator*/
-
-.pagination{
-    float:right;
 }
 
 /*Show Title*/
@@ -933,15 +704,15 @@ legend{
     width: 150px;
     border-radius: 10px;
     box-shadow:inset 0 0 30px #CCCCCC;
-    -moz-box-shadow:inset 0 0 30px #CCCCCC;    
+    -moz-box-shadow:inset 0 0 30px #CCCCCC;
 }
 
 .toolbox A {
-    color: #1298aD;    
+    color: #1298aD;
 }
 
 .toolbox :hover {
-    color: #154362;    
+    color: #154362;
 }
 
 .toolbox h1 {
@@ -972,5 +743,5 @@ legend{
     border-radius: 10px;
     -moz-border-radius: 10px;
     box-shadow:inset 0 0 30px #CCCCCC;
-    -moz-box-shadow:inset 0 0 30px #CCCCCC;   
+    -moz-box-shadow:inset 0 0 30px #CCCCCC;
 }
