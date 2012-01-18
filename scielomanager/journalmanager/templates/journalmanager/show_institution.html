@@ -43,7 +43,11 @@
         <tr>
             <th>{% trans "Address" %}</th>
             <td>
-                {{ institution.Address }} - {{ institution.Address_number }} - {{ institution.Address_complement }}
+                <ul>
+                {% for address in institution.get_address_as_list %}
+                    <li>{{ address }}</li>    
+                {% endfor%}
+                </ul>
             </td>
         </tr>
         <tr>

@@ -51,7 +51,10 @@ class Institution(models.Model):
 
     def __unicode__(self):
         return u'%s' % (self.name)
-
+    
+    def get_address_as_list(self):
+        return self.Address.split("\n")
+        
     class Meta:
         ordering = ['name']
 
