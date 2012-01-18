@@ -12,6 +12,9 @@ class CollectionAdmin(admin.ModelAdmin):
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
+class JournalParallelTitlesInline(admin.StackedInline):
+    model = JournalParallelTitles
+
 class JournalTitleOtherFormsInline(admin.StackedInline):
     model = JournalTitleOtherForms
 
@@ -30,7 +33,7 @@ class JournalHistoryInline(admin.StackedInline):
 class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [JournalHistoryInline,JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
+    inlines = [JournalHistoryInline,JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalParallelTitlesInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')

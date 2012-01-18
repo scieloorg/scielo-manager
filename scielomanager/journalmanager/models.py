@@ -189,3 +189,7 @@ class JournalHist(models.Model):
     d = models.DateField(_('Date'),default=datetime.now,        editable=True,blank=True)
     status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
 
+class JournalParallelTitles(models.Model):
+    journal = models.ForeignKey(Journal,null=False)
+    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
+
