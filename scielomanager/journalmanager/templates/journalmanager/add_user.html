@@ -3,7 +3,11 @@
 
 {% block stepmenu_top %}
     {{ block.super }}
-    / <a href="{% url user.index %}">{% trans 'User Dashboard' %}</a> / {% trans 'New User' %}
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li><a href="{% url user.index %}">{% trans 'User Dashboard' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'New User' %}</li>
+    </ul>
 {% endblock %}
 
 {% block body %}

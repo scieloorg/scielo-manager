@@ -8,7 +8,8 @@
         <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
         <link rel="shortcut icon" href="/static/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style_sci.css"/>
-        
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/bootstrap-1.4.0.min.css">
+
         <!--Script-->
         <script type="text/javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
         <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
@@ -53,7 +54,7 @@
                         <div class="userData_block">
                             <span>{% trans 'Collection' %}</span>
                             <big>{{ collection }}</big>
-                        </div>                        
+                        </div>
                         <div class="userData_block logout">
                             <table>
                             <tr>
@@ -149,5 +150,5 @@
                 </p>
             </div>
         </div>
-    </body>   
+    </body>
 </html>

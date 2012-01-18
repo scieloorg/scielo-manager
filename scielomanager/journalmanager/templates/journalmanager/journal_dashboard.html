@@ -9,17 +9,21 @@
 
 {% block stepmenu_top %}
 {{ block.super }}
-/ <a href="{% url index %}">{% trans 'Home' %}</a>
-/ {% trans 'Journals DashBoard' %} ({{ journals|length }})
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'Journals DashBoard' %}</li>
+    </ul>
+    {% trans 'Showing' %} {{ journals.start_index }}-{{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
 {% endblock %}
 
 {% block body %}
-<div class="actions"><a href="{% url journal.add %}" class="addNew">{% trans 'New Journal' %}</a></div>
-<table class="dataTable" cellspacing="0" border="0">
+<div class="actions">
+    <a href="{% url journal.add %}" class="btn large primary">{% trans 'New Journal' %}</a>
+</div>
+<table class="bordered-table zebra-striped">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
-            <th>{% trans "SciELO ISSN" %}</th>
             <th>{% trans "Print ISSN" %}</th>
             <th>{% trans "Electronic ISSN" %}</th>
             <th>{% trans "Publisher" %}</th>
@@ -30,14 +34,13 @@
     </thead>
     <tbody>
         {% for ct in journals.object_list %}
-        <tr class="{% cycle 'even' 'odd' %}">
-            <td class="subject">{{ ct.title }}</td>
-            <td class="subject">{{ ct.scielo_issn }}</td>
-            <td class="subject">{{ ct.print_issn }}</td>
-            <td class="subject">{{ ct.eletronic_issn }}</td>
-            <td class="subject">{{ ct.publisher }}</td>
-            <td class="subject">{{ ct.pub_status }}</td>
-            <td class="subject">
+        <tr>
+            <td><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></td>
+            <td>{{ ct.print_issn }}</td>
+            <td>{{ ct.eletronic_issn }}</td>
+            <td>{{ ct.publisher }}</td>
+            <td>{{ ct.pub_status }}</td>
+            <td>
                 {%if ct.validated %}
                     <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
                 {%else%}
@@ -47,11 +50,10 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a href="/journal/show/{{ ct.pk }}/" title="{% trans 'view journal' %}"><img src="/static/images/show.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/edit/{{ ct.pk }}/" title="{% trans 'edit journal' %}"><img src="/static/images/edit.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/issue/{{ ct.pk }}/" title="{% trans 'issue manager' %}"><img src="/static/images/issue_manager.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/section/{{ ct.pk }}/" title="{% trans 'section manager' %}"><img src="/static/images/section_manager.png" border="0" width="20px" heigth="20px"/></a></li>
-                        <li><a href="/journal/delete/{{ ct.pk }}/" title="{% trans 'delete journal' %}"><img src="/static/images/trash.png" border="0" width="20px" heigth="20px"/></a></li>
+                        <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
+                        <li><a class="label" href="/journal/issue/{{ ct.pk }}/">{% trans 'Issues' %}</a></li>
+                        <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
+                        <li><a class="label important" href="/journal/delete/{{ ct.pk }}/">{% trans 'delete journal' %}</a></li>
                     </ul>
                 </div>
             </td>
@@ -60,18 +62,16 @@
     <tbody>
 </table>
 <div class="pagination">
-    <span class="step-links">
-        {% if journals.has_previous %}
-            <a href="?page={{ journals.previous_page_number }}">{% trans 'previous<<' %}</a>
-        {% endif %}
-
-        <span class="current">
-            {% trans 'Page' %} {{ journals.number }} {% trans 'of' %} {{ journals.paginator.num_pages }}
-        </span>
-
-        {% if journals.has_next %}
-            <a href="?page={{ journals.next_page_number }}">{% trans '>>next' %}</a>
-        {% endif %}
-    </span>
+    <ul>
+        <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
+            <a href="?page={{ journals.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in journals.paginator.page_range %}
+        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not journals.has_next %}disabled{% endif %}">
+            <a href="?page={{ journals.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
 </div>
 {% endblock %}
