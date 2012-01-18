@@ -7,32 +7,32 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
+        
         # Deleting field 'Journal.collection'
         db.delete_column('journalmanager_journal', 'collection_id')
 
-        # Adding M2M table for field collection on 'Journal'
-        db.create_table('journalmanager_journal_collection', (
+        # Adding M2M table for field collections on 'Journal'
+        db.create_table('journalmanager_journal_collections', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
             ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
         ))
-        db.create_unique('journalmanager_journal_collection', ['journal_id', 'collection_id'])
+        db.create_unique('journalmanager_journal_collections', ['journal_id', 'collection_id'])
 
         # Deleting field 'Collection.manager'
-        # db.delete_column('journalmanager_collection', 'manager_id')
+        db.delete_column('journalmanager_collection', 'manager_id')
 
         # Adding field 'UserProfile.is_manager'
-        # db.add_column('journalmanager_userprofile', 'is_manager', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        db.add_column('journalmanager_userprofile', 'is_manager', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
 
     def backwards(self, orm):
-
+        
         # User chose to not deal with backwards NULL issues for 'Journal.collection'
         raise RuntimeError("Cannot reverse this migration. 'Journal.collection' and its values cannot be restored.")
 
-        # Removing M2M table for field collection on 'Journal'
-        db.delete_table('journalmanager_journal_collection')
+        # Removing M2M table for field collections on 'Journal'
+        db.delete_table('journalmanager_journal_collections')
 
         # User chose to not deal with backwards NULL issues for 'Collection.manager'
         raise RuntimeError("Cannot reverse this migration. 'Collection.manager' and its values cannot be restored.")
@@ -136,7 +136,7 @@ class Migration(SchemaMigration):
             'acronym': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
             'alphabet': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'classification': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'collection': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
+            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'enjoy_creator'", 'to': "orm['auth.User']"}),
             'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
