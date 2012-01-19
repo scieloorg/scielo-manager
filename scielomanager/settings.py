@@ -112,8 +112,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.flatpages',
-    'south',
     'journalmanager',
+    'south',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
