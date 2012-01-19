@@ -4,7 +4,15 @@ import json
 import os
 import difflib
 from django.core.management import setup_environ
-import settings
+
+try:
+    from scielomanager import settings
+except ImportError:
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    from sys import path
+    path.append(BASE_PATH)
+    import settings
+
 setup_environ(settings)
 from journalmanager.models import *
 
