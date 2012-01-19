@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
+{% endblock %}
+
+{% block body_title %}{% trans "User Journals" %}{% endblock %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'Journals DashBoard' %}</li>
+    </ul>
+    {% trans 'Showing' %} {{ journals.start_index }}{{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
+{% endblock %}
+
+{% block body %}
+<div class="actions">
+    <a href="{% url journal.add %}" class="btn large primary">{% trans 'New Journal' %}</a>
+     <div class="search">
+        <div style="float:left;">{{ journals.paginator.count }} {% trans 'Result(s)' %}</div>
+        <form action="{% url journal.search %}" method="get">
+            <input type="text" placeholder="Search" name="q" />
+            <button class="btn" type="submit">Search</button>
+        </form>
+
+    </div>
+</div>
+{% if journals.paginator.count > 0 %} 
+<table class="bordered-table zebra-striped">
+    <thead>
+        <tr>
+            <th>{% trans "Journal Title" %}</th>
+            <th>{% trans "Print ISSN" %}</th>
+            <th>{% trans "Electronic ISSN" %}</th>
+            <th>{% trans "Publisher" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Validated" %}</th>
+            <th>{% trans "Options" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ct in journals.object_list %}
+        <tr>
+            <td><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></td>
+            <td>{{ ct.print_issn }}</td>
+            <td>{{ ct.eletronic_issn }}</td>
+            <td>{{ ct.publisher }}</td>
+            <td>{{ ct.pub_status }}</td>
+            <td>
+                {%if ct.validated %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>
+            <td>
+                <div class="options">
+                    <ul>
+                        <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
+                        <li><a class="label" href="/journal/issue/{{ ct.pk }}/">{% trans 'Issues' %}</a></li>
+                        <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
+                        <li><a class="label important" href="/journal/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    <tbody>
+</table>
+<div class="pagination">
+    <ul>
+        <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
+            <a href="?page={{ journals.previous_page_number }}&q={{ search_query_string }}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in journals.paginator.page_range %}
+        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}&q={{ search_query_string }}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not journals.has_next %}disabled{% endif %}">
+            <a href="?page={{ journals.next_page_number }}&q={{ search_query_string }}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
+</div>
+{% else %}
+
+    {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}  
+    
+{% endif %}
+{% endblock %}
