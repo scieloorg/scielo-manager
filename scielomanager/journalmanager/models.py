@@ -9,6 +9,8 @@ from django.conf.global_settings import LANGUAGES
 import choices
 #import scielomanager.tools
 
+HELP_INSTITUTION = 'Texto de ajuda!!!'
+
 class IndexingCoverage(models.Model):
     database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
     database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=False,blank=True)
@@ -51,10 +53,10 @@ class Institution(models.Model):
 
     def __unicode__(self):
         return u'%s' % (self.name)
-    
+
     def get_address_as_list(self):
         return self.Address.split("\n")
-        
+
     class Meta:
         ordering = ['name']
 
@@ -66,7 +68,7 @@ class Journal(models.Model):
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
     collections = models.ManyToManyField('Collection')
-    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
+    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False, help_text=_(HELP_INSTITUTION))
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
     acronym = models.CharField(_('Acronym'),max_length=8)
