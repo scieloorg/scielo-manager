@@ -13,19 +13,22 @@
         <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
         <li class="active">{% trans 'Journals DashBoard' %}</li>
     </ul>
-    {% trans 'Showing' %} {{ journals.start_index }}-{{ journals.end_index }} {% trans 'of' %} {{ journals.paginator.count }}
+    {% trans 'Showing' %} {{ journals.start_index }}{{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
 {% endblock %}
 
 {% block body %}
 <div class="actions">
     <a href="{% url journal.add %}" class="btn large primary">{% trans 'New Journal' %}</a>
      <div class="search">
+        <div style="float:left;">{{ journals.paginator.count }} {% trans 'Result(s)' %}</div>
         <form action="{% url journal.search %}" method="get">
             <input type="text" placeholder="Search" name="q" />
             <button class="btn" type="submit">Search</button>
         </form>
+
     </div>
 </div>
+{% if journals.paginator.count > 0 %} 
 <table class="bordered-table zebra-striped">
     <thead>
         <tr>
@@ -70,14 +73,19 @@
 <div class="pagination">
     <ul>
         <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
-            <a href="?page={{ journals.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+            <a href="?page={{ journals.previous_page_number }}&q={{ search_query_string }}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in journals.paginator.page_range %}
-        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}&q={{ search_query_string }}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not journals.has_next %}disabled{% endif %}">
-            <a href="?page={{ journals.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+            <a href="?page={{ journals.next_page_number }}&q={{ search_query_string }}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>
+{% else %}
+
+    {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}  
+    
+{% endif %}
 {% endblock %}

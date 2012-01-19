@@ -368,3 +368,21 @@ def open_journal(request):
                        'journals': journals,
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def search_journal(request):
+    user_collection = request.user.userprofile_set.get().collection
+
+    #Get journals where title contains the "q" value and collection equal with the user
+    journals_filter = Journal.objects.filter(title__contains=request.REQUEST['q'], collections=user_collection)
+
+    #Paginated the result
+    journals = get_paginated(journals_filter, request.GET.get('page', 1))
+    
+    t = loader.get_template('journalmanager/journal_search_result.html')
+    c = RequestContext(request, {
+                       'journals': journals,
+                       'collection': user_collection,
+                       'search_query_string': request.REQUEST['q'], 
+                       })
+    return HttpResponse(t.render(c))
