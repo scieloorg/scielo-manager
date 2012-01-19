@@ -66,7 +66,7 @@
             <a href="?page={{ institutions.previous_page_number }}&q={{ search_query_string }}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in institutions.paginator.page_range %}
-        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}&q={{ search_query_string }}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not institutions.has_next %}disabled{% endif %}">
             <a href="?page={{ institutions.next_page_number }}&q={{ search_query_string }}">{% trans 'Next' %} &rarr;</a>
