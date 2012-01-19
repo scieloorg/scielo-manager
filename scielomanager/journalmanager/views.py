@@ -388,3 +388,21 @@ def search_journal(request):
                        'search_query_string': request.REQUEST['q'], 
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def search_institution(request):
+    user_collection = request.user.userprofile_set.get().collection
+
+    #Get institutions where title contains the "q" value and collection equal with the user
+    institutions_filter = Institution.objects.filter(name__contains=request.REQUEST['q'], collection=user_collection)
+
+    #Paginated the result
+    institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
+    
+    t = loader.get_template('journalmanager/institution_search_result.html')
+    c = RequestContext(request, {
+                       'institutions': institutions,
+                       'collection': user_collection,
+                       'search_query_string': request.REQUEST['q'], 
+                       })
+    return HttpResponse(t.render(c))

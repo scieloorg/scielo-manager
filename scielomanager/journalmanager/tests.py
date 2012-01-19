@@ -76,6 +76,25 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
         self.assertTrue(7, len(response.context['journals'].object_list))
 
+    def test_search_institution(self):
+        """
+        View: search_institution
+
+        Tests url dispatch and values returned by the view to the template
+        """
+        response = self.client.get('/journal/institution/search/?q=Centro')
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200)
+
+        #values passed to template
+        self.assertTrue('institutions' in response.context)
+        self.assertTrue('collection' in response.context)
+
+        #testing content
+        self.assertEqual(u' Centro de Estudos de Opiniao Publica da Universidade Estadual de Campinas', unicode(response.context['institutions'].object_list[0].name))
+        self.assertTrue(9, len(response.context['institutions'].object_list))
+
 class LoggedOutViewsTest(TestCase):
 
     def test_page_index(self):
