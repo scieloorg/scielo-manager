@@ -19,7 +19,8 @@
 {% block body %}
 <div class="actions">
     <a href="{% url institution.add %}" class="btn large primary">{% trans 'New Institution' %}</a>
-    <div class="search">
+     <div class="search">
+        <div style="float:left;">{{ institutions.paginator.count }} {% trans 'Result(s)' %}</div>
         <form action="{% url institution.search %}" method="get">
             <input type="text" placeholder="Search" name="q" />
             <button class="btn" type="submit">Search</button>
