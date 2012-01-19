@@ -187,7 +187,7 @@ class JournalTextLanguage(models.Model):
 
 class JournalAbstrLanguage(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
+    language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal,null=False)
