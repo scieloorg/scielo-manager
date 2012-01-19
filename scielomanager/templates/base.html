@@ -122,15 +122,6 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% if user.is_authenticated %}
-                    <div class="search">
-                        <form action="{ url journal.search }" method="get">
-                            <input type="text" name="q" class="textEntrySearch" id="search" onblur="this.className = 'textEntrySearch';" onfocus="this.className = 'textEntryFocusSearch';" />
-                            <input type="submit" class="submit" value="{% trans 'Search' %}" />
-                        </form>
-                    </div>
-                    <div class="searchtext">{% trans 'Search: ISSN, Journal Title'%}</div>
-                    {% endif %}
                 </div>
                 {% endblock %}
                 <div class="spacer">&#160;</div>
