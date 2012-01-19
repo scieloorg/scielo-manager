@@ -16,13 +16,14 @@ except ImportError:
 setup_environ(settings)
 from journalmanager.models import *
 
+json_parsed={}
+
 if __name__ == '__main__':
     json_file=open('journal.json','r')
     json_parsed=json.loads(json_file.read())
 
-collection = Collection.objects.get(id=1)
-
-institutions_pool = []
+def get_collection(collection_name):
+    return Collection.objects.get(name='Brasil')
 
 def have_similar_institutions(match_string, institutions_pool):
     institutions = Institution.objects.all()
@@ -35,13 +36,8 @@ def have_similar_institutions(match_string, institutions_pool):
             
     return institution_id
 
-
-
-for reg in json_parsed:
-
+def load_institution(registry):
     institution = Institution()
-    journal = Journal()
-
     # Institutions Import
     institution.name = reg['480'][0]
     institution.acronym = reg['68'][0]
@@ -52,20 +48,23 @@ for reg in json_parsed:
 
     similar_key =  have_similar_institutions(match_string,institutions_pool)
 
-    inst_relationship=""
+    loaded_institution=""
 
     if similar_key != "":
         similar_institution=Institution.objects.get(id=similar_key)
         similar_institution.Address += "\n"+institution.Address
         similar_institution.save()
-        inst_relationship = similar_institution
+        loaded_institution = similar_institution
     else:
         institution.save(force_insert=True)
+        loaded_institution = institution
         institutions_pool.append(dict({"id":institution.id,"match_string":match_string}))
-        inst_relationship = institution
 
-    # Journal Import
     
+    return loaded_institution
+
+
+def load_journal(loaded_institution,reg):
     issn_type=""
     print_issn=""
     electronic_issn=""
@@ -142,9 +141,24 @@ for reg in json_parsed:
     if reg.has_key('37'):
         journal.secs_code = reg['37'][0]
 
-    journal.institution = inst_relationship
+    journal.institution = loaded_institution
     journal.creator_id = 1
     journal.save(force_insert=True)
     journal.collections.add(collection)
+
+    return journal    
+
+collection = get_collection('Brasil')
+
+institutions_pool = []
+
+for reg in json_parsed:
+
+    institution = Institution()
+    journal = Journal()
+
+    loaded_institution = load_institution(reg)
+    loaded_journal = load_journal(loaded_institution,reg)
+
 
 print "Done!"

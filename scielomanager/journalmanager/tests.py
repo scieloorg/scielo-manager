@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from scielomanager.journalmanager.models import Collection, UserProfile
+from scielomanager.journalmanager.models import Collection, UserProfile, Journal, Institution
 
 class LoggedInViewsTest(TestCase):
 
@@ -125,16 +125,28 @@ class ToolsTest(TestCase):
         # Testing if page parameter is a "string"
         self.assertRaises(TypeError, get_paginated, items_list, 'foo', items_per_page=items_per_page)
 
-class TitleImportTest(TestCase):
-
+class JournalImportTest(TestCase):
     import json
     import os
 
-    isis_records=json.loads(open('utils/test_journal.json','r').read())
-    collection=1
+    fixtures = ['test_import_data']
 
-    def setUp(self):
+    json_parsed=json.loads(open('utils/test_journal.json','r').read())
+
+    #def setUp(self):
+        #import pdb; pdb.set_trace()
+        
+    """
+    Function: scielomanger.utils.get_collection
+
+    Testando recuperar dados da coleção que receberá o import
+    """
+    def test_get_collection(self):
         from scielomanager.utils import titleconvert
 
-    def test_have_similar_institutions(self):
-        self.assertEqual(self.collection, 1)
+        collection = titleconvert.get_collection('Brasil')
+        self.assertEqual(collection.id, 1)
+        self.assertEqual(collection.name, u'Brasil')
+        self.assertEqual(collection.url, u'http://www.scielo.br/')
+
+
