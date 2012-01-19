@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/tablesorter/style.css"/>
+{% endblock %}
+
+{% block body_title %}{% trans "User Journals" %}{% endblock %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'Institutions DashBoard' %}</li>
+    </ul>
+    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
+{% endblock %}
+
+{% block body %}
+<div class="actions">
+    <a href="{% url institution.add %}" class="btn large primary">{% trans 'New Institution' %}</a>
+     <div class="search">
+        <div style="float:left;">{{ institutions.paginator.count }} {% trans 'Result(s)' %}</div>
+        <form action="{% url institution.search %}" method="get">
+            <input type="text" placeholder="Search" name="q" />
+            <button class="btn" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+<table class="bordered-table zebra-striped">
+    <thead>
+        <tr>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Sponsor" %}</th>
+            <th>{% trans "Validated" %}</th>
+            <th>{% trans "Options" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ct in institutions.object_list %}
+        <tr>
+            <td><a href="/journal/institution/show/{{ ct.pk }}/">{{ ct.name }}</a></td>
+            <td>{{ ct.sponsor }}</td>
+            <td>
+                {%if ct.validated %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>
+            <td>
+                <div>
+                    <ul>
+                        <li><a class="label" href="/journal/institution/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
+                        <li><a class="label important" href="/journal/institution/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    <tbody>
+</table>
+<div class="pagination">
+    <ul>
+        <li class="prev {% if not institutions.has_previous %}disabled{% endif %}">
+            <a href="?page={{ institutions.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in institutions.paginator.page_range %}
+        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not institutions.has_next %}disabled{% endif %}">
+            <a href="?page={{ institutions.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
