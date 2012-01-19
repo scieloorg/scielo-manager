@@ -23,6 +23,9 @@ urlpatterns = patterns('',
     url(r'^institution/edit/(?P<institution_id>\d+)/$', edit_institution, name='institution.edit' ),
     url(r'^institution/delete/(?P<institution_id>\d+)/$', delete_institution, name='institution.delete' ),
 
+    #Search Institution
+    url(r'^institution/search/$', search_institution, name='institution.search'),
+
     # Users Tools
     url(r'^user/$', user_index, name="user.index"),
     url(r'^user/add/$', add_user, name="user.add"),
