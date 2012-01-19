@@ -1,0 +1,213 @@
+
+-------------------------
+The simplest record test
+-------------------------
+
+    >>> import idfile
+    >>> from StringIO import StringIO
+    >>> id1 = '''!ID 0000001\n!v001!CR1.1'''
+    >>> rdr = idfile.reader(StringIO(id1))
+    >>> r = rdr.next()
+    >>> r['_id'], r['001']
+    ('0000001', ['CR1.1'])
+    
+--------------------------------------------
+A newline at the end of the file is ignored
+--------------------------------------------
+
+    >>> id2 = '''\
+    ... !ID 0000001
+    ... !v001!CR1.1
+    ... !v002!94523
+    ... '''
+    >>> rdr = idfile.reader(StringIO(id2))
+    >>> r = rdr.next()
+    >>> r['_id'], r['001'], r['002']
+    ('0000001', ['CR1.1'], ['94523'])
+
+--------------------------------
+But only one newline is ignored
+--------------------------------
+
+    >>> id2 = '''\
+    ... !ID 0000001
+    ... !v001!CR1.1
+    ... !v002!94523
+    ...
+    ... '''
+    >>> rdr = idfile.reader(StringIO(id2))
+    >>> r = rdr.next()
+    >>> r['_id'], r['001'], r['002']
+    ('0000001', ['CR1.1'], ['94523\n'])
+    
+----------------------------------------
+Two records, with some repeating fields
+----------------------------------------
+
+    >>> id3 = '''\
+    ... !ID 0000001
+    ... !v001!CR1.1
+    ... !v002!94523
+    ... !v003!CR1.1/D00083
+    ... !v004!LILACS
+    ... !v004!BINASS
+    ... !v004!ADOLEC
+    ... !ID 0000002
+    ... !v001!CR1.1
+    ... !v002!94525
+    ... !v003!CR1.1/DOOO85
+    ... !v004!LILACS
+    ... !v004!ADOLEC'''
+    >>> rdr = idfile.reader(StringIO(id3))
+    >>> for r in rdr:
+    ...     print(r['_id'])
+    ...     print(r['002'])
+    ...     print(r['004'])
+    ...     print('---')
+    0000001
+    ['94523']
+    ['LILACS', 'BINASS', 'ADOLEC']
+    ---
+    0000002
+    ['94525']
+    ['LILACS', 'ADOLEC']
+    ---
+
+----------------
+Multiline field
+----------------
+
+    >>> id5 = '''\
+    ... !ID 0000001
+    ... !v001!CR1.1
+    ... !v017!Costa Rica
+    ... Ministerio de Salud
+    ... !v004!LILACS'''
+    >>> rdr = idfile.reader(StringIO(id5))
+    >>> r = rdr.next()
+    >>> r['_id'], r['017']
+    ('0000001', ['Costa Rica\nMinisterio de Salud'])
+
+--------------------------------
+Multiline field, last in record
+--------------------------------
+
+    >>> id6 = '''\
+    ... !ID 0000001
+    ... !v001!CR1.1
+    ... !v004!LILACS
+    ... !v017!Costa Rica
+    ... Ministerio de Salud'''
+    >>> rdr = idfile.reader(StringIO(id6))
+    >>> r = rdr.next()
+    >>> r['_id'], r['017']
+    ('0000001', ['Costa Rica\nMinisterio de Salud'])
+
+
+--------------------------------------------
+Blank lines in field contents are preserved
+--------------------------------------------
+
+    >>> id1b = '''!ID 0000001\n!v001!CR1.1\n\n!v002!94523'''
+    >>> rdr = idfile.reader(StringIO(id1b))
+    >>> r = rdr.next()
+    >>> r['_id'], r['001']
+    ('0000001', ['CR1.1\n'])
+    
+----------------------------------------------------
+...but not in the last field (blame regex for that)
+----------------------------------------------------
+    
+    >>> id1c = '''!ID 0000001\n!v001!CR1.1\n!v002!94523\n'''
+    >>> rdr = idfile.reader(StringIO(id1c))
+    >>> r = rdr.next()
+    >>> r['_id'], r['002']
+    ('0000001', ['94523'])
+
+
+-----------
+Empty file
+-----------
+
+    >>> rdr = idfile.reader(StringIO(''))
+    >>> list(rdr)
+    []
+    
+-------------
+Empty record
+-------------
+
+    >>> id0 = '''\
+    ... !ID 0000001'''
+    >>> rdr = idfile.reader(StringIO(id0))
+    >>> list(rdr)
+    [{'_id': '0000001'}]
+
+------------
+Empty field
+------------
+
+    >>> id4 = '''\
+    ... !ID 0000001
+    ... !v001!'''
+    >>> rdr = idfile.reader(StringIO(id4))
+    >>> r = rdr.next()
+    >>> r['_id'], r['001']
+    ('0000001', [''])
+
+
+---------------
+Invalid files
+---------------
+
+Bogus content    
+==============
+    
+    >>> rdr = idfile.reader(StringIO('spam'))
+    >>> rdr.next()
+    Traceback (most recent call last):
+      ...
+    ValueError: (Line 1) Invalid line, no previous field tag: 'spam'
+    
+Just a newline
+===============
+    
+    >>> rdr = idfile.reader(StringIO('\n'))
+    >>> rdr.next()
+    Traceback (most recent call last):
+      ...
+    ValueError: (Line 1) Invalid line, no previous field tag: '\n'
+        
+Invalid line
+==============    
+
+    >>> rdr = idfile.reader(StringIO('!ID 0000001\neggs'))
+    >>> rdr.next()
+    Traceback (most recent call last):
+      ...
+    ValueError: (Line 2) Invalid line, no previous field tag: 'eggs'
+    
+Invalid field
+==============    
+
+    >>> rdr = idfile.reader(StringIO('!v001!foo'))
+    >>> rdr.next()
+    Traceback (most recent call last):
+      ...
+    ValueError: (Line 1) Invalid field start, no previous record ID: '!v001!foo'
+
+Invalid field 2
+================    
+
+    >>> rdr = idfile.reader(StringIO('!ID 0000001\n!v001'))
+    >>> rdr.next()
+    Traceback (most recent call last):
+      ...
+    ValueError: (Line 2) Invalid line, no previous field tag: '!v001'
+
+
+
+
+
+
+
