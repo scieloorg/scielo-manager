@@ -105,6 +105,12 @@ class Journal(models.Model):
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
     indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
+    url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
+    url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
+    url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
+
+    id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
+ 
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
