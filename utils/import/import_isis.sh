@@ -3,8 +3,8 @@
 #carrega config
 . import_config.sh
 
-	#scp do arquivo ISO
-	#scp $database_server:/$database_dir/$dbname/$dbname.iso in_isis/
+#scp do arquivo ISO
+scp $user@$database_server:/$database_dir/$dbname/$dbname.iso in_isis/
 	
 	#gerar ISO da base
 	#$cisis_dir/mx $in_isis/$dbname iso=$iso_file -all now tell=10
