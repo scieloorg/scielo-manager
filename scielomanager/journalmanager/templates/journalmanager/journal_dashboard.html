@@ -19,6 +19,12 @@
 {% block body %}
 <div class="actions">
     <a href="{% url journal.add %}" class="btn large primary">{% trans 'New Journal' %}</a>
+     <div class="search">
+        <form action="{% url journal.search %}" method="get">
+            <input type="text" placeholder="Search" name="q" />
+            <button class="btn" type="submit">Search</button>
+        </form>
+    </div>
 </div>
 <table class="bordered-table zebra-striped">
     <thead>

@@ -291,10 +291,10 @@ blockquote {
     text-decoration: underline;
 }
 .search {
-    margin-top: 28px;
-    margin-left:13px;
+    /*margin-left:40px;*/
+    margin-top: 10px;
 }
-.search .submit {
+.483 .submit {
     background: url(../images/submit_search.gif) no-repeat;
     color: #1c4507;
     /*text-transform: uppercase;*/
@@ -482,6 +482,8 @@ blockquote {
     background-color: #FFFFFF !important;
     border: 0 !important;
     text-align: right;
+    border: 0 none !important;
+    padding: 0 !important;
 }
 
 .showAll, .addNew {

@@ -11,7 +11,10 @@ urlpatterns = patterns('',
     url(r'^add/$', add_journal, name='journal.add'),
     url(r'^show/(?P<journal_id>\d+)/$', show_journal, name='journal.show'),
     url(r'^edit/(?P<journal_id>\d+)/$', edit_journal, name='journal.edit'),
-    url(r'^delete/(?P<journal_id>\d+)/$', delete_journal, name='journal.delete'),   
+    url(r'^delete/(?P<journal_id>\d+)/$', delete_journal, name='journal.delete'),
+
+    #Search Journal
+    url(r'^search/$', search_journal, name='journal.search'),
     
     # Institution Tools
     url(r'^institution/$', institution_index, name='institution.index' ),
@@ -19,6 +22,9 @@ urlpatterns = patterns('',
     url(r'^institution/show/(?P<institution_id>\d+)/$', show_institution, name='institution.show' ),    
     url(r'^institution/edit/(?P<institution_id>\d+)/$', edit_institution, name='institution.edit' ),
     url(r'^institution/delete/(?P<institution_id>\d+)/$', delete_institution, name='institution.delete' ),
+
+    #Search Institution
+    url(r'^institution/search/$', search_institution, name='institution.search'),
 
     # Users Tools
     url(r'^user/$', user_index, name="user.index"),
