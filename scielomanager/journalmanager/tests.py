@@ -35,8 +35,8 @@ class LoggedInViewsTest(TestCase):
 
 
         #testing content
-        self.assertEqual(u'Periódico SciELO', unicode(response.context['journals'].object_list[0].title))
-        self.assertTrue(1, len(response.context['journals'].object_list))
+        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
+        self.assertTrue(273, len(response.context['journals'].object_list))
 
     def test_institution_index(self):
         """
@@ -54,9 +54,8 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue('collection' in response.context)
 
         #testing content
-        self.assertEqual(u'SciELO Publisher', unicode(response.context['institutions'].object_list[0].name))
-        self.assertTrue(1, len(response.context['institutions'].object_list))
-
+        self.assertEqual(u' Centro de Estudos de Opiniao Publica da Universidade Estadual de Campinas', unicode(response.context['institutions'].object_list[0].name))
+        self.assertTrue(255, len(response.context['institutions'].object_list))
 
 class LoggedOutViewsTest(TestCase):
 
