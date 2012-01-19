@@ -124,3 +124,17 @@ class ToolsTest(TestCase):
 
         # Testing if page parameter is a "string"
         self.assertRaises(TypeError, get_paginated, items_list, 'foo', items_per_page=items_per_page)
+
+class TitleImportTest(TestCase):
+
+    import json
+    import os
+
+    isis_records=json.loads(open('utils/test_journal.json','r').read())
+    collection=1
+
+    def setUp(self):
+        from scielomanager.utils import titleconvert
+
+    def test_have_similar_institutions(self):
+        self.assertEqual(self.collection, 1)
