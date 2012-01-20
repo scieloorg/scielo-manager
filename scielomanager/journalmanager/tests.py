@@ -173,17 +173,23 @@ class JournalImportTest(TestCase):
     #def setUp(self):
         #import pdb; pdb.set_trace()
         
-    """
-    Function: scielomanger.utils.get_collection
-
-    Testando recuperar dados da coleção que receberá o import
-    """
     def test_get_collection(self):
-        from scielomanager.utils import titleconvert
+        """
+        Function: scielomanger.utils.get_collection
+        Testando recuperar dados da coleção que receberá o import
+        """
 
-        collection = titleconvert.get_collection('Brasil')
+        from scielomanager.utils.journalimport import JournalImport
+
+        ji = JournalImport()
+        collection = ji.get_collection('Brasil')
         self.assertEqual(collection.id, 1)
         self.assertEqual(collection.name, u'Brasil')
         self.assertEqual(collection.url, u'http://www.scielo.br/')
+
+    def test_charge_summary(self):
+        from scielomanager.utils.journalimport import JournalImport        
+
+
 
 
