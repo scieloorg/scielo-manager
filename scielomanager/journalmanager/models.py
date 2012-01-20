@@ -119,8 +119,10 @@ class Journal(models.Model):
     subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=False, choices=choices.SUBSCRIPT)
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
+    
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
-
+    
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
@@ -209,3 +211,5 @@ class JournalParallelTitles(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
 
+class Center(Institution):
+    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)

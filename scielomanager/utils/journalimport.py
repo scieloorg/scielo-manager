@@ -71,7 +71,7 @@ class JournalImport:
 
         institution = Institution()
         # Institutions Import
-        institution.name = record['480'][0]
+        institution.name = record[480][0]
         institution.collection = collection
         institution.Address = " ".join(record['63'])
         
