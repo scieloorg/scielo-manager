@@ -205,7 +205,6 @@ def add_journal(request):
             add_journal_form = JournalForm() # An unbound form
             return render_to_response('journalmanager/add_journal.html', {
                                       'add_journal_form': add_journal_form,
-                                      'type': type,
                                       'mode': 'add_journal',
                                       'form': form,
                                       'user_name': request.user.pk,
@@ -216,7 +215,6 @@ def add_journal(request):
         add_journal_form = JournalForm() # An unbound form
     return render_to_response('journalmanager/add_journal.html', {
                               'add_journal_form': add_journal_form,
-                              'type': type,
                               'mode': 'add_journal',
                               'user_name': request.user.pk,
                               'collection': user_collection},
