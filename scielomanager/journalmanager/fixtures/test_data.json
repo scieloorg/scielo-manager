@@ -6075,6 +6075,7 @@
     "pk": 1, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -6121,6 +6122,7 @@
     "pk": 2, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6167,6 +6169,7 @@
     "pk": 3, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6213,6 +6216,7 @@
     "pk": 4, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6259,6 +6263,7 @@
     "pk": 5, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6305,6 +6310,7 @@
     "pk": 6, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6351,6 +6357,7 @@
     "pk": 7, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6397,6 +6404,7 @@
     "pk": 8, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -6443,6 +6451,7 @@
     "pk": 9, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6489,6 +6498,7 @@
     "pk": 10, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6535,6 +6545,7 @@
     "pk": 11, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6581,6 +6592,7 @@
     "pk": 12, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6627,6 +6639,7 @@
     "pk": 13, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -6673,6 +6686,7 @@
     "pk": 14, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "Q", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6719,6 +6733,7 @@
     "pk": 15, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6765,6 +6780,7 @@
     "pk": 16, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6811,6 +6827,7 @@
     "pk": 17, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6857,6 +6874,7 @@
     "pk": 18, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "SF", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6903,6 +6921,7 @@
     "pk": 19, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6949,6 +6968,7 @@
     "pk": 20, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WK", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -6995,6 +7015,7 @@
     "pk": 21, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -7041,6 +7062,7 @@
     "pk": 22, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -7087,6 +7109,7 @@
     "pk": 23, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "1451", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -7133,6 +7156,7 @@
     "pk": 24, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7179,6 +7203,7 @@
     "pk": 25, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7225,6 +7250,7 @@
     "pk": 26, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7271,6 +7297,7 @@
     "pk": 27, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7317,6 +7344,7 @@
     "pk": 28, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7363,6 +7391,7 @@
     "pk": 29, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7409,6 +7438,7 @@
     "pk": 30, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7455,6 +7485,7 @@
     "pk": 31, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7501,6 +7532,7 @@
     "pk": 32, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -7547,6 +7579,7 @@
     "pk": 33, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7593,6 +7626,7 @@
     "pk": 34, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -7639,6 +7673,7 @@
     "pk": 35, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7685,6 +7720,7 @@
     "pk": 36, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "qh", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7731,6 +7767,7 @@
     "pk": 37, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7777,6 +7814,7 @@
     "pk": 38, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "QH W20.5", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7823,6 +7861,7 @@
     "pk": 39, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7869,6 +7908,7 @@
     "pk": 40, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -7915,6 +7955,7 @@
     "pk": 41, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -7961,6 +8002,7 @@
     "pk": 42, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8007,6 +8049,7 @@
     "pk": 43, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8053,6 +8096,7 @@
     "pk": 44, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8099,6 +8143,7 @@
     "pk": 45, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8145,6 +8190,7 @@
     "pk": 46, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -8191,6 +8237,7 @@
     "pk": 47, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8237,6 +8284,7 @@
     "pk": 48, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8283,6 +8331,7 @@
     "pk": 49, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8329,6 +8378,7 @@
     "pk": 50, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8375,6 +8425,7 @@
     "pk": 51, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8421,6 +8472,7 @@
     "pk": 52, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8467,6 +8519,7 @@
     "pk": 53, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WA", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -8513,6 +8566,7 @@
     "pk": 54, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8559,6 +8613,7 @@
     "pk": 55, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8605,6 +8660,7 @@
     "pk": 56, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8651,6 +8707,7 @@
     "pk": 57, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8697,6 +8754,7 @@
     "pk": 58, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8743,6 +8801,7 @@
     "pk": 59, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8789,6 +8848,7 @@
     "pk": 60, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8835,6 +8895,7 @@
     "pk": 61, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -8881,6 +8942,7 @@
     "pk": 62, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -8927,6 +8989,7 @@
     "pk": 63, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -8973,6 +9036,7 @@
     "pk": 64, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9019,6 +9083,7 @@
     "pk": 65, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9065,6 +9130,7 @@
     "pk": 66, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9111,6 +9177,7 @@
     "pk": 67, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9157,6 +9224,7 @@
     "pk": 68, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9203,6 +9271,7 @@
     "pk": 69, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9249,6 +9318,7 @@
     "pk": 70, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9295,6 +9365,7 @@
     "pk": 71, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9341,6 +9412,7 @@
     "pk": 72, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9387,6 +9459,7 @@
     "pk": 73, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9433,6 +9506,7 @@
     "pk": 74, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9479,6 +9553,7 @@
     "pk": 75, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9525,6 +9600,7 @@
     "pk": 76, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9571,6 +9647,7 @@
     "pk": 77, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9617,6 +9694,7 @@
     "pk": 78, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9663,6 +9741,7 @@
     "pk": 79, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9709,6 +9788,7 @@
     "pk": 80, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -9755,6 +9835,7 @@
     "pk": 81, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9801,6 +9882,7 @@
     "pk": 82, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9847,6 +9929,7 @@
     "pk": 83, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9893,6 +9976,7 @@
     "pk": 84, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "981.005", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9939,6 +10023,7 @@
     "pk": 85, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -9985,6 +10070,7 @@
     "pk": 86, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10031,6 +10117,7 @@
     "pk": 87, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "615.82", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10077,6 +10164,7 @@
     "pk": 88, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10123,6 +10211,7 @@
     "pk": 89, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10169,6 +10258,7 @@
     "pk": 90, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10215,6 +10305,7 @@
     "pk": 91, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10261,6 +10352,7 @@
     "pk": 92, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10307,6 +10399,7 @@
     "pk": 93, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10353,6 +10446,7 @@
     "pk": 94, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10399,6 +10493,7 @@
     "pk": 95, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10445,6 +10540,7 @@
     "pk": 96, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10491,6 +10587,7 @@
     "pk": 97, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10537,6 +10634,7 @@
     "pk": 98, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10583,6 +10681,7 @@
     "pk": 99, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10629,6 +10728,7 @@
     "pk": 100, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10675,6 +10775,7 @@
     "pk": 101, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10721,6 +10822,7 @@
     "pk": 102, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10767,6 +10869,7 @@
     "pk": 103, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10813,6 +10916,7 @@
     "pk": 104, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10859,6 +10963,7 @@
     "pk": 105, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10905,6 +11010,7 @@
     "pk": 106, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -10951,6 +11057,7 @@
     "pk": 107, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -10997,6 +11104,7 @@
     "pk": 108, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11043,6 +11151,7 @@
     "pk": 109, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11089,6 +11198,7 @@
     "pk": 110, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -11135,6 +11245,7 @@
     "pk": 111, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11181,6 +11292,7 @@
     "pk": 112, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11227,6 +11339,7 @@
     "pk": 113, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11273,6 +11386,7 @@
     "pk": 114, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11319,6 +11433,7 @@
     "pk": 115, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11365,6 +11480,7 @@
     "pk": 116, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11411,6 +11527,7 @@
     "pk": 117, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11457,6 +11574,7 @@
     "pk": 118, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11503,6 +11621,7 @@
     "pk": 119, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11549,6 +11668,7 @@
     "pk": 120, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11595,6 +11715,7 @@
     "pk": 121, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11641,6 +11762,7 @@
     "pk": 122, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11687,6 +11809,7 @@
     "pk": 123, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11733,6 +11856,7 @@
     "pk": 124, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11779,6 +11903,7 @@
     "pk": 125, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WC680", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11825,6 +11950,7 @@
     "pk": 126, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -11871,6 +11997,7 @@
     "pk": 127, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "595.7", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11917,6 +12044,7 @@
     "pk": 128, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -11963,6 +12091,7 @@
     "pk": 129, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12009,6 +12138,7 @@
     "pk": 130, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12055,6 +12185,7 @@
     "pk": 131, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12101,6 +12232,7 @@
     "pk": 132, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12147,6 +12279,7 @@
     "pk": 133, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12193,6 +12326,7 @@
     "pk": 134, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12239,6 +12373,7 @@
     "pk": 135, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12285,6 +12420,7 @@
     "pk": 136, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12331,6 +12467,7 @@
     "pk": 137, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12377,6 +12514,7 @@
     "pk": 138, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -12423,6 +12561,7 @@
     "pk": 139, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12469,6 +12608,7 @@
     "pk": 140, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12515,6 +12655,7 @@
     "pk": 141, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12561,6 +12702,7 @@
     "pk": 142, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12607,6 +12749,7 @@
     "pk": 143, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12653,6 +12796,7 @@
     "pk": 144, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12699,6 +12843,7 @@
     "pk": 145, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12745,6 +12890,7 @@
     "pk": 146, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -12791,6 +12937,7 @@
     "pk": 147, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12837,6 +12984,7 @@
     "pk": 148, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12883,6 +13031,7 @@
     "pk": 149, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12929,6 +13078,7 @@
     "pk": 150, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -12975,6 +13125,7 @@
     "pk": 151, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13021,6 +13172,7 @@
     "pk": 152, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13067,6 +13219,7 @@
     "pk": 153, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13113,6 +13266,7 @@
     "pk": 154, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13159,6 +13313,7 @@
     "pk": 155, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13205,6 +13360,7 @@
     "pk": 156, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13251,6 +13407,7 @@
     "pk": 157, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13297,6 +13454,7 @@
     "pk": 158, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13343,6 +13501,7 @@
     "pk": 159, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13389,6 +13548,7 @@
     "pk": 160, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13435,6 +13595,7 @@
     "pk": 161, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13481,6 +13642,7 @@
     "pk": 162, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13527,6 +13689,7 @@
     "pk": 163, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13573,6 +13736,7 @@
     "pk": 164, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13619,6 +13783,7 @@
     "pk": 165, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13665,6 +13830,7 @@
     "pk": 166, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -13711,6 +13877,7 @@
     "pk": 167, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -13757,6 +13924,7 @@
     "pk": 168, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -13803,6 +13971,7 @@
     "pk": 169, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13849,6 +14018,7 @@
     "pk": 170, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13895,6 +14065,7 @@
     "pk": 171, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13941,6 +14112,7 @@
     "pk": 172, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -13987,6 +14159,7 @@
     "pk": 173, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -14033,6 +14206,7 @@
     "pk": 174, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -14079,6 +14253,7 @@
     "pk": 175, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14125,6 +14300,7 @@
     "pk": 176, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14171,6 +14347,7 @@
     "pk": 177, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14217,6 +14394,7 @@
     "pk": 178, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14263,6 +14441,7 @@
     "pk": 179, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -14309,6 +14488,7 @@
     "pk": 180, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14355,6 +14535,7 @@
     "pk": 181, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14401,6 +14582,7 @@
     "pk": 182, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14447,6 +14629,7 @@
     "pk": 183, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14493,6 +14676,7 @@
     "pk": 184, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14539,6 +14723,7 @@
     "pk": 185, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14585,6 +14770,7 @@
     "pk": 186, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14631,6 +14817,7 @@
     "pk": 187, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14677,6 +14864,7 @@
     "pk": 188, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14723,6 +14911,7 @@
     "pk": 189, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14769,6 +14958,7 @@
     "pk": 190, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14815,6 +15005,7 @@
     "pk": 191, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -14861,6 +15052,7 @@
     "pk": 192, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -14907,6 +15099,7 @@
     "pk": 193, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14953,6 +15146,7 @@
     "pk": 194, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -14999,6 +15193,7 @@
     "pk": 195, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15045,6 +15240,7 @@
     "pk": 196, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15091,6 +15287,7 @@
     "pk": 197, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15137,6 +15334,7 @@
     "pk": 198, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15183,6 +15381,7 @@
     "pk": 199, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15229,6 +15428,7 @@
     "pk": 200, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15275,6 +15475,7 @@
     "pk": 201, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15321,6 +15522,7 @@
     "pk": 202, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15367,6 +15569,7 @@
     "pk": 203, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15413,6 +15616,7 @@
     "pk": 204, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15459,6 +15663,7 @@
     "pk": 205, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15505,6 +15710,7 @@
     "pk": 206, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15551,6 +15757,7 @@
     "pk": 207, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15597,6 +15804,7 @@
     "pk": 208, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15643,6 +15851,7 @@
     "pk": 209, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15689,6 +15898,7 @@
     "pk": 210, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -15735,6 +15945,7 @@
     "pk": 211, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15781,6 +15992,7 @@
     "pk": 212, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15827,6 +16039,7 @@
     "pk": 213, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15873,6 +16086,7 @@
     "pk": 214, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15919,6 +16133,7 @@
     "pk": 215, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -15965,6 +16180,7 @@
     "pk": 216, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -16011,6 +16227,7 @@
     "pk": 217, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16057,6 +16274,7 @@
     "pk": 218, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -16103,6 +16321,7 @@
     "pk": 219, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16149,6 +16368,7 @@
     "pk": 220, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16195,6 +16415,7 @@
     "pk": 221, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16241,6 +16462,7 @@
     "pk": 222, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -16287,6 +16509,7 @@
     "pk": 223, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16333,6 +16556,7 @@
     "pk": 224, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WB", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16379,6 +16603,7 @@
     "pk": 225, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -16425,6 +16650,7 @@
     "pk": 226, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16471,6 +16697,7 @@
     "pk": 227, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -16517,6 +16744,7 @@
     "pk": 228, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WC680", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16563,6 +16791,7 @@
     "pk": 229, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16609,6 +16838,7 @@
     "pk": 230, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16655,6 +16885,7 @@
     "pk": 231, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16701,6 +16932,7 @@
     "pk": 232, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16747,6 +16979,7 @@
     "pk": 233, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16793,6 +17026,7 @@
     "pk": 234, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16839,6 +17073,7 @@
     "pk": 235, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16885,6 +17120,7 @@
     "pk": 236, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "", 
@@ -16931,6 +17167,7 @@
     "pk": 237, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -16977,6 +17214,7 @@
     "pk": 238, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -17023,6 +17261,7 @@
     "pk": 239, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -17069,6 +17308,7 @@
     "pk": 240, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17115,6 +17355,7 @@
     "pk": 241, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -17161,6 +17402,7 @@
     "pk": 242, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17207,6 +17449,7 @@
     "pk": 243, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -17253,6 +17496,7 @@
     "pk": 244, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17299,6 +17543,7 @@
     "pk": 245, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WB", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17345,6 +17590,7 @@
     "pk": 246, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WC680", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17391,6 +17637,7 @@
     "pk": 247, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17437,6 +17684,7 @@
     "pk": 248, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "WB", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17483,6 +17731,7 @@
     "pk": 249, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -17529,6 +17778,7 @@
     "pk": 250, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17575,6 +17825,7 @@
     "pk": 251, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17621,6 +17872,7 @@
     "pk": 252, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17667,6 +17919,7 @@
     "pk": 253, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17713,6 +17966,7 @@
     "pk": 254, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17759,6 +18013,7 @@
     "pk": 255, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17805,6 +18060,7 @@
     "pk": 256, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17851,6 +18107,7 @@
     "pk": 257, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17897,6 +18154,7 @@
     "pk": 258, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17943,6 +18201,7 @@
     "pk": 259, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -17989,6 +18248,7 @@
     "pk": 260, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18035,6 +18295,7 @@
     "pk": 261, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18081,6 +18342,7 @@
     "pk": 262, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18127,6 +18389,7 @@
     "pk": 263, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18173,6 +18436,7 @@
     "pk": 264, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -18219,6 +18483,7 @@
     "pk": 265, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18265,6 +18530,7 @@
     "pk": 266, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18311,6 +18577,7 @@
     "pk": 267, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18357,6 +18624,7 @@
     "pk": 268, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "decs", 
@@ -18403,6 +18671,7 @@
     "pk": 269, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18449,6 +18718,7 @@
     "pk": 270, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18495,6 +18765,7 @@
     "pk": 271, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 
@@ -18541,6 +18812,7 @@
     "pk": 272, 
     "model": "journalmanager.journal", 
     "fields": {
+      "copyrighter": null, 
       "classification": "", 
       "creator": 1, 
       "ctrl_vocabulary": "nd", 

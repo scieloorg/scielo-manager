@@ -107,7 +107,7 @@ class Journal(models.Model):
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
 
     use_license = models.ForeignKey('UseLicense', null=True, blank=False)
-
+    copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True)
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
