@@ -131,9 +131,6 @@ class JournalMission(models.Model):
 class JournalTitleOtherForms(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Title'),null=False,max_length=128)
-    form_sub = models.CharField(_('Sub Title'),null=False,max_length=128)
-    title_type = models.CharField(_('Title Type'),max_length=16,
-        choices=choices.TITLE_TYPE,null=True,)
 
 class JournalShortTitleOtherForms(models.Model):
     title = models.ForeignKey(Journal,null=False)
