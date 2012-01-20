@@ -126,7 +126,7 @@ class Journal(models.Model):
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     description = models.TextField(_('Mission'),null=False)
-    language = models.CharField(_('Language'),null=False, max_length=2)
+    language = models.CharField(_('Language'),null=False, max_length=2,choices=LANGUAGES)
 
 class JournalTitleOtherForms(models.Model):
     journal = models.ForeignKey(Journal,null=False)
