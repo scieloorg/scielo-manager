@@ -69,7 +69,11 @@ class Journal(models.Model):
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
-    acronym = models.CharField(_('Acronym'),max_length=8)
+    
+    previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
+    next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
+
+    acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=16,null=False,blank=True)
@@ -105,10 +109,16 @@ class Journal(models.Model):
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
     indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
+
+    use_license = models.ForeignKey('UseLicense', null=True, blank=False)
+    copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True)
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
+    pdf_access = models.CharField(_('Access to PDF'), max_length=4, null=False, default='art', blank=False, choices=choices.PDF_DOWNLOAD)
+    subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=False, choices=choices.SUBSCRIPT)
 
+    notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
 
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
@@ -126,14 +136,11 @@ class Journal(models.Model):
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     description = models.TextField(_('Mission'),null=False)
-    language = models.CharField(_('Language'),null=False, max_length=2)
+    language = models.CharField(_('Language'),null=False, max_length=2,choices=LANGUAGES)
 
 class JournalTitleOtherForms(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     form = models.CharField(_('Title'),null=False,max_length=128)
-    form_sub = models.CharField(_('Sub Title'),null=False,max_length=128)
-    title_type = models.CharField(_('Title Type'),max_length=16,
-        choices=choices.TITLE_TYPE,null=True,)
 
 class JournalShortTitleOtherForms(models.Model):
     title = models.ForeignKey(Journal,null=False)
