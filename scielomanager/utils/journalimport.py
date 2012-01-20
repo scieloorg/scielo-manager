@@ -72,7 +72,6 @@ class JournalImport:
         institution = Institution()
         # Institutions Import
         institution.name = record['480'][0]
-        institution.acronym = record['68'][0]
         institution.collection = collection
         institution.Address = " ".join(record['63'])
         
@@ -170,7 +169,7 @@ class JournalImport:
         self.charge_summary("journals")
         journal.collections.add(collection)
 
-        return journal    
+        return journal
 
     def run_import(self, json_file, collection):
         """
@@ -190,7 +189,7 @@ class JournalImport:
         for record in json_parsed:
             loaded_institution = self.load_institution(collection, record)
             loaded_journal = self.load_journal(collection, loaded_institution, record)
-    
+        
     def get_summary(self):
         """
         Function: get_summary
