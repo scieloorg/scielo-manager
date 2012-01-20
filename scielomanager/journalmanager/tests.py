@@ -187,9 +187,14 @@ class JournalImportTest(TestCase):
         self.assertEqual(collection.name, u'Brasil')
         self.assertEqual(collection.url, u'http://www.scielo.br/')
 
-    def test_charge_summary(self):
-        from scielomanager.utils.journalimport import JournalImport        
+    #def test_charge_summary(self):
+        #from scielomanager.utils.journalimport import JournalImport
 
+        #ji = JournalImport()
 
+        #ji.run_import(self.json_parsed, 'Brasil')
+
+        #self.assertEqual(len(Institution.objects.all()),2)
+        #self.assertEqual(len(Journal.objects.all()),3)
 
 

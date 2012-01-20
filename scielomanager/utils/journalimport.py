@@ -94,7 +94,6 @@ class JournalImport:
             loaded_institution = institution
             self._institutions_pool.append(dict({"id":institution.id,"match_string":match_string}))
 
-        
         return loaded_institution
 
 
@@ -183,9 +182,11 @@ class JournalImport:
         collection = self.get_collection(collection)
 
         if __name__ == '__main__':
-            json_file=open(json_file,'r')
-            json_parsed=json.loads(json_file.read())
-            
+            json_file = open(json_file,'r')
+            json_parsed = json.loads(json_file.read())
+        else:
+            json_parsed = json_file # Para testes, carregado pelo unittest
+
         for record in json_parsed:
             loaded_institution = self.load_institution(collection, record)
             loaded_journal = self.load_journal(collection, loaded_institution, record)
