@@ -131,4 +131,13 @@ JOURNAL_HIST_STATUS = [
     ('D','Deceased'),
     ('S','Suspended'),
 ]
-
+PDF_DOWNLOAD = [
+    ('art','article based - a PDF file for each article'),
+    ('iss','issue based - a PDF file for each issue'),
+    ('na','Not Available'),
+] 
+SUBSCRIPT = [
+    ('na','Not Available'),
+    ('reg','Electronic Registration'),
+    ('sub','Regular Subscription'),
+]
