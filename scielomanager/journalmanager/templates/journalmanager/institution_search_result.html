@@ -13,7 +13,7 @@
         <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
         <li class="active">{% trans 'Institutions DashBoard' %}</li>
     </ul>
-    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
+    {% trans 'Showing' %} {{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
 {% endblock %}
 
 {% block body %}

@@ -376,7 +376,7 @@ def search_journal(request):
     user_collection = request.user.userprofile_set.get().collection
 
     #Get journals where title contains the "q" value and collection equal with the user
-    journals_filter = Journal.objects.filter(title__contains=request.REQUEST['q'], collections=user_collection)
+    journals_filter = Journal.objects.filter(title__icontains=request.REQUEST['q'], collections=user_collection)
 
     #Paginated the result
     journals = get_paginated(journals_filter, request.GET.get('page', 1))
@@ -394,7 +394,7 @@ def search_institution(request):
     user_collection = request.user.userprofile_set.get().collection
 
     #Get institutions where title contains the "q" value and collection equal with the user
-    institutions_filter = Institution.objects.filter(name__contains=request.REQUEST['q'], collection=user_collection)
+    institutions_filter = Institution.objects.filter(name__icontains=request.REQUEST['q'], collection=user_collection)
 
     #Paginated the result
     institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
