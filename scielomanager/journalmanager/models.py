@@ -112,6 +112,8 @@ class Journal(models.Model):
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
 
+
+    notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
 
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
