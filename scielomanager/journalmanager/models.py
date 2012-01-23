@@ -9,8 +9,6 @@ from django.conf.global_settings import LANGUAGES
 import choices
 #import scielomanager.tools
 
-HELP_INSTITUTION = 'Texto de ajuda!!!'
-
 class IndexingCoverage(models.Model):
     database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
     database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=False,blank=True)
@@ -68,10 +66,10 @@ class Journal(models.Model):
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
     collections = models.ManyToManyField('Collection')
-    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False, help_text=_(HELP_INSTITUTION))
+    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
-    
+
     previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
     next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
 
@@ -121,9 +119,9 @@ class Journal(models.Model):
     subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=False, choices=choices.SUBSCRIPT)
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
-    
+
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
-    
+
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
