@@ -26,6 +26,22 @@ urlpatterns = patterns('',
     #Search Institution
     url(r'^institution/search/$', search_institution, name='institution.search'),
 
+    # Section Tools
+    #url(r'^section/$', section_index, name='section.index' ),
+    #url(r'^section/add/$', add_section, name='section.add' ),
+    #url(r'^section/show/(?P<section_id>\d+)/$', show_section, name='section.show' ),
+    #url(r'^section/edit/(?P<section_id>\d+)/$', edit_section, name='section.edit' ),
+    #url(r'^section/delete/(?P<section_id>\d+)/$', delete_section, name='section.delete' ),
+    #url(r'^section/search/$', search_section, name='section.search'),
+
+    # Issue Tools
+    url(r'^issue/(?P<journal_id>\d+)/$', issue_index, name='issue.index' ),
+    url(r'^issue/add/$', add_issue, name='issue.add' ),
+    url(r'^issue/show/(?P<issue_id>\d+)/$', show_issue, name='issue.show' ),
+    url(r'^issue/edit/(?P<issue_id>\d+)/$', edit_issue, name='issue.edit' ),
+    url(r'^issue/delete/(?P<issue_id>\d+)/$', delete_issue, name='issue.delete' ),
+    url(r'^issue/search/$', search_issue, name='issue.search'),
+
     # Users Tools
     url(r'^user/$', user_index, name="user.index"),
     url(r'^user/add/$', add_user, name="user.add"),

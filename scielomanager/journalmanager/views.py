@@ -404,3 +404,40 @@ def search_institution(request):
                        'search_query_string': request.REQUEST['q'], 
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def issue_index(request, journal_id):
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    
+    all_issues = Issue.objects.filter(journal=journal_id)
+
+    issues = get_paginated(all_issues, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/issue_dashboard.html')
+    c = RequestContext(request, {
+                       'issues': issues,
+                       'journal': journal,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_issue(request, journal_id):
+    return issue_index(request, journal_id) 
+    
+@login_required
+def edit_issue(request, journal_id):
+    return issue_index(request, journal_id) 
+
+@login_required
+def delete_issue(request, journal_id):
+    return issue_index(request, journal_id) 
+
+@login_required
+def show_issue(request, journal_id):
+    return issue_index(request, journal_id) 
+
+@login_required
+def search_issue(request, journal_id):
+    return issue_index(request, journal_id) 

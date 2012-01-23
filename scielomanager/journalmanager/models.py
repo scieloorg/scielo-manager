@@ -161,8 +161,10 @@ class UseLicense(models.Model):
         return self.license_code
 
 class Section(models.Model):
-    title = models.CharField(_('Title'), null=True, blank=True, max_length=256) #l10n
+    journal = models.ForeignKey('Journal', null=False, default=1)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
+    language = models.CharField(_('Language'), null=True, blank=False, max_length=2, choices=LANGUAGES) #l10n
+    title = models.CharField(_('Title'), null=True, blank=True, max_length=256) #l10n
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
 
@@ -214,4 +216,4 @@ class JournalParallelTitles(models.Model):
     form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
 
 class Center(Institution):
-    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
+    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=True, null=False, blank=False)
