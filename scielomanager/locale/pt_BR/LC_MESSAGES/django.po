@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-01-23 13:52-0200\n"
-"PO-Revision-Date: 2012-01-23 16:33-0300\n"
+"PO-Revision-Date: 2012-01-23 16:53-0300\n"
 "Last-Translator: ednilson.gesseff <ednilson.gesseff@scielo.org>\n"
 "Language-Team: SciELO <desenvolvimento@scielo.org>\n"
 "Language: \n"
@@ -481,17 +481,17 @@ msgstr "Avaliação de usuários"
 #: journalmanager/templates/journalmanager/home_journal.html:11
 #: journalmanager/templates/journalmanager/home_journal.html:26
 msgid "Journal Manager"
-msgstr "Gerenciador de Revista"
+msgstr "Gerenciador de Revistas"
 
 #: journalmanager/templates/journalmanager/home_journal.html:15
 #: journalmanager/templates/journalmanager/home_journal.html:36
 msgid "Institution Manager"
-msgstr "Gerenciador de Instituição"
+msgstr "Gerenciador de Instituições"
 
 #: journalmanager/templates/journalmanager/home_journal.html:19
 #: journalmanager/templates/journalmanager/home_journal.html:49
 msgid "User Manager"
-msgstr "Gerenciador de Usuário"
+msgstr "Gerenciador de Usuários"
 
 #: journalmanager/templates/journalmanager/home_journal.html:25
 msgid "About SciELO Manager Tools"
@@ -538,7 +538,7 @@ msgstr "Revistas do usuário"
 #: journalmanager/templates/journalmanager/institution_dashboard.html:14
 #: journalmanager/templates/journalmanager/institution_search_result.html:14
 msgid "Institutions DashBoard"
-msgstr "Painel de Instituições"
+msgstr "Painel de instituições"
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:37
 #: journalmanager/templates/journalmanager/institution_search_result.html:41
@@ -686,7 +686,7 @@ msgstr "Adicionar ingresso"
 
 #: journalmanager/templates/journalmanager/show_institution.html:7
 msgid "Institution DashBoard"
-msgstr "Painel da instituição"
+msgstr "Painel de instituições"
 
 #: journalmanager/templates/journalmanager/show_institution.html:8
 #: journalmanager/templates/journalmanager/show_institution.html:17
@@ -720,7 +720,7 @@ msgstr "Revistas desta instituição"
 
 #: journalmanager/templates/journalmanager/show_journal.html:7
 msgid "Journal DashBoard"
-msgstr "Painel da revista"
+msgstr "Painel de revistas"
 
 #: journalmanager/templates/journalmanager/show_journal.html:8
 msgid "Journal Details"
@@ -784,7 +784,7 @@ msgstr "Título abreviado na Medline"
 
 #: journalmanager/templates/journalmanager/show_user.html:7
 msgid "User DashBoard"
-msgstr "Painel do usuário"
+msgstr "Painel de usuários"
 
 #: journalmanager/templates/journalmanager/show_user.html:8
 #: journalmanager/templates/journalmanager/show_user.html:14
@@ -815,7 +815,7 @@ msgstr "Títulos do usuário"
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:14
 msgid "Users DashBoard"
-msgstr "Painel do usuário"
+msgstr "Painel de usuários"
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:23
 msgid "Login"
