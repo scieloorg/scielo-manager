@@ -292,7 +292,7 @@ blockquote {
 }
 .search {
     /*margin-left:40px;*/
-    margin-top: 10px;
+    margin-top: 7px;
 }
 .483 .submit {
     background: url(../images/submit_search.gif) no-repeat;
@@ -578,30 +578,14 @@ blockquote {
 }
 
 /*FOOTER*/
-#footer {
-    clear: both;
-    margin-top: 20px;
-    padding: 5px;
-    border-width: 1px 0 0;
-    background: url(../images/footer_bg.jpg) repeat-x;
-    font-size:80%;
+.footer {
+    background-color: #EEEEEE;
+    border-top: 1px solid #E5E5E5;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.024) inset;
+    min-width: 940px;
+    padding: 15px 0 10px 15px;
+    text-shadow: 0 1px 0 #FFFFFF;
 
-}
-
-#footer a:link, #footer a:visited {
-
-    background: inherit;
-
-}
-#footer, #footer a {
-    color:#000000;
-}
-#footer a{
-    text-decoration:underline;
-}
-#footer P {
-    margin-left: 20px;
-    line-height: 150%;
 }
 
 .issue{

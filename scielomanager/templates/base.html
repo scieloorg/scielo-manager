@@ -26,13 +26,13 @@
                        {% csrf_token %}
                         <input type="hidden" id="language" name="language">
                         <li><a id="lang_pt-BR" href="javascript: void(0)" title="Alterar o idioma para Português">
-                        {% if request.LANGUAGE_CODE == 'pt-br' %}<span class="selected_language">Português</span>{% else %}Português{% endif %}
+                        {% if request.LANGUAGE_CODE == 'pt-br' %}<span class="selected_language">Português</span>{% else %}{% trans "Português" %}{% endif %}
                         </a></li>
                         <li><a id="lang_es" href="javascript: void(0)" title="Cambiar el idioma a Español">
-                        {% if request.LANGUAGE_CODE == 'es' %}<span class="selected_language">Español</span>{% else %}Español{% endif %}
+                        {% if request.LANGUAGE_CODE == 'es' %}<span class="selected_language">Español</span>{% else %}{% trans "Español" %}{% endif %}
                         </a></li>
                         <li><a id="lang_en" href="javascript: void(0)" title="Change language to English">
-                        {% if request.LANGUAGE_CODE == 'en' %}<span class="selected_language">English</span>{% else %}English{% endif %}
+                        {% if request.LANGUAGE_CODE == 'en' %}<span class="selected_language">English</span>{% else %}{% trans "English" %}{% endif %}
                         </a></li>
                    </ul>
                    </form>
@@ -133,9 +133,9 @@
                 </div>
                 <div class="spacer">&#160;</div>
             </div>
-            <div id="footer">
+            <div class="footer">
                 <p>
-                    <strong>{% trans 'SciELO - Scientific Electronic Library Online' %} <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a> <a href="http://www.bireme.org">BIREME</a> <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a> </strong></p>
+                    <strong>SciELO - Scientific Electronic Library Online  <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a> <a href="http://www.bireme.org">BIREME</a> <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a> </strong></p>
                     <p>Rua Dr. Diogo de   Farias, 1087 conj. 810&nbsp; - Vila Clementino  04037-003 São Paulo SP -   Brazil</p>
                     <p>Tel.: (55 11) 3369-4080 - Email: <a href="mailto:scielo.avaliacao@scielo.org">scielo.avaliacao@scielo.org</a>
                 </p>

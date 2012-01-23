@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from scielomanager.journalmanager.models import Collection, UserProfile
+from scielomanager.journalmanager.models import Collection, UserProfile, Journal, Institution
 
 class LoggedInViewsTest(TestCase):
 
@@ -76,6 +76,25 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
         self.assertTrue(7, len(response.context['journals'].object_list))
 
+    def test_search_institution(self):
+        """
+        View: search_institution
+
+        Tests url dispatch and values returned by the view to the template
+        """
+        response = self.client.get('/journal/institution/search/?q=Centro')
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200)
+
+        #values passed to template
+        self.assertTrue('institutions' in response.context)
+        self.assertTrue('collection' in response.context)
+
+        #testing content
+        self.assertEqual(u' Centro de Estudos de Opiniao Publica da Universidade Estadual de Campinas', unicode(response.context['institutions'].object_list[0].name))
+        self.assertTrue(9, len(response.context['institutions'].object_list))
+
 class LoggedOutViewsTest(TestCase):
 
     def test_page_index(self):
@@ -142,3 +161,40 @@ class ToolsTest(TestCase):
 
         # Testing if page parameter is a "string"
         self.assertRaises(TypeError, get_paginated, items_list, 'foo', items_per_page=items_per_page)
+
+class JournalImportTest(TestCase):
+    import json
+    import os
+
+    fixtures = ['test_import_data']
+
+    json_parsed=json.loads(open('utils/test_journal.json','r').read())
+
+    #def setUp(self):
+        #import pdb; pdb.set_trace()
+        
+    def test_get_collection(self):
+        """
+        Function: scielomanger.utils.get_collection
+        Testando recuperar dados da coleção que receberá o import
+        """
+
+        from scielomanager.utils.journalimport import JournalImport
+
+        ji = JournalImport()
+        collection = ji.get_collection('Brasil')
+        self.assertEqual(collection.id, 1)
+        self.assertEqual(collection.name, u'Brasil')
+        self.assertEqual(collection.url, u'http://www.scielo.br/')
+
+    #def test_charge_summary(self):
+        #from scielomanager.utils.journalimport import JournalImport
+
+        #ji = JournalImport()
+
+        #ji.run_import(self.json_parsed, 'Brasil')
+
+        #self.assertEqual(len(Institution.objects.all()),2)
+        #self.assertEqual(len(Journal.objects.all()),3)
+
+

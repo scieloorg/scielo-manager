@@ -1,6 +1,6 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
-{% trans 'Please click on the link below to activate your account.' %}
+{% trans "Please click on the link below to activate your account." %}
 
 http://{{ site.domain }}{% url registration_activate activation_key %}
 

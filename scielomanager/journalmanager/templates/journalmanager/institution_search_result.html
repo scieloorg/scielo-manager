@@ -17,12 +17,15 @@
 
 {% block body %}
 <div class="actions">
-        <div class="row">
+    <div class="row">
         <div class="span12">
             <div class="search">
                 <form action="{% url institution.search %}" method="get">
                     <input class="span6" type="text" placeholder="Search" name="q" />
                     <button class="btn" type="submit">Search</button>
+                <div class="span9">
+                    <p><small>{{ institutions.paginator.count }} {% trans 'results for' %}: {{ search_query_string }}</small></p>
+                </div> 
                 </form>
             </div>
         </div>
@@ -31,6 +34,7 @@
         </div>
     </div>
 </div>
+{% if institutions.paginator.count > 0 %} 
 <table class="bordered-table zebra-striped">
     <thead>
         <tr>
@@ -64,18 +68,24 @@
         {% endfor %}
     <tbody>
 </table>
-    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
+    {% trans 'Showing' %} {{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
 <div class="pagination">
     <ul>
         <li class="prev {% if not institutions.has_previous %}disabled{% endif %}">
-            <a href="?page={{ institutions.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+            <a href="?page={{ institutions.previous_page_number }}&q={{ search_query_string }}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in institutions.paginator.page_range %}
-        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}&q={{ search_query_string }}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not institutions.has_next %}disabled{% endif %}">
-            <a href="?page={{ institutions.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+            <a href="?page={{ institutions.next_page_number }}&q={{ search_query_string }}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>
+{% else %}
+
+    {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}  
+    
+{% endif %}
+
 {% endblock %}
