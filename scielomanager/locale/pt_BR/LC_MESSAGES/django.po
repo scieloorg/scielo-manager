@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-01-23 13:52-0200\n"
-"PO-Revision-Date: 2012-01-23 16:17-0300\n"
+"PO-Revision-Date: 2012-01-23 16:33-0300\n"
 "Last-Translator: ednilson.gesseff <ednilson.gesseff@scielo.org>\n"
 "Language-Team: SciELO <desenvolvimento@scielo.org>\n"
 "Language: \n"
@@ -481,17 +481,17 @@ msgstr "Avaliação de usuários"
 #: journalmanager/templates/journalmanager/home_journal.html:11
 #: journalmanager/templates/journalmanager/home_journal.html:26
 msgid "Journal Manager"
-msgstr "Gerenciar Revista"
+msgstr "Gerenciador de Revista"
 
 #: journalmanager/templates/journalmanager/home_journal.html:15
 #: journalmanager/templates/journalmanager/home_journal.html:36
 msgid "Institution Manager"
-msgstr "Gerente da instituição"
+msgstr "Gerenciador de Instituição"
 
 #: journalmanager/templates/journalmanager/home_journal.html:19
 #: journalmanager/templates/journalmanager/home_journal.html:49
 msgid "User Manager"
-msgstr "Gerenciar usuário"
+msgstr "Gerenciador de Usuário"
 
 #: journalmanager/templates/journalmanager/home_journal.html:25
 msgid "About SciELO Manager Tools"
