@@ -18,5 +18,3 @@ Glossary
      b) Publication Title: Arzneimittel Forschung /
         Parallel Title: Drug research
 
-   abc
-     Somente para referenciar o item :term:`Parallell Titles`.
