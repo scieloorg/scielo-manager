@@ -179,7 +179,7 @@ class Section(models.Model):
 class Issue(models.Model):
     section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
-    
+    title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
