@@ -13,4 +13,4 @@ DATABASES = {
     }
 }
 
-DOCUMENTATION_BASE_URL = r'http://placeholderurl.com'
+DOCUMENTATION_BASE_URL = r'http://readthedocs.org/docs/scielo-manager/en/latest/'
