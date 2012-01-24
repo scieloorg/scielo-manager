@@ -200,6 +200,15 @@ class Issue(models.Model):
     def __unicode__(self):
         return self.title
 
+    def identification(self):
+        n = self.number
+        if n != 'ahead' and n != 'review':
+            n = '(' + self.number + ')'
+        else:
+            n = self.number
+        
+        return self.volume + ' ' + '(' + n + ')'  
+ 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 

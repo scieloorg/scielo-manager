@@ -5,17 +5,15 @@
 
 {% endblock %}
 
-{% block body_title %}{% trans "Issue Issues" %}{% endblock %}
+{% block body_title %}{% trans "Journal Issues" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
     <ul class="breadcrumb">
         <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-        <li class="active">{% trans 'Issues DashBoard' %}</li>
-        / {{ journal.title }}
+        <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues DashBoard' %}</li>
     </ul>
 {% endblock %}
-<!-- 
 {% block body %}
 <div class="actions">
     <div class="row">
@@ -28,7 +26,7 @@
             </div>
         </div>
         <div class="span4">
-            <a href="{% url issue.add %}" class="btn large primary">{% trans 'New Issue' %}</a>
+            <a href="{% url issue.add journal.id %}" class="btn large primary">{% trans 'New Issue' %}</a>
         </div>
     </div>
 </div>
@@ -45,7 +43,7 @@
     <tbody>
         {% for ct in issues.object_list %}
         <tr>
-            <td><a href="/journal/issue/show/{{ ct.id }}/">{{ ct.bibliographic_strip }}</a></td>
+            <td><a href="{% url issue.show ct.id %}/">{{ ct.identification }}</a></td>
             <td>{{ ct.publication_date }}</td>
             <td>{{ ct.is_available }}</td>
             <td>{{ ct.is_marked_up}}</td>
@@ -59,8 +57,8 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a class="label" href="/journal/issue/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
-                        <li><a class="label important" href="/journal/issue/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
+                        <li><a class="label" href="{% url issue.edit  ct.pk %}/">{% trans 'Edit' %}</a></li>
+                        <li><a class="label important" href="{% url issue.delete ct.pk %}/">{% trans 'Delete' %}</a></li>
                     </ul>
                 </div>
             </td>
@@ -68,18 +66,18 @@
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ journals.start_index }}-{{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
+{% trans 'Showing' %} {{ issues.start_index }}-{{ issues.start_index }} {% trans 'of' %} {{ issues.paginator.count }}
 -->
 <div class="pagination">
     <ul>
-        <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
-            <a href="?page={{ journals.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+        <li class="prev {% if not issues.has_previous %}disabled{% endif %}">
+            <a href="?page={{ issues.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
         </li>
-        {% for page in journals.paginator.page_range %}
-        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        {% for page in issues.paginator.page_range %}
+        <li {% if issues.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
         {% endfor %}
-        <li class="next {% if not journals.has_next %}disabled{% endif %}">
-            <a href="?page={{ journals.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+        <li class="next {% if not issues.has_next %}disabled{% endif %}">
+            <a href="?page={{ issues.next_page_number }}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>

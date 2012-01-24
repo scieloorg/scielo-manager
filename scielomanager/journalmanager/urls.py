@@ -28,7 +28,7 @@ urlpatterns = patterns('',
 
     # Section Tools
     #url(r'^section/$', section_index, name='section.index' ),
-    #url(r'^section/add/$', add_section, name='section.add' ),
+    #url(r'^section/add/(?P<journal_id>\d+/$', add_section, name='section.add' ),
     #url(r'^section/show/(?P<section_id>\d+)/$', show_section, name='section.show' ),
     #url(r'^section/edit/(?P<section_id>\d+)/$', edit_section, name='section.edit' ),
     #url(r'^section/delete/(?P<section_id>\d+)/$', delete_section, name='section.delete' ),
@@ -36,7 +36,7 @@ urlpatterns = patterns('',
 
     # Issue Tools
     url(r'^issue/(?P<journal_id>\d+)/$', issue_index, name='issue.index' ),
-    url(r'^issue/add/$', add_issue, name='issue.add' ),
+    url(r'^issue/add/(?P<journal_id>\d+)/$', add_issue, name='issue.add' ),
     url(r'^issue/show/(?P<issue_id>\d+)/$', show_issue, name='issue.show' ),
     url(r'^issue/edit/(?P<issue_id>\d+)/$', edit_issue, name='issue.edit' ),
     url(r'^issue/delete/(?P<issue_id>\d+)/$', delete_issue, name='issue.delete' ),

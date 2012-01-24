@@ -29,3 +29,11 @@ class UserForm(ModelForm):
             user.save()
         return user
 
+class IssueForm(ModelForm):
+    class Meta:
+        model = Issue
+        exclude = ('collection',)
+        widgets = {
+            'init_year': SelectDateWidget(),
+            'final_year': SelectDateWidget(),            
+        }
