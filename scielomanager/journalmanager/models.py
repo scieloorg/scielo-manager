@@ -1,13 +1,15 @@
 # -*- encoding: utf-8 -*-
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
 
 import choices
-#import scielomanager.tools
+import helptexts
+
 
 class IndexingCoverage(models.Model):
     database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
@@ -216,7 +218,7 @@ class JournalHist(models.Model):
 
 class JournalParallelTitles(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
+    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text = helptexts.JOURNALPARALLELTITLES__FORM)
 
 class Center(Institution):
     is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
