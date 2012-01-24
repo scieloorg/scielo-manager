@@ -160,11 +160,16 @@ class UseLicense(models.Model):
     def __unicode__(self):
         return self.license_code
 
+
+class TranslatedData(models.Model):
+    text = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
+    model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
+    field = models.CharField(_('Field'), null=False, blank=False, max_length=32)
+    language = models.CharField(_('Language') ,choices=choices.LANGUAGE, null=False, blank=False, max_length=32)
+
 class Section(models.Model):
-    journal = models.ForeignKey('Journal', null=False, default=1)
+    translation = models.ManyToManyField(TranslatedData)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
-    language = models.CharField(_('Language'), null=True, blank=False, max_length=2, choices=LANGUAGES) #l10n
-    title = models.CharField(_('Title'), null=True, blank=True, max_length=256) #l10n
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
 
@@ -174,7 +179,7 @@ class Section(models.Model):
 class Issue(models.Model):
     section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
-    title = models.CharField(_('Issue Title'), null=True, blank=True, max_length=256)
+    title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
@@ -216,4 +221,4 @@ class JournalParallelTitles(models.Model):
     form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
 
 class Center(Institution):
-    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=True, null=False, blank=False)
+    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
