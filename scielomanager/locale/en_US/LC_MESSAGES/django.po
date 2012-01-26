@@ -5,36 +5,32 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.1\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-01-24 10:54-0200\n"
-"PO-Revision-Date: 2012-01-24 11:47-0300\n"
+"PO-Revision-Date: 2012-01-24 11:48-0300\n"
 "Last-Translator: ednilson.gesseff <ednilson.gesseff@scielo.org>\n"
-"Language-Team: SciELO <desenvolvimento@scielo.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Poedit-Language: Portuguese\n"
-"X-Poedit-Country: BRAZIL\n"
-"X-Poedit-SourceCharset: utf-8\n"
 
 #: journalmanager/models.py:15
 msgid "Database Name"
-msgstr "Nome da Base de Dados"
+msgstr "Database Name"
 
 #: journalmanager/models.py:16
 msgid "Database Acronym"
-msgstr "Acrônimo da Base de Dados"
+msgstr ""
 
 #: journalmanager/models.py:22
 msgid "Collection Name"
-msgstr "Nome da Coleção"
+msgstr ""
 
 #: journalmanager/models.py:23
 msgid "Instance URL"
-msgstr "URL da Instância"
+msgstr ""
 
 #: journalmanager/models.py:24
 #: journalmanager/models.py:52
@@ -47,99 +43,99 @@ msgstr "URL da Instância"
 #: journalmanager/templates/journalmanager/show_institution.html:88
 #: journalmanager/templates/journalmanager/show_journal.html:19
 msgid "Validated"
-msgstr "Validado"
+msgstr ""
 
 #: journalmanager/models.py:35
 msgid "Is manager of the collection?"
-msgstr "É o gestor desta coleção?"
+msgstr ""
 
 #: journalmanager/models.py:38
 msgid "Institution Name"
-msgstr "Nome da Instituição"
+msgstr ""
 
 #: journalmanager/models.py:39
 msgid "Sigla"
-msgstr ""
+msgstr "acronym"
 
 #: journalmanager/models.py:41
 #: journalmanager/templates/journalmanager/show_institution.html:32
 msgid "Country"
-msgstr "País"
+msgstr ""
 
 #: journalmanager/models.py:42
 #: journalmanager/templates/journalmanager/show_institution.html:36
 msgid "State"
-msgstr "Estado"
+msgstr ""
 
 #: journalmanager/models.py:43
 #: journalmanager/templates/journalmanager/show_institution.html:40
 msgid "City"
-msgstr "Cidade"
+msgstr ""
 
 #: journalmanager/models.py:44
 #: journalmanager/templates/journalmanager/show_institution.html:44
 msgid "Address"
-msgstr "Endereço"
+msgstr ""
 
 #: journalmanager/models.py:45
 #: journalmanager/models.py:184
 msgid "Number"
-msgstr "Número"
+msgstr ""
 
 #: journalmanager/models.py:46
 msgid "Complement"
-msgstr "Complemento"
+msgstr ""
 
 #: journalmanager/models.py:47
 msgid "Zip Code"
-msgstr "CEP"
+msgstr ""
 
 #: journalmanager/models.py:48
 msgid "Phone Number"
-msgstr "Telefone"
+msgstr ""
 
 #: journalmanager/models.py:49
 msgid "Fax Number"
-msgstr "Fax"
+msgstr ""
 
 #: journalmanager/models.py:50
 msgid "Cel Number"
-msgstr "Celular"
+msgstr ""
 
 #: journalmanager/models.py:51
 #: journalmanager/templates/journalmanager/show_user.html:37
 msgid "Email"
-msgstr "Email"
+msgstr ""
 
 #: journalmanager/models.py:66
 msgid "Date of Registration"
-msgstr "Data de registro"
+msgstr ""
 
 #: journalmanager/models.py:68
 msgid "Update Date"
-msgstr "Data de atualização"
+msgstr ""
 
 #: journalmanager/models.py:72
 #: journalmanager/templates/journalmanager/journal_dashboard.html:37
 #: journalmanager/templates/journalmanager/journal_search_result.html:43
 #: journalmanager/templates/journalmanager/show_institution.html:84
 msgid "Journal Title"
-msgstr "Título da revista"
+msgstr ""
 
 #: journalmanager/models.py:73
 #: journalmanager/models.py:151
 #: journalmanager/templates/journalmanager/show_journal.html:37
 msgid "Short Title"
-msgstr "Título abreviado"
+msgstr ""
 
 #: journalmanager/models.py:78
 #: journalmanager/templates/journalmanager/show_journal.html:41
 msgid "Acronym"
-msgstr "Acrônimo"
+msgstr ""
 
 #: journalmanager/models.py:79
 msgid "SciELO ISSN"
-msgstr "ISSN SciELO"
+msgstr ""
 
 #: journalmanager/models.py:81
 #: journalmanager/templates/journalmanager/journal_dashboard.html:38
@@ -147,228 +143,228 @@ msgstr "ISSN SciELO"
 #: journalmanager/templates/journalmanager/show_institution.html:85
 #: journalmanager/templates/journalmanager/show_journal.html:45
 msgid "Print ISSN"
-msgstr "ISSN Impresso"
+msgstr ""
 
 #: journalmanager/models.py:82
 msgid "Eletronic ISSN"
-msgstr "ISSN Eletrônico"
+msgstr ""
 
 #: journalmanager/models.py:83
 msgid "Subject / Descriptors"
-msgstr "Assunto / Descritores"
+msgstr ""
 
 #: journalmanager/models.py:84
 #: journalmanager/templates/journalmanager/show_journal.html:69
 msgid "Study Area"
-msgstr "Área de Estudo"
+msgstr ""
 
 #: journalmanager/models.py:88
 #: journalmanager/templates/journalmanager/show_journal.html:84
 msgid "Initial Date"
-msgstr "Data inicial"
+msgstr ""
 
 #: journalmanager/models.py:89
 #: journalmanager/templates/journalmanager/show_journal.html:88
 msgid "Initial Volume"
-msgstr "Volume inicial"
+msgstr ""
 
 #: journalmanager/models.py:90
 #: journalmanager/templates/journalmanager/show_journal.html:92
 msgid "Initial Number"
-msgstr "Número inicial"
+msgstr ""
 
 #: journalmanager/models.py:91
 #: journalmanager/templates/journalmanager/show_journal.html:96
 msgid "Final Date"
-msgstr "Data final"
+msgstr ""
 
 #: journalmanager/models.py:92
 #: journalmanager/templates/journalmanager/show_journal.html:100
 msgid "Final Volume"
-msgstr "Volume final"
+msgstr ""
 
 #: journalmanager/models.py:93
 #: journalmanager/templates/journalmanager/show_journal.html:104
 msgid "Final Number"
-msgstr "Número final"
+msgstr ""
 
 #: journalmanager/models.py:94
 #: journalmanager/templates/journalmanager/show_journal.html:108
 msgid "Frequency"
-msgstr "Frequência"
+msgstr ""
 
 #: journalmanager/models.py:96
 #: journalmanager/templates/journalmanager/show_journal.html:112
 msgid "Publication Status"
-msgstr "Status da publicação"
+msgstr ""
 
 #: journalmanager/models.py:98
 msgid "Alphabet"
-msgstr "Alfabeto"
+msgstr ""
 
 #: journalmanager/models.py:100
 #: journalmanager/templates/journalmanager/show_journal.html:120
 msgid "Classification"
-msgstr "Classificação"
+msgstr ""
 
 #: journalmanager/models.py:101
 #: journalmanager/templates/journalmanager/show_journal.html:124
 msgid "National Code"
-msgstr "Código Nacional"
+msgstr ""
 
 #: journalmanager/models.py:102
 #: journalmanager/models.py:197
 msgid "Editorial Standard"
-msgstr "Norma editorial"
+msgstr ""
 
 #: journalmanager/models.py:104
 #: journalmanager/models.py:195
 #: journalmanager/templates/journalmanager/show_journal.html:140
 msgid "Controlled Vocabulary"
-msgstr "Vocabulário Controlado"
+msgstr ""
 
 #: journalmanager/models.py:106
 #: journalmanager/templates/journalmanager/show_journal.html:144
 msgid "Literature Type"
-msgstr "Tipo de literatura"
+msgstr ""
 
 #: journalmanager/models.py:108
 msgid "Treatment Type"
-msgstr "Nível de tratamento"
+msgstr ""
 
 #: journalmanager/models.py:110
 #: journalmanager/templates/journalmanager/show_journal.html:152
 msgid "Publication Level"
-msgstr "Nível de publicação"
+msgstr ""
 
 #: journalmanager/models.py:113
 #: journalmanager/templates/journalmanager/show_journal.html:163
 msgid "SECS Code"
-msgstr "Código SECS"
+msgstr ""
 
 #: journalmanager/models.py:116
 msgid "Copyrighter"
-msgstr "Direitos autorais"
+msgstr ""
 
 #: journalmanager/models.py:117
 msgid "URL of main collection"
-msgstr "URL da coleção"
+msgstr ""
 
 #: journalmanager/models.py:118
 msgid "URL of online submission"
-msgstr "URL de submissão online"
+msgstr ""
 
 #: journalmanager/models.py:119
 msgid "URL of the journal"
-msgstr "URL da revista"
+msgstr ""
 
 #: journalmanager/models.py:120
 msgid "Access to PDF"
-msgstr "Acesso ao PDF"
+msgstr ""
 
 #: journalmanager/models.py:121
 msgid "Subscription"
-msgstr "Assinatura"
+msgstr ""
 
 #: journalmanager/models.py:123
 msgid "Notes"
-msgstr "Notas"
+msgstr ""
 
 #: journalmanager/models.py:125
 msgid "ID provided by the Center"
-msgstr "ID fornecido pelo centro"
+msgstr ""
 
 #: journalmanager/models.py:142
 msgid "Mission"
-msgstr "Missão"
+msgstr ""
 
 #: journalmanager/models.py:143
 #: journalmanager/models.py:168
 #: journalmanager/templates/journalmanager/show_journal.html:116
 msgid "Language"
-msgstr "Idioma"
+msgstr ""
 
 #: journalmanager/models.py:147
 #: journalmanager/models.py:182
 #: journalmanager/templates/journalmanager/show_journal.html:29
 msgid "Title"
-msgstr "Título"
+msgstr ""
 
 #: journalmanager/models.py:152
 msgid "Short Title Type"
-msgstr "Tipo de título abreviado"
+msgstr ""
 
 #: journalmanager/models.py:156
 msgid "License Code"
-msgstr "Código da licená"
+msgstr ""
 
 #: journalmanager/models.py:157
 msgid "License Reference URL"
-msgstr "URL da licença"
+msgstr ""
 
 #: journalmanager/models.py:158
 msgid "Disclaimer"
-msgstr "Desaprovar"
+msgstr ""
 
 #: journalmanager/models.py:165
 msgid "Translation"
-msgstr "Tradução"
+msgstr ""
 
 #: journalmanager/models.py:166
 msgid "Model"
-msgstr "Modelo"
+msgstr ""
 
 #: journalmanager/models.py:167
 msgid "Field"
-msgstr "Campo"
+msgstr ""
 
 #: journalmanager/models.py:172
 msgid "Code"
-msgstr "Código"
+msgstr ""
 
 #: journalmanager/models.py:183
 msgid "Volume"
-msgstr "Volume"
+msgstr ""
 
 #: journalmanager/models.py:185
 msgid "Is Press Release?"
-msgstr "É Press Release?"
+msgstr ""
 
 #: journalmanager/models.py:189
 msgid "Is Available?"
-msgstr "Está disponível?"
+msgstr ""
 
 #: journalmanager/models.py:190
 msgid "Is Marked Up?"
-msgstr "Está marcado?"
+msgstr ""
 
 #: journalmanager/models.py:191
 msgid "Custom Bibliographic Strip"
-msgstr "Legenda bibliográfica personalizada"
+msgstr ""
 
 #: journalmanager/models.py:193
 msgid "Publisher Full Name"
-msgstr "Nome completo do publicador."
+msgstr ""
 
 #: journalmanager/models.py:194
 msgid "Total of Documents"
-msgstr "Total de documentos"
+msgstr ""
 
 #: journalmanager/models.py:204
 msgid "Supplement Label"
-msgstr "Rótulo do suplemento"
+msgstr ""
 
 #: journalmanager/models.py:208
 msgid "Text Languages"
-msgstr "Idiomas do texto"
+msgstr ""
 
 #: journalmanager/models.py:212
 msgid "Abstract Languages"
-msgstr "Idiomas dos resumos"
+msgstr ""
 
 #: journalmanager/models.py:216
 msgid "Date"
-msgstr "Data"
+msgstr ""
 
 #: journalmanager/models.py:217
 #: journalmanager/templates/journalmanager/journal_dashboard.html:41
@@ -379,7 +375,7 @@ msgstr ""
 
 #: journalmanager/models.py:221
 msgid "Parallel Titles"
-msgstr "Títulos paralelos"
+msgstr ""
 
 #: journalmanager/models.py:224
 msgid "Is provider of the marked files?"
@@ -402,19 +398,19 @@ msgstr ""
 #: templates/registration/password_reset_form.html:6
 #: templates/registration/registration_form.html:6
 msgid "Home"
-msgstr "Início"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_institution.html:8
 #: journalmanager/templates/journalmanager/edit_institution.html:7
 msgid "Institution Dashboard"
-msgstr "Painel de instituições"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_institution.html:9
 #: journalmanager/templates/journalmanager/add_institution.html:16
 #: journalmanager/templates/journalmanager/institution_dashboard.html:30
 #: journalmanager/templates/journalmanager/institution_search_result.html:33
 msgid "New Institution"
-msgstr "Nova instituição"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_institution.html:23
 #: journalmanager/templates/journalmanager/add_journal.html:23
@@ -423,92 +419,92 @@ msgstr "Nova instituição"
 #: journalmanager/templates/journalmanager/edit_journal.html:21
 #: journalmanager/templates/journalmanager/edit_user.html:21
 msgid "field required!"
-msgstr "campo obrigatório!"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_institution.html:29
 msgid "Add Institution"
-msgstr "Adicionar instituição"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_journal.html:8
 #: journalmanager/templates/journalmanager/edit_journal.html:7
 msgid "Journal Dashboard"
-msgstr "Painel de revistas"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_journal.html:9
 #: journalmanager/templates/journalmanager/add_journal.html:16
 #: journalmanager/templates/journalmanager/journal_dashboard.html:30
 #: journalmanager/templates/journalmanager/journal_search_result.html:35
 msgid "New Journal"
-msgstr "Nova revista"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_journal.html:29
 msgid "Add Journal"
-msgstr "Adicionar Revista"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_user.html:8
 #: journalmanager/templates/journalmanager/edit_user.html:7
 msgid "User Dashboard"
-msgstr "Painel de usuários"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_user.html:9
 #: journalmanager/templates/journalmanager/add_user.html:16
 #: journalmanager/templates/journalmanager/user_dashboard.html:19
 msgid "New User"
-msgstr "Novo usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_user.html:29
 msgid "Add User"
-msgstr "Adicionar usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/edit_institution.html:8
 #: journalmanager/templates/journalmanager/edit_institution.html:14
 msgid "Edit Institution"
-msgstr "Editar instituição"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/edit_institution.html:26
 msgid "Save Institution"
-msgstr "Salvar instituição"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/edit_journal.html:8
 #: journalmanager/templates/journalmanager/edit_journal.html:14
 msgid "Edit Journal"
-msgstr "Editar revista"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/edit_journal.html:27
 msgid "Save Journal"
-msgstr "Salvar revista"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/edit_user.html:8
 #: journalmanager/templates/journalmanager/edit_user.html:14
 msgid "Edit User"
-msgstr "Editar usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/edit_user.html:27
 msgid "Save User"
-msgstr "Salvar usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:3
 msgid "User Evaluations"
-msgstr "Avaliação de usuários"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:11
 #: journalmanager/templates/journalmanager/home_journal.html:26
 msgid "Journal Manager"
-msgstr "Gerenciador de Revistas"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:15
 #: journalmanager/templates/journalmanager/home_journal.html:36
 msgid "Institution Manager"
-msgstr "Gerenciador de Instituições"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:19
 #: journalmanager/templates/journalmanager/home_journal.html:49
 msgid "User Manager"
-msgstr "Gerenciador de Usuários"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:25
 msgid "About SciELO Manager Tools"
-msgstr "Sobre o SciELO Manager Tools"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:28
 msgid ""
@@ -546,23 +542,23 @@ msgstr ""
 #: journalmanager/templates/journalmanager/journal_dashboard.html:8
 #: journalmanager/templates/journalmanager/journal_search_result.html:8
 msgid "User Journals"
-msgstr "Revistas do usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:14
 #: journalmanager/templates/journalmanager/institution_search_result.html:14
 msgid "Institutions DashBoard"
-msgstr "Painel de instituições"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:37
 #: journalmanager/templates/journalmanager/institution_search_result.html:41
 #: journalmanager/templates/journalmanager/show_user.html:29
 msgid "Name"
-msgstr "Nome"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:38
 #: journalmanager/templates/journalmanager/institution_search_result.html:42
 msgid "Sponsor"
-msgstr "Patrocinador"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:40
 #: journalmanager/templates/journalmanager/institution_search_result.html:44
@@ -570,7 +566,7 @@ msgstr "Patrocinador"
 #: journalmanager/templates/journalmanager/journal_search_result.html:49
 #: journalmanager/templates/journalmanager/user_dashboard.html:27
 msgid "Options"
-msgstr "Opções"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:50
 #: journalmanager/templates/journalmanager/institution_search_result.html:54
@@ -581,7 +577,7 @@ msgstr "Opções"
 #: journalmanager/templates/journalmanager/show_journal.html:22
 #: journalmanager/templates/journalmanager/user_dashboard.html:38
 msgid "metadata validated"
-msgstr "Metadados validado"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:52
 #: journalmanager/templates/journalmanager/institution_search_result.html:56
@@ -592,7 +588,7 @@ msgstr "Metadados validado"
 #: journalmanager/templates/journalmanager/show_journal.html:24
 #: journalmanager/templates/journalmanager/user_dashboard.html:40
 msgid "metadata not validated"
-msgstr "Metadados não validado"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:58
 #: journalmanager/templates/journalmanager/institution_search_result.html:62
@@ -600,7 +596,7 @@ msgstr "Metadados não validado"
 #: journalmanager/templates/journalmanager/journal_search_result.html:70
 #: journalmanager/templates/journalmanager/user_dashboard.html:47
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:59
 #: journalmanager/templates/journalmanager/institution_search_result.html:63
@@ -608,111 +604,111 @@ msgstr "Editar"
 #: journalmanager/templates/journalmanager/journal_search_result.html:73
 #: journalmanager/templates/journalmanager/user_dashboard.html:50
 msgid "Delete"
-msgstr "Apagar"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:67
 #: journalmanager/templates/journalmanager/institution_search_result.html:71
 #: journalmanager/templates/journalmanager/journal_dashboard.html:75
 #: journalmanager/templates/journalmanager/journal_search_result.html:81
 msgid "Showing"
-msgstr "Mostrando"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:67
 #: journalmanager/templates/journalmanager/institution_search_result.html:71
 #: journalmanager/templates/journalmanager/journal_dashboard.html:75
 #: journalmanager/templates/journalmanager/journal_search_result.html:81
 msgid "of"
-msgstr "de"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:71
 #: journalmanager/templates/journalmanager/institution_search_result.html:75
 #: journalmanager/templates/journalmanager/journal_dashboard.html:79
 #: journalmanager/templates/journalmanager/journal_search_result.html:85
 msgid "Previous"
-msgstr "Anterior"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_dashboard.html:77
 #: journalmanager/templates/journalmanager/institution_search_result.html:81
 #: journalmanager/templates/journalmanager/journal_dashboard.html:85
 #: journalmanager/templates/journalmanager/journal_search_result.html:91
 msgid "Next"
-msgstr "Próximo"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_search_result.html:27
 #: journalmanager/templates/journalmanager/journal_search_result.html:27
 msgid "results for"
-msgstr "resultados para"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_search_result.html:87
 #: journalmanager/templates/journalmanager/journal_search_result.html:97
 msgid "Your search "
-msgstr "Sua pesquisa"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/institution_search_result.html:87
 #: journalmanager/templates/journalmanager/journal_search_result.html:97
 msgid "- did not match any documents."
-msgstr "- não foi encontrado documentos"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/journal_dashboard.html:14
 #: journalmanager/templates/journalmanager/journal_search_result.html:14
 msgid "Journals DashBoard"
-msgstr "Painel de revistas"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/journal_dashboard.html:39
 #: journalmanager/templates/journalmanager/journal_search_result.html:45
 #: journalmanager/templates/journalmanager/show_institution.html:86
 #: journalmanager/templates/journalmanager/show_journal.html:49
 msgid "Electronic ISSN"
-msgstr "ISSN eletrônico"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/journal_dashboard.html:40
 #: journalmanager/templates/journalmanager/journal_search_result.html:46
 #: journalmanager/templates/journalmanager/show_journal.html:33
 msgid "Publisher"
-msgstr "Editor"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/journal_dashboard.html:65
 #: journalmanager/templates/journalmanager/journal_search_result.html:71
 msgid "Issues"
-msgstr "Fascículos"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/journal_dashboard.html:66
 #: journalmanager/templates/journalmanager/journal_search_result.html:72
 msgid "Sections"
-msgstr "Sessões"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/open_journal.html:6
 msgid "Ingress"
-msgstr "Ingresso"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/open_journal.html:6
 msgid "Open Ingress"
-msgstr "Ingresso aberto"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/open_journal.html:12
 msgid "New Ingress"
-msgstr "Novo ingresso"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/open_journal.html:26
 msgid "Add Ingress"
-msgstr "Adicionar ingresso"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_institution.html:7
 msgid "Institution DashBoard"
-msgstr "Painel de instituições"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_institution.html:8
 #: journalmanager/templates/journalmanager/show_institution.html:17
 msgid "Institution Details"
-msgstr "Detalhes da instituição"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_institution.html:54
 msgid "Zip"
-msgstr "CEP"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_institution.html:58
 msgid "Phone"
-msgstr "Telefone"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_institution.html:62
 msgid "Fax"
@@ -729,92 +725,92 @@ msgstr ""
 
 #: journalmanager/templates/journalmanager/show_institution.html:79
 msgid "Journals of this Institution"
-msgstr "Revistas desta instituição"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:7
 msgid "Journal DashBoard"
-msgstr "Painel de revistas"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:8
 msgid "Journal Details"
-msgstr "Detalhes da revista"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:15
 msgid "About the Journal Part-1"
-msgstr "Sobre a revista - parte 1"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:53
 msgid "Mission Portuguese"
-msgstr "Missão (em português)"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:57
 msgid "Mission English"
-msgstr "Missão (em inglês)"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:61
 msgid "Mission Spanish"
-msgstr "Missão (em espanhol)"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:65
 msgid "Subject Descriptors"
-msgstr "Descritores de assunto"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:73
 msgid "Indexation Range"
-msgstr "Faixa de indexação"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:80
 msgid "About the Journal Part-2"
-msgstr "Sobre a revista - parte 2"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:128
 msgid "Text Language"
-msgstr "Idioma do texto"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:132
 msgid "Abstract Language"
-msgstr "Idioma do resumo"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:136
 msgid "Standard"
-msgstr "Norma"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:148
 msgid "Treatment Level"
-msgstr "Nível de tratamento"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:159
 msgid "For Health Sciences and Biological Sciences Journals"
-msgstr "Para revistas em Ciências da Saúde e Ciências Biológicas"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:167
 msgid "Medline Code"
-msgstr "Código Medline"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_journal.html:171
 msgid "Medline Short Title"
-msgstr "Título abreviado na Medline"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_user.html:7
 msgid "User DashBoard"
-msgstr "Painel de usuários"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_user.html:8
 #: journalmanager/templates/journalmanager/show_user.html:14
 msgid "User Details"
-msgstr "Detalhes do usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_user.html:19
 msgid "Activated"
-msgstr "Ativado"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_user.html:22
 msgid "user activated"
-msgstr "usuário ativo"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_user.html:24
 msgid "user not activated"
-msgstr "usuário desativado"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/show_user.html:33
 #: templates/base.html:89
@@ -824,11 +820,11 @@ msgstr ""
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:8
 msgid "User Titles"
-msgstr "Títulos do usuário"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:14
 msgid "Users DashBoard"
-msgstr "Painel de usuários"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:23
 msgid "Login"
@@ -836,15 +832,15 @@ msgstr ""
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:25
 msgid "Full name"
-msgstr "Nome completo"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/user_dashboard.html:26
 msgid "Active"
-msgstr "Ativo"
+msgstr ""
 
 #: templates/404.html:6
 msgid "Page not found (404)"
-msgstr "Página não encontrada (404)"
+msgstr ""
 
 #: templates/500.html:6
 msgid "Internal Server Error (500)"
@@ -852,7 +848,7 @@ msgstr ""
 
 #: templates/500.html:8
 msgid "The server encountered an unexpected condition which prevented it from fulfilling the request."
-msgstr "O servidor encontrou uma condição inesperada que o impediu de cumprir a solicitação."
+msgstr ""
 
 #: templates/base.html:8
 msgid "SciELO Manager"
@@ -878,12 +874,12 @@ msgstr ""
 #: templates/flatpages/default.html:50
 #: templates/flatpages/default.html:80
 msgid "Username"
-msgstr "Nome de usuário"
+msgstr ""
 
 #: templates/base.html:55
 #: templates/flatpages/default.html:54
 msgid "Collection"
-msgstr "Coleção"
+msgstr ""
 
 #: templates/base.html:62
 #: templates/base.html.py:66
@@ -898,84 +894,84 @@ msgstr ""
 #: templates/base.html:85
 #: templates/flatpages/default.html:84
 msgid "Password"
-msgstr "Senha"
+msgstr ""
 
 #: templates/base.html:94
 #: templates/flatpages/default.html:93
 msgid "Forgot password?"
-msgstr "Esqueci a senha?"
+msgstr ""
 
 #: templates/base.html:95
 #: templates/flatpages/default.html:94
 msgid "create an account to submit trial records"
-msgstr "criar uma conta para enviar registros de ensaio"
+msgstr ""
 
 #: templates/base.html:95
 #: templates/flatpages/default.html:94
 #: templates/registration/registration_form.html:6
 #: templates/registration/registration_form.html:19
 msgid "Register"
-msgstr "Registrar"
+msgstr ""
 
 #: templates/base.html:98
 #: templates/flatpages/default.html:97
 msgid "Your username and password did not match. Please try again."
-msgstr "Seu usuário e senha não conferem. Por favor, tente novamente."
+msgstr ""
 
 #: templates/base.html:101
 #: templates/flatpages/default.html:100
 msgid "Your account is not active. Please contact the SciELO or verify your e-mail"
-msgstr "Sua conta não está ativada. Por favor, entre em contato com a SciELO ou verifique seu e-mail"
+msgstr ""
 
 #: templates/base.html:104
 #: templates/flatpages/default.html:103
 msgid "Please login on the system to see this page"
-msgstr "Por favor, faça login no sistema para ver esta página"
+msgstr ""
 
 #: templates/base.html:114
 #: templates/flatpages/default.html:113
 msgid "Journal"
-msgstr "Revista"
+msgstr ""
 
 #: templates/base.html:117
 #: templates/flatpages/default.html:116
 msgid "Institution"
-msgstr "Instituição"
+msgstr ""
 
 #: templates/base.html:120
 #: templates/flatpages/default.html:119
 msgid "User"
-msgstr "Usuário"
+msgstr ""
 
 #: templates/flatpages/default.html:128
 msgid "Search"
-msgstr "Buscar"
+msgstr ""
 
 #: templates/flatpages/default.html:131
 msgid "Search: ISSN, Journal Title"
-msgstr "Busca: ISSN, Título da Revista"
+msgstr ""
 
 #: templates/registration/activate.html:6
 #: templates/registration/activation_complete.html:6
 msgid "Your account is now activated."
-msgstr "Sua conta está ativada."
+msgstr ""
 
 #: templates/registration/activate.html:8
 #: templates/registration/activation_complete.html:8
 msgid "You may now login using your username and password."
-msgstr "Agora você pode logar usando seu nome de usuário e senha."
+msgstr ""
 
 #: templates/registration/login.html:7
 msgid "Por favor informar usuário e senha"
-msgstr "Por favor, informar usuário e senha"
+msgstr ""
 
 #: templates/registration/password_reset_complete.html:6
 msgid "Reset password complete"
-msgstr "Renovação de senha completa"
+msgstr ""
 
 #: templates/registration/password_reset_complete.html:11
 msgid "Your password has been reset! You may now"
-msgstr "Sua senha foi renovada! Agora voce pode"
+msgstr ""
 
 #: templates/registration/password_reset_complete.html:12
 msgid "log in"
@@ -983,28 +979,28 @@ msgstr ""
 
 #: templates/registration/password_reset_confirm.html:7
 msgid "Reset password"
-msgstr "Redefinir senha"
+msgstr ""
 
 #: templates/registration/password_reset_confirm.html:12
 msgid "Enter your new password below to reset your password:"
-msgstr "Informe sua nova senha abaixo para redefinir sua senha:"
+msgstr ""
 
 #: templates/registration/password_reset_confirm.html:20
 msgid "Set Password"
-msgstr "Definir senha"
+msgstr ""
 
 #: templates/registration/password_reset_done.html:7
 #: templates/registration/password_reset_form.html:6
 msgid "Forgot username or password"
-msgstr "Esqueceu usuário ou senha"
+msgstr ""
 
 #: templates/registration/password_reset_done.html:7
 msgid "E-mail sent"
-msgstr "E-mail enviado"
+msgstr ""
 
 #: templates/registration/password_reset_done.html:12
 msgid "We have sent you an email with a link to reset your password. Please check your email and click the link to continue."
-msgstr "Enviamos um e-mail com um link para redefinir sua senha. Por favor, verifique seu e-mail e clique no link para continuar."
+msgstr ""
 
 #: templates/registration/password_reset_email.html:4
 #, python-format
@@ -1023,43 +1019,28 @@ msgid ""
 "To reset your password, please click the following link, or copy and paste it\n"
 "into your web browser:\n"
 msgstr ""
-"\n"
-"Prezado %(user)s, \n"
-"\n"
-"Você recebeu este e-mail porque você (ou alguém que se passa por você)\n"
-"solicitou a renovação de sua senha no %(site_name)s. Se você não\n"
-"deseja renovar sua senha, por favor, ignore esta mensagem.\n"
-"\n"
-"Seu nome de usuário é: %(user)s\n"
-"e você pode acessar sua conta agora:\n"
-"http://%(domain)s\n"
-"\n"
-"Para renovar sua senha, por favor, clique no link abaixo ou copie e cole \n"
-"no seu navegador web:\n"
 
 #: templates/registration/password_reset_form.html:12
 msgid "Enter your e-mail in the form below and we will send your username and instructions to create a new password."
-msgstr "Digite seu e-mail no formulário abaixo e nós enviaremos seu nome de usuário e as instruções para criar uma nova senha."
+msgstr ""
 
 #: templates/registration/password_reset_form.html:16
 msgid "Send E-mail"
-msgstr "Enviar E-mail"
+msgstr ""
 
 #: templates/registration/registration_complete.html:6
 msgid "A confirmation e-mail is on the way"
-msgstr "Um e-mail de confirmação está a caminho"
+msgstr ""
 
 #: templates/registration/registration_complete.html:8
 msgid "Please click the activation link included in the e-mail to confirm you registration."
-msgstr "Por favor, clique no link de ativação incluído no e-mail para confirmar seu registro."
+msgstr ""
 
 #: templates/registration/registration_form.html:9
 msgid "Please correct the errors below."
-msgstr "Por favor, corrija os erros abaixo"
+msgstr ""
 
 #: templates/registration/registration_form.html:12
 msgid "You will receive an email with a link to activate your account."
-msgstr "Você receberá e-mail com um link para ativar sua conta."
+msgstr ""
 
-#~ msgid "Issue Title"
-#~ msgstr "Título do fascículo"
