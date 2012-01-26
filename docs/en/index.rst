@@ -6,11 +6,22 @@
 Welcome to SciELO Journals Manager's documentation!
 ===================================================
 
-Contents:
+Usage guides
+============
 
 .. toctree::
    :maxdepth: 2
 
+   glossary
+
+
+Development guides
+==================
+
+.. toctree::
+   :maxdepth: 2
+
+   dev/helptexts
 
 
 Indices and tables
