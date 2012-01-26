@@ -488,7 +488,13 @@ def edit_issue(request, issue_id):
 
 @login_required
 def delete_issue(request, issue_id):
-    return issue_index(request, journal_id) 
+    issue_data = Issue.objects.get(pk=issue_id)
+    journal = issue_data.journal
+    user_collection = request.user.userprofile_set.get().collection
+    issue_data.update_date = datetime.now
+    issue_data.is_available = False
+    issue_data.save()
+    return HttpResponseRedirect("/journal/issue/" + str(journal.id))
 
 @login_required
 def show_issue(request, issue_id):
@@ -503,4 +509,18 @@ def show_issue(request, issue_id):
 
 @login_required
 def search_issue(request, journal_id):
-    return issue_index(request, journal_id) 
+
+    #Get issues where journal.id = journal_id and volume contains "q" 
+    selected_issues = Issue.objects.filter(title__icontains=request.REQUEST['q'], collections=user_collection).order_by('title')
+
+    #Paginated the result
+    journals = get_paginated(journals_filter, request.GET.get('page', 1))
+    
+    t = loader.get_template('journalmanager/journal_search_result.html')
+    c = RequestContext(request, {
+                       'journals': journals,
+                       'collection': user_collection,
+                       'search_query_string': request.REQUEST['q'], 
+                       })
+    return HttpResponse(t.render(c))
+    
