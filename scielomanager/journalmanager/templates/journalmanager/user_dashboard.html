@@ -16,7 +16,9 @@
 {% endblock %}
 
 {% block body %}
+{% if perms.auth.add_user %}
 <div class="actions"><a href="{% url user.add %}" class="btn large primary">{% trans 'New User' %}</a></div>
+{% endif %}
 <table class="bordered-table zebra-striped">
     <thead>
         <tr>
@@ -29,7 +31,7 @@
     </thead>
     <tbody>
         {% for ct in users %}
-        <tr class="{% cycle 'even' 'odd' %}">
+        <tr>
             <td><a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a></td>
             <td>{{ ct.email }}</td>
             <td>{{ ct.first_name }} {{ ct.last_name }}</td>
@@ -43,12 +45,16 @@
             <td>
                 <div class="options">
                     <ul>
+                        {% if perms.auth.change_user %}
                         <li>
                             <a class="label" href="/journal/user/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a>
                         </li>
+                        {% endif %}
+                        {% if perms.auth.delete_user %}
                         <li>
                             <a class="label important" href="/journal/user/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a>
                         </li>
+                        {% endif %}
                     </ul>
                 </div>
             </td>

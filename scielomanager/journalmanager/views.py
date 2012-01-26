@@ -5,6 +5,7 @@ from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.db.models import Q
@@ -17,6 +18,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
+
 from scielomanager.journalmanager.models import *
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
@@ -148,6 +150,7 @@ def show_institution(request,institution_id):
     return HttpResponse(t.render(c))
 
 @login_required
+@permission_required('auth.add_user')
 def add_user(request):
     user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
@@ -255,6 +258,7 @@ def add_institution(request):
                               context_instance=RequestContext(request))
 
 @login_required
+@permission_required('auth.change_user')
 def edit_user(request,user_id):
     #recovering Journal Data to input form fields
     formFilled = User.objects.get(pk=user_id)
@@ -378,12 +382,12 @@ def search_journal(request):
 
     #Paginated the result
     journals = get_paginated(journals_filter, request.GET.get('page', 1))
-    
+
     t = loader.get_template('journalmanager/journal_search_result.html')
     c = RequestContext(request, {
                        'journals': journals,
                        'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'], 
+                       'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
 
@@ -396,11 +400,11 @@ def search_institution(request):
 
     #Paginated the result
     institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
-    
+
     t = loader.get_template('journalmanager/institution_search_result.html')
     c = RequestContext(request, {
                        'institutions': institutions,
                        'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'], 
+                       'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
