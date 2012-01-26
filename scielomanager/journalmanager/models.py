@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
 
 import choices
-#import scielomanager.tools
+import helptexts
 
-HELP_INSTITUTION = 'Texto de ajuda!!!'
 
 class IndexingCoverage(models.Model):
     database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
@@ -68,10 +68,10 @@ class Journal(models.Model):
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
     collections = models.ManyToManyField('Collection')
-    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False, help_text=_(HELP_INSTITUTION))
+    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
-    
+
     previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
     next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
 
@@ -121,9 +121,9 @@ class Journal(models.Model):
     subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=False, choices=choices.SUBSCRIPT)
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
-    
+
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
-    
+
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
@@ -209,7 +209,7 @@ class JournalTextLanguage(models.Model):
 
 class JournalAbstrLanguage(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
+    language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal,null=False)
@@ -218,7 +218,7 @@ class JournalHist(models.Model):
 
 class JournalParallelTitles(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
+    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text = helptexts.JOURNALPARALLELTITLES__FORM)
 
 class Center(Institution):
     is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
