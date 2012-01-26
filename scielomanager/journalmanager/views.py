@@ -426,43 +426,61 @@ def issue_index(request, journal_id):
 def add_issue(request, journal_id):
     journal = Journal.objects.get(id=journal_id)
     user_collection = request.user.userprofile_set.get().collection
+    saved = False
+    form = IssueForm()
     if request.method == 'POST':
         form = IssueForm(request.POST)
         if form.is_valid():
             #Get the user and create a new evaluation
-            user_collection = Collection.objects.get(manager=request.user)
+            #user_collection = Collection.objects.get(manager=request.user)
             saved_form = form.save(commit=False)
             saved_form.creator = request.user
             saved_form.collection = user_collection
+            saved_form.journal = journal
             saved_form.save()
             data = Issue()
-            return HttpResponseRedirect("/journal/issue")
-        else:
-            add_form = IssueForm() # An unbound form
-            return render_to_response('journalmanager/add_issue.html', {
-                                      'add_issue_form': add_form,
+            saved = True
+    if saved == True:
+        return HttpResponseRedirect("/journal/issue/" + journal_id )
+    else:
+        add_form = IssueForm() # An unbound form
+        return render_to_response('journalmanager/add_issue.html', {
+                                      'add_form': add_form,
                                       'mode': 'add_issue',
                                       'form': form,
                                       'journal': journal,
-                                      'journal_id': journal.id,
                                       'user_name': request.user.pk,
                                       'collection': user_collection},
                                       context_instance=RequestContext(request))
-    else:
-        #recovering Evaluation Data to input form fields
-        add_form = IssueForm() # An unbound form
-    return render_to_response('journalmanager/add_issue.html', {
-                              'add_issue_form': add_form,
-                              'mode': 'add_issue',
-                              'journal': journal,
-                              'journal_id': journal.id,
-                              'user_name': request.user.pk,
-                              'collection': user_collection},
-                              context_instance=RequestContext(request))
     
 @login_required
-def edit_issue(request, journal_id):
-    return issue_index(request, journal_id) 
+def edit_issue(request, issue_id):
+    form_filled = Issue.objects.get(pk=issue_id)
+    user_collection = request.user.userprofile_set.get().collection
+    saved = False
+    if request.method == 'POST':
+        form = IssueForm(request.POST,instance=form_filled)
+        if form.is_valid():
+            save_form = form.save(commit=False)
+            save_form.creator = request.user
+            save_form.save()
+            issue = Issue()
+            saved = True
+        else:
+            edit_form = IssueForm(request.POST,instance=form_filled)
+    else:
+        edit_form = IssueForm(instance=form_filled)
+    if saved == True:
+        return HttpResponseRedirect("/journal/issue")
+    else:
+        return render_to_response('journalmanager/edit_issue.html', { 
+                              'edit_form': edit_form,
+                              'type': type,
+                              'mode': 'edit_issue',
+                              'issue_id': issue_id,
+                              'user_name': request.user.pk,
+                              'collection': user_collection},
+                              context_instance=RequestContext(request))    
 
 @login_required
 def delete_issue(request, journal_id):

@@ -72,8 +72,8 @@ class Journal(models.Model):
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
 
-    previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
-    next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
+    previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
+    next_title_id = models.ForeignKey('Journal',related_name='next_title', null=True, blank=True)
 
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
@@ -124,7 +124,7 @@ class Journal(models.Model):
 
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
 
-    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=True, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
@@ -177,7 +177,7 @@ class Section(models.Model):
         return self.title
 
 class Issue(models.Model):
-    section = models.ManyToManyField(Section)
+    section = models.ManyToManyField(Section, null=True, default=None, blank=True)
     journal = models.ForeignKey(Journal, null=True, blank=False)
     title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
@@ -189,7 +189,7 @@ class Issue(models.Model):
     is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128) #l10n
-    use_license = models.ForeignKey(UseLicense, null=False)
+    use_license = models.ForeignKey(UseLicense, null=False, blank=False)
     publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128)
     total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -207,7 +207,7 @@ class Issue(models.Model):
         else:
             n = self.number
         
-        return self.volume + ' ' + '(' + n + ')'  
+        return self.volume + ' ' + n 
  
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)

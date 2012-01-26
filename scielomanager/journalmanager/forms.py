@@ -32,8 +32,9 @@ class UserForm(ModelForm):
 class IssueForm(ModelForm):
     class Meta:
         model = Issue
-        exclude = ('collection',)
+        exclude = ('collection', 'journal')
         widgets = {
+            'publication_date': SelectDateWidget(),
             'init_year': SelectDateWidget(),
             'final_year': SelectDateWidget(),            
         }
