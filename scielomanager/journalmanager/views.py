@@ -509,16 +509,20 @@ def show_issue(request, issue_id):
 
 @login_required
 def search_issue(request, journal_id):
+    #return issue_index(request, journal_id)
 
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
     #Get issues where journal.id = journal_id and volume contains "q" 
-    selected_issues = Issue.objects.filter(title__icontains=request.REQUEST['q'], collections=user_collection).order_by('title')
+    selected_issues = Issue.objects.filter(journal=journal_id, volume__icontains=request.REQUEST['q']).order_by('publication_date')
 
     #Paginated the result
-    journals = get_paginated(journals_filter, request.GET.get('page', 1))
+    issues = get_paginated(selected_issues, request.GET.get('page', 1))
     
-    t = loader.get_template('journalmanager/journal_search_result.html')
+    t = loader.get_template('journalmanager/issue_dashboard.html')
     c = RequestContext(request, {
-                       'journals': journals,
+                       'issues': issues,
+                       'journal': journal,
                        'collection': user_collection,
                        'search_query_string': request.REQUEST['q'], 
                        })

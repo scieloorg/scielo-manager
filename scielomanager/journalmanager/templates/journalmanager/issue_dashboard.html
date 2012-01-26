@@ -19,7 +19,7 @@
     <div class="row">
         <div class="span12">
             <div class="search">
-                <form action="{% url issue.search %}" method="get">
+                <form action="{% url issue.search journal.id  %}" method="get">
                     <input class="span6" type="text" placeholder="Search" name="q"  />
                     <button class="btn" type="submit">Search</button>
                 </form>

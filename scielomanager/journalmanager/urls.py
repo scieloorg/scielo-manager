@@ -40,7 +40,7 @@ urlpatterns = patterns('',
     url(r'^issue/show/(?P<issue_id>\d+)/$', show_issue, name='issue.show' ),
     url(r'^issue/edit/(?P<issue_id>\d+)/$', edit_issue, name='issue.edit' ),
     url(r'^issue/delete/(?P<issue_id>\d+)/$', delete_issue, name='issue.delete' ),
-    url(r'^issue/search/$', search_issue, name='issue.search'),
+    url(r'^issue/search/(?P<journal_id>\d+)/$', search_issue, name='issue.search'),
 
     # Users Tools
     url(r'^user/$', user_index, name="user.index"),
