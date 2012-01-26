@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+    <a href="{% url index %}">{% trans 'Home' %}</a>
+    / {{ journal.title }}
+    / <a href="{% url issue.index journal.id %}">{% trans 'Issue DashBoard' %}</a>
+    / {% trans 'Issue Details' %}
+    {% endblock %}
+
+{% block body %}
+
+<h1>{{ issue.title}} {{ issue.identification }}</h1>
+<fieldset>
+    <div class="show">
+    <table>
+        <tr>
+            <th>{% trans "Validated" %}</th>
+            <td>
+                {%if isssue.validated %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>
+        </tr>        
+        <tr>
+            <th>{% trans "Volume" %}</th>
+            <td>{{ issue.volume }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Number" %}</th>
+            <td>{{ issue.number }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Is Press Release?" %}</th>
+            <td>{{ issue.is_press_release }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Publication date" %}</th>
+            <td>{{ issue.print_issn }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Custom Bibliographic Strip" %}</th>
+            <td>{{ issue.bibliographic_strip }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Issue Title" %}</th>
+            <td>{{ issue.title }}</td>
+        </tr>        
+        <tr>
+            <th>{% trans "Publisher" %}</th>
+            <td>{{ issue.publisher }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Controlled Vocabulary" %}</th>
+            <td>{{ issue.ctrl_vocabulary }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Editorial Standard" %}</th>
+            <td>{{ issue.editorial_standard }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Use License" %}</th>
+            <td>{{ issue.use_license }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Documents total" %}</th>
+            <td>{{ issue.total_documents }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Is Available?" %}</th>
+            <td>{{ issue.is_available }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Is Marked Up?" %}</th>
+            <td>{{ issue.is_marked_up }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Created on" %}</th>
+            <td>{{ issue.creation_date }}</td>
+        </tr>        
+        <tr>
+            <th>{% trans "Updated on" %}</th>
+            <td>{{ issue.update_date }}</td>
+        </tr>
+    </table>
+    </div>
+</fieldset>    
+{% endblock %}

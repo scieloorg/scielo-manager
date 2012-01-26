@@ -5,7 +5,7 @@
     {{ block.super }}
     / <a href="{% url index %}">{% trans 'Home' %}</a>
     / {{journal.title}}
-    / <a href="{% url issue.index %}">{% trans 'Issue Dashboard' %}</a>
+    / <a href="{% url issue.index journal_id %}">{% trans 'Issue Dashboard' %}</a>
     / {% trans 'Edit Issue' %}
     {% endblock %}
 
@@ -13,7 +13,7 @@
 
 <fieldset>
     <legend>{% trans "Edit Issue" %}</legend>
-    <form method="post" action="{% url issue.edit issue.id %}}/">{% csrf_token %}
+    <form method="post" action="{% url issue.edit issue_id  %}">{% csrf_token %}
         <table class="table">
             <col width="10%"/>
             <col width="85%"/>

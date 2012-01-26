@@ -43,7 +43,7 @@
     <tbody>
         {% for ct in issues.object_list %}
         <tr>
-            <td><a href="{% url issue.show ct.id %}/">{{ ct.identification }}</a></td>
+            <td><a href="{% url issue.show ct.id %}">{{ ct.identification }}</a></td>
             <td>{{ ct.publication_date }}</td>
             <td>{{ ct.is_available }}</td>
             <td>{{ ct.is_marked_up}}</td>
@@ -57,8 +57,8 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a class="label" href="{% url issue.edit  ct.pk %}/">{% trans 'Edit' %}</a></li>
-                        <li><a class="label important" href="{% url issue.delete ct.pk %}/">{% trans 'Delete' %}</a></li>
+                        <li><a class="label" href="{% url issue.edit  ct.pk %}">{% trans 'Edit' %}</a></li>
+                        <li><a class="label important" href="{% url issue.delete ct.pk %}">{% trans 'Delete' %}</a></li>
                     </ul>
                 </div>
             </td>

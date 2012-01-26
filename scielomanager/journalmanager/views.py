@@ -432,13 +432,13 @@ def add_issue(request, journal_id):
         form = IssueForm(request.POST)
         if form.is_valid():
             #Get the user and create a new evaluation
-            #user_collection = Collection.objects.get(manager=request.user)
-            saved_form = form.save(commit=False)
-            saved_form.creator = request.user
-            saved_form.collection = user_collection
-            saved_form.journal = journal
-            saved_form.save()
-            data = Issue()
+            issue_data = form.save(commit=False)
+            issue_data.update_date = datetime.now
+            if issue_data.creation_date == None:
+                issue_data.creation_date = issue_data.update_date
+            issue_data.collection = user_collection
+            issue_data.journal = journal
+            issue_data.save()
             saved = True
     if saved == True:
         return HttpResponseRedirect("/journal/issue/" + journal_id )
@@ -456,22 +456,24 @@ def add_issue(request, journal_id):
 @login_required
 def edit_issue(request, issue_id):
     form_filled = Issue.objects.get(pk=issue_id)
+    journal = form_filled.journal
     user_collection = request.user.userprofile_set.get().collection
     saved = False
     if request.method == 'POST':
         form = IssueForm(request.POST,instance=form_filled)
         if form.is_valid():
-            save_form = form.save(commit=False)
-            save_form.creator = request.user
-            save_form.save()
-            issue = Issue()
+            issue_data = form.save(commit=False)
+            issue_data.update_date = datetime.now
+            if issue_data.creation_date == None:
+                issue_data.creation_date = issue_data.update_date
+            issue_data.save()
             saved = True
         else:
             edit_form = IssueForm(request.POST,instance=form_filled)
     else:
         edit_form = IssueForm(instance=form_filled)
     if saved == True:
-        return HttpResponseRedirect("/journal/issue")
+        return HttpResponseRedirect("/journal/issue/" + str(journal.id))
     else:
         return render_to_response('journalmanager/edit_issue.html', { 
                               'edit_form': edit_form,
@@ -479,18 +481,25 @@ def edit_issue(request, issue_id):
                               'mode': 'edit_issue',
                               'issue_id': issue_id,
                               'user_name': request.user.pk,
+                              'journal_id': journal.id,
+                              'journal': journal,
                               'collection': user_collection},
                               context_instance=RequestContext(request))    
 
 @login_required
-def delete_issue(request, journal_id):
+def delete_issue(request, issue_id):
     return issue_index(request, journal_id) 
 
 @login_required
-def show_issue(request, journal_id):
-    return issue_index(request, journal_id) 
-
-
+def show_issue(request, issue_id):
+    issue = Issue.objects.get(id=issue_id)
+    journal = issue.journal
+    t = loader.get_template('journalmanager/show_issue.html')
+    c = RequestContext(request, {
+                       'issue': issue,
+                       'journal': journal,
+                       })
+    return HttpResponse(t.render(c))
 
 @login_required
 def search_issue(request, journal_id):
