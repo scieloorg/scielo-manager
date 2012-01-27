@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery.asmselect.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-ui.js"></script>
+    <!--script type="text/javascript" src="{% get_static_prefix %}js/combobox.js"></script-->
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css" />
+{% endblock %}
 
 {% block stepmenu_top %}
     {{ block.super }}
@@ -9,24 +17,229 @@
         <li class="active">{% trans 'New Journal' %}</li>
     </ul>
     {% endblock %}
-
 {% block body %}
 
-<fieldset>
-    <legend>{% trans "New Journal" %}</legend>
-    <form method="post" action="/journal/add/">{% csrf_token %}
-        <table class="table">
-            <col width="10%"/>
-            <col width="85%"/>
-            {% if form.errors %}
-                {% for field in form %}
-                        <tr><td>{{ field.label_tag }}</td><td>{{ field }} {% if field.errors %}<span class="field_errors"><img src="/static/images/error.png" border="0" width="20px" height="20px" /> {% trans "field required!" %}</span></td>{%endif%}</tr>
-                {% endfor %}
-            {% else %}
-                {{ add_journal_form.as_table }}
-            {% endif %}
-        </table>
-    <input class="addNew" name="submit" type="submit" value="{% trans "Add Journal" %}">
+<script>
+    $(document).ready(function() {
+        $("select[multiple]").asmSelect({
+            sortable: false,
+            animate: true,
+            addItemTarget: 'top'
+        });
+    }); 
+
+    // $(document).ready(function() {
+    //     $( "#id_institution" ).combobox();
+
+    //     $( "#toggle" ).click(function() {
+    //         $( "#id_institution" ).toggle();
+    //     });
+    // });
+</script>
+    <h4>{% trans "New Journal" %}</h4>
+    <form method="post" action="/journal/add/">
+
+    {% csrf_token %}
+
+    <span class="label">{% trans "Journal Information" %}</span>
+        <div class="well">
+            <div class="clearfix {% if form.title.errors %}error{% endif %}">
+                    {{ add_journal_form.title.label_tag }}
+                <div class="input">
+                    {{ add_journal_form.title }}
+                    {% if form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+                </div>
+            </div>
+            <div class="clearfix {% if form.short_title.errors %}error{% endif %}">
+                    {{ add_journal_form.short_title.label_tag }}
+                <div class="input">
+                    {{ add_journal_form.short_title }}
+                    {% if form.short_title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+                </div>
+            </div>
+            <div class="clearfix {% if form.short_title.errors %}error{% endif %}">
+                    {{ add_journal_form.acronym.label_tag }}
+                <div class="input">
+                    {{ add_journal_form.acronym }}
+                    {% if form.acronym.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+                </div>
+            </div>
+            <div class="clearfix {% if form.institution.errors %}error{% endif %}">
+                    {{ add_journal_form.institution.label_tag }}
+                <div class="input">
+                    {{ add_journal_form.institution }}
+                    {% if form.institution.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+                </div>
+                {{ form.institution.help_text }}
+            </div>             
+            <div class="clearfix">
+                    {{ add_journal_form.scielo_issn.label_tag }}
+                <div class="input">{{ add_journal_form.scielo_issn }}</div>
+            </div>
+            <div class="clearfix">
+                    {{ add_journal_form.print_issn.label_tag }}
+                <div class="input">{{ add_journal_form.print_issn }}</div>
+            </div>           
+            <div class="clearfix">
+                    {{ add_journal_form.eletronic_issn.label_tag }}
+                <div class="input">{{ add_journal_form.eletronic_issn }}</div>
+            </div>
+        </div>
+    <span class="label">{% trans "Information Area" %}</span>
+     <div class="well">
+        <div class="clearfix">
+                {{ add_journal_form.subject_descriptors.label_tag }}
+            <div class="input">{{ add_journal_form.subject_descriptors }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.study_area.label_tag }}
+            <div class="input">{{ add_journal_form.study_area }}</div>
+        </div>
+
+        <div class="clearfix">
+                {{ add_journal_form.init_year.label_tag }}
+            <div class="input">{{ add_journal_form.init_year }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.init_vol.label_tag }}
+            <div class="input">{{ add_journal_form.init_vol }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.init_num.label_tag }}
+            <div class="input">{{ add_journal_form.init_num }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.final_year.label_tag }}
+            <div class="input">{{ add_journal_form.final_year }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.final_vol.label_tag }}
+            <div class="input">{{ add_journal_form.final_vol }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.final_num.label_tag }}
+            <div class="input">{{ add_journal_form.final_num }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.frequency.label_tag }}
+            <div class="input">{{ add_journal_form.frequency }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.pub_status.label_tag }}
+            <div class="input">{{ add_journal_form.pub_status }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.alphabet.label_tag }}
+            <div class="input">{{ add_journal_form.alphabet }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.classification.label_tag }}
+            <div class="input">{{ add_journal_form.classification }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.national_code.label_tag }}
+            <div class="input">{{ add_journal_form.national_code }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.editorial_standard.label_tag }}
+            <div class="input">{{ add_journal_form.editorial_standard }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.ctrl_vocabulary.label_tag }}
+            <div class="input">{{ add_journal_form.ctrl_vocabulary }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.literature_type.label_tag }}
+            <div class="input">{{ add_journal_form.literature_type }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.treatment_level.label_tag }}
+            <div class="input">{{ add_journal_form.treatment_level }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.pub_level.label_tag }}
+            <div class="input">{{ add_journal_form.pub_level }}</div>
+        </div>
+        <div class="clearfix {% if form.indexing_coverage.errors %}error{% endif %}">
+                {{ add_journal_form.indexing_coverage.label_tag }}
+            <div class="input">
+                {{ add_journal_form.indexing_coverage }}
+                {% if form.indexing_coverage.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+            </div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.secs_code.label_tag }}
+            <div class="input">{{ add_journal_form.secs_code }}</div>
+        </div>
+         <div class="clearfix">
+                {{ add_journal_form.subscription.label_tag }}
+            <div class="input">{{ add_journal_form.subscription }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.id_provided_by_the_center.label_tag }}
+            <div class="input">{{ add_journal_form.id_provided_by_the_center }}</div>
+        </div>
+
+        <div class="clearfix {% if form.collections.errors %}error{% endif %}">
+                {{ add_journal_form.collections.label_tag }}
+            <div class="input">
+                {{ add_journal_form.collections }}
+                {% if form.collections.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+            </div>
+        </div>
+    </div>
+     <span class="label">{% trans "License" %}</span>
+     <div class="well">  
+        <div class="clearfix {% if form.use_license.errors %}error{% endif %}">
+                {{ add_journal_form.use_license.label_tag }}
+            <div class="input">
+                {{ add_journal_form.use_license }}
+                {% if form.use_license.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+            </div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.copyrighter.label_tag }}
+            <div class="input">{{ add_journal_form.copyrighter }}</div>
+        </div>
+     </div>
+     <span class="label">URL(s)</span>
+     <div class="well">
+        <div class="clearfix">
+                {{ add_journal_form.url_main_collection.label_tag }}
+            <div class="input">{{ add_journal_form.url_main_collection }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.url_online_submission.label_tag }}
+            <div class="input">{{ add_journal_form.url_online_submission }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.url_journal.label_tag }}
+            <div class="input">{{ add_journal_form.url_journal }}</div>
+        </div>
+     </div>
+     <span class="label">{% trans "PDF Access" %}</span>
+     <div class="well">
+        <div class="clearfix">
+                {{ add_journal_form.pdf_access.label_tag }}
+            <div class="input">{{ add_journal_form.pdf_access }}</div>
+        </div>
+     </div>
+     <span class="label">Extra Information</span>
+     <div class="well">
+        <div class="clearfix">
+                {{ add_journal_form.notes.label_tag }}
+            <div class="input">{{ add_journal_form.notes }}</div>
+        </div>
+        <div class="clearfix">
+                {{ add_journal_form.validated.label_tag }}
+            <div class="input">{{ add_journal_form.validated }}</div>
+        </div> 
+     </div>
+     <div class="row show-grid">
+        <div class="span4 offset12">
+            <button class="btn" type="reset">{% trans "Cancel" %}</button>
+         <input class="btn primary" name="submit" type="submit" value="{% trans "Create Journal" %}">
+        </div>
+     </div>
     </form>
-</fieldset>
 {% endblock %}

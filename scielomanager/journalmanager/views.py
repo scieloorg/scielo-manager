@@ -190,16 +190,10 @@ def add_user(request):
 def add_journal(request):
     user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
-        #instance of form
+        #Instance of form
         form = JournalForm(request.POST)
         if form.is_valid():
-            #Get the user and create a new evaluation
-            user_collection = Collection.objects.get(manager=request.user)
-            fjournal = form.save(commit=False)
-            fjournal.creator = request.user
-            fjournal.collection = user_collection
-            fjournal.save()
-            journal = Journal()
+            form.save_all(creator=request.user)
             return HttpResponseRedirect("/journal")
         else:
             add_journal_form = JournalForm() # An unbound form
