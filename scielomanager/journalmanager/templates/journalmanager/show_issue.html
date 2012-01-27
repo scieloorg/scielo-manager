@@ -3,7 +3,8 @@
 
 {% block stepmenu_top %}
     {{ block.super }}
-    <a href="{% url index %}">{% trans 'Home' %}</a>
+    / <a href="{% url index %}">{% trans 'Home' %}</a>
+    / <a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a>
     / {{ journal.title }}
     / <a href="{% url issue.index journal.id %}">{% trans 'Issue DashBoard' %}</a>
     / {% trans 'Issue Details' %}
@@ -11,7 +12,7 @@
 
 {% block body %}
 
-<h1>{{ issue.title}} {{ issue.identification }}</h1>
+<h1>{{ journal.title}} {{ issue.identification }}</h1>
 <fieldset>
     <div class="show">
     <table>

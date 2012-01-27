@@ -5,6 +5,7 @@
     {{ block.super }}
     <ul class="breadcrumb">
         <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
         <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
         <li class="active">{% trans 'New Issue' %}</li>
     </ul>

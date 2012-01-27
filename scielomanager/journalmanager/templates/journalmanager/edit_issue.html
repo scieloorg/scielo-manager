@@ -4,6 +4,7 @@
 {% block stepmenu_top %}
     {{ block.super }}
     / <a href="{% url index %}">{% trans 'Home' %}</a>
+    / <a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a>
     / {{journal.title}}
     / <a href="{% url issue.index journal_id %}">{% trans 'Issue Dashboard' %}</a>
     / {% trans 'Edit Issue' %}
