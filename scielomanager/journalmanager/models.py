@@ -154,8 +154,8 @@ class JournalShortTitleOtherForms(models.Model):
 
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
-    reference_url = models.URLField(_('License Reference URL'), null=False, blank=False)
-    disclaimer = models.TextField(_('Disclaimer'), null=False, blank=False, max_length=512)
+    reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
+    disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
 
     def __unicode__(self):
         return self.license_code
@@ -189,7 +189,7 @@ class Issue(models.Model):
     is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128) #l10n
-    use_license = models.ForeignKey(UseLicense, null=False, blank=False)
+    use_license = models.ForeignKey(UseLicense, null=True)
     publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128)
     total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
