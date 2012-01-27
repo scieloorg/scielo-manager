@@ -29,3 +29,12 @@ class UserForm(ModelForm):
             user.save()
         return user
 
+class IssueForm(ModelForm):
+    class Meta:
+        model = Issue
+        exclude = ('collection', 'journal')
+        widgets = {
+            'publication_date': SelectDateWidget(),
+            'init_year': SelectDateWidget(),
+            'final_year': SelectDateWidget(),            
+        }
