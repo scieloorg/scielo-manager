@@ -194,8 +194,16 @@ class Issue(models.Model):
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=choices.STANDARD, null=False, blank=True)
 
+    def identification(self):
+        n = self.number
+        if n != 'ahead' and n != 'review':
+            n = '(' + self.number + ')'
+        else:
+            n = self.number
+
+        return self.volume + ' ' + n
     def __unicode__(self):
-        return self.title
+        return self.identification()
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
