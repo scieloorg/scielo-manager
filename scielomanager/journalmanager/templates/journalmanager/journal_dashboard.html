@@ -72,7 +72,7 @@
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ journals.start_index }}-{{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
+{% trans 'Showing' %} {{ journals.start_index }}-{{ journals.end_index }} {% trans 'of' %} {{ journals.paginator.count }}
 <div class="pagination">
     <ul>
         <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
