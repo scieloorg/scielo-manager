@@ -72,8 +72,8 @@ class Journal(models.Model):
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
 
-    previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
-    next_title_id = models.ForeignKey('Journal',related_name='next_title', null=True, blank=True)
+    previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
+    next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
 
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
@@ -124,7 +124,7 @@ class Journal(models.Model):
 
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
 
-    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=True, )
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
@@ -173,11 +173,8 @@ class Section(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
-        return self.title
-
 class Issue(models.Model):
-    section = models.ManyToManyField(Section, null=True, default=None, blank=True)
+    section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
     title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
@@ -200,15 +197,6 @@ class Issue(models.Model):
     def __unicode__(self):
         return self.title
 
-    def identification(self):
-        n = self.number
-        if n != 'ahead' and n != 'review':
-            n = '(' + self.number + ')'
-        else:
-            n = self.number
-        
-        return self.volume + ' ' + n 
- 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
