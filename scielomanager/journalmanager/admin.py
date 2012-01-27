@@ -30,10 +30,13 @@ class JournalAbstrLanguageInline(admin.StackedInline):
 class JournalHistoryInline(admin.StackedInline):
     model = JournalHist
 
+class JournalSectionsInline(admin.StackedInline):
+    model = Section
+
 class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [JournalHistoryInline,JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalParallelTitlesInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
+    inlines = [JournalHistoryInline,JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalParallelTitlesInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline, JournalSectionsInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
@@ -48,7 +51,7 @@ class UserProfileAdmin(UserAdmin):
     inlines = [UserProfileInline]
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ('title', 'volume', 'number', 'is_available', 'is_marked_up')
+    list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
 
 if Journal not in admin.site._registry:
     admin.site.register(Journal, JournalAdmin)

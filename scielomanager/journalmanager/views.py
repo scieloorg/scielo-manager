@@ -404,3 +404,127 @@ def search_institution(request):
                        'search_query_string': request.REQUEST['q'], 
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def issue_index(request, journal_id):
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    
+    all_issues = Issue.objects.filter(journal=journal_id)
+
+    issues = get_paginated(all_issues, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/issue_dashboard.html')
+    c = RequestContext(request, {
+                       'issues': issues,
+                       'journal': journal,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_issue(request, journal_id):
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    saved = False
+    form = IssueForm()
+    if request.method == 'POST':
+        form = IssueForm(request.POST)
+        if form.is_valid():
+            #Get the user and create a new evaluation
+            issue_data = form.save(commit=False)
+            issue_data.update_date = datetime.now
+            if issue_data.creation_date == None:
+                issue_data.creation_date = issue_data.update_date
+            issue_data.collection = user_collection
+            issue_data.journal = journal
+            issue_data.save()
+            saved = True
+    if saved == True:
+        return HttpResponseRedirect("/journal/issue/" + journal_id )
+    else:
+        add_form = IssueForm() # An unbound form
+        return render_to_response('journalmanager/add_issue.html', {
+                                      'add_form': add_form,
+                                      'mode': 'add_issue',
+                                      'form': form,
+                                      'journal': journal,
+                                      'user_name': request.user.pk,
+                                      'collection': user_collection},
+                                      context_instance=RequestContext(request))
+    
+@login_required
+def edit_issue(request, issue_id):
+    form_filled = Issue.objects.get(pk=issue_id)
+    journal = form_filled.journal
+    user_collection = request.user.userprofile_set.get().collection
+    saved = False
+    if request.method == 'POST':
+        form = IssueForm(request.POST,instance=form_filled)
+        if form.is_valid():
+            issue_data = form.save(commit=False)
+            issue_data.update_date = datetime.now
+            if issue_data.creation_date == None:
+                issue_data.creation_date = issue_data.update_date
+            issue_data.save()
+            saved = True
+        else:
+            edit_form = IssueForm(request.POST,instance=form_filled)
+    else:
+        edit_form = IssueForm(instance=form_filled)
+    if saved == True:
+        return HttpResponseRedirect("/journal/issue/" + str(journal.id))
+    else:
+        return render_to_response('journalmanager/edit_issue.html', { 
+                              'edit_form': edit_form,
+                              'type': type,
+                              'mode': 'edit_issue',
+                              'issue_id': issue_id,
+                              'user_name': request.user.pk,
+                              'journal_id': journal.id,
+                              'journal': journal,
+                              'collection': user_collection},
+                              context_instance=RequestContext(request))    
+
+@login_required
+def delete_issue(request, issue_id):
+    issue_data = Issue.objects.get(pk=issue_id)
+    journal = issue_data.journal
+    user_collection = request.user.userprofile_set.get().collection
+    issue_data.update_date = datetime.now
+    issue_data.is_available = False
+    issue_data.save()
+    return HttpResponseRedirect("/journal/issue/" + str(journal.id))
+
+@login_required
+def show_issue(request, issue_id):
+    issue = Issue.objects.get(id=issue_id)
+    journal = issue.journal
+    t = loader.get_template('journalmanager/show_issue.html')
+    c = RequestContext(request, {
+                       'issue': issue,
+                       'journal': journal,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def search_issue(request, journal_id):
+    #return issue_index(request, journal_id)
+
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    #Get issues where journal.id = journal_id and volume contains "q" 
+    selected_issues = Issue.objects.filter(journal=journal_id, volume__icontains=request.REQUEST['q']).order_by('publication_date')
+
+    #Paginated the result
+    issues = get_paginated(selected_issues, request.GET.get('page', 1))
+    
+    t = loader.get_template('journalmanager/issue_dashboard.html')
+    c = RequestContext(request, {
+                       'issues': issues,
+                       'journal': journal,
+                       'collection': user_collection,
+                       'search_query_string': request.REQUEST['q'], 
+                       })
+    return HttpResponse(t.render(c))
+    

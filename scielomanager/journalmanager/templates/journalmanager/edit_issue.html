@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+    / <a href="{% url index %}">{% trans 'Home' %}</a>
+    / <a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a>
+    / {{journal.title}}
+    / <a href="{% url issue.index journal_id %}">{% trans 'Issue Dashboard' %}</a>
+    / {% trans 'Edit Issue' %}
+    {% endblock %}
+
+{% block body %}
+
+<fieldset>
+    <legend>{% trans "Edit Issue" %}</legend>
+    <form method="post" action="{% url issue.edit issue_id  %}">{% csrf_token %}
+        <table class="table">
+            <col width="10%"/>
+            <col width="85%"/>
+            {% if edit_form.errors %}
+                {% for field in edit_form %}
+                        <tr><td>{{ field.label_tag }}</td><td>{{ field }} {% if field.errors %}<span class="field_errors"><img src="/static/images/error.png" border="0" width="20px" height="20px" /> {% trans "field required!" %}</span></td>{%endif%}</tr>
+                {% endfor %}
+            {% else %}
+                {{ edit_form.as_table }}
+            {% endif %}
+        </table>
+    <input class="addNew" name="submit" type="submit" value="{% trans "Save Issue" %}">
+    </form>
+</fieldset>
+{% endblock %}

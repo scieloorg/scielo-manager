@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+    {{ block.super }}
+    <ul class="breadcrumb">
+        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+        <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+        <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
+        <li class="active">{% trans 'New Issue' %}</li>
+    </ul>
+    {% endblock %}
+
+{% block body %}
+
+<fieldset>
+    <legend>{% trans "New Issue" %}</legend>
+    <form method="post" action="{% url issue.add journal.id %}">{% csrf_token %}
+        <table class="table">
+            <col width="10%"/>
+            <col width="85%"/>
+            {% if form.errors %}
+                {% for field in form %}
+                        <tr><td>{{ field.label_tag }}</td><td>{{ field }} {% if field.errors %}<span class="field_errors"><img src="/static/images/error.png" border="0" width="20px" height="20px" /> {% trans "field required!" %}</span></td>{%endif%}</tr>
+                {% endfor %}
+            {% else %}
+                {{ add_form.as_table }}
+            {% endif %}
+        </table>
+    <input class="addNew" name="submit" type="submit" value="{% trans "Add Issue" %}">
+    </form>
+</fieldset>
+{% endblock %}
