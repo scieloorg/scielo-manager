@@ -85,12 +85,12 @@ class SectionImport:
         json_parsed={} 
 
         if __name__ == '__main__':
-            issue_json_file = open(json_file,'r')
-            issue_json_parsed = json.loads(issue_json_file.read())
+            section_json_file = open(json_file,'r')
+            section_json_parsed = json.loads(section_json_file.read())
         else:
-            issue_json_parsed = issue_json_file # Para testes, carregado pelo unittest
+            section_json_parsed = section_json_file # Para testes, carregado pelo unittest
 
-        for record in issue_json_parsed:
+        for record in section_json_parsed:
             loaded_section = self.load_section(record)
 
 import_section = SectionImport()

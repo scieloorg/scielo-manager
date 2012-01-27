@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-23 13:52-0200\n"
-"PO-Revision-Date: 2012-01-23 16:53-0300\n"
+"POT-Creation-Date: 2012-01-24 10:54-0200\n"
+"PO-Revision-Date: 2012-01-24 11:47-0300\n"
 "Last-Translator: ednilson.gesseff <ednilson.gesseff@scielo.org>\n"
 "Language-Team: SciELO <desenvolvimento@scielo.org>\n"
 "Language: \n"
@@ -38,7 +38,7 @@ msgstr "URL da Instância"
 
 #: journalmanager/models.py:24
 #: journalmanager/models.py:52
-#: journalmanager/models.py:126
+#: journalmanager/models.py:128
 #: journalmanager/templates/journalmanager/institution_dashboard.html:39
 #: journalmanager/templates/journalmanager/institution_search_result.html:43
 #: journalmanager/templates/journalmanager/journal_dashboard.html:42
@@ -82,7 +82,7 @@ msgid "Address"
 msgstr "Endereço"
 
 #: journalmanager/models.py:45
-#: journalmanager/models.py:175
+#: journalmanager/models.py:184
 msgid "Number"
 msgstr "Número"
 
@@ -127,7 +127,7 @@ msgid "Journal Title"
 msgstr "Título da revista"
 
 #: journalmanager/models.py:73
-#: journalmanager/models.py:149
+#: journalmanager/models.py:151
 #: journalmanager/templates/journalmanager/show_journal.html:37
 msgid "Short Title"
 msgstr "Título abreviado"
@@ -217,12 +217,12 @@ msgid "National Code"
 msgstr "Código Nacional"
 
 #: journalmanager/models.py:102
-#: journalmanager/models.py:188
+#: journalmanager/models.py:197
 msgid "Editorial Standard"
 msgstr "Norma editorial"
 
 #: journalmanager/models.py:104
-#: journalmanager/models.py:186
+#: journalmanager/models.py:195
 #: journalmanager/templates/journalmanager/show_journal.html:140
 msgid "Controlled Vocabulary"
 msgstr "Vocabulário Controlado"
@@ -274,103 +274,116 @@ msgstr "Assinatura"
 msgid "Notes"
 msgstr "Notas"
 
-#: journalmanager/models.py:124
+#: journalmanager/models.py:125
 msgid "ID provided by the Center"
 msgstr "ID fornecido pelo centro"
 
-#: journalmanager/models.py:140
+#: journalmanager/models.py:142
 msgid "Mission"
 msgstr "Missão"
 
-#: journalmanager/models.py:141
+#: journalmanager/models.py:143
+#: journalmanager/models.py:168
 #: journalmanager/templates/journalmanager/show_journal.html:116
 msgid "Language"
 msgstr "Idioma"
 
-#: journalmanager/models.py:145
-#: journalmanager/models.py:162
+#: journalmanager/models.py:147
+#: journalmanager/models.py:182
 #: journalmanager/templates/journalmanager/show_journal.html:29
 msgid "Title"
 msgstr "Título"
 
-#: journalmanager/models.py:150
+#: journalmanager/models.py:152
 msgid "Short Title Type"
 msgstr "Tipo de título abreviado"
 
-#: journalmanager/models.py:154
+#: journalmanager/models.py:156
 msgid "License Code"
 msgstr "Código da licená"
 
-#: journalmanager/models.py:155
+#: journalmanager/models.py:157
 msgid "License Reference URL"
 msgstr "URL da licença"
 
-#: journalmanager/models.py:156
+#: journalmanager/models.py:158
 msgid "Disclaimer"
 msgstr "Desaprovar"
 
-#: journalmanager/models.py:163
+#: journalmanager/models.py:165
+msgid "Translation"
+msgstr "Tradução"
+
+#: journalmanager/models.py:166
+msgid "Model"
+msgstr "Modelo"
+
+#: journalmanager/models.py:167
+msgid "Field"
+msgstr "Campo"
+
+#: journalmanager/models.py:172
 msgid "Code"
 msgstr "Código"
 
-#: journalmanager/models.py:173
-msgid "Issue Title"
-msgstr "Título do fascículo"
-
-#: journalmanager/models.py:174
+#: journalmanager/models.py:183
 msgid "Volume"
 msgstr "Volume"
 
-#: journalmanager/models.py:176
+#: journalmanager/models.py:185
 msgid "Is Press Release?"
 msgstr "É Press Release?"
 
-#: journalmanager/models.py:180
+#: journalmanager/models.py:189
 msgid "Is Available?"
 msgstr "Está disponível?"
 
-#: journalmanager/models.py:181
+#: journalmanager/models.py:190
 msgid "Is Marked Up?"
 msgstr "Está marcado?"
 
-#: journalmanager/models.py:182
+#: journalmanager/models.py:191
 msgid "Custom Bibliographic Strip"
 msgstr "Legenda bibliográfica personalizada"
 
-#: journalmanager/models.py:184
+#: journalmanager/models.py:193
 msgid "Publisher Full Name"
 msgstr "Nome completo do publicador."
 
-#: journalmanager/models.py:185
+#: journalmanager/models.py:194
 msgid "Total of Documents"
 msgstr "Total de documentos"
 
-#: journalmanager/models.py:195
+#: journalmanager/models.py:204
 msgid "Supplement Label"
 msgstr "Rótulo do suplemento"
 
-#: journalmanager/models.py:199
+#: journalmanager/models.py:208
 msgid "Text Languages"
 msgstr "Idiomas do texto"
 
-#: journalmanager/models.py:203
+#: journalmanager/models.py:212
 msgid "Abstract Languages"
 msgstr "Idiomas dos resumos"
 
-#: journalmanager/models.py:207
+#: journalmanager/models.py:216
 msgid "Date"
 msgstr "Data"
 
-#: journalmanager/models.py:208
+#: journalmanager/models.py:217
 #: journalmanager/templates/journalmanager/journal_dashboard.html:41
 #: journalmanager/templates/journalmanager/journal_search_result.html:47
 #: journalmanager/templates/journalmanager/show_institution.html:87
 msgid "Status"
 msgstr ""
 
-#: journalmanager/models.py:212
+#: journalmanager/models.py:221
 msgid "Parallel Titles"
 msgstr "Títulos paralelos"
+
+#: journalmanager/models.py:224
+msgid "Is provider of the marked files?"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_institution.html:7
 #: journalmanager/templates/journalmanager/add_journal.html:7
@@ -1048,3 +1061,5 @@ msgstr "Por favor, corrija os erros abaixo"
 msgid "You will receive an email with a link to activate your account."
 msgstr "Você receberá e-mail com um link para ativar sua conta."
 
+#~ msgid "Issue Title"
+#~ msgstr "Título do fascículo"
