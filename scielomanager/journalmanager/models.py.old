@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
-from datetime import datetime
-
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
 
 import choices
-import helptexts
+#import scielomanager.tools
 
+HELP_INSTITUTION = 'Texto de ajuda!!!'
 
 class IndexingCoverage(models.Model):
     database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
@@ -68,12 +68,12 @@ class Journal(models.Model):
     updated = models.DateTimeField(_('Update Date'),default=datetime.now,
         editable=False)
     collections = models.ManyToManyField('Collection')
-    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
+    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False, help_text=_(HELP_INSTITUTION))
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
-
-    previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
-    next_title_id = models.ForeignKey('Journal',related_name='next_title', null=True, blank=True)
+    
+    previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
+    next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
 
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
@@ -121,10 +121,10 @@ class Journal(models.Model):
     subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=False, choices=choices.SUBSCRIPT)
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
-
+    
     id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
-
-    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=True, )
+    
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
@@ -154,8 +154,8 @@ class JournalShortTitleOtherForms(models.Model):
 
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
-    reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
-    disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
+    reference_url = models.URLField(_('License Reference URL'), null=False, blank=False)
+    disclaimer = models.TextField(_('Disclaimer'), null=False, blank=False, max_length=512)
 
     def __unicode__(self):
         return self.license_code
@@ -174,10 +174,10 @@ class Section(models.Model):
     update_date = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return self.title
+        return self.title    
 
 class Issue(models.Model):
-    section = models.ManyToManyField(Section, null=True, default=None, blank=True)
+    section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
     title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
@@ -189,7 +189,7 @@ class Issue(models.Model):
     is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128) #l10n
-    use_license = models.ForeignKey(UseLicense, null=True)
+    use_license = models.ForeignKey(UseLicense, null=False)
     publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128)
     total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -200,15 +200,6 @@ class Issue(models.Model):
     def __unicode__(self):
         return self.title
 
-    def identification(self):
-        n = self.number
-        if n != 'ahead' and n != 'review':
-            n = '(' + self.number + ')'
-        else:
-            n = self.number
-        
-        return self.volume + ' ' + n 
- 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
@@ -218,7 +209,7 @@ class JournalTextLanguage(models.Model):
 
 class JournalAbstrLanguage(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
+    language = models.CharField(_('Abstract Languages'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal,null=False)
@@ -227,7 +218,7 @@ class JournalHist(models.Model):
 
 class JournalParallelTitles(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text = helptexts.JOURNALPARALLELTITLES__FORM)
+    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True)
 
 class Center(Institution):
-    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
+    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=True, null=False, blank=False)
