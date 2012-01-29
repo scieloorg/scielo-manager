@@ -167,11 +167,18 @@ class TranslatedData(models.Model):
     field = models.CharField(_('Field'), null=False, blank=False, max_length=32)
     language = models.CharField(_('Language') ,choices=choices.LANGUAGE, null=False, blank=False, max_length=32)
 
+    def __unicode__(self):
+        return self.text
+
+
 class Section(models.Model):
     translation = models.ManyToManyField(TranslatedData)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.code
 
 class Issue(models.Model):
     section = models.ManyToManyField(Section)
@@ -202,6 +209,7 @@ class Issue(models.Model):
             n = self.number
 
         return self.volume + ' ' + n
+
     def __unicode__(self):
         return self.identification()
 
