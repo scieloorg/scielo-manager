@@ -1,17 +1,55 @@
+
+from django import forms
 from django.forms import ModelForm, DateField
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
 from journalmanager.models import *
 
 class JournalForm(ModelForm):
+  
+    def save_all(self, creator):
+        journal = self.save(commit=False)
+        journal.creator = creator
+        journal.save()
+        self.save_m2m()
+        return journal
+
     class Meta:
         model = Journal
-        exclude = ('collection',)
-        widgets = {
-            'init_year': SelectDateWidget(),
-            'final_year': SelectDateWidget(),            
-        }
+        fields = ('title', 'short_title', 'acronym', 'institution', 'scielo_issn', 'print_issn', 'eletronic_issn',
+          'subject_descriptors', 'study_area', 'init_year', 'init_vol', 'init_num', 'final_year','final_vol', 'final_num',
+          'frequency', 'pub_status', 'alphabet', 'classification', 'national_code', 'editorial_standard','ctrl_vocabulary',
+          'literature_type', 'treatment_level', 'pub_level', 'indexing_coverage', 'secs_code', 'use_license','copyrighter',
+          'url_main_collection', 'url_online_submission', 'url_journal', 'pdf_access', 'subscription', 'notes','id_provided_by_the_center', 
+          'collections', 'validated', )
 
+        #Overriding the default field types or widgets
+        widgets = {
+           'title': forms.TextInput(attrs={'class':'span12'}),
+           'short_title': forms.TextInput(attrs={'class':'span8'}),
+           'acronym': forms.TextInput(attrs={'class':'span2'}),
+           'institution': forms.Select(attrs={'class':'xxlarge'}),
+           'scielo_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
+           'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
+           'eletronic_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}), 
+           'subject_descriptors': forms.Textarea(attrs={'class':'xxlarge'}), 
+           'init_year': SelectDateWidget(),
+           'init_vol': forms.TextInput(attrs={'class':'span1'}),
+           'init_num': forms.TextInput(attrs={'class':'span1'}),
+           'final_year': SelectDateWidget(), 
+           'final_vol': forms.TextInput(attrs={'class':'span1'}),
+           'final_num': forms.TextInput(attrs={'class':'span1'}),
+           'url_main_collection': forms.TextInput(attrs={'class':'span8'}),
+           'url_online_submission': forms.TextInput(attrs={'class':'span8'}),
+           'url_journal': forms.TextInput(attrs={'class':'span8'}),
+           'notes': forms.Textarea(attrs={'class':'xxlarge'}),
+           'id_provided_by_the_center': forms.TextInput(attrs={'class':'span2'}),
+           'pdf_access': forms.Select(attrs={'class':'xlarge'}),
+           'editorial_standard': forms.Select(attrs={'class':'xlarge'}),
+           'literature_type': forms.Select(attrs={'class':'xlarge'}),
+           'copyrighter': forms.TextInput(attrs={'class':'span8'}),
+        }
+    
 class InstitutionForm(ModelForm):
     class Meta:
         model = Institution

@@ -594,9 +594,7 @@ blockquote {
 }
 
 fieldset{
-    border: 1px solid #CCC;
     margin-bottom: 12px;
-    background: #F8F7F7;
 }
 
 label{
@@ -610,6 +608,10 @@ ul li{
 legend{
     font-weight:bold;
 	color: #990000;
+}
+
+.well{
+    background-color: #FFFFFF !important;
 }
 
 #content a.buttonadd {

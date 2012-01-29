@@ -1,0 +1,52 @@
+.asmContainer {
+}
+
+select.asmSelect {
+	display: inline; 
+	margin-right: 1em; 
+}
+
+.asmHighlight {
+	margin: 0;
+	padding: 0;
+}
+
+.asmList {
+	margin: 0.25em 0 1em 0; 
+	position: relative;
+	display: block;
+	padding-left: 0; 
+	list-style: none; 
+}
+
+.asmListItem {
+	position: relative; 
+	margin-left: 0;
+	padding-left: 0;
+	list-style: none;
+	background: #ddd;
+	border: 1px solid #bbb; 
+	width: 100%; 
+	margin: 0 0 -1px 0; 
+	line-height: 1em;
+}
+
+.asmListItem:hover {
+	background-color: #e5e5e5;
+}
+
+.asmListItemLabel {
+	padding: 5px; 
+	display: block;
+}
+
+.asmListSortable .asmListItemLabel {
+	cursor: move; 
+}
+
+.asmListItemRemove {
+	position: absolute;
+	right: 0; 
+	top: 0;
+	padding: 5px; 
+}
