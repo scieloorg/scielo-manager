@@ -64,7 +64,7 @@
         {% endfor %}
     <tbody>
 </table>
-    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.start_index }} {% trans 'of' %} {{ institutions.paginator.count }}
+    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.end_index }} {% trans 'of' %} {{ institutions.paginator.count }}
 <div class="pagination">
     <ul>
         <li class="prev {% if not institutions.has_previous %}disabled{% endif %}">

@@ -14,12 +14,14 @@
             <a href="{% url institution.index %}" ><img src="/static/images/publisher_manager.png" border="0" /></a>
             <h1><a href="{% url institution.index %}" >{% trans "Institution Manager" %}</a></h1>
         </li>
+        {% if perms.auth %}
         <li class="toolbox">
             <a href="{% url user.index %}" ><img src="/static/images/user_manager.png" border="0" /></a>
-            <h1><a href="{% url user.index %}" >{% trans "User Manager" %}</a></h1> 
-        </li>      
+            <h1><a href="{% url user.index %}" >{% trans "User Manager" %}</a></h1>
+        </li>
+        {% endif %}
     </ul>
-    <div class="spacer">&#160;</div>    
+    <div class="spacer">&#160;</div>
 </div>
 {%endif%}
 <h1>{% trans "About SciELO Manager Tools" %}</h1>
@@ -52,7 +54,7 @@ in euismod condimentum, lacus nisl sagittis arcu, sit amet pharetra leo dolor ne
 eleifend. Morbi euismod quam a lacus sagittis accumsan. Quisque consectetur, mauris eget commodo condimentum, quam ipsum
 rutrum libero, id ullamcorper augue odio et ante. Praesent et quam lacus. Morbi a metus quis purus tincidunt elementum et
 ac nunc. Donec a lorem sit amet urna dictum porttitor. Nulla lacus ligula, gravida id sagittis in, tincidunt sit amet lectus.
-Donec pretium luctus felis eu egestas. {% endblocktrans %} 
+Donec pretium luctus felis eu egestas. {% endblocktrans %}
 </p>
 
 {% endblock %}

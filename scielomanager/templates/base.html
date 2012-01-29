@@ -116,9 +116,11 @@
                             <li>
                                 <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institution' %} </a>
                             </li>
+                            {% if perms.auth %}
                             <li>
                                 <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'User' %} </a>
                             </li>
+                            {% endif %}
                             {% endif %}
                         </ul>
                     </div>
