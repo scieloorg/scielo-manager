@@ -153,7 +153,7 @@ class JournalShortTitleOtherForms(models.Model):
         choices=choices.TITLE_TYPE,null=True,)
 
 class UseLicense(models.Model):
-    license_code = models.CharField(_('License Code'), null=False, blank=False, max_length=64)
+    license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
     disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
 
