@@ -18,6 +18,8 @@ except ImportError:
     import settings
 
 setup_environ(settings)
+from django.db.utils import IntegrityError
+from django.db import transaction
 from journalmanager.models import *
 
 class IssueImport:
@@ -50,21 +52,29 @@ class IssueImport:
         """
         return self._summary
 
+    @transaction.commit_manually
     def load_use_license(self, journal_issn):
         use_license = UseLicense()
+        exists = False
         if self._journals.has_key(journal_issn):
             license = self._journals[journal_issn]['use_license']
             if license:
                 use_license.license_code = license['license_code']
                 use_license.reference_url = license['reference_url']
                 use_license.disclaimer = license['disclaimer']
-                use_license.save(force_insert=True)
-                self.charge_summary('licenses')
+                try:
+                    use_license.save(force_insert=True)
+                    self.charge_summary('licenses')
+                except IntegrityError:
+                    transaction.rollback()
+                    self.charge_summary('duplicated_code_licenses')
+                    use_license = UseLicense.objects.get(license_code=license['license_code'])
             else:
                 return False
         else:
             return False        
-
+        
+        transaction.commit()
         return use_license
 
     def load_issue(self, record):
