@@ -62,7 +62,7 @@
                 <div class="options">
                     <ul>
                         <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
-                        <li><a class="label" href="/journal/issue/{{ ct.pk }}/">{% trans 'Issues' %}</a></li>
+                        <li><a class="label" href="{% url issue.index ct.pk %}">{% trans 'Issues' %}</a></li>
                         <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
                         <li><a class="label important" href="/journal/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
                     </ul>
