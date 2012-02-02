@@ -679,7 +679,7 @@ msgstr "Fascículos"
 #: journalmanager/templates/journalmanager/journal_dashboard.html:66
 #: journalmanager/templates/journalmanager/journal_search_result.html:72
 msgid "Sections"
-msgstr "Sessões"
+msgstr "Seções"
 
 #: journalmanager/templates/journalmanager/open_journal.html:6
 msgid "Ingress"
