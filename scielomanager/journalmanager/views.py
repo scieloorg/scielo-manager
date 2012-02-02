@@ -199,31 +199,6 @@ def journal_index(request):
                        })
     return HttpResponse(t.render(c))
 
-# @login_required
-# def add_journal(request):
-#     user_collection = request.user.userprofile_set.get().collection
-#     if request.method == 'POST':
-
-#         add_form = JournalForm(request.POST)
-
-#         if add_form.is_valid():
-#             add_form.save_all(creator=request.user)
-#             return HttpResponseRedirect("/journal")
-#         else:
-#             return render_to_response('journalmanager/add_journal.html', {
-#                                       'mode': 'add_journal',
-#                                       'add_form': add_form,
-#                                       'user_name': request.user.pk,
-#                                       'collection': user_collection},
-#                                       context_instance=RequestContext(request))
-#     else:
-#         add_form = JournalForm()
-#         return render_to_response('journalmanager/add_journal.html', {
-#                               'add_form': add_form,
-#                               'mode': 'add_journal',
-#                               'user_name': request.user.pk,
-#                               'collection': user_collection},
-#                               context_instance=RequestContext(request))
 @login_required
 def add_journal(request, journal_id=None):
     """
