@@ -19,14 +19,14 @@
 {% block body %}
 
     <h4>{% trans "New Journal" %}</h4>
-<!-- 
+<!--
     {% if add_form.errors %}
         <div class="alert-message block-message error">
             {{ add_form.errors }}
         </div>
     {% endif %} -->
 
-    <form method="post" action="/journal/add/">
+    <form method="post" action="#">
 
     {% csrf_token %}
 
@@ -60,7 +60,7 @@
                     {% if add_form.institution.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
                 </div>
                 {{ add_form.institution.help_text }}
-            </div>             
+            </div>
             <div class="clearfix">
                     {{ add_form.scielo_issn.label_tag }}
                 <div class="input">{{ add_form.scielo_issn }}</div>
@@ -68,7 +68,7 @@
             <div class="clearfix">
                     {{ add_form.print_issn.label_tag }}
                 <div class="input">{{ add_form.print_issn }}</div>
-            </div>           
+            </div>
             <div class="clearfix">
                     {{ add_form.eletronic_issn.label_tag }}
                 <div class="input">{{ add_form.eletronic_issn }}</div>
@@ -178,7 +178,7 @@
         </div>
     </div>
      <span class="label">{% trans "License" %}</span>
-     <div class="well">  
+     <div class="well">
         <div class="clearfix {% if add_form.use_license.errors %}error{% endif %}">
                 {{ add_form.use_license.label_tag }}
             <div class="input">
@@ -222,7 +222,7 @@
         <div class="clearfix">
                 {{ add_form.validated.label_tag }}
             <div class="input">{{ add_form.validated }}</div>
-        </div> 
+        </div>
      </div>
      <div class="row show-grid">
         <div class="span4 offset12">
@@ -232,7 +232,7 @@
      </div>
     </form>
 {% endblock %}
-    
+
 {% block extrafooter %}
     <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js" type="text/javascript"></script>
@@ -251,7 +251,7 @@
             $( "#toggle" ).click(function() {
                 $( "#id_institution" ).toggle();
             });
-        }); 
+        });
     </script>
 
 {% endblock %}
