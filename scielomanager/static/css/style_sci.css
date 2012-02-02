@@ -613,6 +613,23 @@ legend{
 .well{
     background-color: #FFFFFF !important;
 }
+.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl{
+    width: 700px;
+}
+
+.ui-autocomplete-input ui-widget ui-widget-content ui-corner-left{
+    background-color: #DDD;
+    width:300px;
+}
+ui-autocomplete-input ui-widget ui-widget-content ui-corner-left ui-autocomplete-loading
+{
+    width:10px;
+}
+
+
+button.ui-button-icon-only {
+    width: 5.4em !important;
+}
 
 #content a.buttonadd {
     background:#527FA3 url(/static/add.png) no-repeat scroll right center;
