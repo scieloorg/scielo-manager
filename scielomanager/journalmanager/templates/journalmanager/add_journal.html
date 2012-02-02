@@ -19,12 +19,6 @@
 {% block body %}
 
     <h4>{% trans "New Journal" %}</h4>
-<!-- 
-    {% if add_form.errors %}
-        <div class="alert-message block-message error">
-            {{ add_form.errors }}
-        </div>
-    {% endif %} -->
 
     <form method="post" action="/journal/add/">
 
@@ -237,14 +231,10 @@
     <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
 
     <script>
         $(document).ready(function() {
-            $("select[multiple]").asmSelect({
-                sortable: false,
-                animate: true,
-                addItemTarget: 'top'
-            });
 
             $( "#id_institution" ).combobox({ autoFocus: true });
 
@@ -253,5 +243,4 @@
             });
         }); 
     </script>
-
 {% endblock %}
