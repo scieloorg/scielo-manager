@@ -110,9 +110,8 @@
                 <p>Rua Dr. Diogo de   Farias, 1087 conj. 810&nbsp; - Vila Clementino  04037-003 São Paulo SP -   Brazil</p>
                 <p>Tel.: (55 11) 3369-4080 - Email: <a href="mailto:scielo.avaliacao@scielo.org">scielo.avaliacao@scielo.org</a>
             </div><!--Footer-->
+            {% block extrafooter %}{% endblock %}
         </div><!--container-fluid-->
-
-        {% block extrafooter %}{% endblock %}
         <script type="text/javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
         <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
         <script type="text/javascript" src="{% get_static_prefix %}google-prettify/prettify.js"></script>
