@@ -3,4 +3,5 @@ settings_local.include
 *.pyc
 *.sqlite
 *.mo
+*.coverage
 _build/
