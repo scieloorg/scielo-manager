@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     url(r'^institution/$', institution_index, name='institution.index' ),
     url(r'^institution/add/$', add_institution, name='institution.add' ),
     url(r'^institution/show/(?P<institution_id>\d+)/$', show_institution, name='institution.show' ),
-    url(r'^institution/edit/(?P<institution_id>\d+)/$', edit_institution, name='institution.edit' ),
+    url(r'^institution/edit/(?P<institution_id>\d+)/$', add_institution, name='institution.edit' ),
     url(r'^institution/delete/(?P<institution_id>\d+)/$', delete_institution, name='institution.delete' ),
 
     #Search Institution
