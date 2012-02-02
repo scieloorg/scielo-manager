@@ -7,143 +7,115 @@
         <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
         <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
         <link rel="shortcut icon" href="/static/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style_sci.css"/>
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/bootstrap-1.4.0.min.css">
-
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap.css">
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}google-prettify/prettify.css">
         {% block extrahead %}{% endblock %}
     </head>
     <body>
-        <div class="{% block container_class %}container wide{% endblock %}">
-            <div id="bar_top">
-               <div class="languages">
-                   <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
-                   <ul>
-                       {% csrf_token %}
-                        <input type="hidden" id="language" name="language">
-                        <li><a id="lang_pt-BR" href="javascript: void(0)" title="Alterar o idioma para Português">
-                        {% if request.LANGUAGE_CODE == 'pt-br' %}<span class="selected_language">Português</span>{% else %}{% trans "Português" %}{% endif %}
-                        </a></li>
-                        <li><a id="lang_es" href="javascript: void(0)" title="Cambiar el idioma a Español">
-                        {% if request.LANGUAGE_CODE == 'es' %}<span class="selected_language">Español</span>{% else %}{% trans "Español" %}{% endif %}
-                        </a></li>
-                        <li><a id="lang_en" href="javascript: void(0)" title="Change language to English">
-                        {% if request.LANGUAGE_CODE == 'en' %}<span class="selected_language">English</span>{% else %}{% trans "English" %}{% endif %}
-                        </a></li>
-                   </ul>
-                   </form>
-               </div>
-           </div>
-            <div class="top">
-                <div class="banner">
-                    <div class="identification">
-                    </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span2">
+                    <img src="{% get_static_prefix %}images/scielologo.gif">
                 </div>
-                {% block login %}
-                <div class="topRight">
-                    {% if user.is_authenticated %}
-                    <div class="userData">
-                        <div class="userData_block">
-                            <span>{% trans 'Username' %}</span>
-                            <big>{{ user.username }}</big>
-                        </div>
-                        <div class="userData_block">
-                            <span>{% trans 'Collection' %}</span>
-                            <big>{{ collection }}</big>
-                        </div>
-                        <div class="userData_block logout">
-                            <table>
-                            <tr>
-                                <td>
-                                    <a href="/accounts/logout" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
-                                </td>
-                                <td>
-                                    <a href="/accounts/logout">
-                                        <img class="nohover" src="/static/images/button_logout.gif" alt="{% trans 'Logout' %}"/>
-                                        <img class="hover" src="/static/images/button_logout_hover.gif" alt="{% trans 'Logout' %}"/>
-                                    </a>
-                                </td>
-                            </tr>
-                            </table>
-                        </div>
-                        <div class="spacer">&#160;</div>
-                    </div>
-                    {% else %}
-                    <div class="login">
-                        <div class="loginForm">
-                            <form action="{% url journalmanager.user_login %}" method="post">
-                                {% csrf_token %}
-                                <div class="formSegment">
-                                    <label for="id_username">{% trans 'Username' %}</label>
-                                    <input type="text" maxlength="30" name="username" class="textEntry" id="id_username" onblur="this.className = 'textEntry';" onfocus="this.className = 'textEntry textEntryFocus';"/>
-                                </div>
-                                <div class="formSegment">
-                                    <label for="id_password">{% trans 'Password' %}</label>
-                                    <input type="password" id="id_password" class="textEntry" name="password" onblur="this.className = 'textEntry';" onfocus="this.className = 'textEntry textEntryFocus';" />
-                                </div>
-                                <input type="hidden" value="{{ next|default:'' }}" name="next" />
-                                <input type="submit" class="submit" value="{% trans 'login' %}" />
-                            </form>
-                        </div>
-                        <div class="loginOption">
-                            <ul>
-                                <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
-                                <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
-                            </ul>
-                            {% if invalid %}
-                                 <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
-                            {% endif %}
-                            {% if active %}
-                                 <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
-                            {% endif %}
-                            {% if required %}
-                                 <div class="loginError">{% trans 'Please login on the system to see this page' %}</div>
-                            {% endif %}
-                        </div>
-                    <div class="spacer">&#160;</div>
-                    </div>
-                    {% endif %}
-                    <div class="topMenu">
-                        <ul>
+                <div class="span6"><h1>SciELO Manager</h1></div>
+                <div class="span2">
+                   <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
+                        <input type="hidden" id="language" name="language">
+                        {% csrf_token %}
+                        <div class="btn-toolbar">
+                            <div class="btn-group">
+                                <a class="btn" href="#">{% trans 'Language' %}</a>
+                                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Português</a></li>
+                                    <li><a href="#">Inglês</a></li>
+                                    <li><a href="#">Espanhol</a></li>
+                                </ul>
+                            </div><!--btn-group-->
+                        </div><!--btn-toolbar-->
+                   </form>
+                </div><!--span2-->
+            </div><!--/row-->
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="well">
+                        {% block login %}
                             {% if user.is_authenticated %}
+                                    <h5>{% trans 'Username' %}</h5>
+                                    <h6>{{ user.username }}</h6>
+                                    <h5>{% trans 'Collection' %}</h5>
+                                    <h6>{{ collection }}</h6>
+                                    <a href="/accounts/logout" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
+                            {% else %}
+                                    <form action="{% url journalmanager.user_login %}" method="post">
+                                            <input type="hidden" value="{{ next|default:'' }}" name="next" />
+                                            {% csrf_token %}
+                                            <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/>
+                                            <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/>
+                                            <input class="btn" type="submit" value="{% trans 'login' %}" />
+                                            <ul>
+                                                <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
+                                                <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
+                                            </ul>                                            
+                                    </form>
+                                    {% if invalid %}
+                                         <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
+                                    {% endif %}
+                                    {% if active %}
+                                         <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
+                                    {% endif %}
+                                    {% if required %}
+                                         <div class="loginError">{% trans 'Please login on the system to see this page' %}</div>
+                                    {% endif %}
+                            {% endif %}
+                        {% endblock %}
+                    </div><!--well login box-->
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            {% if user.is_authenticated %}
+                            <li class="nav-header">{% trans 'Tools' %}</li>
                             <li>
-                                <a href="{% url journal.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Journal' %} </a>
+                                <a href="{% url journal.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Journals Dashboard' %} </a>
                             </li>
                             <li>
-                                <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institution' %} </a>
+                                <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institutions Dashboard' %} </a>
                             </li>
                             {% if perms.auth %}
                             <li>
-                                <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'User' %} </a>
+                                <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Users Dashboard' %} </a>
                             </li>
                             {% endif %}
+                            <li class="nav-header">{% trans 'Short Access' %}</a></li>
+                            <li><a href="#">{% trans 'Add Journal' %}</a></li>
+                            <li><a href="#">{% trans 'Add Issue' %}</a></li>
+                            <li><a href="#">{% trans 'Add Section' %}</a></li>
+                            <li><a href="#">{% trans 'Add Institution' %}</a></li>
                             {% endif %}
+                            <li class="nav-header">{% trans 'Help' %}</a></li>
+                            <li><a href="#">{% trans 'About' %}</a></li>
+                            <li><a href="#">{% trans 'Documentations' %}</a></li>
+                            <li><a href="#">{% trans 'Report Bug' %}</a></li>
                         </ul>
-                    </div>
-                </div>
-                {% endblock %}
-                <div class="spacer">&#160;</div>
-            </div>
-            <div class="middle">
+                    </div><!--well sidebar-nav-->
+                </div><!--span3 left menu-->
+                <div class="span9">
                 <div class="mainContent">
                     {% block stepmenu_top %}{% endblock %}
                     {% block body %}{% endblock %}
-                </div>
-                <div class="spacer">&#160;</div>
+                </div><!--span9 content-->
             </div>
             <div class="footer">
-                <p>
-                    <strong>SciELO - Scientific Electronic Library Online  <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a> <a href="http://www.bireme.org">BIREME</a> <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a> </strong></p>
-                    <p>Rua Dr. Diogo de   Farias, 1087 conj. 810&nbsp; - Vila Clementino  04037-003 São Paulo SP -   Brazil</p>
-                    <p>Tel.: (55 11) 3369-4080 - Email: <a href="mailto:scielo.avaliacao@scielo.org">scielo.avaliacao@scielo.org</a>
-                </p>
-            </div>
-        </div>
-
-        <!--Script-->
-        <script type="text/javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-        <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
-        <!--Script-->
+                <strong>SciELO - Scientific Electronic Library Online  <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a> <a href="http://www.bireme.org">BIREME</a> <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a> </strong></p>
+                <p>Rua Dr. Diogo de   Farias, 1087 conj. 810&nbsp; - Vila Clementino  04037-003 São Paulo SP -   Brazil</p>
+                <p>Tel.: (55 11) 3369-4080 - Email: <a href="mailto:scielo.avaliacao@scielo.org">scielo.avaliacao@scielo.org</a>
+            </div><!--Footer-->
+        </div><!--container-fluid-->
 
         {% block extrafooter %}{% endblock %}
+        <script type="text/javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
+        <script type="text/javascript" src="{% get_static_prefix %}google-prettify/prettify.js"></script>
+        <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
     </body>
 </html>
