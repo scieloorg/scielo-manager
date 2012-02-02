@@ -2,28 +2,6 @@
 {% load i18n %}
 {% block body_title %}{% trans "User Evaluations" %}{% endblock %}
 {% block body %}
-
-{% if user.is_authenticated %}
-<div class="tools">
-    <ul>
-        <li class="toolbox">
-            <a href="{% url journal.index %}" ><img src="/static/images/title_manager.png" border="0" /></a>
-            <h1><a href="{% url journal.index %}" >{% trans "Journal Manager" %}</a></h1>
-        </li>
-        <li class="toolbox">
-            <a href="{% url institution.index %}" ><img src="/static/images/publisher_manager.png" border="0" /></a>
-            <h1><a href="{% url institution.index %}" >{% trans "Institution Manager" %}</a></h1>
-        </li>
-        {% if perms.auth %}
-        <li class="toolbox">
-            <a href="{% url user.index %}" ><img src="/static/images/user_manager.png" border="0" /></a>
-            <h1><a href="{% url user.index %}" >{% trans "User Manager" %}</a></h1>
-        </li>
-        {% endif %}
-    </ul>
-    <div class="spacer">&#160;</div>
-</div>
-{%endif%}
 <h1>{% trans "About SciELO Manager Tools" %}</h1>
 <h2><img src="/static/images/title_manager.png" border="0" width="30px" height="30px" /> {% trans "Journal Manager" %}</h2>
 <p>
