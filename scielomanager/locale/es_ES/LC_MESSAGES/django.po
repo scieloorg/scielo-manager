@@ -1,4 +1,3 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
@@ -7,14 +6,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-24 10:54-0200\n"
-"PO-Revision-Date: 2012-01-26 12:09-0300\n"
+"POT-Creation-Date: 2012-01-27 15:57-0200\n"
+"PO-Revision-Date: 2012-01-27 15:21-0300\n"
 "Last-Translator: ednilson.gesseff <ednilson.gesseff@scielo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: journalmanager/helptexts.py:9
+#, python-format
+msgid ""
+"Enter parallel titles in accordance with the sequence and\n"
+"    typography in which they appear on the title page or its substitute.\n"
+"    <a href=\"%sterm-parallell-titles\" target=\"_blank\">Read more</a>"
+msgstr ""
 
 #: journalmanager/models.py:15
 msgid "Database Name"
@@ -32,8 +39,7 @@ msgstr "Nombre de colección"
 msgid "Instance URL"
 msgstr "URL de la instancia"
 
-#: journalmanager/models.py:24
-#: journalmanager/models.py:52
+#: journalmanager/models.py:24 journalmanager/models.py:52
 #: journalmanager/models.py:128
 #: journalmanager/templates/journalmanager/institution_dashboard.html:39
 #: journalmanager/templates/journalmanager/institution_search_result.html:43
@@ -77,8 +83,7 @@ msgstr "Ciudad"
 msgid "Address"
 msgstr "Dirección"
 
-#: journalmanager/models.py:45
-#: journalmanager/models.py:184
+#: journalmanager/models.py:45 journalmanager/models.py:184
 msgid "Number"
 msgstr "Número"
 
@@ -122,8 +127,7 @@ msgstr "Fecha de actualización"
 msgid "Journal Title"
 msgstr "Título de la revista"
 
-#: journalmanager/models.py:73
-#: journalmanager/models.py:151
+#: journalmanager/models.py:73 journalmanager/models.py:151
 #: journalmanager/templates/journalmanager/show_journal.html:37
 msgid "Short Title"
 msgstr "Título abreviado"
@@ -212,13 +216,11 @@ msgstr "Classificación"
 msgid "National Code"
 msgstr "Código nacional"
 
-#: journalmanager/models.py:102
-#: journalmanager/models.py:197
+#: journalmanager/models.py:102 journalmanager/models.py:197
 msgid "Editorial Standard"
 msgstr "Norma Editorial"
 
-#: journalmanager/models.py:104
-#: journalmanager/models.py:195
+#: journalmanager/models.py:104 journalmanager/models.py:195
 #: journalmanager/templates/journalmanager/show_journal.html:140
 msgid "Controlled Vocabulary"
 msgstr "Vocabulario Controlado"
@@ -278,14 +280,12 @@ msgstr "ID proporcionada por el Centro"
 msgid "Mission"
 msgstr "Misión"
 
-#: journalmanager/models.py:143
-#: journalmanager/models.py:168
+#: journalmanager/models.py:143 journalmanager/models.py:168
 #: journalmanager/templates/journalmanager/show_journal.html:116
 msgid "Language"
 msgstr "Idioma"
 
-#: journalmanager/models.py:147
-#: journalmanager/models.py:182
+#: journalmanager/models.py:147 journalmanager/models.py:182
 #: journalmanager/templates/journalmanager/show_journal.html:29
 msgid "Title"
 msgstr "Título"
@@ -359,8 +359,8 @@ msgid "Text Languages"
 msgstr "Idiomas del texto"
 
 #: journalmanager/models.py:212
-msgid "Abstract Languages"
-msgstr "Idiomas del resumen"
+msgid "Language of the Abstract"
+msgstr ""
 
 #: journalmanager/models.py:216
 msgid "Date"
@@ -508,32 +508,49 @@ msgstr "Acerca de el SciELO Manager Tools"
 
 #: journalmanager/templates/journalmanager/home_journal.html:28
 msgid ""
-" Nulla facilisi. Aliquam tincidunt mi et libero volutpat lacinia. Sed ante lectus, dapibus venenatis facilisis eget,\n"
-"bibendum eu lectus. Proin felis lacus, porta sed posuere non, sollicitudin nec arcu. Sed dignissim ultrices faucibus.\n"
-"Duis nec ante sit amet ligula laoreet gravida. Ut a rhoncus enim. Proin id est nunc, in pretium augue. Pellentesque\n"
-"hendrerit sapien nec elit elementum gravida. In vulputate porta turpis sed sodales. Nam ultrices urna non tellus malesuada\n"
-"tincidunt. Donec at quam ac felis condimentum congue. Curabitur commodo nulla eget nibh mattis et aliquam tortor blandit.\n"
+" Nulla facilisi. Aliquam tincidunt mi et libero volutpat lacinia. Sed ante "
+"lectus, dapibus venenatis facilisis eget,\n"
+"bibendum eu lectus. Proin felis lacus, porta sed posuere non, sollicitudin "
+"nec arcu. Sed dignissim ultrices faucibus.\n"
+"Duis nec ante sit amet ligula laoreet gravida. Ut a rhoncus enim. Proin id "
+"est nunc, in pretium augue. Pellentesque\n"
+"hendrerit sapien nec elit elementum gravida. In vulputate porta turpis sed "
+"sodales. Nam ultrices urna non tellus malesuada\n"
+"tincidunt. Donec at quam ac felis condimentum congue. Curabitur commodo "
+"nulla eget nibh mattis et aliquam tortor blandit.\n"
 "Donec sed ipsum a lorem euismod semper. Nullam non scelerisque leo. "
 msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:38
 msgid ""
-" Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quam arcu, porta vel dictum et, accumsan\n"
-"vel lectus. Donec et neque diam, a ultrices sapien. Nunc hendrerit venenatis orci nec imperdiet. Donec bibendum,\n"
-"ligula nec pretium interdum, ante ante ornare augue, id interdum sem neque eu magna. Fusce neque massa, feugiat\n"
-"id convallis id, viverra sit amet lectus. Aenean eleifend, eros sollicitudin accumsan dictum, orci enim auctor purus,\n"
-"eu egestas risus libero ac leo. Praesent vitae sem ante. Nam euismod nulla varius nulla cursus varius. Ut elit justo,\n"
-"bibendum vel vestibulum eget, eleifend quis nunc. Phasellus imperdiet dignissim imperdiet. Suspendisse sit amet quam enim.\n"
-"Suspendisse at odio non justo aliquam commodo. Praesent eu dui vitae libero pulvinar blandit vel sed leo. Sed auctor, dui\n"
-"in euismod condimentum, lacus nisl sagittis arcu, sit amet pharetra leo dolor nec erat. Proin gravida accumsan nisl a lobortis.\n"
+" Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quam arcu, "
+"porta vel dictum et, accumsan\n"
+"vel lectus. Donec et neque diam, a ultrices sapien. Nunc hendrerit venenatis "
+"orci nec imperdiet. Donec bibendum,\n"
+"ligula nec pretium interdum, ante ante ornare augue, id interdum sem neque "
+"eu magna. Fusce neque massa, feugiat\n"
+"id convallis id, viverra sit amet lectus. Aenean eleifend, eros sollicitudin "
+"accumsan dictum, orci enim auctor purus,\n"
+"eu egestas risus libero ac leo. Praesent vitae sem ante. Nam euismod nulla "
+"varius nulla cursus varius. Ut elit justo,\n"
+"bibendum vel vestibulum eget, eleifend quis nunc. Phasellus imperdiet "
+"dignissim imperdiet. Suspendisse sit amet quam enim.\n"
+"Suspendisse at odio non justo aliquam commodo. Praesent eu dui vitae libero "
+"pulvinar blandit vel sed leo. Sed auctor, dui\n"
+"in euismod condimentum, lacus nisl sagittis arcu, sit amet pharetra leo "
+"dolor nec erat. Proin gravida accumsan nisl a lobortis.\n"
 msgstr ""
 
 #: journalmanager/templates/journalmanager/home_journal.html:51
 msgid ""
-"  Phasellus rhoncus vehicula neque eu tincidunt. Etiam vestibulum purus eget tortor convallis gravida. Proin semper semper\n"
-"eleifend. Morbi euismod quam a lacus sagittis accumsan. Quisque consectetur, mauris eget commodo condimentum, quam ipsum\n"
-"rutrum libero, id ullamcorper augue odio et ante. Praesent et quam lacus. Morbi a metus quis purus tincidunt elementum et\n"
-"ac nunc. Donec a lorem sit amet urna dictum porttitor. Nulla lacus ligula, gravida id sagittis in, tincidunt sit amet lectus.\n"
+"  Phasellus rhoncus vehicula neque eu tincidunt. Etiam vestibulum purus eget "
+"tortor convallis gravida. Proin semper semper\n"
+"eleifend. Morbi euismod quam a lacus sagittis accumsan. Quisque consectetur, "
+"mauris eget commodo condimentum, quam ipsum\n"
+"rutrum libero, id ullamcorper augue odio et ante. Praesent et quam lacus. "
+"Morbi a metus quis purus tincidunt elementum et\n"
+"ac nunc. Donec a lorem sit amet urna dictum porttitor. Nulla lacus ligula, "
+"gravida id sagittis in, tincidunt sit amet lectus.\n"
 "Donec pretium luctus felis eu egestas. "
 msgstr ""
 
@@ -813,8 +830,7 @@ msgid "user not activated"
 msgstr "Usuario no activado"
 
 #: journalmanager/templates/journalmanager/show_user.html:33
-#: templates/base.html:89
-#: templates/flatpages/default.html:88
+#: templates/base.html:89 templates/flatpages/default.html:88
 msgid "login"
 msgstr ""
 
@@ -847,99 +863,88 @@ msgid "Internal Server Error (500)"
 msgstr ""
 
 #: templates/500.html:8
-msgid "The server encountered an unexpected condition which prevented it from fulfilling the request."
-msgstr "El servidor encontró una condición inesperada que le impidió cumplir con la solicitud."
+msgid ""
+"The server encountered an unexpected condition which prevented it from "
+"fulfilling the request."
+msgstr ""
+"El servidor encontró una condición inesperada que le impidió cumplir con la "
+"solicitud."
 
 #: templates/base.html:8
 msgid "SciELO Manager"
 msgstr ""
 
-#: templates/base.html:29
-#: templates/flatpages/default.html:28
+#: templates/base.html:29 templates/flatpages/default.html:28
 msgid "Português"
 msgstr "Portugués"
 
-#: templates/base.html:32
-#: templates/flatpages/default.html:31
+#: templates/base.html:32 templates/flatpages/default.html:31
 msgid "Español"
 msgstr ""
 
-#: templates/base.html:35
-#: templates/flatpages/default.html:34
+#: templates/base.html:35 templates/flatpages/default.html:34
 msgid "English"
 msgstr "Inglés"
 
-#: templates/base.html:51
-#: templates/base.html.py:81
-#: templates/flatpages/default.html:50
-#: templates/flatpages/default.html:80
+#: templates/base.html:51 templates/base.html.py:81
+#: templates/flatpages/default.html:50 templates/flatpages/default.html:80
 msgid "Username"
 msgstr "Nombre de usuario"
 
-#: templates/base.html:55
-#: templates/flatpages/default.html:54
+#: templates/base.html:55 templates/flatpages/default.html:54
 msgid "Collection"
 msgstr "Colección"
 
-#: templates/base.html:62
-#: templates/base.html.py:66
-#: templates/base.html:67
-#: templates/flatpages/default.html:61
-#: templates/flatpages/default.html:65
-#: templates/flatpages/default.html:66
-#: templates/registration/logout.html:7
+#: templates/base.html:62 templates/base.html.py:66 templates/base.html:67
+#: templates/flatpages/default.html:61 templates/flatpages/default.html:65
+#: templates/flatpages/default.html:66 templates/registration/logout.html:7
 msgid "Logout"
 msgstr ""
 
-#: templates/base.html:85
-#: templates/flatpages/default.html:84
+#: templates/base.html:85 templates/flatpages/default.html:84
 msgid "Password"
 msgstr "Contraseña"
 
-#: templates/base.html:94
-#: templates/flatpages/default.html:93
+#: templates/base.html:94 templates/flatpages/default.html:93
 msgid "Forgot password?"
 msgstr "¿Olvidaste tu contraseña?"
 
-#: templates/base.html:95
-#: templates/flatpages/default.html:94
+#: templates/base.html:95 templates/flatpages/default.html:94
 msgid "create an account to submit trial records"
 msgstr "crear una cuenta para enviar los registros de prueba"
 
-#: templates/base.html:95
-#: templates/flatpages/default.html:94
+#: templates/base.html:95 templates/flatpages/default.html:94
 #: templates/registration/registration_form.html:6
 #: templates/registration/registration_form.html:19
 msgid "Register"
 msgstr "registro"
 
-#: templates/base.html:98
-#: templates/flatpages/default.html:97
+#: templates/base.html:98 templates/flatpages/default.html:97
 msgid "Your username and password did not match. Please try again."
-msgstr "Su nombre de usuario y la contraseña no coinciden. Por favor, inténtalo de nuevo."
+msgstr ""
+"Su nombre de usuario y la contraseña no coinciden. Por favor, inténtalo de "
+"nuevo."
 
-#: templates/base.html:101
-#: templates/flatpages/default.html:100
-msgid "Your account is not active. Please contact the SciELO or verify your e-mail"
-msgstr "Tu cuenta no está activa. Por favor, póngase en contacto con la SciELO o verificar su e-mail"
+#: templates/base.html:101 templates/flatpages/default.html:100
+msgid ""
+"Your account is not active. Please contact the SciELO or verify your e-mail"
+msgstr ""
+"Tu cuenta no está activa. Por favor, póngase en contacto con la SciELO o "
+"verificar su e-mail"
 
-#: templates/base.html:104
-#: templates/flatpages/default.html:103
+#: templates/base.html:104 templates/flatpages/default.html:103
 msgid "Please login on the system to see this page"
 msgstr "Por favor ingrese en el sistema para ver esta página"
 
-#: templates/base.html:114
-#: templates/flatpages/default.html:113
+#: templates/base.html:114 templates/flatpages/default.html:113
 msgid "Journal"
 msgstr "Revista"
 
-#: templates/base.html:117
-#: templates/flatpages/default.html:116
+#: templates/base.html:117 templates/flatpages/default.html:116
 msgid "Institution"
 msgstr "Institución"
 
-#: templates/base.html:120
-#: templates/flatpages/default.html:119
+#: templates/base.html:120 templates/flatpages/default.html:119
 msgid "User"
 msgstr "Usuario"
 
@@ -999,8 +1004,12 @@ msgid "E-mail sent"
 msgstr "E-mail envidado"
 
 #: templates/registration/password_reset_done.html:12
-msgid "We have sent you an email with a link to reset your password. Please check your email and click the link to continue."
-msgstr "Te hemos enviado un e-mail con un link para restablecer tu contraseña. Por favor, consultar su e-mial y haga clic en el link para continuar."
+msgid ""
+"We have sent you an email with a link to reset your password. Please check "
+"your email and click the link to continue."
+msgstr ""
+"Te hemos enviado un e-mail con un link para restablecer tu contraseña. Por "
+"favor, consultar su e-mial y haga clic en el link para continuar."
 
 #: templates/registration/password_reset_email.html:4
 #, python-format
@@ -1016,26 +1025,33 @@ msgid ""
 "and you can access your account now:\n"
 "http://%(domain)s\n"
 "\n"
-"To reset your password, please click the following link, or copy and paste it\n"
+"To reset your password, please click the following link, or copy and paste "
+"it\n"
 "into your web browser:\n"
 msgstr ""
 "\n"
-"Saludos %(user)s, \n"
+"Saludos %(user)s,\n"
 "\n"
-"Usted está recibiendo este mensaje porque usted (o alguien haciéndose pasar por usted) \n"
-"pidió que la contraseña se restablecerá en %(site_name)s. Si usted no \n"
-"desea restablecer su contraseña, por favor ignore este mensaje. \n"
+"Usted está recibiendo este mensaje porque usted (o alguien haciéndose pasar "
+"por usted)\n"
+"pidió que la contraseña se restablecerá en %(site_name)s. Si usted no\n"
+"desea restablecer su contraseña, por favor ignore este mensaje.\n"
 "\n"
-"Su nombre de usuario es: %(user) \n"
-"y se puede acceder a su cuenta ahora: \n"
-"http://%(dominio)s \n"
+"Su nombre de usuario es: %(user)s\n"
+"y se puede acceder a su cuenta ahora:\n"
+"http://%(domain)s\n"
 "\n"
-"Para restablecer su contraseña, por favor clic en el link abajo o copia y pega \n"
-"en el navegador: \n"
+"Para restablecer su contraseña, por favor clic en el link abajo o copia y "
+"pega\n"
+"en el navegador:\n"
 
 #: templates/registration/password_reset_form.html:12
-msgid "Enter your e-mail in the form below and we will send your username and instructions to create a new password."
-msgstr "Introduzca su dirección de e-mail en el formulario abajo y le enviaremos su nombre de usuario y las instrucciones para crear una nueva contraseña."
+msgid ""
+"Enter your e-mail in the form below and we will send your username and "
+"instructions to create a new password."
+msgstr ""
+"Introduzca su dirección de e-mail en el formulario abajo y le enviaremos su "
+"nombre de usuario y las instrucciones para crear una nueva contraseña."
 
 #: templates/registration/password_reset_form.html:16
 msgid "Send E-mail"
@@ -1046,8 +1062,12 @@ msgid "A confirmation e-mail is on the way"
 msgstr "El e-mail de confirmación está en el camino"
 
 #: templates/registration/registration_complete.html:8
-msgid "Please click the activation link included in the e-mail to confirm you registration."
-msgstr "Por favor, clic en el link de activación incluido en el e-mail para confirmar la inscripción."
+msgid ""
+"Please click the activation link included in the e-mail to confirm you "
+"registration."
+msgstr ""
+"Por favor, clic en el link de activación incluido en el e-mail para "
+"confirmar la inscripción."
 
 #: templates/registration/registration_form.html:9
 msgid "Please correct the errors below."
@@ -1057,3 +1077,5 @@ msgstr "Por favor, corrija los errores abajo."
 msgid "You will receive an email with a link to activate your account."
 msgstr "Usted recibirá un email con un link para activar tu cuenta."
 
+#~ msgid "Abstract Languages"
+#~ msgstr "Idiomas del resumen"
