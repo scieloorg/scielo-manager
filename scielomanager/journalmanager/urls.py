@@ -35,10 +35,10 @@ urlpatterns = patterns('',
     #url(r'^section/search/$', search_section, name='section.search'),
 
     # Issue Tools
-    url(r'^issue/(?P<journal_id>\d+)/$', issue_index, name='issue.index' ),
-    url(r'^issue/add/(?P<journal_id>\d+)/$', add_issue, name='issue.add' ),
+    url(r'^(?P<journal_id>\d+)/issues/$', issue_index, name='issue.index' ),
+    url(r'^(?P<journal_id>\d+)/issues/new/$', add_issue, name='issue.add' ),
+    url(r'^(?P<journal_id>\d+)/issues/(?P<issue_id>\d+)/edit/$', add_issue, name='issue.edit' ),
     url(r'^issue/show/(?P<issue_id>\d+)/$', show_issue, name='issue.show' ),
-    url(r'^issue/edit/(?P<issue_id>\d+)/$', edit_issue, name='issue.edit' ),
     url(r'^issue/delete/(?P<issue_id>\d+)/$', delete_issue, name='issue.delete' ),
     url(r'^issue/search/(?P<journal_id>\d+)/$', search_issue, name='issue.search'),
 

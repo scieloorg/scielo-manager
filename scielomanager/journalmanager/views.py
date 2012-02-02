@@ -333,62 +333,41 @@ def issue_index(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def add_issue(request, journal_id):
-    journal = Journal.objects.get(id=journal_id)
-    user_collection = request.user.userprofile_set.get().collection
-    saved = False
-    add_form = IssueForm()
-    if request.method == 'POST':
-        add_form = IssueForm(request.POST)
-        if add_form.is_valid():
-            issue_data = add_form.save(commit=False)
-            issue_data.update_date = datetime.now
-            if issue_data.creation_date == None:
-                issue_data.creation_date = issue_data.update_date
-            issue_data.collection = user_collection
-            issue_data.journal = journal
-            issue_data.save()
-            saved = True
-    if saved == True:
-        return HttpResponseRedirect("/journal/issue/" + journal_id )
-    else:
-        return render_to_response('journalmanager/add_issue.html', {
-                                      'mode': 'add_issue',
-                                      'add_form': add_form,
-                                      'journal': journal,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
+def add_issue(request, journal_id, issue_id=None):
+    """
+    Handles new and existing issues
+    """
 
-@login_required
-def edit_issue(request, issue_id):
-    form_filled = Issue.objects.get(pk=issue_id)
-    journal = form_filled.journal
     user_collection = request.user.userprofile_set.get().collection
-    saved = False
+    journal = Journal.objects.get(pk=journal_id)
+
     if request.method == 'POST':
-        form = IssueForm(request.POST,instance=form_filled)
-        if form.is_valid():
-            issue_data = form.save(commit=False)
-            issue_data.update_date = datetime.now
-            if issue_data.creation_date == None:
-                issue_data.creation_date = issue_data.update_date
-            issue_data.save()
-            saved = True
+        issue_form_kwargs = {}
+
+        if issue_id is not None: #edit - preserve form-data
+            filled_form = Issue.objects.get(pk=issue_id)
+            issue_form_kwargs['instance'] = filled_form
+
+        add_form = IssueForm(request.POST, **issue_form_kwargs)
+
+        if add_form.is_valid():
+            if issue_id is not None:
+                add_form.save()
+            else:
+                add_form.save_all(user_collection, journal)
+
+            return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
+    else:
+        if issue_id is None: #new
+            add_form = IssueForm()
         else:
-            edit_form = IssueForm(request.POST,instance=form_filled)
-    else:
-        edit_form = IssueForm(instance=form_filled)
-    if saved == True:
-        return HttpResponseRedirect("/journal/issue/" + str(journal.id))
-    else:
-        return render_to_response('journalmanager/edit_issue.html', {
-                              'edit_form': edit_form,
-                              'mode': 'edit_issue',
-                              'issue_id': issue_id,
-                              'user_name': request.user.pk,
-                              'journal_id': journal.id,
+            filled_form = Issue.objects.get(pk=issue_id)
+            add_form = IssueForm(instance=filled_form)
+
+    return render_to_response('journalmanager/add_issue.html', {
+                              'add_form': add_form,
                               'journal': journal,
+                              'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
 

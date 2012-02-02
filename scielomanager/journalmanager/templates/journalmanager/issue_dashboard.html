@@ -56,7 +56,7 @@
             <td>
                 <div class="options">
                     <ul>
-                        <li><a class="label" href="{% url issue.edit  ct.pk %}">{% trans 'Edit' %}</a></li>
+                        <li><a class="label" href="{% url issue.edit ct.journal.pk ct.pk %}">{% trans 'Edit' %}</a></li>
                         {%if ct.is_available %}
                         <li><a class="label important" href="{% url issue.delete ct.pk %}">{% trans 'Disable' %}</a></li>
                         {%endif%}

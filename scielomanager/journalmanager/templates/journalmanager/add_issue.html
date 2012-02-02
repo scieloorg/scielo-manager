@@ -15,7 +15,7 @@
 
 <fieldset>
     <legend>{% trans "New Issue" %}</legend>
-    <form method="post" action="{% url issue.add journal.id %}">{% csrf_token %}
+    <form method="post" action="#">{% csrf_token %}
         <table class="table">
             <col width="10%"/>
             <col width="85%"/>
@@ -27,7 +27,7 @@
                 {{ add_form.as_table }}
             {% endif %}
         </table>
-    <input class="addNew" name="submit" type="submit" value="{% trans "Add Issue" %}">
+    <input class="addNew" name="submit" type="submit" value="{% trans 'Add Issue' %}">
     </form>
 </fieldset>
 {% endblock %}
