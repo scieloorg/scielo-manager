@@ -33,6 +33,17 @@ def index(request):
     c = RequestContext(request,{'collection':user_collection,})
     return HttpResponse(t.render(c),)
 
+@login_required
+def user_index(request):
+    user_collection = request.user.userprofile_set.get().collection
+    users = User.objects.get_query_set().filter(userprofile__collection=user_collection)
+    t = loader.get_template('journalmanager/user_dashboard.html')
+    c = RequestContext(request, {
+                       'users': users,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
 def user_login(request):
     next = request.GET.get('next', None)
     if request.method == 'POST':
@@ -76,75 +87,12 @@ def user_logout(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def user_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    users = User.objects.get_query_set().filter(userprofile__collection=user_collection)
-    t = loader.get_template('journalmanager/user_dashboard.html')
-    c = RequestContext(request, {
-                       'users': users,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def journal_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_journals = Journal.objects.filter(collections=user_collection)
-
-    journals = get_paginated(all_journals, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/journal_dashboard.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def institution_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_institutions = Institution.objects.filter(collection=user_collection)
-
-    institutions = get_paginated(all_institutions, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/institution_dashboard.html')
-    c = RequestContext(request, {
-                       'institutions': institutions,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def show_user(request,user_id):
     user_collection = request.user.userprofile_set.get().collection
     user = Institution.objects.get(id=user_id)
     t = loader.get_template('journalmanager/show_user.html')
     c = RequestContext(request, {
                        'user': user,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def show_journal(request,journal_id):
-    user_collection = request.user.userprofile_set.get().collection
-    journal = Journal.objects.get(id=journal_id)
-    t = loader.get_template('journalmanager/show_journal.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def show_institution(request,institution_id):
-    user_collection = request.user.userprofile_set.get().collection
-    institution = Institution.objects.get(id=institution_id)
-    journals = Journal.objects.filter(institution=institution_id)
-    t = loader.get_template('journalmanager/show_institution.html')
-    c = RequestContext(request, {
-                       'institution': institution,
-                       'journals': journals,
                        'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
@@ -172,81 +120,16 @@ def add_user(request):
             add_user_form = UserForm() # An unbound form
             return render_to_response('journalmanager/add_user.html', {
                                       'add_user_form': add_user_form,
-                                      'type': type,
                                       'mode': 'add_user',
                                       'form': form,
                                       'user_name': request.user.pk,
                                       'collection': user_collection},
                                       context_instance=RequestContext(request))
     else:
-        #recovering Evaluation Data to input form fields
         add_user_form = UserForm() # An unbound form
     return render_to_response('journalmanager/add_user.html', {
                               'add_user_form': add_user_form,
-                              'type': type,
                               'mode': 'user_journal',
-                              'user_name': request.user.pk,
-                              'collection': user_collection},
-                              context_instance=RequestContext(request))
-
-@login_required
-def add_journal(request):
-    user_collection = request.user.userprofile_set.get().collection
-    if request.method == 'POST':
-        #Instance of form
-        form = JournalForm(request.POST)
-        if form.is_valid():
-            form.save_all(creator=request.user)
-            return HttpResponseRedirect("/journal")
-        else:
-            add_journal_form = JournalForm() # An unbound form
-            return render_to_response('journalmanager/add_journal.html', {
-                                      'add_journal_form': add_journal_form,
-                                      'mode': 'add_journal',
-                                      'form': form,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
-    else:
-        #recovering Evaluation Data to input form fields
-        add_journal_form = JournalForm() # An unbound form
-    return render_to_response('journalmanager/add_journal.html', {
-                              'add_journal_form': add_journal_form,
-                              'mode': 'add_journal',
-                              'user_name': request.user.pk,
-                              'collection': user_collection},
-                              context_instance=RequestContext(request))
-
-@login_required
-def add_institution(request):
-    user_collection = request.user.userprofile_set.get().collection
-    if request.method == 'POST':
-        #instance of form
-        form = InstitutionForm(request.POST)
-        if form.is_valid():
-            #Get the user and create a new evaluation
-            user_collection = request.user.userprofile_set.get().collection
-            finstitution = form.save(commit=False)
-            finstitution.collection = user_collection
-            finstitution.save()
-            return HttpResponseRedirect("/journal/institution")
-        else:
-            add_institution_form = UserForm() # An unbound form
-            return render_to_response('journalmanager/add_institution.html', {
-                                      'add_institution_form': add_institution_form,
-                                      'type': type,
-                                      'mode': 'add_institution',
-                                      'form': form,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
-    else:
-        #recovering Evaluation Data to input form fields
-        add_institution_form = InstitutionForm() # An unbound form
-    return render_to_response('journalmanager/add_institution.html', {
-                              'add_institution_form': add_institution_form,
-                              'type': type,
-                              'mode': 'institution_journal',
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
@@ -266,7 +149,6 @@ def edit_user(request,user_id):
             edit_user_form = UserForm(request.POST,instance=formFilled)
             return render_to_response('journalmanager/edit_user.html', {
                                       'edit_user_form': edit_user_form,
-                                      'type': type,
                                       'mode': 'edit_user',
                                       'user_id': user_id,
                                       'user_name': request.user.pk,
@@ -276,7 +158,6 @@ def edit_user(request,user_id):
         edit_user_form = UserForm(instance=formFilled)
     return render_to_response('journalmanager/edit_user.html', {
                               'edit_user_form': edit_user_form,
-                              'type': type,
                               'mode': 'edit_user',
                               'user_id': user_id,
                               'user_name': request.user.pk,
@@ -284,33 +165,87 @@ def edit_user(request,user_id):
                               context_instance=RequestContext(request))
 
 @login_required
-def edit_journal(request,journal_id):
-    #recovering Journal Data to input form fields
-    formFilled = Journal.objects.get(pk=journal_id)
+def show_journal(request, journal_id):
+    user_collection = request.user.userprofile_set.get().collection
+    journal = Journal.objects.get(id=journal_id)
+    t = loader.get_template('journalmanager/show_journal.html')
+    c = RequestContext(request, {
+                       'journal': journal,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def open_journal(request):
+    journals = Journal.objects.all()
+    t = loader.get_template('journalmanager/journal_dashboard.html')
+    c = RequestContext(request, {
+                       'journals': journals,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def journal_index(request):
+    user_collection = request.user.userprofile_set.get().collection
+    all_journals = Journal.objects.filter(collections=user_collection)
+
+    journals = get_paginated(all_journals, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/journal_dashboard.html')
+    c = RequestContext(request, {
+                       'journals': journals,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_journal(request):
     user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
-        form = JournalForm(request.POST,instance=formFilled)
-        if form.is_valid():
-            fjournal = form.save(commit=False)
-            fjournal.creator = request.user
-            fjournal.save()
-            journal = Journal()
+
+        add_form = JournalForm(request.POST)
+
+        if add_form.is_valid():
+            add_form.save_all(creator=request.user)
             return HttpResponseRedirect("/journal")
         else:
-            edit_journal_form = JournalForm(request.POST,instance=formFilled)
+            return render_to_response('journalmanager/add_journal.html', {
+                                      'mode': 'add_journal',
+                                      'add_form': add_form,
+                                      'user_name': request.user.pk,
+                                      'collection': user_collection},
+                                      context_instance=RequestContext(request))
+    else:
+        add_form = JournalForm() 
+        return render_to_response('journalmanager/add_journal.html', {
+                              'add_form': add_form,
+                              'mode': 'add_journal',
+                              'user_name': request.user.pk,
+                              'collection': user_collection},
+                              context_instance=RequestContext(request))
+@login_required
+def edit_journal(request, journal_id):
+    filled_form = Journal.objects.get(pk=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    if request.method == 'POST':
+
+        edit_form = JournalForm(request.POST, instance=filled_form)
+
+        if edit_form.is_valid():
+            edit_form.save_all(creator=request.user)  
+            return HttpResponseRedirect("/journal")
+        else:
             return render_to_response('journalmanager/edit_journal.html', {
-                                      'edit_journal_form': edit_journal_form,
-                                      'type': type,
+                                      'edit_form': edit_form,
                                       'mode': 'edit_journal',
                                       'journal_id': journal_id,
                                       'user_name': request.user.pk,
                                       'collection': user_collection},
                                       context_instance=RequestContext(request))
     else:
-        edit_journal_form = JournalForm(instance=formFilled)
-    return render_to_response('journalmanager/edit_journal.html', {
-                              'edit_journal_form': edit_journal_form,
-                              'type': type,
+        edit_form = JournalForm(instance=filled_form)
+        return render_to_response('journalmanager/edit_journal.html', {
+                              'edit_form': edit_form,
                               'mode': 'edit_journal',
                               'journal_id': journal_id,
                               'user_name': request.user.pk,
@@ -318,35 +253,86 @@ def edit_journal(request,journal_id):
                               context_instance=RequestContext(request))
 
 @login_required
-def delete_journal(request,journal_id):
+def delete_journal(request, journal_id):
   Journal.objects.get(pk=journal_id).delete()
   return HttpResponseRedirect("/journal")
 
 @login_required
-def edit_institution(request,institution_id):
-    #recovering Institution Data to input form fields
-    formFilled = Institution.objects.get(pk=institution_id)
+def show_institution(request, institution_id):
+    user_collection = request.user.userprofile_set.get().collection
+    institution = Institution.objects.get(id=institution_id)
+    journals = Journal.objects.filter(institution=institution_id)
+    t = loader.get_template('journalmanager/show_institution.html')
+    c = RequestContext(request, {
+                       'institution': institution,
+                       'journals': journals,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def institution_index(request):
+    user_collection = request.user.userprofile_set.get().collection
+    all_institutions = Institution.objects.filter(collection=user_collection)
+
+    institutions = get_paginated(all_institutions, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/institution_dashboard.html')
+    c = RequestContext(request, {
+                       'institutions': institutions,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_institution(request):
     user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
-        form = InstitutionForm(request.POST,instance=formFilled)
-        if form.is_valid():
-            form.save()
+
+        add_form = InstitutionForm(request.POST)
+
+        if add_form.is_valid():
+            add_form.save_all(collection=user_collection)
             return HttpResponseRedirect("/journal/institution")
         else:
-            edit_institution_form = UserForm(request.POST,instance=formFilled)
+            return render_to_response('journalmanager/add_institution.html', {
+                                      'mode': 'add_institution',
+                                      'add_form': add_form,
+                                      'user_name': request.user.pk,
+                                      'collection': user_collection},
+                                      context_instance=RequestContext(request))
+    else:
+        add_form = InstitutionForm()
+        return render_to_response('journalmanager/add_institution.html', {
+                              'add_form': add_form,
+                              'mode': 'institution_journal',
+                              'user_name': request.user.pk,
+                              'collection': user_collection},
+                              context_instance=RequestContext(request))
+
+@login_required
+def edit_institution(request, institution_id):
+    filled_form = Institution.objects.get(pk=institution_id)
+    user_collection = request.user.userprofile_set.get().collection
+    if request.method == 'POST':
+
+        edit_form = InstitutionForm(request.POST, instance=filled_form)
+
+        if edit_form.is_valid():
+            edit_form.save()
+            return HttpResponseRedirect("/journal/institution")
+        else:
             return render_to_response('journalmanager/edit_institution.html', {
-                                      'edit_institution_form': edit_institution_form,
-                                      'type': type,
+                                      'edit_form': edit_form,
                                       'mode': 'edit_institution',
                                       'institution_id':institution_id,
                                       'user_name': request.user.pk,
                                       'collection': user_collection},
                                       context_instance=RequestContext(request))
     else:
-        edit_institution_form = InstitutionForm(instance=formFilled)
-    return render_to_response('journalmanager/edit_institution.html', {
-                              'edit_institution_form': edit_institution_form,
-                              'type': type,
+        edit_form = InstitutionForm(instance=filled_form)
+        return render_to_response('journalmanager/edit_institution.html', {
+                              'edit_form': edit_form,
                               'mode': 'edit_institution',
                               'institution_id':institution_id,
                               'user_name': request.user.pk,
@@ -359,13 +345,102 @@ def delete_institution(request,institution_id):
   return HttpResponseRedirect("/journal/institution")
 
 @login_required
-def open_journal(request):
-    journals = Journal.objects.all()
-    t = loader.get_template('journalmanager/journal_dashboard.html')
+def show_issue(request, issue_id):
+    issue = Issue.objects.get(id=issue_id)
+    journal = issue.journal
+    t = loader.get_template('journalmanager/show_issue.html')
     c = RequestContext(request, {
-                       'journals': journals,
+                       'issue': issue,
+                       'journal': journal,
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def issue_index(request, journal_id):
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    
+    all_issues = Issue.objects.filter(journal=journal_id)
+
+    issues = get_paginated(all_issues, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/issue_dashboard.html')
+    c = RequestContext(request, {
+                       'issues': issues,
+                       'journal': journal,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_issue(request, journal_id):
+    journal = Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+    saved = False
+    add_form = IssueForm()
+    if request.method == 'POST':
+        add_form = IssueForm(request.POST)
+        if add_form.is_valid():
+            issue_data = add_form.save(commit=False)
+            issue_data.update_date = datetime.now
+            if issue_data.creation_date == None:
+                issue_data.creation_date = issue_data.update_date
+            issue_data.collection = user_collection
+            issue_data.journal = journal
+            issue_data.save()
+            saved = True
+    if saved == True:
+        return HttpResponseRedirect("/journal/issue/" + journal_id )
+    else:
+        return render_to_response('journalmanager/add_issue.html', {
+                                      'mode': 'add_issue',
+                                      'add_form': add_form,
+                                      'journal': journal,
+                                      'user_name': request.user.pk,
+                                      'collection': user_collection},
+                                      context_instance=RequestContext(request))
+    
+@login_required
+def edit_issue(request, issue_id):
+    form_filled = Issue.objects.get(pk=issue_id)
+    journal = form_filled.journal
+    user_collection = request.user.userprofile_set.get().collection
+    saved = False
+    if request.method == 'POST':
+        form = IssueForm(request.POST,instance=form_filled)
+        if form.is_valid():
+            issue_data = form.save(commit=False)
+            issue_data.update_date = datetime.now
+            if issue_data.creation_date == None:
+                issue_data.creation_date = issue_data.update_date
+            issue_data.save()
+            saved = True
+        else:
+            edit_form = IssueForm(request.POST,instance=form_filled)
+    else:
+        edit_form = IssueForm(instance=form_filled)
+    if saved == True:
+        return HttpResponseRedirect("/journal/issue/" + str(journal.id))
+    else:
+        return render_to_response('journalmanager/edit_issue.html', { 
+                              'edit_form': edit_form,
+                              'mode': 'edit_issue',
+                              'issue_id': issue_id,
+                              'user_name': request.user.pk,
+                              'journal_id': journal.id,
+                              'journal': journal,
+                              'collection': user_collection},
+                              context_instance=RequestContext(request))    
+
+@login_required
+def delete_issue(request, issue_id):
+    issue_data = Issue.objects.get(pk=issue_id)
+    journal = issue_data.journal
+    user_collection = request.user.userprofile_set.get().collection
+    issue_data.update_date = datetime.now
+    issue_data.is_available = False
+    issue_data.save()
+    return HttpResponseRedirect("/journal/issue/" + str(journal.id))
 
 @login_required
 def search_journal(request):
@@ -404,110 +479,7 @@ def search_institution(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def issue_index(request, journal_id):
-    journal = Journal.objects.get(id=journal_id)
-    user_collection = request.user.userprofile_set.get().collection
-    
-    all_issues = Issue.objects.filter(journal=journal_id)
-
-    issues = get_paginated(all_issues, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/issue_dashboard.html')
-    c = RequestContext(request, {
-                       'issues': issues,
-                       'journal': journal,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def add_issue(request, journal_id):
-    journal = Journal.objects.get(id=journal_id)
-    user_collection = request.user.userprofile_set.get().collection
-    saved = False
-    form = IssueForm()
-    if request.method == 'POST':
-        form = IssueForm(request.POST)
-        if form.is_valid():
-            #Get the user and create a new evaluation
-            issue_data = form.save(commit=False)
-            issue_data.update_date = datetime.now
-            if issue_data.creation_date == None:
-                issue_data.creation_date = issue_data.update_date
-            issue_data.collection = user_collection
-            issue_data.journal = journal
-            issue_data.save()
-            saved = True
-    if saved == True:
-        return HttpResponseRedirect("/journal/issue/" + journal_id )
-    else:
-        add_form = IssueForm() # An unbound form
-        return render_to_response('journalmanager/add_issue.html', {
-                                      'add_form': add_form,
-                                      'mode': 'add_issue',
-                                      'form': form,
-                                      'journal': journal,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
-    
-@login_required
-def edit_issue(request, issue_id):
-    form_filled = Issue.objects.get(pk=issue_id)
-    journal = form_filled.journal
-    user_collection = request.user.userprofile_set.get().collection
-    saved = False
-    if request.method == 'POST':
-        form = IssueForm(request.POST,instance=form_filled)
-        if form.is_valid():
-            issue_data = form.save(commit=False)
-            issue_data.update_date = datetime.now
-            if issue_data.creation_date == None:
-                issue_data.creation_date = issue_data.update_date
-            issue_data.save()
-            saved = True
-        else:
-            edit_form = IssueForm(request.POST,instance=form_filled)
-    else:
-        edit_form = IssueForm(instance=form_filled)
-    if saved == True:
-        return HttpResponseRedirect("/journal/issue/" + str(journal.id))
-    else:
-        return render_to_response('journalmanager/edit_issue.html', { 
-                              'edit_form': edit_form,
-                              'type': type,
-                              'mode': 'edit_issue',
-                              'issue_id': issue_id,
-                              'user_name': request.user.pk,
-                              'journal_id': journal.id,
-                              'journal': journal,
-                              'collection': user_collection},
-                              context_instance=RequestContext(request))    
-
-@login_required
-def delete_issue(request, issue_id):
-    issue_data = Issue.objects.get(pk=issue_id)
-    journal = issue_data.journal
-    user_collection = request.user.userprofile_set.get().collection
-    issue_data.update_date = datetime.now
-    issue_data.is_available = False
-    issue_data.save()
-    return HttpResponseRedirect("/journal/issue/" + str(journal.id))
-
-@login_required
-def show_issue(request, issue_id):
-    issue = Issue.objects.get(id=issue_id)
-    journal = issue.journal
-    t = loader.get_template('journalmanager/show_issue.html')
-    c = RequestContext(request, {
-                       'issue': issue,
-                       'journal': journal,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def search_issue(request, journal_id):
-    #return issue_index(request, journal_id)
 
     journal = Journal.objects.get(id=journal_id)
     user_collection = request.user.userprofile_set.get().collection

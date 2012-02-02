@@ -29,7 +29,7 @@ class JournalForm(ModelForm):
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
            'institution': forms.Select(attrs={'class':'xxlarge'}),
-           'scielo_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
+           'scielo_issn': forms.Select(attrs={'class':'span3', 'maxlength':'9'}),
            'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
            'eletronic_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}), 
            'subject_descriptors': forms.Textarea(attrs={'class':'xxlarge'}), 
@@ -54,6 +54,11 @@ class InstitutionForm(ModelForm):
     class Meta:
         model = Institution
         exclude = ('collection',)
+
+    def save_all(self, collection):
+        institution = self.save(commit=False)
+        institution.collection = collection
+        institution.save()
 
 class UserForm(ModelForm):
     class Meta:
