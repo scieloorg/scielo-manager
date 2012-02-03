@@ -36,7 +36,7 @@
         {% for ct in users %}
         <tr>
             <td>
-                <a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a>
+                <h3><a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a></h3>
                 <p>
                     {% if perms.auth.change_user %}
                         <a class="btn btn-small btn-primary" href="/journal/user/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
