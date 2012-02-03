@@ -84,7 +84,8 @@ def get_sample_journal():
       'pub_status': 'C',
       'alphabet': 'B',
       'pdf_access': 'art',
-      'print_issn': '0102-6720'
+      'print_issn': '0102-6720',
+      'is_available': True,
     }
 
     return models.Journal(**journal_attrs)
@@ -146,7 +147,8 @@ def get_sample_institution(validated = True):
       'state': '',
       'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
-      'Address_complement': ''
+      'Address_complement': '',
+      'is_available': True,
     }
 
     return models.Institution(**institution_attrs)
