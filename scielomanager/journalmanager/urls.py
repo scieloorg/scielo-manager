@@ -39,7 +39,7 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/issues/new/$', add_issue, name='issue.add' ),
     url(r'^(?P<journal_id>\d+)/issues/(?P<issue_id>\d+)/edit/$', add_issue, name='issue.edit' ),
     url(r'^issue/show/(?P<issue_id>\d+)/$', show_issue, name='issue.show' ),
-    url(r'^(?P<journal_id>\d+)/issue/toggle/(?P<issue_id>\d+)/$', toggle_issue, name='issue.toggle' ),
+    url(r'^issue/toggle/(?P<issue_id>\d+)/$', toggle_issue, name='issue.toggle' ),
     url(r'^issue/search/(?P<journal_id>\d+)/$', search_issue, name='issue.search'),
 
     # Users Tools
