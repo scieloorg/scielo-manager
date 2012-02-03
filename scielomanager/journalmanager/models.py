@@ -128,11 +128,7 @@ class Journal(models.Model):
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
-        return u'%s' % (self.title)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("/title")
+        return self.title
 
     class Meta:
         ordering = ['title']
@@ -173,9 +169,10 @@ class TranslatedData(models.Model):
 
 class Section(models.Model):
     translation = models.ManyToManyField(TranslatedData)
-    code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    code = models.CharField(_('Code'), null = True, blank = True, max_length = 16)
+    creation_date = models.DateTimeField(auto_now_add = True)
+    update_date = models.DateTimeField(auto_now = True)
+    journal = models.ForeignKey(Journal, null = True, blank = False)
 
     def __unicode__(self):
         return self.code
