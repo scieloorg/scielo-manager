@@ -56,7 +56,11 @@
                 <div>
                     <ul>
                         <li><a class="label" href="/journal/institution/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
-                        <li><a class="label important" href="/journal/institution/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
+                        {% if ct.is_available %}
+                            <li><a class="label important" href="/journal/institution/toggle/{{ ct.pk }}/">{% trans 'enable' %}</a></li>
+                        {% else %}
+                            <li><a class="label important" href="/journal/institution/toggle/{{ ct.pk }}/">{% trans 'disable' %}</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </td>
