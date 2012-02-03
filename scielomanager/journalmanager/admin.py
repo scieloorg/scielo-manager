@@ -36,7 +36,9 @@ class JournalSectionsInline(admin.StackedInline):
 class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    inlines = [JournalHistoryInline,JournalTextLanguageInline,JournalAbstrLanguageInline,JournalMissionInline,JournalParallelTitlesInline,JournalTitleOtherFormsInline,JournalShortTitleOtherFormsInline]
+    inlines = [JournalHistoryInline, JournalTextLanguageInline, JournalAbstrLanguageInline,
+               JournalMissionInline, JournalParallelTitlesInline, JournalTitleOtherFormsInline,
+               JournalShortTitleOtherFormsInline, JournalSectionsInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
