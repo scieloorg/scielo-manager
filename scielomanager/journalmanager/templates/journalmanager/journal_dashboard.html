@@ -9,29 +9,29 @@
 
 {% block stepmenu_top %}
 {{ block.super }}
-    <ul class="breadcrumb">
-        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-        <li class="active">{% trans 'Journals DashBoard' %}</li>
-    </ul>
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'Journals DashBoard' %}</li>
+</ul><!--breadcrumb-->
 {% endblock %}
 
 {% block body %}
-<div class="actions">
-    <div class="row">
-        <div class="span12">
-            <div class="search">
-                <form action="{% url journal.search %}" method="get">
-                    <input class="span6" type="text" placeholder="Search" name="q"  />
-                    <button class="btn" type="submit">Search</button>
-                </form>
-            </div>
-        </div>
-        <div class="span4">
-            <a href="{% url journal.add %}" class="btn large primary">{% trans 'New Journal' %}</a>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="search">
+            <form class="well form-search" action="{% url journal.search %}" method="get">
+                <input class="span6 search-query" placeholder="Search" name="q"  />
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
         </div>
     </div>
-</div>
-<table class="bordered-table zebra-striped">
+</div><!--row-fluid Search box-->
+<div class="row-fluid">
+    <div class="span2">
+        <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
+    </div>
+</div><!--row-fluid botões-->
+<table class="table table-striped">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
@@ -40,13 +40,20 @@
             <th>{% trans "Publisher" %}</th>
             <th>{% trans "Status" %}</th>
             <th>{% trans "Validated" %}</th>
-            <th>{% trans "Options" %}</th>
         </tr>
     </thead>
     <tbody>
         {% for ct in journals.object_list %}
         <tr>
-            <td><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></td>
+            <td>
+                <h3><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h3>
+                <p>
+                    <a class="btn btn-small btn-primary" href="/journal/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                    <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
+                    <a class="btn btn-small btn-primary"href="/journal/section/{{ ct.pk }}/"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
+                    <a class="btn btn-small btn-danger" href="/journal/delete/{{ ct.pk }}/"><i class="icon-trash icon-white"></i> {% trans 'Delete' %}</a>
+                </p>
+            </td>
             <td>{{ ct.print_issn }}</td>
             <td>{{ ct.eletronic_issn }}</td>
             <td>{{ ct.publisher }}</td>
@@ -57,16 +64,6 @@
                 {%else%}
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
                 {%endif%}
-            </td>
-            <td>
-                <div class="options">
-                    <ul>
-                        <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
-                        <li><a class="label" href="{% url issue.index ct.pk %}">{% trans 'Issues' %}</a></li>
-                        <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
-                        <li><a class="label important" href="/journal/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
-                    </ul>
-                </div>
             </td>
         </tr>
         {% endfor %}
