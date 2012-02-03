@@ -99,9 +99,8 @@
                 </div><!--span3 left menu-->
                 <div class="span9">
                     <div class="mainContent">
-                        <div class="alert alert-error" style="display: none;"><span id="alert-error"></span></div>
-                        <div class="alert alert-success" style="display: none;"><span id="alert-success"></span></div>
-                        <div class="alert alert-info" style="display: none;"><span id="alert-info"></span></div>
+                        <div class="alert alert-error" style="display: none;">{{ msg_error }}</div>
+                        <div class="alert alert-heading" style="display: none;">{{ msg_success }}</div>
                         {% block stepmenu_top %}{% endblock %}
                         {% block body %}{% endblock %}
                     </div><!--mainContent-->
