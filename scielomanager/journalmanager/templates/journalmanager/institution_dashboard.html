@@ -5,45 +5,54 @@
 
 {% endblock %}
 
-{% block body_title %}{% trans "User Journals" %}{% endblock %}
+{% block body_title %}{% trans "Institutions" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
-    <ul class="breadcrumb">
-        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-        <li class="active">{% trans 'Institutions DashBoard' %}</li>
-    </ul>
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'Institutions DashBoard' %}</li>
+</ul><!--breadcrumb-->
 {% endblock %}
 
 {% block body %}
-<div class="actions">
-        <div class="row">
-        <div class="span12">
-            <div class="search">
-                <form action="{% url institution.search %}" method="get">
-                    <input class="span6" type="text" placeholder="Search" name="q" />
-                    <button class="btn" type="submit">Search</button>
-                </form>
-            </div>
-        </div>
-        <div class="span4">
-            <a href="{% url institution.add %}" class="btn large primary">{% trans 'New Institution' %}</a>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="search">
+            <form class="well form-search" action="{% url institution.search %}" method="get">
+                <input class="span6 search-query" placeholder="Search" name="q" />
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
         </div>
     </div>
-</div>
-<table class="bordered-table zebra-striped">
+</div><!--row-fluid Search box-->
+<div class="row-fluid">
+    <div class="span2">
+        <a class="btn btn-primary" href="{% url institution.add %}">{% trans 'New' %}</a>
+    </div>
+</div><!--row-fluid botões-->
+<table class="table table-striped">
     <thead>
         <tr>
             <th>{% trans "Name" %}</th>
             <th>{% trans "Sponsor" %}</th>
             <th>{% trans "Validated" %}</th>
-            <th>{% trans "Options" %}</th>
         </tr>
     </thead>
     <tbody>
         {% for ct in institutions.object_list %}
         <tr>
-            <td><a href="/journal/institution/show/{{ ct.pk }}/">{{ ct.name }}</a></td>
+            <td>
+                <h3><a href="/journal/institution/show/{{ ct.pk }}/">{{ ct.name }}</a></h3>
+                <p>
+                    <a class="btn btn-small btn-primary" href="/journal/institution/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                    {% if ct.is_available %}
+                        <a class="btn btn-small btn-danger" href="/journal/institution/toggle/{{ ct.pk }}/"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
+                    {% else %}
+                        <a class="btn btn-small btn-success" href="/journal/institution/toggle/{{ ct.pk }}/"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
+                    {% endif %}
+                </p>
+            </td>
             <td>{{ ct.sponsor }}</td>
             <td>
                 {%if ct.validated %}
@@ -51,18 +60,6 @@
                 {%else%}
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
                 {%endif%}
-            </td>
-            <td>
-                <div>
-                    <ul>
-                        <li><a class="label" href="/journal/institution/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
-                        {% if ct.is_available %}
-                            <li><a class="label important" href="/journal/institution/toggle/{{ ct.pk }}/">{% trans 'enable' %}</a></li>
-                        {% else %}
-                            <li><a class="label important" href="/journal/institution/toggle/{{ ct.pk }}/">{% trans 'disable' %}</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
             </td>
         </tr>
         {% endfor %}
