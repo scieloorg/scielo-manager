@@ -128,11 +128,7 @@ class Journal(models.Model):
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
 
     def __unicode__(self):
-        return u'%s' % (self.title)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("/title")
+        return self.title
 
     class Meta:
         ordering = ['title']
