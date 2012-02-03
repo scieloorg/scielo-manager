@@ -9,35 +9,31 @@
 
 {% block stepmenu_top %}
 {{ block.super }}
-    <ul class="breadcrumb">
-        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-        <li class="active">{% trans 'Journals DashBoard' %}</li>
-    </ul>
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'Journals DashBoard' %}</li>
+</ul><!--breadcrumb-->
 {% endblock %}
 
 {% block body %}
-<div class="actions">
-  <div class="row">
-        <div class="span12">
-            <div class="search">
-                <form action="{% url journal.search %}" method="get">
-                    <input class="span6" type="text" placeholder="Search" name="q"  />
-                    <button class="btn" type="submit">Search</button>
-                    <div class="span9">
-                         <p><small>{{ journals.paginator.count }} {% trans 'results for' %}: {{ search_query_string }}</small></p>
-                    </div> 
-                </form>
-
-            </div>
-            
-        </div>
-        <div class="span4">
-            <a href="{% url journal.add %}" class="btn large primary">{% trans 'New Journal' %}</a>
+<div class="row-fluid">
+    <div class="span12">
+        <div class="search">
+            <form class="well form-search" action="{% url journal.search %}" method="get">
+                <input class="span6 search-query" type="text" placeholder="Search" name="q"  />
+                <button class="btn btn-primary" type="submit">Search</button>
+                <p><small>{{ journals.paginator.count }} {% trans 'results for' %}: {{ search_query_string }}</small></p>
+            </form>
         </div>
     </div>
-</div>
+</div><!--row-fluid Search box-->
+<div class="row-fluid">
+    <div class="span2">
+        <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
+    </div>
+</div><!--row-fluid botões-->
 {% if journals.paginator.count > 0 %} 
-<table class="bordered-table zebra-striped">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
@@ -46,13 +42,20 @@
             <th>{% trans "Publisher" %}</th>
             <th>{% trans "Status" %}</th>
             <th>{% trans "Validated" %}</th>
-            <th>{% trans "Options" %}</th>
         </tr>
     </thead>
     <tbody>
         {% for ct in journals.object_list %}
         <tr>
-            <td><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></td>
+            <td>
+                <h3><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h3>
+                <p>
+                    <a class="btn btn-small btn-primary" href="/journal/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                    <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
+                    <a class="btn btn-small btn-primary"href="/journal/section/{{ ct.pk }}/"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
+                    <a class="btn btn-small btn-danger" href="/journal/delete/{{ ct.pk }}/"><i class="icon-trash icon-white"></i> {% trans 'Delete' %}</a>
+                </p>
+            </td>
             <td>{{ ct.print_issn }}</td>
             <td>{{ ct.eletronic_issn }}</td>
             <td>{{ ct.publisher }}</td>
@@ -64,21 +67,11 @@
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
                 {%endif%}
             </td>
-            <td>
-                <div class="options">
-                    <ul>
-                        <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
-                        <li><a class="label" href="/journal/issue/{{ ct.pk }}/">{% trans 'Issues' %}</a></li>
-                        <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
-                        <li><a class="label important" href="/journal/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
-                    </ul>
-                </div>
-            </td>
         </tr>
         {% endfor %}
     <tbody>
 </table>
-    {% trans 'Showing' %} {{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
+{% trans 'Showing' %} {{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
 <div class="pagination">
     <ul>
         <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
@@ -93,8 +86,10 @@
     </ul>
 </div>
 {% else %}
-
-    {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}  
-    
+<div class="row-fluid">
+    <div class="alert alert-error">
+        {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}  
+    </div>
+</div>
 {% endif %}
 {% endblock %}

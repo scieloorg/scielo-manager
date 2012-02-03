@@ -9,160 +9,159 @@
 {% endblock %}
 
 {% block stepmenu_top %}
-    {{ block.super }}
-    <ul class="breadcrumb">
-        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-        <li><a href="{% url journal.index %}">{% trans 'Journal Dashboard' %}</a> <span class="divider">/</span></li>
-        <li class="active">{% trans 'New Journal' %}</li>
-    </ul>
-    {% endblock %}
+
+{{ block.super }}
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li><a href="{% url journal.index %}">{% trans 'Journal Dashboard' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'New Journal' %}</li>
+</ul>
+{% endblock %}
+
 {% block body %}
-
-    <h4>{% trans "New Journal" %}</h4>
-
-    <form method="post" action="#">
-
+<form method="post" action="#">
     {% csrf_token %}
 
     <span class="label">{% trans "Journal Information" %}</span>
-        <div class="well">
-            <div class="clearfix {% if add_form.title.errors %}error{% endif %}">
-                    {{ add_form.title.label_tag }}
-                <div class="input">
-                    {{ add_form.title }}
-                    {% if add_form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-                </div>
-            </div>
-            <div class="clearfix {% if add_form.short_title.errors %}error{% endif %}">
-                    {{ add_form.short_title.label_tag }}
-                <div class="input">
-                    {{ add_form.short_title }}
-                    {% if add_form.short_title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-                </div>
-            </div>
-            <div class="clearfix {% if add_form.short_title.errors %}error{% endif %}">
-                    {{ add_form.acronym.label_tag }}
-                <div class="input">
-                    {{ add_form.acronym }}
-                    {% if add_form.acronym.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-                </div>
-            </div>
-            <div class="clearfix {% if add_form.institution.errors %}error{% endif %}">
-                    {{ add_form.institution.label_tag }}
-                <div class="input">
-                    {{ add_form.institution }}
-                    {% if add_form.institution.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-                </div>
-                {{ add_form.institution.help_text }}
-            </div>
-            <div class="clearfix">
-                    {{ add_form.scielo_issn.label_tag }}
-                <div class="input">{{ add_form.scielo_issn }}</div>
-            </div>
-            <div class="clearfix">
-                    {{ add_form.print_issn.label_tag }}
-                <div class="input">{{ add_form.print_issn }}</div>
-            </div>
-            <div class="clearfix">
-                    {{ add_form.eletronic_issn.label_tag }}
-                <div class="input">{{ add_form.eletronic_issn }}</div>
+
+    <div class="well">
+        <div class="clearfix {% if add_form.title.errors %}error{% endif %}">
+            {{ add_form.title.label_tag }}
+            <div class="input">
+                {{ add_form.title }}
+                {% if add_form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
             </div>
         </div>
-    <span class="label">{% trans "Information Area" %}</span>
-     <div class="well">
+        <div class="clearfix {% if add_form.short_title.errors %}error{% endif %}">
+            {{ add_form.short_title.label_tag }}
+            <div class="input">
+                {{ add_form.short_title }}
+                {% if add_form.short_title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+            </div>
+        </div>
+        <div class="clearfix {% if add_form.short_title.errors %}error{% endif %}">
+            {{ add_form.acronym.label_tag }}
+            <div class="input">
+                {{ add_form.acronym }}
+                {% if add_form.acronym.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+            </div>
+        </div>
+        <div class="clearfix {% if add_form.institution.errors %}error{% endif %}">
+            {{ add_form.institution.label_tag }}
+            <div class="input">
+                {{ add_form.institution }}
+                {% if add_form.institution.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
+            </div>
+            {{ add_form.institution.help_text }}
+        </div>
         <div class="clearfix">
-                {{ add_form.subject_descriptors.label_tag }}
+            {{ add_form.scielo_issn.label_tag }}
+            <div class="input">{{ add_form.scielo_issn }}</div>
+        </div>
+        <div class="clearfix">
+            {{ add_form.print_issn.label_tag }}
+            <div class="input">{{ add_form.print_issn }}</div>
+        </div>
+        <div class="clearfix">
+            {{ add_form.eletronic_issn.label_tag }}
+            <div class="input">{{ add_form.eletronic_issn }}</div>
+        </div>
+    </div>
+
+    <span class="label">{% trans "Information Area" %}</span>
+
+    <div class="well">
+        <div class="clearfix">
+            {{ add_form.subject_descriptors.label_tag }}
             <div class="input">{{ add_form.subject_descriptors }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.study_area.label_tag }}
+            {{ add_form.study_area.label_tag }}
             <div class="input">{{ add_form.study_area }}</div>
         </div>
-
         <div class="clearfix">
-                {{ add_form.init_year.label_tag }}
+            {{ add_form.init_year.label_tag }}
             <div class="input">{{ add_form.init_year }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.init_vol.label_tag }}
+            {{ add_form.init_vol.label_tag }}
             <div class="input">{{ add_form.init_vol }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.init_num.label_tag }}
+            {{ add_form.init_num.label_tag }}
             <div class="input">{{ add_form.init_num }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.final_year.label_tag }}
+            {{ add_form.final_year.label_tag }}
             <div class="input">{{ add_form.final_year }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.final_vol.label_tag }}
+            {{ add_form.final_vol.label_tag }}
             <div class="input">{{ add_form.final_vol }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.final_num.label_tag }}
+            {{ add_form.final_num.label_tag }}
             <div class="input">{{ add_form.final_num }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.frequency.label_tag }}
+            {{ add_form.frequency.label_tag }}
             <div class="input">{{ add_form.frequency }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.pub_status.label_tag }}
+            {{ add_form.pub_status.label_tag }}
             <div class="input">{{ add_form.pub_status }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.alphabet.label_tag }}
+            {{ add_form.alphabet.label_tag }}
             <div class="input">{{ add_form.alphabet }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.classification.label_tag }}
+            {{ add_form.classification.label_tag }}
             <div class="input">{{ add_form.classification }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.national_code.label_tag }}
+            {{ add_form.national_code.label_tag }}
             <div class="input">{{ add_form.national_code }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.editorial_standard.label_tag }}
+            {{ add_form.editorial_standard.label_tag }}
             <div class="input">{{ add_form.editorial_standard }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.ctrl_vocabulary.label_tag }}
+            {{ add_form.ctrl_vocabulary.label_tag }}
             <div class="input">{{ add_form.ctrl_vocabulary }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.literature_type.label_tag }}
+            {{ add_form.literature_type.label_tag }}
             <div class="input">{{ add_form.literature_type }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.treatment_level.label_tag }}
+            {{ add_form.treatment_level.label_tag }}
             <div class="input">{{ add_form.treatment_level }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.pub_level.label_tag }}
+            {{ add_form.pub_level.label_tag }}
             <div class="input">{{ add_form.pub_level }}</div>
         </div>
         <div class="clearfix {% if add_form.indexing_coverage.errors %}error{% endif %}">
-                {{ add_form.indexing_coverage.label_tag }}
+            {{ add_form.indexing_coverage.label_tag }}
             <div class="input">
                 {{ add_form.indexing_coverage }}
                 {% if add_form.indexing_coverage.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
             </div>
         </div>
         <div class="clearfix">
-                {{ add_form.secs_code.label_tag }}
+            {{ add_form.secs_code.label_tag }}
             <div class="input">{{ add_form.secs_code }}</div>
         </div>
          <div class="clearfix">
-                {{ add_form.subscription.label_tag }}
+            {{ add_form.subscription.label_tag }}
             <div class="input">{{ add_form.subscription }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.id_provided_by_the_center.label_tag }}
+            {{ add_form.id_provided_by_the_center.label_tag }}
             <div class="input">{{ add_form.id_provided_by_the_center }}</div>
         </div>
-
         <div class="clearfix {% if add_form.collections.errors %}error{% endif %}">
                 {{ add_form.collections.label_tag }}
             <div class="input">
@@ -171,64 +170,70 @@
             </div>
         </div>
     </div>
-     <span class="label">{% trans "License" %}</span>
-     <div class="well">
+
+    <span class="label">{% trans "License" %}</span>
+
+    <div class="well">
         <div class="clearfix {% if add_form.use_license.errors %}error{% endif %}">
-                {{ add_form.use_license.label_tag }}
+            {{ add_form.use_license.label_tag }}
             <div class="input">
                 {{ add_form.use_license }}
                 {% if add_form.use_license.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
             </div>
         </div>
         <div class="clearfix">
-                {{ add_form.copyrighter.label_tag }}
+            {{ add_form.copyrighter.label_tag }}
             <div class="input">{{ add_form.copyrighter }}</div>
         </div>
-     </div>
-     <span class="label">URL(s)</span>
-     <div class="well">
+    </div>
+
+    <span class="label">URL(s)</span>
+
+    <div class="well">
         <div class="clearfix">
-                {{ add_form.url_main_collection.label_tag }}
+            {{ add_form.url_main_collection.label_tag }}
             <div class="input">{{ add_form.url_main_collection }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.url_online_submission.label_tag }}
+            {{ add_form.url_online_submission.label_tag }}
             <div class="input">{{ add_form.url_online_submission }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.url_journal.label_tag }}
+            {{ add_form.url_journal.label_tag }}
             <div class="input">{{ add_form.url_journal }}</div>
         </div>
-     </div>
-     <span class="label">{% trans "PDF Access" %}</span>
-     <div class="well">
+    </div>
+
+    <span class="label">{% trans "PDF Access" %}</span>
+
+    <div class="well">
         <div class="clearfix">
-                {{ add_form.pdf_access.label_tag }}
+            {{ add_form.pdf_access.label_tag }}
             <div class="input">{{ add_form.pdf_access }}</div>
         </div>
-     </div>
-     <span class="label">Extra Information</span>
-     <div class="well">
+    </div>
+
+    <span class="label">Extra Information</span>
+
+    <div class="well">
         <div class="clearfix">
-                {{ add_form.notes.label_tag }}
+            {{ add_form.notes.label_tag }}
             <div class="input">{{ add_form.notes }}</div>
         </div>
         <div class="clearfix">
-                {{ add_form.validated.label_tag }}
+            {{ add_form.validated.label_tag }}
             <div class="input">{{ add_form.validated }}</div>
         </div>
         <div class="clearfix">
                 {{ add_form.is_available.label_tag }}
             <div class="input">{{ add_form.is_available }}</div>
         </div>
-     </div>
-     <div class="row show-grid">
-        <div class="span4 offset12">
-            <button class="btn" type="reset">{% trans "Cancel" %}</button>
-         <input class="btn primary" name="submit" type="submit" value="{% trans "Create Journal" %}">
-        </div>
-     </div>
-    </form>
+    </div>
+    <div class="row-fluid">
+        <input class="btn btn-primary" name="submit" type="submit" value="{% trans "add" %}"/>
+        <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
+    </div>
+</form>
 {% endblock %}
 
 {% block extrafooter %}
