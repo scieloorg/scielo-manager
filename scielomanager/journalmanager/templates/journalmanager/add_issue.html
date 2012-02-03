@@ -7,21 +7,19 @@
 {% endblock %}
 
 {% block stepmenu_top %}
-    {{ block.super }}
-    <ul class="breadcrumb">
-        <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-        <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-        <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
-        <li class="active">{% trans 'New Issue' %}</li>
-    </ul>
-    {% endblock %}
+{{ block.super }}
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+    <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'New Issue' %}</li>
+</ul>
+{% endblock %}
 
 {% block body %}
-
-<fieldset>
-    <legend>{% trans "New Issue" %}</legend>
+    <span class="label">{% trans "Issue Information" %}</span>
     <form method="post" action="#">{% csrf_token %}
-        <table class="table">
+        <table class="well">
             <col width="10%"/>
             <col width="85%"/>
             {% if add_form.errors %}
@@ -32,9 +30,9 @@
                 {{ add_form.as_table }}
             {% endif %}
         </table>
-    <input class="addNew" name="submit" type="submit" value="{% trans 'Add Issue' %}">
+        <input class="btn btn-primary" name="submit" type="submit" value="{% trans 'add' %}">
+        <input class="btn btn-warning" name="reset" type="reset" value="{% trans 'cancel' %}">
     </form>
-</fieldset>
 {% endblock %}
 
 {% block extrafooter %}

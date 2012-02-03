@@ -32,7 +32,7 @@ class JournalForm(ModelForm):
            'scielo_issn': forms.Select(attrs={'class':'span3', 'maxlength':'9'}),
            'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
            'eletronic_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
-           'subject_descriptors': forms.Textarea(attrs={'class':'xxlarge'}),
+           'subject_descriptors': forms.Textarea(attrs={'class':'span10'}),
            'init_year': SelectDateWidget(),
            'init_vol': forms.TextInput(attrs={'class':'span1'}),
            'init_num': forms.TextInput(attrs={'class':'span1'}),
@@ -42,11 +42,10 @@ class JournalForm(ModelForm):
            'url_main_collection': forms.TextInput(attrs={'class':'span8'}),
            'url_online_submission': forms.TextInput(attrs={'class':'span8'}),
            'url_journal': forms.TextInput(attrs={'class':'span8'}),
-           'notes': forms.Textarea(attrs={'class':'xxlarge'}),
+           'notes': forms.Textarea(attrs={'class':'span10'}),
            'id_provided_by_the_center': forms.TextInput(attrs={'class':'span2'}),
-           'pdf_access': forms.Select(attrs={'class':'xlarge'}),
-           'editorial_standard': forms.Select(attrs={'class':'xlarge'}),
-           'literature_type': forms.Select(attrs={'class':'xlarge'}),
+           'editorial_standard': forms.Select(attrs={'class':'span10'}),
+           'literature_type': forms.Select(attrs={'class':'span10'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 

@@ -47,7 +47,7 @@
                 <p class="href">
                     <a class="btn btn-small btn-primary" href="{% url issue.edit ct.journal.pk ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
                     {%if ct.is_available %}
-                    <a class="btn btn-small btn-danger" href="{% url issue.delete ct.pk %}"><i class="icon-trash icon-white"></i> {% trans 'Disable' %}</a>
+                    <a class="btn btn-small btn-warning" href="{% url issue.delete ct.pk %}"><i class="icon-remove-sign icon-white"></i> {% trans 'Disable' %}</a>
                     {%endif%}
                 </p>
             </td>
