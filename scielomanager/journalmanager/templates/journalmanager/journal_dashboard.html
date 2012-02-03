@@ -64,7 +64,11 @@
                         <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
                         <li><a class="label" href="{% url issue.index ct.pk %}">{% trans 'Issues' %}</a></li>
                         <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
-                        <li><a class="label important" href="/journal/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a></li>
+                        {% if ct.is_available %}
+                            <li><a class="label important" href="/journal/toggle/{{ ct.pk }}/">{% trans 'enable' %}</a></li>
+                        {% else %}
+                            <li><a class="label important" href="/journal/toggle/{{ ct.pk }}/">{% trans 'disable' %}</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </td>

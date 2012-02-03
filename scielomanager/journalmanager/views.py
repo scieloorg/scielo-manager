@@ -234,8 +234,16 @@ def add_journal(request, journal_id=None):
                               context_instance=RequestContext(request))
 
 @login_required
-def delete_journal(request, journal_id):
-  Journal.objects.get(pk=journal_id).delete()
+def toggle_journal(request, journal_id):
+  journal = Journal.objects.get(pk=journal_id)
+
+  if journal.is_available:
+      journal.is_available = False
+  else:
+      journal.is_available = True
+
+  journal.save()
+  
   return HttpResponseRedirect("/journal")
 
 @login_required
@@ -300,8 +308,16 @@ def add_institution(request, institution_id=None):
                               context_instance=RequestContext(request))
 
 @login_required
-def delete_institution(request,institution_id):
-  Institution.objects.get(pk=institution_id).delete()
+def toggle_institution(request, institution_id):
+  institution = Institution.objects.get(pk=institution_id)
+
+  if institution.is_available:
+      institution.is_available = False
+  else:
+      institution.is_available = True
+
+  institution.save()
+
   return HttpResponseRedirect("/journal/institution")
 
 @login_required
@@ -372,14 +388,20 @@ def add_issue(request, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 @login_required
-def delete_issue(request, issue_id):
-    issue_data = Issue.objects.get(pk=issue_id)
-    journal = issue_data.journal
-    user_collection = request.user.userprofile_set.get().collection
-    issue_data.update_date = datetime.now
-    issue_data.is_available = False
-    issue_data.save()
-    return HttpResponseRedirect("/journal/issue/" + str(journal.id))
+def toggle_issue(request, issue_id):
+    issue = Issue.objects.get(pk=issue_id)
+
+    journal_id = issue.journal_id
+    issue.update_date = datetime.now
+
+    if issue.is_available:
+        issue.is_available = False
+    else:
+        issue.is_available = True
+
+    issue.save()
+    
+    return HttpResponseRedirect("/journal/" + str(journal_id)+ "/issues/")
 
 @login_required
 def search_journal(request):
