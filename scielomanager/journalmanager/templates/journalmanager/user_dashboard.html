@@ -8,7 +8,7 @@
 {% block body_title %}{% trans "User Titles" %}{% endblock %}
 
 {% block stepmenu_top %}
-    {{ block.super }}
+{{ block.super }}
     <ul class="breadcrumb">
         <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
         <li class="active">{% trans 'Users DashBoard' %}</li>
@@ -16,7 +16,9 @@
 {% endblock %}
 
 {% block body %}
+{% if perms.auth.add_user %}
 <div class="actions"><a href="{% url user.add %}" class="btn large primary">{% trans 'New User' %}</a></div>
+{% endif %}
 <table class="bordered-table zebra-striped">
     <thead>
         <tr>
@@ -28,8 +30,8 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in users %}
-        <tr class="{% cycle 'even' 'odd' %}">
+        {% for ct in users.object_list %}
+        <tr>
             <td><a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a></td>
             <td>{{ ct.email }}</td>
             <td>{{ ct.first_name }} {{ ct.last_name }}</td>
@@ -43,12 +45,16 @@
             <td>
                 <div class="options">
                     <ul>
+                        {% if perms.auth.change_user %}
                         <li>
                             <a class="label" href="/journal/user/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a>
                         </li>
+                        {% endif %}
+                        {% if perms.auth.delete_user %}
                         <li>
                             <a class="label important" href="/journal/user/delete/{{ ct.pk }}/">{% trans 'Delete' %}</a>
                         </li>
+                        {% endif %}
                     </ul>
                 </div>
             </td>
@@ -56,4 +62,18 @@
         {% endfor %}
     <tbody>
 </table>
+{% trans 'Showing' %} {{ users.start_index }}-{{ users.end_index }} {% trans 'of' %} {{ users.paginator.count }}
+<div class="pagination">
+    <ul>
+        <li class="prev {% if not users.has_previous %}disabled{% endif %}">
+            <a href="?page={{ users.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in users.paginator.page_range %}
+        <li {% if users.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not user.has_next %}disabled{% endif %}">
+            <a href="?page={{ users.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
+</div>
 {% endblock %}
