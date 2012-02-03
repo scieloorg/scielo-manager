@@ -50,6 +50,7 @@ class Institution(models.Model):
     cel = models.CharField(_('Cel Number'), max_length=16, null=False,blank=True,)
     mail = models.EmailField(_('Email'),)
     validated = models.BooleanField(_('Validated'), default=False,)
+    is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True)
 
     def __unicode__(self):
         return u'%s' % (self.name)
@@ -126,6 +127,7 @@ class Journal(models.Model):
 
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
+    is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -165,7 +167,6 @@ class TranslatedData(models.Model):
 
     def __unicode__(self):
         return self.text
-
 
 class Section(models.Model):
     translation = models.ManyToManyField(TranslatedData)

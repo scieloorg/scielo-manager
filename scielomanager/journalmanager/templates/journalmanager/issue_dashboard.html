@@ -46,9 +46,11 @@
                 <h3><a href="{% url issue.show ct.id %}">{{ ct.identification }}</a><h3>
                 <p class="href">
                     <a class="btn btn-small btn-primary" href="{% url issue.edit ct.journal.pk ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
-                    {%if ct.is_available %}
-                    <a class="btn btn-small btn-warning" href="{% url issue.delete ct.pk %}"><i class="icon-remove-sign icon-white"></i> {% trans 'Disable' %}</a>
-                    {%endif%}
+                    {% if ct.is_available %}
+                        <li><a class="btn btn-small btn-warning" href="/journal/issue/toggle/{{ ct.pk }}/"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a></li>
+                    {% else %}
+                        <li><a class="btn btn-small btn-success" href="/journal/issue/toggle/{{ ct.pk }}/"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a></li>
+                    {% endif %}
                 </p>
             </td>
             <td>{{ ct.publication_date }}</td>

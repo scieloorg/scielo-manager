@@ -51,7 +51,11 @@
                     <a class="btn btn-small btn-primary" href="/journal/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
                     <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
                     <a class="btn btn-small btn-primary"href="/journal/section/{{ ct.pk }}/"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
-                    <a class="btn btn-small btn-danger" href="/journal/delete/{{ ct.pk }}/"><i class="icon-trash icon-white"></i> {% trans 'Delete' %}</a>
+                    {% if ct.is_available %}
+                        <li><a class="btn btn-small btn-warning" href="/journal/toggle/{{ ct.pk }}/"><i class="icon-plus-sign icon-white"></i> {% trans 'disable' %}</a></li>
+                    {% else %}
+                        <li><a class="btn btn-small btn-success" href="/journal/toggle/{{ ct.pk }}/"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a></li>
+                    {% endif %}
                 </p>
             </td>
             <td>{{ ct.print_issn }}</td>
@@ -64,6 +68,20 @@
                 {%else%}
                     <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
                 {%endif%}
+            </td>
+            <td>
+                <div class="options">
+                    <ul>
+                        <li><a class="label" href="/journal/edit/{{ ct.pk }}/">{% trans 'Edit' %}</a></li>
+                        <li><a class="label" href="{% url issue.index ct.pk %}">{% trans 'Issues' %}</a></li>
+                        <li><a class="label" href="/journal/section/{{ ct.pk }}/">{% trans 'Sections' %}</a></li>
+                        {% if ct.is_available %}
+                            <li><a class="label important" href="/journal/toggle/{{ ct.pk }}/">{% trans 'enable' %}</a></li>
+                        {% else %}
+                            <li><a class="label important" href="/journal/toggle/{{ ct.pk }}/">{% trans 'disable' %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
             </td>
         </tr>
         {% endfor %}

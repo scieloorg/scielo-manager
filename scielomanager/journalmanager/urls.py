@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     url(r'^add/$', add_journal, name='journal.add'),
     url(r'^show/(?P<journal_id>\d+)/$', show_journal, name='journal.show'),
     url(r'^edit/(?P<journal_id>\d+)/$', add_journal, name='journal.edit'),
-    url(r'^delete/(?P<journal_id>\d+)/$', delete_journal, name='journal.delete'),
+    url(r'^toggle/(?P<journal_id>\d+)/$', toggle_journal, name='journal.toggle'),
 
     #Search Journal
     url(r'^search/$', search_journal, name='journal.search'),
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^institution/add/$', add_institution, name='institution.add' ),
     url(r'^institution/show/(?P<institution_id>\d+)/$', show_institution, name='institution.show' ),
     url(r'^institution/edit/(?P<institution_id>\d+)/$', add_institution, name='institution.edit' ),
-    url(r'^institution/delete/(?P<institution_id>\d+)/$', delete_institution, name='institution.delete' ),
+    url(r'^institution/toggle/(?P<institution_id>\d+)/$', toggle_institution, name='institution.toggle' ),
 
     #Search Institution
     url(r'^institution/search/$', search_institution, name='institution.search'),
@@ -39,7 +39,7 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/issues/new/$', add_issue, name='issue.add' ),
     url(r'^(?P<journal_id>\d+)/issues/(?P<issue_id>\d+)/edit/$', add_issue, name='issue.edit' ),
     url(r'^issue/show/(?P<issue_id>\d+)/$', show_issue, name='issue.show' ),
-    url(r'^issue/delete/(?P<issue_id>\d+)/$', delete_issue, name='issue.delete' ),
+    url(r'^(?P<journal_id>\d+)/issue/toggle/(?P<issue_id>\d+)/$', toggle_issue, name='issue.toggle' ),
     url(r'^issue/search/(?P<journal_id>\d+)/$', search_issue, name='issue.search'),
 
     # Users Tools

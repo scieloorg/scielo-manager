@@ -224,6 +224,10 @@
             {{ add_form.validated.label_tag }}
             <div class="input">{{ add_form.validated }}</div>
         </div>
+        <div class="clearfix">
+                {{ add_form.is_available.label_tag }}
+            <div class="input">{{ add_form.is_available }}</div>
+        </div>
     </div>
     <div class="row-fluid">
         <input class="btn btn-primary" name="submit" type="submit" value="{% trans "add" %}"/>
