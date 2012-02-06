@@ -231,18 +231,12 @@ def add_journal(request, journal_id = None):
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_journal(request, journal_id):
-  #FIXME: Deveria ser um metodo na classe models.Journal
-  journal = models.Journal.objects.get(pk = journal_id)
-
-  if journal.is_available:
-      journal.is_available = False
-  else:
-      journal.is_available = True
-
+def toggle_journal_availability(request, journal_id):
+  journal = get_object_or_404(models.Journal, pk = journal_id)
+  journal.is_available = not journal.is_available
   journal.save()
 
-  return HttpResponseRedirect("/journal")
+  return HttpResponseRedirect(reverse('journal.index'))
 
 @login_required
 def show_institution(request, institution_id):
@@ -308,17 +302,12 @@ def add_institution(request, institution_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_institution(request, institution_id):
-  institution = models.Institution.objects.get(pk = institution_id)
-
-  if institution.is_available:
-      institution.is_available = False
-  else:
-      institution.is_available = True
-
+def toggle_institution_availability(request, institution_id):
+  institution = get_object_or_404(models.Institution, pk = institution_id)
+  institution.is_available = not institution.is_available
   institution.save()
 
-  return HttpResponseRedirect("/journal/institution")
+  return HttpResponseRedirect(reverse('institution.index'))
 
 @login_required
 def show_issue(request, issue_id):

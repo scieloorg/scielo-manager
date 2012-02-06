@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     url(r'^add/$', views.add_journal, name='journal.add'),
     url(r'^show/(?P<journal_id>\d+)/$', views.show_journal, name='journal.show'),
     url(r'^edit/(?P<journal_id>\d+)/$', views.add_journal, name='journal.edit'),
-    url(r'^toggle/(?P<journal_id>\d+)/$', views.toggle_journal, name='journal.toggle'),
+    url(r'^toggle_availability/(?P<journal_id>\d+)/$', views.toggle_journal_availability, name='journal.toggle_availability'),
 
     #Search Journal
     url(r'^search/$', views.search_journal, name='journal.search'),
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^institution/add/$', views.add_institution, name='institution.add' ),
     url(r'^institution/show/(?P<institution_id>\d+)/$', views.show_institution, name='institution.show' ),
     url(r'^institution/edit/(?P<institution_id>\d+)/$', views.add_institution, name='institution.edit' ),
-    url(r'^institution/toggle/(?P<institution_id>\d+)/$', views.toggle_institution, name='institution.toggle' ),
+    url(r'^institution/toggle_availability/(?P<institution_id>\d+)/$', views.toggle_institution_availability, name='institution.toggle_availability' ),
 
     #Search Institution
     url(r'^institution/search/$', views.search_institution, name='institution.search'),
