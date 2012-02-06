@@ -1,9 +1,10 @@
-
+# coding: utf-8
 from django import forms
 from django.forms import ModelForm, DateField
 from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
-from journalmanager.models import *
+
+from journalmanager import models
 
 class JournalForm(ModelForm):
 
@@ -15,7 +16,7 @@ class JournalForm(ModelForm):
         return journal
 
     class Meta:
-        model = Journal
+        model = models.Journal
         fields = ('title', 'short_title', 'acronym', 'institution', 'scielo_issn', 'print_issn', 'eletronic_issn',
           'subject_descriptors', 'study_area', 'init_year', 'init_vol', 'init_num', 'final_year','final_vol', 'final_num',
           'frequency', 'pub_status', 'alphabet', 'classification', 'national_code', 'editorial_standard','ctrl_vocabulary',
@@ -51,7 +52,7 @@ class JournalForm(ModelForm):
 
 class InstitutionForm(ModelForm):
     class Meta:
-        model = Institution
+        model = models.Institution
         exclude = ('collection',)
 
     def save_all(self, collection):
@@ -61,7 +62,7 @@ class InstitutionForm(ModelForm):
 
 class UserForm(ModelForm):
     class Meta:
-        model = User
+        model = models.User
         exclude = ('is_staff','is_superuser','last_login','date_joined','groups',
                    'user_permissions')
     def save(self, commit=True):
@@ -82,7 +83,7 @@ class IssueForm(ModelForm):
         return issue
 
     class Meta:
-        model = Issue
+        model = models.Issue
         exclude = ('collection', 'journal')
         widgets = {
             'publication_date': SelectDateWidget(),

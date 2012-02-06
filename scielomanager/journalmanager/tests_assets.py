@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 """
 Collection of domain object factories to make testing easier.
 """

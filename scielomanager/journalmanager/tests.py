@@ -1,13 +1,16 @@
-#coding: utf-8
+# coding: utf-8
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 
-from scielomanager.journalmanager.models import Collection, UserProfile, Journal, Institution
 from scielomanager.journalmanager import tests_assets
-
+from scielomanager.journalmanager.models import Collection
+from scielomanager.journalmanager.models import UserProfile
+from scielomanager.journalmanager.models import Journal
+from scielomanager.journalmanager.models import Institution
+from scielomanager.journalmanager.models import Issue
 
 def with_sample_journal(func):
     """
@@ -21,15 +24,17 @@ def with_sample_journal(func):
     return decorated
 
 class LoggedInViewsTest(TestCase):
+    """
+    Tests views that need logged in users.
 
+    The setUp method creates a new user and authenticates with it. If you want
+    a journal to be created at the beginning and then be destructed after each
+    testcase, decorate your testcase methods with ``with_sample_journal``.
     """
-    Set fixture
-    """
-    # fixtures = ['test_data']
 
     def setUp(self):
         """
-        Creates an authenticated session using user from fixture
+        Creates an authenticated session using a dummy user.
         """
 
         #add a dummy user
@@ -186,6 +191,32 @@ class LoggedInViewsTest(TestCase):
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['institutions'].object_list[0].name))
         self.assertTrue(1, len(response.context['institutions'].object_list))
+
+    @with_sample_journal
+    def test_toggle_journal_availability(self):
+        pre_journal = Journal.objects.all()[0]
+        response = self.client.get(reverse('journal.toggle_availability', args=[pre_journal.pk]))
+        pos_journal = Journal.objects.all()[0]
+
+        self.assertEqual(pre_journal, pos_journal)
+        self.assertRedirects(response, reverse('journal.index'))
+        self.assertTrue(pre_journal.is_available is not pos_journal.is_available)
+
+        response = self.client.get(reverse('journal.toggle_availability', args=[9999999]))
+        self.assertEqual(response.status_code, 404)
+
+    @with_sample_journal
+    def test_toggle_institution_availability(self):
+        pre_institution = Institution.objects.all()[0]
+        response = self.client.get(reverse('institution.toggle_availability', args=[pre_institution.pk]))
+        pos_institution = Institution.objects.all()[0]
+
+        self.assertEqual(pre_institution, pos_institution)
+        self.assertRedirects(response, reverse('institution.index'))
+        self.assertTrue(pre_institution.is_available is not pos_institution.is_available)
+
+        response = self.client.get(reverse('institution.toggle_availability', args=[9999999]))
+        self.assertEqual(response.status_code, 404)
 
 # class LoggedOutViewsTest(TestCase):
 
