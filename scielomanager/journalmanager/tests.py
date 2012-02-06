@@ -1,13 +1,15 @@
-#coding: utf-8
+# coding: utf-8
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 
-from scielomanager.journalmanager.models import Collection, UserProfile, Journal, Institution
 from scielomanager.journalmanager import tests_assets
-
+from scielomanager.journalmanager.models import Collection
+from scielomanager.journalmanager.models import UserProfile
+from scielomanager.journalmanager.models import Journal
+from scielomanager.journalmanager.models import Institution
 
 def with_sample_journal(func):
     """
@@ -21,15 +23,17 @@ def with_sample_journal(func):
     return decorated
 
 class LoggedInViewsTest(TestCase):
+    """
+    Tests views that need logged in users.
 
+    The setUp method creates a new user and authenticates with it. If you want
+    a journal to be created at the beginning and then be destructed after each
+    testcase, decorate your testcase methods with ``with_sample_journal``.
     """
-    Set fixture
-    """
-    # fixtures = ['test_data']
 
     def setUp(self):
         """
-        Creates an authenticated session using user from fixture
+        Creates an authenticated session using a dummy user.
         """
 
         #add a dummy user
