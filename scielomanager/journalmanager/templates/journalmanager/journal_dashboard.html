@@ -48,13 +48,13 @@
             <td>
                 <h3><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h3>
                 <p>
-                    <a class="btn btn-small btn-primary" href="/journal/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                    <a class="btn btn-small btn-primary" href="{% url journal.edit ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
                     <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
-                    <a class="btn btn-small btn-primary"href="/journal/section/{{ ct.pk }}/"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
+                    <a class="btn btn-small btn-primary"href="#"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
                     {% if ct.is_available %}
-                        <a class="btn btn-small btn-danger" href="/journal/toggle/{{ ct.pk }}/"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
+                        <a class="btn btn-small btn-danger" href="{% url journal.toggle_availability ct.pk %}"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
                     {% else %}
-                        <a class="btn btn-small btn-success" href="/journal/toggle/{{ ct.pk }}/"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
+                        <a class="btn btn-small btn-success" href="{% url journal.toggle_availability ct.pk %}"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
                     {% endif %}
                 </p>
             </td>
