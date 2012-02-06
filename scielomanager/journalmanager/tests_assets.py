@@ -171,3 +171,32 @@ def get_sample_indexing_coverage():
     }
 
     return models.IndexingCoverage(**indexing_coverage_attrs)
+
+def get_sample_section():
+    """
+    Missing attributes: ['translation', 'journal']
+    """
+    section_attrs = {
+        'code': 'BJCE110',
+    }
+
+    return models.Section(**section_attrs)
+
+def get_sample_issue():
+    """
+    Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
+        'bibliographic_strip', 'section', 'use_license']
+    """
+    issue_attrs = {
+        'total_documents': 16,
+        'ctrl_vocabulary': '',
+        'number': '3',
+        'volume': '29',
+        'editorial_standard': '',
+        'is_available': True,
+        'is_press_release': False,
+        'publication_date': '1998-09-01',
+        'is_marked_up': False,
+    }
+
+    return models.Issue(**issue_attrs)
