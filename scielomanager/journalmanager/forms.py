@@ -21,7 +21,7 @@ class JournalForm(ModelForm):
           'subject_descriptors', 'study_area', 'init_year', 'init_vol', 'init_num', 'final_year','final_vol', 'final_num',
           'frequency', 'pub_status', 'alphabet', 'classification', 'national_code', 'editorial_standard','ctrl_vocabulary',
           'literature_type', 'treatment_level', 'pub_level', 'indexing_coverage', 'secs_code', 'use_license','copyrighter',
-          'url_main_collection', 'url_online_submission', 'url_journal', 'pdf_access', 'subscription', 'notes','id_provided_by_the_center',
+          'url_main_collection', 'url_online_submission', 'url_journal', 'subscription', 'notes','id_provided_by_the_center',
           'collections', 'validated', 'is_available' )
 
         #Overriding the default field types or widgets

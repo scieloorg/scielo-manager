@@ -35,7 +35,6 @@ def get_sample_journal_dataform(**kwargs):
       'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
-      'pdf_access': 'art',
       'print_issn': '0102-6720',
     }
 
@@ -83,7 +82,6 @@ def get_sample_journal():
       'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
-      'pdf_access': 'art',
       'print_issn': '0102-6720',
       'is_available': True,
     }
