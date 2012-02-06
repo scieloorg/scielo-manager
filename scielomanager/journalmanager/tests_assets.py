@@ -43,6 +43,28 @@ def get_sample_journal_dataform(**kwargs):
 
     return journal_attrs
 
+def get_sample_institution_dataform(**kwargs):
+    institution_attrs = {
+      'city': '',
+      'fax': '',
+      'validated': True,
+      'name': u'Associação Nacional de História - ANPUH',
+      'Address_number': '222',
+      'acronym': 'rbh',
+      'country': 'BR',
+      'cel': '',
+      'phone': '',
+      'state': '',
+      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'mail': 'teste@scielo.org',
+      'Address_complement': '',
+      'is_available': True,
+    }
+
+    institution_attrs.update(kwargs)
+
+    return institution_attrs
+
 def get_sample_journal():
     """
     Journal object factory
