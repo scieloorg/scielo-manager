@@ -35,13 +35,34 @@ def get_sample_journal_dataform(**kwargs):
       'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
-      'pdf_access': 'art',
       'print_issn': '0102-6720',
     }
 
     journal_attrs.update(kwargs)
 
     return journal_attrs
+
+def get_sample_institution_dataform(**kwargs):
+    institution_attrs = {
+      'city': '',
+      'fax': '',
+      'validated': True,
+      'name': u'Associação Nacional de História - ANPUH',
+      'Address_number': '222',
+      'acronym': 'rbh',
+      'country': 'BR',
+      'cel': '',
+      'phone': '',
+      'state': '',
+      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'mail': 'teste@scielo.org',
+      'Address_complement': '',
+      'is_available': True,
+    }
+
+    institution_attrs.update(kwargs)
+
+    return institution_attrs
 
 def get_sample_journal():
     """
@@ -83,7 +104,6 @@ def get_sample_journal():
       'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
-      'pdf_access': 'art',
       'print_issn': '0102-6720',
       'is_available': True,
     }
@@ -171,3 +191,32 @@ def get_sample_indexing_coverage():
     }
 
     return models.IndexingCoverage(**indexing_coverage_attrs)
+
+def get_sample_section():
+    """
+    Missing attributes: ['translation', 'journal']
+    """
+    section_attrs = {
+        'code': 'BJCE110',
+    }
+
+    return models.Section(**section_attrs)
+
+def get_sample_issue():
+    """
+    Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
+        'bibliographic_strip', 'section', 'use_license']
+    """
+    issue_attrs = {
+        'total_documents': 16,
+        'ctrl_vocabulary': '',
+        'number': '3',
+        'volume': '29',
+        'editorial_standard': '',
+        'is_available': True,
+        'is_press_release': False,
+        'publication_date': '1998-09-01',
+        'is_marked_up': False,
+    }
+
+    return models.Issue(**issue_attrs)

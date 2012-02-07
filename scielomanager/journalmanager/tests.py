@@ -23,6 +23,18 @@ def with_sample_journal(func):
         self._destroy_journal()
     return decorated
 
+def with_sample_issue(func):
+    """
+    Decorator that creates a sample Journal instance
+    and destructs it at the end of the execution.
+    """
+    def decorated(self=None):
+        self._create_issue()
+        func(self)
+        self._destroy_issue()
+    return decorated
+
+
 class LoggedInViewsTest(TestCase):
     """
     Tests views that need logged in users.
@@ -64,6 +76,21 @@ class LoggedInViewsTest(TestCase):
 
     def _destroy_journal(self):
         Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xe3o Paulo)').delete()
+
+    def _create_issue(self):
+        self._create_journal()
+        sample_journal = Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xe3o Paulo)')
+        sample_issue = tests_assets.get_sample_issue()
+
+        sample_issue.journal = sample_journal
+        sample_issue.save()
+
+        sample_section = tests_assets.get_sample_section()
+        sample_section.journal = sample_journal
+        sample_section.save()
+
+    def _destroy_issue(self):
+        self._destroy_journal
 
     def test_add_journal(self):
         #empty form
@@ -108,6 +135,25 @@ class LoggedInViewsTest(TestCase):
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
         self.assertEqual(testing_journal, modified_testing_journal)
 
+    def test_add_institution(self):
+        #empty form
+        response = self.client.get(reverse('institution.add'))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse('institution.add'),
+            tests_assets.get_sample_institution_dataform(collections=[self.collection.pk]))
+
+        self.assertRedirects(response, reverse('institution.index'))
+
+        #edit institution - must be changed
+        testing_institution = Institution.objects.get(name = u'Associação Nacional de História - ANPUH')
+        response = self.client.post(reverse('institution.edit', args = (testing_institution.pk,)),
+            tests_assets.get_sample_institution_dataform(name = 'Modified Title',
+                                                         collections = [self.collection.pk]))
+
+        # self.assertRedirects(response, reverse('journal.index'))
+        # modified_testing_journal = Journal.objects.get(title = 'Modified Title')
+        # self.assertEqual(testing_journal, modified_testing_journal)
 
     @with_sample_journal
     def test_journal_index(self):
@@ -216,6 +262,19 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(pre_institution.is_available is not pos_institution.is_available)
 
         response = self.client.get(reverse('institution.toggle_availability', args=[9999999]))
+        self.assertEqual(response.status_code, 404)
+
+    @with_sample_issue
+    def test_toggle_issue_availability(self):
+        pre_issue = Issue.objects.all()[0]
+        response = self.client.get(reverse('issue.toggle_availability', args=[pre_issue.pk]))
+        pos_issue = Issue.objects.all()[0]
+
+        self.assertEqual(pre_issue, pos_issue)
+        self.assertRedirects(response, reverse('issue.index', args=[pre_issue.journal.pk]))
+        self.assertTrue(pre_issue.is_available is not pos_issue.is_available)
+
+        response = self.client.get(reverse('issue.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 404)
 
 # class LoggedOutViewsTest(TestCase):
