@@ -37,14 +37,18 @@
         <tr>
             <td>
                 <h3><a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a></h3>
-                <p>
+                <ul class="_actions">
                     {% if perms.auth.change_user %}
+                    <li>
                         <a class="btn btn-small btn-primary" href="/journal/user/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                    </li>
                     {% endif %}
                     {% if perms.auth.delete_user %}
+                    <li>
                         <a class="btn btn-small btn-danger" href="/journal/user/delete/{{ ct.pk }}/"><i class="icon-trash icon-white"></i> {% trans 'Delete' %}</a>
+                    </li>
                     {% endif %}
-                </p>
+                </ul>
             </td>
             <td>{{ ct.email }}</td>
             <td>{{ ct.first_name }} {{ ct.last_name }}</td>
