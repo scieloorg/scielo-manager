@@ -28,21 +28,21 @@
     </div>
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
-    <div class="span6">
+    <div class="span10">
         <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
     </div>
-    <div class="span6">
+    <div class="span2">
         <div class="btn-group">
-            <a class="btn" href="#"><i class="icon-cog"></i></a>
+            <a class="btn" href="#">{% trans 'View' %}</a>
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{% url journal.index %}">{% trans "Available" %}</a>
+                    <a href="{% url journal.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Journal" %}</a>
                 </li>
                 <li>
-                    <a href="{% url journal.index %}?is_available=0">{% trans "Unvailable" %}</a>
+                    <a href="{% url journal.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Journal" %}</a>
                 </li>
             </ul>
         </div>
