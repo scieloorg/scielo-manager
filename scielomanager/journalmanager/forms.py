@@ -7,7 +7,6 @@ from django.forms.models import inlineformset_factory
 from journalmanager import models
 
 class JournalForm(ModelForm):
-
     def save_all(self, creator):
         journal = self.save(commit=False)
         journal.creator = creator
@@ -17,7 +16,9 @@ class JournalForm(ModelForm):
 
     class Meta:
         model = models.Journal
+        
         fields = ('title', 'short_title', 'acronym', 'institution', 'scielo_issn', 'print_issn', 'eletronic_issn',
+          'previous_title_id', 'next_title_id', 
           'subject_descriptors', 'study_area', 'init_year', 'init_vol', 'init_num', 'final_year','final_vol', 'final_num',
           'frequency', 'pub_status', 'alphabet', 'classification', 'national_code', 'editorial_standard','ctrl_vocabulary',
           'literature_type', 'treatment_level', 'pub_level', 'indexing_coverage', 'secs_code', 'use_license','copyrighter',
@@ -29,6 +30,8 @@ class JournalForm(ModelForm):
            'title': forms.TextInput(attrs={'class':'span12'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
+           'previous_title_id': forms.Select(attrs={'class':'xxlarge'}),
+           'next_title_id': forms.Select(attrs={'class':'xxlarge'}),
            'institution': forms.Select(attrs={'class':'xxlarge'}),
            'scielo_issn': forms.Select(attrs={'class':'span3', 'maxlength':'9'}),
            'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
