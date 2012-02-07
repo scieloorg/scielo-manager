@@ -379,20 +379,12 @@ def add_issue(request, journal_id, issue_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_issue(request, issue_id):
-    issue = models.Issue.objects.get(pk = issue_id)
-
-    journal_id = issue.journal_id
-    issue.update_date = datetime.now
-
-    if issue.is_available:
-        issue.is_available = False
-    else:
-        issue.is_available = True
-
+def toggle_issue_availability(request, issue_id):
+    issue = get_object_or_404(models.Issue, pk = issue_id)
+    issue.is_available = not issue.is_available
     issue.save()
 
-    return HttpResponseRedirect("/journal/" + str(journal_id)+ "/issues/")
+    return HttpResponseRedirect(reverse('issue.index', args=[issue.journal.pk]))
 
 @login_required
 def search_journal(request):
