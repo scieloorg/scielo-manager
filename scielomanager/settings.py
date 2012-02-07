@@ -145,11 +145,13 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
-        },
+        }, 
     }
 }
 
 AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
+
+AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 
 MANAGED_LANGUAGES_CHOICES = (
     (u'en',u'English'),
