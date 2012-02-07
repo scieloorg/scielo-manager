@@ -43,15 +43,29 @@
         {% for ct in issues.object_list %}
         <tr>
             <td>
-                <h3><a href="{% url issue.show ct.id %}">{{ ct.identification }}</a><h3>
-                <p class="href">
-                    <a class="btn btn-small btn-primary" href="{% url issue.edit ct.journal.pk ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                <h4>
+                    <a href="{% url issue.show ct.id %}">{{ ct.identification }}</a>
+                </h4>
+                <ul class="_actions">
+                    <li>
+                        <a href="{% url issue.edit ct.journal.pk ct.pk %}">
+                            {% trans 'Edit' %}
+                        </a>
+                    </li>
+                    <li>
                     {% if ct.is_available %}
-                        <a class="btn btn-small btn-danger" href="{% url issue.toggle_availability ct.pk %}"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
+                        <a href="{% url issue.toggle_availability ct.pk %}"
+                           class="label label-important">
+                            {% trans 'Disable' %}
+                        </a>
                     {% else %}
-                        <a class="btn btn-small btn-success" href="{% url issue.toggle_availability ct.pk %}"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
+                        <a href="{% url issue.toggle_availability ct.pk %}"
+                           class="label label-success">
+                            {% trans 'Enable' %}
+                        </a>
                     {% endif %}
-                </p>
+                    </li>
+                </ul>
             </td>
             <td>{{ ct.publication_date }}</td>
             <td>{{ ct.is_marked_up}}</td>

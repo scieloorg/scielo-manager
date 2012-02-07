@@ -1,0 +1,28 @@
+
+/*Toggle action list visibility on mouse over a table row*/
+
+ul._actions {
+    margin: 5px;
+    padding: 0;
+}
+
+ul._actions li {
+    border-right: 1px solid #919191;
+    font-weight: bold;
+    margin-right: 5px;
+    padding: 0 5px;
+    visibility: hidden;
+    display: inline;
+}
+
+ul._actions a {
+    color: #333333 !important;
+}
+
+tr:hover ul._actions li {
+    visibility: visible;
+}
+
+ul._actions li:last-child {
+    border: medium none;
+}
