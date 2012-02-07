@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load append_to_get %}
 
 {% block extrahead %}
 
@@ -27,8 +28,24 @@
     </div>
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
-    <div class="span2">
+    <div class="span6">
         <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
+    </div>
+    <div class="span6">
+        <div class="btn-group">
+            <a class="btn" href="#"><i class="icon-cog"></i></a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url journal.index %}">{% trans "Available" %}</a>
+                </li>
+                <li>
+                    <a href="{% url journal.index %}?is_available=0">{% trans "Unvailable" %}</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div><!--row-fluid botões-->
 <table class="table table-striped">
@@ -77,13 +94,13 @@
 <div class="pagination">
     <ul>
         <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
-            <a href="?page={{ journals.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+            <a href="{% append_to_get page=journals.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in journals.paginator.page_range %}
-        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if journals.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not journals.has_next %}disabled{% endif %}">
-            <a href="?page={{ journals.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+            <a href="{% append_to_get page=journals.next_page_number %}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>

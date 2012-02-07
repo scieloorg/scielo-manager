@@ -174,18 +174,9 @@ def show_journal(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def open_journal(request):
-    journals = models.Journal.objects.all()
-    t = loader.get_template('journalmanager/journal_dashboard.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_journals = models.Journal.objects.filter(collections = user_collection)
+    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections = user_collection)
 
     journals = get_paginated(all_journals, request.GET.get('page', 1))
 
@@ -256,7 +247,7 @@ def show_institution(request, institution_id):
 @login_required
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_institutions = models.Institution.objects.filter(collection = user_collection)
+    all_institutions = models.Institution.objects.available(True).filter(collection = user_collection)
 
     institutions = get_paginated(all_institutions, request.GET.get('page', 1))
 
@@ -327,7 +318,7 @@ def issue_index(request, journal_id):
     journal = models.Journal.objects.get(pk = journal_id)
     user_collection = request.user.userprofile_set.get().collection
 
-    all_issues = models.Issue.objects.filter(journal = journal_id)
+    all_issues = models.Issue.objects.available(True).filter(journal = journal_id)
 
     issues = get_paginated(all_issues, request.GET.get('page', 1))
 
@@ -383,7 +374,6 @@ def toggle_issue(request, issue_id):
     issue = models.Issue.objects.get(pk = issue_id)
 
     journal_id = issue.journal_id
-    issue.update_date = datetime.now
 
     if issue.is_available:
         issue.is_available = False
@@ -399,7 +389,7 @@ def search_journal(request):
     user_collection = request.user.userprofile_set.get().collection
 
     #Get journals where title contains the "q" value and collection equal with the user
-    journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q'],
+    journals_filter = models.Journal.objects.available(True).filter(title__icontains = request.REQUEST['q'],
                                                     collections = user_collection).order_by('title')
 
     #Paginated the result
@@ -418,7 +408,7 @@ def search_institution(request):
     user_collection = request.user.userprofile_set.get().collection
 
     #Get institutions where title contains the "q" value and collection equal with the user
-    institutions_filter = models.Institution.objects.filter(name__icontains = request.REQUEST['q'],
+    institutions_filter = models.Institution.objects.available(True).filter(name__icontains = request.REQUEST['q'],
                                                             collection = user_collection).order_by('name')
 
     #Paginated the result
@@ -438,7 +428,7 @@ def search_issue(request, journal_id):
     journal = models.Journal.objects.get(pk = journal_id)
     user_collection = request.user.userprofile_set.get().collection
     #Get issues where journal.id = journal_id and volume contains "q"
-    selected_issues = models.Issue.objects.filter(journal = journal_id,
+    selected_issues = models.Issue.objects.available(True).filter(journal = journal_id,
                                                   volume__icontains = request.REQUEST['q']).order_by('publication_date')
 
     #Paginated the result

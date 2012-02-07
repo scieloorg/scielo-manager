@@ -34,7 +34,17 @@ class UserProfile(models.Model):
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
 
+
+class CustomInstitutionManager(models.Manager):
+
+    def available(self, avalability = True):
+        return super(CustomInstitutionManager, self).get_query_set().filter(is_available=avalability)
+
 class Institution(models.Model):
+
+    #Custom manager
+    objects = CustomInstitutionManager()
+
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
@@ -61,7 +71,17 @@ class Institution(models.Model):
     class Meta:
         ordering = ['name']
 
+
+class CustomJournalManager(models.Manager):
+
+    def available(self, avalability = True):
+        return super(CustomJournalManager, self).get_query_set().filter(is_available=avalability)
+
 class Journal(models.Model):
+
+    #Custom manager
+    objects = CustomJournalManager()
+
     # PART 1
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     created = models.DateTimeField(_('Date of Registration'),default=datetime.now,
@@ -158,7 +178,6 @@ class UseLicense(models.Model):
     def __unicode__(self):
         return self.license_code
 
-
 class TranslatedData(models.Model):
     text = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
     model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
@@ -178,7 +197,16 @@ class Section(models.Model):
     def __unicode__(self):
         return self.code
 
+class CustomIssueManager(models.Manager):
+
+    def available(self, avalability = True):
+        return super(CustomIssueManager, self).get_query_set().filter(is_available=avalability)
+
 class Issue(models.Model):
+
+    #Custom manager
+    objects = CustomIssueManager()  
+
     section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
     title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
@@ -224,7 +252,7 @@ class JournalAbstrLanguage(models.Model):
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    d = models.DateField(_('Date'),default=datetime.now,        editable=True,blank=True)
+    d = models.DateField(_('Date'),default=datetime.now,editable=True,blank=True)
     status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
 
 class JournalParallelTitles(models.Model):
