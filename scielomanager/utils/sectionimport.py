@@ -6,6 +6,7 @@ import difflib
 import subfield
 from datetime import datetime
 from django.core.management import setup_environ
+from django.core.exceptions import ObjectDoesNotExist
 
 try:
     from scielomanager import settings
@@ -40,10 +41,22 @@ class SectionImport:
         """
         return self._summary
 
+    def load_journal(self, issn):
+        try:
+            journal = Journal.objects.get(eletronic_issn=issn)
+        except ObjectDoesNotExist:
+            try:
+                journal = Journal.objects.get(print_issn=issn)
+            except ObjectDoesNotExist:
+                return None
+
+        return journal
 
     def load_section(self, record):
         section = ""
         section_by_language = {}
+
+        journal = self.load_journal(record['35'][0])
 
         if record.has_key('49'):
             for sec in record['49']: # Criando dicionário organizado de secoes
@@ -59,6 +72,7 @@ class SectionImport:
         for sec_key,sec in section_by_language.items():
             section = Section()
             section.code = sec_key
+            section.journal = journal
             section.creation_date = datetime.now()
             section.save(force_insert=True)
             self.charge_summary('sections')
