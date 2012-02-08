@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load append_to_get %}
 
 {% block extrahead %}
 
@@ -27,9 +28,24 @@
     </div>
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
-    <div class="span2">
+    <div class="span10">
         <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
     </div>
+    <div class="span2">
+        <div class="btn-group">
+            <a class="btn" href="#">{% trans 'View' %}</a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url institution.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Issue" %}</a>
+                </li>
+                <li>
+                    <a href="{% url institution.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Issue" %}</a>
+                </li>
+            </ul>
+        </div>
 </div><!--row-fluid Search box-->
 <table class="table table-striped">
     <thead>
@@ -67,13 +83,13 @@
 <div class="pagination">
     <ul>
         <li class="prev {% if not issues.has_previous %}disabled{% endif %}">
-            <a href="?page={{ issues.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+            <a href="{% append_to_get page=issues.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in issues.paginator.page_range %}
-        <li {% if issues.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if issues.number == page %}class="active"{% endif %}><a href="?{% append_to_get page=page %}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not issues.has_next %}disabled{% endif %}">
-            <a href="?page={{ issues.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+            <a href="{% append_to_get page=issues.next_page_number %}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>
