@@ -277,6 +277,53 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 404)
 
+    @with_sample_journal
+    def test_journal_availability_list(self):
+
+        pre_journal = Journal.objects.all()[0]
+        response = self.client.get(reverse('journal.index') + '?is_available=1')
+        self.assertEqual(response.context['journals'].object_list[0].is_available, True)
+
+        #change object atribute is_available
+        pre_journal.is_available = False
+        pre_journal.save()
+
+        response = self.client.get(reverse('journal.index') + '?is_available=0')
+        self.assertEqual(response.context['journals'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['journals'].object_list), 1)
+
+
+    @with_sample_journal
+    def test_institution_availability_list(self):
+
+        institution = Institution.objects.all()[0]
+        response = self.client.get(reverse('institution.index'))
+        self.assertEqual(response.context['institutions'].object_list[0].is_available, True)
+
+        #change atribute is_available
+        institution.is_available = False
+        institution.save()
+
+        response = self.client.get(reverse('institution.index') + '?is_available=0')
+        self.assertEqual(response.context['institutions'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['institutions'].object_list), 1)
+
+
+    @with_sample_issue
+    def test_issue_availability_list(self):
+
+        issue = Issue.objects.all()[0]
+        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]))
+        self.assertEqual(response.context['issues'].object_list[0].is_available, True)
+
+        #change atribute is_available
+        issue.is_available = False
+        issue.save()
+
+        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
+        self.assertEqual(response.context['issues'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['issues'].object_list), 1)
+
 # class LoggedOutViewsTest(TestCase):
 
 #     def test_page_index(self):

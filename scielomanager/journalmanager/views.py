@@ -174,18 +174,9 @@ def show_journal(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def open_journal(request):
-    journals = models.Journal.objects.all()
-    t = loader.get_template('journalmanager/journal_dashboard.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_journals = models.Journal.objects.filter(collections = user_collection)
+    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections = user_collection)
 
     journals = get_paginated(all_journals, request.GET.get('page', 1))
 
@@ -256,7 +247,7 @@ def show_institution(request, institution_id):
 @login_required
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_institutions = models.Institution.objects.filter(collection = user_collection)
+    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection = user_collection)
 
     institutions = get_paginated(all_institutions, request.GET.get('page', 1))
 
@@ -327,7 +318,7 @@ def issue_index(request, journal_id):
     journal = models.Journal.objects.get(pk = journal_id)
     user_collection = request.user.userprofile_set.get().collection
 
-    all_issues = models.Issue.objects.filter(journal = journal_id)
+    all_issues = models.Issue.objects.available(request.GET.get('is_available', 1)).filter(journal = journal_id)
 
     issues = get_paginated(all_issues, request.GET.get('page', 1))
 
