@@ -63,22 +63,34 @@
         {% for ct in journals.object_list %}
         <tr>
             <td>
-                <h3><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h3>
+                <h4><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h4>
                 <ul class="_actions">
                     <li>
-                        <a class="btn btn-small btn-primary" href="{% url journal.edit ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                        <a href="{% url journal.edit ct.pk %}">
+                            {% trans 'Edit' %}
+                        </a>
                     </li>
                     <li>
-                        <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
+                        <a href="{% url issue.index ct.pk %}">
+                            {% trans 'Issues' %}
+                        </a>
                     </li>
                     <li>
-                        <a class="btn btn-small btn-primary"href="#"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
+                        <a href="#">
+                            {% trans 'Sections' %}
+                        </a>
                     </li>
                     <li>
                     {% if ct.is_available %}
-                        <a class="btn btn-small btn-danger" href="{% url journal.toggle_availability ct.pk %}"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
+                        <a href="{% url journal.toggle_availability ct.pk %}"
+                           class="label label-important">
+                            {% trans 'Disable' %}
+                        </a>
                     {% else %}
-                        <a class="btn btn-small btn-success" href="{% url journal.toggle_availability ct.pk %}"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
+                        <a href="{% url journal.toggle_availability ct.pk %}"
+                           class="label label-success">
+                            {% trans 'Enable' %}
+                        </a>
                     {% endif %}
                     </li>
                 </ul>
