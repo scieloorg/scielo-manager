@@ -436,3 +436,21 @@ def search_issue(request, journal_id):
                        })
     return HttpResponse(t.render(c))
 
+@login_required
+def section_index(request, journal_id):
+    #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
+    #estas queries.
+    journal = models.Journal.objects.get(pk = journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+
+    all_sections = models.Section.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
+
+    sections = get_paginated(all_sections, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/section_dashboard.html')
+    c = RequestContext(request, {
+                       'items': sections,
+                       'journal': journal,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))

@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^institution/search/$', views.search_institution, name='institution.search'),
 
     # Section Tools
-    #url(r'^section/$', section_index, name='section.index' ),
+    url(r'^(?P<journal_id>\d+)/sections/$', views.section_index, name='section.index' ),
     #url(r'^section/add/(?P<journal_id>\d+/$', add_section, name='section.add' ),
     #url(r'^section/show/(?P<section_id>\d+)/$', show_section, name='section.show' ),
     #url(r'^section/edit/(?P<section_id>\d+)/$', edit_section, name='section.edit' ),
