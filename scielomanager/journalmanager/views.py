@@ -36,9 +36,9 @@ def user_index(request):
     user_collection = request.user.userprofile_set.get().collection
     all_users = User.objects.filter(userprofile__collection=user_collection)
     users = get_paginated(all_users, request.GET.get('page', 1))
-    
+
     t = loader.get_template('journalmanager/user_dashboard.html')
-    
+
     c = RequestContext(request, {
                        'users': users,
                        'collection': user_collection,
@@ -457,3 +457,38 @@ def section_index(request, journal_id):
                        'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def add_section(request, journal_id = None):
+    """
+    Handles new and existing journals
+    """
+
+    user_collection = request.user.userprofile_set.get().collection
+
+    if request.method == 'POST':
+        journal_form_kwargs = {}
+
+        if journal_id is not None: #edit - preserve form-data
+            filled_form = models.Journal.objects.get(pk = journal_id)
+            journal_form_kwargs['instance'] = filled_form
+
+        add_form = JournalForm(request.POST, **journal_form_kwargs)
+
+        if add_form.is_valid():
+            add_form.save_all(creator = request.user)
+            return HttpResponseRedirect(reverse('journal.index'))
+    else:
+        if journal_id is None: #new
+            add_form = JournalForm()
+        else:
+            filled_form = models.Journal.objects.get(pk = journal_id)
+            add_form = JournalForm(instance = filled_form)
+
+    return render_to_response('journalmanager/add_journal.html', {
+                              'add_form': add_form,
+                              'user_name': request.user.pk,
+                              'collection': user_collection,
+                              },
+                              context_instance = RequestContext(request))
+
