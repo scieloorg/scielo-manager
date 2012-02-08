@@ -1,4 +1,4 @@
-# coding: utf-8
+from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -38,6 +38,7 @@ def user_index(request):
     users = get_paginated(all_users, request.GET.get('page', 1))
     
     t = loader.get_template('journalmanager/user_dashboard.html')
+    
     c = RequestContext(request, {
                        'users': users,
                        'collection': user_collection,
