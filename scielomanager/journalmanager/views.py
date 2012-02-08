@@ -34,7 +34,9 @@ def index(request):
 @login_required
 def user_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    users = User.objects.get_query_set().filter(userprofile__collection=user_collection)
+    all_users = User.objects.filter(userprofile__collection=user_collection)
+    users = get_paginated(all_users, request.GET.get('page', 1))
+    
     t = loader.get_template('journalmanager/user_dashboard.html')
     c = RequestContext(request, {
                        'users': users,
