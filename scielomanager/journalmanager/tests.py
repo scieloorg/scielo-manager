@@ -140,6 +140,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('institution.add'))
         self.assertEqual(response.status_code, 200)
 
+        #add institution - must be added
         response = self.client.post(reverse('institution.add'),
             tests_assets.get_sample_institution_dataform(collections=[self.collection.pk]))
 
@@ -151,9 +152,9 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_institution_dataform(name = 'Modified Title',
                                                          collections = [self.collection.pk]))
 
-        # self.assertRedirects(response, reverse('journal.index'))
-        # modified_testing_journal = Journal.objects.get(title = 'Modified Title')
-        # self.assertEqual(testing_journal, modified_testing_journal)
+        self.assertRedirects(response, reverse('institution.index'))
+        modified_testing_institution = Institution.objects.get(name = 'Modified Title')
+        self.assertEqual(testing_institution, modified_testing_institution)
 
     @with_sample_journal
     def test_journal_index(self):

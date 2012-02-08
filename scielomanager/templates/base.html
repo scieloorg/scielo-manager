@@ -8,7 +8,7 @@
         <link rel="shortcut icon" href="/static/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap.css">
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/bootstrap-local.css">
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
         {% block extrahead %}{% endblock %}
     </head>
     <body>
@@ -56,7 +56,7 @@
                                             <ul>
                                                 <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
                                                 <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
-                                            </ul>                                            
+                                            </ul>
                                     </form>
                                     {% if invalid %}
                                          <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
