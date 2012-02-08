@@ -26,3 +26,10 @@ tr:hover ul._actions li {
 ul._actions li:last-child {
     border: medium none;
 }
+
+
+/*Customize bootstrap components*/
+
+.dropdown-menu{
+    min-width: 130px;
+}
