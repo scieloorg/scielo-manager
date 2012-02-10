@@ -68,6 +68,7 @@ if Collection not in admin.site._registry:
 admin.site.register(User, UserProfileAdmin)
 admin.site.register(UseLicense)
 admin.site.register(Section)
+admin.site.register(TranslatedData)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
 

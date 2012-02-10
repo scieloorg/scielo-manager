@@ -30,14 +30,14 @@ class Collection(models.Model):
         ordering = ['name']
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(User, unique=True)
+    user=models.ForeignKey(User, unique=True)
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
 
 
 class CustomInstitutionManager(models.Manager):
 
-    def available(self, avalability = True):
+    def available(self, avalability=True):
         return super(CustomInstitutionManager, self).get_query_set().filter(is_available=avalability)
 
 class Institution(models.Model):
@@ -56,7 +56,7 @@ class Institution(models.Model):
     Address_complement = models.CharField(_('Complement'), max_length=128, null=False,blank=True,)
     zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True)
     phone = models.CharField(_('Phone Number'), max_length=16, null=False,blank=True,)
-    fax =  models.CharField(_('Fax Number'), max_length=16, null=False,blank=True,)
+    fax = models.CharField(_('Fax Number'), max_length=16, null=False,blank=True,)
     cel = models.CharField(_('Cel Number'), max_length=16, null=False,blank=True,)
     mail = models.EmailField(_('Email'),)
     validated = models.BooleanField(_('Validated'), default=False,)
@@ -74,8 +74,8 @@ class Institution(models.Model):
 
 class CustomJournalManager(models.Manager):
 
-    def available(self, avalability = True):
-        return super(CustomJournalManager, self).get_query_set().filter(is_available=avalability)
+    def available(self, availability=True):
+        return super(CustomJournalManager, self).get_query_set().filter(is_available=availability)
 
 class Journal(models.Model):
 
@@ -116,7 +116,7 @@ class Journal(models.Model):
         choices=choices.FREQUENCY,null=False,blank=True)
     pub_status = models.CharField(_('Publication Status'),max_length=16,
         choices=choices.PUBLICATION_STATUS,null=False,blank=True)
-    alphabet =  models.CharField(_('Alphabet'),max_length=16,
+    alphabet = models.CharField(_('Alphabet'),max_length=16,
         choices=choices.ALPHABET,null=False,blank=True)
     classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
@@ -142,7 +142,7 @@ class Journal(models.Model):
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
 
-    id_provided_by_the_center  = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
+    id_provided_by_the_center = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
 
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
@@ -178,37 +178,42 @@ class UseLicense(models.Model):
         return self.license_code
 
 class TranslatedData(models.Model):
-    text = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
+    translation = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
+    language = models.CharField(_('Language'), choices=choices.LANGUAGE, null=False, blank=False, max_length=32)
     model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
     field = models.CharField(_('Field'), null=False, blank=False, max_length=32)
-    language = models.CharField(_('Language') ,choices=choices.LANGUAGE, null=False, blank=False, max_length=32)
 
     def __unicode__(self):
-        return self.text
+        return self.translation if self.translation is not None else 'Missing trans: {0}.{1}'.format(self.model, self.field)
 
 class Section(models.Model):
-    translation = models.ManyToManyField(TranslatedData)
-    code = models.CharField(_('Code'), null = True, blank = True, max_length = 16)
-    creation_date = models.DateTimeField(auto_now_add = True)
-    update_date = models.DateTimeField(auto_now = True)
-    journal = models.ForeignKey(Journal, null = True, blank = False)
+    #Custom manager
+    objects = CustomJournalManager()
+
+    title = models.CharField(_('Title'), null=True, blank=True, max_length=256)
+    title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
+    journal = models.ForeignKey(Journal, null=False, blank=False)
+    code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=False)
 
     def __unicode__(self):
         return self.code
 
 class CustomIssueManager(models.Manager):
 
-    def available(self, avalability = True):
+    def available(self, avalability=True):
         return super(CustomIssueManager, self).get_query_set().filter(is_available=avalability)
 
 class Issue(models.Model):
 
     #Custom manager
-    objects = CustomIssueManager()  
+    objects = CustomIssueManager()
 
     section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
-    title =   models.CharField(_('Title'), null=True, blank=True, max_length=256)
+    title = models.CharField(_('Title'), null=True, blank=True, max_length=256)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
@@ -229,7 +234,7 @@ class Issue(models.Model):
     def identification(self):
         n = self.number
         if n != 'ahead' and n != 'review':
-            n = '(' + self.number + ')'
+            n ='(' + self.number + ')'
         else:
             n = self.number
 
@@ -256,7 +261,7 @@ class JournalHist(models.Model):
 
 class JournalParallelTitles(models.Model):
     journal = models.ForeignKey(Journal,null=False)
-    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text = helptexts.JOURNALPARALLELTITLES__FORM)
+    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text=helptexts.JOURNALPARALLELTITLES__FORM)
 
 class Center(Institution):
     is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
