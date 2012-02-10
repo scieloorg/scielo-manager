@@ -99,7 +99,14 @@ class SectionForm(ModelForm):
             self.fields['code'].widget.attrs['readonly'] = True
 
     def clean_code(self):
-        return self.instance.sku
+        return self.instance.code
+
+    def save_all(self, journal):
+        section = self.save(commit=False)
+        section.journal = journal
+        section.save()
+
+        return section
 
     class Meta:
       model = models.Section

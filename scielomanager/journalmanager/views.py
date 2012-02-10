@@ -464,26 +464,25 @@ def add_section(request, journal_id, section_id=None):
     Handles new and existing sections
     """
 
+    if section_id is None:
+        section = models.Section()
+    else:
+        section = get_object_or_404(models.Section, pk=section_id)
+
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
     if request.method == 'POST':
-        section_form_kwargs = {}
-
-        if section_id is not None: #edit - preserve form-data
-            section = get_object_or_404(models.Section, pk = section_id)
-            section_form_kwargs['instance'] = section
-
-        add_form = SectionForm(request.POST, **journal_form_kwargs)
+        add_form = SectionForm(request.POST, instance=section)
 
         if add_form.is_valid():
-            add_form.save()
+            if section_id is None: #new
+                add_form.save_all(journal)
+            else: #edit
+                add_form.save()
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+
     else:
-        if section_id is None: #new
-            add_form = SectionForm()
-            journal = get_object_or_404(models.Journal, pk=journal_id)
-        else:
-            section = models.Section.objects.get(pk=section_id)
-            add_form = SectionForm(instance=section)
-            journal = section.journal
+        add_form = SectionForm(instance=section)
 
     return render_to_response('journalmanager/add_section.html', {
                               'add_form': add_form,

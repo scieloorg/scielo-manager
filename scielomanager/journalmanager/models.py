@@ -192,7 +192,7 @@ class Section(models.Model):
 
     title = models.CharField(_('Title'), null=True, blank=True, max_length=256)
     title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
-    journal = models.ForeignKey(Journal, null=False, blank=False)
+    journal = models.ForeignKey(Journal, null=True, blank=True)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
