@@ -91,5 +91,15 @@ class IssueForm(ModelForm):
             'final_year': SelectDateWidget(),
         }
 
-# class SectionForm(ModelForm):
-#     class Meta:
+class SectionForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SectionForm, self).__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.id:
+            self.fields['code'].widget.attrs['readonly'] = True
+
+    def clean_code(self):
+        return self.instance.sku
+
+    class Meta:
+      model = models.Section
