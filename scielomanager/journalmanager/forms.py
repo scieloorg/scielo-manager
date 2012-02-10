@@ -94,3 +94,6 @@ class IssueForm(ModelForm):
             'init_year': SelectDateWidget(),
             'final_year': SelectDateWidget(),
         }
+
+# class SectionForm(ModelForm):
+#     class Meta:
