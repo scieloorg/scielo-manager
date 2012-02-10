@@ -93,7 +93,7 @@ class Journal(models.Model):
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'),max_length=128)
 
-    previous_title_id = models.ForeignKey('Journal',related_name='prev_title',null=True)
+    previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True)
     next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
 
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
@@ -138,7 +138,7 @@ class Journal(models.Model):
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
-    subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=False, choices=choices.SUBSCRIPT)
+    subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=True, choices=choices.SUBSCRIPT)
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
 
@@ -242,20 +242,20 @@ class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
 class JournalTextLanguage(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
-    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,null=False,blank=False)
+    journal = models.ForeignKey(Journal)
+    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,blank=True,null=False)
 
 class JournalAbstrLanguage(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
+    journal = models.ForeignKey(Journal)
     language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
 class JournalHist(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
-    d = models.DateField(_('Date'),default=datetime.now,editable=True,blank=True)
+    journal = models.ForeignKey(Journal)
+    date = models.DateField(_('Date'),editable=True,blank=True)
     status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
 
 class JournalParallelTitles(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
+    journal = models.ForeignKey(Journal)
     form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text = helptexts.JOURNALPARALLELTITLES__FORM)
 
 class Center(Institution):
