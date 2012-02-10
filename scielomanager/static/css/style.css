@@ -27,9 +27,19 @@ ul._actions li:last-child {
     border: medium none;
 }
 
-
 /*Customize bootstrap components*/
 
 .dropdown-menu{
     min-width: 130px;
+}
+
+/*Customize jquery-ui.css components*/
+
+.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
+    width: 800px;
+}
+
+button.ui-button-icon-only {
+    height: 20px;
+    width: 4em;
 }

@@ -16,24 +16,19 @@ class JournalForm(ModelForm):
         return journal
 
     class Meta:
+      
         model = models.Journal
-        fields = ('title', 'short_title', 'acronym', 'institution', 'scielo_issn', 'print_issn', 'eletronic_issn',
-          'subject_descriptors', 'study_area', 'init_year', 'init_vol', 'init_num', 'final_year','final_vol', 'final_num',
-          'frequency', 'pub_status', 'alphabet', 'classification', 'national_code', 'editorial_standard','ctrl_vocabulary',
-          'literature_type', 'treatment_level', 'pub_level', 'indexing_coverage', 'secs_code', 'use_license','copyrighter',
-          'url_main_collection', 'url_online_submission', 'url_journal', 'subscription', 'notes','id_provided_by_the_center',
-          'collections', 'validated', 'is_available' )
 
         #Overriding the default field types or widgets
         widgets = {
-           'title': forms.TextInput(attrs={'class':'span12'}),
+           'title': forms.TextInput(attrs={'class':'span10'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'institution': forms.Select(attrs={'class':'xxlarge'}),
+           'institution': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3', 'maxlength':'9'}),
            'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
            'eletronic_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
-           'subject_descriptors': forms.Textarea(attrs={'class':'span10'}),
+           'subject_descriptors': forms.Textarea(attrs={'class':'span12'}),
            'init_year': SelectDateWidget(),
            'init_vol': forms.TextInput(attrs={'class':'span1'}),
            'init_num': forms.TextInput(attrs={'class':'span1'}),
@@ -91,5 +86,26 @@ class IssueForm(ModelForm):
             'final_year': SelectDateWidget(),
         }
 
-# class SectionForm(ModelForm):
-#     class Meta:
+class JournalMissionForm(ModelForm):
+    class Meta:
+      model = models.JournalMission
+      widgets = {
+        'description':forms.Textarea(attrs={'class':'span12'}), 
+      }
+
+class JournalTitleOtherFormsForm(ModelForm):
+    class Meta:
+      model = models.JournalTitleOtherForms
+      widgets = {
+        'form': forms.TextInput(attrs={'class':'span8'}),
+      }
+
+class JournalParallelTitlesForm(ModelForm):
+    class Meta:
+      model = models.JournalParallelTitles
+      widgets = {
+        'form': forms.TextInput(attrs={'class':'span8'}),
+      }
+      
+
+      
