@@ -192,37 +192,68 @@ def journal_index(request):
 
 @login_required
 def add_journal(request, journal_id = None):
+
     """
     Handles new and existing journals
     """
-
     user_collection = request.user.userprofile_set.get().collection
 
-    if request.method == 'POST':
-        journal_form_kwargs = {}
+    if  journal_id == None:
+        journal = models.Journal()
+    else:
+        journal = get_object_or_404(models.Journal, id = journal_id)
 
-        if journal_id is not None: #edit - preserve form-data
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            journal_form_kwargs['instance'] = filled_form
+    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm,  extra=1)
+    JournalTitleOtherFormSet = inlineformset_factory(models.Journal, models.JournalTitleOtherForms, form=JournalTitleOtherFormsForm, extra=1)
+    JournalShortTitleOtherFormSet = inlineformset_factory(models.Journal, models.JournalShortTitleOtherForms, extra=1)
+    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1)
+    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1)
+    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1)
+    JournalParallelTitlesFormSet = inlineformset_factory(models.Journal, models.JournalParallelTitles, form=JournalParallelTitlesForm,  extra=1)
+    JournalShortTitleOtherFormSet = inlineformset_factory(models.Journal, models.JournalShortTitleOtherForms, extra=1)
 
-        add_form = JournalForm(request.POST, **journal_form_kwargs)
+    if request.method == "POST":
+        journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+        missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
+        titleotherformset = JournalTitleOtherFormSet(request.POST, instance=journal, prefix='othertitle')
+        textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
+        abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
+        histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
+        paralleltitlesformset = JournalParallelTitlesFormSet(request.POST, instance=journal, prefix='paralleltitles')
+        shorttitleotherformset = JournalShortTitleOtherFormSet(request.POST, instance=journal, prefix='othershorttitles')
 
-        if add_form.is_valid():
-            add_form.save_all(creator = request.user)
+        if journalform.is_valid() and missionformset.is_valid():
+            journalform.save_all(creator = request.user)
+            missionformset.save()
+            titleotherformset.save()
+            textlanguageformset.save()
+            abstrlanguageformset.save()
+            paralleltitlesformset.save()
+            shorttitleotherformset.save()
+            histformset.save()
+
             return HttpResponseRedirect(reverse('journal.index'))
     else:
-        if journal_id is None: #new
-            add_form = JournalForm()
-        else:
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            add_form = JournalForm(instance = filled_form)
+        journalform  = JournalForm(instance=journal, prefix='journal')
+        missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
+        titleotherformset = JournalTitleOtherFormSet(instance=journal, prefix='othertitle')
+        textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
+        abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
+        histformset = JournalHistFormSet(instance=journal, prefix='hist')
+        paralleltitlesformset = JournalParallelTitlesFormSet(instance=journal, prefix='paralleltitles')
+        shorttitleotherformset = JournalShortTitleOtherFormSet(instance=journal, prefix='othershorttitles')
 
     return render_to_response('journalmanager/add_journal.html', {
-                              'add_form': add_form,
-                              'user_name': request.user.pk,
+                              'add_form': journalform,
+                              'missionformset': missionformset,
                               'collection': user_collection,
-                              },
-                              context_instance = RequestContext(request))
+                              'titleotherformset': titleotherformset,
+                              'textlanguageformset': textlanguageformset,
+                              'histformset': histformset,
+                              'paralleltitlesformset': paralleltitlesformset,
+                              'shorttitleotherformset': shorttitleotherformset,
+                              'abstrlanguageformset': abstrlanguageformset
+                              }, context_instance = RequestContext(request))
 
 @login_required
 def toggle_journal_availability(request, journal_id):
