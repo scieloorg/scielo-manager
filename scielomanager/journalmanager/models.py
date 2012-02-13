@@ -99,8 +99,8 @@ class Journal(models.Model):
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True)
-    print_issn = models.CharField(_('Print ISSN'),max_length=16,null=False,blank=True)
-    eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=16,null=False,blank=True)
+    print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True)
+    eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=512,null=False,blank=True)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
