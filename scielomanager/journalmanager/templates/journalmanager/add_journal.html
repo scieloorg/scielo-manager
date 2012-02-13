@@ -21,223 +21,405 @@
 {% block body %}
 <form method="post" action="#">
     {% csrf_token %}
-
-    <span class="label">{% trans "Journal Information" %}</span>
-
-    <div class="well">
-        <div class="clearfix {% if add_form.title.errors %}error{% endif %}">
-            {{ add_form.title.label_tag }}
-            <div class="input">
-                {{ add_form.title }}
-                {% if add_form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix {% if add_form.short_title.errors %}error{% endif %}">
-            {{ add_form.short_title.label_tag }}
-            <div class="input">
-                {{ add_form.short_title }}
-                {% if add_form.short_title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix {% if add_form.short_title.errors %}error{% endif %}">
-            {{ add_form.acronym.label_tag }}
-            <div class="input">
-                {{ add_form.acronym }}
-                {% if add_form.acronym.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix {% if add_form.institution.errors %}error{% endif %}">
-            {{ add_form.institution.label_tag }}
-            <div class="input">
-                {{ add_form.institution }}
-                {% if add_form.institution.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
-            {{ add_form.institution.help_text }}
-        </div>
-        <div class="clearfix">
-            {{ add_form.scielo_issn.label_tag }}
-            <div class="input">{{ add_form.scielo_issn }}</div>
-        </div>
-        <div class="clearfix {% if add_form.print_issn.errors %}error{% endif %}">
-            {{ add_form.print_issn.label_tag }}
-            <div class="input">
-            	{{ add_form.print_issn }}
-            	{% if add_form.print_issn.errors %}<span class="help-inline">Enter a valid ISSN</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix {% if add_form.print_issn.errors %}error{% endif %}">
-            {{ add_form.electronic_issn.label_tag }}
-            <div class="input">
-            	{{ add_form.electronic_issn }}
-            	{% if add_form.electronic_issn.errors %}<span class="help-inline">Enter a valid ISSN</span>{% endif %}
-            </div>
-        </div>
-
-    <span class="label">{% trans "Information Area" %}</span>
-
-    <div class="well">
-        <div class="clearfix">
-            {{ add_form.subject_descriptors.label_tag }}
-            <div class="input">{{ add_form.subject_descriptors }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.study_area.label_tag }}
-            <div class="input">{{ add_form.study_area }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.init_year.label_tag }}
-            <div class="input">{{ add_form.init_year }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.init_vol.label_tag }}
-            <div class="input">{{ add_form.init_vol }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.init_num.label_tag }}
-            <div class="input">{{ add_form.init_num }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.final_year.label_tag }}
-            <div class="input">{{ add_form.final_year }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.final_vol.label_tag }}
-            <div class="input">{{ add_form.final_vol }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.final_num.label_tag }}
-            <div class="input">{{ add_form.final_num }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.frequency.label_tag }}
-            <div class="input">{{ add_form.frequency }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.pub_status.label_tag }}
-            <div class="input">{{ add_form.pub_status }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.alphabet.label_tag }}
-            <div class="input">{{ add_form.alphabet }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.classification.label_tag }}
-            <div class="input">{{ add_form.classification }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.national_code.label_tag }}
-            <div class="input">{{ add_form.national_code }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.editorial_standard.label_tag }}
-            <div class="input">{{ add_form.editorial_standard }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.ctrl_vocabulary.label_tag }}
-            <div class="input">{{ add_form.ctrl_vocabulary }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.literature_type.label_tag }}
-            <div class="input">{{ add_form.literature_type }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.treatment_level.label_tag }}
-            <div class="input">{{ add_form.treatment_level }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.pub_level.label_tag }}
-            <div class="input">{{ add_form.pub_level }}</div>
-        </div>
-        <div class="clearfix {% if add_form.indexing_coverage.errors %}error{% endif %}">
-            {{ add_form.indexing_coverage.label_tag }}
-            <div class="input">
-                {{ add_form.indexing_coverage }}
-                {% if add_form.indexing_coverage.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.secs_code.label_tag }}
-            <div class="input">{{ add_form.secs_code }}</div>
-        </div>
-         <div class="clearfix">
-            {{ add_form.subscription.label_tag }}
-            <div class="input">{{ add_form.subscription }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.id_provided_by_the_center.label_tag }}
-            <div class="input">{{ add_form.id_provided_by_the_center }}</div>
-        </div>
-        <div class="clearfix {% if add_form.collections.errors %}error{% endif %}">
-                {{ add_form.collections.label_tag }}
-            <div class="input">
-                {{ add_form.collections }}
-                {% if add_form.collections.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
+  <span class="label">{% trans "titles" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.title.errors %}error{% endif %}">
+        <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.title }}
         </div>
     </div>
-
-    <span class="label">{% trans "License" %}</span>
-
-    <div class="well">
-        <div class="clearfix {% if add_form.use_license.errors %}error{% endif %}">
-            {{ add_form.use_license.label_tag }}
-            <div class="input">
-                {{ add_form.use_license }}
-                {% if add_form.use_license.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.copyrighter.label_tag }}
-            <div class="input">{{ add_form.copyrighter }}</div>
+    <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
+        <label class="control-label" for="short_title">{% trans add_form.short_title.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.short_title }}
         </div>
     </div>
-
-    <span class="label">URL(s)</span>
-
-    <div class="well">
-        <div class="clearfix {% if add_form.url_main_collection.errors %}error{% endif %}">
-            {{ add_form.url_main_collection.label_tag }}
-            <div class="input">
-            	{{ add_form.url_main_collection }}
-            	{% if add_form.url_main_collection.errors %}<span class="help-inline">{% trans "Invalid URL!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix {% if add_form.url_online_submission.errors %}error{% endif %}">
-            {{ add_form.url_online_submission.label_tag }}
-            <div class="input">
-            	{{ add_form.url_online_submission }}
-            	{% if add_form.url_online_submission.errors %}<span class="help-inline">{% trans "Invalid URL!" %}</span>{% endif %}
-            </div>
-        </div>
-        <div class="clearfix {% if add_form.url_journal.errors %}error{% endif %}">
-            {{ add_form.url_journal.label_tag }}
-            <div class="input">
-            	{{ add_form.url_journal }}
-            	{% if add_form.url_journal.errors %}<span class="help-inline">{% trans "Invalid URL!" %}</span>{% endif %}
-            </div>
+    <div class="control-group {% if add_form.previous_title_id.errors %}error{% endif %}">
+        <label class="control-label" for="previous_title_id">{% trans add_form.previous_title_id.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.previous_title_id }}
         </div>
     </div>
-
-    <span class="label">Extra Information</span>
-
-    <div class="well">
-        <div class="clearfix">
-            {{ add_form.notes.label_tag }}
-            <div class="input">{{ add_form.notes }}</div>
-        </div>
-        <div class="clearfix">
-            {{ add_form.validated.label_tag }}
-            <div class="input">{{ add_form.validated }}</div>
-        </div>
-        <div class="clearfix">
-                {{ add_form.is_available.label_tag }}
-            <div class="input">{{ add_form.is_available }}</div>
+    <div class="control-group {% if add_form.next_title_id.errors %}error{% endif %}">
+        <label class="control-label" for="next_title_id">{% trans add_form.next_title_id.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.next_title_id }}
         </div>
     </div>
-    <div class="row-fluid">
-        <input class="btn btn-primary" name="submit" type="submit" value="{% trans "add" %}"/>
-        <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
+  </div>
+  <span class="label">{% trans "titleotherformset" %}</span>
+  <div class="well">
+   {% for f in titleotherformset.management_form %}
+       {{ f }}
+   {% endfor %}
+   {% for f in titleotherformset.forms %}
+       {% for field in f %}
+          {% if not field.is_hidden %}
+           <div class="control-group {% if field.errors %}error{% endif %}">
+               <label class="control-label">{% trans field.label_tag %}</label>
+               <div class="controls">
+                   {{ field  }}
+               </div>
+           </div>
+           {% else %}
+               {{ field }}
+           {% endif %} 
+        {% endfor %}
+    {% endfor %}
+  </div>
+  <span class="label">{% trans "paralleltitlesformset" %}</span>
+  <div class="well">
+   {% for f in paralleltitlesformset.management_form %}
+       {{ f }}
+   {% endfor %}
+   {% for f in paralleltitlesformset.forms %}
+       {% for field in f %}
+          {% if not field.is_hidden %}
+           <div class="control-group {% if field.errors %}error{% endif %}">
+               <label class="control-label">{% trans field.label_tag %}</label>
+               <div class="controls">
+                   {{ field  }}
+               </div>
+           </div>
+           {% else %}
+               {{ field }}
+           {% endif %} 
+        {% endfor %}
+    {% endfor %}
+  </div>
+  <span class="label">{% trans "shorttitlesformset" %}</span>
+  <div class="well">
+     {% for f in shorttitleotherformset.management_form %}
+         {{ f }}
+     {% endfor %}
+     {% for f in shorttitleotherformset.forms %}
+         {% for field in f %}
+            {% if not field.is_hidden %}
+             <div class="control-group {% if field.errors %}error{% endif %}">
+                 <label class="control-label">{% trans field.label_tag %}</label>
+                 <div class="controls">
+                     {{ field  }}
+                 </div>
+             </div>
+             {% else %}
+                 {{ field }}
+             {% endif %} 
+          {% endfor %}
+      {% endfor %}
+  </div>
+  <span class="label">{% trans "ISSN" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
+        <label class="control-label" for="print_issn">{% trans add_form.print_issn.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.print_issn }}
+        </div>
     </div>
+    <div class="control-group {% if add_form.eletronic_issn.errors %}error{% endif %}">
+        <label class="control-label" for="eletronic_issn">{% trans add_form.eletronic_issn.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.eletronic_issn }}
+        </div>
+    </div>
+  </div>
+  <span class="label">{% trans "subject" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.study_area.errors %}error{% endif %}">
+        <label class="control-label" for="study_area">{% trans add_form.study_area.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.study_area }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.subject_descriptors.errors %}error{% endif %}">
+        <label class="control-label" for="subject_descriptors">{% trans add_form.subject_descriptors.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.subject_descriptors }}
+        </div>
+    </div>
+  </div>
+  <span class="label">{% trans "missionformset" %}</span>
+  <div class="well">
+     {% for f in missionformset.management_form %}
+         {{ f }}
+     {% endfor %}
+     {% for f in missionformset.forms %}
+         {% for field in f %}
+            {% if not field.is_hidden %}
+             <div class="control-group {% if field.errors %}error{% endif %}">
+                 <label class="control-label">{% trans field.label_tag %}</label>
+                 <div class="controls">
+                     {{ field  }}
+                 </div>
+             </div>
+             {% else %}
+                 {{ field }}
+             {% endif %} 
+          {% endfor %}
+      {% endfor %}
+  </div>
+  <span class="label">{% trans "textlanguageformset" %}</span>
+  <div class="well">
+     {% for f in textlanguageformset.management_form %}
+         {{ f }}
+     {% endfor %}
+     {% for f in textlanguageformset.forms %}
+         {% for field in f %}
+            {% if not field.is_hidden %}
+             <div class="control-group {% if field.errors %}error{% endif %}">
+                 <label class="control-label">{% trans field.label_tag %}</label>
+                 <div class="controls">
+                     {{ field  }}
+                 </div>
+             </div>
+             {% else %}
+                 {{ field }}
+             {% endif %} 
+          {% endfor %}
+      {% endfor %}
+  </div>
+  <span class="label">{% trans "abstractlanguageformset" %}</span>
+  <div class="well">
+     {% for f in abstrlanguageformset.management_form %}
+         {{ f }}
+     {% endfor %}
+     {% for f in abstrlanguageformset.forms %}
+         {% for field in f %}
+            {% if not field.is_hidden %}
+             <div class="control-group {% if field.errors %}error{% endif %}">
+                 <label class="control-label">{% trans field.label_tag %}</label>
+                 <div class="controls">
+                     {{ field  }}
+                 </div>
+             </div>
+             {% else %}
+                 {{ field }}
+             {% endif %} 
+          {% endfor %}
+      {% endfor %}
+  </div>
+  <span class="label">{% trans "histformset" %}</span>
+  <div class="well">
+     {% for f in histformset.management_form %}
+         {{ f }}
+     {% endfor %}
+     {% for f in histformset.forms %}
+         {% for field in f %}
+            {% if not field.is_hidden %}
+             <div class="control-group {% if field.errors %}error{% endif %}">
+                 <label class="control-label">{% trans field.label_tag %}</label>
+                 <div class="controls">
+                     {{ field  }}
+                 </div>
+             </div>
+             {% else %}
+                 {{ field }}
+             {% endif %} 
+          {% endfor %}
+      {% endfor %}
+  </div>
+      <span class="label">{% trans "system" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
+        <label class="control-label" for="acronym">{% trans add_form.acronym.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.acronym }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.scielo_issn.errors %}error{% endif %}">
+        <label class="control-label" for="scielo_issn">{% trans add_form.scielo_issn.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.scielo_issn }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.pub_status.errors %}error{% endif %}">
+        <label class="control-label" for="pub_status">{% trans add_form.pub_status.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.pub_status }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.url_main_collection.errors %}error{% endif %}">
+        <label class="control-label" for="url_main_collection">{% trans add_form.url_main_collection.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.url_main_collection }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.url_online_submission.errors %}error{% endif %}">
+        <label class="control-label" for="url_online_submission">{% trans add_form.url_online_submission.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.url_online_submission }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.url_journal.errors %}error{% endif %}">
+        <label class="control-label" for="url_journal">{% trans add_form.url_journal.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.url_journal }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.center.errors %}error{% endif %}">
+        <label class="control-label" for="center">{% trans add_form.center.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.center }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
+        <label class="control-label" for="editorial_standard">{% trans add_form.editorial_standard.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.editorial_standard }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
+        <label class="control-label" for="ctrl_vocabulary">{% trans add_form.ctrl_vocabulary.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.ctrl_vocabulary }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
+        <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.collections }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
+        <label class="control-label" for="validated">{% trans add_form.validated.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.validated }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
+        <label class="control-label" for="is_available">{% trans add_form.is_available.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.is_available }}
+        </div>
+    </div>
+  </div>
+      <span class="label">{% trans "indexing" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.indexing_coverage.errors %}error{% endif %}">
+        <label class="control-label" for="indexing_coverage">{% trans add_form.indexing_coverage.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.indexing_coverage }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.secs_code.errors %}error{% endif %}">
+        <label class="control-label" for="secs_code">{% trans add_form.secs_code.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.secs_code }}
+        </div>
+    </div>
+  </div>
+      <span class="label">{% trans "publisher and sponsors" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.institution.errors %}error{% endif %}">
+        <label class="control-label" for="institution">{% trans add_form.institution.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.institution }}
+        </div>
+    </div>
+  </div>
+      <span class="label">{% trans "licenses" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
+        <label class="control-label" for="use_license">{% trans add_form.use_license.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.use_license }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.copyrighter.errors %}error{% endif %}">
+        <label class="control-label" for="copyrighter">{% trans add_form.copyrighter.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.copyrighter }}
+        </div>
+    </div>
+  </div>
+      <span class="label">{% trans "formal information" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
+        <label class="control-label" for="init_year">{% trans add_form.init_year.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.init_year }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.init_vol.errors %}error{% endif %}">
+        <label class="control-label" for="init_vol">{% trans add_form.init_vol.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.init_vol }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.init_num.errors %}error{% endif %}">
+        <label class="control-label" for="init_num">{% trans add_form.init_num.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.init_num }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.final_year.errors %}error{% endif %}">
+        <label class="control-label" for="final_year">{% trans add_form.final_year.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.final_year }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.final_vol.errors %}error{% endif %}">
+        <label class="control-label" for="final_vol">{% trans add_form.final_vol.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.final_vol }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.final_num.errors %}error{% endif %}">
+        <label class="control-label" for="final_num">{% trans add_form.final_num.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.final_num }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.frequency.errors %}error{% endif %}">
+        <label class="control-label" for="frequency">{% trans add_form.frequency.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.frequency }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.alphabet.errors %}error{% endif %}">
+        <label class="control-label" for="alphabet">{% trans add_form.alphabet.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.alphabet }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.national_code.errors %}error{% endif %}">
+        <label class="control-label" for="national_code">{% trans add_form.national_code.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.national_code }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.literature_type.errors %}error{% endif %}">
+        <label class="control-label" for="literature_type">{% trans add_form.literature_type.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.literature_type }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.treatment_level.errors %}error{% endif %}">
+        <label class="control-label" for="treatment_level">{% trans add_form.treatment_level.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.treatment_level }}
+        </div>
+    </div>
+    <div class="control-group {% if add_form.pub_level.errors %}error{% endif %}">
+        <label class="control-label" for="pub_level">{% trans add_form.pub_level.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.pub_level }}
+        </div>
+    </div>
+  </div>
+      <span class="label">{% trans "further" %}</span>
+  <div class="well">
+      <div class="control-group {% if add_form.notes.errors %}error{% endif %}">
+          <label class="control-label" for="notes">{% trans add_form.notes.label_tag %}</label>
+          <div class="controls">
+             {{ add_form.notes }}
+          </div>
+      </div>
+  </div>
+  <div class="row-fluid">
+      <input class="btn btn-primary" name="submit" type="submit" value="{% trans "add" %}"/>
+      <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
+  </div>
 </form>
 {% endblock %}
 
@@ -258,3 +440,4 @@
         });
     </script>
 {% endblock %}
+
