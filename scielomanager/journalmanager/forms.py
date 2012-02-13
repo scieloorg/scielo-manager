@@ -8,8 +8,8 @@ from journalmanager import models
 
 class JournalForm(ModelForm):
 
-    print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9)
-    electronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9)
+    print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9,)
+    eletronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9)
     
     def save_all(self, creator):
         journal = self.save(commit=False)
@@ -28,9 +28,7 @@ class JournalForm(ModelForm):
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
            'institution': forms.Select(attrs={'class':'span8'}),
-           'scielo_issn': forms.Select(attrs={'class':'span3', 'maxlength':'9'}),
-           'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
-           'eletronic_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
+           'scielo_issn': forms.Select(attrs={'class':'span3'}),
            'subject_descriptors': forms.Textarea(attrs={'class':'span12'}),
            'init_year': SelectDateWidget(),
            'init_vol': forms.TextInput(attrs={'class':'span1'}),
@@ -43,7 +41,7 @@ class JournalForm(ModelForm):
            'url_journal': forms.TextInput(attrs={'class':'span8'}),
            'notes': forms.Textarea(attrs={'class':'span10'}),
            'id_provided_by_the_center': forms.TextInput(attrs={'class':'span2'}),
-           'editorial_standard': forms.Select(attrs={'class':'span10'}),
+           'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'literature_type': forms.Select(attrs={'class':'span10'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
