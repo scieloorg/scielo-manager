@@ -8,20 +8,20 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Deleting field 'JournalHist.d'
-        db.delete_column('journalmanager_journalhist', 'd')
+        # Changing field 'Journal.eletronic_issn'
+        db.alter_column('journalmanager_journal', 'eletronic_issn', self.gf('django.db.models.fields.CharField')(max_length=9))
 
-        # Adding field 'JournalHist.date'
-        db.add_column('journalmanager_journalhist', 'date', self.gf('django.db.models.fields.DateField')(default=datetime.datetime.now, blank=True), keep_default=False)
+        # Changing field 'Journal.print_issn'
+        db.alter_column('journalmanager_journal', 'print_issn', self.gf('django.db.models.fields.CharField')(max_length=9))
 
 
     def backwards(self, orm):
         
-        # Adding field 'JournalHist.d'
-        db.add_column('journalmanager_journalhist', 'd', self.gf('django.db.models.fields.DateField')(default=datetime.datetime.now, blank=True), keep_default=False)
+        # Changing field 'Journal.eletronic_issn'
+        db.alter_column('journalmanager_journal', 'eletronic_issn', self.gf('django.db.models.fields.CharField')(max_length=16))
 
-        # Deleting field 'JournalHist.date'
-        db.delete_column('journalmanager_journalhist', 'date')
+        # Changing field 'Journal.print_issn'
+        db.alter_column('journalmanager_journal', 'print_issn', self.gf('django.db.models.fields.CharField')(max_length=16))
 
 
     models = {
@@ -132,7 +132,7 @@ class Migration(SchemaMigration):
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'enjoy_creator'", 'to': "orm['auth.User']"}),
             'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
-            'eletronic_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
+            'eletronic_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'blank': 'True'}),
             'final_num': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'final_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'final_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
@@ -150,7 +150,7 @@ class Migration(SchemaMigration):
             'next_title_id': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'next_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
             'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'previous_title_id': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
-            'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
+            'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'blank': 'True'}),
             'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'pub_status': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
@@ -176,7 +176,7 @@ class Migration(SchemaMigration):
         },
         'journalmanager.journalhist': {
             'Meta': {'object_name': 'JournalHist'},
-            'date': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
+            'd': ('django.db.models.fields.DateField', [], {'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'})
@@ -218,8 +218,10 @@ class Migration(SchemaMigration):
             'code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']", 'null': 'True'}),
-            'translation': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.TranslatedData']", 'symmetrical': 'False'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'title_translations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['journalmanager.TranslatedData']", 'null': 'True', 'blank': 'True'}),
             'update_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         'journalmanager.supplement': {
@@ -233,7 +235,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
+            'translation': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.uselicense': {
             'Meta': {'object_name': 'UseLicense'},
