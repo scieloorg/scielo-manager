@@ -256,7 +256,7 @@ class JournalAbstrLanguage(models.Model):
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal)
-    date = models.DateField(_('Date'),editable=True,blank=True)
+    d = models.DateField(_('Date'),editable=True,blank=True)
     status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
 
 class JournalParallelTitles(models.Model):
