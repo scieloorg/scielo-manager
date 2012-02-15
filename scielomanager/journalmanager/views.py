@@ -204,55 +204,44 @@ def add_journal(request, journal_id = None):
         journal = get_object_or_404(models.Journal, id = journal_id)
 
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm,  extra=1)
-    JournalTitleOtherFormSet = inlineformset_factory(models.Journal, models.JournalTitleOtherForms, form=JournalTitleOtherFormsForm, extra=1)
-    JournalShortTitleOtherFormSet = inlineformset_factory(models.Journal, models.JournalShortTitleOtherForms, extra=1)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1)
     JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1)
-    JournalParallelTitlesFormSet = inlineformset_factory(models.Journal, models.JournalParallelTitles, form=JournalParallelTitlesForm,  extra=1)
-    JournalShortTitleOtherFormSet = inlineformset_factory(models.Journal, models.JournalShortTitleOtherForms, extra=1)
+    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, extra=1)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-        titleotherformset = JournalTitleOtherFormSet(request.POST, instance=journal, prefix='othertitle')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
-        paralleltitlesformset = JournalParallelTitlesFormSet(request.POST, instance=journal, prefix='paralleltitles')
-        shorttitleotherformset = JournalShortTitleOtherFormSet(request.POST, instance=journal, prefix='othershorttitles')
+        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='hist')
 
         if journalform.is_valid() and missionformset.is_valid():
             journalform.save_all(creator = request.user)
             missionformset.save()
-            titleotherformset.save()
             textlanguageformset.save()
             abstrlanguageformset.save()
-            paralleltitlesformset.save()
-            shorttitleotherformset.save()
             histformset.save()
+            titleformset.save()
 
             return HttpResponseRedirect(reverse('journal.index'))
     else:
         journalform  = JournalForm(instance=journal, prefix='journal')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
-        titleotherformset = JournalTitleOtherFormSet(instance=journal, prefix='othertitle')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
-        paralleltitlesformset = JournalParallelTitlesFormSet(instance=journal, prefix='paralleltitles')
-        shorttitleotherformset = JournalShortTitleOtherFormSet(instance=journal, prefix='othershorttitles')
+        titleformset = JournalTitleFormSet(instance=journal, prefix='hist')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
                               'missionformset': missionformset,
                               'collection': user_collection,
-                              'titleotherformset': titleotherformset,
                               'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
-                              'paralleltitlesformset': paralleltitlesformset,
-                              'shorttitleotherformset': shorttitleotherformset,
-                              'abstrlanguageformset': abstrlanguageformset
+                              'abstrlanguageformset': abstrlanguageformset,
+                              'titleformset': titleformset,
                               }, context_instance = RequestContext(request))
 
 @login_required

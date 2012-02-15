@@ -94,19 +94,19 @@ class JournalMissionForm(ModelForm):
         'description':forms.Textarea(attrs={'class':'span12'}), 
       }
 
-class JournalTitleOtherFormsForm(ModelForm):
-    class Meta:
-      model = models.JournalTitleOtherForms
-      widgets = {
-        'form': forms.TextInput(attrs={'class':'span8'}),
-      }
+# class JournalTitleOtherFormsForm(ModelForm):
+#     class Meta:
+#       model = models.JournalTitleOtherForms
+#       widgets = {
+#         'form': forms.TextInput(attrs={'class':'span8'}),
+#       }
 
-class JournalParallelTitlesForm(ModelForm):
-    class Meta:
-      model = models.JournalParallelTitles
-      widgets = {
-        'form': forms.TextInput(attrs={'class':'span8'}),
-      }
+# class JournalParallelTitlesForm(ModelForm):
+#     class Meta:
+#       model = models.JournalParallelTitles
+#       widgets = {
+#         'form': forms.TextInput(attrs={'class':'span8'}),
+#       }
       
 
       
