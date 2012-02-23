@@ -12,6 +12,8 @@ from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Institution
 from scielomanager.journalmanager.models import Issue
 
+from scielomanager.journalmanager.forms import JournalForm
+
 def with_sample_journal(func):
     """
     Decorator that creates a sample Journal instance
@@ -324,6 +326,23 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
         self.assertEqual(response.context['issues'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['issues'].object_list), 1)
+
+    def test_ISSNField_validation(self):
+
+        valid_issns = ['1678-5320','0044-5967','0102-8650','2179-975X','1413-7852','0103-2100',]
+        invalid_issns = ['A123-4532','1t23-8979','0900-090900','9827-u982','8992-8u77','1111-111Y',]
+
+        for issn in valid_issns:
+            form = JournalForm({'print_issn': issn,})
+            self.assertTrue(form.errors.get('print_issn') is None)
+            del(form)
+
+        for issn in invalid_issns:
+            form = JournalForm({'print_issn': issn,})
+            self.assertEqual(form.errors.get('print_issn')[0], u'Enter a valid ISSN.')
+            del(form)
+
+
 
 # class LoggedOutViewsTest(TestCase):
 

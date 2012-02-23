@@ -5,12 +5,13 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
 
 from journalmanager import models
+from journalmanager import fields
 
 class JournalForm(ModelForm):
 
-    print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9, required=False)
-    eletronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9, required=False)
-    
+    print_issn = fields.ISSNField(max_length=9, required=False)
+    eletronic_issn = fields.ISSNField(max_length=9, required=False)
+
     def save_all(self, creator):
         journal = self.save(commit=False)
         journal.creator = creator
