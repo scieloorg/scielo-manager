@@ -8,8 +8,8 @@ from journalmanager import models
 
 class JournalForm(ModelForm):
 
-    print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9,)
-    eletronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9)
+    print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9, required=False)
+    eletronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9, required=False)
     
     def save_all(self, creator):
         journal = self.save(commit=False)
@@ -94,19 +94,12 @@ class JournalMissionForm(ModelForm):
         'description':forms.Textarea(attrs={'class':'span12'}), 
       }
 
-class JournalTitleOtherFormsForm(ModelForm):
+class JournalTitleForm(ModelForm):
     class Meta:
-      model = models.JournalTitleOtherForms
+      model = models.JournalTitle
       widgets = {
-        'form': forms.TextInput(attrs={'class':'span8'}),
+        'title': forms.TextInput(attrs={'class':'span8'}),
       }
 
-class JournalParallelTitlesForm(ModelForm):
-    class Meta:
-      model = models.JournalParallelTitles
-      widgets = {
-        'form': forms.TextInput(attrs={'class':'span8'}),
-      }
-      
 
       

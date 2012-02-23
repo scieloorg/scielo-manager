@@ -60,7 +60,7 @@ class Institution(models.Model):
     cel = models.CharField(_('Cel Number'), max_length=16, null=False,blank=True,)
     mail = models.EmailField(_('Email'),)
     validated = models.BooleanField(_('Validated'), default=False,)
-    is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True)
+    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
     def __unicode__(self):
         return u'%s' % (self.name)
@@ -91,7 +91,6 @@ class Journal(models.Model):
     collections = models.ManyToManyField('Collection')
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
-    short_title = models.CharField(_('Short Title'),max_length=128)
 
     previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True)
     next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
@@ -146,7 +145,7 @@ class Journal(models.Model):
 
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
-    is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True)
+    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -154,20 +153,28 @@ class Journal(models.Model):
     class Meta:
         ordering = ['title']
 
+class JournalTitle(models.Model):
+    journal = models.ForeignKey(Journal)
+    title = models.CharField(_('Title'), null=False, max_length=128)
+    category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
+
+class JournalTextLanguage(models.Model):
+    journal = models.ForeignKey(Journal)
+    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,blank=True,null=False)
+
+class JournalAbstrLanguage(models.Model):
+    journal = models.ForeignKey(Journal)
+    language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
+
+class JournalHist(models.Model):
+    journal = models.ForeignKey(Journal)
+    date = models.DateField(_('Date'),editable=True,blank=True)
+    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
+
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal,null=False)
     description = models.TextField(_('Mission'),null=False)
     language = models.CharField(_('Language'),null=False, max_length=2,choices=LANGUAGES)
-
-class JournalTitleOtherForms(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
-    form = models.CharField(_('Title'),null=False,max_length=128)
-
-class JournalShortTitleOtherForms(models.Model):
-    title = models.ForeignKey(Journal,null=False)
-    form = models.CharField(_('Short Title'),null=False,max_length=128)
-    title_type = models.CharField(_('Short Title Type'),max_length=16,
-        choices=choices.TITLE_TYPE,null=True,)
 
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
@@ -220,7 +227,7 @@ class Issue(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     publication_date = models.DateField(null=False, blank=False)
-    is_available = models.BooleanField(_('Is Available?'), default=False, null=False, blank=True) #status v42
+    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128) #l10n
     use_license = models.ForeignKey(UseLicense, null=True)
@@ -245,23 +252,6 @@ class Issue(models.Model):
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
-
-class JournalTextLanguage(models.Model):
-    journal = models.ForeignKey(Journal)
-    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,blank=True,null=False)
-
-class JournalAbstrLanguage(models.Model):
-    journal = models.ForeignKey(Journal)
-    language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
-
-class JournalHist(models.Model):
-    journal = models.ForeignKey(Journal)
-    d = models.DateField(_('Date'),editable=True,blank=True)
-    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
-
-class JournalParallelTitles(models.Model):
-    journal = models.ForeignKey(Journal)
-    form = models.CharField(_('Parallel Titles'),null=False,max_length=128, blank=True, help_text = helptexts.JOURNALPARALLELTITLES__FORM)
 
 class Center(Institution):
     is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)

@@ -5,13 +5,6 @@ SCIELO_ISSN = [
     ('electronic','electronic'),
 ]
 
-TITLE_TYPE = [
-    ('medline','Medline'),
-    ('lilacs','LILACS'),
-    ('iso','ISO'),
-    ('other','Other'),    
-]
-
 SUBJECTS = [
     ('Agricultural Sciences','Agricultural Sciences'),
     ('Applied Social Sciences','Applied Social Sciences'),
@@ -140,4 +133,12 @@ SUBSCRIPT = [
     ('na','Not Available'),
     ('reg','Electronic Registration'),
     ('sub','Regular Subscription'),
+]
+TITLE_CATEGORY = [
+    ('medline','Medline'),
+    ('lilacs','LILACS'),
+    ('iso','ISO'),
+    ('paralleltitle','Parallel Title'),
+    ('shorttitle','Short Title'),
+    ('other','Other'), 
 ]
