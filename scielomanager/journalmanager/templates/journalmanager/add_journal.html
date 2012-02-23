@@ -19,6 +19,13 @@
 {% endblock %}
 
 {% block body %}
+<!-- {% for field in add_form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            {{ field.label_tag }}: {{ field }}
+        </div>
+    {% endfor %}  -->
+
 <form method="post" action="#">
     {% csrf_token %}
   <span class="label">{% trans "titles" %}</span>
@@ -68,58 +75,28 @@
         {% endfor %}
     {% endfor %}
   </div>
-  <!-- <span class="label">{% trans "paralleltitlesformset" %}</span>
-  <div class="well">
-   {% for f in paralleltitlesformset.management_form %}
-       {{ f }}
-   {% endfor %}
-   {% for f in paralleltitlesformset.forms %}
-       {% for field in f %}
-          {% if not field.is_hidden %}
-           <div class="control-group {% if field.errors %}error{% endif %}">
-               <label class="control-label">{% trans field.label_tag %}</label>
-               <div class="controls">
-                   {{ field  }}
-               </div>
-           </div>
-           {% else %}
-               {{ field }}
-           {% endif %} 
-        {% endfor %}
-    {% endfor %}
-  </div>
-  <span class="label">{% trans "shorttitlesformset" %}</span>
-  <div class="well">
-     {% for f in shorttitleotherformset.management_form %}
-         {{ f }}
-     {% endfor %}
-     {% for f in shorttitleotherformset.forms %}
-         {% for field in f %}
-            {% if not field.is_hidden %}
-             <div class="control-group {% if field.errors %}error{% endif %}">
-                 <label class="control-label">{% trans field.label_tag %}</label>
-                 <div class="controls">
-                     {{ field  }}
-                 </div>
-             </div>
-             {% else %}
-                 {{ field }}
-             {% endif %} 
-          {% endfor %}
-      {% endfor %}
-  </div> -->
   <span class="label">{% trans "ISSN" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
         <label class="control-label" for="print_issn">{% trans add_form.print_issn.label_tag %}</label>
         <div class="controls">
+        <span class="help-inline">
            {{ add_form.print_issn }}
+           {% for error in add_form.print_issn.errors %}
+              {{ error }}
+           {% endfor %}
+        </span>
         </div>
     </div>
-    <div class="control-group {% if add_form.eletronic_issn.errors %}error{% endif %}">
+    <div class="control-group {% if add_form.eletronic_issn.errors %}error{% endif %}"> 
         <label class="control-label" for="eletronic_issn">{% trans add_form.eletronic_issn.label_tag %}</label>
         <div class="controls">
+        <span class="help-inline">
            {{ add_form.eletronic_issn }}
+           {% for error in add_form.eletronic_issn.errors %}
+              {{ error }}
+           {% endfor %}
+           </span>
         </div>
     </div>
   </div>
@@ -218,7 +195,7 @@
           {% endfor %}
       {% endfor %}
   </div>
-      <span class="label">{% trans "system" %}</span>
+  <span class="label">{% trans "system" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
         <label class="control-label" for="acronym">{% trans add_form.acronym.label_tag %}</label>
@@ -332,7 +309,7 @@
         </div>
     </div>
   </div>
-      <span class="label">{% trans "formal information" %}</span>
+  <span class="label">{% trans "formal information" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
         <label class="control-label" for="init_year">{% trans add_form.init_year.label_tag %}</label>
