@@ -48,12 +48,12 @@
         </div>
     </div>
   </div>
-  <span class="label">{% trans "titleotherformset" %}</span>
+  <span class="label">{% trans "titleformset" %}</span>
   <div class="well">
-   {% for f in titleotherformset.management_form %}
+   {% for f in titleformset.management_form %}
        {{ f }}
    {% endfor %}
-   {% for f in titleotherformset.forms %}
+   {% for f in titleformset.forms %}
        {% for field in f %}
           {% if not field.is_hidden %}
            <div class="control-group {% if field.errors %}error{% endif %}">
@@ -68,7 +68,7 @@
         {% endfor %}
     {% endfor %}
   </div>
-  <span class="label">{% trans "paralleltitlesformset" %}</span>
+  <!-- <span class="label">{% trans "paralleltitlesformset" %}</span>
   <div class="well">
    {% for f in paralleltitlesformset.management_form %}
        {{ f }}
@@ -107,7 +107,7 @@
              {% endif %} 
           {% endfor %}
       {% endfor %}
-  </div>
+  </div> -->
   <span class="label">{% trans "ISSN" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
