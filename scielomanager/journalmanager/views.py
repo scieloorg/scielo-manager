@@ -203,11 +203,11 @@ def add_journal(request, journal_id = None):
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
 
-    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm,  extra=1)
+    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1)
     JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1)
-    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, extra=1)
+    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
@@ -215,7 +215,7 @@ def add_journal(request, journal_id = None):
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
-        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='hist')
+        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
 
         if journalform.is_valid() and missionformset.is_valid():
             journalform.save_all(creator = request.user)
@@ -232,7 +232,7 @@ def add_journal(request, journal_id = None):
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
-        titleformset = JournalTitleFormSet(instance=journal, prefix='hist')
+        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
