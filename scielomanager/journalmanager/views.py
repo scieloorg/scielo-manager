@@ -1,4 +1,4 @@
-# coding: utf-8
+from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -34,8 +34,11 @@ def index(request):
 @login_required
 def user_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    users = User.objects.get_query_set().filter(userprofile__collection=user_collection)
+    all_users = User.objects.filter(userprofile__collection=user_collection)
+    users = get_paginated(all_users, request.GET.get('page', 1))
+
     t = loader.get_template('journalmanager/user_dashboard.html')
+
     c = RequestContext(request, {
                        'users': users,
                        'collection': user_collection,
@@ -174,18 +177,9 @@ def show_journal(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def open_journal(request):
-    journals = models.Journal.objects.all()
-    t = loader.get_template('journalmanager/journal_dashboard.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def journal_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_journals = models.Journal.objects.filter(collections = user_collection)
+    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections = user_collection)
 
     journals = get_paginated(all_journals, request.GET.get('page', 1))
 
@@ -198,37 +192,57 @@ def journal_index(request):
 
 @login_required
 def add_journal(request, journal_id = None):
+
     """
     Handles new and existing journals
     """
-
     user_collection = request.user.userprofile_set.get().collection
 
-    if request.method == 'POST':
-        journal_form_kwargs = {}
+    if  journal_id == None:
+        journal = models.Journal()
+    else:
+        journal = get_object_or_404(models.Journal, id = journal_id)
 
-        if journal_id is not None: #edit - preserve form-data
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            journal_form_kwargs['instance'] = filled_form
+    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1)
+    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1)
+    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1)
+    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1)
+    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1)
 
-        add_form = JournalForm(request.POST, **journal_form_kwargs)
+    if request.method == "POST":
+        journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+        missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
+        textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
+        abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
+        histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
+        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
 
-        if add_form.is_valid():
-            add_form.save_all(creator = request.user)
+        if journalform.is_valid() and missionformset.is_valid():
+            journalform.save_all(creator = request.user)
+            missionformset.save()
+            textlanguageformset.save()
+            abstrlanguageformset.save()
+            histformset.save()
+            titleformset.save()
+
             return HttpResponseRedirect(reverse('journal.index'))
     else:
-        if journal_id is None: #new
-            add_form = JournalForm()
-        else:
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            add_form = JournalForm(instance = filled_form)
+        journalform  = JournalForm(instance=journal, prefix='journal')
+        missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
+        textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
+        abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
+        histformset = JournalHistFormSet(instance=journal, prefix='hist')
+        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
 
     return render_to_response('journalmanager/add_journal.html', {
-                              'add_form': add_form,
-                              'user_name': request.user.pk,
+                              'add_form': journalform,
+                              'missionformset': missionformset,
                               'collection': user_collection,
-                              },
-                              context_instance = RequestContext(request))
+                              'textlanguageformset': textlanguageformset,
+                              'histformset': histformset,
+                              'abstrlanguageformset': abstrlanguageformset,
+                              'titleformset': titleformset,
+                              }, context_instance = RequestContext(request))
 
 @login_required
 def toggle_journal_availability(request, journal_id):
@@ -256,7 +270,7 @@ def show_institution(request, institution_id):
 @login_required
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_institutions = models.Institution.objects.filter(collection = user_collection)
+    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection = user_collection)
 
     institutions = get_paginated(all_institutions, request.GET.get('page', 1))
 
@@ -327,7 +341,7 @@ def issue_index(request, journal_id):
     journal = models.Journal.objects.get(pk = journal_id)
     user_collection = request.user.userprofile_set.get().collection
 
-    all_issues = models.Issue.objects.filter(journal = journal_id)
+    all_issues = models.Issue.objects.available(request.GET.get('is_available', 1)).filter(journal = journal_id)
 
     issues = get_paginated(all_issues, request.GET.get('page', 1))
 
@@ -444,4 +458,57 @@ def search_issue(request, journal_id):
                        'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def section_index(request, journal_id):
+    #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
+    #estas queries.
+    journal = models.Journal.objects.get(pk = journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+
+    all_sections = models.Section.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
+
+    sections = get_paginated(all_sections, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/section_dashboard.html')
+    c = RequestContext(request, {
+                       'items': sections,
+                       'journal': journal,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_section(request, journal_id = None):
+    """
+    Handles new and existing journals
+    """
+
+    user_collection = request.user.userprofile_set.get().collection
+
+    if request.method == 'POST':
+        journal_form_kwargs = {}
+
+        if journal_id is not None: #edit - preserve form-data
+            filled_form = models.Journal.objects.get(pk = journal_id)
+            journal_form_kwargs['instance'] = filled_form
+
+        add_form = JournalForm(request.POST, **journal_form_kwargs)
+
+        if add_form.is_valid():
+            add_form.save_all(creator = request.user)
+            return HttpResponseRedirect(reverse('journal.index'))
+    else:
+        if journal_id is None: #new
+            add_form = JournalForm()
+        else:
+            filled_form = models.Journal.objects.get(pk = journal_id)
+            add_form = JournalForm(instance = filled_form)
+
+    return render_to_response('journalmanager/add_journal.html', {
+                              'add_form': add_form,
+                              'user_name': request.user.pk,
+                              'collection': user_collection,
+                              },
+                              context_instance = RequestContext(request))
 

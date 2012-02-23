@@ -8,6 +8,9 @@ from journalmanager import models
 
 class JournalForm(ModelForm):
 
+    print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9, required=False)
+    eletronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9, required=False)
+    
     def save_all(self, creator):
         journal = self.save(commit=False)
         journal.creator = creator
@@ -16,24 +19,17 @@ class JournalForm(ModelForm):
         return journal
 
     class Meta:
+      
         model = models.Journal
-        fields = ('title', 'short_title', 'acronym', 'institution', 'scielo_issn', 'print_issn', 'eletronic_issn',
-          'subject_descriptors', 'study_area', 'init_year', 'init_vol', 'init_num', 'final_year','final_vol', 'final_num',
-          'frequency', 'pub_status', 'alphabet', 'classification', 'national_code', 'editorial_standard','ctrl_vocabulary',
-          'literature_type', 'treatment_level', 'pub_level', 'indexing_coverage', 'secs_code', 'use_license','copyrighter',
-          'url_main_collection', 'url_online_submission', 'url_journal', 'subscription', 'notes','id_provided_by_the_center',
-          'collections', 'validated', 'is_available' )
 
         #Overriding the default field types or widgets
         widgets = {
-           'title': forms.TextInput(attrs={'class':'span12'}),
+           'title': forms.TextInput(attrs={'class':'span10'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'institution': forms.Select(attrs={'class':'xxlarge'}),
-           'scielo_issn': forms.Select(attrs={'class':'span3', 'maxlength':'9'}),
-           'print_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
-           'eletronic_issn': forms.TextInput(attrs={'class':'span3', 'maxlength':'9'}),
-           'subject_descriptors': forms.Textarea(attrs={'class':'span10'}),
+           'institution': forms.Select(attrs={'class':'span8'}),
+           'scielo_issn': forms.Select(attrs={'class':'span3'}),
+           'subject_descriptors': forms.Textarea(attrs={'class':'span12'}),
            'init_year': SelectDateWidget(),
            'init_vol': forms.TextInput(attrs={'class':'span1'}),
            'init_num': forms.TextInput(attrs={'class':'span1'}),
@@ -45,7 +41,7 @@ class JournalForm(ModelForm):
            'url_journal': forms.TextInput(attrs={'class':'span8'}),
            'notes': forms.Textarea(attrs={'class':'span10'}),
            'id_provided_by_the_center': forms.TextInput(attrs={'class':'span2'}),
-           'editorial_standard': forms.Select(attrs={'class':'span10'}),
+           'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'literature_type': forms.Select(attrs={'class':'span10'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
@@ -90,3 +86,20 @@ class IssueForm(ModelForm):
             'init_year': SelectDateWidget(),
             'final_year': SelectDateWidget(),
         }
+
+class JournalMissionForm(ModelForm):
+    class Meta:
+      model = models.JournalMission
+      widgets = {
+        'description':forms.Textarea(attrs={'class':'span12'}), 
+      }
+
+class JournalTitleForm(ModelForm):
+    class Meta:
+      model = models.JournalTitle
+      widgets = {
+        'title': forms.TextInput(attrs={'class':'span8'}),
+      }
+
+
+      

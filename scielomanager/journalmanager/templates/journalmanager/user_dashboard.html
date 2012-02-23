@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load append_to_get %}
 
 {% block extrahead %}
 
@@ -23,7 +24,7 @@
     </div>
 </div><!--row-fluid botões-->
 {% endif %}
-<table class="table table-striped">
+<table class="table table-condensed">
     <thead>
         <tr>
             <th>{% trans "Login" %}</th>
@@ -33,18 +34,29 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in users %}
+        {% for ct in users.object_list %}
         <tr>
             <td>
-                <h3><a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a></h3>
-                <p>
+                <h4>
+                    <a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a>
+                </h4>
+                <ul class="_actions">
                     {% if perms.auth.change_user %}
-                        <a class="btn btn-small btn-primary" href="/journal/user/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                    <li>
+                        <a href="/journal/user/edit/{{ ct.pk }}/">
+                            {% trans 'Edit' %}
+                        </a>
+                    </li>
                     {% endif %}
                     {% if perms.auth.delete_user %}
-                        <a class="btn btn-small btn-danger" href="/journal/user/delete/{{ ct.pk }}/"><i class="icon-trash icon-white"></i> {% trans 'Delete' %}</a>
+                    <li>
+                        <a href="/journal/user/delete/{{ ct.pk }}/"
+                           class="label label-important">
+                            {% trans 'Delete' %}
+                        </a>
+                    </li>
                     {% endif %}
-                </p>
+                </ul>
             </td>
             <td>{{ ct.email }}</td>
             <td>{{ ct.first_name }} {{ ct.last_name }}</td>
@@ -59,4 +71,18 @@
         {% endfor %}
     <tbody>
 </table>
+{% trans 'Showing' %} {{ users.start_index }}-{{ users.end_index }} {% trans 'of' %} {{ users.paginator.count }}
+<div class="pagination">
+    <ul>
+        <li class="prev {% if not users.has_previous %}disabled{% endif %}">
+            <a href="{% append_to_get page=users.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in users.paginator.page_range %}
+        <li {% if users.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not user.has_next %}disabled{% endif %}">
+            <a href="{% append_to_get page=users.next_page_number %}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
+</div>
 {% endblock %}

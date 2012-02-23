@@ -32,8 +32,8 @@
         <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
     </div>
 </div><!--row-fluid botões-->
-{% if journals.paginator.count > 0 %} 
-<table class="table table-striped">
+{% if journals.paginator.count > 0 %}
+<table class="table table-condensed">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
@@ -48,13 +48,37 @@
         {% for ct in journals.object_list %}
         <tr>
             <td>
-                <h3><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h3>
-                <p>
-                    <a class="btn btn-small btn-primary" href="/journal/edit/{{ ct.pk }}/"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
-                    <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
-                    <a class="btn btn-small btn-primary"href="/journal/section/{{ ct.pk }}/"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
-                    <a class="btn btn-small btn-danger" href="/journal/delete/{{ ct.pk }}/"><i class="icon-trash icon-white"></i> {% trans 'Delete' %}</a>
-                </p>
+                <h4><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h4>
+                <ul class="_actions">
+                    <li>
+                        <a href="{% url journal.edit ct.pk %}">
+                            {% trans 'Edit' %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url issue.index ct.pk %}">
+                            {% trans 'Issues' %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            {% trans 'Sections' %}
+                        </a>
+                    </li>
+                    <li>
+                    {% if ct.is_available %}
+                        <a href="{% url journal.toggle_availability ct.pk %}"
+                           class="label label-important">
+                            {% trans 'Disable' %}
+                        </a>
+                    {% else %}
+                        <a href="{% url journal.toggle_availability ct.pk %}"
+                           class="label label-success">
+                            {% trans 'Enable' %}
+                        </a>
+                    {% endif %}
+                    </li>
+                </ul>
             </td>
             <td>{{ ct.print_issn }}</td>
             <td>{{ ct.eletronic_issn }}</td>
@@ -88,7 +112,7 @@
 {% else %}
 <div class="row-fluid">
     <div class="alert alert-error">
-        {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}  
+        {% trans 'Your search ' %} - {{ search_query_string }}  {% trans '- did not match any documents.' %}
     </div>
 </div>
 {% endif %}
