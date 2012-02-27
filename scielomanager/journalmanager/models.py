@@ -117,7 +117,7 @@ class Journal(models.Model):
         choices=choices.PUBLICATION_STATUS,null=False,blank=True)
     alphabet = models.CharField(_('Alphabet'),max_length=16,
         choices=choices.ALPHABET,null=False,blank=True)
-    classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
+    sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True)
