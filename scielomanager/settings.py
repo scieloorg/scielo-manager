@@ -7,6 +7,8 @@ TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+
 ADMINS = (
     ('Admin SciELO', 'dev@scielo.org'),
 )
@@ -146,7 +148,7 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
-        }, 
+        },
     }
 }
 
