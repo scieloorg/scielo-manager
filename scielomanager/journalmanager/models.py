@@ -92,8 +92,7 @@ class Journal(models.Model):
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
 
-    previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True)
-    next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
+    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
 
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
