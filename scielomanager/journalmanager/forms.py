@@ -11,7 +11,7 @@ class JournalForm(ModelForm):
 
     print_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9)
     electronic_issn = forms.RegexField(regex=r'[0-9]{4}-[0-9]{3}[0-9X]{1}$', error_messages={'invalid': 'Enter a valid ISSN.'}, max_length=9)
-    
+
     def save_all(self, creator):
         journal = self.save(commit=False)
         journal.creator = creator
@@ -27,7 +27,7 @@ class JournalForm(ModelForm):
           'literature_type', 'treatment_level', 'pub_level', 'indexing_coverage', 'secs_code', 'use_license','copyrighter',
           'url_main_collection', 'url_online_submission', 'url_journal', 'subscription', 'notes','id_provided_by_the_center',
           'collections', 'validated', 'is_available' )
-        
+
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class':'span12'}),
@@ -99,8 +99,7 @@ class SectionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SectionForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
-        if instance and instance.id:
-            self.fields['code'].widget.attrs['readonly'] = True
+        self.fields['code'].widget.attrs['readonly'] = True
 
     def clean_code(self):
         return self.instance.code

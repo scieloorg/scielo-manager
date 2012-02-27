@@ -13,23 +13,19 @@
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
     <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Sections DashBoard' %}</li>
+    <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Sections' %}</li>
 </ul>
 {% endblock %}
 {% block body %}
 <div class="row-fluid">
     <div class="span12">
         <div class="search">
-            <!-- <form class="well form-search" action="{% url issue.search journal.id  %}" method="get">
-                <input class="span6 search-query" type="text" placeholder="Search" name="q"  />
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form> -->
         </div>
     </div>
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
     <div class="span10">
-        <!-- <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a> -->
+        <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
     </div>
     <div class="span2">
         <div class="btn-group">
@@ -58,34 +54,14 @@
         <tr>
             <td>
                 <h4>
-                    <a href="{% url issue.show ct.id %}">{{ ct.title }}</a>
+                    <a href="{% url section.edit ct.journal.pk ct.pk %}">{{ ct.title }}</a>
                 </h4>
-                <ul class="_actions">
-                    <li>
-                        <a href="{% url issue.edit ct.journal.pk ct.pk %}">
-                            {% trans 'Edit' %}
-                        </a>
-                    </li>
-                    <li>
-                    {% if ct.is_available %}
-                        <a href="{% url issue.toggle_availability ct.pk %}"
-                           class="label label-important">
-                            {% trans 'Disable' %}
-                        </a>
-                    {% else %}
-                        <a href="{% url issue.toggle_availability ct.pk %}"
-                           class="label label-success">
-                            {% trans 'Enable' %}
-                        </a>
-                    {% endif %}
-                    </li>
-                </ul>
             </td>
         </tr>
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ items.start_index }}-{{ items.start_index }} {% trans 'of' %} {{ items.paginator.count }}
+{% trans 'Showing' %} {{ items.start_index }}-{{ items.end_index }} {% trans 'of' %} {{ items.paginator.count }}
 <div class="pagination">
     <ul>
         <li class="prev {% if not items.has_previous %}disabled{% endif %}">

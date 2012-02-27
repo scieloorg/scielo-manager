@@ -190,7 +190,7 @@ class Section(models.Model):
     #Custom manager
     objects = CustomJournalManager()
 
-    title = models.CharField(_('Title'), null=True, blank=True, max_length=256)
+    title = models.CharField(_('Title'), null=False, blank=False, max_length=256)
     title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
     journal = models.ForeignKey(Journal, null=True, blank=True)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
