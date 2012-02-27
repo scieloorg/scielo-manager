@@ -6,6 +6,7 @@ import difflib
 import subfield
 from datetime import datetime
 from django.core.management import setup_environ
+from django.core.exceptions import ObjectDoesNotExist
 
 try:
     from scielomanager import settings
@@ -29,8 +30,8 @@ class SectionImport:
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
         if not self._summary.has_key(attribute):
-            self._summary[attribute] = 0    
-        
+            self._summary[attribute] = 0
+
         self._summary[attribute] += 1
 
     def get_summary(self):
@@ -40,10 +41,22 @@ class SectionImport:
         """
         return self._summary
 
+    def load_journal(self, issn):
+        try:
+            journal = Journal.objects.get(eletronic_issn=issn)
+        except ObjectDoesNotExist:
+            try:
+                journal = Journal.objects.get(print_issn=issn)
+            except ObjectDoesNotExist:
+                return None
+
+        return journal
 
     def load_section(self, record):
         section = ""
         section_by_language = {}
+
+        journal = self.load_journal(record['35'][0])
 
         if record.has_key('49'):
             for sec in record['49']: # Criando dicionário organizado de secoes
@@ -55,34 +68,46 @@ class SectionImport:
         else:
             print u"Periódico "+record['35'][0]+u" não tem seções definidas"
             self.charge_summary('journals_without_sections')
-    
+
         for sec_key,sec in section_by_language.items():
+            if journal is None:
+                print('Invalid Journal: {}'.format(record['35'][0]))
+                continue
+
             section = Section()
+            if sec.has_key('pt'):
+                section.title = sec['pt']
+            elif sec.has_key('en'):
+                section.title = sec['en']
+            elif sec.has_key('es'):
+                section.title = sec['es']
+            else:
+                section.title = ''
             section.code = sec_key
+            section.journal = journal
             section.creation_date = datetime.now()
             section.save(force_insert=True)
             self.charge_summary('sections')
 
             for trans_key,trans in sec.items():
                 translation = TranslatedData()
-                translation.text = trans
                 translation.language = trans_key
                 translation.field = 'code'
                 translation.model = 'section'
                 translation.save(force_insert=True)
-                section.translation.add(translation)
+                section.title_translations.add(translation)
                 self.charge_summary('translations')
-            
+
 
         return section
-        
+
     def run_import(self, json_file, collection):
         """
         Function: run_import
         Dispara processo de importacao de dados
         """
 
-        json_parsed={} 
+        json_parsed={}
 
         if __name__ == '__main__':
             section_json_file = open(json_file,'r')

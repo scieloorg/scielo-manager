@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load append_to_get %}
 
 {% block extrahead %}
 
@@ -27,11 +28,27 @@
     </div>
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
-    <div class="span2">
+    <div class="span10">
         <a class="btn btn-primary" href="{% url institution.add %}">{% trans 'New' %}</a>
     </div>
+    <div class="span2">
+        <div class="btn-group">
+            <a class="btn" href="#">{% trans 'View' %}</a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url institution.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Institution" %}</a>
+                </li>
+                <li>
+                    <a href="{% url institution.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Institution" %}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div><!--row-fluid botões-->
-<table class="table table-striped">
+<table class="table table-condensed">
     <thead>
         <tr>
             <th>{% trans "Name" %}</th>
@@ -43,15 +60,27 @@
         {% for ct in institutions.object_list %}
         <tr>
             <td>
-                <h3><a href="{% url institution.show ct.pk %}">{{ ct.name }}</a></h3>
-                <p>
-                    <a class="btn btn-small btn-primary" href="{% url institution.edit ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
+                <h4><a href="{% url institution.show ct.pk %}">{{ ct.name }}</a></h4>
+                <ul class="_actions">
+                    <li>
+                        <a href="{% url institution.edit ct.pk %}">
+                            {% trans 'Edit' %}
+                        </a>
+                    </li>
+                    <li>
                     {% if ct.is_available %}
-                        <a class="btn btn-small btn-danger" href="{% url institution.toggle_availability ct.pk %}"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
+                        <a href="{% url institution.toggle_availability ct.pk %}"
+                           class="label label-important">
+                            {% trans 'Disable' %}
+                        </a>
                     {% else %}
-                        <a class="btn btn-small btn-success" href="{% url institution.toggle_availability ct.pk %}"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
+                        <a href="{% url institution.toggle_availability ct.pk %}"
+                           class="label label-success">
+                            {% trans 'Enable' %}
+                        </a>
                     {% endif %}
-                </p>
+                    </li>
+                </ul>
             </td>
             <td>{{ ct.sponsor }}</td>
             <td>
@@ -69,13 +98,13 @@
 <div class="pagination">
     <ul>
         <li class="prev {% if not institutions.has_previous %}disabled{% endif %}">
-            <a href="?page={{ institutions.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+            <a href="{% append_to_get page=institutions.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in institutions.paginator.page_range %}
-        <li {% if institutions.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if institutions.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not institutions.has_next %}disabled{% endif %}">
-            <a href="?page={{ institutions.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+            <a href="{% append_to_get page=institutions.next_page_number %}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>

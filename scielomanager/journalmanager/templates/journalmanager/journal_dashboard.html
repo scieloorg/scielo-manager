@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load append_to_get %}
 
 {% block extrahead %}
 
@@ -27,11 +28,27 @@
     </div>
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
-    <div class="span2">
+    <div class="span10">
         <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
     </div>
+    <div class="span2">
+        <div class="btn-group">
+            <a class="btn" href="#">{% trans 'View' %}</a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url journal.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Journal" %}</a>
+                </li>
+                <li>
+                    <a href="{% url journal.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Journal" %}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div><!--row-fluid botões-->
-<table class="table table-striped">
+<table class="table table-condensed">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
@@ -46,17 +63,37 @@
         {% for ct in journals.object_list %}
         <tr>
             <td>
-                <h3><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h3>
-                <p>
-                    <a class="btn btn-small btn-primary" href="{% url journal.edit ct.pk %}"><i class="icon-edit icon-white"></i> {% trans 'Edit' %}</a>
-                    <a class="btn btn-small btn-primary" href="{% url issue.index ct.pk %}"><i class="icon-book icon-white"></i> {% trans 'Issues' %}</a>
-                    <a class="btn btn-small btn-primary"href="#"><i class="icon-list-alt icon-white"></i> {% trans 'Sections' %}</a>
+                <h4><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h4>
+                <ul class="_actions">
+                    <li>
+                        <a href="{% url journal.edit ct.pk %}">
+                            {% trans 'Edit' %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url issue.index ct.pk %}">
+                            {% trans 'Issues' %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url section.index ct.pk %}">
+                            {% trans 'Sections' %}
+                        </a>
+                    </li>
+                    <li>
                     {% if ct.is_available %}
-                        <a class="btn btn-small btn-danger" href="{% url journal.toggle_availability ct.pk %}"><i class="icon-minus-sign icon-white"></i> {% trans 'disable' %}</a>
+                        <a href="{% url journal.toggle_availability ct.pk %}"
+                           class="label label-important">
+                            {% trans 'Disable' %}
+                        </a>
                     {% else %}
-                        <a class="btn btn-small btn-success" href="{% url journal.toggle_availability ct.pk %}"><i class="icon-plus-sign icon-white"></i> {% trans 'enable' %}</a>
+                        <a href="{% url journal.toggle_availability ct.pk %}"
+                           class="label label-success">
+                            {% trans 'Enable' %}
+                        </a>
                     {% endif %}
-                </p>
+                    </li>
+                </ul>
             </td>
             <td>{{ ct.print_issn }}</td>
             <td>{{ ct.eletronic_issn }}</td>
@@ -77,13 +114,13 @@
 <div class="pagination">
     <ul>
         <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
-            <a href="?page={{ journals.previous_page_number }}">&larr; {% trans 'Previous' %}</a>
+            <a href="{% append_to_get page=journals.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
         </li>
         {% for page in journals.paginator.page_range %}
-        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        <li {% if journals.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
         {% endfor %}
         <li class="next {% if not journals.has_next %}disabled{% endif %}">
-            <a href="?page={{ journals.next_page_number }}">{% trans 'Next' %} &rarr;</a>
+            <a href="{% append_to_get page=journals.next_page_number %}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>

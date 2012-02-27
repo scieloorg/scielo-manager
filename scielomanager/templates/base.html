@@ -6,9 +6,11 @@
         <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
         <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
         <link rel="shortcut icon" href="/static/favicon.ico"/>
+        {% block extrahead %}{% endblock %}
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap.css">
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
-        {% block extrahead %}{% endblock %}
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
+        
     </head>
     <body>
         <div class="container-fluid">
@@ -16,7 +18,7 @@
                 <div class="span2">
                     <img src="{% get_static_prefix %}images/scielologo.gif">
                 </div>
-                <div class="span6"><h1>SciELO Manager</h1></div>
+                <div class="span8"><h1>SciELO Manager</h1></div>
                 <div class="span2">
                    <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
                         <input type="hidden" id="language" name="language">
@@ -55,7 +57,7 @@
                                             <ul>
                                                 <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
                                                 <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
-                                            </ul>                                            
+                                            </ul>
                                     </form>
                                     {% if invalid %}
                                          <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
