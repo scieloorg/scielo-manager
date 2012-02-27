@@ -293,6 +293,12 @@
            {{ add_form.institution }}
         </div>
     </div>
+    <div class="control-group {% if add_form.sponsor.errors %}error{% endif %}">
+        <label class="control-label" for="sponsor">{% trans add_form.sponsor.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.sponsor }}
+        </div>
+    </div>
   </div>
       <span class="label">{% trans "licenses" %}</span>
   <div class="well">
