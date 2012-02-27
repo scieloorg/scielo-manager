@@ -42,16 +42,10 @@
            {{ add_form.short_title }}
         </div>
     </div>
-    <div class="control-group {% if add_form.previous_title_id.errors %}error{% endif %}">
-        <label class="control-label" for="previous_title_id">{% trans add_form.previous_title_id.label_tag %}</label>
+    <div class="control-group {% if add_form.previous_title.errors %}error{% endif %}">
+        <label class="control-label" for="previous_title">{% trans add_form.previous_title.label_tag %}</label>
         <div class="controls">
-           {{ add_form.previous_title_id }}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.next_title_id.errors %}error{% endif %}">
-        <label class="control-label" for="next_title_id">{% trans add_form.next_title_id.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.next_title_id }}
+           {{ add_form.previous_title }}
         </div>
     </div>
   </div>
