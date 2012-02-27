@@ -44,7 +44,8 @@ class Institution(models.Model):
 
     #Custom manager
     objects = CustomInstitutionManager()
-
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
@@ -200,8 +201,8 @@ class Section(models.Model):
     title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
     journal = models.ForeignKey(Journal, null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=False)
 
     def __unicode__(self):
