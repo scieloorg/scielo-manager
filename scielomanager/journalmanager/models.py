@@ -137,7 +137,6 @@ class Journal(models.Model):
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
-    subscription = models.CharField(_('Subscription'), max_length=4, null=False, default='na', blank=True, choices=choices.SUBSCRIPT)
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
 
