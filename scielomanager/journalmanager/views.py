@@ -198,6 +198,70 @@ def journal_index(request):
 
 @login_required
 def add_journal(request, journal_id = None):
+    user_collection = request.user.userprofile_set.get().collection
+
+    if  journal_id == None:
+        journal = models.Journal()
+    else:
+        journal = models.Journal.objects.get(id = journal_id)
+
+    MissionFormSet    = inlineformset_factory(models.Journal, models.JournalMission, can_delete=True)    
+    TitleOtherFormsFormSet    = inlineformset_factory(models.Journal, models.JournalTitleOtherForms, can_delete=True)    
+    ParallelTitlesFormSet    = inlineformset_factory(models.Journal, models.JournalShortTitleOtherForms, can_delete=True)    
+    ShortTitlesFormSet    = inlineformset_factory(models.Journal, models.JournalShortTitleOtherForms, can_delete=True)    
+    TextLanguagesFormSet    = inlineformset_factory(models.Journal, models.JournalTextLanguage, can_delete=True)    
+    AbstractLanguagesFormSet    = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, can_delete=True)    
+    HistoryFormSet    = inlineformset_factory(models.Journal, models.JournalHist, can_delete=True)    
+
+    if request.method == "POST":
+        journalform      = JournalForm(request.POST, instance=journal)
+        missionformset    = MissionFormSet(request.POST, instance=journal)
+        titleotherformset    = TitleOtherFormsFormSet(request.POST, instance=journal)
+        paralleltitlesformset    = ParallelTitlesFormSet(request.POST, instance=journal)
+        shorttitlesformset    = ShortTitlesFormSet(request.POST, instance=journal)
+        textlanguagesformset    = TextLanguagesFormSet(request.POST, instance=journal)
+        abstractlanguagesformset    = AbstractLanguagesFormSet(request.POST, instance=journal)
+        histformset    = HistoryFormSet(request.POST, instance=journal)
+        
+        if journalform.is_valid() and missionformset.is_valid() and titleotherformset.is_valid() and paralleltitlesformset.is_valid() and shorttitlesformset.is_valid() and textlanguagesformset.is_valid() and abstractlanguagesformset.is_valid() and histformset.is_valid():
+            journalform.save()
+            missionformset.save()
+            titleotherformset.save()
+            paralleltitlesformset.save()
+            shorttitlesformset.save()
+            textlanguagesformset.save()
+            abstractlanguagesformset.save()
+            histformset.save()
+
+            # Redirect to somewhere
+            if '_save' in request.POST:
+                return HttpResponseRedirect(reverse('journal.index'))
+            if '_addanother' in request.POST:
+                return HttpResponseRedirect(reverse('journal.add'))
+                
+    else:
+        journalform      = JournalForm(instance=journal)
+        missionformset    = MissionFormSet(instance=journal)
+        titleotherformset    = TitleOtherFormsFormSet( instance=journal)
+        paralleltitlesformset    = ParallelTitlesFormSet(instance=journal)
+        shorttitlesformset    = ShortTitlesFormSet(instance=journal)
+        textlanguagesformset    = TextLanguagesFormSet(instance=journal)
+        abstractlanguagesformset    = AbstractLanguagesFormSet(instance=journal)
+        histformset    = HistoryFormSet(instance=journal)
+
+    return render_to_response('journalmanager/add_journal.html', {
+                              'add_form': journalform,
+                              'missionformset': missionformset,
+                              'collection': user_collection,
+                              'titleotherformset': titleotherformset,
+                              'textlanguageformset': textlanguagesformset,
+                              'histformset': histformset,
+                              'paralleltitlesformset': paralleltitlesformset,
+                              'shorttitleotherformset': shorttitlesformset,
+                              'abstrlanguageformset': abstractlanguagesformset
+                              }, context_instance = RequestContext(request))
+@login_required
+def add_journal_old(request, journal_id = None):
     """
     Handles new and existing journals
     """
@@ -444,4 +508,58 @@ def search_issue(request, journal_id):
                        'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
+
+@login_required
+def section_index(request, journal_id):
+    journal = models.Journal.objects.get(id=journal_id)
+    user_collection = request.user.userprofile_set.get().collection
+
+    sections = get_paginated(journal.section_set.all(), request.GET.get('page', 1))
+    t = loader.get_template('journalmanager/section_dashboard.html')
+    c = RequestContext(request, {
+                       'sections': sections,
+                       'journal': journal,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def search_section(request, journal_id):
+    return section_index(request, journal_id)
+
+@login_required
+def add_section(request, journal_id, section_id=None):
+    user_collection = request.user.userprofile_set.get().collection
+    journal = models.Journal.objects.get(pk=journal_id)
+
+    if request.method == 'POST':
+        section_form_kwargs = {}
+
+        if section_id is not None: #edit - preserve form-data
+            filled_form = models.Section.objects.get(pk=section_id)
+            section_form_kwargs['instance'] = filled_form
+
+        add_form = SectionForm(request.POST, **section_form_kwargs)
+
+        if add_form.is_valid():
+            if section_id is not None:
+                add_form.save()
+            else:
+                add_form.save_all(journal)
+
+            return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+    else:
+        if section_id is None: #new
+            add_form = SectionForm()
+        else:
+            filled_form = models.Section.objects.get(pk=section_id)
+            add_form = SectionForm(instance=filled_form)
+
+    return render_to_response('journalmanager/add_section.html', {
+                              'add_form': add_form,
+                              'journal': journal,
+                              'journal_id': journal_id,
+                              'user_name': request.user.pk,
+                              'section_id': section_id,
+                              'collection': user_collection},
+                              context_instance=RequestContext(request))
 
