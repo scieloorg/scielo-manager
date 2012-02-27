@@ -44,7 +44,8 @@ class Institution(models.Model):
 
     #Custom manager
     objects = CustomInstitutionManager()
-
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     collection = models.ForeignKey(Collection, related_name='publisher_collection')
@@ -84,16 +85,15 @@ class Journal(models.Model):
 
     # PART 1
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    created = models.DateTimeField(_('Date of Registration'),default=datetime.now,
-        editable=False)
-    updated = models.DateTimeField(_('Update Date'),default=datetime.now,
-        editable=False)
+    
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
     collections = models.ManyToManyField('Collection')
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
 
-    previous_title_id = models.ForeignKey('Journal',related_name='prev_title', null=True)
-    next_title_id = models.ForeignKey('Journal',related_name='next_title',null=True)
+    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
 
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
@@ -117,7 +117,7 @@ class Journal(models.Model):
         choices=choices.PUBLICATION_STATUS,null=False,blank=True)
     alphabet = models.CharField(_('Alphabet'),max_length=16,
         choices=choices.ALPHABET,null=False,blank=True)
-    classification = models.CharField(_('Classification'), max_length=16,null=False,blank=True)
+    sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True)
@@ -200,8 +200,8 @@ class Section(models.Model):
     title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
     journal = models.ForeignKey(Journal, null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=False)
 
     def __unicode__(self):
@@ -223,8 +223,8 @@ class Issue(models.Model):
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     publication_date = models.DateField(null=False, blank=False)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200

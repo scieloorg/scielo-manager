@@ -8,7 +8,7 @@ from scielomanager.journalmanager import models
 
 def get_sample_journal_dataform(**kwargs):
     journal_attrs = {
-      'classification': '',
+      'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
       'national_code': '083653-2',
       'frequency': 'Q',
@@ -68,14 +68,14 @@ def get_sample_journal():
 
     Returns a journal object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['classification', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
+    - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
        'id_provided_by_the_center', 'institution', 'center', 'notes',]
     """
 
     journal_attrs = {
-      'classification': '',
+      'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
       'national_code': '083653-2',
       'frequency': 'Q',
