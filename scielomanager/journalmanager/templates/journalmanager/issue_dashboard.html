@@ -39,10 +39,10 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{% url institution.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Issue" %}</a>
+                    <a href="{% url issue.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Issue" %}</a>
                 </li>
                 <li>
-                    <a href="{% url institution.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Issue" %}</a>
+                    <a href="{% url issue.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Issue" %}</a>
                 </li>
             </ul>
         </div>
