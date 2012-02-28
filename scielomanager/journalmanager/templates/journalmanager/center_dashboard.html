@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load append_to_get %}
+
+{% block extrahead %}
+
+{% endblock %}
+
+{% block body_title %}{% trans "Centers" %}{% endblock %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'Centers DashBoard' %}</li>
+</ul><!--breadcrumb-->
+{% endblock %}
+
+{% block body %}
+<div class="row-fluid">
+    <div class="span12">
+        <div class="search">
+            <form class="well form-search" action="{% url center.search %}" method="get">
+                <input class="span6 search-query" placeholder="Search" name="q" />
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</div><!--row-fluid Search box-->
+<div class="row-fluid">
+    <div class="span10">
+        <a class="btn btn-primary" href="{% url center.add %}">{% trans 'New' %}</a>
+    </div>
+    <div class="span2">
+        <div class="btn-group">
+            <a class="btn" href="#">{% trans 'View' %}</a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{% url center.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Center" %}</a>
+                </li>
+                <li>
+                    <a href="{% url center.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Center" %}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div><!--row-fluid botões-->
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Acronym" %}</th>
+            <th>{% trans "Country" %}</th>
+            <th>{% trans "Validated" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ct in centers.object_list %}
+        <tr>
+            <td>
+                <h4>{{ ct.name }}</h4>
+                <ul class="_actions">
+                    <li>
+                        <a href="{% url center.edit ct.pk %}">
+                            {% trans 'Edit' %}
+                        </a>
+                    </li>
+                    <li>
+                    {% if ct.is_available %}
+                        <a href="{% url center.toggle_availability ct.pk %}"
+                           class="label label-important">
+                            {% trans 'Disable' %}
+                        </a>
+                    {% else %}
+                        <a href="{% url center.toggle_availability ct.pk %}"
+                           class="label label-success">
+                            {% trans 'Enable' %}
+                        </a>
+                    {% endif %}
+                    </li>
+                </ul>
+            </td>
+            <td>{{ ct.acronym }}</td>
+            <td>{{ ct.country }}</td>
+            <td>
+                {%if ct.validated %}
+                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+                {%else%}
+                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+                {%endif%}
+            </td>
+        </tr>
+        {% endfor %}
+    <tbody>
+</table>
+    {% trans 'Showing' %} {{ centers.start_index }}-{{ centers.end_index }} {% trans 'of' %} {{ centers.paginator.count }}
+<div class="pagination">
+    <ul>
+        <li class="prev {% if not centers.has_previous %}disabled{% endif %}">
+            <a href="{% append_to_get page=centers.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
+        </li>
+        {% for page in centers.paginator.page_range %}
+        <li {% if centers.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
+        {% endfor %}
+        <li class="next {% if not centers.has_next %}disabled{% endif %}">
+            <a href="{% append_to_get page=centers.next_page_number %}">{% trans 'Next' %} &rarr;</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
