@@ -246,6 +246,7 @@ def add_journal(request, journal_id = None):
                               'abstrlanguageformset': abstrlanguageformset,
                               }, context_instance = RequestContext(request))
 
+
 @login_required
 def toggle_journal_availability(request, journal_id):
   journal = get_object_or_404(models.Journal, pk = journal_id)
