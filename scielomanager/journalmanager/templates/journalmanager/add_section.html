@@ -4,8 +4,7 @@
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/base/jquery-ui.css" type="text/css" media="all" />
-    <link rel="stylesheet" href="http://static.jquery.com/ui/css/demo-docs-theme/ui.theme.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ jquery_ui_css_url }}" type="text/css" media="all" />
 {% endblock %}
 
 {% block stepmenu_top %}
@@ -79,7 +78,7 @@
 
 {% block extrafooter %}
     <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-tooltip.js"></script>
