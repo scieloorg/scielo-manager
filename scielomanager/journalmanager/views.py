@@ -203,45 +203,47 @@ def add_journal(request, journal_id = None):
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
 
-    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1)
-    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1)
-    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1)
-    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1)
-    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1)
+    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
+    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
+    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
+    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1, can_delete=True)
+    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
-        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
 
-        if journalform.is_valid() and missionformset.is_valid():
+        if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
+            titleformset.save()
             missionformset.save()
             textlanguageformset.save()
             abstrlanguageformset.save()
             histformset.save()
-            titleformset.save()
 
             return HttpResponseRedirect(reverse('journal.index'))
+
     else:
+
         journalform  = JournalForm(instance=journal, prefix='journal')
+        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
-        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
+                              'titleformset': titleformset,
                               'missionformset': missionformset,
                               'collection': user_collection,
                               'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
                               'abstrlanguageformset': abstrlanguageformset,
-                              'titleformset': titleformset,
                               }, context_instance = RequestContext(request))
 
 @login_required
