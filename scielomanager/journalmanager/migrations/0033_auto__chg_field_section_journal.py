@@ -8,20 +8,14 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Changing field 'UseLicense.reference_url'
-        db.alter_column('journalmanager_uselicense', 'reference_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True))
-
-        # Changing field 'UseLicense.disclaimer'
-        db.alter_column('journalmanager_uselicense', 'disclaimer', self.gf('django.db.models.fields.TextField')(max_length=512, null=True))
+        # Changing field 'Section.journal'
+        db.alter_column('journalmanager_section', 'journal_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'], null=True))
 
 
     def backwards(self, orm):
         
-        # User chose to not deal with backwards NULL issues for 'UseLicense.reference_url'
-        raise RuntimeError("Cannot reverse this migration. 'UseLicense.reference_url' and its values cannot be restored.")
-
-        # User chose to not deal with backwards NULL issues for 'UseLicense.disclaimer'
-        raise RuntimeError("Cannot reverse this migration. 'UseLicense.disclaimer' and its values cannot be restored.")
+        # User chose to not deal with backwards NULL issues for 'Section.journal'
+        raise RuntimeError("Cannot reverse this migration. 'Section.journal' and its values cannot be restored.")
 
 
     models = {
@@ -91,6 +85,7 @@ class Migration(SchemaMigration):
             'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'mail': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
@@ -143,11 +138,11 @@ class Migration(SchemaMigration):
             'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'institution': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'journal_institution'", 'to': "orm['journalmanager.Institution']"}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'literature_type': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'national_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'next_title_id': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'next_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
             'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
-            'pdf_access': ('django.db.models.fields.CharField', [], {'default': "'art'", 'max_length': '4'}),
             'previous_title_id': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
             'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
@@ -217,7 +212,10 @@ class Migration(SchemaMigration):
             'code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'translation': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.TranslatedData']", 'symmetrical': 'False'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']", 'null': 'True', 'blank': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'title_translations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['journalmanager.TranslatedData']", 'null': 'True', 'blank': 'True'}),
             'update_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         'journalmanager.supplement': {
@@ -231,13 +229,13 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'text': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
+            'translation': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.uselicense': {
             'Meta': {'object_name': 'UseLicense'},
             'disclaimer': ('django.db.models.fields.TextField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'license_code': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'license_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
             'reference_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.userprofile': {

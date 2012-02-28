@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li><a href="{% url center.index %}">{% trans 'Center Dashboard' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'New Center' %}</li>
+</ul>
+{% endblock %}
+
+{% block body %}
+    <form method="post" action="#">
+        {% csrf_token %}
+        <span class="label">{% trans "Center Information" %}</span>
+        <table class="well">
+            <col width="10%"/>
+            <col width="85%"/>
+            {% if add_form.errors %}
+                {% for field in add_form %}
+                        <tr><td>{{ field.label_tag }}</td><td>{{ field }} {% if field.errors %}<span class="field_errors"><img src="/static/images/error.png" border="0" width="20px" height="20px" /> {% trans "field required!" %}</span></td>{%endif%}</tr>
+                {% endfor %}
+            {% else %}
+                {{ add_form.as_table }}
+            {% endif %}
+        </table>
+        <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
+        <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
+    </form>
+
+{% endblock %}

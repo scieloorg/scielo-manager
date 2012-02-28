@@ -479,36 +479,111 @@ def section_index(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def add_section(request, journal_id = None):
+def add_section(request, journal_id, section_id=None):
     """
-    Handles new and existing journals
+    Handles new and existing sections
+    """
+
+    if section_id is None:
+        section = models.Section()
+    else:
+        section = get_object_or_404(models.Section, pk=section_id)
+
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if request.method == 'POST':
+        add_form = SectionForm(request.POST, instance=section)
+
+        if add_form.is_valid():
+            if section_id is None: #new
+                add_form.save_all(journal)
+            else: #edit
+                add_form.save()
+            return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+
+    else:
+        add_form = SectionForm(instance=section)
+
+    return render_to_response('journalmanager/add_section.html', {
+                              'add_form': add_form,
+                              'user_name': request.user.pk,
+                              'journal': journal,
+                              },
+                              context_instance = RequestContext(request))
+@login_required
+def center_index(request):
+    user_collection = request.user.userprofile_set.get().collection
+    all_centers = models.Center.objects
+    if all_centers:
+        all_centers = all_centers.filter(collection = user_collection)
+
+    centers = get_paginated(all_centers, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/center_dashboard.html')
+    c = RequestContext(request, {
+                       'centers': centers,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_center(request, center_id=None):
+    """
+    Handles new and existing centers
     """
 
     user_collection = request.user.userprofile_set.get().collection
 
     if request.method == 'POST':
-        journal_form_kwargs = {}
+        center_form_kwargs = {} 
 
-        if journal_id is not None: #edit - preserve form-data
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            journal_form_kwargs['instance'] = filled_form
+        if center_id is not None: #edit - preserve form-data
+            filled_form = models.Center.objects.get(pk = center_id)
+            center_form_kwargs['instance'] = filled_form
 
-        add_form = JournalForm(request.POST, **journal_form_kwargs)
+        add_form = CenterForm(request.POST, **center_form_kwargs)
 
         if add_form.is_valid():
-            add_form.save_all(creator = request.user)
-            return HttpResponseRedirect(reverse('journal.index'))
+            add_form.save_all(collection = user_collection)
+            return HttpResponseRedirect(reverse('center.index'))
     else:
-        if journal_id is None: #new
-            add_form = JournalForm()
+        if center_id is None: #new 
+            add_form = CenterForm()
         else:
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            add_form = JournalForm(instance = filled_form)
+            filled_form = models.Center.objects.get(pk = center_id)
+            add_form = CenterForm(instance = filled_form)
 
-    return render_to_response('journalmanager/add_journal.html', {
+    return render_to_response('journalmanager/add_center.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
                               'collection': user_collection,
                               },
                               context_instance = RequestContext(request))
+
+@login_required
+def toggle_center_availability(request, center_id):
+  center = get_object_or_404(models.Center, pk = center_id)
+  center.is_available = not center.is_available
+  center.save()
+
+  return HttpResponseRedirect(reverse('center.index'))
+
+@login_required
+def search_center(request):
+    user_collection = request.user.userprofile_set.get().collection
+
+    #Get centers where title contains the "q" value and collection equal with the user
+    center_filter = models.Center.objects.filter(name__icontains = request.REQUEST['q'],
+                                                            collection = user_collection).order_by('name')
+
+    #Paginated the result
+    centers = get_paginated(center_filter, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/center_dashboard.html')
+    c = RequestContext(request, {
+                       'centers': centers,
+                       'collection': user_collection,
+                       'search_query_string': request.REQUEST['q'],
+                       })
+    return HttpResponse(t.render(c))
 

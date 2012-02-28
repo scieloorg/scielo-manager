@@ -28,9 +28,9 @@ urlpatterns = patterns('',
 
     # Section Tools
     url(r'^(?P<journal_id>\d+)/sections/$', views.section_index, name='section.index' ),
-    #url(r'^section/add/(?P<journal_id>\d+/$', add_section, name='section.add' ),
+    url(r'^(?P<journal_id>\d+)/sections/new/$', views.add_section, name='section.add' ),
     #url(r'^section/show/(?P<section_id>\d+)/$', show_section, name='section.show' ),
-    #url(r'^(?P<journal_id>\d+)/sections/(?P<section_id>\d+)/edit/$', views.add_section, name='section.edit' ),
+    url(r'^(?P<journal_id>\d+)/sections/(?P<section_id>\d+)/edit/$', views.add_section, name='section.edit' ),
     #url(r'^section/delete/(?P<section_id>\d+)/$', delete_section, name='section.delete' ),
     #url(r'^section/search/$', search_section, name='section.search'),
 
@@ -48,4 +48,10 @@ urlpatterns = patterns('',
     url(r'^user/show/(?P<user_id>\d+)/$', views.show_user, name="user.show"),
     url(r'^user/edit/(?P<user_id>\d+)/$', views.edit_user, name="user.edit"),
 
+    # Center Tools
+    url(r'^center/$', views.center_index, name='center.index' ),
+    url(r'^center/add/$', views.add_center, name='center.add' ),
+    url(r'^center/edit/(?P<center_id>\d+)/$', views.add_center, name='center.edit' ),
+    url(r'^center/toggle_availability/(?P<center_id>\d+)/$', views.toggle_center_availability, name='center.toggle_availability' ),
+    url(r'^icenter/search/$', views.search_center, name='center.search'),
 )
