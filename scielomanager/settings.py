@@ -53,6 +53,16 @@ USE_L10N = True
 STATIC_URL = '/static/'
 MEDIA_URL  = '/static/media/'
 
+#Third-party URLS
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+
+AVAILABLE_IN_TEMPLATES = {
+    'docs_url': DOCUMENTATION_BASE_URL,
+    'jquery_url': r'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
+    'jquery_ui_url': r'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js',
+    'jquery_ui_css_url': r'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/base/jquery-ui.css',
+}
+
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
@@ -122,6 +132,7 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.csrf',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    'journalmanager.context_processors.from_settings',
 )
 
 
@@ -146,7 +157,7 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
-        }, 
+        },
     }
 }
 
