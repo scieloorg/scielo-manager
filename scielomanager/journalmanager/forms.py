@@ -104,3 +104,12 @@ class JournalTitleForm(ModelForm):
 
 
       
+class CenterForm(ModelForm):
+    class Meta:
+        model = models.Center
+        exclude = ('collection',)
+
+    def save_all(self, collection):
+        center = self.save(commit=False)
+        center.collection = collection
+        center.save()
