@@ -495,10 +495,8 @@ def add_section(request, journal_id, section_id=None):
         add_form = SectionForm(request.POST, instance=section)
 
         if add_form.is_valid():
-            if section_id is None: #new
-                add_form.save_all(journal)
-            else: #edit
-                add_form.save()
+            add_form.save_all(journal)
+
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
 
     else:
@@ -535,7 +533,7 @@ def add_center(request, center_id=None):
     user_collection = request.user.userprofile_set.get().collection
 
     if request.method == 'POST':
-        center_form_kwargs = {} 
+        center_form_kwargs = {}
 
         if center_id is not None: #edit - preserve form-data
             filled_form = models.Center.objects.get(pk = center_id)
@@ -547,7 +545,7 @@ def add_center(request, center_id=None):
             add_form.save_all(collection = user_collection)
             return HttpResponseRedirect(reverse('center.index'))
     else:
-        if center_id is None: #new 
+        if center_id is None: #new
             add_form = CenterForm()
         else:
             filled_form = models.Center.objects.get(pk = center_id)
