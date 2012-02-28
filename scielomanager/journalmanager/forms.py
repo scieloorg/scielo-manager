@@ -26,6 +26,7 @@ class JournalForm(ModelForm):
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class':'span10'}),
+           'previous_title': forms.Select(attrs={'class':'span10'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
            'institution': forms.Select(attrs={'class':'span8'}),
@@ -106,18 +107,19 @@ class SectionForm(ModelForm):
 
     class Meta:
       model = models.Section
+
 class JournalMissionForm(ModelForm):
     class Meta:
       model = models.JournalMission
       widgets = {
-        'description':forms.Textarea(attrs={'class':'span12'}), 
+        'description':forms.Textarea(attrs={'class':'span10', 'rows':'3'}), 
       }
 
 class JournalTitleForm(ModelForm):
     class Meta:
       model = models.JournalTitle
       widgets = {
-        'title': forms.TextInput(attrs={'class':'span8'}),
+        'title': forms.TextInput(attrs={'class':'span11'}),
       }
 
 
