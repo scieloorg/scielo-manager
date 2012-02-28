@@ -43,3 +43,12 @@ button.ui-button-icon-only {
     height: 20px;
     width: 4em;
 }
+
+/*Customize the links "add another" and "remove" from add_journal form*/
+.add-row {
+        padding-left:8px;
+    }
+.delete-row {
+        padding-left:8px;
+
+    }
