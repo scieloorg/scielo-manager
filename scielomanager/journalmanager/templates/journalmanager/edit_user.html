@@ -12,7 +12,7 @@
 
 <fieldset>
     <legend>{% trans "Edit User" %}</legend>
-    <form method="post" action="/journal/user/edit/{{ user_id }}/">{% csrf_token %}
+    <form method="post" action="{% url user.edit user.id %}">{% csrf_token %}
         <table class="table">
             <col width="10%"/>
             <col width="85%"/>

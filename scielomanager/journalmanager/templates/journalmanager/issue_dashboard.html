@@ -60,7 +60,7 @@
         <tr>
             <td>
                 <h4>
-                    <a href="{% url issue.show ct.id %}">{{ ct.identification }}</a>
+                    <a href="{% url issue.edit ct.journal.pk ct.id %}">{{ ct.identification }}</a>
                 </h4>
                 <ul class="_actions">
                     <li>

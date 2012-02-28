@@ -34,19 +34,19 @@
         <tr>
             <td>
                 <h4>
-                    <a href="/journal/user/show/{{ ct.pk }}/">{{ ct.username }}</a>
+                    <a href="{% url user.edit ct.pk %}">{{ ct.username }}</a>
                 </h4>
                 <ul class="_actions">
                     {% if perms.auth.change_user %}
                     <li>
-                        <a href="/journal/user/edit/{{ ct.pk }}/">
+                        <a href="{% url user.edit ct.pk %}">
                             {% trans 'Edit' %}
                         </a>
                     </li>
                     {% endif %}
                     {% if perms.auth.delete_user %}
                     <li>
-                        <a href="/journal/user/delete/{{ ct.pk }}/"
+                        <a href="{% url user.delete ct.pk %}"
                            class="label label-important">
                             {% trans 'Delete' %}
                         </a>

@@ -44,7 +44,7 @@
         </div>
     </div>
 </div><!--row-fluid botões-->
-<table class="table table-condensed">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>{% trans "Journal Title" %}</th>
@@ -59,7 +59,7 @@
         {% for ct in journals.object_list %}
         <tr>
             <td>
-                <h4><a href="/journal/show/{{ ct.pk }}/">{{ ct.title }}</a></h4>
+                <h4><a href="{% url journal.edit ct.pk %}">{{ ct.title }}</a></h4>
                 <ul class="_actions">
                     <li>
                         <a href="{% url journal.edit ct.pk %}">
