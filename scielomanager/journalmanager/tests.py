@@ -159,6 +159,39 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(testing_institution, modified_testing_institution)
 
     @with_sample_journal
+    def test_add_section(self):
+        """
+        View: add_section
+        """
+        from models import Journal
+        from models import Section
+        journal = Journal.objects.all()[0]
+
+        #empty form
+        response = self.client.get(reverse('section.add', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+        #add section
+        response = self.client.post(reverse('section.add', args=[journal.pk]),
+            tests_assets.get_sample_section_dataform())
+
+        self.assertRedirects(response, reverse('section.index', args=[journal.pk]))
+
+        #edit section
+        testing_section = Section.objects.get(title='Artigo Original')
+        previous_code = testing_section.code
+
+        response = self.client.post(reverse('section.edit', args=[journal.pk, testing_section.pk]),
+            tests_assets.get_sample_section_dataform(title='Modified Original Article',
+                                                     code='qwerty'))
+
+        self.assertRedirects(response, reverse('section.index', args=[journal.pk]))
+        modified_section = Section.objects.get(title='Modified Original Article')
+
+        self.assertEqual(testing_section, modified_section)
+        self.assertEqual(modified_section.code, previous_code) #code must be read-only
+
+    @with_sample_journal
     def test_journal_index(self):
         """
         View: journal_index
