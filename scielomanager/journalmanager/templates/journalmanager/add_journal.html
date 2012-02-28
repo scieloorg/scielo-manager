@@ -41,26 +41,34 @@
         </div>
     </div>
   </div>
+  
   <span class="label">{% trans "titleformset" %}</span>
   <div class="well">
-   {% for f in titleformset.management_form %}
-       {{ f }}
-   {% endfor %}
-   {% for f in titleformset.forms %}
-       {% for field in f %}
-          {% if not field.is_hidden %}
-           <div class="control-group {% if field.errors %}error{% endif %}">
-               <label class="control-label">{% trans field.label_tag %}</label>
-               <div class="controls">
-                   {{ field  }}
-               </div>
-           </div>
-           {% else %}
-               {{ field }}
-           {% endif %}
-        {% endfor %}
-    {% endfor %}
+      <table id="titleformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Title" %}</th>
+              <th>{% trans "Category" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for form in titleformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.title }}
+              </td>
+              <td>{{ form.category }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ titleformset.management_form }}
+      </p>
   </div>
+
   <span class="label">{% trans "ISSN" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
@@ -101,46 +109,59 @@
         </div>
     </div>
   </div>
+
   <span class="label">{% trans "missionformset" %}</span>
   <div class="well">
-     {% for f in missionformset.management_form %}
-         {{ f }}
-     {% endfor %}
-     {% for f in missionformset.forms %}
-         {% for field in f %}
-            {% if not field.is_hidden %}
-             <div class="control-group {% if field.errors %}error{% endif %}">
-                 <label class="control-label">{% trans field.label_tag %}</label>
-                 <div class="controls">
-                     {{ field  }}
-                 </div>
-             </div>
-             {% else %}
-                 {{ field }}
-             {% endif %}
+      <table id="missionformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Description" %}</th>
+              <th>{% trans "Language" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for form in missionformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.description }}
+              </td>
+              <td>{{ form.language }}</td>
+          </tr>
           {% endfor %}
-      {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ missionformset.management_form }}
+      </p>
   </div>
+
   <span class="label">{% trans "textlanguageformset" %}</span>
   <div class="well">
-     {% for f in textlanguageformset.management_form %}
-         {{ f }}
-     {% endfor %}
-     {% for f in textlanguageformset.forms %}
-         {% for field in f %}
-            {% if not field.is_hidden %}
-             <div class="control-group {% if field.errors %}error{% endif %}">
-                 <label class="control-label">{% trans field.label_tag %}</label>
-                 <div class="controls">
-                     {{ field  }}
-                 </div>
-             </div>
-             {% else %}
-                 {{ field }}
-             {% endif %}
+      <table id="textlanguageformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Language" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for form in textlanguageformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.language }}
+              </td>
+          </tr>
           {% endfor %}
-      {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ textlanguageformset.management_form }}
+      </p>
   </div>
+
   <span class="label">{% trans "abstractlanguageformset" %}</span>
   <div class="well">
      {% for f in abstrlanguageformset.management_form %}
@@ -161,26 +182,34 @@
           {% endfor %}
       {% endfor %}
   </div>
+  
   <span class="label">{% trans "histformset" %}</span>
   <div class="well">
-     {% for f in histformset.management_form %}
-         {{ f }}
-     {% endfor %}
-     {% for f in histformset.forms %}
-         {% for field in f %}
-            {% if not field.is_hidden %}
-             <div class="control-group {% if field.errors %}error{% endif %}">
-                 <label class="control-label">{% trans field.label_tag %}</label>
-                 <div class="controls">
-                     {{ field  }}
-                 </div>
-             </div>
-             {% else %}
-                 {{ field }}
-             {% endif %}
+      <table id="histformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Status" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+           {% for form in histformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.date }}
+              </td>
+              <td>{{ form.status }}</td>
+          </tr>
           {% endfor %}
-      {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ histformset.management_form }}
+      </p>
   </div>
+
   <span class="label">{% trans "system" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
@@ -397,15 +426,38 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
 
-    <script>
-        $(document).ready(function() {
+ <script>
+    $(document).ready(function() {
 
-            $( "#id_journal-institution" ).combobox({ autoFocus: true });
+        $( "#id_journal-institution" ).combobox({ autoFocus: true });
 
-            $( "#toggle" ).click(function() {
-                $( "#id_institution" ).toggle();
-            });
+        $( "#toggle" ).click(function() {
+            $( "#id_institution" ).toggle();
         });
-    </script>
+
+        //multiple-formsets
+        $('#titleformset tbody tr').formset({
+           formCssClass: 'dynamic-titleformset-form',
+           prefix: '{{ titleformset.prefix }}'
+        });
+
+        $('#missionformset tbody tr').formset({
+           formCssClass: 'dynamic-missionformset-form',
+           prefix: '{{ missionformset.prefix }}'
+        });
+
+        $('#textlanguageformset tbody tr').formset({
+           formCssClass: 'dynamic-textlanguageformset-form',
+           prefix: '{{ textlanguageformset.prefix }}'
+        });
+
+        $('#histformset tbody tr').formset({
+           formCssClass: 'dynamic-histformset-form',
+           prefix: '{{ histformset.prefix }}'
+        });
+              
+    });
+  </script>
 {% endblock %}

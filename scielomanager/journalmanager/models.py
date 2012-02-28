@@ -168,13 +168,13 @@ class JournalAbstrLanguage(models.Model):
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal)
-    date = models.DateField(_('Date'),editable=True,blank=True)
-    status = models.CharField(_('Status'),choices=choices.JOURNAL_HIST_STATUS,null=False,blank=True, max_length=2)
+    date = models.DateField(_('Date'), editable=True, blank=True)
+    status = models.CharField(_('Status'), choices=choices.JOURNAL_HIST_STATUS, null=False, blank=True, max_length=2)
 
 class JournalMission(models.Model):
-    journal = models.ForeignKey(Journal,null=False)
-    description = models.TextField(_('Mission'),null=False)
-    language = models.CharField(_('Language'),null=False, max_length=2,choices=LANGUAGES)
+    journal = models.ForeignKey(Journal, null=False)
+    description = models.TextField(_('Mission'), null=False)
+    language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
 
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
