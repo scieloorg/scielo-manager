@@ -48,4 +48,10 @@ urlpatterns = patterns('',
     url(r'^user/show/(?P<user_id>\d+)/$', views.show_user, name="user.show"),
     url(r'^user/edit/(?P<user_id>\d+)/$', views.edit_user, name="user.edit"),
 
+    # Center Tools
+    url(r'^center/$', views.center_index, name='center.index' ),
+    url(r'^center/add/$', views.add_center, name='center.add' ),
+    url(r'^center/edit/(?P<center_id>\d+)/$', views.add_center, name='center.edit' ),
+    url(r'^center/toggle_availability/(?P<center_id>\d+)/$', views.toggle_center_availability, name='center.toggle_availability' ),
+    url(r'^icenter/search/$', views.search_center, name='center.search'),
 )
