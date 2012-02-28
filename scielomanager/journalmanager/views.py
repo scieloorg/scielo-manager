@@ -479,36 +479,35 @@ def section_index(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def add_section(request, journal_id = None):
+def add_section(request, journal_id, section_id=None):
     """
-    Handles new and existing journals
+    Handles new and existing sections
     """
 
-    user_collection = request.user.userprofile_set.get().collection
+    if section_id is None:
+        section = models.Section()
+    else:
+        section = get_object_or_404(models.Section, pk=section_id)
+
+    journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if request.method == 'POST':
-        journal_form_kwargs = {}
-
-        if journal_id is not None: #edit - preserve form-data
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            journal_form_kwargs['instance'] = filled_form
-
-        add_form = JournalForm(request.POST, **journal_form_kwargs)
+        add_form = SectionForm(request.POST, instance=section)
 
         if add_form.is_valid():
-            add_form.save_all(creator = request.user)
-            return HttpResponseRedirect(reverse('journal.index'))
-    else:
-        if journal_id is None: #new
-            add_form = JournalForm()
-        else:
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            add_form = JournalForm(instance = filled_form)
+            if section_id is None: #new
+                add_form.save_all(journal)
+            else: #edit
+                add_form.save()
+            return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
 
-    return render_to_response('journalmanager/add_journal.html', {
+    else:
+        add_form = SectionForm(instance=section)
+
+    return render_to_response('journalmanager/add_section.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
-                              'collection': user_collection,
+                              'journal': journal,
                               },
                               context_instance = RequestContext(request))
 @login_required
