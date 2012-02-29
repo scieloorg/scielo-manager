@@ -40,7 +40,6 @@ def get_sample_journal_dataform(**kwargs):
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
       'print_issn': '0102-6720',
@@ -114,7 +113,7 @@ def get_sample_journal():
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'id_provided_by_the_center', 'institution', 'center', 'notes',]
+       'institution', 'center', 'notes',]
     """
 
     journal_attrs = {
@@ -141,7 +140,6 @@ def get_sample_journal():
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
       'print_issn': '0102-6720',
