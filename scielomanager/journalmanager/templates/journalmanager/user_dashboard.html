@@ -46,10 +46,17 @@
                     {% endif %}
                     {% if perms.auth.delete_user %}
                     <li>
-                        <a href="{% url user.delete ct.pk %}"
-                           class="label label-important">
-                            {% trans 'Delete' %}
-                        </a>
+                        {% if ct.is_active %}
+                            <a href="{% url user.toggle_availability ct.pk %}"
+                               class="label label-important">
+                                {% trans 'Disable' %}
+                            </a>
+                        {% else %}
+                            <a href="{% url user.toggle_availability ct.pk %}"
+                               class="label label-success">
+                                {% trans 'Enable' %}
+                            </a>
+                        {% endif %}
                     </li>
                     {% endif %}
                 </ul>

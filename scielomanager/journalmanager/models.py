@@ -101,8 +101,6 @@ class Journal(models.Model):
     print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=512,null=False,blank=True)
-    study_area = models.CharField(_('Study Area'),max_length=256,
-        choices=choices.SUBJECTS,null=False,blank=True)
 
     #PART 2
     init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
@@ -150,6 +148,11 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
+        
+class JournalStudyArea(models.Model):
+    journal = models.ForeignKey(Journal)
+    study_area = models.CharField(_('Study Area'),max_length=256,
+        choices=choices.SUBJECTS,null=False,blank=True)
 
 class JournalTitle(models.Model):
     journal = models.ForeignKey(Journal)
