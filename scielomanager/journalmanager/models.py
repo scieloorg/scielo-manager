@@ -140,7 +140,6 @@ class Journal(models.Model):
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
 
-    id_provided_by_the_center = models.CharField(_('ID provided by the Center'), max_length=64,null=True,blank=True) #v30
 
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
