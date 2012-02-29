@@ -260,6 +260,15 @@ def toggle_journal_availability(request, journal_id):
 
   return HttpResponseRedirect(reverse('journal.index'))
 
+
+@login_required
+def toggle_user_availability(request, user_id):
+  user = get_object_or_404(models.User, pk = user_id)
+  user.is_active = not user.is_active
+  user.save()
+
+  return HttpResponseRedirect(reverse('user.index'))
+
 @login_required
 def show_institution(request, institution_id):
     #FIXME: models.Intitutions e models.Journals ja se relacionam, avaliar
