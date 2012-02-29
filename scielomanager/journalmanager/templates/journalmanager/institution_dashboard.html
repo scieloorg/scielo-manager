@@ -48,7 +48,7 @@
         </div>
     </div>
 </div><!--row-fluid botões-->
-<table class="table table-condensed">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>{% trans "Name" %}</th>
@@ -60,7 +60,7 @@
         {% for ct in institutions.object_list %}
         <tr>
             <td>
-                <h4><a href="{% url institution.show ct.pk %}">{{ ct.name }}</a></h4>
+                <h4><a href="{% url institution.edit ct.pk %}">{{ ct.name }}</a></h4>
                 <ul class="_actions">
                     <li>
                         <a href="{% url institution.edit ct.pk %}">

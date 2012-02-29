@@ -45,7 +45,7 @@
         {% for ct in institutions.object_list %}
         <tr>
             <td>
-                <h4><a href="{% url institution.show ct.pk %}">{{ ct.name }}</a></h4>
+                <h4><a href="{% url institution.edit ct.pk %}">{{ ct.name }}</a></h4>
                 <ul class="_actions">
                     <li>
                         <a href="{% url institution.edit ct.pk %}">

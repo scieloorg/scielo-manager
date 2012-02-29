@@ -6,6 +6,15 @@ from django.contrib.auth.models import User
 
 from scielomanager.journalmanager import models
 
+def get_sample_section_dataform(**kwargs):
+    section_attrs = {
+      'title': 'Artigo Original',
+    }
+
+    section_attrs.update(kwargs)
+
+    return section_attrs
+
 def get_sample_journal_dataform(**kwargs):
     journal_attrs = {
       'sponsor': 'FAPESP',
