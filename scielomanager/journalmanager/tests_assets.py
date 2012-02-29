@@ -80,7 +80,7 @@ def get_sample_journal():
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'id_provided_by_the_center', 'institution', 'center', 'notes',]
+       'institution', 'center', 'notes',]
     """
 
     journal_attrs = {
