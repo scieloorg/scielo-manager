@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     url(r'^user/new/$', views.add_user, name="user.add"),
     url(r'^user/(?P<user_id>\d+)/edit/$', views.edit_user, name="user.edit"),
     url(r'^user/(?P<user_id>\d+)/delete/$', views.edit_user, name="user.delete"),
+    url(r'^user/(?P<user_id>\d+)/toggle_availability/$', views.toggle_user_availability, name='user.toggle_availability' ),
 
     # Center Tools
     url(r'^center/$', views.center_index, name='center.index' ),

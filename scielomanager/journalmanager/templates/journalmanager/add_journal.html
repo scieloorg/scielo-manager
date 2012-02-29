@@ -96,12 +96,27 @@
   </div>
   <span class="label">{% trans "subject" %}</span>
   <div class="well">
-    <div class="control-group {% if add_form.study_area.errors %}error{% endif %}">
-        <label class="control-label" for="study_area">{% trans add_form.study_area.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.study_area }}
-        </div>
-    </div>
+    <table id="studyareaformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Study Area" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for form in studyareaformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.study_area }}
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+    <p>
+      {{ studyareaformset.management_form }}
+    </p>
     <div class="control-group {% if add_form.subject_descriptors.errors %}error{% endif %}">
         <label class="control-label" for="subject_descriptors">{% trans add_form.subject_descriptors.label_tag %}</label>
         <div class="controls">
@@ -446,6 +461,11 @@
         $('#missionformset tbody tr').formset({
            formCssClass: 'dynamic-missionformset-form',
            prefix: '{{ missionformset.prefix }}'
+        });
+
+        $('#studyareaformset tbody tr').formset({
+           formCssClass: 'dynamic-studyareaformset-form',
+           prefix: '{{ textstudyareaformset.prefix }}'
         });
 
         $('#textlanguageformset tbody tr').formset({
