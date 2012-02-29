@@ -42,7 +42,6 @@ class JournalForm(ModelForm):
            'url_online_submission': forms.TextInput(attrs={'class':'span8'}),
            'url_journal': forms.TextInput(attrs={'class':'span8'}),
            'notes': forms.Textarea(attrs={'class':'span10'}),
-           'id_provided_by_the_center': forms.TextInput(attrs={'class':'span2'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'literature_type': forms.Select(attrs={'class':'span10'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),

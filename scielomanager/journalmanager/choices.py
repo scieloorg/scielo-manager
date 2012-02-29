@@ -129,11 +129,6 @@ PDF_DOWNLOAD = [
     ('iss','issue based - a PDF file for each issue'),
     ('na','Not Available'),
 ] 
-SUBSCRIPT = [
-    ('na','Not Available'),
-    ('reg','Electronic Registration'),
-    ('sub','Regular Subscription'),
-]
 TITLE_CATEGORY = [
     ('medline','Medline'),
     ('lilacs','LILACS'),
