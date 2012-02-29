@@ -363,7 +363,7 @@ def add_issue(request, journal_id, issue_id=None):
     """
 
     user_collection = request.user.userprofile_set.get().collection
-    journal = models.Journal.objects.get(pk = journal_id)
+    journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if request.method == 'POST':
         issue_form_kwargs = {}
@@ -383,7 +383,7 @@ def add_issue(request, journal_id, issue_id=None):
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
     else:
         if issue_id is None: #new
-            add_form = IssueForm()
+            add_form = IssueForm(journal.pk)
         else:
             filled_form = models.Issue.objects.get(pk = issue_id)
             add_form = IssueForm(instance = filled_form)
