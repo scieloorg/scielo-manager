@@ -192,6 +192,36 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(modified_section.code, previous_code) #code must be read-only
 
     @with_sample_journal
+    def test_add_issue(self):
+        from models import Journal
+        from models import Issue
+        journal = Journal.objects.all()[0]
+
+        #empty form
+        response = self.client.get(reverse('issue.add', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+        #add - should work
+        sample_license = tests_assets.get_sample_uselicense()
+        sample_license.save()
+
+        sample_section = tests_assets.get_sample_section()
+        sample_section.journal = journal
+        sample_section.save()
+
+        response = self.client.post(reverse('issue.add', args=[journal.pk]),
+            tests_assets.get_sample_issue_dataform(section=sample_section.pk,
+                                                   use_license=sample_license.pk))
+
+        self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
+
+        #edit
+        journal = Journal.objects.all()[0]
+
+        response = self.client.get(reverse('issue.edit', args=[journal.pk, journal.issue_set.all()[0].pk]))
+        self.assertEqual(response.status_code, 200)
+
+    @with_sample_journal
     def test_journal_index(self):
         """
         View: journal_index
@@ -375,36 +405,6 @@ class LoggedInViewsTest(TestCase):
             self.assertEqual(form.errors.get('print_issn')[0], u'Enter a valid ISSN.')
             del(form)
 
-
-
-# class LoggedOutViewsTest(TestCase):
-
-#     def test_page_index(self):
-#         """
-#         View: journal_index (Not Logged)
-
-#         """
-#         response = self.client.get('/')
-#         self.assertEqual(response.status_code, 200)
-
-#     def test_password_reset(self):
-#         """
-#         View: password_reset (Not Logged)
-
-#         """
-
-#         response = self.client.get('/accounts/password/reset/')
-#         self.assertEqual(response.status_code, 200)
-
-#     def test_account_register(self):
-#         """
-#         View: account_register (Not Logged)
-
-#         """
-
-#         response = self.client.get('/accounts/register/')
-#         self.assertEqual(response.status_code, 200)
-
 class ToolsTest(TestCase):
     def test_paginator_factory(self):
         """
@@ -443,39 +443,3 @@ class ToolsTest(TestCase):
 
         # Testing if page parameter is a "string"
         self.assertRaises(TypeError, get_paginated, items_list, 'foo', items_per_page=items_per_page)
-
-# class JournalImportTest(TestCase):
-#     import json
-#     import os
-
-#     fixtures = ['test_import_data']
-
-#     json_parsed=json.loads(open('utils/test_journal.json','r').read())
-
-#     #def setUp(self):
-#         #import pdb; pdb.set_trace()
-
-#     def test_get_collection(self):
-#         """
-#         Function: scielomanger.utils.get_collection
-#         Testando recuperar dados da coleção que receberá o import
-#         """
-
-#         from scielomanager.utils.journalimport import JournalImport
-
-#         ji = JournalImport()
-#         collection = ji.get_collection('Brasil')
-#         self.assertEqual(collection.id, 1)
-#         self.assertEqual(collection.name, u'Brasil')
-#         self.assertEqual(collection.url, u'http://www.scielo.br/')
-
-#     #def test_charge_summary(self):
-#         #from scielomanager.utils.journalimport import JournalImport
-
-#         #ji = JournalImport()
-
-#         #ji.run_import(self.json_parsed, 'Brasil')
-
-#         #self.assertEqual(len(Institution.objects.all()),2)
-#         #self.assertEqual(len(Journal.objects.all()),3)
-
