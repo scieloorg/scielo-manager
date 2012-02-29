@@ -85,7 +85,7 @@ class Journal(models.Model):
 
     # PART 1
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -204,7 +204,7 @@ class Section(models.Model):
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=False)
 
     def __unicode__(self):
-        return self.code
+        return self.title
 
 class CustomIssueManager(models.Manager):
 
