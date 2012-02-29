@@ -107,6 +107,13 @@ class SectionForm(ModelForm):
     class Meta:
       model = models.Section
 
+class JournalStudyAreaForm(ModelForm):
+    class Meta:
+      model = models.JournalStudyArea
+      widgets = {
+        'studyarea':forms.TextInput(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
 class JournalMissionForm(ModelForm):
     class Meta:
       model = models.JournalMission
