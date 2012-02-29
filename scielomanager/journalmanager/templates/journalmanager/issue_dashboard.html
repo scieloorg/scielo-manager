@@ -13,7 +13,7 @@
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
     <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues DashBoard' %}</li>
+    <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues' %}</li>
 </ul>
 {% endblock %}
 {% block body %}
@@ -63,11 +63,6 @@
                     <a href="{% url issue.edit ct.journal.pk ct.id %}">{{ ct.identification }}</a>
                 </h4>
                 <ul class="_actions">
-                    <li>
-                        <a href="{% url issue.edit ct.journal.pk ct.pk %}">
-                            {% trans 'Edit' %}
-                        </a>
-                    </li>
                     <li>
                     {% if ct.is_available %}
                         <a href="{% url issue.toggle_availability ct.pk %}"

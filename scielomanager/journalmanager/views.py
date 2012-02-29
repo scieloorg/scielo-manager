@@ -363,30 +363,23 @@ def add_issue(request, journal_id, issue_id=None):
     """
 
     user_collection = request.user.userprofile_set.get().collection
-    journal = models.Journal.objects.get(pk = journal_id)
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if issue_id is None:
+        issue = models.Issue()
+    else:
+        issue = models.Issue.objects.get(pk=issue_id)
+
 
     if request.method == 'POST':
-        issue_form_kwargs = {}
-
-        if issue_id is not None: #edit - preserve form-data
-            filled_form = models.Issue.objects.get(pk = issue_id)
-            issue_form_kwargs['instance'] = filled_form
-
-        add_form = IssueForm(request.POST, **issue_form_kwargs)
+        add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
 
         if add_form.is_valid():
-            if issue_id is not None:
-                add_form.save()
-            else:
-                add_form.save_all(user_collection, journal)
+            add_form.save_all(user_collection, journal)
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
     else:
-        if issue_id is None: #new
-            add_form = IssueForm()
-        else:
-            filled_form = models.Issue.objects.get(pk = issue_id)
-            add_form = IssueForm(instance = filled_form)
+        add_form = IssueForm(journal_id=journal.pk, instance=issue)
 
     return render_to_response('journalmanager/add_issue.html', {
                               'add_form': add_form,

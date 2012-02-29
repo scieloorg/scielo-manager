@@ -20,7 +20,7 @@ class JournalForm(ModelForm):
         return journal
 
     class Meta:
-      
+
         model = models.Journal
 
         #Overriding the default field types or widgets
@@ -70,6 +70,26 @@ class UserForm(ModelForm):
         return user
 
 class IssueForm(ModelForm):
+    section = forms.ModelMultipleChoiceField(models.Section.objects.none(), required=True)
+
+    widgets = {
+        'section': forms.Select(attrs={'class':'span3'}),
+    }
+
+    def __init__(self, *args, **kwargs):
+        """
+        Section field queryset is overridden to display only
+        sections related to a given journal.
+
+        ``journal_id`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        journal_id = kwargs.pop('journal_id', None)
+        super(IssueForm, self).__init__(*args, **kwargs)
+        if journal_id is not None:
+            self.fields['section'].queryset = models.Section.objects.filter(journal=journal_id)
+
+
     def save_all(self, collection, journal):
         issue = self.save(commit=False)
         issue.collection = collection
@@ -81,7 +101,7 @@ class IssueForm(ModelForm):
 
     class Meta:
         model = models.Issue
-        exclude = ('collection', 'journal')
+        exclude = ('collection', 'journal', 'created', 'updated')
         widgets = {
             'publication_date': SelectDateWidget(),
             'init_year': SelectDateWidget(),
@@ -111,7 +131,7 @@ class JournalMissionForm(ModelForm):
     class Meta:
       model = models.JournalMission
       widgets = {
-        'description':forms.Textarea(attrs={'class':'span10', 'rows':'3'}), 
+        'description':forms.Textarea(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class JournalTitleForm(ModelForm):
@@ -122,7 +142,7 @@ class JournalTitleForm(ModelForm):
       }
 
 
-      
+
 class CenterForm(ModelForm):
     class Meta:
         model = models.Center
