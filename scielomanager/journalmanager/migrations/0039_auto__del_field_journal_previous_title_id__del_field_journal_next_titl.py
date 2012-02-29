@@ -8,41 +8,26 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Deleting model 'JournalIndexingCoverage'
-        db.delete_table('journalmanager_journalindexingcoverage')
+        # Deleting field 'Journal.previous_title_id'
+        db.delete_column('journalmanager_journal', 'previous_title_id_id')
 
-        # Adding model 'IndexingCoverage'
-        db.create_table('journalmanager_indexingcoverage', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('database_name', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
-            ('database_acronym', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-        ))
-        db.send_create_signal('journalmanager', ['IndexingCoverage'])
+        # Deleting field 'Journal.next_title_id'
+        db.delete_column('journalmanager_journal', 'next_title_id_id')
 
-        # Adding M2M table for field indexing_coverage on 'Journal'
-        db.create_table('journalmanager_journal_indexing_coverage', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('indexingcoverage', models.ForeignKey(orm['journalmanager.indexingcoverage'], null=False))
-        ))
-        db.create_unique('journalmanager_journal_indexing_coverage', ['journal_id', 'indexingcoverage_id'])
+        # Adding field 'Journal.previous_title'
+        db.add_column('journalmanager_journal', 'previous_title', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='prev_title', null=True, to=orm['journalmanager.Journal']), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Adding model 'JournalIndexingCoverage'
-        db.create_table('journalmanager_journalindexingcoverage', (
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('index_coverage', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-        ))
-        db.send_create_signal('journalmanager', ['JournalIndexingCoverage'])
+        # Adding field 'Journal.previous_title_id'
+        db.add_column('journalmanager_journal', 'previous_title_id', self.gf('django.db.models.fields.related.ForeignKey')(related_name='prev_title', null=True, to=orm['journalmanager.Journal']), keep_default=False)
 
-        # Deleting model 'IndexingCoverage'
-        db.delete_table('journalmanager_indexingcoverage')
+        # Adding field 'Journal.next_title_id'
+        db.add_column('journalmanager_journal', 'next_title_id', self.gf('django.db.models.fields.related.ForeignKey')(related_name='next_title', null=True, to=orm['journalmanager.Journal']), keep_default=False)
 
-        # Removing M2M table for field indexing_coverage on 'Journal'
-        db.delete_table('journalmanager_journal_indexing_coverage')
+        # Deleting field 'Journal.previous_title'
+        db.delete_column('journalmanager_journal', 'previous_title_id')
 
 
     models = {
@@ -82,10 +67,14 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'journalmanager.center': {
+            'Meta': {'ordering': "['name']", 'object_name': 'Center', '_ormbases': ['journalmanager.Institution']},
+            'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'}),
+            'is_provider_of_markup': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'manager': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'collection_user'", 'to': "orm['auth.User']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
             'validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
@@ -108,6 +97,7 @@ class Migration(SchemaMigration):
             'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'mail': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
@@ -122,7 +112,7 @@ class Migration(SchemaMigration):
             'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_marked_up': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_press_release': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']", 'null': 'True'}),
@@ -133,43 +123,53 @@ class Migration(SchemaMigration):
             'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'total_documents': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'update_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']"}),
+            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']", 'null': 'True'}),
             'volume': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.journal': {
             'Meta': {'ordering': "['title']", 'object_name': 'Journal'},
             'acronym': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
             'alphabet': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'classification': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'journal_collection'", 'to': "orm['journalmanager.Collection']"}),
+            'center': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'center_id'", 'null': 'True', 'to': "orm['journalmanager.Center']"}),
+            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
+            'copyrighter': ('django.db.models.fields.CharField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'enjoy_creator'", 'to': "orm['auth.User']"}),
             'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
-            'eletronic_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
+            'eletronic_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'blank': 'True'}),
             'final_num': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'final_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'final_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'frequency': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id_provided_by_the_center': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'indexing_coverage': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.IndexingCoverage']", 'symmetrical': 'False'}),
             'init_num': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'institution': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'journal_institution'", 'to': "orm['journalmanager.Institution']"}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'literature_type': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'national_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
+            'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
+            'previous_title': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
+            'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'blank': 'True'}),
             'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'pub_status': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '8', 'blank': 'True'}),
+            'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
-            'short_title': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'sponsor': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'study_area': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
-            'subject_descriptors': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
+            'subject_descriptors': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
+            'subscription': ('django.db.models.fields.CharField', [], {'default': "'na'", 'max_length': '4', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
             'treatment_level': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'url_journal': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'url_main_collection': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'url_online_submission': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']", 'null': 'True'}),
             'validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'journalmanager.journalabstrlanguage': {
@@ -178,6 +178,13 @@ class Migration(SchemaMigration):
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'blank': 'True'})
         },
+        'journalmanager.journalhist': {
+            'Meta': {'object_name': 'JournalHist'},
+            'date': ('django.db.models.fields.DateField', [], {'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'status': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'})
+        },
         'journalmanager.journalmission': {
             'Meta': {'object_name': 'JournalMission'},
             'description': ('django.db.models.fields.TextField', [], {}),
@@ -185,33 +192,28 @@ class Migration(SchemaMigration):
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '2'})
         },
-        'journalmanager.journalshorttitleotherforms': {
-            'Meta': {'object_name': 'JournalShortTitleOtherForms'},
-            'form': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'title': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
-            'title_type': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True'})
-        },
         'journalmanager.journaltextlanguage': {
             'Meta': {'object_name': 'JournalTextLanguage'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
-            'language': ('django.db.models.fields.CharField', [], {'max_length': '64'})
+            'language': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'})
         },
-        'journalmanager.journaltitleotherforms': {
-            'Meta': {'object_name': 'JournalTitleOtherForms'},
-            'form': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'form_sub': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+        'journalmanager.journaltitle': {
+            'Meta': {'object_name': 'JournalTitle'},
+            'category': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
-            'title_type': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'journalmanager.section': {
             'Meta': {'object_name': 'Section'},
             'code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'title_translations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['journalmanager.TranslatedData']", 'null': 'True', 'blank': 'True'}),
             'update_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         'journalmanager.supplement': {
@@ -219,17 +221,26 @@ class Migration(SchemaMigration):
             'issue_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Issue']", 'unique': 'True', 'primary_key': 'True'}),
             'suppl_label': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'})
         },
+        'journalmanager.translateddata': {
+            'Meta': {'object_name': 'TranslatedData'},
+            'field': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'model': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'translation': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
+        },
         'journalmanager.uselicense': {
             'Meta': {'object_name': 'UseLicense'},
-            'disclaimer': ('django.db.models.fields.TextField', [], {'max_length': '512'}),
+            'disclaimer': ('django.db.models.fields.TextField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'license_code': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'reference_url': ('django.db.models.fields.URLField', [], {'max_length': '200'})
+            'license_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
+            'reference_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'collection': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_collection'", 'to': "orm['journalmanager.Collection']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_manager': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'unique': 'True'})
         }
     }

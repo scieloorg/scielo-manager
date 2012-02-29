@@ -10,7 +10,7 @@
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap.css">
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
         <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
-        
+
     </head>
     <body>
         <div class="container-fluid">
@@ -18,7 +18,7 @@
                 <div class="span2">
                     <img src="{% get_static_prefix %}images/scielologo.gif">
                 </div>
-                <div class="span6"><h1>SciELO Manager</h1></div>
+                <div class="span8"><h1>SciELO Manager</h1></div>
                 <div class="span2">
                    <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
                         <input type="hidden" id="language" name="language">
@@ -94,7 +94,7 @@
                             {% endif %}
                             <li class="nav-header">{% trans 'Help' %}</a></li>
                             <li><a href="#">{% trans 'About' %}</a></li>
-                            <li><a href="#">{% trans 'Documentations' %}</a></li>
+                            <li><a href="{{ docs_url }}" target="_blank">{% trans 'Documentations' %}</a></li>
                             <li><a href="#">{% trans 'Report Bug' %}</a></li>
                         </ul>
                     </div><!--well sidebar-nav-->
@@ -117,7 +117,7 @@
             </div><!--row-fluid footer-->
         </div><!--container-fluid-->
 
-        <script type="text/javascript" src="{% get_static_prefix %}js/jquery/jquery-1.7.1.js"></script>
+        <script type="text/javascript" src="{{ jquery_url }}"></script>
         <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
         <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
         {% block extrafooter %}{% endblock %}

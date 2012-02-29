@@ -203,46 +203,54 @@ def add_journal(request, journal_id = None):
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
 
-    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1)
-    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1)
-    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1)
-    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1)
-    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1)
+    JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
+    JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
+    JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
+    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
+    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1, can_delete=True)
+    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+        studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
+        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
-        titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
 
-        if journalform.is_valid() and missionformset.is_valid():
+        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
+            studyareaformset.save()
+            titleformset.save()
             missionformset.save()
             textlanguageformset.save()
             abstrlanguageformset.save()
             histformset.save()
-            titleformset.save()
 
             return HttpResponseRedirect(reverse('journal.index'))
+
     else:
+
         journalform  = JournalForm(instance=journal, prefix='journal')
+        studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
+        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
-        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
+                              'studyareaformset': studyareaformset,
+                              'titleformset': titleformset,
                               'missionformset': missionformset,
                               'collection': user_collection,
                               'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
                               'abstrlanguageformset': abstrlanguageformset,
-                              'titleformset': titleformset,
                               }, context_instance = RequestContext(request))
+
 
 @login_required
 def toggle_journal_availability(request, journal_id):
@@ -251,6 +259,15 @@ def toggle_journal_availability(request, journal_id):
   journal.save()
 
   return HttpResponseRedirect(reverse('journal.index'))
+
+
+@login_required
+def toggle_user_availability(request, user_id):
+  user = get_object_or_404(models.User, pk = user_id)
+  user.is_active = not user.is_active
+  user.save()
+
+  return HttpResponseRedirect(reverse('user.index'))
 
 @login_required
 def show_institution(request, institution_id):
@@ -360,30 +377,23 @@ def add_issue(request, journal_id, issue_id=None):
     """
 
     user_collection = request.user.userprofile_set.get().collection
-    journal = models.Journal.objects.get(pk = journal_id)
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if issue_id is None:
+        issue = models.Issue()
+    else:
+        issue = models.Issue.objects.get(pk=issue_id)
+
 
     if request.method == 'POST':
-        issue_form_kwargs = {}
-
-        if issue_id is not None: #edit - preserve form-data
-            filled_form = models.Issue.objects.get(pk = issue_id)
-            issue_form_kwargs['instance'] = filled_form
-
-        add_form = IssueForm(request.POST, **issue_form_kwargs)
+        add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
 
         if add_form.is_valid():
-            if issue_id is not None:
-                add_form.save()
-            else:
-                add_form.save_all(user_collection, journal)
+            add_form.save_all(user_collection, journal)
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
     else:
-        if issue_id is None: #new
-            add_form = IssueForm()
-        else:
-            filled_form = models.Issue.objects.get(pk = issue_id)
-            add_form = IssueForm(instance = filled_form)
+        add_form = IssueForm(journal_id=journal.pk, instance=issue)
 
     return render_to_response('journalmanager/add_issue.html', {
                               'add_form': add_form,
@@ -479,36 +489,109 @@ def section_index(request, journal_id):
     return HttpResponse(t.render(c))
 
 @login_required
-def add_section(request, journal_id = None):
+def add_section(request, journal_id, section_id=None):
     """
-    Handles new and existing journals
+    Handles new and existing sections
+    """
+
+    if section_id is None:
+        section = models.Section()
+    else:
+        section = get_object_or_404(models.Section, pk=section_id)
+
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if request.method == 'POST':
+        add_form = SectionForm(request.POST, instance=section)
+
+        if add_form.is_valid():
+            add_form.save_all(journal)
+
+            return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+
+    else:
+        add_form = SectionForm(instance=section)
+
+    return render_to_response('journalmanager/add_section.html', {
+                              'add_form': add_form,
+                              'user_name': request.user.pk,
+                              'journal': journal,
+                              },
+                              context_instance = RequestContext(request))
+@login_required
+def center_index(request):
+    user_collection = request.user.userprofile_set.get().collection
+    all_centers = models.Center.objects
+    if all_centers:
+        all_centers = all_centers.filter(collection = user_collection)
+
+    centers = get_paginated(all_centers, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/center_dashboard.html')
+    c = RequestContext(request, {
+                       'centers': centers,
+                       'collection': user_collection,
+                       })
+    return HttpResponse(t.render(c))
+
+@login_required
+def add_center(request, center_id=None):
+    """
+    Handles new and existing centers
     """
 
     user_collection = request.user.userprofile_set.get().collection
 
     if request.method == 'POST':
-        journal_form_kwargs = {}
+        center_form_kwargs = {}
 
-        if journal_id is not None: #edit - preserve form-data
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            journal_form_kwargs['instance'] = filled_form
+        if center_id is not None: #edit - preserve form-data
+            filled_form = models.Center.objects.get(pk = center_id)
+            center_form_kwargs['instance'] = filled_form
 
-        add_form = JournalForm(request.POST, **journal_form_kwargs)
+        add_form = CenterForm(request.POST, **center_form_kwargs)
 
         if add_form.is_valid():
-            add_form.save_all(creator = request.user)
-            return HttpResponseRedirect(reverse('journal.index'))
+            add_form.save_all(collection = user_collection)
+            return HttpResponseRedirect(reverse('center.index'))
     else:
-        if journal_id is None: #new
-            add_form = JournalForm()
+        if center_id is None: #new
+            add_form = CenterForm()
         else:
-            filled_form = models.Journal.objects.get(pk = journal_id)
-            add_form = JournalForm(instance = filled_form)
+            filled_form = models.Center.objects.get(pk = center_id)
+            add_form = CenterForm(instance = filled_form)
 
-    return render_to_response('journalmanager/add_journal.html', {
+    return render_to_response('journalmanager/add_center.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
                               'collection': user_collection,
                               },
                               context_instance = RequestContext(request))
+
+@login_required
+def toggle_center_availability(request, center_id):
+  center = get_object_or_404(models.Center, pk = center_id)
+  center.is_available = not center.is_available
+  center.save()
+
+  return HttpResponseRedirect(reverse('center.index'))
+
+@login_required
+def search_center(request):
+    user_collection = request.user.userprofile_set.get().collection
+
+    #Get centers where title contains the "q" value and collection equal with the user
+    center_filter = models.Center.objects.filter(name__icontains = request.REQUEST['q'],
+                                                            collection = user_collection).order_by('name')
+
+    #Paginated the result
+    centers = get_paginated(center_filter, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/center_dashboard.html')
+    c = RequestContext(request, {
+                       'centers': centers,
+                       'collection': user_collection,
+                       'search_query_string': request.REQUEST['q'],
+                       })
+    return HttpResponse(t.render(c))
 

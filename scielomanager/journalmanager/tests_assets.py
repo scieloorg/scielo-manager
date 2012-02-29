@@ -6,9 +6,18 @@ from django.contrib.auth.models import User
 
 from scielomanager.journalmanager import models
 
+def get_sample_section_dataform(**kwargs):
+    section_attrs = {
+      'title': 'Artigo Original',
+    }
+
+    section_attrs.update(kwargs)
+
+    return section_attrs
+
 def get_sample_journal_dataform(**kwargs):
     journal_attrs = {
-      'classification': '',
+      'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
       'national_code': '083653-2',
       'frequency': 'Q',
@@ -18,7 +27,6 @@ def get_sample_journal_dataform(**kwargs):
       'eletronic_issn': '',
       'init_vol': '1',
       'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-      'study_area': 'Health Sciences',
       'editorial_standard': 'vancouv',
       'scielo_issn': 'print',
       'secs_code': '6633',
@@ -31,7 +39,6 @@ def get_sample_journal_dataform(**kwargs):
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
       'print_issn': '0102-6720',
@@ -63,20 +70,53 @@ def get_sample_institution_dataform(**kwargs):
 
     return institution_attrs
 
+def get_sample_issue_dataform(**kwargs):
+    """
+    Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
+        'bibliographic_strip', 'section', 'use_license']
+    """
+    issue_attrs = {
+        'total_documents': 16,
+        'ctrl_vocabulary': '',
+        'number': '3',
+        'volume': '29',
+        'editorial_standard': '',
+        'is_available': True,
+        'is_press_release': False,
+        'publication_date': '1998-09-01',
+        'is_marked_up': False,
+    }
+
+    issue_attrs.update(kwargs)
+
+    return issue_attrs
+
+def get_sample_uselicense_dataform(**kwargs):
+
+    uselicense_attrs = {
+        'license_code': 'CC BY-NC-SA',
+        'reference_url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/deed.pt',
+        'disclaimer': r'<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Licença Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />Este trabalho foi licenciado com uma Licença <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons - Atribuição - NãoComercial - CompartilhaIgual 3.0 Não Adaptada</a>.'
+    }
+
+    uselicense_attrs.update(kwargs)
+
+    return uselicense_attrs
+
 def get_sample_journal():
     """
     Journal object factory
 
     Returns a journal object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['classification', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
+    - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'id_provided_by_the_center', 'institution', 'center', 'notes',]
+       'institution', 'center', 'notes',]
     """
 
     journal_attrs = {
-      'classification': '',
+      'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
       'national_code': '083653-2',
       'frequency': 'Q',
@@ -86,7 +126,6 @@ def get_sample_journal():
       'eletronic_issn': '',
       'init_vol': '1',
       'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-      'study_area': 'Health Sciences',
       'editorial_standard': 'vancouv',
       'scielo_issn': 'print',
       'secs_code': '6633',
@@ -99,7 +138,6 @@ def get_sample_journal():
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'subscription': 'na',
       'pub_status': 'C',
       'alphabet': 'B',
       'print_issn': '0102-6720',
