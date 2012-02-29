@@ -72,6 +72,39 @@ def get_sample_institution_dataform(**kwargs):
 
     return institution_attrs
 
+def get_sample_issue_dataform(**kwargs):
+    """
+    Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
+        'bibliographic_strip', 'section', 'use_license']
+    """
+    issue_attrs = {
+        'total_documents': 16,
+        'ctrl_vocabulary': '',
+        'number': '3',
+        'volume': '29',
+        'editorial_standard': '',
+        'is_available': True,
+        'is_press_release': False,
+        'publication_date': '1998-09-01',
+        'is_marked_up': False,
+    }
+
+    issue_attrs.update(kwargs)
+
+    return issue_attrs
+
+def get_sample_uselicense_dataform(**kwargs):
+
+    uselicense_attrs = {
+        'license_code': 'CC BY-NC-SA',
+        'reference_url': 'http://creativecommons.org/licenses/by-nc-sa/3.0/deed.pt',
+        'disclaimer': r'<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Licença Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />Este trabalho foi licenciado com uma Licença <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons - Atribuição - NãoComercial - CompartilhaIgual 3.0 Não Adaptada</a>.'
+    }
+
+    uselicense_attrs.update(kwargs)
+
+    return uselicense_attrs
+
 def get_sample_journal():
     """
     Journal object factory

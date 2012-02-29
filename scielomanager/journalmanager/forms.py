@@ -77,9 +77,18 @@ class IssueForm(ModelForm):
         'section': forms.Select(attrs={'class':'span3'}),
     }
 
-    def __init__(self, journal_id, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        """
+        Section field queryset is overridden to display only
+        sections related to a given journal.
+
+        ``journal_id`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        journal_id = kwargs.pop('journal_id', None)
         super(IssueForm, self).__init__(*args, **kwargs)
-        self.fields['section'].queryset = models.Section.objects.filter(journal=journal_id)
+        if journal_id is not None:
+            self.fields['section'].queryset = models.Section.objects.filter(journal=journal_id)
 
 
     def save_all(self, collection, journal):
