@@ -217,8 +217,6 @@ def add_journal(request, journal_id = None):
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
 
-        import pdb
-        pdb.set_trace()
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
