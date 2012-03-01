@@ -95,6 +95,14 @@ class JournalImport:
 
         return loaded_institution
 
+    def load_studyarea(self, journal, areas):
+        
+        for i in areas:
+            studyarea = JournalStudyArea()
+            studyarea.journal = journal
+            studyarea.study_area = i
+            studyarea.save(force_insert=True)
+            self.charge_summary("studyarea")
 
     def load_journal(self, collection, loaded_institution, record):
         """
@@ -125,7 +133,6 @@ class JournalImport:
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
         journal.subject_descriptors = ', '.join(record['440'])
-        journal.study_area = ', '.join(record['441'])
 
         if record.has_key('301'):
             journal.init_year = record['301'][0]
@@ -168,6 +175,8 @@ class JournalImport:
         journal.save(force_insert=True)
         self.charge_summary("journals")
         journal.collections.add(collection)
+
+        self.load_studyarea(journal,record['441'])
 
         return journal
 
