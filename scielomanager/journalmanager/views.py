@@ -88,17 +88,6 @@ def user_logout(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def show_user(request,user_id):
-    user_collection = request.user.userprofile_set.get().collection
-    user = models.Institution.objects.get(id=user_id)
-    t = loader.get_template('journalmanager/show_user.html')
-    c = RequestContext(request, {
-                       'user': user,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 @permission_required('auth.add_user')
 def add_user(request):
     user_collection = request.user.userprofile_set.get().collection
@@ -148,7 +137,7 @@ def edit_user(request,user_id):
             return HttpResponseRedirect("/journal/user")
         else:
             edit_user_form = UserForm(request.POST,instance=formFilled)
-            return render_to_response('journalmanager/edit_user.html', {
+            return render_to_response('journalmanager/add_user.html', {
                                       'edit_user_form': edit_user_form,
                                       'mode': 'edit_user',
                                       'user_id': user_id,
@@ -157,24 +146,13 @@ def edit_user(request,user_id):
                                       context_instance=RequestContext(request))
     else:
         edit_user_form = UserForm(instance=formFilled)
-    return render_to_response('journalmanager/edit_user.html', {
+    return render_to_response('journalmanager/add_user.html', {
                               'edit_user_form': edit_user_form,
                               'mode': 'edit_user',
                               'user_id': user_id,
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
-
-@login_required
-def show_journal(request, journal_id):
-    user_collection = request.user.userprofile_set.get().collection
-    journal = models.Journal.objects.get(pk = journal_id)
-    t = loader.get_template('journalmanager/show_journal.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def journal_index(request):
@@ -270,21 +248,6 @@ def toggle_user_availability(request, user_id):
   return HttpResponseRedirect(reverse('user.index'))
 
 @login_required
-def show_institution(request, institution_id):
-    #FIXME: models.Intitutions e models.Journals ja se relacionam, avaliar
-    #estas queries.
-    user_collection = request.user.userprofile_set.get().collection
-    institution = models.Institution.objects.get(pk = institution_id)
-    journals = models.Journal.objects.filter(institution = institution_id)
-    t = loader.get_template('journalmanager/show_institution.html')
-    c = RequestContext(request, {
-                       'institution': institution,
-                       'journals': journals,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def institution_index(request):
     user_collection = request.user.userprofile_set.get().collection
     all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection = user_collection)
@@ -339,17 +302,6 @@ def toggle_institution_availability(request, institution_id):
   institution.save()
 
   return HttpResponseRedirect(reverse('institution.index'))
-
-@login_required
-def show_issue(request, issue_id):
-    issue = models.Issue.objects.get(pk = issue_id)
-    journal = issue.journal
-    t = loader.get_template('journalmanager/show_issue.html')
-    c = RequestContext(request, {
-                       'issue': issue,
-                       'journal': journal,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def issue_index(request, journal_id):
