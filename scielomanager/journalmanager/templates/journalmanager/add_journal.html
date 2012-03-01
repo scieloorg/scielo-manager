@@ -176,27 +176,6 @@
           {{ textlanguageformset.management_form }}
       </p>
   </div>
-
-  <span class="label">{% trans "abstractlanguageformset" %}</span>
-  <div class="well">
-     {% for f in abstrlanguageformset.management_form %}
-         {{ f }}
-     {% endfor %}
-     {% for f in abstrlanguageformset.forms %}
-         {% for field in f %}
-            {% if not field.is_hidden %}
-             <div class="control-group {% if field.errors %}error{% endif %}">
-                 <label class="control-label">{% trans field.label_tag %}</label>
-                 <div class="controls">
-                     {{ field  }}
-                 </div>
-             </div>
-             {% else %}
-                 {{ field }}
-             {% endif %}
-          {% endfor %}
-      {% endfor %}
-  </div>
   
   <span class="label">{% trans "histformset" %}</span>
   <div class="well">
