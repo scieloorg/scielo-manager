@@ -11,6 +11,7 @@ from scielomanager.journalmanager.models import UserProfile
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Institution
 from scielomanager.journalmanager.models import Issue
+from scielomanager.journalmanager.backends import ModelBackend
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -36,6 +37,42 @@ def with_sample_issue(func):
         self._destroy_issue()
     return decorated
 
+class ModelBackendTest(TestCase):
+    """
+    Testa as especializações de metodos de backend ModelBackend 
+    """
+
+    def setUp(self):
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.profile = tests_assets.get_sample_userprofile(self.user, self.collection)
+        self.profile.save()
+
+
+    def test_authenticate(self):
+        mbkend = ModelBackend()
+        # authenticating user with true loging and password
+        auth_response = mbkend.authenticate('dummyuser','123')
+        self.assertEqual(auth_response,self.user)
+
+        # authenticating user with true loging and wrong password
+        auth_response = mbkend.authenticate('dummyuser','fakepasswd')
+        self.assertEqual(auth_response,None)
+
+        #authenticating user with true email and password
+        auth_response = mbkend.authenticate('dev@scielo.org','123')
+        self.assertEqual(auth_response,self.user)
+
+        #authenticating user with true email and wrong password
+        auth_response = mbkend.authenticate('dev@scielo.org','fakepasswd')
+        self.assertEqual(auth_response,None)
+
+        #authenticating user with wrong login/email and password
+        auth_response = mbkend.authenticate('fakeuser','fakepasswd')
+        self.assertEqual(auth_response,None)
 
 class LoggedInViewsTest(TestCase):
     """
