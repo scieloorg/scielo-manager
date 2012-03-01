@@ -15,36 +15,65 @@ def get_sample_section_dataform(**kwargs):
 
     return section_attrs
 
-def get_sample_journal_dataform(**kwargs):
+def get_sample_journal_dataform(dict_params):
     journal_attrs = {
-      'sponsor': 'FAPESP',
-      'ctrl_vocabulary': 'decs',
-      'national_code': '083653-2',
-      'frequency': 'Q',
-      'final_num': '',
-      'validated': False,
-      'treatment_level': 'c',
-      'eletronic_issn': '',
-      'init_vol': '1',
-      'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-      'editorial_standard': 'vancouv',
-      'scielo_issn': 'print',
-      'secs_code': '6633',
-      'init_year': '1986',
-      'updated': '2012-01-19 15:44:21',
-      'acronym': 'ABCD',
-      'pub_level': 'CT',
-      'init_num': '1',
-      'literature_type': 'S',
-      'created': '2012-01-19 15:44:21',
-      'final_vol': '',
-      'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'pub_status': 'C',
-      'alphabet': 'B',
-      'print_issn': '0102-6720',
+      'journal-sponsor': 'FAPESP',
+      'journal-ctrl_vocabulary': 'decs',
+      'journal-national_code': '083653-2',
+      'journal-frequency': 'Q',
+      'journal-final_num': '',
+      'journal-validated': False,
+      'journal-treatment_level': 'c',
+      'journal-eletronic_issn': '',
+      'journal-init_vol': '1',
+      'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
+      'journal-editorial_standard': 'vancouv',
+      'journal-scielo_issn': 'print',
+      'journal-secs_code': '6633',
+      'journal-init_year': '1986',
+      'journal-updated': '2012-01-19 15:44:21',
+      'journal-acronym': 'ABCD',
+      'journal-pub_level': 'CT',
+      'journal-init_num': '1',
+      'journal-literature_type': 'S',
+      'journal-created': '2012-01-19 15:44:21',
+      'journal-final_vol': '',
+      'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
+      'journal-pub_status': 'C',
+      'journal-alphabet': 'B',
+      'journal-print_issn': '0102-6720',
+
+      #Title formset data
+      'title-TOTAL_FORMS': 1,
+      'title-INITIAL_FORMS': 0,
+      'title-0-title': 'TITLE FORMSET TEST',
+      'title-0-category': 'other',
+
+      #Study Area formset data
+      'studyarea-TOTAL_FORMS': 1,
+      'studyarea-INITIAL_FORMS': 0,
+      'studyarea-0-study_area': 'Agricultural Sciences',
+      
+      #Mission formset data
+      'mission-TOTAL_FORMS': 1,
+      'mission-INITIAL_FORMS': 0,
+      'mission-0-description': 'To publish original scientific papers about Amazonia...',
+      'mission-0-language': 'pt',
+
+      #Text Language formset data
+      'textlanguage-TOTAL_FORMS': 1,
+      'textlanguage-INITIAL_FORMS': 0,
+      'textlanguage-0-language': 'pt',
+
+      #History Language formset data
+      'hist-TOTAL_FORMS': 1,
+      'hist-INITIAL_FORMS': 0,
+      'hist-0-date': '2005-10-10',
+      'hist-0-status': 'C'
+
     }
 
-    journal_attrs.update(kwargs)
+    journal_attrs.update(dict_params)
 
     return journal_attrs
 
@@ -218,6 +247,34 @@ def get_sample_uselicense():
     }
 
     return models.UseLicense(**uselicense_attrs)
+
+def get_sample_center(validated = True):
+    """
+    Returns a center object, without the following attributes (non mandatory or need to be bound
+    to another model object):
+    - ['city', 'fax', 'Address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'Address_complement']
+    """
+
+    center_attrs = {
+      'city': '',
+      'fax': '',
+      'validated': validated,
+      'name': u'Associação Nacional de História - ANPUH',
+      'Address_number': '',
+      'acronym': 'rbh',
+      'country': '',
+      'cel': '',
+      'phone': '',
+      'state': '',
+      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'mail': '',
+      'Address_complement': '',
+      'is_available': True,
+      'is_provider_of_markup': True,
+    }
+
+    return models.Center(**center_attrs)
 
 def get_sample_indexing_coverage():
 

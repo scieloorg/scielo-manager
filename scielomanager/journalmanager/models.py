@@ -138,8 +138,7 @@ class Journal(models.Model):
 
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
 
-
-    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, )
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
@@ -149,23 +148,19 @@ class Journal(models.Model):
     class Meta:
         ordering = ['title']
         
-class JournalStudyArea(models.Model):
-    journal = models.ForeignKey(Journal)
-    study_area = models.CharField(_('Study Area'),max_length=256,
-        choices=choices.SUBJECTS,null=False,blank=True)
-
 class JournalTitle(models.Model):
     journal = models.ForeignKey(Journal)
     title = models.CharField(_('Title'), null=False, max_length=128)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
+class JournalStudyArea(models.Model):
+    journal = models.ForeignKey(Journal)
+    study_area = models.CharField(_('Study Area'),max_length=256,
+        choices=choices.SUBJECTS,null=False,blank=True)
+
 class JournalTextLanguage(models.Model):
     journal = models.ForeignKey(Journal)
     language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,blank=True,null=False)
-
-class JournalAbstrLanguage(models.Model):
-    journal = models.ForeignKey(Journal)
-    language = models.CharField(_('Language of the Abstract'), max_length=8, choices=LANGUAGES,null=False,blank=True)
 
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal)

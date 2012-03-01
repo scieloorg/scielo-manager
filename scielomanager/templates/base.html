@@ -81,6 +81,9 @@
                             <li>
                                 <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institutions Dashboard' %} </a>
                             </li>
+                            <li>
+                                <a href="{% url center.index %}"><img src="/static/images/center_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Center Dashboard' %} </a>
+                            </li>
                             {% if perms.auth %}
                             <li>
                                 <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Users Dashboard' %} </a>
@@ -91,6 +94,7 @@
                             <li><a href="#">{% trans 'Add Issue' %}</a></li>
                             <li><a href="#">{% trans 'Add Section' %}</a></li>
                             <li><a href="#">{% trans 'Add Institution' %}</a></li>
+                            <li><a href="{% url center.index %}">{% trans 'Add Center' %}</a></li>
                             {% endif %}
                             <li class="nav-header">{% trans 'Help' %}</a></li>
                             <li><a href="#">{% trans 'About' %}</a></li>
