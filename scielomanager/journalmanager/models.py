@@ -30,7 +30,7 @@ class Collection(models.Model):
         ordering = ['name']
 
 class UserProfile(models.Model):
-    user=models.ForeignKey(User, unique=True)
+    user=models.ForeignKey(User)
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
 

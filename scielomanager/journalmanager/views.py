@@ -89,67 +89,40 @@ def user_logout(request):
 
 @login_required
 @permission_required('auth.add_user')
-def add_user(request):
+def add_user(request, user_id=None):
+    """
+    Handles new and existing users
+    """
     user_collection = request.user.userprofile_set.get().collection
-    if request.method == 'POST':
-        #instance of form
-        form = UserForm(request.POST)
-        if form.is_valid():
-            #Get the user and create a new evaluation
-            user_collection = request.user.userprofile_set.get().collection
-            fuser = form.save(commit=False)
-            fuser.collection = user_collection
-            fuser.save()
-            # Saving user collection on UserProfile
-            uprof = models.UserProfile();
-            uprof.collection = user_collection;
-            uprof.user = fuser
-            uprof.save()
-            return HttpResponseRedirect("/journal/user")
-        else:
-            add_user_form = UserForm() # An unbound form
-            return render_to_response('journalmanager/add_user.html', {
-                                      'add_user_form': add_user_form,
-                                      'mode': 'add_user',
-                                      'form': form,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
-    else:
-        add_user_form = UserForm() # An unbound form
-    return render_to_response('journalmanager/add_user.html', {
-                              'add_user_form': add_user_form,
-                              'mode': 'user_journal',
-                              'user_name': request.user.pk,
-                              'collection': user_collection},
-                              context_instance=RequestContext(request))
 
-@login_required
-@permission_required('auth.change_user')
-def edit_user(request,user_id):
-    #recovering Journal Data to input form fields
-    formFilled = User.objects.get(pk=user_id)
-    user_collection = request.user.userprofile_set.get().collection
     if request.method == 'POST':
-        form = UserForm(request.POST,instance=formFilled)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("/journal/user")
-        else:
-            edit_user_form = UserForm(request.POST,instance=formFilled)
-            return render_to_response('journalmanager/add_user.html', {
-                                      'edit_user_form': edit_user_form,
-                                      'mode': 'edit_user',
-                                      'user_id': user_id,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
+
+        user_form_kwargs = {}
+        if user_id is not None: #edit - preserve form-data    
+            filled_form = models.User.objects.get(pk = user_id)
+            user_form_kwargs['instance'] = filled_form
+
+        add_form = UserForm(request.POST, **user_form_kwargs)
+
+        if add_form.is_valid():
+            #Get the user and create a new evaluation
+            user_saved = add_form.save()
+            # Saving user collection on UserProfile
+            uprof = models.UserProfile(pk = user_saved)
+            uprof.collection = user_collection
+            uprof.user = user_saved
+            uprof.save()
+            return HttpResponseRedirect(reverse('user.index'))
     else:
-        edit_user_form = UserForm(instance=formFilled)
+        if user_id is None: #new
+            add_form = UserForm() # An unbound form
+        else:
+            filled_form = models.User.objects.get(pk = user_id)
+            add_form = UserForm(instance = filled_form)
+
     return render_to_response('journalmanager/add_user.html', {
-                              'edit_user_form': edit_user_form,
-                              'mode': 'edit_user',
-                              'user_id': user_id,
+                              'add_form': add_form,
+                              'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'collection': user_collection},
                               context_instance=RequestContext(request))
@@ -170,7 +143,6 @@ def journal_index(request):
 
 @login_required
 def add_journal(request, journal_id = None):
-
     """
     Handles new and existing journals
     """
