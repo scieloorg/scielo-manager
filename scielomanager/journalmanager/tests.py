@@ -9,7 +9,7 @@ from scielomanager.journalmanager import tests_assets
 from scielomanager.journalmanager.models import Collection
 from scielomanager.journalmanager.models import UserProfile
 from scielomanager.journalmanager.models import Journal
-from scielomanager.journalmanager.models import Institution
+from scielomanager.journalmanager.models import Publisher
 from scielomanager.journalmanager.models import Issue
 
 from scielomanager.journalmanager.forms import JournalForm
@@ -66,11 +66,11 @@ class LoggedInViewsTest(TestCase):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
-        sample_institution = tests_assets.get_sample_institution()
-        sample_institution.collection = self.collection
-        sample_institution.save()
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.collection = self.collection
+        sample_publisher.save()
 
-        sample_journal.institution = sample_institution
+        sample_journal.publisher = sample_publisher
         sample_journal.save()
         sample_journal.collections = [self.collection,]
 
@@ -99,9 +99,9 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
 
-        sample_institution = tests_assets.get_sample_institution()
-        sample_institution.collection = self.collection
-        sample_institution.save()
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.collection = self.collection
+        sample_publisher.save()
 
         sample_uselicense = tests_assets.get_sample_uselicense()
         sample_uselicense.save()
@@ -121,7 +121,7 @@ class LoggedInViewsTest(TestCase):
         sample_center.save() 
 
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-institution': sample_institution.pk,
+            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.collection.pk],
                                                      'journal-indexing_coverage': [sample_indexing_coverage.pk],
@@ -133,7 +133,7 @@ class LoggedInViewsTest(TestCase):
         testing_journal = Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)')
         response = self.client.post(reverse('journal.edit', args = (testing_journal.pk,)),
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
-                                                     'journal-institution': sample_institution.pk,
+                                                     'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.collection.pk],
                                                      'journal-indexing_coverage': [sample_indexing_coverage.pk],
@@ -143,26 +143,26 @@ class LoggedInViewsTest(TestCase):
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
         self.assertEqual(testing_journal, modified_testing_journal)
 
-    def test_add_institution(self):
+    def test_add_publisher(self):
         #empty form
-        response = self.client.get(reverse('institution.add'))
+        response = self.client.get(reverse('publisher.add'))
         self.assertEqual(response.status_code, 200)
 
-        #add institution - must be added
-        response = self.client.post(reverse('institution.add'),
-            tests_assets.get_sample_institution_dataform(collections=[self.collection.pk]))
+        #add publisher - must be added
+        response = self.client.post(reverse('publisher.add'),
+            tests_assets.get_sample_publisher_dataform(collections=[self.collection.pk]))
 
-        self.assertRedirects(response, reverse('institution.index'))
+        self.assertRedirects(response, reverse('publisher.index'))
 
-        #edit institution - must be changed
-        testing_institution = Institution.objects.get(name = u'Associação Nacional de História - ANPUH')
-        response = self.client.post(reverse('institution.edit', args = (testing_institution.pk,)),
-            tests_assets.get_sample_institution_dataform(name = 'Modified Title',
+        #edit publisher - must be changed
+        testing_publisher = Publisher.objects.get(name = u'Associação Nacional de História - ANPUH')
+        response = self.client.post(reverse('publisher.edit', args = (testing_publisher.pk,)),
+            tests_assets.get_sample_publisher_dataform(name = 'Modified Title',
                                                          collections = [self.collection.pk]))
 
-        self.assertRedirects(response, reverse('institution.index'))
-        modified_testing_institution = Institution.objects.get(name = 'Modified Title')
-        self.assertEqual(testing_institution, modified_testing_institution)
+        self.assertRedirects(response, reverse('publisher.index'))
+        modified_testing_publisher = Publisher.objects.get(name = 'Modified Title')
+        self.assertEqual(testing_publisher, modified_testing_publisher)
 
     @with_sample_journal
     def test_add_section(self):
@@ -250,25 +250,25 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(1, len(response.context['journals'].object_list))
 
     @with_sample_journal
-    def test_institution_index(self):
+    def test_publisher_index(self):
         """
-        View: institution_index
+        View: publisher_index
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get('/journal/institution/')
+        response = self.client.get('/journal/publisher/')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('institutions' in response.context)
+        self.assertTrue('publishers' in response.context)
         self.assertTrue('collection' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH',
-            unicode(response.context['institutions'].object_list[0].name))
-        self.assertTrue(1, len(response.context['institutions'].object_list))
+            unicode(response.context['publishers'].object_list[0].name))
+        self.assertTrue(1, len(response.context['publishers'].object_list))
 
     @with_sample_journal
     def test_search_journal(self):
@@ -291,24 +291,24 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(1, len(response.context['journals'].object_list))
 
     @with_sample_journal
-    def test_search_institution(self):
+    def test_search_publisher(self):
         """
-        View: search_institution
+        View: search_publisher
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get('/journal/institution/search/?q=Nacional')
+        response = self.client.get('/journal/publisher/search/?q=Nacional')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('institutions' in response.context)
+        self.assertTrue('publishers' in response.context)
         self.assertTrue('collection' in response.context)
 
         #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['institutions'].object_list[0].name))
-        self.assertTrue(1, len(response.context['institutions'].object_list))
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['publishers'].object_list[0].name))
+        self.assertTrue(1, len(response.context['publishers'].object_list))
 
     @with_sample_journal
     def test_toggle_journal_availability(self):
@@ -324,16 +324,16 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     @with_sample_journal
-    def test_toggle_institution_availability(self):
-        pre_institution = Institution.objects.all()[0]
-        response = self.client.get(reverse('institution.toggle_availability', args=[pre_institution.pk]))
-        pos_institution = Institution.objects.all()[0]
+    def test_toggle_publisher_availability(self):
+        pre_publisher = Publisher.objects.all()[0]
+        response = self.client.get(reverse('publisher.toggle_availability', args=[pre_publisher.pk]))
+        pos_publisher = Publisher.objects.all()[0]
 
-        self.assertEqual(pre_institution, pos_institution)
-        self.assertRedirects(response, reverse('institution.index'))
-        self.assertTrue(pre_institution.is_available is not pos_institution.is_available)
+        self.assertEqual(pre_publisher, pos_publisher)
+        self.assertRedirects(response, reverse('publisher.index'))
+        self.assertTrue(pre_publisher.is_available is not pos_publisher.is_available)
 
-        response = self.client.get(reverse('institution.toggle_availability', args=[9999999]))
+        response = self.client.get(reverse('publisher.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 404)
 
     @with_sample_issue
@@ -366,19 +366,19 @@ class LoggedInViewsTest(TestCase):
 
 
     @with_sample_journal
-    def test_institution_availability_list(self):
+    def test_publisher_availability_list(self):
 
-        institution = Institution.objects.all()[0]
-        response = self.client.get(reverse('institution.index'))
-        self.assertEqual(response.context['institutions'].object_list[0].is_available, True)
+        publisher = Publisher.objects.all()[0]
+        response = self.client.get(reverse('publisher.index'))
+        self.assertEqual(response.context['publishers'].object_list[0].is_available, True)
 
         #change atribute is_available
-        institution.is_available = False
-        institution.save()
+        publisher.is_available = False
+        publisher.save()
 
-        response = self.client.get(reverse('institution.index') + '?is_available=0')
-        self.assertEqual(response.context['institutions'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['institutions'].object_list), 1)
+        response = self.client.get(reverse('publisher.index') + '?is_available=0')
+        self.assertEqual(response.context['publishers'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['publishers'].object_list), 1)
 
 
     @with_sample_issue

@@ -243,47 +243,58 @@ def toggle_user_availability(request, user_id):
   return HttpResponseRedirect(reverse('user.index'))
 
 @login_required
-def institution_index(request):
+def publisher_index(request):
     user_collection = request.user.userprofile_set.get().collection
-    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection = user_collection)
+    all_publishers = models.Publisher.objects
 
-    institutions = get_paginated(all_institutions, request.GET.get('page', 1))
+    if all_publishers:
+        all_publishers = all_publishers.available(request.GET.get('is_available', 1))
+        if all_publishers:
+            all_publishers = all_publishers.filter(collection = user_collection)
+            if all_publishers:
+                try:
+                    #Get publishers where title contains the "q" value and collection equal with the user
+                    all_publishers = all_publishers.filter(name__icontains = request.REQUEST['q']).order_by('name')
+                except KeyError:
+                    pass
 
-    t = loader.get_template('journalmanager/institution_dashboard.html')
+    publishers = get_paginated(all_publishers, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/publisher_dashboard.html')
     c = RequestContext(request, {
-                       'institutions': institutions,
+                       'publishers': publishers,
                        'collection': user_collection,
                        })
     return HttpResponse(t.render(c))
 
 @login_required
-def add_institution(request, institution_id=None):
+def add_publisher(request, publisher_id=None):
     """
-    Handles new and existing institutions
+    Handles new and existing publishers
     """
 
     user_collection = request.user.userprofile_set.get().collection
 
     if request.method == 'POST':
-        institution_form_kwargs = {}
+        publisher_form_kwargs = {}
 
-        if institution_id is not None: #edit - preserve form-data
-            filled_form = models.Institution.objects.get(pk = institution_id)
-            institution_form_kwargs['instance'] = filled_form
+        if publisher_id is not None: #edit - preserve form-data
+            filled_form = models.Publisher.objects.get(pk = publisher_id)
+            publisher_form_kwargs['instance'] = filled_form
 
-        add_form = InstitutionForm(request.POST, **institution_form_kwargs)
+        add_form = PublisherForm(request.POST, **publisher_form_kwargs)
 
         if add_form.is_valid():
             add_form.save_all(collection = user_collection)
-            return HttpResponseRedirect(reverse('institution.index'))
+            return HttpResponseRedirect(reverse('publisher.index'))
     else:
-        if institution_id is None: #new
-            add_form = InstitutionForm()
+        if publisher_id is None: #new
+            add_form = PublisherForm()
         else:
-            filled_form = models.Institution.objects.get(pk = institution_id)
-            add_form = InstitutionForm(instance = filled_form)
+            filled_form = models.Publisher.objects.get(pk = publisher_id)
+            add_form = PublisherForm(instance = filled_form)
 
-    return render_to_response('journalmanager/add_institution.html', {
+    return render_to_response('journalmanager/add_publisher.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
                               'collection': user_collection,
@@ -291,12 +302,12 @@ def add_institution(request, institution_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_institution_availability(request, institution_id):
-  institution = get_object_or_404(models.Institution, pk = institution_id)
-  institution.is_available = not institution.is_available
-  institution.save()
+def toggle_publisher_availability(request, publisher_id):
+  publisher = get_object_or_404(models.Publisher, pk = publisher_id)
+  publisher.is_available = not publisher.is_available
+  publisher.save()
 
-  return HttpResponseRedirect(reverse('institution.index'))
+  return HttpResponseRedirect(reverse('publisher.index'))
 
 @login_required
 def issue_index(request, journal_id):
@@ -377,23 +388,8 @@ def search_journal(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def search_institution(request):
-    user_collection = request.user.userprofile_set.get().collection
-
-    #Get institutions where title contains the "q" value and collection equal with the user
-    institutions_filter = models.Institution.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection = user_collection).order_by('name')
-
-    #Paginated the result
-    institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/institution_search_result.html')
-    c = RequestContext(request, {
-                       'institutions': institutions,
-                       'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
+def search_publisher(request):
+    return publisher_index(request)
 
 @login_required
 def search_issue(request, journal_id):
@@ -469,9 +465,17 @@ def add_section(request, journal_id, section_id=None):
 def center_index(request):
     user_collection = request.user.userprofile_set.get().collection
     all_centers = models.Center.objects
-    if all_centers:
-        all_centers = all_centers.filter(collection = user_collection)
 
+    if all_centers:
+        all_centers = all_centers.available(request.GET.get('is_available', 1))
+        if all_centers:
+            all_centers = all_centers.filter(collection = user_collection)
+            if all_centers:
+                try:
+                    #Get centers where title contains the "q" value and collection equal with the user
+                    all_centers = all_centers.filter(name__icontains = request.REQUEST['q']).order_by('name')
+                except KeyError:
+                    pass
     centers = get_paginated(all_centers, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/center_dashboard.html')
@@ -525,20 +529,5 @@ def toggle_center_availability(request, center_id):
 
 @login_required
 def search_center(request):
-    user_collection = request.user.userprofile_set.get().collection
-
-    #Get centers where title contains the "q" value and collection equal with the user
-    center_filter = models.Center.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection = user_collection).order_by('name')
-
-    #Paginated the result
-    centers = get_paginated(center_filter, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/center_dashboard.html')
-    c = RequestContext(request, {
-                       'centers': centers,
-                       'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
+    return center_index(request)
 

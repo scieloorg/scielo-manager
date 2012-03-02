@@ -5,15 +5,15 @@
 {{ block.super }}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url institution.index %}">{% trans 'Institution Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New Institution' %}</li>
+    <li><a href="{% url publisher.index %}">{% trans 'Publisher Dashboard' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'New Publisher' %}</li>
 </ul>
 {% endblock %}
 
 {% block body %}
     <form method="post" action="#">
         {% csrf_token %}
-        <span class="label">{% trans "Institution Information" %}</span>
+        <span class="label">{% trans "Publisher Information" %}</span>
         <table class="well">
             <col width="10%"/>
             <col width="85%"/>

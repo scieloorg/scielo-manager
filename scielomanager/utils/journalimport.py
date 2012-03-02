@@ -20,7 +20,7 @@ from journalmanager.models import *
 class JournalImport:
 
     def __init__(self):
-        self._institutions_pool = []
+        self._publishers_pool = []
         self._summary = {}
 
 
@@ -41,59 +41,59 @@ class JournalImport:
         """
         return Collection.objects.get(name=collection_name)
 
-    def have_similar_institutions(self, match_string):
+    def have_similar_publishers(self, match_string):
         """
-        Function: have_similar_institutions
+        Function: have_similar_publishers
         Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
         instituticoes duplicadas.
         Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
         False.
         """
-        institution_id=""
+        publisher_id=""
 
-        if len(self._institutions_pool) > 0:
-            for inst in self._institutions_pool:
+        if len(self._publishers_pool) > 0:
+            for inst in self._publishers_pool:
                 if inst["match_string"] == match_string:
-                    institution_id = inst["id"]
+                    publisher_id = inst["id"]
                     break
                 else:
-                    institution_id = False
+                    publisher_id = False
         else:
-            institution_id = False
+            publisher_id = False
 
-        return institution_id
+        return publisher_id
 
-    def load_institution(self, collection, record):
+    def load_publisher(self, collection, record):
         """
-        Function: load_institution
-        Retorna um objeto Institution() caso a gravação do mesmo em banco de dados for concluida
+        Function: load_publisher
+        Retorna um objeto Publisher() caso a gravação do mesmo em banco de dados for concluida
         """
 
-        institution = Institution()
-        # Institutions Import
-        institution.name = record['480'][0]
-        institution.collection = collection
-        institution.Address = " ".join(record['63'])
+        publisher = Publisher()
+        # Publishers Import
+        publisher.name = record['480'][0]
+        publisher.collection = collection
+        publisher.address = " ".join(record['63'])
         
-        match_string=institution.name
+        match_string=publisher.name
         
-        similar_key =  self.have_similar_institutions(match_string)
+        similar_key =  self.have_similar_publishers(match_string)
 
-        loaded_institution=""
+        loaded_publisher=""
 
         if similar_key != False:
-            similar_institution=Institution.objects.get(id=similar_key)
-            similar_institution.Address += "\n"+institution.Address
-            similar_institution.save()
-            self.charge_summary("institutions_duplication_fix")
-            loaded_institution = similar_institution
+            similar_publisher=Publisher.objects.get(id=similar_key)
+            similar_publisher.address += "\n"+publisher.address
+            similar_publisher.save()
+            self.charge_summary("publishers_duplication_fix")
+            loaded_publisher = similar_publisher
         else:
-            institution.save(force_insert=True)
-            self.charge_summary("institutions")
-            loaded_institution = institution
-            self._institutions_pool.append(dict({"id":institution.id,"match_string":match_string}))
+            publisher.save(force_insert=True)
+            self.charge_summary("publishers")
+            loaded_publisher = publisher
+            self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
 
-        return loaded_institution
+        return loaded_publisher
 
     def load_studyarea(self, journal, areas):
         
@@ -104,7 +104,7 @@ class JournalImport:
             studyarea.save(force_insert=True)
             self.charge_summary("studyarea")
 
-    def load_journal(self, collection, loaded_institution, record):
+    def load_journal(self, collection, loaded_publisher, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -170,7 +170,7 @@ class JournalImport:
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
 
-        journal.institution = loaded_institution
+        journal.publisher = loaded_publisher
         journal.creator_id = 1
         journal.save(force_insert=True)
         self.charge_summary("journals")
@@ -196,8 +196,8 @@ class JournalImport:
             json_parsed = json_file # Para testes, carregado pelo unittest
 
         for record in json_parsed:
-            loaded_institution = self.load_institution(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_institution, record)
+            loaded_publisher = self.load_publisher(collection, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, record)
         
     def get_summary(self):
         """
