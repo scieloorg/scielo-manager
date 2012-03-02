@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load journalmanager_template_tags %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -26,6 +27,7 @@
         <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
         <div class="controls">
            {{ add_form.title }}
+           {% field_help add_form.title.label add_form.title.help_text term-parallell-titles %}
         </div>
     </div>
     <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
@@ -41,7 +43,7 @@
         </div>
     </div>
   </div>
-  
+
   <span class="label">{% trans "titleformset" %}</span>
   <div class="well">
       <table id="titleformset" class="table table-bordered table-striped">
@@ -176,7 +178,7 @@
           {{ textlanguageformset.management_form }}
       </p>
   </div>
-  
+
   <span class="label">{% trans "histformset" %}</span>
   <div class="well">
       <table id="histformset" class="table table-bordered table-striped">
@@ -420,10 +422,22 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-tooltip.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-popover.js"></script>
+
 
  <script>
     $(document).ready(function() {
+
+        $( "#id_institution" ).combobox({ autoFocus: true });
+
+        $( "#toggle" ).click(function() {
+            $( "#id_institution" ).toggle();
+        });
+        $(".help-text").popover('hide');
+
+
 
         $( "#id_journal-institution" ).combobox({ autoFocus: true });
 
@@ -456,7 +470,7 @@
            formCssClass: 'dynamic-histformset-form',
            prefix: '{{ histformset.prefix }}'
         });
-              
+
     });
   </script>
 {% endblock %}
