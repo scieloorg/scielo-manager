@@ -281,20 +281,33 @@
         </div>
     </div>
   </div>
-      <span class="label">{% trans "indexing" %}</span>
+  <span class="label">{% trans "indexing" %}</span>
   <div class="well">
-    <div class="control-group {% if add_form.indexing_coverage.errors %}error{% endif %}">
-        <label class="control-label" for="indexing_coverage">{% trans add_form.indexing_coverage.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.indexing_coverage }}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.secs_code.errors %}error{% endif %}">
-        <label class="control-label" for="secs_code">{% trans add_form.secs_code.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.secs_code }}
-        </div>
-    </div>
+   <table id="indexcoverageformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Database" %}</th>
+              <th>{% trans "Title" %}</th>
+              <th>{% trans "Identify" %}</th> 
+          </tr>
+      </thead>
+            <tbody>
+           {% for form in indexcoverageformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.database }}
+              </td>
+              <td>{{ form.title }}</td>
+              <td>{{ form.identify }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ indexcoverageformset.management_form }}
+      </p>
   </div>
       <span class="label">{% trans "publisher and sponsors" %}</span>
   <div class="well">
@@ -471,6 +484,14 @@
            prefix: '{{ histformset.prefix }}'
         });
 
+<<<<<<< HEAD
+=======
+        $('#indexcoverageformset tbody tr').formset({
+           formCssClass: 'dynamic-indexcoverageformset-form',
+           prefix: '{{ indexcoverageformset.prefix }}'
+        });
+              
+>>>>>>> master
     });
   </script>
 {% endblock %}
