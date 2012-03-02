@@ -37,23 +37,12 @@
             <div class="input">
                 {{ add_form.title }}
                 {% if add_form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-
-                {% field_help add_form.title.label add_form.title.help_text term-parallell-titles %}
             </div>
         </div>
         <div class="clearfix">
             {{ add_form.code.label_tag }}
             <div class="input">
                 {{ add_form.code }}
-                {% if add_form.code.help_text %}
-                <a class="help-text"
-                   rel="popover"
-                   data-original-title="{{ add_form.code.label }}"
-                   data-content="{{ add_form.code.help_text }}"
-                   href="#">
-                    <i class="icon-question-sign">&nbsp;</i>{% trans 'Help' %}
-                </a>
-                {% endif %}
             </div>
         </div>
         <div class="clearfix">

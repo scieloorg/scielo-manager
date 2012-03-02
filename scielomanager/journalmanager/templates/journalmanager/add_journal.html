@@ -27,7 +27,6 @@
         <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
         <div class="controls">
            {{ add_form.title }}
-           {% field_help add_form.title.label add_form.title.help_text term-parallell-titles %}
         </div>
     </div>
     <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
@@ -288,7 +287,7 @@
           <tr>
               <th>{% trans "Database" %}</th>
               <th>{% trans "Title" %}</th>
-              <th>{% trans "Identify" %}</th> 
+              <th>{% trans "Identify" %}</th>
           </tr>
       </thead>
             <tbody>
@@ -490,7 +489,7 @@
            formCssClass: 'dynamic-indexcoverageformset-form',
            prefix: '{{ indexcoverageformset.prefix }}'
         });
-              
+
 >>>>>>> master
     });
   </script>
