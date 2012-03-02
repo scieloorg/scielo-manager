@@ -69,7 +69,14 @@ def get_sample_journal_dataform(dict_params):
       'hist-TOTAL_FORMS': 1,
       'hist-INITIAL_FORMS': 0,
       'hist-0-date': '2005-10-10',
-      'hist-0-status': 'C'
+      'hist-0-status': 'C',
+
+      #History Language formset data
+      'indexcoverage-TOTAL_FORMS': 1,
+      'indexcoverage-INITIAL_FORMS': 0,
+      'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
+      'indexcoverage-0-database': 1,
+      'indexcoverage-0-identify': 'ABDC-Medline',
 
     }
 
@@ -275,14 +282,22 @@ def get_sample_center(validated = True):
 
     return models.Center(**center_attrs)
 
-def get_sample_indexing_coverage():
+def get_sample_index_coverage():
 
     indexing_coverage_attrs = {
-        'database_name': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
-        'database_acronym': 'lilacs',
+        'title': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
+        'identify': 'lil-llccs',
     }
 
-    return models.IndexingCoverage(**indexing_coverage_attrs)
+    return models.JournalIndexCoverage(**indexing_coverage_attrs)
+
+def get_sample_index_database():
+
+    indexing_index_database_attrs = {
+        'name': u'Lilacs',
+    }
+
+    return models.IndexDatabase(**indexing_index_database_attrs)
 
 def get_sample_section():
     """

@@ -11,13 +11,6 @@ import choices
 import helptexts
 
 
-class IndexingCoverage(models.Model):
-    database_name = models.CharField(_('Database Name'),max_length=256,null=False,blank=True)
-    database_acronym = models.CharField(_('Database Acronym'),max_length=16,null=False,blank=True)
-
-    def __unicode__(self):
-        return u'%s' % (self.database_name)
-
 class Collection(models.Model):
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
     url = models.URLField(_('Instance URL'), )
@@ -89,26 +82,24 @@ class Journal(models.Model):
     #Custom manager
     objects = CustomJournalManager()
 
-    # PART 1
+    #Relation fields
+    collections = models.ManyToManyField('Collection')
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
+    publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False)
+    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False)
+    use_license = models.ForeignKey('UseLicense', null=True, blank=False)
 
+    #Fields
+    title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
-    collections = models.ManyToManyField('Collection')
-    publisher = models.ForeignKey('Publisher', related_name='journal_publisher', null=True, blank=False)
-    title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
-
-    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
-
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=512,null=False,blank=True)
-
-    #PART 2
     init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
     init_vol = models.CharField(_('Initial Volume'), max_length=4,null=False,blank=True)
     init_num = models.CharField(_('Initial Number'), max_length=4,null=False,blank=True)
@@ -133,18 +124,12 @@ class Journal(models.Model):
         choices=choices.TREATMENT_LEVEL,null=False,blank=True)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
-    indexing_coverage = models.ManyToManyField(IndexingCoverage)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
-
-    use_license = models.ForeignKey('UseLicense', null=True, blank=False)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True)
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
-
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
-
-    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
@@ -177,6 +162,19 @@ class JournalMission(models.Model):
     journal = models.ForeignKey(Journal, null=False)
     description = models.TextField(_('Mission'), null=False)
     language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
+
+class IndexDatabase(models.Model):
+    name = models.CharField(_('Database Name'), max_length=256, null=False, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+class JournalIndexCoverage(models.Model):
+    journal = models.ForeignKey(Journal)
+    database = models.ForeignKey(IndexDatabase, null=True)
+    
+    title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
+    identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
 
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)

@@ -186,6 +186,7 @@ def add_journal(request, journal_id = None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
+    JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
@@ -194,14 +195,17 @@ def add_journal(request, journal_id = None):
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
+        indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
-        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
+        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
+            and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
             textlanguageformset.save()
             histformset.save()
+            indexcoverageformset.save()
 
             return HttpResponseRedirect(reverse('journal.index'))
 
@@ -213,6 +217,7 @@ def add_journal(request, journal_id = None):
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
+        indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
@@ -222,6 +227,7 @@ def add_journal(request, journal_id = None):
                               'collection': user_collection,
                               'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
+                              'indexcoverageformset': indexcoverageformset,
                               }, context_instance = RequestContext(request))
 
 

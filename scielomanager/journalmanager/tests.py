@@ -106,15 +106,14 @@ class LoggedInViewsTest(TestCase):
         sample_uselicense = tests_assets.get_sample_uselicense()
         sample_uselicense.save()
 
+        sample_indexdatabase = tests_assets.get_sample_index_database()
+        sample_indexdatabase.save()
+
         #add journal - missing required
         #response = self.client.post(reverse('journal.add'),
         #   tests_assets.get_sample_journal_dataform())
 
         #self.assertTrue('field required' in response.content.lower())
-
-        #add journal - must be added
-        sample_indexing_coverage = tests_assets.get_sample_indexing_coverage()
-        sample_indexing_coverage.save()
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
@@ -124,7 +123,6 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.collection.pk],
-                                                     'journal-indexing_coverage': [sample_indexing_coverage.pk],
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -136,7 +134,6 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.collection.pk],
-                                                     'journal-indexing_coverage': [sample_indexing_coverage.pk],
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
