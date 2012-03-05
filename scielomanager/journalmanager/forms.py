@@ -69,6 +69,11 @@ class UserForm(ModelForm):
             user.save()
         return user
 
+class PasswordChangeForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
+    new_password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
+
 class IssueForm(ModelForm):
     section = forms.ModelMultipleChoiceField(models.Section.objects.none(), required=True)
 
@@ -131,7 +136,7 @@ class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
       widgets = {
-        'studyarea':forms.TextInput(attrs={'class':'span10', 'rows':'3'}), 
+        'studyarea':forms.TextInput(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class JournalMissionForm(ModelForm):

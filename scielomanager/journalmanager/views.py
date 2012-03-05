@@ -548,3 +548,38 @@ def search_center(request):
                        })
     return HttpResponse(t.render(c))
 
+@login_required
+def my_account(request):
+    t = loader.get_template('journalmanager/my_account.html')
+    c = RequestContext(request, {})
+    return HttpResponse(t.render(c))
+
+@login_required
+def password_change(request):
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            if cleaned_data['new_password'] != cleaned_data['new_password_again']:
+                # send a notification
+                return HttpResponseRedirect(reverse('journalmanager.password_change'))
+
+            auth_user = authenticate(username=request.user.username,
+                                     password=cleaned_data['password'])
+            if auth_user:
+                auth_user.set_password(cleaned_data['new_password'])
+                auth_user.save()
+            else:
+                #send a authentication fail notification
+                return HttpResponseRedirect(reverse('journalmanager.password_change'))
+
+            # send a notification
+            return HttpResponseRedirect(reverse('journalmanager.my_account'))
+    else:
+        form = PasswordChangeForm()
+
+    return render_to_response(
+        'journalmanager/password_change.html',
+        {'form': form},
+        context_instance = RequestContext(request))
