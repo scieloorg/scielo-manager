@@ -16,6 +16,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
@@ -25,23 +26,27 @@ from scielomanager.tools import get_paginated
 def index(request):
     t = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
-        user_collection = request.user.userprofile_set.get().collection
+        user_collections = models.UserCollections.objects.filter(user = request.user)
     else:
-        user_collection = ""
-    c = RequestContext(request,{'collection':user_collection,})
+        user_collections = ""
+    c = RequestContext(request,{'user_collections':user_collections,})
     return HttpResponse(t.render(c),)
 
 @login_required
 def user_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_users = User.objects.filter(userprofile__collection=user_collection)
+    user_collections = models.UserCollections.objects.filter(user = request.user,)
+    user_managed_collections = models.UserCollections.objects.filter(user = request.user, 
+        is_manager = True)
+    all_users = models.User.objects.filter(usercollections__collection__in =
+        [ collection.collection.pk for collection in user_managed_collections ]).distinct('username')
+
     users = get_paginated(all_users, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/user_dashboard.html')
 
     c = RequestContext(request, {
                        'users': users,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -55,13 +60,13 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                user_collection = request.user.userprofile_set.get().collection
+                user_collections = models.UserCollections.objects.filter(user = user)
                 if next != '':
                     t = loader.get_template(next)
                 else:
                     t = loader.get_template('journalmanager/home_journal.html')
                 c = RequestContext(request, {'active': True,
-                                             'collection': user_collection,})
+                                             'user_collections': user_collections,})
                 return HttpResponse(t.render(c))
             else: #Login Success User inactive
                 t = loader.get_template('journalmanager/home_journal.html')

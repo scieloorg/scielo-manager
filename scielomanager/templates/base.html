@@ -44,8 +44,19 @@
                             {% if user.is_authenticated %}
                                     <h5>{% trans 'Username' %}</h5>
                                     <h6>{{ user.username }}</h6>
-                                    <h5>{% trans 'Collection' %}</h5>
-                                    <h6>{{ collection }}</h6>
+                                    <h5>{% trans 'Collections' %}</h5>
+                                    <h6>
+                                        <ul>
+                                        {% for collection in user_collections %}
+                                            <li>
+                                                {{ collection.collection.name }} 
+                                                {% if collection.is_manager %}
+                                                    (m)
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+                                    </h6>
                                     <a href="/accounts/logout" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
                             {% else %}
                                     <form action="{% url journalmanager.user_login %}" method="post">

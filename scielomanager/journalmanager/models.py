@@ -31,11 +31,10 @@ class Collection(models.Model):
     class Meta:
         ordering = ['name']
 
-#class UserProfile(models.Model):
-
 class UserCollections(models.Model):
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection)
+    is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, 
         blank=False)
 

@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 
 from scielomanager.journalmanager import tests_assets
 from scielomanager.journalmanager.models import Collection
-from scielomanager.journalmanager.models import UserProfile
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Institution
 from scielomanager.journalmanager.models import Issue
