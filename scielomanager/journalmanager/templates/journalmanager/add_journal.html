@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load journalmanager_template_tags %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -41,7 +42,7 @@
         </div>
     </div>
   </div>
-  
+
   <span class="label">{% trans "titleformset" %}</span>
   <div class="well">
       <table id="titleformset" class="table table-bordered table-striped">
@@ -176,7 +177,7 @@
           {{ textlanguageformset.management_form }}
       </p>
   </div>
-  
+
   <span class="label">{% trans "histformset" %}</span>
   <div class="well">
       <table id="histformset" class="table table-bordered table-striped">
@@ -286,7 +287,7 @@
           <tr>
               <th>{% trans "Database" %}</th>
               <th>{% trans "Title" %}</th>
-              <th>{% trans "Identify" %}</th> 
+              <th>{% trans "Identify" %}</th>
           </tr>
       </thead>
             <tbody>
@@ -433,10 +434,22 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-tooltip.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-popover.js"></script>
+
 
  <script>
     $(document).ready(function() {
+
+        $( "#id_institution" ).combobox({ autoFocus: true });
+
+        $( "#toggle" ).click(function() {
+            $( "#id_institution" ).toggle();
+        });
+        $(".help-text").popover('hide');
+
+
 
         $( "#id_journal-institution" ).combobox({ autoFocus: true });
 
@@ -470,11 +483,14 @@
            prefix: '{{ histformset.prefix }}'
         });
 
+<<<<<<< HEAD
+=======
         $('#indexcoverageformset tbody tr').formset({
            formCssClass: 'dynamic-indexcoverageformset-form',
            prefix: '{{ indexcoverageformset.prefix }}'
         });
-              
+
+>>>>>>> master
     });
   </script>
 {% endblock %}
