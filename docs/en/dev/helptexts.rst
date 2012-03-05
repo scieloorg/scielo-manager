@@ -23,8 +23,6 @@ In order to edit, remove or add new short descriptions, follow the steps:
    class name;
 3. Follow the naming convention for the help text identifier: CLASSNAME__FIELD_NAME (classname
    in uppercase, plus double underscores, plus the attribute name the text refers to in uppercase)
-4. If a Detailed description is needed, add the text ``Read more`` referencing its detailed
-   description version.
 
 
 Example::
@@ -32,8 +30,7 @@ Example::
   #models.JournalParallellTitles.form
 
   JOURNALPARALLELTITLES__FORM = _("""Enter parallel titles in accordance with the sequence and
-    typography in which they appear on the title page or its substitute.
-    <a href="%sterm-parallell-titles" target="_blank">Read more</a>""" % GLOSSARY_URL)
+    typography in which they appear on the title page or its substitute.""")
 
 
 Detailed Description
@@ -45,3 +42,17 @@ When a more detailed level of information is needed, we must follow the steps:
 2. Edit ``docs/en/glossary.rst`` and add a new definition entry. See ReSTQuickRef_ for more
    details about the syntax.
 3. Push to the project's main repository and the documentation will be built automagically.
+
+
+Template Tag
+------------
+
+Uses the custom template tag ``{% load journalmanager_template_tags %}``.
+
+In order to add the help widget, you need to use the ``field_help`` django template tag::
+
+  {% field_help <label> <help_text> <glossary-term> %}
+
+Example, for the ``title`` field would be::
+
+  {% field_help add_form.title.label add_form.title.help_text term-title %}
