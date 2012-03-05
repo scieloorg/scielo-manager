@@ -22,23 +22,33 @@ from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
 
+def get_user_collections(user_id):
+
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+
+    return user_collections        
 
 def index(request):
     t = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
-        user_collections = models.UserCollections.objects.filter(user = request.user)
+        collections = get_user_collections(request.user.id)
+        user_collections = collections['all'] 
     else:
         user_collections = ""
+
     c = RequestContext(request,{'user_collections':user_collections,})
     return HttpResponse(t.render(c),)
 
 @login_required
 def user_index(request):
-    user_collections = models.UserCollections.objects.filter(user = request.user,)
-    user_managed_collections = models.UserCollections.objects.filter(user = request.user, 
-        is_manager = True)
+    
+    
+    user_collections = get_user_collections(request.user.id)
+    user_collections_managed = user_collections.filter(is_manager=True)
+
+    # Filtering users manager by the administrator
     all_users = models.User.objects.filter(usercollections__collection__in =
-        [ collection.collection.pk for collection in user_managed_collections ]).distinct('username')
+        ( collection.collection.pk for collection in user_collections_managed )).distinct('username')
 
     users = get_paginated(all_users, request.GET.get('page', 1))
 
@@ -60,7 +70,8 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                user_collections = models.UserCollections.objects.filter(user = user)
+                user_collections = get_user_collections(request.user.id)
+
                 if next != '':
                     t = loader.get_template(next)
                 else:
@@ -98,51 +109,63 @@ def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
-    user_collection = request.user.userprofile_set.get().collection
+
+    if  user_id == None:
+        user = models.User()
+    else:
+        user = get_object_or_404(models.User, id = user_id)
+
+    # Getting Collections from the logged user.
+    user_collections = get_user_collections(request.user.id)
+
+    UserCollectionsFormSet = inlineformset_factory(models.User, models.UserCollections, 
+        form=UserCollectionsForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
-
+        usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
         user_form_kwargs = {}
+
         if user_id is not None: #edit - preserve form-data    
             filled_form = models.User.objects.get(pk = user_id)
             user_form_kwargs['instance'] = filled_form
 
         add_form = UserForm(request.POST, **user_form_kwargs)
 
-        if add_form.is_valid():
-            #Get the user and create a new evaluation
+        if add_form.is_valid() and usercollectionsformset.is_valid():
             user_saved = add_form.save()
-            # Saving user collection on UserProfile
-            uprof = models.UserProfile(pk = user_saved)
-            uprof.collection = user_collection
-            uprof.user = user_saved
-            uprof.save()
+            usercollectionsformset.save()     
+
             return HttpResponseRedirect(reverse('user.index'))
     else:
         if user_id is None: #new
             add_form = UserForm() # An unbound form
+            usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections')
         else:
             filled_form = models.User.objects.get(pk = user_id)
             add_form = UserForm(instance = filled_form)
+            usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections')
 
     return render_to_response('journalmanager/add_user.html', {
                               'add_form': add_form,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
-                              'collection': user_collection},
+                              'user_collections': user_collections,
+                              'usercollectionsformset': usercollectionsformset},
                               context_instance=RequestContext(request))
 
 @login_required
 def journal_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections = user_collection)
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default=True)
+
+    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections__in = ( collection.collection.pk for collection in default_collections ))
 
     journals = get_paginated(all_journals, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/journal_dashboard.html')
     c = RequestContext(request, {
                        'journals': journals,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -151,7 +174,7 @@ def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
     """
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
 
     if  journal_id == None:
         journal = models.Journal()
@@ -201,7 +224,7 @@ def add_journal(request, journal_id = None):
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
-                              'collection': user_collection,
+                              'user_collections': user_collections,
                               'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
                               'indexcoverageformset': indexcoverageformset,
@@ -227,15 +250,16 @@ def toggle_user_availability(request, user_id):
 
 @login_required
 def institution_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection = user_collection)
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default = True)
+    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection__in = ( collection.collection.pk for collection in default_collections ))
 
     institutions = get_paginated(all_institutions, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/institution_dashboard.html')
     c = RequestContext(request, {
                        'institutions': institutions,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -245,7 +269,7 @@ def add_institution(request, institution_id=None):
     Handles new and existing institutions
     """
 
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
 
     if request.method == 'POST':
         institution_form_kwargs = {}
@@ -269,7 +293,7 @@ def add_institution(request, institution_id=None):
     return render_to_response('journalmanager/add_institution.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
-                              'collection': user_collection,
+                              'user_collections': user_collections,
                               },
                               context_instance = RequestContext(request))
 
@@ -286,7 +310,8 @@ def issue_index(request, journal_id):
     #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
     #estas queries.
     journal = models.Journal.objects.get(pk = journal_id)
-    user_collection = request.user.userprofile_set.get().collection
+
+    user_collections = get_user_collections(request.user.id)
 
     all_issues = models.Issue.objects.available(request.GET.get('is_available', 1)).filter(journal = journal_id)
 
@@ -296,7 +321,7 @@ def issue_index(request, journal_id):
     c = RequestContext(request, {
                        'issues': issues,
                        'journal': journal,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -306,7 +331,7 @@ def add_issue(request, journal_id, issue_id=None):
     Handles new and existing issues
     """
 
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if issue_id is None:
@@ -329,7 +354,7 @@ def add_issue(request, journal_id, issue_id=None):
                               'add_form': add_form,
                               'journal': journal,
                               'user_name': request.user.pk,
-                              'collection': user_collection},
+                              'user_collections': user_collections},
                               context_instance = RequestContext(request))
 
 @login_required
@@ -342,11 +367,12 @@ def toggle_issue_availability(request, issue_id):
 
 @login_required
 def search_journal(request):
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default=True)
 
     #Get journals where title contains the "q" value and collection equal with the user
     journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q'],
-                                                    collections = user_collection).order_by('title')
+                                                    collection__in = ( collection.collection.pk for collection in default_collections )).order_by('title')
 
     #Paginated the result
     journals = get_paginated(journals_filter, request.GET.get('page', 1))
@@ -354,18 +380,19 @@ def search_journal(request):
     t = loader.get_template('journalmanager/journal_search_result.html')
     c = RequestContext(request, {
                        'journals': journals,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
 
 @login_required
 def search_institution(request):
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default=True)
 
     #Get institutions where title contains the "q" value and collection equal with the user
     institutions_filter = models.Institution.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection = user_collection).order_by('name')
+                                                            collection__in = ( collection.collection.pk for collection in default_collections )).order_by('name')
 
     #Paginated the result
     institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
@@ -373,7 +400,7 @@ def search_institution(request):
     t = loader.get_template('journalmanager/institution_search_result.html')
     c = RequestContext(request, {
                        'institutions': institutions,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
@@ -382,7 +409,8 @@ def search_institution(request):
 def search_issue(request, journal_id):
 
     journal = models.Journal.objects.get(pk = journal_id)
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
+
     #Get issues where journal.id = journal_id and volume contains "q"
     selected_issues = models.Issue.objects.filter(journal = journal_id,
                                                   volume__icontains = request.REQUEST['q']).order_by('publication_date')
@@ -394,7 +422,7 @@ def search_issue(request, journal_id):
     c = RequestContext(request, {
                        'issues': issues,
                        'journal': journal,
-                       'collection': user_collection,
+                       'user_collection': user_collections,
                        'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
@@ -404,7 +432,7 @@ def section_index(request, journal_id):
     #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
     #estas queries.
     journal = models.Journal.objects.get(pk = journal_id)
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
 
     all_sections = models.Section.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
 
@@ -414,7 +442,7 @@ def section_index(request, journal_id):
     c = RequestContext(request, {
                        'items': sections,
                        'journal': journal,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -450,17 +478,19 @@ def add_section(request, journal_id, section_id=None):
                               context_instance = RequestContext(request))
 @login_required
 def center_index(request):
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default=True)
+
     all_centers = models.Center.objects
     if all_centers:
-        all_centers = all_centers.filter(collection = user_collection)
+        all_centers = all_centers.filter(collection__in = ( collection.collection.pk for collection in default_collections ))
 
     centers = get_paginated(all_centers, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/center_dashboard.html')
     c = RequestContext(request, {
                        'centers': centers,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -469,8 +499,7 @@ def add_center(request, center_id=None):
     """
     Handles new and existing centers
     """
-
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
 
     if request.method == 'POST':
         center_form_kwargs = {}
@@ -482,7 +511,7 @@ def add_center(request, center_id=None):
         add_form = CenterForm(request.POST, **center_form_kwargs)
 
         if add_form.is_valid():
-            add_form.save_all(collection = user_collection)
+            add_form.save_all(collection = user_collections)
             return HttpResponseRedirect(reverse('center.index'))
     else:
         if center_id is None: #new
@@ -494,7 +523,7 @@ def add_center(request, center_id=None):
     return render_to_response('journalmanager/add_center.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
-                              'collection': user_collection,
+                              'user_collections': user_collections,
                               },
                               context_instance = RequestContext(request))
 
@@ -508,11 +537,11 @@ def toggle_center_availability(request, center_id):
 
 @login_required
 def search_center(request):
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
 
     #Get centers where title contains the "q" value and collection equal with the user
     center_filter = models.Center.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection = user_collection).order_by('name')
+                                                            collection__in = ( collection.collection.pk for collection in default_collections )).order_by('name')
 
     #Paginated the result
     centers = get_paginated(center_filter, request.GET.get('page', 1))
@@ -520,7 +549,7 @@ def search_center(request):
     t = loader.get_template('journalmanager/center_dashboard.html')
     c = RequestContext(request, {
                        'centers': centers,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))

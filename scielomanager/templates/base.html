@@ -53,6 +53,9 @@
                                                 {% if collection.is_manager %}
                                                     (m)
                                                 {% endif %}
+                                                {% if collection.is_default %}
+                                                    (d)
+                                                {% endif %}
                                             </li>
                                         {% endfor %}
                                         </ul>

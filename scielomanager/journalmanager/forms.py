@@ -127,6 +127,13 @@ class SectionForm(ModelForm):
     class Meta:
       model = models.Section
 
+class UserCollectionsForm(ModelForm):
+    class Meta:
+      model = models.UserCollections
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
 class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea

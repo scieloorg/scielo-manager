@@ -59,9 +59,64 @@
             </div>
         </div>
     </div>
+    <span class="label">{% trans "usercollectionsformset" %}</span>
+    <div class="well">
+        <table id="usercollectionsformset" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>{% trans "Collection" %}</th>
+                <th>{% trans "is_manager" %}</th>
+                <th>{% trans "is_default" %}</th>
+                <th>{% trans "options" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for form in usercollectionsformset.forms %}
+            <tr id="{{ form.prefix }}-row">
+                <td>
+                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                    {{ form.collection }}
+                </td>
+                <td>{{ form.is_manager }}</td>
+                <td>{{ form.is_default }}</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        <p>
+            {{ usercollectionsformset.management_form }}
+        </p>
+    </div>
     <div class="row-fluid">
         <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}"/>
         <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
     </div>
 </form>
+{% endblock %}
+
+{% block extrafooter %}
+    <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
+    <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+
+ <script>
+    $(document).ready(function() {
+
+        $( "#id_user-collection" ).combobox({ autoFocus: true });
+
+        $( "#toggle" ).click(function() {
+            $( "#id_collection" ).toggle();
+        });
+
+        //multiple-formsets
+        $('#usercollectionsformset tbody tr').formset({
+           formCssClass: 'dynamic-usercollectionsformset-form',
+           prefix: '{{ usercollectionsformset.prefix }}'
+        });
+    });
+  </script>
 {% endblock %}
