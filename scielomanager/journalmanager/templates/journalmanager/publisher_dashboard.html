@@ -6,13 +6,13 @@
 
 {% endblock %}
 
-{% block body_title %}{% trans "Institutions" %}{% endblock %}
+{% block body_title %}{% trans "Publishers" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'Institutions DashBoard' %}</li>
+    <li class="active">{% trans 'Publishers DashBoard' %}</li>
 </ul><!--breadcrumb-->
 {% endblock %}
 
@@ -20,7 +20,7 @@
 <div class="row-fluid">
     <div class="span12">
         <div class="search">
-            <form class="well form-search" action="{% url institution.search %}" method="get">
+            <form class="well form-search" action="{% url publisher.search %}" method="get">
                 <input class="span6 search-query" placeholder="Search" name="q" />
                 <button class="btn btn-primary" type="submit">Search</button>
             </form>
@@ -29,7 +29,7 @@
 </div><!--row-fluid Search box-->
 <div class="row-fluid">
     <div class="span10">
-        <a class="btn btn-primary" href="{% url institution.add %}">{% trans 'New' %}</a>
+        <a class="btn btn-primary" href="{% url publisher.add %}">{% trans 'New' %}</a>
     </div>
     <div class="span2">
         <div class="btn-group">
@@ -39,10 +39,10 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{% url institution.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Institution" %}</a>
+                    <a href="{% url publisher.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Publisher" %}</a>
                 </li>
                 <li>
-                    <a href="{% url institution.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Institution" %}</a>
+                    <a href="{% url publisher.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Publisher" %}</a>
                 </li>
             </ul>
         </div>
@@ -57,24 +57,24 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in institutions.object_list %}
+        {% for ct in publishers.object_list %}
         <tr>
             <td>
-                <h4><a href="{% url institution.edit ct.pk %}">{{ ct.name }}</a></h4>
+                <h4><a href="{% url publisher.edit ct.pk %}">{{ ct.name }}</a></h4>
                 <ul class="_actions">
                     <li>
-                        <a href="{% url institution.edit ct.pk %}">
+                        <a href="{% url publisher.edit ct.pk %}">
                             {% trans 'Edit' %}
                         </a>
                     </li>
                     <li>
                     {% if ct.is_available %}
-                        <a href="{% url institution.toggle_availability ct.pk %}"
+                        <a href="{% url publisher.toggle_availability ct.pk %}"
                            class="label label-important">
                             {% trans 'Disable' %}
                         </a>
                     {% else %}
-                        <a href="{% url institution.toggle_availability ct.pk %}"
+                        <a href="{% url publisher.toggle_availability ct.pk %}"
                            class="label label-success">
                             {% trans 'Enable' %}
                         </a>
@@ -94,17 +94,17 @@
         {% endfor %}
     <tbody>
 </table>
-    {% trans 'Showing' %} {{ institutions.start_index }}-{{ institutions.end_index }} {% trans 'of' %} {{ institutions.paginator.count }}
+    {% trans 'Showing' %} {{ publishers.start_index }}-{{ publishers.end_index }} {% trans 'of' %} {{ publishers.paginator.count }}
 <div class="pagination">
     <ul>
-        <li class="prev {% if not institutions.has_previous %}disabled{% endif %}">
-            <a href="{% append_to_get page=institutions.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
+        <li class="prev {% if not publishers.has_previous %}disabled{% endif %}">
+            <a href="{% append_to_get page=publishers.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
         </li>
-        {% for page in institutions.paginator.page_range %}
-        <li {% if institutions.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
+        {% for page in publishers.paginator.page_range %}
+        <li {% if publishers.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
         {% endfor %}
-        <li class="next {% if not institutions.has_next %}disabled{% endif %}">
-            <a href="{% append_to_get page=institutions.next_page_number %}">{% trans 'Next' %} &rarr;</a>
+        <li class="next {% if not publishers.has_next %}disabled{% endif %}">
+            <a href="{% append_to_get page=publishers.next_page_number %}">{% trans 'Next' %} &rarr;</a>
         </li>
     </ul>
 </div>

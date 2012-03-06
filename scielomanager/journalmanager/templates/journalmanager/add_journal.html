@@ -310,10 +310,10 @@
   </div>
       <span class="label">{% trans "publisher and sponsors" %}</span>
   <div class="well">
-    <div class="control-group {% if add_form.institution.errors %}error{% endif %}">
-        <label class="control-label" for="institution">{% trans add_form.institution.label_tag %}</label>
+    <div class="control-group {% if add_form.publisher.errors %}error{% endif %}">
+        <label class="control-label" for="publisher">{% trans add_form.publisher.label_tag %}</label>
         <div class="controls">
-           {{ add_form.institution }}
+           {{ add_form.publisher }}
         </div>
     </div>
     <div class="control-group {% if add_form.sponsor.errors %}error{% endif %}">
@@ -452,9 +452,10 @@
 
 
         $( "#id_journal-institution" ).combobox({ autoFocus: true });
+        $( "#id_journal-publisher" ).combobox({ autoFocus: true });
 
         $( "#toggle" ).click(function() {
-            $( "#id_institution" ).toggle();
+            $( "#id_publisher" ).toggle();
         });
 
         //multiple-formsets
@@ -483,14 +484,11 @@
            prefix: '{{ histformset.prefix }}'
         });
 
-<<<<<<< HEAD
-=======
         $('#indexcoverageformset tbody tr').formset({
            formCssClass: 'dynamic-indexcoverageformset-form',
            prefix: '{{ indexcoverageformset.prefix }}'
         });
-
->>>>>>> master
+              
     });
   </script>
 {% endblock %}

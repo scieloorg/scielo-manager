@@ -13,12 +13,12 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/toggle_availability/$', views.toggle_journal_availability, name='journal.toggle_availability'),
     url(r'^search/$', views.search_journal, name='journal.search'),
 
-    # Institution Tools
-    url(r'^institution/$', views.institution_index, name='institution.index' ),
-    url(r'^institution/new/$', views.add_institution, name='institution.add' ),
-    url(r'^institution/(?P<institution_id>\d+)/edit/$', views.add_institution, name='institution.edit' ),
-    url(r'^institution/(?P<institution_id>\d+)/toggle_availability/$', views.toggle_institution_availability, name='institution.toggle_availability' ),
-    url(r'^institution/search/$', views.search_institution, name='institution.search'),
+    # Publisher Tools
+    url(r'^publisher/$', views.publisher_index, name='publisher.index' ),
+    url(r'^publisher/new/$', views.add_publisher, name='publisher.add' ),
+    url(r'^publisher/(?P<publisher_id>\d+)/edit/$', views.add_publisher, name='publisher.edit' ),
+    url(r'^publisher/(?P<publisher_id>\d+)/toggle_availability/$', views.toggle_publisher_availability, name='publisher.toggle_availability' ),
+    url(r'^publisher/search/$', views.search_publisher, name='publisher.search'),
 
     # Section Tools
     url(r'^(?P<journal_id>\d+)/section/$', views.section_index, name='section.index' ),

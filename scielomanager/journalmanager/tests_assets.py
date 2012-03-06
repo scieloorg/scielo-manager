@@ -84,27 +84,27 @@ def get_sample_journal_dataform(dict_params):
 
     return journal_attrs
 
-def get_sample_institution_dataform(**kwargs):
-    institution_attrs = {
+def get_sample_publisher_dataform(**kwargs):
+    publisher_attrs = {
       'city': '',
       'fax': '',
       'validated': True,
       'name': u'Associação Nacional de História - ANPUH',
-      'Address_number': '222',
+      'address_number': '222',
       'acronym': 'rbh',
       'country': 'BR',
       'cel': '',
       'phone': '',
       'state': '',
-      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': 'teste@scielo.org',
-      'Address_complement': '',
+      'address_complement': '',
       'is_available': True,
     }
 
-    institution_attrs.update(kwargs)
+    publisher_attrs.update(kwargs)
 
-    return institution_attrs
+    return publisher_attrs
 
 def get_sample_issue_dataform(**kwargs):
     """
@@ -148,7 +148,7 @@ def get_sample_journal():
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'institution', 'center', 'notes',]
+       'publisher', 'center', 'notes',]
     """
 
     journal_attrs = {
@@ -218,32 +218,32 @@ def get_sample_collection(validated = True):
 
     return models.Collection(**collection_attrs)
 
-def get_sample_institution(validated = True):
+def get_sample_publisher(validated = True):
     """
-    Returns a institution object, without the following attributes (non mandatory or need to be bound
+    Returns a publisher object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['city', 'fax', 'Address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'Address_complement']
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
     """
 
-    institution_attrs = {
+    publisher_attrs = {
       'city': '',
       'fax': '',
       'validated': validated,
       'name': u'Associação Nacional de História - ANPUH',
-      'Address_number': '',
+      'address_number': '',
       'acronym': 'rbh',
       'country': '',
       'cel': '',
       'phone': '',
       'state': '',
-      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
-      'Address_complement': '',
+      'address_complement': '',
       'is_available': True,
     }
 
-    return models.Institution(**institution_attrs)
+    return models.Publisher(**publisher_attrs)
 
 def get_sample_uselicense():
 
@@ -259,8 +259,8 @@ def get_sample_center(validated = True):
     """
     Returns a center object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['city', 'fax', 'Address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'Address_complement']
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
     """
 
     center_attrs = {
@@ -268,17 +268,16 @@ def get_sample_center(validated = True):
       'fax': '',
       'validated': validated,
       'name': u'Associação Nacional de História - ANPUH',
-      'Address_number': '',
+      'address_number': '',
       'acronym': 'rbh',
       'country': '',
       'cel': '',
       'phone': '',
       'state': '',
-      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
-      'Address_complement': '',
+      'address_complement': '',
       'is_available': True,
-      'is_provider_of_markup': True,
     }
 
     return models.Center(**center_attrs)

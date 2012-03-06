@@ -29,7 +29,7 @@ class JournalForm(ModelForm):
            'previous_title': forms.Select(attrs={'class':'span10'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'institution': forms.Select(attrs={'class':'span8'}),
+           'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
            'subject_descriptors': forms.Textarea(attrs={'class':'span12'}),
            'init_year': SelectDateWidget(),
@@ -47,15 +47,15 @@ class JournalForm(ModelForm):
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
-class InstitutionForm(ModelForm):
+class PublisherForm(ModelForm):
     class Meta:
-        model = models.Institution
+        model = models.Publisher
         exclude = ('collection',)
 
     def save_all(self, collection):
-        institution = self.save(commit=False)
-        institution.collection = collection
-        institution.save()
+        publisher = self.save(commit=False)
+        publisher.collection = collection
+        publisher.save()
 
 class UserForm(ModelForm):
     class Meta:
