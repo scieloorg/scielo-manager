@@ -158,7 +158,7 @@ def journal_index(request):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
-    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections__in = ( collection.collection.pk for collection in default_collections ))
+    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1))
 
     journals = get_paginated(all_journals, request.GET.get('page', 1))
 
@@ -180,51 +180,51 @@ def add_journal(request, journal_id = None):
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
-    JournalCollectionsFormSet = inlineformset_factory(models.Journal, models.JournalCollections, form=JournalCollectionsForm, extra=1, can_delete=True)
+
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
+    JournalCollectionsFormSet = inlineformset_factory(models.Journal, models.JournalCollections, extra=1, can_delete=True)
     JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
-        journalcollectionsformset = JournalCollectionsFormSet(request.POST, instance=journal, prefix='collection')
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
+        collectionsformset = JournalCollectionsFormSet(request.POST, instance=journal, prefix='collection')
         indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
-        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
+        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() and collectionsformset.is_valid() \
             and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
-            journalcollections.save()
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
             textlanguageformset.save()
             histformset.save()
+            collectionsformset.save()
             indexcoverageformset.save()
 
             return HttpResponseRedirect(reverse('journal.index'))
 
     else:
-
         journalform  = JournalForm(instance=journal, prefix='journal')
-        journalcollectionsformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
+        collectionsformset = JournalCollectionsFormSet(instance=journal, prefix='collection')
         indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
-                              'journalcollectionsformset': journalcollectionsformset,
+                              'collectionsformset': collectionsformset,
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,

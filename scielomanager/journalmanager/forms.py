@@ -145,7 +145,7 @@ class JournalCollectionsForm(ModelForm):
     class Meta:
       model = models.JournalCollections
       widgets = {
-        'collection':forms.TextInput(attrs={'class':'span10', 'rows':'3'}), 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
       }
 
 

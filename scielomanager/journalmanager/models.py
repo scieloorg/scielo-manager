@@ -174,7 +174,6 @@ class IndexDatabase(models.Model):
 class JournalIndexCoverage(models.Model):
     journal = models.ForeignKey(Journal)
     database = models.ForeignKey(IndexDatabase, null=True)
-    
     title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
     identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
 

@@ -29,8 +29,19 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('journalmanager', ['UserCollections'])
 
+        # Adding model 'JournalCollections'
+        db.create_table('journalmanager_journalcollections', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
+            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
+        ))
+        db.send_create_signal('journalmanager', ['JournalCollections'])
+
         # Deleting field 'Institution.collection'
         db.delete_column('journalmanager_institution', 'collection_id')
+
+        # Removing M2M table for field collections on 'Journal'
+        db.delete_table('journalmanager_journal_collections')
 
 
     def backwards(self, orm):
@@ -50,8 +61,19 @@ class Migration(SchemaMigration):
         # Deleting model 'UserCollections'
         db.delete_table('journalmanager_usercollections')
 
+        # Deleting model 'JournalCollections'
+        db.delete_table('journalmanager_journalcollections')
+
         # User chose to not deal with backwards NULL issues for 'Institution.collection'
         raise RuntimeError("Cannot reverse this migration. 'Institution.collection' and its values cannot be restored.")
+
+        # Adding M2M table for field collections on 'Journal'
+        db.create_table('journalmanager_journal_collections', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
+            ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
+        ))
+        db.create_unique('journalmanager_journal_collections', ['journal_id', 'collection_id'])
 
 
     models = {
@@ -162,7 +184,6 @@ class Migration(SchemaMigration):
             'acronym': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
             'alphabet': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'center': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'center_id'", 'null': 'True', 'to': "orm['journalmanager.Center']"}),
-            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
             'copyrighter': ('django.db.models.fields.CharField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'enjoy_creator'", 'to': "orm['auth.User']"}),
@@ -198,6 +219,12 @@ class Migration(SchemaMigration):
             'url_online_submission': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']", 'null': 'True'}),
             'validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        'journalmanager.journalcollections': {
+            'Meta': {'object_name': 'JournalCollections'},
+            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"})
         },
         'journalmanager.journalhist': {
             'Meta': {'object_name': 'JournalHist'},
