@@ -131,8 +131,9 @@ def add_user(request, user_id=None):
 
         add_form = UserForm(request.POST, **user_form_kwargs)
 
-        if add_form.is_valid() and usercollectionsformset.is_valid():
+        if add_form.is_valid():
             user_saved = add_form.save()
+            usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user_saved, prefix='usercollections',)
             usercollectionsformset.save()     
 
             return HttpResponseRedirect(reverse('user.index'))
