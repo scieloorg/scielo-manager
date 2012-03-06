@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load append_to_get %}
+{% load journalmanager_template_tags %}
+
 
 {% block body_title %}{% trans "User Journals" %}{% endblock %}
 
@@ -23,10 +24,15 @@
         </div>
     </div>
 </div><!--row-fluid Search box-->
+
 <div class="row-fluid">
-    <div class="span10">
+    <div class="span9">
         <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
     </div>
+        {% simple_pagination journals %}
+</div><!--row-fluid botões-->
+
+<div class="row-fluid">
     <div class="span2">
         <div class="btn-group">
             <a class="btn" href="#">{% trans 'View' %}</a>
@@ -43,7 +49,8 @@
             </ul>
         </div>
     </div>
-</div><!--row-fluid botões-->
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -106,18 +113,5 @@
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ journals.start_index }}-{{ journals.end_index }} {% trans 'of' %} {{ journals.paginator.count }}
-<div class="pagination">
-    <ul>
-        <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
-            <a href="{% append_to_get page=journals.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
-        </li>
-        {% for page in journals.paginator.page_range %}
-        <li {% if journals.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
-        {% endfor %}
-        <li class="next {% if not journals.has_next %}disabled{% endif %}">
-            <a href="{% append_to_get page=journals.next_page_number %}">{% trans 'Next' %} &rarr;</a>
-        </li>
-    </ul>
-</div>
+{% pagination journals %}
 {% endblock %}
