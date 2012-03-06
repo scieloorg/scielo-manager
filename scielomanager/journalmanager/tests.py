@@ -117,7 +117,7 @@ class LoggedInViewsTest(TestCase):
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
-        sample_center.save() 
+        sample_center.save()
 
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
@@ -393,20 +393,63 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.context['issues'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['issues'].object_list), 1)
 
-    def test_ISSNField_validation(self):
+    def test_my_account(self):
+        """
+        Logged in user accessing his own data management dashboard
+        """
+        response = self.client.get(reverse('journalmanager.my_account'))
+        self.assertEqual(response.status_code, 200)
 
-        valid_issns = ['1678-5320','0044-5967','0102-8650','2179-975X','1413-7852','0103-2100',]
-        invalid_issns = ['A123-4532','1t23-8979','0900-090900','9827-u982','8992-8u77','1111-111Y',]
+    def test_password_change(self):
+        """
+        Logged in user changing its password
 
-        for issn in valid_issns:
-            form = JournalForm({'print_issn': issn,})
-            self.assertTrue(form.errors.get('print_issn') is None)
-            del(form)
+        Covered cases:
+        * Correct credentials and new password
+        * Correct credentials, incorrect new password confirmation
+        * Incorrect credentials and correct new password
+        """
+        response = self.client.get(reverse('journalmanager.password_change'))
+        self.assertEqual(response.status_code, 200)
 
-        for issn in invalid_issns:
-            form = JournalForm({'print_issn': issn,})
-            self.assertEqual(form.errors.get('print_issn')[0], u'Enter a valid ISSN.')
-            del(form)
+        # correct credentials
+        response = self.client.post(reverse('journalmanager.password_change'), {
+            'password': '123',
+            'new_password': '654321',
+            'new_password_again': '654321',
+            })
+        self.assertRedirects(response, reverse('journalmanager.my_account'))
+
+        # correct credentials, incorrect new password confirmation
+        response = self.client.post(reverse('journalmanager.password_change'), {
+            'password': '123',
+            'new_password': '65',
+            'new_password_again': '654321',
+            })
+        self.assertRedirects(response, reverse('journalmanager.password_change'))
+
+        # incorrect credentials
+        response = self.client.post(reverse('journalmanager.password_change'), {
+            'password': '123456',
+            'new_password': '654321',
+            'new_password_again': '654321',
+            })
+        self.assertRedirects(response, reverse('journalmanager.password_change'))
+
+class LoggedOutViewsTest(TestCase):
+    def test_my_account(self):
+        """
+        Logged out user trying to access a user management dashboard
+        """
+        response = self.client.get(reverse('journalmanager.my_account'))
+        self.assertRedirects(response, reverse('journalmanager.user_login') + '?next=/myaccount/')
+
+    def test_password_change(self):
+        """
+        Logged out user trying to change its password
+        """
+        response = self.client.get(reverse('journalmanager.password_change'))
+        self.assertRedirects(response, reverse('journalmanager.user_login') + '?next=/myaccount/password/')
 
 class ToolsTest(TestCase):
     def test_paginator_factory(self):
@@ -446,3 +489,19 @@ class ToolsTest(TestCase):
 
         # Testing if page parameter is a "string"
         self.assertRaises(TypeError, get_paginated, items_list, 'foo', items_per_page=items_per_page)
+
+class ComponentsTest(TestCase):
+    def test_ISSNField_validation(self):
+
+        valid_issns = ['1678-5320','0044-5967','0102-8650','2179-975X','1413-7852','0103-2100',]
+        invalid_issns = ['A123-4532','1t23-8979','0900-090900','9827-u982','8992-8u77','1111-111Y',]
+
+        for issn in valid_issns:
+            form = JournalForm({'print_issn': issn,})
+            self.assertTrue(form.errors.get('print_issn') is None)
+            del(form)
+
+        for issn in invalid_issns:
+            form = JournalForm({'print_issn': issn,})
+            self.assertEqual(form.errors.get('print_issn')[0], u'Enter a valid ISSN.')
+            del(form)
