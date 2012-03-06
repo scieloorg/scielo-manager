@@ -57,8 +57,8 @@
     "pk": 14,
     "model": "contenttypes.contenttype",
     "fields": {
-      "model": "institution",
-      "name": "institution",
+      "model": "publisher",
+      "name": "publisher",
       "app_label": "journalmanager"
     }
   },
@@ -533,8 +533,8 @@
     "pk": 40,
     "model": "auth.permission",
     "fields": {
-      "codename": "add_institution",
-      "name": "Can add institution",
+      "codename": "add_publisher",
+      "name": "Can add publisher",
       "content_type": 14
     }
   },
@@ -542,8 +542,8 @@
     "pk": 41,
     "model": "auth.permission",
     "fields": {
-      "codename": "change_institution",
-      "name": "Can change institution",
+      "codename": "change_publisher",
+      "name": "Can change publisher",
       "content_type": 14
     }
   },
@@ -551,8 +551,8 @@
     "pk": 42,
     "model": "auth.permission",
     "fields": {
-      "codename": "delete_institution",
-      "name": "Can delete institution",
+      "codename": "delete_publisher",
+      "name": "Can delete publisher",
       "content_type": 14
     }
   },

@@ -41,17 +41,16 @@ class Institution(models.Model):
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
-    collection = models.ForeignKey(Collection, related_name='publisher_collection')
     country = models.CharField(_('Country'), max_length=32)
-    state = models.CharField(_('State'), max_length=32, null=False,blank=True,)
-    city = models.CharField(_('City'), max_length=32, null=False,blank=True,)
-    Address = models.TextField(_('Address'), )
-    Address_number = models.CharField(_('Number'), max_length=8)
-    Address_complement = models.CharField(_('Complement'), max_length=128, null=False,blank=True,)
+    state = models.CharField(_('State'), max_length=32, null=False, blank=True,)
+    city = models.CharField(_('City'), max_length=32, null=False, blank=True,)
+    address = models.TextField(_('Address'), )
+    address_number = models.CharField(_('Number'), max_length=8)
+    address_complement = models.CharField(_('Complement'), max_length=128, null=False, blank=True,)
     zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True)
-    phone = models.CharField(_('Phone Number'), max_length=16, null=False,blank=True,)
-    fax = models.CharField(_('Fax Number'), max_length=16, null=False,blank=True,)
-    cel = models.CharField(_('Cel Number'), max_length=16, null=False,blank=True,)
+    phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True,)
+    fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True,)
+    cel = models.CharField(_('Cel Number'), max_length=16, null=False, blank=True,)
     mail = models.EmailField(_('Email'),)
     validated = models.BooleanField(_('Validated'), default=False,)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
@@ -60,11 +59,18 @@ class Institution(models.Model):
         return u'%s' % (self.name)
 
     def get_address_as_list(self):
-        return self.Address.split("\n")
+        return self.address.split("\n")
 
     class Meta:
         ordering = ['name']
 
+class CustomPublisherManager(models.Manager):
+    def available(self, avalability=True):
+        return super(CustomPublisherManager, self).get_query_set().filter(is_available=avalability)
+
+class Publisher(Institution):
+    objects = CustomPublisherManager()
+    collection = models.ForeignKey('Collection', related_name='publisher_collection', blank=False, ) 
 
 class CustomJournalManager(models.Manager):
 
@@ -79,7 +85,7 @@ class Journal(models.Model):
     #Relation fields
     collections = models.ManyToManyField('Collection')
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
+    publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False)
@@ -247,5 +253,11 @@ class Issue(models.Model):
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
+class CustomCenterManager(models.Manager):
+
+    def available(self, avalability=True):
+        return super(CustomCenterManager, self).get_query_set().filter(is_available=avalability)
+
 class Center(Institution):
-    is_provider_of_markup = models.BooleanField(_('Is provider of the marked files?'), default=False, null=False, blank=True)
+    objects = CustomCenterManager()
+    collection = models.ForeignKey('Collection', related_name='collection', blank=False, ) 

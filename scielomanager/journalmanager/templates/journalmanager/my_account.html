@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block stepmenu_top %}
+{{ block.super }}
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'My Account' %}</li>
+</ul>
+{% endblock %}
+
+{% block body %}
+    <ul>
+        <li><a href="{% url journalmanager.password_change %}">Change my password</a></li>
+        <li>Update my personal information</li>
+    </ul>
+{% endblock %}

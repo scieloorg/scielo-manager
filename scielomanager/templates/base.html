@@ -42,32 +42,33 @@
                     <div class="well">
                         {% block login %}
                             {% if user.is_authenticated %}
-                                    <h5>{% trans 'Username' %}</h5>
-                                    <h6>{{ user.username }}</h6>
-                                    <h5>{% trans 'Collection' %}</h5>
-                                    <h6>{{ collection }}</h6>
-                                    <a href="/accounts/logout" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
-                            {% else %}
-                                    <form action="{% url journalmanager.user_login %}" method="post">
-                                            <input type="hidden" value="{{ next|default:'' }}" name="next" />
-                                            {% csrf_token %}
-                                            <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/>
-                                            <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/>
-                                            <input class="btn" type="submit" value="{% trans 'login' %}" />
-                                            <ul>
-                                                <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
-                                                <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
-                                            </ul>
-                                    </form>
-                                    {% if invalid %}
-                                         <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
-                                    {% endif %}
-                                    {% if active %}
-                                         <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
-                                    {% endif %}
-                                    {% if required %}
-                                         <div class="loginError">{% trans 'Please login on the system to see this page' %}</div>
-                                    {% endif %}
+                                <h5>{% trans 'Username' %}</h5>
+                                <h6>{{ user.username }}</h6>
+                                <h5>{% trans 'Collection' %}</h5>
+                                <h6>{{ collection }}</h6>
+                                <a href="{% url journalmanager.my_account %}">{% trans 'My Account' %}</a>
+                                <a href="{% url journalmanager.user_logout %}" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
+                        {% else %}
+                                <form action="{% url journalmanager.user_login %}" method="post">
+                                        <input type="hidden" value="{{ next|default:'' }}" name="next" />
+                                        {% csrf_token %}
+                                        <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/>
+                                        <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/>
+                                        <input class="btn" type="submit" value="{% trans 'login' %}" />
+                                        <ul>
+                                            <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
+                                            <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
+                                        </ul>
+                                </form>
+                                {% if invalid %}
+                                     <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
+                                {% endif %}
+                                {% if active %}
+                                     <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
+                                {% endif %}
+                                {% if required %}
+                                     <div class="loginError">{% trans 'Please login on the system to see this page' %}</div>
+                                {% endif %}
                             {% endif %}
                         {% endblock %}
                     </div><!--well login box-->
@@ -79,7 +80,7 @@
                                 <a href="{% url journal.index %}"><img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Journals Dashboard' %} </a>
                             </li>
                             <li>
-                                <a href="{% url institution.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Institutions Dashboard' %} </a>
+                                <a href="{% url publisher.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Publishers Dashboard' %} </a>
                             </li>
                             <li>
                                 <a href="{% url center.index %}"><img src="/static/images/center_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Center Dashboard' %} </a>
@@ -93,7 +94,7 @@
                             <li><a href="#">{% trans 'Add Journal' %}</a></li>
                             <li><a href="#">{% trans 'Add Issue' %}</a></li>
                             <li><a href="#">{% trans 'Add Section' %}</a></li>
-                            <li><a href="#">{% trans 'Add Institution' %}</a></li>
+                            <li><a href="#">{% trans 'Add Publisher' %}</a></li>
                             <li><a href="{% url center.index %}">{% trans 'Add Center' %}</a></li>
                             {% endif %}
                             <li class="nav-header">{% trans 'Help' %}</a></li>
