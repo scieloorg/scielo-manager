@@ -37,14 +37,12 @@ class CustomInstitutionManager(models.Manager):
         return super(CustomInstitutionManager, self).get_query_set().filter(is_available=avalability)
 
 class Institution(models.Model):
-
     #Custom manager
     objects = CustomInstitutionManager()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
-    collection = models.ForeignKey(Collection, related_name='publisher_collection')
     country = models.CharField(_('Country'), max_length=32)
     state = models.CharField(_('State'), max_length=32, null=False,blank=True,)
     city = models.CharField(_('City'), max_length=32, null=False,blank=True,)
@@ -135,7 +133,11 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
-        
+     
+class InstitutionCollections(models.Model):
+    institution = models.ForeignKey(Institution)
+    collection  = models.ForeignKey(Collection, null=False)
+
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)
     study_area = models.CharField(_('Study Area'),max_length=256,

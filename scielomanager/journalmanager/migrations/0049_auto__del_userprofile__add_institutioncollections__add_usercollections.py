@@ -8,14 +8,50 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Removing unique constraint on 'UserProfile', fields ['user']
-        db.delete_unique('journalmanager_userprofile', ['user_id'])
+        # Deleting model 'UserProfile'
+        db.delete_table('journalmanager_userprofile')
+
+        # Adding model 'InstitutionCollections'
+        db.create_table('journalmanager_institutioncollections', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('institution', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Institution'])),
+            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
+        ))
+        db.send_create_signal('journalmanager', ['InstitutionCollections'])
+
+        # Adding model 'UserCollections'
+        db.create_table('journalmanager_usercollections', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
+            ('is_default', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_manager', self.gf('django.db.models.fields.BooleanField')(default=False)),
+        ))
+        db.send_create_signal('journalmanager', ['UserCollections'])
+
+        # Deleting field 'Institution.collection'
+        db.delete_column('journalmanager_institution', 'collection_id')
 
 
     def backwards(self, orm):
         
-        # Adding unique constraint on 'UserProfile', fields ['user']
-        db.create_unique('journalmanager_userprofile', ['user_id'])
+        # Adding model 'UserProfile'
+        db.create_table('journalmanager_userprofile', (
+            ('is_manager', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_collection', to=orm['journalmanager.Collection'])),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], unique=True)),
+        ))
+        db.send_create_signal('journalmanager', ['UserProfile'])
+
+        # Deleting model 'InstitutionCollections'
+        db.delete_table('journalmanager_institutioncollections')
+
+        # Deleting model 'UserCollections'
+        db.delete_table('journalmanager_usercollections')
+
+        # User chose to not deal with backwards NULL issues for 'Institution.collection'
+        raise RuntimeError("Cannot reverse this migration. 'Institution.collection' and its values cannot be restored.")
 
 
     models = {
@@ -62,16 +98,16 @@ class Migration(SchemaMigration):
         },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
+            'collection': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'user_collection'", 'symmetrical': 'False', 'through': "orm['journalmanager.UserCollections']", 'to': "orm['auth.User']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
             'validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
-        'journalmanager.indexingcoverage': {
-            'Meta': {'object_name': 'IndexingCoverage'},
-            'database_acronym': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'database_name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        'journalmanager.indexdatabase': {
+            'Meta': {'object_name': 'IndexDatabase'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'})
         },
         'journalmanager.institution': {
             'Address': ('django.db.models.fields.TextField', [], {}),
@@ -81,7 +117,6 @@ class Migration(SchemaMigration):
             'acronym': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'blank': 'True'}),
             'cel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'publisher_collection'", 'to': "orm['journalmanager.Collection']"}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
@@ -94,6 +129,12 @@ class Migration(SchemaMigration):
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
+        },
+        'journalmanager.institutioncollections': {
+            'Meta': {'object_name': 'InstitutionCollections'},
+            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'institution': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Institution']"})
         },
         'journalmanager.issue': {
             'Meta': {'object_name': 'Issue'},
@@ -133,7 +174,6 @@ class Migration(SchemaMigration):
             'final_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             'frequency': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'indexing_coverage': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.IndexingCoverage']", 'symmetrical': 'False'}),
             'init_num': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
@@ -165,6 +205,14 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'})
+        },
+        'journalmanager.journalindexcoverage': {
+            'Meta': {'object_name': 'JournalIndexCoverage'},
+            'database': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.IndexDatabase']", 'null': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'identify': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'})
         },
         'journalmanager.journalmission': {
             'Meta': {'object_name': 'JournalMission'},
@@ -223,10 +271,11 @@ class Migration(SchemaMigration):
             'license_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
             'reference_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
-        'journalmanager.userprofile': {
-            'Meta': {'object_name': 'UserProfile'},
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_collection'", 'to': "orm['journalmanager.Collection']"}),
+        'journalmanager.usercollections': {
+            'Meta': {'object_name': 'UserCollections'},
+            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_default': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_manager': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         }

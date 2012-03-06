@@ -126,7 +126,7 @@ def add_user(request, user_id=None):
         user_form_kwargs = {}
 
         if user_id is not None: #edit - preserve form-data    
-            filled_form = models.User.objects.get(pk = user_id)
+            filled_form = user
             user_form_kwargs['instance'] = filled_form
 
         add_form = UserForm(request.POST, **user_form_kwargs)
@@ -252,8 +252,8 @@ def toggle_user_availability(request, user_id):
 def institution_index(request):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default = True)
-    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection__in = ( collection.collection.pk for collection in default_collections ))
-
+    #all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(institutioncollections_set__collection__in = ( collection.collection.pk for collection in default_collections ))
+    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1))
     institutions = get_paginated(all_institutions, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/institution_dashboard.html')
@@ -268,33 +268,48 @@ def add_institution(request, institution_id=None):
     """
     Handles new and existing institutions
     """
+    if  institution_id == None:
+        institution = models.Institution()
+    else:
+        institution = get_object_or_404(models.Institution, id = institution_id)
 
     user_collections = get_user_collections(request.user.id)
 
+    InstitutionCollectionsFormSet = inlineformset_factory(models.Institution, models.InstitutionCollections, 
+        form=InstitutionCollectionsForm, extra=1, can_delete=True)
+
     if request.method == 'POST':
         institution_form_kwargs = {}
+        institutioncollectionsformset = InstitutionCollectionsFormSet(request.POST, 
+            instance=institution, prefix='institutioncollections',)
 
         if institution_id is not None: #edit - preserve form-data
-            filled_form = models.Institution.objects.get(pk = institution_id)
+            filled_form = institution
             institution_form_kwargs['instance'] = filled_form
 
         add_form = InstitutionForm(request.POST, **institution_form_kwargs)
 
-        if add_form.is_valid():
-            add_form.save_all(collection = user_collection)
+        if add_form.is_valid() and institutioncollectionsformset.is_valid():
+            add_form.save()
+            institutioncollectionsformset.save()  
             return HttpResponseRedirect(reverse('institution.index'))
+
     else:
         if institution_id is None: #new
             add_form = InstitutionForm()
+            institutioncollectionsformset = InstitutionCollectionsFormSet(instance=institution, 
+                prefix='institutioncollections')
         else:
             filled_form = models.Institution.objects.get(pk = institution_id)
             add_form = InstitutionForm(instance = filled_form)
+            institutioncollectionsformset = InstitutionCollectionsFormSet(instance=institution, 
+                prefix='institutioncollections')
 
     return render_to_response('journalmanager/add_institution.html', {
                               'add_form': add_form,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
-                              },
+                              'institutioncollectionsformset': institutioncollectionsformset},
                               context_instance = RequestContext(request))
 
 @login_required
