@@ -78,7 +78,6 @@ class Journal(models.Model):
     objects = CustomJournalManager()
 
     #Relation fields
-    collections = models.ManyToManyField('Collection')
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     institution = models.ForeignKey(Institution, related_name='journal_institution',null=False)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
@@ -136,7 +135,11 @@ class Journal(models.Model):
      
 class InstitutionCollections(models.Model):
     institution = models.ForeignKey(Institution)
-    collection  = models.ForeignKey(Collection, null=False)
+    collection= models.ForeignKey(Collection, null=False)
+
+class JournalCollections(models.Model):
+    journal = models.ForeignKey(Journal)
+    collection = models.ForeignKey(Collection, null=False)
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)

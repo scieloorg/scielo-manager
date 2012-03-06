@@ -180,7 +180,7 @@ def add_journal(request, journal_id = None):
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
-
+    JournalCollectionsFormSet = inlineformset_factory(models.Journal, models.JournalCollections, form=JournalCollectionsForm, extra=1, can_delete=True)
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
@@ -190,6 +190,7 @@ def add_journal(request, journal_id = None):
 
     if request.method == "POST":
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+        journalcollectionsformset = JournalCollectionsFormSet(request.POST, instance=journal, prefix='collection')
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
@@ -200,6 +201,7 @@ def add_journal(request, journal_id = None):
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
             and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
+            journalcollections.save()
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
@@ -212,6 +214,7 @@ def add_journal(request, journal_id = None):
     else:
 
         journalform  = JournalForm(instance=journal, prefix='journal')
+        journalcollectionsformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
@@ -221,6 +224,7 @@ def add_journal(request, journal_id = None):
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
+                              'journalcollectionsformset': journalcollectionsformset,
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,

@@ -141,6 +141,14 @@ class UserCollectionsForm(ModelForm):
         'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
       }
 
+class JournalCollectionsForm(ModelForm):
+    class Meta:
+      model = models.JournalCollections
+      widgets = {
+        'collection':forms.TextInput(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+
 class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
