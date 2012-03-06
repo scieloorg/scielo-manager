@@ -1,6 +1,8 @@
 # coding: utf-8
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from django import template
+
 
 from scielomanager import settings
 
@@ -49,6 +51,90 @@ def append_to_get(_tag_name, params):
     return AppendGetNode(params)
 
 
+class Pagination(template.Node):
+
+    def __init__(self, object_record):
+        self.object_record = template.Variable(object_record)
+
+    def render(self, context):
+        object_record = self.object_record.resolve(context)
+
+        if object_record.paginator.count > settings.PAGINATION__ITEMS_PER_PAGE:
+            html_snippet = u'''<div class="pagination"><ul>'''
+
+            class_li_previous = 'disabled' if not object_record.has_previous() else ''
+
+            #Previous
+            html_snippet += u'''<li class="prev {0}"><a href="?page={1}">&larr; {2}</a></li>
+                '''.format(class_li_previous, object_record.previous_page_number(), _('Previous')) 
+
+            #Numbers
+            for page in object_record.paginator.page_range:
+
+                class_li_page = 'active' if object_record.number == page else ''
+
+                html_snippet += u'''<li class="{0}">
+                    <a href="?page={1}">{1}</a></li>'''.format(class_li_page, page)
+
+            #Next
+            class_li_next = 'disabled' if not object_record.has_next() else ''
+
+            html_snippet += u'''<li class="next {0}">
+                <a href="?page={1}">{2} &rarr;</a></li>
+                '''.format(class_li_next, object_record.next_page_number(), _('Next') )
+
+            html_snippet += u'''</ul></div>'''
+
+            return html_snippet
+          
+        else: return ''
+
+@register.tag()
+@easy_tag
+def pagination(_tag_name, params):
+    return Pagination(params)
+
+class SimplePagination(template.Node):
+
+    def __init__(self, object_record):
+        self.object_record = template.Variable(object_record)
+
+    def render(self, context):
+
+        object_record = self.object_record.resolve(context)
+
+        if object_record.paginator.count > settings.PAGINATION__ITEMS_PER_PAGE:
+
+            html_snippet = u'''<strong> {0}-{1} {2} {3} </strong><span class="pagination">
+                '''.format(object_record.start_index(), object_record.end_index(), _('of'), object_record.paginator.count)
+
+            html_snippet += u'''<ul>'''
+
+            #Previous
+            class_li_previous = 'disabled' if not object_record.has_previous() else ''
+
+            html_snippet += u'''<li class="prev {0}"><a href="?page={1}">&larr;</a></li>
+                '''.format(class_li_previous, object_record.previous_page_number()) 
+
+            #Next
+            class_li_next = 'disabled' if not object_record.has_next() else ''
+
+            html_snippet += u'''<li class="next {0}">
+                <a href="?page={1}">&rarr;</a></li>
+                '''.format(class_li_next, object_record.next_page_number())
+
+            html_snippet += u'''</ul></span>'''
+
+            return html_snippet
+
+        else: return ''
+
+
+@register.tag()
+@easy_tag
+def simple_pagination(_tag_name, params):
+    return SimplePagination(params)
+
 class FieldHelpText(template.Node):
 
     def __init__(self, field_name, help_text, glossary_refname):
@@ -91,3 +177,6 @@ def field_help(_tag_name, *params):
     Usage: {% field_help field_label help_text %}
     """
     return FieldHelpText(*params)
+
+
+
