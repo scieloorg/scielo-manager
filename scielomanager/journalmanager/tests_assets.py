@@ -78,31 +78,42 @@ def get_sample_journal_dataform(dict_params):
       'indexcoverage-0-database': 1,
       'indexcoverage-0-identify': 'ABDC-Medline',
 
+      #Collection formset data
+      'collection-TOTAL_FORMS': 1,
+      'collection-INITIAL_FORMS': 0,
+      'collection-0-collection': 4,
+
     }
 
     journal_attrs.update(dict_params)
 
     return journal_attrs
 
-def get_sample_institution_dataform(**kwargs):
+def get_sample_institution_dataform(dict_params):
     institution_attrs = {
-      'city': '',
-      'fax': '',
-      'validated': True,
-      'name': u'Associação Nacional de História - ANPUH',
-      'Address_number': '222',
-      'acronym': 'rbh',
-      'country': 'BR',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': 'teste@scielo.org',
-      'Address_complement': '',
-      'is_available': True,
+      'institution-city': '',
+      'institution-fax': '',
+      'institution-validated': True,
+      'institution-name': u'Associação Nacional de História - ANPUH',
+      'institution-Address_number': '222',
+      'institution-acronym': 'rbh',
+      'institution-country': 'BR',
+      'institution-cel': '',
+      'institution-phone': '',
+      'institution-state': '',
+      'institution-Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'institution-mail': 'teste@scielo.org',
+      'institution-Address_complement': '',
+      'institution-is_available': True,
+
+      #Collection formset data
+      'institutioncollections-TOTAL_FORMS': 1,
+      'institutioncollections-INITIAL_FORMS': 0,
+      'institutioncollections-0-collection': 2,
+
     }
 
-    institution_attrs.update(kwargs)
+    institution_attrs.update(dict_params)
 
     return institution_attrs
 
@@ -197,15 +208,16 @@ def get_sample_creator(is_active = True, is_superuser = True, is_staff = True):
 
     return User(**user_attrs)
 
-def get_sample_userprofile(user, collection):
+def get_sample_usercollections(user, collection):
 
-    profile_attrs = {
+    usercollections_attrs = {
       'is_manager': False,
+      'is_default': False,
       'user': user,
       'collection': collection,
     }
 
-    return models.UserProfile(**profile_attrs)
+    return models.UserCollections(**usercollections_attrs)
 
 
 def get_sample_collection(validated = True):
@@ -241,6 +253,7 @@ def get_sample_institution(validated = True):
       'mail': '',
       'Address_complement': '',
       'is_available': True,
+
     }
 
     return models.Institution(**institution_attrs)

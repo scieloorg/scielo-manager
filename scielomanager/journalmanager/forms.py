@@ -50,11 +50,9 @@ class JournalForm(ModelForm):
 class InstitutionForm(ModelForm):
     class Meta:
         model = models.Institution
-        exclude = ('collection',)
 
     def save_all(self, collection):
         institution = self.save(commit=False)
-        institution.collection = collection
         institution.save()
 
 class UserForm(ModelForm):
@@ -90,9 +88,8 @@ class IssueForm(ModelForm):
             self.fields['section'].queryset = models.Section.objects.filter(journal=journal_id)
 
 
-    def save_all(self, collection, journal):
+    def save_all(self, journal):
         issue = self.save(commit=False)
-        issue.collection = collection
         issue.journal = journal
         issue.save()
         self.save_m2m()

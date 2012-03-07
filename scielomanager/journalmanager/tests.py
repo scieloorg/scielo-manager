@@ -55,8 +55,8 @@ class LoggedInViewsTest(TestCase):
         self.collection = tests_assets.get_sample_collection()
         self.user.save()
         self.collection.save()
-        self.profile = tests_assets.get_sample_userprofile(self.user, self.collection)
-        self.profile.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
 
         self.client = Client()
         self.client.login(username='dummyuser', password='123')
@@ -116,12 +116,11 @@ class LoggedInViewsTest(TestCase):
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
-        sample_center.save() 
+        sample_center.sself.collectionave() 
 
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-institution': sample_institution.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'journal-collections': [self.collection.pk],
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -132,7 +131,6 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
                                                      'journal-institution': sample_institution.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'journal-collections': [self.collection.pk],
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -146,15 +144,14 @@ class LoggedInViewsTest(TestCase):
 
         #add institution - must be added
         response = self.client.post(reverse('institution.add'),
-            tests_assets.get_sample_institution_dataform(collections=[self.collection.pk]))
+            tests_assets.get_sample_institution_dataform({}))
 
         self.assertRedirects(response, reverse('institution.index'))
 
         #edit institution - must be changed
         testing_institution = Institution.objects.get(name = u'Associação Nacional de História - ANPUH')
         response = self.client.post(reverse('institution.edit', args = (testing_institution.pk,)),
-            tests_assets.get_sample_institution_dataform(name = 'Modified Title',
-                                                         collections = [self.collection.pk]))
+            tests_assets.get_sample_institution_dataform({'institution-name': 'Modified Title',}))
 
         self.assertRedirects(response, reverse('institution.index'))
         modified_testing_institution = Institution.objects.get(name = 'Modified Title')
@@ -238,7 +235,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('journals' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
@@ -259,7 +256,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('institutions' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH',
@@ -280,7 +277,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('journals' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
@@ -300,7 +297,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('institutions' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['institutions'].object_list[0].name))

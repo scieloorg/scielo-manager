@@ -191,6 +191,7 @@ def add_journal(request, journal_id = None):
     JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
+
         journalform = JournalForm(request.POST, instance=journal, prefix='journal')
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
@@ -280,38 +281,25 @@ def add_institution(request, institution_id=None):
 
     user_collections = get_user_collections(request.user.id)
 
-    InstitutionCollectionsFormSet = inlineformset_factory(models.Institution, models.InstitutionCollections, 
-        form=InstitutionCollectionsForm, extra=1, can_delete=True)
+    InstitutionCollectionsFormSet = inlineformset_factory(models.Institution, models.InstitutionCollections, form=InstitutionCollectionsForm, extra=1, can_delete=True)
 
-    if request.method == 'POST':
-        institution_form_kwargs = {}
-        institutioncollectionsformset = InstitutionCollectionsFormSet(request.POST, 
-            instance=institution, prefix='institutioncollections',)
 
-        if institution_id is not None: #edit - preserve form-data
-            filled_form = institution
-            institution_form_kwargs['instance'] = filled_form
+    if request.method == "POST":
+        institutionform = InstitutionForm(request.POST, instance=institution, prefix='institution')
+        institutioncollectionsformset = InstitutionCollectionsFormSet(request.POST, instance=institution, prefix='institutioncollections')
 
-        add_form = InstitutionForm(request.POST, **institution_form_kwargs)
+        if institutionform.is_valid():
+            institutionform.save()
+            institutioncollectionsformset.save()
 
-        if add_form.is_valid() and institutioncollectionsformset.is_valid():
-            add_form.save()
-            institutioncollectionsformset.save()  
             return HttpResponseRedirect(reverse('institution.index'))
 
     else:
-        if institution_id is None: #new
-            add_form = InstitutionForm()
-            institutioncollectionsformset = InstitutionCollectionsFormSet(instance=institution, 
-                prefix='institutioncollections')
-        else:
-            filled_form = models.Institution.objects.get(pk = institution_id)
-            add_form = InstitutionForm(instance = filled_form)
-            institutioncollectionsformset = InstitutionCollectionsFormSet(instance=institution, 
-                prefix='institutioncollections')
+        institutionform  = InstitutionForm(instance=institution, prefix='institution')
+        institutioncollectionsformset =  InstitutionCollectionsFormSet(instance=institution, prefix='institutioncollections')
 
     return render_to_response('journalmanager/add_institution.html', {
-                              'add_form': add_form,
+                              'add_form': institutionform,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
                               'institutioncollectionsformset': institutioncollectionsformset},
@@ -364,7 +352,7 @@ def add_issue(request, journal_id, issue_id=None):
         add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
 
         if add_form.is_valid():
-            add_form.save_all(user_collection, journal)
+            add_form.save_all(journal)
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
     else:
@@ -391,8 +379,7 @@ def search_journal(request):
     default_collections = user_collections.filter(is_default=True)
 
     #Get journals where title contains the "q" value and collection equal with the user
-    journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q'],
-                                                    collection__in = ( collection.collection.pk for collection in default_collections )).order_by('title')
+    journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q']).order_by('title')
 
     #Paginated the result
     journals = get_paginated(journals_filter, request.GET.get('page', 1))
@@ -411,8 +398,7 @@ def search_institution(request):
     default_collections = user_collections.filter(is_default=True)
 
     #Get institutions where title contains the "q" value and collection equal with the user
-    institutions_filter = models.Institution.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection__in = ( collection.collection.pk for collection in default_collections )).order_by('name')
+    institutions_filter = models.Institution.objects.filter(name__icontains = request.REQUEST['q']).order_by('name')
 
     #Paginated the result
     institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
