@@ -11,6 +11,18 @@ import choices
 import helptexts
 
 
+class AppCustomManager(models.Manager):
+    """
+    Domain specific model managers.
+    """
+
+    def available(self, avalability=True):
+        """
+        Filter the queryset based on its availability.
+        """
+        return super(AppCustomManager, self).get_query_set().filter(is_available=avalability)
+
+
 class Collection(models.Model):
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
     url = models.URLField(_('Instance URL'), )
@@ -27,16 +39,10 @@ class UserProfile(models.Model):
     collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
 
-
-class CustomInstitutionManager(models.Manager):
-
-    def available(self, avalability=True):
-        return super(CustomInstitutionManager, self).get_query_set().filter(is_available=avalability)
-
 class Institution(models.Model):
 
     #Custom manager
-    objects = CustomInstitutionManager()
+    objects = AppCustomManager()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
@@ -64,23 +70,14 @@ class Institution(models.Model):
     class Meta:
         ordering = ['name']
 
-class CustomPublisherManager(models.Manager):
-    def available(self, avalability=True):
-        return super(CustomPublisherManager, self).get_query_set().filter(is_available=avalability)
-
 class Publisher(Institution):
-    objects = CustomPublisherManager()
-    collection = models.ForeignKey('Collection', related_name='publisher_collection', blank=False, ) 
-
-class CustomJournalManager(models.Manager):
-
-    def available(self, availability=True):
-        return super(CustomJournalManager, self).get_query_set().filter(is_available=availability)
+    objects = AppCustomManager()
+    collection = models.ForeignKey('Collection', related_name='publisher_collection', blank=False, )
 
 class Journal(models.Model):
 
     #Custom manager
-    objects = CustomJournalManager()
+    objects = AppCustomManager()
 
     #Relation fields
     collections = models.ManyToManyField('Collection')
@@ -138,7 +135,7 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
-        
+
 class JournalTitle(models.Model):
     journal = models.ForeignKey(Journal)
     title = models.CharField(_('Title'), null=False, max_length=128)
@@ -172,7 +169,7 @@ class IndexDatabase(models.Model):
 class JournalIndexCoverage(models.Model):
     journal = models.ForeignKey(Journal)
     database = models.ForeignKey(IndexDatabase, null=True)
-    
+
     title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
     identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
 
@@ -195,7 +192,7 @@ class TranslatedData(models.Model):
 
 class Section(models.Model):
     #Custom manager
-    objects = CustomJournalManager()
+    objects = AppCustomManager()
 
     title = models.CharField(_('Title'), null=False, blank=False, max_length=256)
     title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
@@ -208,15 +205,10 @@ class Section(models.Model):
     def __unicode__(self):
         return self.title
 
-class CustomIssueManager(models.Manager):
-
-    def available(self, avalability=True):
-        return super(CustomIssueManager, self).get_query_set().filter(is_available=avalability)
-
 class Issue(models.Model):
 
     #Custom manager
-    objects = CustomIssueManager()
+    objects = AppCustomManager()
 
     section = models.ManyToManyField(Section)
     journal = models.ForeignKey(Journal, null=True, blank=False)
@@ -253,11 +245,6 @@ class Issue(models.Model):
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
-class CustomCenterManager(models.Manager):
-
-    def available(self, avalability=True):
-        return super(CustomCenterManager, self).get_query_set().filter(is_available=avalability)
-
 class Center(Institution):
-    objects = CustomCenterManager()
-    collection = models.ForeignKey('Collection', related_name='collection', blank=False, ) 
+    objects = AppCustomManager()
+    collection = models.ForeignKey('Collection', related_name='collection', blank=False, )
