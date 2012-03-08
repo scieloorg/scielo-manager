@@ -16,6 +16,7 @@
     <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues' %}</li>
 </ul>
 {% endblock %}
+
 {% block body %}
 <div class="row-fluid">
     <div class="span12">
@@ -27,26 +28,22 @@
         </div>
     </div>
 </div><!--row-fluid Search box-->
-<div class="row-fluid">
-    <div class="span10">
-        <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
+
+<div class="row-fluid show-grid">
+    <div class="span10"> 
+      <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
     </div>
     <div class="span2">
-        <div class="btn-group">
-            <a class="btn" href="#">{% trans 'View' %}</a>
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="{% url issue.index journal.id %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Issue" %}</a>
-                </li>
-                <li>
-                    <a href="{% url issue.index journal.id %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Issue" %}</a>
-                </li>
-            </ul>
-        </div>
-</div><!--row-fluid Search box-->
+        {% simple_pagination issues %}
+    </div>
+</div>
+
+<div class="row-fluid">
+  <span>{% trans 'Show by: ' %}</span>
+    <a href="{% url issue.index journal.id %}"> {% trans "Enabled Issue" %}</a>
+    <a href="{% url issue.index journal.id %}?is_available=0">  {% trans "Disabled Issue" %}</a>
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -84,18 +81,5 @@
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ issues.start_index }}-{{ issues.start_index }} {% trans 'of' %} {{ issues.paginator.count }}
-<div class="pagination">
-    <ul>
-        <li class="prev {% if not issues.has_previous %}disabled{% endif %}">
-            <a href="{% append_to_get page=issues.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
-        </li>
-        {% for page in issues.paginator.page_range %}
-        <li {% if issues.number == page %}class="active"{% endif %}><a href="?{% append_to_get page=page %}">{{ page }}</a></li>
-        {% endfor %}
-        <li class="next {% if not issues.has_next %}disabled{% endif %}">
-            <a href="{% append_to_get page=issues.next_page_number %}">{% trans 'Next' %} &rarr;</a>
-        </li>
-    </ul>
-</div>
+{% pagination issues %}
 {% endblock %}
