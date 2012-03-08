@@ -442,21 +442,11 @@
  <script>
     $(document).ready(function() {
 
-        $( "#id_institution" ).combobox({ autoFocus: true });
+        $( "#id_publisher" ).combobox({ autoFocus: true });
 
-        $( "#toggle" ).click(function() {
-            $( "#id_institution" ).toggle();
-        });
         $(".help-text").popover('hide');
 
-
-
-        $( "#id_journal-institution" ).combobox({ autoFocus: true });
         $( "#id_journal-publisher" ).combobox({ autoFocus: true });
-
-        $( "#toggle" ).click(function() {
-            $( "#id_publisher" ).toggle();
-        });
 
         //multiple-formsets
         $('#titleformset tbody tr').formset({
@@ -488,7 +478,7 @@
            formCssClass: 'dynamic-indexcoverageformset-form',
            prefix: '{{ indexcoverageformset.prefix }}'
         });
-              
+
     });
   </script>
 {% endblock %}

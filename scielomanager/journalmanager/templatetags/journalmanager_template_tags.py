@@ -1,6 +1,8 @@
 # coding: utf-8
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from django import template
+
 
 from scielomanager import settings
 
@@ -22,32 +24,100 @@ def easy_tag(func):
     inner.__doc__ = inner.__doc__
     return inner
 
+def full_path(context, **params):
 
-class AppendGetNode(template.Node):
-    def __init__(self, params):
-        self.dict_pairs = {}
-        for pair in params.split(','):
-            key, value = pair.split('=')
-            self.dict_pairs[key] = template.Variable(value)
+    url_get = context['request'].GET.copy()
+
+    url_path = context['request'].META['PATH_INFO']
+
+    for key, value in params.items():
+        url_get[key] = value
+
+    if len(url_get):
+        url_path += "?%s" % "&".join(("%s=%s" % (key, value) for key, value in url_get.items() if value))
+
+    return url_path
+
+class Pagination(template.Node):
+
+    def __init__(self, object_record):
+        self.object_record = template.Variable(object_record)
 
     def render(self, context):
-        get = context['request'].GET.copy()
+        object_record = self.object_record.resolve(context)
 
-        for key, value in self.dict_pairs.items():
-            get[key] = value.resolve(context)
+        if object_record.paginator.count > settings.PAGINATION__ITEMS_PER_PAGE:
+            class_li_previous = 'disabled' if not object_record.has_previous() else ''
+            class_li_next = 'disabled' if not object_record.has_next() else ''
+            html_pages = []
 
-        path = context['request'].META['PATH_INFO']
+            for page in object_record.paginator.page_range:
+                class_li_page = 'active' if object_record.number == page else ''
+                html_pages.append(u'<li class="{0}"><a href="{1}">{2}</a></li>'.format(class_li_page, full_path(context, page=page), page))
 
-        if len(get):
-            path += "?%s" % "&".join(["%s=%s" % (key, value) for (key, value) in get.items() if value])
-
-        return path
+            html_snippet = u'''
+                <div class="pagination">
+                <ul>
+                <li class="prev {0}"><a href="{1}">&larr; {2}</a></li>
+                {3}
+                <li class="next {4}"><a href="{5}">{6} &rarr;</a></li>
+                </ul>
+                </div>
+                '''.format(
+                    class_li_previous,
+                    full_path(context, page=object_record.previous_page_number()),
+                    _('Previous'),
+                    ''.join(html_pages),
+                    class_li_next,
+                    full_path(context, page=object_record.next_page_number()),
+                    _('Next')
+                )
+            return html_snippet
+        else:
+            return ''
 
 @register.tag()
 @easy_tag
-def append_to_get(_tag_name, params):
-    return AppendGetNode(params)
+def pagination(_tag_name, params):
+    return Pagination(params)
 
+class SimplePagination(template.Node):
+
+    def __init__(self, object_record):
+        self.object_record = template.Variable(object_record)
+
+    def render(self, context):
+
+        object_record = self.object_record.resolve(context)
+
+        if object_record.paginator.count > settings.PAGINATION__ITEMS_PER_PAGE:
+            class_li_previous = 'disabled' if not object_record.has_previous() else ''
+            class_li_next = 'disabled' if not object_record.has_next() else ''
+
+            html_snippet = u'''
+                <strong> {0}-{1} {2} {3} </strong>
+                <span class="pagination"><ul>
+                <li class="prev {4}">
+                <a href="{5}">&larr;</a></li>
+                <li class="next {6}">
+                <a href="{7}">&rarr;</a></li>
+                </ul></span>
+                '''.format(object_record.start_index(), 
+                    object_record.end_index(), _('of'),
+                    object_record.paginator.count,
+                    class_li_previous,
+                    full_path(context, page=object_record.previous_page_number()),
+                    class_li_next,
+                    full_path(context, page=object_record.next_page_number()))
+
+            return html_snippet
+
+        else: return ''
+
+@register.tag()
+@easy_tag
+def simple_pagination(_tag_name, params):
+    return SimplePagination(params)
 
 class FieldHelpText(template.Node):
 
@@ -91,3 +161,6 @@ def field_help(_tag_name, *params):
     Usage: {% field_help field_label help_text %}
     """
     return FieldHelpText(*params)
+
+
+
