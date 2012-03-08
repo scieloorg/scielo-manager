@@ -56,7 +56,7 @@
         {% for ct in centers.object_list %}
         <tr>
             <td>
-                <h4>{{ ct.name }}</h4>
+                <h4><a href="{% url center.edit ct.pk %}">{{ ct.name }}</a></h4>
                 <ul class="_actions">
                     <li>
                         <a href="{% url center.edit ct.pk %}">

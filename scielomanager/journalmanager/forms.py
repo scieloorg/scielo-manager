@@ -50,11 +50,9 @@ class JournalForm(ModelForm):
 class PublisherForm(ModelForm):
     class Meta:
         model = models.Publisher
-        exclude = ('collection',)
 
-    def save_all(self, collection):
+    def save_all(self):
         publisher = self.save(commit=False)
-        publisher.collection = collection
         publisher.save()
 
 class UserForm(ModelForm):
@@ -95,9 +93,8 @@ class IssueForm(ModelForm):
             self.fields['section'].queryset = models.Section.objects.filter(journal=journal_id)
 
 
-    def save_all(self, collection, journal):
+    def save_all(self, journal):
         issue = self.save(commit=False)
-        issue.collection = collection
         issue.journal = journal
         issue.save()
         self.save_m2m()
@@ -132,6 +129,42 @@ class SectionForm(ModelForm):
     class Meta:
       model = models.Section
 
+class InstitutionCollectionsForm(ModelForm):
+    class Meta:
+      model = models.Institution
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+class PublisherCollectionsForm(ModelForm):
+    class Meta:
+      model = models.Publisher
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+class CenterCollectionsForm(ModelForm):
+    class Meta:
+      model = models.Center
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+class UserCollectionsForm(ModelForm):
+    class Meta:
+      model = models.UserCollections
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+class JournalCollectionsForm(ModelForm):
+    class Meta:
+      model = models.JournalCollections
+      widgets = {
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+
 class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
@@ -162,5 +195,4 @@ class CenterForm(ModelForm):
 
     def save_all(self, collection):
         center = self.save(commit=False)
-        center.collection = collection
         center.save()
