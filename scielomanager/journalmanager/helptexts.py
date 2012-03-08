@@ -7,8 +7,6 @@ JOURNAL__ACRONYM = _("""Enter in this field the acronym of the journal, max 8 ch
 
 JOURNAL__ALPHABET = _("""Enter data in this field the alphabet of the Original Title of the journal title.""")
 
-JOURNAL__COLLECTIONS = _("""Select the collections to which the journal belong.""")
-
 JOURNAL__COPYRIGHTER = _("""Enter a Copyrighter.""")
 
 JOURNAL__CTRL_VOCABULARY = _("""Enter in this field the controlled vocabulary used to the key words.""")
