@@ -7,70 +7,71 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Deleting model 'UserProfile'
-        db.delete_table('journalmanager_userprofile')
+        # Adding model 'Publisher'
+        #db.create_table('journalmanager_publisher', (
+        #    ('institution_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.Institution'], unique=True, primary_key=True)),
+        #))
+        #db.send_create_signal('journalmanager', ['Publisher'])
 
-        # Adding model 'InstitutionCollections'
-        db.create_table('journalmanager_institutioncollections', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('institution', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Institution'])),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-        ))
-        db.send_create_signal('journalmanager', ['InstitutionCollections'])
+        #Deleting field 'Center.collection_id'
+        db.delete_column('journalmanager_center', 'collection_id')
 
-        # Adding model 'UserCollections'
-        db.create_table('journalmanager_usercollections', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-            ('is_default', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_manager', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('journalmanager', ['UserCollections'])
+        #Deleting field 'Publisher.collection_id'
+        db.delete_column('journalmanager_publisher', 'collection_id')
 
-        # Adding model 'JournalCollections'
-        db.create_table('journalmanager_journalcollections', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-        ))
-        db.send_create_signal('journalmanager', ['JournalCollections'])
+        # Adding field 'Journal.publisher'
+        #db.add_column('journalmanager_journal', 'publisher', self.gf('django.db.models.fields.related.ForeignKey')(default='', related_name='journal_institution', to=orm['journalmanager.Publisher']), keep_default=False)
 
-        # Removing M2M table for field collections on 'Journal'
-        db.delete_table('journalmanager_journal_collections')
+        # Deleting field 'Institution.Address_complement'
+        #db.delete_column('journalmanager_institution', 'Address_complement')
+
+        # Deleting field 'Institution.Address_number'
+        #db.delete_column('journalmanager_institution', 'Address_number')
+
+        # Deleting field 'Institution.Address'
+        #db.delete_column('journalmanager_institution', 'Address')
+
+        # Adding field 'Institution.address'
+        #db.add_column('journalmanager_institution', 'address', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
+
+        # Adding field 'Institution.address_number'
+        #db.add_column('journalmanager_institution', 'address_number', self.gf('django.db.models.fields.CharField')(default='', max_length=8), keep_default=False)
+
+        # Adding field 'Institution.address_complement'
+        #db.add_column('journalmanager_institution', 'address_complement', self.gf('django.db.models.fields.CharField')(default='', max_length=128, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Adding model 'UserProfile'
-        db.create_table('journalmanager_userprofile', (
-            ('is_manager', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_collection', to=orm['journalmanager.Collection'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], unique=True)),
-        ))
-        db.send_create_signal('journalmanager', ['UserProfile'])
+        # Deleting model 'Publisher'
+        db.delete_table('journalmanager_publisher')
 
-        # Deleting model 'InstitutionCollections'
-        db.delete_table('journalmanager_institutioncollections')
+        # Adding field 'Center.is_provider_of_markup'
+        db.add_column('journalmanager_center', 'is_provider_of_markup', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
-        # Deleting model 'UserCollections'
-        db.delete_table('journalmanager_usercollections')
+        # User chose to not deal with backwards NULL issues for 'Journal.institution'
+        raise RuntimeError("Cannot reverse this migration. 'Journal.institution' and its values cannot be restored.")
 
-        # Deleting model 'JournalCollections'
-        db.delete_table('journalmanager_journalcollections')
+        # Deleting field 'Journal.publisher'
+        db.delete_column('journalmanager_journal', 'publisher_id')
 
-        # User chose to not deal with backwards NULL issues for 'Institution.collection'
-        raise RuntimeError("Cannot reverse this migration. 'Institution.collection' and its values cannot be restored.")
+        # Adding field 'Institution.Address_complement'
+        db.add_column('journalmanager_institution', 'Address_complement', self.gf('django.db.models.fields.CharField')(default='', max_length=128, blank=True), keep_default=False)
 
-        # Adding M2M table for field collections on 'Journal'
-        db.create_table('journalmanager_journal_collections', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
-        ))
-        db.create_unique('journalmanager_journal_collections', ['journal_id', 'collection_id'])
+        # User chose to not deal with backwards NULL issues for 'Institution.Address_number'
+        raise RuntimeError("Cannot reverse this migration. 'Institution.Address_number' and its values cannot be restored.")
+
+        # User chose to not deal with backwards NULL issues for 'Institution.Address'
+        raise RuntimeError("Cannot reverse this migration. 'Institution.Address' and its values cannot be restored.")
+
+        # Deleting field 'Institution.address'
+        db.delete_column('journalmanager_institution', 'address')
+
+        # Deleting field 'Institution.address_number'
+        db.delete_column('journalmanager_institution', 'address_number')
+
+        # Deleting field 'Institution.address_complement'
+        db.delete_column('journalmanager_institution', 'address_complement')
 
 
     models = {
@@ -112,8 +113,7 @@ class Migration(SchemaMigration):
         },
         'journalmanager.center': {
             'Meta': {'ordering': "['name']", 'object_name': 'Center', '_ormbases': ['journalmanager.Institution']},
-            'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'}),
-            'is_provider_of_markup': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+            'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
@@ -129,11 +129,11 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'})
         },
         'journalmanager.institution': {
-            'Address': ('django.db.models.fields.TextField', [], {}),
-            'Address_complement': ('django.db.models.fields.CharField', [], {'max_length': '128', 'blank': 'True'}),
-            'Address_number': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
             'Meta': {'ordering': "['name']", 'object_name': 'Institution'},
             'acronym': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'blank': 'True'}),
+            'address': ('django.db.models.fields.TextField', [], {}),
+            'address_complement': ('django.db.models.fields.CharField', [], {'max_length': '128', 'blank': 'True'}),
+            'address_number': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
             'cel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
@@ -195,7 +195,6 @@ class Migration(SchemaMigration):
             'init_num': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
-            'institution': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'journal_institution'", 'to': "orm['journalmanager.Institution']"}),
             'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'literature_type': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'national_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
@@ -204,6 +203,7 @@ class Migration(SchemaMigration):
             'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'blank': 'True'}),
             'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'pub_status': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
+            'publisher': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'journal_institution'", 'to': "orm['journalmanager.Publisher']"}),
             'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'sponsor': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
@@ -263,6 +263,10 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
+        'journalmanager.publisher': {
+            'Meta': {'ordering': "['name']", 'object_name': 'Publisher', '_ormbases': ['journalmanager.Institution']},
+            'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.section': {
             'Meta': {'object_name': 'Section'},

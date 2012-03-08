@@ -6,8 +6,8 @@
 {{ block.super }}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url institution.index %}">{% trans 'Institution Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New Institution' %}</li>
+    <li><a href="{% url publisher.index %}">{% trans 'Publisher Dashboard' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'New Publisher' %}</li>
 </ul>
 {% endblock %}
 
@@ -50,19 +50,19 @@
         <div class="control-group {% if add_form.Address.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.Address.label_tag %}</label>
             <div class="controls">
-                {{ add_form.Address }}
+                {{ add_form.address }}
             </div>
         </div>
         <div class="control-group {% if add_form.Address_number.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.Address_number.label_tag %}</label>
             <div class="controls">
-                {{ add_form.Address_number }}
+                {{ add_form.address_number }}
             </div>
         </div>
         <div class="control-group {% if add_form.Address_complement.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.Address_complement.label_tag %}</label>
             <div class="controls">
-                {{ add_form.Address_complement }}
+                {{ add_form.address_complement }}
             </div>
         </div>
         <div class="control-group {% if add_form.zip_code.errors %}error{% endif %}">
@@ -108,9 +108,9 @@
             </div>
         </div>
     </div>
-    <span class="label">{% trans "Institution Collections" %}</span>
+    <span class="label">{% trans "Publisher Collections" %}</span>
     <div class="well">
-        <table id="institutioncollectionsformset" class="table table-bordered table-striped">
+        <table id="publishercollectionsformset" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th>{% trans "Collection" %}</th>
@@ -118,7 +118,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for form in institutioncollectionsformset.forms %}
+            {% for form in publishercollectionsformset.forms %}
             <tr id="{{ form.prefix }}-row">
                 <td>
                     {% for field in form.hidden_fields %}{{ field }}{% endfor %}
@@ -131,7 +131,7 @@
         </tbody>
         </table>
         <p>
-            {{ institutioncollectionsformset.management_form }}
+            {{ publishercollectionsformset.management_form }}
         </p>
     </div>
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
@@ -149,16 +149,16 @@
  <script>
     $(document).ready(function() {
 
-        $( "#id_institution-collection" ).combobox({ autoFocus: true });
+        $( "#id_publisher-collection" ).combobox({ autoFocus: true });
 
         $( "#toggle" ).click(function() {
-            $( "#id_institution" ).toggle();
+            $( "#id_publisher" ).toggle();
         });
 
         //multiple-formsets
-        $('#institutioncollectionsformset tbody tr').formset({
-           formCssClass: 'dynamic-institutioncollectionsformset-form',
-           prefix: '{{ institutioncollectionsformset.prefix }}'
+        $('#publishercollectionsformset tbody tr').formset({
+           formCssClass: 'dynamic-publishercollectionsformset-form',
+           prefix: '{{ publishercollectionsformset.prefix }}'
         });
     });
   </script>

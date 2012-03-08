@@ -22,6 +22,7 @@ Development guides
    :maxdepth: 2
 
    dev/helptexts
+   dev/db-diagram
 
 
 Indices and tables

@@ -29,7 +29,7 @@ class JournalForm(ModelForm):
            'previous_title': forms.Select(attrs={'class':'span10'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'institution': forms.Select(attrs={'class':'span8'}),
+           'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
            'subject_descriptors': forms.Textarea(attrs={'class':'span12'}),
            'init_year': SelectDateWidget(),
@@ -47,13 +47,13 @@ class JournalForm(ModelForm):
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
-class InstitutionForm(ModelForm):
+class PublisherForm(ModelForm):
     class Meta:
-        model = models.Institution
+        model = models.Publisher
 
-    def save_all(self, collection):
-        institution = self.save(commit=False)
-        institution.save()
+    def save_all(self):
+        publisher = self.save(commit=False)
+        publisher.save()
 
 class UserForm(ModelForm):
     class Meta:
@@ -66,6 +66,11 @@ class UserForm(ModelForm):
         if commit:
             user.save()
         return user
+
+class PasswordChangeForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
+    new_password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
 
 class IssueForm(ModelForm):
     section = forms.ModelMultipleChoiceField(models.Section.objects.none(), required=True)
@@ -131,6 +136,20 @@ class InstitutionCollectionsForm(ModelForm):
         'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
       }
 
+class PublisherCollectionsForm(ModelForm):
+    class Meta:
+      model = models.Publisher
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
+class CenterCollectionsForm(ModelForm):
+    class Meta:
+      model = models.Center
+      widgets = { 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      }
+
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
@@ -150,7 +169,7 @@ class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
       widgets = {
-        'studyarea':forms.TextInput(attrs={'class':'span10', 'rows':'3'}), 
+        'studyarea':forms.TextInput(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class JournalMissionForm(ModelForm):
@@ -176,5 +195,4 @@ class CenterForm(ModelForm):
 
     def save_all(self, collection):
         center = self.save(commit=False)
-        center.collection = collection
         center.save()
