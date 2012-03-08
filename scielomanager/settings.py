@@ -2,6 +2,8 @@
 # Django settings for scielomanager project.
 import os
 
+from django.contrib.messages import constants as messages
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -97,6 +99,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -132,9 +135,18 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.csrf',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     'journalmanager.context_processors.from_settings',
 )
 
+# Messages framework
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+MESSAGE_TAGS = {
+    messages.INFO: 'alert-heading',
+    messages.SUCCESS: 'alert-heading',
+    messages.WARNING: 'alert-error',
+    messages.ERROR: 'alert-error',
+}
 
 FIXTURE_DIRS = ('fixtures',)
 
