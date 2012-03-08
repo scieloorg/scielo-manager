@@ -75,8 +75,11 @@ def get_sample_journal_dataform(dict_params):
       'indexcoverage-TOTAL_FORMS': 1,
       'indexcoverage-INITIAL_FORMS': 0,
       'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
-      'indexcoverage-0-database': 1,
       'indexcoverage-0-identify': 'ABDC-Medline',
+
+      #Collection formset data
+      'collection-TOTAL_FORMS': 1,
+      'collection-INITIAL_FORMS': 0,
 
     }
 
@@ -84,25 +87,56 @@ def get_sample_journal_dataform(dict_params):
 
     return journal_attrs
 
-def get_sample_publisher_dataform(**kwargs):
-    publisher_attrs = {
-      'city': '',
-      'fax': '',
-      'validated': True,
-      'name': u'Associação Nacional de História - ANPUH',
-      'address_number': '222',
-      'acronym': 'rbh',
-      'country': 'BR',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': 'teste@scielo.org',
-      'address_complement': '',
-      'is_available': True,
+def get_sample_institution_dataform(dict_params):
+    institution_attrs = {
+      'institution-city': '',
+      'institution-fax': '',
+      'institution-validated': True,
+      'institution-name': u'Associação Nacional de História - ANPUH',
+      'institution-Address_number': '222',
+      'institution-acronym': 'rbh',
+      'institution-country': 'BR',
+      'institution-cel': '',
+      'institution-phone': '',
+      'institution-state': '',
+      'institution-Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'institution-mail': 'teste@scielo.org',
+      'institution-Address_complement': '',
+      'institution-is_available': True,
+
+      #Collection formset data
+      'institutioncollections-TOTAL_FORMS': 1,
+      'institutioncollections-INITIAL_FORMS': 0,
+
     }
 
-    publisher_attrs.update(kwargs)
+    institution_attrs.update(dict_params)
+
+    return publisher_attrs
+
+def get_sample_publisher_dataform(dict_params):
+    publisher_attrs = {
+      'publisher-city': '',
+      'publisher-fax': '',
+      'publisher-validated': True,
+      'publisher-name': u'Associação Nacional de História - ANPUH',
+      'publisher-address_number': '222',
+      'publisher-acronym': 'rbh',
+      'publisher-country': 'BR',
+      'publisher-cel': '',
+      'publisher-phone': '',
+      'publisher-state': '',
+      'publisher-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'publisher-mail': 'teste@scielo.org',
+      'publisher-address_complement': '',
+      'publisher-is_available': True,
+
+      #Collection formset data
+      'publishercollections-TOTAL_FORMS': 1,
+      'publishercollections-INITIAL_FORMS': 0,
+    }
+
+    publisher_attrs.update(dict_params)
 
     return publisher_attrs
 
@@ -197,15 +231,16 @@ def get_sample_creator(is_active = True, is_superuser = True, is_staff = True):
 
     return User(**user_attrs)
 
-def get_sample_userprofile(user, collection):
+def get_sample_usercollections(user, collection):
 
-    profile_attrs = {
+    usercollections_attrs = {
       'is_manager': False,
+      'is_default': False,
       'user': user,
       'collection': collection,
     }
 
-    return models.UserProfile(**profile_attrs)
+    return models.UserCollections(**usercollections_attrs)
 
 
 def get_sample_collection(validated = True):
@@ -241,6 +276,7 @@ def get_sample_publisher(validated = True):
       'mail': '',
       'address_complement': '',
       'is_available': True,
+
     }
 
     return models.Publisher(**publisher_attrs)

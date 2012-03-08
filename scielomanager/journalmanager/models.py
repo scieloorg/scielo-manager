@@ -24,6 +24,8 @@ class AppCustomManager(models.Manager):
 
 
 class Collection(models.Model):
+    collection = models.ManyToManyField(User, related_name='user_collection', 
+        through='UserCollections', )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
     url = models.URLField(_('Instance URL'), )
     validated = models.BooleanField(_('Validated'), default=False, )
@@ -34,10 +36,12 @@ class Collection(models.Model):
     class Meta:
         ordering = ['name']
 
-class UserProfile(models.Model):
-    user=models.ForeignKey(User, unique=True)
-    collection = models.ForeignKey(Collection, related_name='user_collection', blank=False)
-    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=True)
+class UserCollections(models.Model):
+    user = models.ForeignKey(User)
+    collection = models.ForeignKey(Collection)
+    is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, 
+        blank=False)
 
 class Institution(models.Model):
 
@@ -80,7 +84,6 @@ class Journal(models.Model):
     objects = AppCustomManager()
 
     #Relation fields
-    collections = models.ManyToManyField('Collection')
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
@@ -135,16 +138,24 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
+     
+class InstitutionCollections(models.Model):
+    institution = models.ForeignKey(Institution)
+    collection= models.ForeignKey(Collection, null=False)
 
-class JournalTitle(models.Model):
+class JournalCollections(models.Model):
     journal = models.ForeignKey(Journal)
-    title = models.CharField(_('Title'), null=False, max_length=128)
-    category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
+    collection = models.ForeignKey(Collection, null=False)
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True)
+
+class JournalTitle(models.Model):
+    journal = models.ForeignKey(Journal)
+    title = models.CharField(_('Title'), null=False, max_length=128)
+    category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
 class JournalTextLanguage(models.Model):
     journal = models.ForeignKey(Journal)
@@ -169,7 +180,6 @@ class IndexDatabase(models.Model):
 class JournalIndexCoverage(models.Model):
     journal = models.ForeignKey(Journal)
     database = models.ForeignKey(IndexDatabase, null=True)
-
     title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
     identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
 
