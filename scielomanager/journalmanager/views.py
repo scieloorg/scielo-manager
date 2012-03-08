@@ -6,6 +6,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import User
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse
@@ -15,7 +17,6 @@ from django.shortcuts import render_to_response
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
@@ -551,7 +552,7 @@ def password_change(request):
         if form.is_valid():
             cleaned_data = form.cleaned_data
             if cleaned_data['new_password'] != cleaned_data['new_password_again']:
-                # send a notification
+                messages.error(request, _('Your new password and new password confirmation must match.'))
                 return HttpResponseRedirect(reverse('journalmanager.password_change'))
 
             auth_user = authenticate(username=request.user.username,
@@ -560,10 +561,10 @@ def password_change(request):
                 auth_user.set_password(cleaned_data['new_password'])
                 auth_user.save()
             else:
-                #send a authentication fail notification
+                messages.error(request, _('Your current password does not match. Please try again.'))
                 return HttpResponseRedirect(reverse('journalmanager.password_change'))
 
-            # send a notification
+            messages.info(request, _('Your new password has been set.'))
             return HttpResponseRedirect(reverse('journalmanager.my_account'))
     else:
         form = PasswordChangeForm()

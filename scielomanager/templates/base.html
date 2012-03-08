@@ -106,8 +106,11 @@
                 </div><!--span3 left menu-->
                 <div class="span9">
                     <div class="mainContent">
-                        <div class="alert alert-error" style="display: none;">{{ msg_error }}</div>
-                        <div class="alert alert-heading" style="display: none;">{{ msg_success }}</div>
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert {{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
                         {% block stepmenu_top %}{% endblock %}
                         {% block body %}{% endblock %}
                     </div><!--mainContent-->
