@@ -29,22 +29,22 @@
               <h5>{% trans 'Username' %}</h5>
               <h6>{{ user.username }}</h6>
               <h5>{% trans 'Collection' %}</h5>
-              <h6>{{ collection }}</h6>
-<h6>
-                                        <ul>
-                                        {% for collection in user_collections %}
-                                            <li>
-                                                {{ collection.collection.name }} 
-                                                {% if collection.is_manager %}
-                                                    (m)
-                                                {% endif %}
-                                                {% if collection.is_default %}
-                                                    (d)
-                                                {% endif %}
-                                            </li>
-                                        {% endfor %}
-                                        </ul>
-                                    </h6>
+              <h5>{{ collection }}</h5>
+              <h6>
+                <ul>
+                  {% for collection in user_collections %}
+                  <li>
+                    {{ collection.collection.name }}
+                    {% if collection.is_manager %}
+                      (m)
+                    {% endif %}
+                    {% if collection.is_default %}
+                      (d)
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </h6>
               <a href="{% url journalmanager.my_account %}">{% trans 'My Account' %}</a>
               <a href="{% url journalmanager.user_logout %}" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
               {% else %}
