@@ -15,8 +15,11 @@
 {% block body %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
-    <div class="span2">
+    <div class="span10">
         <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
+    </div>
+    <div class="span2">
+        {% simple_pagination users %}
     </div>
 </div><!--row-fluid botões-->
 {% endif %}
@@ -74,18 +77,5 @@
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ users.start_index }}-{{ users.end_index }} {% trans 'of' %} {{ users.paginator.count }}
-<div class="pagination">
-    <ul>
-        <li class="prev {% if not users.has_previous %}disabled{% endif %}">
-            <a href="{% append_to_get page=users.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
-        </li>
-        {% for page in users.paginator.page_range %}
-        <li {% if users.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
-        {% endfor %}
-        <li class="next {% if not user.has_next %}disabled{% endif %}">
-            <a href="{% append_to_get page=users.next_page_number %}">{% trans 'Next' %} &rarr;</a>
-        </li>
-    </ul>
-</div>
+{% pagination users %}
 {% endblock %}
