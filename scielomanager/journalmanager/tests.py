@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 
 from scielomanager.journalmanager import tests_assets
 from scielomanager.journalmanager.models import Collection
-from scielomanager.journalmanager.models import UserProfile
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Publisher
 from scielomanager.journalmanager.models import Issue
@@ -56,8 +55,8 @@ class LoggedInViewsTest(TestCase):
         self.collection = tests_assets.get_sample_collection()
         self.user.save()
         self.collection.save()
-        self.profile = tests_assets.get_sample_userprofile(self.user, self.collection)
-        self.profile.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
 
         self.client = Client()
         self.client.login(username='dummyuser', password='123')
@@ -107,13 +106,7 @@ class LoggedInViewsTest(TestCase):
         sample_uselicense.save()
 
         sample_indexdatabase = tests_assets.get_sample_index_database()
-        sample_indexdatabase.save()
-
-        #add journal - missing required
-        #response = self.client.post(reverse('journal.add'),
-        #   tests_assets.get_sample_journal_dataform())
-
-        #self.assertTrue('field required' in response.content.lower())
+        sample_indexdatabase.save()       
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
@@ -122,8 +115,12 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'journal-collections': [self.collection.pk],
+                                                     'collection-0-collection': self.usercollections.pk,
+                                                     'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-center': sample_center.pk, }))
+
+        with open('/tmp/debug.html', 'w') as f:
+            f.write(response.content)
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -133,7 +130,8 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'journal-collections': [self.collection.pk],
+                                                     'indexcoverage-0-database': sample_indexdatabase.pk,
+                                                     'collection-0-collection': self.usercollections.pk,
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -147,15 +145,14 @@ class LoggedInViewsTest(TestCase):
 
         #add publisher - must be added
         response = self.client.post(reverse('publisher.add'),
-            tests_assets.get_sample_publisher_dataform(collections=[self.collection.pk]))
+            tests_assets.get_sample_publisher_dataform({}))
 
         self.assertRedirects(response, reverse('publisher.index'))
 
         #edit publisher - must be changed
         testing_publisher = Publisher.objects.get(name = u'Associação Nacional de História - ANPUH')
         response = self.client.post(reverse('publisher.edit', args = (testing_publisher.pk,)),
-            tests_assets.get_sample_publisher_dataform(name = 'Modified Title',
-                                                         collections = [self.collection.pk]))
+            tests_assets.get_sample_publisher_dataform({'publisher-name': 'Modified Title',}))
 
         self.assertRedirects(response, reverse('publisher.index'))
         modified_testing_publisher = Publisher.objects.get(name = 'Modified Title')
@@ -239,7 +236,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('journals' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
@@ -260,7 +257,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('publishers' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH',
@@ -281,7 +278,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('journals' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
@@ -301,7 +298,7 @@ class LoggedInViewsTest(TestCase):
 
         #values passed to template
         self.assertTrue('publishers' in response.context)
-        self.assertTrue('collection' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['publishers'].object_list[0].name))
