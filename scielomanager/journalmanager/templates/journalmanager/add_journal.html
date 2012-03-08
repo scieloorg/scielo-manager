@@ -27,6 +27,7 @@
         <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
         <div class="controls">
            {{ add_form.title }}
+           {% field_help add_form.title.label add_form.title.help_text term-journal-title %} 
         </div>
     </div>
     <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
@@ -137,10 +138,13 @@
                   {% for field in form.hidden_fields %}{{ field }}{% endfor %}
                   {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
                   {{ form.study_area }}
+                  {% field_help form.study_area.label form.study_area.help_text term-study-area %}
               </td>
           </tr>
+          
           {% endfor %}
       </tbody>
+
     </table>
     <p>
       {{ studyareaformset.management_form }}
@@ -238,6 +242,7 @@
         <label class="control-label" for="acronym">{% trans add_form.acronym.label_tag %}</label>
         <div class="controls">
            {{ add_form.acronym }}
+           {% field_help add_form.acronym.label add_form.acronym.help_text term-acronym  %}
         </div>
     </div>
     <div class="control-group {% if add_form.scielo_issn.errors %}error{% endif %}">
@@ -280,16 +285,20 @@
         <label class="control-label" for="editorial_standard">{% trans add_form.editorial_standard.label_tag %}</label>
         <div class="controls">
            {{ add_form.editorial_standard }}
+           {% field_help add_form.editorial_standard.label add_form.editorial_standard.help_text term-editorial-standard %}
         </div>
     </div>
     <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
         <label class="control-label" for="ctrl_vocabulary">{% trans add_form.ctrl_vocabulary.label_tag %}</label>
         <div class="controls">
            {{ add_form.ctrl_vocabulary }}
+           {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
         </div>
     </div>
     <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
-        <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
+        <label class="control-label" for="collections">
+		  {% trans add_form.collections.label_tag %}
+        </label>
         <div class="controls">
            {{ add_form.collections }}
         </div>
@@ -362,6 +371,7 @@
         <label class="control-label" for="copyrighter">{% trans add_form.copyrighter.label_tag %}</label>
         <div class="controls">
            {{ add_form.copyrighter }}
+           {% field_help add_form.copyrighter.label add_form.copyrighter.help_text term-copyrighter %}
         </div>
     </div>
   </div>
@@ -395,24 +405,28 @@
         <label class="control-label" for="final_vol">{% trans add_form.final_vol.label_tag %}</label>
         <div class="controls">
            {{ add_form.final_vol }}
+           {% field_help add_form.final_vol.label add_form.final_vol.help_text term-final-volume %}
         </div>
     </div>
     <div class="control-group {% if add_form.final_num.errors %}error{% endif %}">
         <label class="control-label" for="final_num">{% trans add_form.final_num.label_tag %}</label>
         <div class="controls">
            {{ add_form.final_num }}
+           {% field_help add_form.final_num.label add_form.final_num.help_text term-final-number %}
         </div>
     </div>
     <div class="control-group {% if add_form.frequency.errors %}error{% endif %}">
         <label class="control-label" for="frequency">{% trans add_form.frequency.label_tag %}</label>
         <div class="controls">
            {{ add_form.frequency }}
+           {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
         </div>
     </div>
     <div class="control-group {% if add_form.alphabet.errors %}error{% endif %}">
-        <label class="control-label" for="alphabet">{% trans add_form.alphabet.label_tag %}</label>
+        <label class="control-label" for="alphabets">{% trans add_form.alphabet.label_tag %}</label>
         <div class="controls">
            {{ add_form.alphabet }}
+           {% field_help add_form.alphabet.label add_form.alphabet.help_text term-alphabet %} 
         </div>
     </div>
     <div class="control-group {% if add_form.national_code.errors %}error{% endif %}">

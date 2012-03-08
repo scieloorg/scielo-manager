@@ -123,10 +123,6 @@ Glossary
    Alphabet 
      Enter data in this field the alphabet of the Original Title of the journal title.
 
-   Classification
-     Subject classification number assigned to the serial according to the classification system used by 
-     the Center.
-
 
    Final Number
      Enter the final number in arabic numerals.
@@ -333,7 +329,7 @@ Glossary
      Enter in this field, in free style, all information of interest to the Center about the serial.
 
 
-   Collection Name
+   Collections
      Select the collections to which the journal belong.
 
    Acronym
@@ -390,21 +386,14 @@ Glossary
    
    Is Available?
      help...
-   
-   Collection
-     help...
-   
+
    Use License
      help...
    
    Core of Markup
      Enter the name of core marking (old center).
      
-     
    Print ISSN
-     help...
-   
-   Eletronic ISSN
      help...
    
    Final Date
@@ -424,10 +413,6 @@ Glossary
    
    Code
      help...  (session)
-   
-   
+
    Is provider of the marked files?
      help...
-     
-     
-   
