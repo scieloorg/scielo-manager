@@ -83,7 +83,7 @@ class Journal(models.Model):
     objects = CustomJournalManager()
 
     #Relation fields
-    collections = models.ManyToManyField('Collection')
+    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
@@ -91,10 +91,10 @@ class Journal(models.Model):
     use_license = models.ForeignKey('UseLicense', null=True, blank=False)
 
     #Fields
-    title = models.CharField(_('Journal Title'),max_length=256, db_index=True)
+    title = models.CharField(_('Journal Title'),max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    acronym = models.CharField(_('Acronym'),max_length=8, blank=False)
+    acronym = models.CharField(_('Acronym'),max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True)
     print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True)
@@ -104,20 +104,20 @@ class Journal(models.Model):
     init_vol = models.CharField(_('Initial Volume'), max_length=4,null=False,blank=True)
     init_num = models.CharField(_('Initial Number'), max_length=4,null=False,blank=True)
     final_year = models.CharField(_('Final Date'),max_length=10,null=True,blank=True)
-    final_vol = models.CharField(_('Final Volume'),max_length=4,null=False,blank=True)
-    final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True)
+    final_vol = models.CharField(_('Final Volume'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
+    final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
-        choices=choices.FREQUENCY,null=False,blank=True)
+        choices=choices.FREQUENCY,null=False,blank=True, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'),max_length=16,
         choices=choices.PUBLICATION_STATUS,null=False,blank=True)
     alphabet = models.CharField(_('Alphabet'),max_length=16,
-        choices=choices.ALPHABET,null=False,blank=True)
+        choices=choices.ALPHABET,null=False,blank=True, help_text=helptexts.JOURNAL__ALPHABET)
     sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True)
     national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
-        choices=choices.STANDARD,null=False,blank=True)
+        choices=choices.STANDARD,null=False,blank=True, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
-        choices=choices.CTRL_VOCABULARY,null=False,blank=True)
+        choices=choices.CTRL_VOCABULARY,null=False,blank=True, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
     literature_type = models.CharField(_('Literature Type'),max_length=64,
         choices=choices.LITERATURE_TYPE,null=False,blank=True)
     treatment_level = models.CharField(_('Treatment Type'),max_length=64,
@@ -125,7 +125,7 @@ class Journal(models.Model):
     pub_level = models.CharField(_('Publication Level'),max_length=64,
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
-    copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True)
+    copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__COPYRIGHTER)
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
@@ -147,7 +147,7 @@ class JournalTitle(models.Model):
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)
     study_area = models.CharField(_('Study Area'),max_length=256,
-        choices=choices.SUBJECTS,null=False,blank=True)
+        choices=choices.SUBJECTS,null=False,blank=True, help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
 
 class JournalTextLanguage(models.Model):
     journal = models.ForeignKey(Journal)
