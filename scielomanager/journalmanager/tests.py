@@ -116,8 +116,7 @@ class LoggedInViewsTest(TestCase):
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
-        sample_center.self.collectionave() 
-
+        sample_center.save() 
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-institution': sample_institution.pk,
                                                      'journal-use_license': sample_uselicense.pk,
