@@ -31,8 +31,7 @@ def get_user_collections(user_id):
 def index(request):
     t = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
-        collections = get_user_collections(request.user.id)
-        user_collections = collections['all'] 
+        user_collections = get_user_collections(request.user.id)
     else:
         user_collections = ""
 
@@ -484,29 +483,6 @@ def center_index(request):
                        'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
-
-
-
-
-
-
-    if request.method == "POST":
-        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher')
-        publishercollectionsformset = PublisherCollectionsFormSet(request.POST, instance=publisher, prefix='publishercollections')
-
-
-        if publisherform.is_valid() and publishercollectionsformset.is_valid():
-            publisherform.save()
-            publishercollectionsformset.save()
-
-            return HttpResponseRedirect(reverse('publisher.index'))
-
-    else:
-        publisherform  = PublisherForm(instance=publisher, prefix='publisher')
-        publishercollectionsformset =  PublisherCollectionsFormSet(instance=publisher, prefix='publishercollections')
-
-
-
 
 @login_required
 def add_center(request, center_id=None):

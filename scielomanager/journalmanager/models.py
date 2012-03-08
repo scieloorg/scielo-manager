@@ -76,7 +76,6 @@ class Institution(models.Model):
 
 class Publisher(Institution):
     objects = AppCustomManager()
-    collection = models.ForeignKey('Collection', related_name='publisher_collection', blank=False, )
 
 class Journal(models.Model):
 
@@ -257,4 +256,3 @@ class Supplement(Issue):
 
 class Center(Institution):
     objects = AppCustomManager()
-    collection = models.ForeignKey('Collection', related_name='collection', blank=False, )
