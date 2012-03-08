@@ -44,6 +44,33 @@
     </div>
   </div>
 
+  <span class="label">{% trans "Journal Collections" %}</span>
+  <div class="well">
+      <table id="collectionsformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Collection" %}</th>
+              <th>{% trans "options" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for form in collectionsformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.collection }}
+              </td>
+              <td></td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ collectionsformset.management_form }}
+      </p>
+  </div>
+
   <span class="label">{% trans "titleformset" %}</span>
   <div class="well">
       <table id="titleformset" class="table table-bordered table-striped">
@@ -130,7 +157,7 @@
     </div>
   </div>
 
-  <span class="label">{% trans "missionformset" %}</span>
+  <span class="label">{% trans "Mission" %}</span>
   <div class="well">
       <table id="missionformset" class="table table-bordered table-striped">
       <thead>
@@ -157,7 +184,7 @@
       </p>
   </div>
 
-  <span class="label">{% trans "textlanguageformset" %}</span>
+  <span class="label">{% trans "Text Language" %}</span>
   <div class="well">
       <table id="textlanguageformset" class="table table-bordered table-striped">
       <thead>
@@ -457,16 +484,10 @@
  <script>
     $(document).ready(function() {
 
-        $( "#id_institution" ).combobox({ autoFocus: true });
+        $( "#id_publisher" ).combobox({ autoFocus: true });
 
-        $( "#toggle" ).click(function() {
-            $( "#id_institution" ).toggle();
-        });
         $(".help-text").popover('hide');
 
-
-
-        $( "#id_journal-institution" ).combobox({ autoFocus: true });
         $( "#id_journal-publisher" ).combobox({ autoFocus: true });
 
         $( "#toggle" ).click(function() {
@@ -477,6 +498,11 @@
         $('#titleformset tbody tr').formset({
            formCssClass: 'dynamic-titleformset-form',
            prefix: '{{ titleformset.prefix }}'
+        });
+
+        $('#collectionsformset tbody tr').formset({
+           formCssClass: 'dynamic-collectionsformset-form',
+           prefix: '{{ collectionsformset.prefix }}'
         });
 
         $('#missionformset tbody tr').formset({
@@ -503,7 +529,7 @@
            formCssClass: 'dynamic-indexcoverageformset-form',
            prefix: '{{ indexcoverageformset.prefix }}'
         });
-              
+
     });
   </script>
 {% endblock %}

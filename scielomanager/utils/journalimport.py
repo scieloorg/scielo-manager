@@ -174,7 +174,7 @@ class JournalImport:
         journal.creator_id = 1
         journal.save(force_insert=True)
         self.charge_summary("journals")
-        journal.collections.add(collection)
+        #journal.collections.add(collection)
 
         self.load_studyarea(journal,record['441'])
 

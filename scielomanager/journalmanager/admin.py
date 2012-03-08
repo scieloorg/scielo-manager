@@ -9,6 +9,9 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
 
+class InstitutionCollectionsInline(admin.StackedInline):
+    model = InstitutionCollections
+
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
@@ -37,14 +40,14 @@ class JournalAdmin(admin.ModelAdmin):
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
     search_fields = ('name',)
+    inlines = [InstitutionCollectionsInline]
 
-class UserProfileInline(admin.StackedInline):
-    model = UserProfile
+class UserCollectionsInline(admin.TabularInline):
+    model = UserCollections
+    extra = 1
 
-class UserProfileAdmin(UserAdmin):
-    list_display = ('username', 'email',  )
-    search_fields = ['username','email', 'collection']
-    inlines = [UserProfileInline]
+class UserAdmin(admin.ModelAdmin):
+    inlines = (UserCollectionsInline,)
 
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
@@ -58,7 +61,7 @@ if Institution not in admin.site._registry:
 if Collection not in admin.site._registry:
     admin.site.register(Collection, CollectionAdmin)
 
-admin.site.register(User, UserProfileAdmin)
+admin.site.register(User, UserAdmin)
 admin.site.register(UseLicense)
 admin.site.register(Section)
 admin.site.register(TranslatedData)
