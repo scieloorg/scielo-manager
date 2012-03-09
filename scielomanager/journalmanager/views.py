@@ -108,49 +108,42 @@ def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
-
     if  user_id == None:
-        user = models.User()
+        user = User()
     else:
-        user = get_object_or_404(models.User, id = user_id)
+        user = get_object_or_404(User, id = user_id)
 
     # Getting Collections from the logged user.
     user_collections = get_user_collections(request.user.id)
-
-    UserCollectionsFormSet = inlineformset_factory(models.User, models.UserCollections, 
+    
+    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
+    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections, 
         form=UserCollectionsForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
+        userform = UserForm(request.POST, instance=user, prefix='user')
+        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
-        user_form_kwargs = {}
 
-        if user_id is not None: #edit - preserve form-data    
-            filled_form = user
-            user_form_kwargs['instance'] = filled_form
-
-        add_form = UserForm(request.POST, **user_form_kwargs)
-
-        if add_form.is_valid():
-            user_saved = add_form.save()
-            usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user_saved, prefix='usercollections',)
-            usercollectionsformset.save()     
+        if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
+            userform.save()
+            userprofileformset.save()
+            usercollectionsformset.save()
 
             return HttpResponseRedirect(reverse('user.index'))
     else:
-        if user_id is None: #new
-            add_form = UserForm() # An unbound form
-            usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections')
-        else:
-            filled_form = models.User.objects.get(pk = user_id)
-            add_form = UserForm(instance = filled_form)
-            usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections')
+        userform  = UserForm(instance=user, prefix='user')
+        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
+        usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
 
     return render_to_response('journalmanager/add_user.html', {
-                              'add_form': add_form,
+                              'add_form': userform,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
-                              'usercollectionsformset': usercollectionsformset},
+                              'usercollectionsformset': usercollectionsformset,
+                              'userprofileformset': userprofileformset
+                              },
                               context_instance=RequestContext(request))
 
 @login_required

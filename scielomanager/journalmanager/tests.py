@@ -502,3 +502,46 @@ class ComponentsTest(TestCase):
             form = JournalForm({'print_issn': issn,})
             self.assertEqual(form.errors.get('print_issn')[0], u'Enter a valid ISSN.')
             del(form)
+
+class ModelBackendTest(TestCase):
+    """
+    Testa as especializações de metodos de backend ModelBackend 
+    """
+
+    def setUp(self):
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()        
+        self.user.save()
+        self.profile = tests_assets.get_sample_userprofile(user=self.user)
+        self.profile.save()
+        
+
+    def test_authenticate(self):
+        """
+        test_authentication 
+
+        Covered Tests
+        1. authenticating user with true username and password
+        2. authenticating user with true username and wrong password
+        3. authenticating user with true email and password
+        4. authenticating user with true email and wrong password
+        5. authenticating user with wrong username/email and password
+        """
+        from scielomanager.journalmanager.backends import ModelBackend
+
+        mbkend = ModelBackend()
+
+        auth_response = mbkend.authenticate('dummyuser','123')
+        self.assertEqual(auth_response,self.user)
+
+        auth_response = mbkend.authenticate('dummyuser','fakepasswd')
+        self.assertEqual(auth_response,None)
+
+        auth_response = mbkend.authenticate('dev@scielo.org','123')
+        self.assertEqual(auth_response,self.user)
+
+        auth_response = mbkend.authenticate('dev@scielo.org','fakepasswd')
+        self.assertEqual(auth_response,None)
+
+        auth_response = mbkend.authenticate('fakeuser','fakepasswd')
+        self.assertEqual(auth_response,None)

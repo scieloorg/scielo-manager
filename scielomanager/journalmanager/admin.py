@@ -42,12 +42,16 @@ class InstitutionAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     inlines = [InstitutionCollectionsInline]
 
+class UserProfileInline(admin.TabularInline):
+    model = UserProfile
+
 class UserCollectionsInline(admin.TabularInline):
     model = UserCollections
     extra = 1
 
 class UserAdmin(admin.ModelAdmin):
-    inlines = (UserCollectionsInline,)
+    exclude = ('email', )
+    inlines = (UserProfileInline, UserCollectionsInline)
 
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
