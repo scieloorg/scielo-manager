@@ -40,13 +40,16 @@
                 {{ add_form.last_name }}
             </div>
         </div>
-        <div class="control-group {% if userprofileformset.forms.0.email.errors %}error{% endif %}">
-            <label class="control-label" for="email">{% trans userprofileformset.forms.0.email.label_tag %}</label>
+        {% for form in userprofileformset.forms %}
+        {{ form.id }}
+        <div class="control-group {% if form.email.errors %}error{% endif %}">
+            <label class="control-label" for="email">{% trans form.email.label_tag %}</label>
             <div class="controls">
-                {{ userprofileformset.forms.0.email }}
-                {{ userprofileformset.management_form }}
+                {{ form.email }}
             </div>
         </div>
+        {% endfor %}
+        {{ userprofileformset.management_form }}
         <div class="control-group {% if add_form.groups.errors %}error{% endif %}">
             <label class="control-label" for="groups">{% trans add_form.groups.label_tag %}</label>
             <div class="controls">
