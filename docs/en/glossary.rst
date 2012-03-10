@@ -2,7 +2,7 @@ Glossary
 ========
 
 .. glossary::
-   :sorted:
+  :sorted:
 
   Parallell Titles
      Enter parallel titles in accordance with the sequence and typography in which
