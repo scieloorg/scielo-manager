@@ -40,20 +40,30 @@
                 {{ add_form.last_name }}
             </div>
         </div>
-        <div class="control-group {% if add_form.email.errors %}error{% endif %}">
-            <label class="control-label" for="email">{% trans add_form.email.label_tag %}</label>
+        {% for form in userprofileformset.forms %}
+        {{ form.id }}
+        <div class="control-group {% if form.email.errors %}error{% endif %}">
+            <label class="control-label" for="email">{% trans form.email.label_tag %}</label>
             <div class="controls">
-                {{ add_form.email }}
+                {{ form.email }}
+            </div>
+        </div>
+        {% endfor %}
+        {{ userprofileformset.management_form }}
+        <div class="control-group {% if add_form.groups.errors %}error{% endif %}">
+            <label class="control-label" for="groups">{% trans add_form.groups.label_tag %}</label>
+            <div class="controls">
+                {{ add_form.groups }}
             </div>
         </div>
         <div class="control-group {% if add_form.password.errors %}error{% endif %}">
-            <label class="control-label" for="email">{% trans add_form.password.label_tag %}</label>
+            <label class="control-label" for="controls">{% trans add_form.password.label_tag %}</label>
             <div class="controls">
                 {{ add_form.password }}
             </div>
         </div>
         <div class="control-group {% if add_form.is_active.errors %}error{% endif %}">
-            <label class="control-label" for="email">{% trans add_form.is_active.label_tag %}</label>
+            <label class="control-label" for="is_active">{% trans add_form.is_active.label_tag %}</label>
             <div class="controls">
                 {{ add_form.is_active }}
             </div>

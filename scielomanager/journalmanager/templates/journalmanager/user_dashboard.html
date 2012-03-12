@@ -64,7 +64,7 @@
                     {% endif %}
                 </ul>
             </td>
-            <td>{{ ct.email }}</td>
+            <td>{{ ct.get_profile.email }}</td>
             <td>{{ ct.first_name }} {{ ct.last_name }}</td>
             <td>
                 {%if ct.is_active %}
