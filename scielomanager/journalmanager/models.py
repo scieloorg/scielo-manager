@@ -6,10 +6,10 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
+from django.db.models.signals import post_save
 
 import choices
 import helptexts
-
 
 class AppCustomManager(models.Manager):
     """
@@ -22,6 +22,9 @@ class AppCustomManager(models.Manager):
         """
         return super(AppCustomManager, self).get_query_set().filter(is_available=avalability)
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
 
 class Collection(models.Model):
     collection = models.ManyToManyField(User, related_name='user_collection', 
@@ -256,3 +259,9 @@ class Supplement(Issue):
 
 class Center(Institution):
     objects = AppCustomManager()
+
+#def create_user_profile(sender, instance, created, **kwargs):
+#    if created:
+#        UserProfile.objects.create(user=instance)
+
+#post_save.connect(create_user_profile, sender=User)

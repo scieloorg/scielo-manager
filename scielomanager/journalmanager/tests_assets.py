@@ -15,6 +15,14 @@ def get_sample_section_dataform(**kwargs):
 
     return section_attrs
 
+def get_sample_userprofile(**kwargs):
+    userprofile_attrs = {
+        'email': 'dev@scielo.org',
+    }
+    userprofile_attrs.update(kwargs)
+    
+    return models.UserProfile(**userprofile_attrs)
+
 def get_sample_journal_dataform(dict_params):
     journal_attrs = {
       'journal-sponsor': 'FAPESP',
