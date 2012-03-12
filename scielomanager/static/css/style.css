@@ -52,3 +52,8 @@ button.ui-button-icon-only {
         padding-left:8px;
 
     }
+
+/*Strikethrough disable list*/
+.strikethrough{
+    text-decoration: line-through;
+}

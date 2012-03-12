@@ -1,3 +1,4 @@
+import json
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -21,6 +22,7 @@ from django.utils.translation import ugettext as _
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
+
 
 def get_user_collections(user_id):
 
@@ -154,6 +156,14 @@ def add_user(request, user_id=None):
                               context_instance=RequestContext(request))
 
 @login_required
+def toggle_user_availability(request, user_id):
+  user = get_object_or_404(models.User, pk = user_id)
+  user.is_active = not user.is_active
+  user.save()
+
+  return HttpResponseRedirect(reverse('user.index'))
+
+@login_required
 def journal_index(request):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
@@ -237,23 +247,6 @@ def add_journal(request, journal_id = None):
 
 
 @login_required
-def toggle_journal_availability(request, journal_id):
-  journal = get_object_or_404(models.Journal, pk = journal_id)
-  journal.is_available = not journal.is_available
-  journal.save()
-
-  return HttpResponseRedirect(reverse('journal.index'))
-
-
-@login_required
-def toggle_user_availability(request, user_id):
-  user = get_object_or_404(models.User, pk = user_id)
-  user.is_active = not user.is_active
-  user.save()
-
-  return HttpResponseRedirect(reverse('user.index'))
-
-@login_required
 def publisher_index(request):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default = True)
@@ -308,14 +301,6 @@ def add_publisher(request, publisher_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_publisher_availability(request, publisher_id):
-  publisher = get_object_or_404(models.Publisher, pk = publisher_id)
-  publisher.is_available = not publisher.is_available
-  publisher.save()
-
-  return HttpResponseRedirect(reverse('publisher.index'))
-
-@login_required
 def issue_index(request, journal_id):
     #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
     #estas queries.
@@ -366,14 +351,6 @@ def add_issue(request, journal_id, issue_id=None):
                               'user_name': request.user.pk,
                               'user_collections': user_collections},
                               context_instance = RequestContext(request))
-
-@login_required
-def toggle_issue_availability(request, issue_id):
-    issue = get_object_or_404(models.Issue, pk = issue_id)
-    issue.is_available = not issue.is_available
-    issue.save()
-
-    return HttpResponseRedirect(reverse('issue.index', args=[issue.journal.pk]))
 
 @login_required
 def search_journal(request):
@@ -523,13 +500,25 @@ def add_center(request, center_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_center_availability(request, center_id):
-  center = get_object_or_404(models.Center, pk = center_id)
-  center.is_available = not center.is_available
-  center.save()
+def generic_toggle_availability(request, object_id, model):
 
-  return HttpResponseRedirect(reverse('center.index'))
+  if request.is_ajax():
 
+    model = get_object_or_404(model, pk = object_id)
+    model.is_available = not model.is_available
+    model.save()
+
+    response_data = json.dumps({
+      "result": str(model.is_available),
+      "object_id": model.id
+      })
+
+    #ajax response json
+    return HttpResponse(response_data, mimetype="application/json")
+  else:
+    #bad request
+    return HttpResponse(status=400)
+    
 @login_required
 def search_center(request):
     return center_index(request)
@@ -569,3 +558,5 @@ def password_change(request):
         'journalmanager/password_change.html',
         {'form': form},
         context_instance = RequestContext(request))
+
+
