@@ -25,25 +25,25 @@ class JournalForm(ModelForm):
 
         #Overriding the default field types or widgets
         widgets = {
-           'title': forms.TextInput(attrs={'class':'span10'}),
-           'previous_title': forms.Select(attrs={'class':'span10'}),
+           'title': forms.TextInput(attrs={'class':'span9'}),
+           'previous_title': forms.Select(attrs={'class':'span9'}),
            'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
            'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
-           'subject_descriptors': forms.Textarea(attrs={'class':'span12'}),
+           'subject_descriptors': forms.Textarea(attrs={'class':'span9'}),
            'init_year': SelectDateWidget(),
            'init_vol': forms.TextInput(attrs={'class':'span1'}),
            'init_num': forms.TextInput(attrs={'class':'span1'}),
            'final_year': SelectDateWidget(),
            'final_vol': forms.TextInput(attrs={'class':'span1'}),
            'final_num': forms.TextInput(attrs={'class':'span1'}),
-           'url_main_collection': forms.TextInput(attrs={'class':'span8'}),
-           'url_online_submission': forms.TextInput(attrs={'class':'span8'}),
-           'url_journal': forms.TextInput(attrs={'class':'span8'}),
-           'notes': forms.Textarea(attrs={'class':'span10'}),
+           'url_main_collection': forms.TextInput(attrs={'class':'span9'}),
+           'url_online_submission': forms.TextInput(attrs={'class':'span9'}),
+           'url_journal': forms.TextInput(attrs={'class':'span9'}),
+           'notes': forms.Textarea(attrs={'class':'span9'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
-           'literature_type': forms.Select(attrs={'class':'span10'}),
+           'literature_type': forms.Select(attrs={'class':'span8'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
@@ -176,17 +176,15 @@ class JournalMissionForm(ModelForm):
     class Meta:
       model = models.JournalMission
       widgets = {
-        'description':forms.Textarea(attrs={'class':'span10', 'rows':'3'}),
+        'description':forms.Textarea(attrs={'class':'span6', 'rows':'3'}),
       }
 
 class JournalTitleForm(ModelForm):
     class Meta:
       model = models.JournalTitle
       widgets = {
-        'title': forms.TextInput(attrs={'class':'span11'}),
+        'title': forms.TextInput(attrs={'class':'span6  '}),
       }
-
-
 
 class CenterForm(ModelForm):
     class Meta:

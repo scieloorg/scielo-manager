@@ -10,6 +10,7 @@ from scielomanager.journalmanager.models import Collection
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Publisher
 from scielomanager.journalmanager.models import Issue
+from scielomanager.journalmanager.models import Center
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -33,6 +34,17 @@ def with_sample_issue(func):
         self._create_issue()
         func(self)
         self._destroy_issue()
+    return decorated
+
+def with_sample_center(func):
+    """
+    Decorator that creates a sample Journal instance
+    and destructs it at the end of the execution.
+    """
+    def decorated(self=None):
+        self._create_center()
+        func(self)
+        self._destroy_center()
     return decorated
 
 
@@ -92,6 +104,15 @@ class LoggedInViewsTest(TestCase):
 
     def _destroy_issue(self):
         self._destroy_journal
+
+    def _create_center(self):
+
+        sample_center = tests_assets.get_sample_center()
+        sample_center.collection = self.collection
+        sample_center.save()
+
+    def _destroy_center(self):
+        Center.objects.get(name = u'Associação Nacional de História - ANPUH').delete()
 
     def test_add_journal(self):
         #empty form
@@ -307,41 +328,50 @@ class LoggedInViewsTest(TestCase):
     @with_sample_journal
     def test_toggle_journal_availability(self):
         pre_journal = Journal.objects.all()[0]
-        response = self.client.get(reverse('journal.toggle_availability', args=[pre_journal.pk]))
+        response = self.client.get(reverse('journal.toggle_availability', args=[pre_journal.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         pos_journal = Journal.objects.all()[0]
 
         self.assertEqual(pre_journal, pos_journal)
-        self.assertRedirects(response, reverse('journal.index'))
         self.assertTrue(pre_journal.is_available is not pos_journal.is_available)
 
         response = self.client.get(reverse('journal.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     @with_sample_journal
     def test_toggle_publisher_availability(self):
         pre_publisher = Publisher.objects.all()[0]
-        response = self.client.get(reverse('publisher.toggle_availability', args=[pre_publisher.pk]))
+        response = self.client.get(reverse('publisher.toggle_availability', args=[pre_publisher.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         pos_publisher = Publisher.objects.all()[0]
 
         self.assertEqual(pre_publisher, pos_publisher)
-        self.assertRedirects(response, reverse('publisher.index'))
         self.assertTrue(pre_publisher.is_available is not pos_publisher.is_available)
 
         response = self.client.get(reverse('publisher.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     @with_sample_issue
     def test_toggle_issue_availability(self):
         pre_issue = Issue.objects.all()[0]
-        response = self.client.get(reverse('issue.toggle_availability', args=[pre_issue.pk]))
+        response = self.client.get(reverse('issue.toggle_availability', args=[pre_issue.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         pos_issue = Issue.objects.all()[0]
 
         self.assertEqual(pre_issue, pos_issue)
-        self.assertRedirects(response, reverse('issue.index', args=[pre_issue.journal.pk]))
         self.assertTrue(pre_issue.is_available is not pos_issue.is_available)
 
         response = self.client.get(reverse('issue.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
+
+    @with_sample_center
+    def test_toggle_center_availability(self):
+        pre_center = Center.objects.all()[0]
+        response = self.client.get(reverse('center.toggle_availability', args=[pre_center.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        pos_center = Center.objects.all()[0]
+
+        self.assertEqual(pre_center, pos_center)
+        self.assertTrue(pre_center.is_available is not pos_center.is_available)
+
+        response = self.client.get(reverse('center.toggle_availability', args=[9999999]))
+        self.assertEqual(response.status_code, 400)
 
     @with_sample_journal
     def test_journal_availability_list(self):
