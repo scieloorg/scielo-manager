@@ -87,10 +87,10 @@ class Journal(models.Model):
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False)
-    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True)
-    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False)
-    use_license = models.ForeignKey('UseLicense', null=True, blank=False)
+    publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
+    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
+    center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, help_text=helptexts.JOURNAL__CENTER)
+    use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
 
     #Fields
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
@@ -98,40 +98,40 @@ class Journal(models.Model):
     updated = models.DateTimeField(auto_now=True)
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
     scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
-        choices=choices.SCIELO_ISSN,null=False,blank=True)
-    print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True)
-    eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True)
-    subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=512,null=False,blank=True)
-    init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True)
-    init_vol = models.CharField(_('Initial Volume'), max_length=4,null=False,blank=True)
-    init_num = models.CharField(_('Initial Number'), max_length=4,null=False,blank=True)
-    final_year = models.CharField(_('Final Date'),max_length=10,null=True,blank=True)
+        choices=choices.SCIELO_ISSN,null=False,blank=True, help_text=helptexts.JOURNAL__SCIELO_ISSN)
+    print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__PRINT_ISSN)
+    eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
+    subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=512,null=False,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
+    init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True, help_text=helptexts.JOURNAL__INIT_YEAR)
+    init_vol = models.CharField(_('Initial Volume'), max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__INIT_VOL)
+    init_num = models.CharField(_('Initial Number'), max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__INIT_NUM)
+    final_year = models.CharField(_('Final Date'),max_length=10,null=True,blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
     final_vol = models.CharField(_('Final Volume'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
     final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
         choices=choices.FREQUENCY,null=False,blank=True, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'),max_length=16,
-        choices=choices.PUBLICATION_STATUS,null=False,blank=True)
+        choices=choices.PUBLICATION_STATUS,null=False,blank=True, help_text=helptexts.JOURNAL__PUB_STATUS)
     alphabet = models.CharField(_('Alphabet'),max_length=16,
         choices=choices.ALPHABET,null=False,blank=True, help_text=helptexts.JOURNAL__ALPHABET)
-    sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True)
-    national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True)
+    sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True, help_text=helptexts.JOURNAL__SPONSOR)
+    national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__NATIONAL_CODE)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
         choices=choices.CTRL_VOCABULARY,null=False,blank=True, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
     literature_type = models.CharField(_('Literature Type'),max_length=64,
-        choices=choices.LITERATURE_TYPE,null=False,blank=True)
+        choices=choices.LITERATURE_TYPE,null=False,blank=True, help_text=helptexts.JOURNAL__LITERATURE_TYPE)
     treatment_level = models.CharField(_('Treatment Type'),max_length=64,
-        choices=choices.TREATMENT_LEVEL,null=False,blank=True)
+        choices=choices.TREATMENT_LEVEL,null=False,blank=True, help_text=helptexts.JOURNAL__TREATMENT_LEVEL)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
-        choices=choices.PUBLICATION_LEVEL,null=False,blank=True)
+        choices=choices.PUBLICATION_LEVEL,null=False,blank=True, help_text=helptexts.JOURNAL__PUB_LEVEL)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__COPYRIGHTER)
-    url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True)
-    url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True)
-    url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True)
-    notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
+    url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_MAIN_COLLECTION)
+    url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
+    url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
+    notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
@@ -147,7 +147,7 @@ class InstitutionCollections(models.Model):
 
 class JournalCollections(models.Model):
     journal = models.ForeignKey(Journal)
-    collection = models.ForeignKey(Collection, null=False)
+    collection = models.ForeignKey(Collection, null=False, help_text=helptexts.JOURNALCOLLECTIONS_COLLECTION)
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)
@@ -170,7 +170,7 @@ class JournalHist(models.Model):
 
 class JournalMission(models.Model):
     journal = models.ForeignKey(Journal, null=False)
-    description = models.TextField(_('Mission'), null=False)
+    description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
 
 class IndexDatabase(models.Model):
@@ -181,7 +181,7 @@ class IndexDatabase(models.Model):
 
 class JournalIndexCoverage(models.Model):
     journal = models.ForeignKey(Journal)
-    database = models.ForeignKey(IndexDatabase, null=True)
+    database = models.ForeignKey(IndexDatabase, null=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
     identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
 

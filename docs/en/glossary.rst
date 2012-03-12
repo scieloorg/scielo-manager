@@ -2,9 +2,9 @@ Glossary
 ========
 
 .. glossary::
-   :sorted:
+  :sorted:
 
-   Parallell Titles
+  Parallell Titles
      Enter parallel titles in accordance with the sequence and typography in which
      they appear on the title page or its substitute, according to ISBD(S) rules.
      In case of more than one parallel title, enter them in the sequence which appears
@@ -18,7 +18,7 @@ Glossary
      b) Publication Title: Arzneimittel Forschung /
         Parallel Title: Drug research
 
-   SciELO ISSN
+  SciELO ISSN
      Enter the current ISSN. It can be different or equal to the ISSN used as ID, but it 
      is usually the online ISSN.
 
@@ -41,11 +41,11 @@ Glossary
         Abbreviated title: Pediatrics (London)
 
 
-   Literature Type
+  Literature Type
      Type of literature
 
-   
-   Subtitle
+
+  Subtitle
      Any information subordinate to the title proper which completes it, qualifies it or
      makes it more explicit.
      Enter in this field only the information defined as subtitle, with the intent that 
@@ -59,7 +59,7 @@ Glossary
         Subtitle: morbidity and mortality weekly report
 
 
-   Mission
+  Mission
      Enter in this field the mission of the journal in English, Spanish and Portuguese. 
      This is used in the home page of the journal.
      
@@ -73,13 +73,13 @@ Glossary
      relacionados con esas áreas
 
 
-   Short Title
+  Short Title
      Enter the abbreviated title respecting the upper case letters, lower case letters 
      and accentuation of the corresponding language, according to the standard.adopted by 
      the journal.
 
 
-   Journal Title
+  Journal Title
      Main title or title proper of the serial, in the language and form in which it appears. 
      
      Examples:
@@ -101,8 +101,8 @@ Glossary
      presents the journal title in the site in the list by subject.
 
 
-   Subject / Descriptors 
-     Descriptors; Standard terms used for the subject representation of the serial being described.
+  Subject / Descriptors 
+     Standard terms used for the subject representation of the serial being described.
      Terms must be entered in capital letters.
      Cooperating Centers of BIREME System should use terms taken from DeCS (Descriptors in Health Science).
      In case of more than one descriptor, enter them in sequence, separating them by ENTER, an item by line.
@@ -120,11 +120,11 @@ Glossary
      
 
 
-   Alphabet 
+  Alphabet 
      Enter data in this field the alphabet of the Original Title of the journal title.
 
 
-   Final Number
+  Final Number
      Enter the final number in arabic numerals.
  
      Examples:
@@ -134,7 +134,7 @@ Glossary
      b) Final number: 10 
 
 
-   Final Volume
+  Final Volume
      Number of the last published volume of the serial.
      Enter the final volume in arabic numerals.
 
@@ -145,11 +145,24 @@ Glossary
      b) Final volume: 12
 
 
-   Frequency
+  Frequency
      Code which identifies the intervals of time in which the issues of the serial are published.
 
 
-   Initial Date 
+  Final Date 
+     Enter the date of the last issue of the journal in ISO format (year in 4 digits, month 2 digits, 
+     day in 2 digits).
+
+     Examples:
+     
+     a) Final date: Jan./Mar. 1974 = 19740100
+     
+     b) Final date: 1987 = 19870000
+     
+     c) Final date: Sept. 1988 = 19880900
+     
+     
+  Initial Date 
      Enter the date of the first issue of the journal in ISO format (year in 4 digits, month 2 digits, 
      day in 2 digits).
 
@@ -162,7 +175,7 @@ Glossary
      c) Initial date: Sept. 1988 = 19880900
 
 
-   Initial Number 
+  Initial Number 
      Enter the initial number in arabic numerals.
 
      Examples:
@@ -170,10 +183,9 @@ Glossary
      a) Initial number: 1
      
      b) Initial number: 2
-     
 
 
-   Initial Volume
+  Initial Volume
      Enter the initial volume in arabic numerals.
      Omit this information for serials which do not include clear information on the volume.
  
@@ -182,10 +194,9 @@ Glossary
      a) Initial volume: 1
      
      b) Initial volume: 4
-     
 
 
-   National Code 
+  National Code 
      Code which identifies the title in the national system of serials of each country 
      (or its equivalent) with the purpose of facilitating the transfer of data between this 
      and other related systems.
@@ -200,7 +211,7 @@ Glossary
      
 
 
-   Publisher's City 
+  Publisher's City 
      Enter the name of the city in full in the language in which it appears in the 
      publication.
      When the title appears in more than one language, enter the city in the language 
@@ -218,11 +229,11 @@ Glossary
      
 
 
-   Publisher''s Country 
+  Publisher''s Country 
      Country of the Publication
 
 
-   Publisher 
+  Publisher 
      Name of the publisher and/or issuing body of the serial.
 
 
@@ -243,7 +254,7 @@ Glossary
      
 
 
-   Publisher's State 
+  Publisher's State 
      State/Province – Enter in this field the location in the country of the publication, but not the 
      city or town. 
      
@@ -252,8 +263,9 @@ Glossary
      a) State/Province: SP
      
      b) State/Province: RJ
-     
-
+  
+  Previous title   
+     Previous title in the language and form in which it appears.
 
    Text Languages
      Languages in which the articles are published, including the translations. This field is related 
@@ -273,21 +285,18 @@ Glossary
      d) Revista Brasileira de Ciências Sociais
      
 
-
-   Electronic Address
+  Electronic Address
      Enter in this field the e-mail address of the publication, used in the process of publication. 
      DO NOT USE PERSONAL e-mails. 
      This information is presented in the foot page of the site.
 
 
-   Fax Number
+  Fax Number
      Fax Number
 
-
-   Identify
-     Indexing Coverage – Enter in this field all the database in which the title is indexed.
-     Each database in one line.
-     
+  Indexing
+     Database – Select the database in which the title is indexed.
+       
      Examples: 
      
      IM - Index Medicus
@@ -303,10 +312,10 @@ Glossary
      SP - LILACS-SP
      
 
-   Phone Number
+  Phone Number
      Phone Number
 
-   SECS Code 
+  SECS Code 
      Enter in this field the number assigned by BIREME which identifies the title in SeCS (Health Science Serials) 
      database.
      Mandatory field for Cooperating Centers which input data to SeCS database.
@@ -321,30 +330,29 @@ Glossary
      b) SECS Number: 4 
      
 
+  Center
+     Code which identifies the center responsible for the creation of the bibliographic records.
 
-   Center Code 
-     Code which identifies the center responsible for the creation of the bibliographic records
-
-   Notes 
+  Notes 
      Enter in this field, in free style, all information of interest to the Center about the serial.
 
 
-   Collections
+  Collections
      Select the collections to which the journal belong.
 
-   Acronym
+  Acronym
      Enter in this field the acronym of the journal, max 8 characters length, in capital letter or not.
      It must be unique comparing to the other titles. It is used for the name of the folder in which are 
      saved all the files related to the journal (markup, body, images, etc) and also used for the prefix 
      to the sections code of the journal.
 
-   URL of the journal
+  URL of the journal
      If the journal is published in another site, enter in this field the other site location
 
-   URL of online submission
+  URL of online submission
      Enter the URL of the submission site
 
-   User Subscription 
+  User Subscription 
      Identifies how to access to the articles by subscription. 
      Select the corresponding code: 
      sub;
@@ -353,7 +361,7 @@ Glossary
      not available, no hay subscription 
 
 
-   Publication Status
+  Publication Status
      Date and status which identify the changes of the journal status in the collection.
      Date must be in ISO format YYYYMMDD.
      Status can be:
@@ -365,54 +373,47 @@ Glossary
      Suspended: journal is no longer according to collection´s criteria. In the future it can become current.
 
 
-   Controlled Vocabulary
+  Controlled Vocabulary
      Enter in this field the controlled vocabulary used to the key words
 
-   Editorial Standard
+  Editorial Standard
      Standard used to the bibliographic references presentation. This content is related to the Markup program.
 
-   URL of main collection
+  URL of main collection
      Enter the URL of the main collection site. If the journal is published in SciELO Brazil, then www.scielo.br
      
-     
-   Validated
+  Validated
      help...
    
-   Is manager of the collection?
+  Is manager of the collection?
      help...
    
-   Institution Name
+  Institution Name
      help...
    
-   Is Available?
+  Is Available?
      help...
 
-   Use License
+  Use License
      help...
-   
-   Core of Markup
-     Enter the name of core marking (old center).
      
-   Print ISSN
+  Print ISSN
      help...
    
-   Final Date
+  Sponsor
      help...
    
-   Sponsor
+  Treatment Type
      help...
    
-   Treatment Type
+  Publication Level
      help...
    
-   Publication Level
+  Title Category
      help...
    
-   Title Category
-     help...
-   
-   Code
+  Code
      help...  (session)
 
-   Is provider of the marked files?
+  Is provider of the marked files?
      help...
