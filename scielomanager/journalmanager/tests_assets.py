@@ -23,7 +23,11 @@ def get_sample_userprofile(**kwargs):
     
     return models.UserProfile(**userprofile_attrs)
 
-def get_sample_journal_dataform(dict_params={}):
+def get_sample_journal_dataform(dict_params=None):
+
+    if dict_params is None:
+      dict_params = {}
+
     journal_attrs = {
       'journal-sponsor': 'FAPESP',
       'journal-ctrl_vocabulary': 'decs',
@@ -95,7 +99,11 @@ def get_sample_journal_dataform(dict_params={}):
 
     return journal_attrs
 
-def get_sample_institution_dataform(dict_params={}):
+def get_sample_institution_dataform(dict_params=None):
+
+    if dict_params is None:
+      dict_params = {}
+
     institution_attrs = {
       'institution-city': '',
       'institution-fax': '',
@@ -122,7 +130,11 @@ def get_sample_institution_dataform(dict_params={}):
 
     return publisher_attrs
 
-def get_sample_publisher_dataform(dict_params={}):
+def get_sample_publisher_dataform(dict_params=None):
+
+    if dict_params is None:
+      dict_params = {}
+
     publisher_attrs = {
       'publisher-city': '',
       'publisher-fax': '',
@@ -181,7 +193,10 @@ def get_sample_uselicense_dataform(**kwargs):
 
     return uselicense_attrs
 
-def get_sample_user_dataform(dict_params={}):
+def get_sample_user_dataform(dict_params=None):
+
+    if dict_params is None:
+      dict_params = {}
 
     user_attrs = {
         'user-username': 'dummyuser_add',
@@ -353,7 +368,11 @@ def get_sample_center(validated = True):
 
     return models.Center(**center_attrs)
 
-def get_sample_center_dataform(dict_params={}):
+def get_sample_center_dataform(dict_params=None):
+
+    if dict_params is None:
+      dict_params = {}
+      
     """
     Returns a center object, without the following attributes (non mandatory or need to be bound
     to another model object):
