@@ -26,7 +26,7 @@ def get_sample_userprofile(**kwargs):
 def get_sample_journal_dataform(dict_params=None):
 
     if dict_params is None:
-      dict_params = {}
+        dict_params = {}
 
     journal_attrs = {
       'journal-sponsor': 'FAPESP',
@@ -102,7 +102,7 @@ def get_sample_journal_dataform(dict_params=None):
 def get_sample_institution_dataform(dict_params=None):
 
     if dict_params is None:
-      dict_params = {}
+        dict_params = {}
 
     institution_attrs = {
       'institution-city': '',
@@ -133,7 +133,7 @@ def get_sample_institution_dataform(dict_params=None):
 def get_sample_publisher_dataform(dict_params=None):
 
     if dict_params is None:
-      dict_params = {}
+        dict_params = {}
 
     publisher_attrs = {
       'publisher-city': '',
@@ -196,7 +196,7 @@ def get_sample_uselicense_dataform(**kwargs):
 def get_sample_user_dataform(dict_params=None):
 
     if dict_params is None:
-      dict_params = {}
+        dict_params = {}
 
     user_attrs = {
         'user-username': 'dummyuser_add',
@@ -371,7 +371,7 @@ def get_sample_center(validated = True):
 def get_sample_center_dataform(dict_params=None):
 
     if dict_params is None:
-      dict_params = {}
+        dict_params = {}
       
     """
     Returns a center object, without the following attributes (non mandatory or need to be bound

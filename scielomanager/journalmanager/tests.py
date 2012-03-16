@@ -699,7 +699,7 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
 
         #Testing content
-        self.assertTrue(u'Sua conta não está ativada. Por favor, entre em contato com a SciELO ou verifique seu e-mail' in response.content)
+        self.assertTrue(u'Sua conta não está ativada. Por favor, entre em contato com a SciELO ou verifique seu e-mail' in response.content.decode('utf-8'))
 
         self.user.is_active = True
         self.user.save()
@@ -714,7 +714,7 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '1234', 'next':''})
 
         #Testing content
-        self.assertTrue(u'Seu usuário e senha não conferem. Por favor, tente novamente.' in response.content)
+        self.assertTrue(u'Seu usuário e senha não conferem. Por favor, tente novamente.' in response.content.decode('utf-8'))
 
         #Verify the value of user session 
         self.assertFalse('_auth_user_id' in self.client.session)
