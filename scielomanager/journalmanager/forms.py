@@ -51,9 +51,6 @@ class PublisherForm(ModelForm):
     class Meta:
         model = models.Publisher
 
-    def save_all(self):
-        publisher = self.save(commit=False)
-        publisher.save()
 
 class UserForm(ModelForm):
     class Meta:
@@ -190,7 +187,3 @@ class CenterForm(ModelForm):
     class Meta:
         model = models.Center
         exclude = ('collection',)
-
-    def save_all(self, collection):
-        center = self.save(commit=False)
-        center.save()
