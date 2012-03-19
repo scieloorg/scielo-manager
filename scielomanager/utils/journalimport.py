@@ -4,7 +4,10 @@ import json
 import os
 import difflib
 
+import subfield
+
 from django.core.management import setup_environ
+from django.core import exceptions
 
 try:
     from scielomanager import settings
@@ -23,6 +26,18 @@ class JournalImport:
         self._publishers_pool = []
         self._summary = {}
 
+    def iso_format(self, dates, string='-'):
+        day = dates[6:8]
+        if day == "00":
+            day = "01"
+        
+        month = dates[4:6]
+        if month == "00":
+            month = "01"
+
+        dateformated = "%s-%s-%s" % (dates[0:4],month,day)
+
+        return dateformated
 
     def charge_summary(self, attribute):
         """
@@ -99,10 +114,70 @@ class JournalImport:
         
         for i in areas:
             studyarea = JournalStudyArea()
-            studyarea.journal = journal
             studyarea.study_area = i
-            studyarea.save(force_insert=True)
+            journal.journalstudyarea_set.add(studyarea)
             self.charge_summary("studyarea")
+
+    def load_textlanguage(self, journal, langs):
+
+        for i in langs:
+            language = JournalTextLanguage()
+            language.language = i
+            journal.journaltextlanguage_set.add(language)
+            self.charge_summary("language")
+
+    def load_mission(self, journal, missions):
+
+        for i in missions:
+
+            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+
+            mission = JournalMission()            
+            mission.language = parsed_subfields['l']
+            mission.description = parsed_subfields['_']
+            journal.journalmission_set.add(mission)
+            self.charge_summary("mission")
+
+    def load_historic(self, journal, historicals):        
+
+        for i in historicals:
+
+            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+
+            print journal.title
+            print i
+            try:
+                historic = JournalHist()
+                historic.date = self.iso_format(parsed_subfields['a'])
+                historic.status = parsed_subfields['b']
+            except KeyError:
+                self.charge_summary("history_error_field")
+                return False
+
+            try:
+                journal.journalhist_set.add(historic)
+                self.charge_summary("history")
+            except exceptions.ValidationError:
+                self.charge_summary("history_error_data")
+
+            try:
+                historic = JournalHist()
+                historic.date = self.iso_format(parsed_subfields['c'])
+                historic.status = parsed_subfields['d']
+            except KeyError:
+                self.charge_summary("history_error_field")
+                return False
+
+            try:
+                journal.journalhist_set.add(historic)
+                self.charge_summary("history")
+            except exceptions.ValidationError:
+                return False
+
+        return True
+
+
+
 
     def load_journal(self, collection, loaded_publisher, record):
         """
@@ -134,39 +209,56 @@ class JournalImport:
         journal.eletronic_issn = electronic_issn
         journal.subject_descriptors = ', '.join(record['440'])
 
+        # Text Language
+
         if record.has_key('301'):
             journal.init_year = record['301'][0]
+
         if record.has_key('302'):
             journal.init_vol = record['302'][0]
+
         if record.has_key('303'):
             journal.init_num = record['303'][0]
+
         if record.has_key('304'): 
             journal.final_year = record['304'][0]
+
         if record.has_key('305'):
             journal.final_vol = record['305'][0]
+
         if record.has_key('306'):
             journal.final_num = record['306'][0]
+
         if record.has_key('380'):
             journal.frequency = record['380'][0]
+
         if record.has_key('50'):
             journal.pub_status = record['50'][0]
+
         if record.has_key('340'):
             journal.alphabet = record['340'][0]
+
         if record.has_key('430'):
             journal.classification = record['430'][0]
+
         if record.has_key('20'):
             journal.national_code = record['20'][0]
+
         if record.has_key('117'):
             journal.editorial_standard = record['117'][0]
+
         if record.has_key('85'):
             journal.ctrl_vocabulary = record['85'][0]
+
         if record.has_key('5'):
             journal.literature_type = record['5'][0]
+
         if record.has_key('6'):        
             journal.treatment_level = record['6'][0]
+
         if record.has_key('330'):
             journal.pub_level = record['330'][0]
-        #journal.indexing_coverage.add(join(record['450'])) 
+
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
 
@@ -174,9 +266,36 @@ class JournalImport:
         journal.creator_id = 1
         journal.save(force_insert=True)
         self.charge_summary("journals")
-        #journal.collections.add(collection)
 
-        self.load_studyarea(journal,record['441'])
+        # text language
+        if record.has_key('350'):
+            self.load_textlanguages(journal,record['350'])
+
+        # study area
+        if record.has_key('441'):
+            self.load_studyareas(journal,record['441'])
+
+        # mission
+        if record.has_key('901'):
+            self.load_missions(journal,record['901'])
+
+        # historic
+        if record.has_key('51'):
+            self.load_historics(journal,record['51'])
+
+        # titles
+        if record.has_key('421'):
+            self.load_titles(journal,record['421'],'medline')
+
+        if record.has_key('150'):
+            self.load_titles(journal,record['150'],'short')
+
+        if record.has_key('151'):
+            self.load_titles(journal,record['151'],'lilacs')
+
+        if record.has_key('230'):
+            self.load_titles(journal,record['230'],'parallel')
+
 
         return journal
 
