@@ -43,7 +43,6 @@ def index(request):
 @login_required
 def user_index(request):
     
-    
     user_collections = get_user_collections(request.user.id)
     user_collections_managed = user_collections.filter(is_manager=True)
 
@@ -147,14 +146,6 @@ def add_user(request, user_id=None):
                               'userprofileformset': userprofileformset
                               },
                               context_instance=RequestContext(request))
-
-@login_required
-def toggle_user_availability(request, user_id):
-  user = get_object_or_404(models.User, pk = user_id)
-  user.is_active = not user.is_active
-  user.save()
-
-  return HttpResponseRedirect(reverse('user.index'))
 
 @login_required
 def journal_index(request):
@@ -511,7 +502,27 @@ def generic_toggle_availability(request, object_id, model):
   else:
     #bad request
     return HttpResponse(status=400)
-    
+
+@login_required
+def toggle_user_availability(request, user_id):
+
+  if request.is_ajax():
+
+    user = get_object_or_404(models.User, pk = user_id)
+    user.is_active = not user.is_active
+    user.save()
+
+    response_data = json.dumps({
+      "result": str(user.is_active),
+      "object_id": user.id
+      })
+
+    #ajax response json
+    return HttpResponse(response_data, mimetype="application/json")
+  else:
+    #bad request
+    return HttpResponse(status=400)
+
 @login_required
 def search_center(request):
     return center_index(request)
