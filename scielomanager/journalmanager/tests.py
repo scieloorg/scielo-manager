@@ -517,16 +517,14 @@ class LoggedInViewsTest(TestCase):
 
     def test_toggle_user_availability(self):
         pre_user = User.objects.all()[0]
-        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]))
+        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         pos_user = User.objects.all()[0]
 
         self.assertEqual(pre_user, pos_user)
         self.assertTrue(pre_user.is_active is not pos_user.is_active)
 
         response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 404)
-
-        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]))
+        self.assertEqual(response.status_code, 400)
 
     @with_sample_journal
     def test_journal_availability_list(self):
