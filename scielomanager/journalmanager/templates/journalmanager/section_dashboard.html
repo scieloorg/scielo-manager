@@ -19,7 +19,7 @@
       <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
     </div>
     <div class="span2">
-        {% simple_pagination items %}
+        {% simple_pagination objects_section %}
     </div>
 </div>
 
@@ -30,7 +30,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in items.object_list %}
+        {% for item in objects_section.object_list %}
         <tr>
             <td>
                 <h4>
@@ -42,6 +42,6 @@
     <tbody>
 </table>
 
-{% pagination items %} 
+{% pagination objects_section %} 
 
 {% endblock %}

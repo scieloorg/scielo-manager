@@ -240,11 +240,17 @@ class Issue(models.Model):
         choices=choices.STANDARD, null=False, blank=True)
 
     def identification(self):
-        n = self.number
-        if n != 'ahead' and n != 'review':
-            n ='(' + self.number + ')'
 
-        return self.volume + ' ' + n
+        if self.number is not None:  
+            n = self.number
+            if n != 'ahead' and n != 'review':
+                n ='(' + self.number + ')'
+            else:
+                n = self.number
+
+            return self.volume + ' ' + n
+        else:
+            return ''
 
     def __unicode__(self):
         return self.identification()
