@@ -71,9 +71,6 @@ class Institution(models.Model):
     def __unicode__(self):
         return u'%s' % (self.name)
 
-    def get_address_as_list(self):
-        return self.address.split("\n")
-
     class Meta:
         ordering = ['name']
 
@@ -264,8 +261,3 @@ class Supplement(Issue):
 class Center(Institution):
     objects = AppCustomManager()
 
-#def create_user_profile(sender, instance, created, **kwargs):
-#    if created:
-#        UserProfile.objects.create(user=instance)
-
-#post_save.connect(create_user_profile, sender=User)

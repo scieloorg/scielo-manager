@@ -9,7 +9,7 @@ from scielomanager.journalmanager import views
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
+
     url(r'^$', views.index, name='index'),
 
     # Journal Manager APP
@@ -17,12 +17,11 @@ urlpatterns = patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
-
     url(r'^accounts/logout/$', views.user_logout, name='journalmanager.user_logout'),
     url(r'^accounts/login/$', views.user_login, name='journalmanager.user_login'),
     url(r'^accounts/password/reset/$', password_reset, {
         'template_name': 'registration/password_reset_form.html',
-        'email_template_name': 'registration/password_reset_email.html',
+        'email_template_name':  'registration/password_reset_email.html',
         'post_reset_redirect': '/accounts/password/reset/done/'},
         name='registration.password_reset'),
 

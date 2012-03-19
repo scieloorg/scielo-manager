@@ -38,7 +38,7 @@ def index(request):
         user_collections = ""
 
     c = RequestContext(request,{'user_collections':user_collections,})
-    return HttpResponse(t.render(c),)
+    return HttpResponse(t.render(c))
 
 @login_required
 def generic_index(request, model, journal_id = None):
@@ -90,9 +90,7 @@ def user_index(request):
     user_collections_managed = user_collections.filter(is_manager=True)
 
     # Filtering users manager by the administrator
-    all_users = models.User.objects.filter(usercollections__collection__in =
-        ( collection.collection.pk for collection in user_collections_managed )).distinct('username')
-
+    all_users = models.User.objects.filter(usercollections__collection__in = ( collection.collection.pk for collection in user_collections_managed )).distinct('username')
     users = get_paginated(all_users, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/user_dashboard.html')
@@ -104,7 +102,9 @@ def user_index(request):
     return HttpResponse(t.render(c))
 
 def user_login(request):
+
     next = request.GET.get('next', None)
+
     if request.method == 'POST':
         next = request.POST['next']
         username = request.POST['username']
@@ -116,7 +116,7 @@ def user_login(request):
                 user_collections = get_user_collections(request.user.id)
 
                 if next != '':
-                    t = loader.get_template(next)
+                    return HttpResponseRedirect(next)
                 else:
                     t = loader.get_template('journalmanager/home_journal.html')
                 c = RequestContext(request, {'active': True,
@@ -135,8 +135,6 @@ def user_login(request):
         t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
-        else:
-            c = RequestContext(request, {'next': next,})
         return HttpResponse(t.render(c))
 
 @login_required
@@ -486,7 +484,7 @@ def add_center(request, center_id=None):
         centerform = CenterForm(request.POST, instance=center, prefix='center')
         centercollectionsformset = CenterCollectionsFormSet(request.POST, instance=center, prefix='centercollections')
 
-        if centerform.is_valid():
+        if centerform.is_valid() and centercollectionsformset.is_valid():
             centerform.save()
             centercollectionsformset.save()
 
@@ -543,5 +541,3 @@ def password_change(request):
         'journalmanager/password_change.html',
         {'form': form},
         context_instance = RequestContext(request))
-
-

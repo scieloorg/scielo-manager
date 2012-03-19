@@ -23,7 +23,11 @@ def get_sample_userprofile(**kwargs):
     
     return models.UserProfile(**userprofile_attrs)
 
-def get_sample_journal_dataform(dict_params):
+def get_sample_journal_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
     journal_attrs = {
       'journal-sponsor': 'FAPESP',
       'journal-ctrl_vocabulary': 'decs',
@@ -95,7 +99,11 @@ def get_sample_journal_dataform(dict_params):
 
     return journal_attrs
 
-def get_sample_institution_dataform(dict_params):
+def get_sample_institution_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
     institution_attrs = {
       'institution-city': '',
       'institution-fax': '',
@@ -122,7 +130,11 @@ def get_sample_institution_dataform(dict_params):
 
     return publisher_attrs
 
-def get_sample_publisher_dataform(dict_params):
+def get_sample_publisher_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
     publisher_attrs = {
       'publisher-city': '',
       'publisher-fax': '',
@@ -180,6 +192,36 @@ def get_sample_uselicense_dataform(**kwargs):
     uselicense_attrs.update(kwargs)
 
     return uselicense_attrs
+
+def get_sample_user_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    user_attrs = {
+        'user-username': 'dummyuser_add',
+        'user-first_name': 'Dummy',
+        'user-last_name': 'User',
+        'user-is_active': True,
+        'user-is_superuser': True,
+        'user-is_staff': True,
+        'user-password': 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799',
+        'user-email': 'dev@scielo.org',
+
+        #Collection formset data
+        'usercollections-TOTAL_FORMS': 1,
+        'usercollections-INITIAL_FORMS': 0,
+
+        #User formset data
+        'userprofile-0-email': 'dummyuser@dummymail.com',
+        'userprofile-TOTAL_FORMS': 1, 
+        'userprofile-INITIAL_FORMS': 0
+
+        }
+
+    user_attrs.update(dict_params)
+
+    return user_attrs
 
 def get_sample_journal():
     """
@@ -242,7 +284,7 @@ def get_sample_creator(is_active = True, is_superuser = True, is_staff = True):
 def get_sample_usercollections(user, collection):
 
     usercollections_attrs = {
-      'is_manager': False,
+      'is_manager': True,
       'is_default': False,
       'user': user,
       'collection': collection,
@@ -325,6 +367,44 @@ def get_sample_center(validated = True):
     }
 
     return models.Center(**center_attrs)
+
+def get_sample_center_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+      
+    """
+    Returns a center object, without the following attributes (non mandatory or need to be bound
+    to another model object):
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
+    """
+
+    center_attrs = {
+      'center-city': '',
+      'center-fax': '',
+      'center-validated': True,
+      'center-name': u'Associação Nacional de História - ANPUH',
+      'center-address_number': '123456',
+      'center-acronym': 'rbh',
+      'center-country': 'São Paulo',
+      'center-cel': '',
+      'center-phone': '',
+      'center-state': '',
+      'center-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'center-mail': 'scielo@scielo.org',
+      'center-address_complement': '',
+      'center-is_available': True,
+
+      #Collection formset data
+      'centercollections-TOTAL_FORMS': 1,
+      'centercollections-INITIAL_FORMS': 0,
+
+    }
+
+    center_attrs.update(dict_params)
+
+    return center_attrs
 
 def get_sample_index_coverage():
 

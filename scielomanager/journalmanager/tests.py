@@ -114,6 +114,69 @@ class LoggedInViewsTest(TestCase):
     def _destroy_center(self):
         Center.objects.get(name = u'Associação Nacional de História - ANPUH').delete()
 
+    def test_index(self):
+        """
+        Logged user verify index page
+        """
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue('user_collections' in response.context)
+        self.assertEqual(response.context['user_collections'][0].collection.name, u'SciELO')
+
+    def test_user_index(self):
+        """
+        Logged user verify list of users
+        """
+        response = self.client.get(reverse('user.index'))
+        self.assertTrue('users' in response.context)
+        self.assertEqual(response.context['users'].object_list[0].username, u'dummyuser')
+        self.assertEqual(response.context['users'].object_list.count(), 1)
+
+    def test_my_account(self):
+        """
+        Logged in user accessing his own data management dashboard
+        """
+        response = self.client.get(reverse('journalmanager.my_account'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_password_change(self):
+        """
+        Logged in user changing its password
+
+        Covered cases:
+        * Correct credentials and new password
+        * Correct credentials, incorrect new password confirmation
+        * Incorrect credentials and correct new password
+        """
+        response = self.client.get(reverse('journalmanager.password_change'))
+        self.assertEqual(response.status_code, 200)
+
+        # correct credentials
+        response = self.client.post(reverse('journalmanager.password_change'), {
+            'password': '123',
+            'new_password': '654321',
+            'new_password_again': '654321',
+            })
+        self.assertRedirects(response, reverse('journalmanager.my_account'))
+
+        # correct credentials, incorrect new password confirmation
+        response = self.client.post(reverse('journalmanager.password_change'), {
+            'password': '123',
+            'new_password': '65',
+            'new_password_again': '654321',
+            })
+        self.assertRedirects(response, reverse('journalmanager.password_change'))
+
+        # incorrect credentials
+        response = self.client.post(reverse('journalmanager.password_change'), {
+            'password': '123456',
+            'new_password': '654321',
+            'new_password_again': '654321',
+            })
+        self.assertRedirects(response, reverse('journalmanager.password_change'))
+
+
     def test_add_journal(self):
         #empty form
         response = self.client.get(reverse('journal.add'))
@@ -239,6 +302,35 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.edit', args=[journal.pk, journal.issue_set.all()[0].pk]))
         self.assertEqual(response.status_code, 200)
 
+    def test_add_center(self):
+
+        #empty form
+        response = self.client.get(reverse('center.add'))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse('center.add'),
+            tests_assets.get_sample_center_dataform({
+                'centercollections-0-collection': self.collection.pk
+                }))
+
+        self.assertRedirects(response, reverse('center.index'))
+
+        response = self.client.get(reverse('center.edit', args=[Center.objects.all()[0].pk]))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
+            tests_assets.get_sample_center_dataform({
+                'center-name': u'Associação Nacional de História - ANPUH - modified', 
+                'centercollections-0-collection': self.collection.pk
+                }))
+
+        self.assertRedirects(response, reverse('center.index'))
+
+        self.assertQuerysetEqual(Center.objects.all(), [
+                "<Center: Associação Nacional de História - ANPUH - modified>",
+              ]
+          )
+
     @with_sample_journal
     def test_journal_index(self):
         """
@@ -282,6 +374,18 @@ class LoggedInViewsTest(TestCase):
             unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
+    @with_sample_center
+    def test_center_index(self):
+        """
+        Logged user verify list of centers
+        """
+        response = self.client.get(reverse('center.index'))
+        self.assertTrue('centers' in response.context)
+
+        self.assertEqual(response.context['centers'].object_list[0].name, u'Associação Nacional de História - ANPUH')
+        self.assertEqual(response.context['centers'].object_list.count(), 1)
+
+
     @with_sample_journal
     def test_search_journal(self):
         """
@@ -321,6 +425,47 @@ class LoggedInViewsTest(TestCase):
         # #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
+
+    @with_sample_issue
+    def test_search_issue(self):
+        """
+        View: search_issue
+
+        Tests url dispatch and values returned by the view to the template
+        """
+        journal = Journal.objects.all()[0]
+        issue = Issue.objects.all()[0]
+
+        response = self.client.get('/journal/' + str(journal.pk) + '/issue/search/?q=29')
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200)
+
+        #values passed to template
+        self.assertTrue('issues' in response.context)
+
+        #testing content
+        self.assertEqual(u'29', unicode(response.context['issues'].object_list[0].volume))
+        self.assertTrue(1, len(response.context['issues'].object_list))
+
+    @with_sample_center
+    def test_search_center(self):
+        """
+        View: search_center
+
+        Tests url dispatch and values returned by the view to the template
+        """
+        response = self.client.get(u'/journal/center/search/?q=Associação')
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200)
+
+        #values passed to template
+        self.assertTrue('centers' in response.context)
+
+        #testing content
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['centers'].object_list[0].name))
+        self.assertTrue(1, len(response.context['centers'].object_list))
 
     @with_sample_journal
     def test_toggle_journal_availability(self):
@@ -370,6 +515,19 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('center.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
+    def test_toggle_user_availability(self):
+        pre_user = User.objects.all()[0]
+        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]))
+        pos_user = User.objects.all()[0]
+
+        self.assertEqual(pre_user, pos_user)
+        self.assertTrue(pre_user.is_active is not pos_user.is_active)
+
+        response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]))
+
     @with_sample_journal
     def test_journal_availability_list(self):
 
@@ -417,50 +575,150 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['objects_issue'].object_list), 1)
 
-    def test_my_account(self):
+    def test_add_user(self):
         """
-        Logged in user accessing his own data management dashboard
+        Create user and verify content on database
         """
-        response = self.client.get(reverse('journalmanager.my_account'))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
+                'usercollections-0-collection': self.usercollections.pk,
+                'usercollections-0-is_manager': True, 
+                'usercollections-0-is_default': True,}))
 
-    def test_password_change(self):
+        self.assertRedirects(response, reverse('user.index'))
+
+        self.assertEqual(str(User.objects.all()[1].username), tests_assets.get_sample_user_dataform()['user-username'])
+
+        self.assertQuerysetEqual(User.objects.all(), [
+                "<User: dummyuser>",
+                "<User: dummyuser_add>",
+              ]
+          )
+
+    def test_edit_user(self):
         """
-        Logged in user changing its password
-
-        Covered cases:
-        * Correct credentials and new password
-        * Correct credentials, incorrect new password confirmation
-        * Incorrect credentials and correct new password
+        Edit user and verify content on database
         """
-        response = self.client.get(reverse('journalmanager.password_change'))
-        self.assertEqual(response.status_code, 200)
+        user = User.objects.all()[0]
 
-        # correct credentials
-        response = self.client.post(reverse('journalmanager.password_change'), {
-            'password': '123',
-            'new_password': '654321',
-            'new_password_again': '654321',
-            })
-        self.assertRedirects(response, reverse('journalmanager.my_account'))
+        response = self.client.get(reverse('user.edit', args=[user.pk]))
+        self.assertEqual(response.context['user'], user)
 
-        # correct credentials, incorrect new password confirmation
-        response = self.client.post(reverse('journalmanager.password_change'), {
-            'password': '123',
-            'new_password': '65',
-            'new_password_again': '654321',
-            })
-        self.assertRedirects(response, reverse('journalmanager.password_change'))
+        response = self.client.post(reverse('user.edit', args=(user.pk,)), 
+                tests_assets.get_sample_user_dataform({
+                'user-username': 'dummyuser_edit',
+                'usercollections-0-collection': self.collection.pk,
+                'usercollections-0-is_manager': True, 
+                'usercollections-0-is_default': True,
+                }))
 
-        # incorrect credentials
-        response = self.client.post(reverse('journalmanager.password_change'), {
-            'password': '123456',
-            'new_password': '654321',
-            'new_password_again': '654321',
-            })
-        self.assertRedirects(response, reverse('journalmanager.password_change'))
+        self.assertRedirects(response, reverse('user.index'))
 
+        user = User.objects.all()[0]
+
+        self.assertEqual(user.username, u'dummyuser_edit')
+
+        self.assertQuerysetEqual(User.objects.all(), [
+                "<User: dummyuser_edit>",
+              ]
+          )
+       
 class LoggedOutViewsTest(TestCase):
+
+    def setUp(self):
+        """
+        Creates an authenticated session using a dummy user.
+        """
+
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
+
+    def test_index(self):
+        """
+        Logged out user try access index page
+        """
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue('SciELO Manager' in response.content)
+
+    def test_user_login(self):
+        """
+        Logged out user try login and verify session 
+        """
+        #Login
+        response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('journal.index'))
+        self.assertEqual(response.status_code, 200)
+
+        #Verify the value of user session 
+        self.assertTrue('_auth_user_id' in self.client.session)
+
+    def test_user_logout(self):
+        """
+        Logged out user try login, logout and verify user session
+        """
+        #Login
+        response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':'/journal/?page=14'})
+        self.assertRedirects(response, reverse('journal.index') + '?page=14')
+
+        #Logout
+        response = self.client.get(reverse('journalmanager.user_logout'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue('SciELO Manager' in response.content)
+
+        #Verify the value of user session 
+        self.assertFalse('_auth_user_id' in self.client.session)
+
+    def test_user_login_next(self):
+        """
+        Logged out user try login with next param and verify user session
+        """
+        #Login
+        response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':'/journal/?page=14'})
+        self.assertRedirects(response, reverse('journal.index') + '?page=14')
+
+        #Verify the value of user session 
+        self.assertTrue('_auth_user_id' in self.client.session)
+
+    def test_user_login_unactive(self):
+        """
+        Logged out user try login with is_active=False and verify user session 
+        """
+
+        self.user.is_active = False
+        self.user.save()
+
+        response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
+
+        #Testing content
+        self.assertTrue(u'Sua conta não está ativada. Por favor, entre em contato com a SciELO ou verifique seu e-mail' in response.content.decode('utf-8'))
+
+        self.user.is_active = True
+        self.user.save()
+
+        #Verify the value of user session 
+        self.assertFalse('_auth_user_id' in self.client.session)
+
+    def test_user_login_failed(self):
+        """
+        Logged out user try login with password=1234 and verify user session 
+        """
+        response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '1234', 'next':''})
+
+        #Testing content
+        self.assertTrue(u'Seu usuário e senha não conferem. Por favor, tente novamente.' in response.content.decode('utf-8'))
+
+        #Verify the value of user session 
+        self.assertFalse('_auth_user_id' in self.client.session)
+
     def test_my_account(self):
         """
         Logged out user trying to access a user management dashboard
@@ -537,7 +795,7 @@ class ModelBackendTest(TestCase):
 
     def setUp(self):
         #add a dummy user
-        self.user = tests_assets.get_sample_creator()        
+        self.user = tests_assets.get_sample_creator()
         self.user.save()
         self.profile = tests_assets.get_sample_userprofile(user=self.user)
         self.profile.save()
