@@ -7,13 +7,13 @@
 
 {% endblock %}
 
-{% block body_title %}{% trans "publishers" %}{% endblock %}
+{% block body_title %}{% trans "objects_publisher" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 <ul class="breadcrumb">
 <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-<li class="active">{% trans 'publishers DashBoard' %}</li>
+<li class="active">{% trans 'Publishers DashBoard' %}</li>
 </ul><!--breadcrumb-->
 {% endblock %}
 
@@ -34,14 +34,14 @@
   <a class="btn btn-primary" href="{% url publisher.add %}">{% trans 'New' %}</a>
 </div>
 <div class="span2">
-    {% simple_pagination publishers %}
+    {% simple_pagination objects_publisher %}
 </div>
 </div>
 
 <div class="row-fluid">
 <span>{% trans 'Show by: ' %}</span>
-<a href="{% url publisher.index %}">{% trans "Enabled Publishers" %}</a>
-<a href="{% url publisher.index %}?is_available=0">{% trans "Disabled Publishers" %}</a>
+<a href="{% url publisher.index %}">{% trans "Enabled objects_publisher" %}</a>
+<a href="{% url publisher.index %}?is_available=0">{% trans "Disabled objects_publisher" %}</a>
 </div>
 
 <table class="table table-striped">
@@ -53,7 +53,7 @@
     </tr>
 </thead>
 <tbody>
-  {% for publisher in publishers.object_list %}
+  {% for publisher in objects_publisher.object_list %}
   <tr id="{{ publisher.pk }}">
       <td>
           <h4>
@@ -89,7 +89,7 @@
   {% endfor %}
 <tbody>
 </table>
-{% pagination publishers %}
+{% pagination objects_publisher %}
 {% endblock %}
 
 {% block extrafooter %}
