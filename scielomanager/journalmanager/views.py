@@ -41,8 +41,50 @@ def index(request):
     return HttpResponse(t.render(c),)
 
 @login_required
+def generic_index(request, model, journal_id = None):
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default=True)
+
+    if journal_id:
+        journal = models.Journal.objects.get(pk=journal_id)
+        objects_all = model.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
+    else:
+        journal = None
+        objects_all = model.objects.available(request.GET.get('is_available', 1))
+
+    objects = get_paginated(objects_all, request.GET.get('page', 1))
+
+    template = loader.get_template('journalmanager/%s_dashboard.html' % model.__name__.lower())
+
+    context = RequestContext(request, {
+                       'objects_%s' %  model.__name__.lower(): objects,
+                       'journal': journal,
+                       'user_collections': user_collections,
+                       })
+    return HttpResponse(template.render(context))
+
+@login_required
+def generic_toggle_availability(request, object_id, model):
+
+  if request.is_ajax():
+
+    model = get_object_or_404(model, pk = object_id)
+    model.is_available = not model.is_available
+    model.save()
+
+    response_data = json.dumps({
+      "result": str(model.is_available),
+      "object_id": model.id
+      })
+
+    #ajax response json
+    return HttpResponse(response_data, mimetype="application/json")
+  else:
+    #bad request
+    return HttpResponse(status=400)
+
+@login_required
 def user_index(request):
-    
     
     user_collections = get_user_collections(request.user.id)
     user_collections_managed = user_collections.filter(is_manager=True)
@@ -157,22 +199,6 @@ def toggle_user_availability(request, user_id):
   return HttpResponseRedirect(reverse('user.index'))
 
 @login_required
-def journal_index(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default=True)
-
-    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1))
-
-    journals = get_paginated(all_journals, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/journal_dashboard.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
@@ -237,22 +263,6 @@ def add_journal(request, journal_id = None):
                               'histformset': histformset,
                               'indexcoverageformset': indexcoverageformset,
                               }, context_instance = RequestContext(request))
-
-
-@login_required
-def publisher_index(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default = True)
-
-    all_publishers = models.Publisher.objects.available(request.GET.get('is_available', 1))
-    publishers = get_paginated(all_publishers, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/publisher_dashboard.html')
-    c = RequestContext(request, {
-                       'publishers': publishers,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def add_publisher(request, publisher_id=None):
@@ -364,6 +374,22 @@ def search_journal(request):
                        })
     return HttpResponse(t.render(c))
 
+
+@login_required
+def publisher_index(request):
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default = True)
+
+    all_publishers = models.Publisher.objects.available(request.GET.get('is_available', 1))
+    publishers = get_paginated(all_publishers, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/publisher_dashboard.html')
+    c = RequestContext(request, {
+                       'objects_publisher': publishers,
+                       'user_collections': user_collections,
+                       })
+    return HttpResponse(t.render(c))
+
 @login_required
 def search_publisher(request):
     return publisher_index(request)
@@ -439,20 +465,6 @@ def add_section(request, journal_id, section_id=None):
                               'journal': journal,
                               },
                               context_instance = RequestContext(request))
-@login_required
-def center_index(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default=True)
-
-    all_centers = models.Center.objects.available(request.GET.get('is_available', 1))
-    centers = get_paginated(all_centers, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/center_dashboard.html')
-    c = RequestContext(request, {
-                       'centers': centers,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def add_center(request, center_id=None):
@@ -491,26 +503,6 @@ def add_center(request, center_id=None):
                               'centercollectionsformset': centercollectionsformset,
                               },
                               context_instance = RequestContext(request))
-
-@login_required
-def generic_toggle_availability(request, object_id, model):
-
-  if request.is_ajax():
-
-    model = get_object_or_404(model, pk = object_id)
-    model.is_available = not model.is_available
-    model.save()
-
-    response_data = json.dumps({
-      "result": str(model.is_available),
-      "object_id": model.id
-      })
-
-    #ajax response json
-    return HttpResponse(response_data, mimetype="application/json")
-  else:
-    #bad request
-    return HttpResponse(status=400)
     
 @login_required
 def search_center(request):

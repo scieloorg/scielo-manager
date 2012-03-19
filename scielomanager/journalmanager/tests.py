@@ -140,9 +140,6 @@ class LoggedInViewsTest(TestCase):
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-center': sample_center.pk, }))
 
-        with open('/tmp/debug.html', 'w') as f:
-            f.write(response.content)
-
         self.assertRedirects(response, reverse('journal.index'))
 
         #edit journal - must be changed
@@ -256,13 +253,13 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('journals' in response.context)
+        self.assertTrue('objects_journal' in response.context)
         self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-            unicode(response.context['journals'].object_list[0].title))
-        self.assertTrue(1, len(response.context['journals'].object_list))
+            unicode(response.context['objects_journal'].object_list[0].title))
+        self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_journal
     def test_publisher_index(self):
@@ -277,13 +274,13 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('publishers' in response.context)
+        self.assertTrue('objects_publisher' in response.context)
         self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH',
-            unicode(response.context['publishers'].object_list[0].name))
-        self.assertTrue(1, len(response.context['publishers'].object_list))
+            unicode(response.context['objects_publisher'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
     @with_sample_journal
     def test_search_journal(self):
@@ -317,13 +314,13 @@ class LoggedInViewsTest(TestCase):
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
-        #values passed to template
-        self.assertTrue('publishers' in response.context)
+        # #values passed to template
+        self.assertTrue('objects_publisher' in response.context)
         self.assertTrue('user_collections' in response.context)
 
-        #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['publishers'].object_list[0].name))
-        self.assertTrue(1, len(response.context['publishers'].object_list))
+        # #testing content
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
     @with_sample_journal
     def test_toggle_journal_availability(self):
@@ -378,15 +375,15 @@ class LoggedInViewsTest(TestCase):
 
         pre_journal = Journal.objects.all()[0]
         response = self.client.get(reverse('journal.index') + '?is_available=1')
-        self.assertEqual(response.context['journals'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
 
         #change object atribute is_available
         pre_journal.is_available = False
         pre_journal.save()
 
         response = self.client.get(reverse('journal.index') + '?is_available=0')
-        self.assertEqual(response.context['journals'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['journals'].object_list), 1)
+        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['objects_journal'].object_list), 1)
 
 
     @with_sample_journal
@@ -394,15 +391,15 @@ class LoggedInViewsTest(TestCase):
 
         publisher = Publisher.objects.all()[0]
         response = self.client.get(reverse('publisher.index'))
-        self.assertEqual(response.context['publishers'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, True)
 
         #change atribute is_available
         publisher.is_available = False
         publisher.save()
 
         response = self.client.get(reverse('publisher.index') + '?is_available=0')
-        self.assertEqual(response.context['publishers'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['publishers'].object_list), 1)
+        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['objects_publisher'].object_list), 1)
 
 
     @with_sample_issue
@@ -410,15 +407,15 @@ class LoggedInViewsTest(TestCase):
 
         issue = Issue.objects.all()[0]
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]))
-        self.assertEqual(response.context['issues'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, True)
 
         #change atribute is_available
         issue.is_available = False
         issue.save()
 
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
-        self.assertEqual(response.context['issues'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['issues'].object_list), 1)
+        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['objects_issue'].object_list), 1)
 
     def test_my_account(self):
         """

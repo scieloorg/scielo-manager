@@ -7,14 +7,14 @@
 
 {% endblock %}
 
-{% block body_title %}{% trans "Journal Issues" %}{% endblock %}
+{% block body_title %}{% trans "Journal objects_issue" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 <ul class="breadcrumb">
 <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
 <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-<li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues' %}</li>
+<li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'objects_issue' %}</li>
 </ul>
 {% endblock %}
 
@@ -35,7 +35,7 @@
     <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
   </div>
   <div class="span2">
-      {% simple_pagination issues %}
+      {% simple_pagination objects_issue %}
   </div>
 </div>
 
@@ -54,7 +54,7 @@
     </tr>
 </thead>
 <tbody>
-  {% for issue in issues.object_list %}
+  {% for issue in objects_issue.object_list %}
   <tr id="{{issue.pk}}">
     <td>
       <h4>
@@ -81,7 +81,7 @@
 <tbody>
 </table>
 
-{% pagination issues %}
+{% pagination objects_issue %}
 {% endblock %}
 
 {% block extrafooter %}

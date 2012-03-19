@@ -3,13 +3,13 @@
 {% load static %}
 {% load journalmanager_template_tags %}
 
-{% block body_title %}{% trans "User Journals" %}{% endblock %}
+{% block body_title %}{% trans "User objects_journal" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 <ul class="breadcrumb">
 <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-<li class="active">{% trans 'Journals DashBoard' %}</li>
+<li class="active">{% trans 'objects_journal DashBoard' %}</li>
 </ul><!--breadcrumb-->
 {% endblock %}
 
@@ -30,7 +30,7 @@
     <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
   </div>
   <div class="span2">
-      {% simple_pagination journals %}
+      {% simple_pagination objects_journal %}
   </div>
 </div>
 
@@ -52,7 +52,7 @@
   </tr>
 </thead>
 <tbody>
-  {% for journal in journals.object_list %}
+  {% for journal in objects_journal.object_list %}
   <tr id="{{ journal.pk }}">
     <td>
       <h4>
@@ -102,7 +102,7 @@
   {% endfor %}
 <tbody>
 </table>
-{% pagination journals %}
+{% pagination objects_journal %}
 {% endblock %}
 
 {% block extrafooter %}
