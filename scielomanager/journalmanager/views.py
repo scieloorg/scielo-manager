@@ -301,25 +301,6 @@ def add_publisher(request, publisher_id=None):
                               },
                               context_instance = RequestContext(request))
 
-@login_required
-def issue_index(request, journal_id):
-    #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
-    #estas queries.
-    journal = models.Journal.objects.get(pk = journal_id)
-
-    user_collections = get_user_collections(request.user.id)
-
-    all_issues = models.Issue.objects.available(request.GET.get('is_available', 1)).filter(journal = journal_id)
-
-    issues = get_paginated(all_issues, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/issue_dashboard.html')
-    c = RequestContext(request, {
-                       'issues': issues,
-                       'journal': journal,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def add_issue(request, journal_id, issue_id=None):
@@ -407,29 +388,10 @@ def search_issue(request, journal_id):
 
     t = loader.get_template('journalmanager/issue_dashboard.html')
     c = RequestContext(request, {
-                       'issues': issues,
+                       'objects_issue': issues,
                        'journal': journal,
                        'user_collection': user_collections,
                        'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def section_index(request, journal_id):
-    #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
-    #estas queries.
-    journal = models.Journal.objects.get(pk = journal_id)
-    user_collections = get_user_collections(request.user.id)
-
-    all_sections = models.Section.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
-
-    sections = get_paginated(all_sections, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/section_dashboard.html')
-    c = RequestContext(request, {
-                       'items': sections,
-                       'journal': journal,
-                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -502,6 +464,23 @@ def add_center(request, center_id=None):
                               },
                               context_instance = RequestContext(request))
     
+
+@login_required
+def center_index(request):
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default = True)
+
+    all_centers = models.Center.objects.available(request.GET.get('is_available', 1))
+    centers = get_paginated(all_centers, request.GET.get('page', 1))
+
+    t = loader.get_template('journalmanager/center_dashboard.html')
+    c = RequestContext(request, {
+                       'objects_center': centers,
+                       'user_collections': user_collections,
+                       })
+    return HttpResponse(t.render(c))
+
+
 @login_required
 def search_center(request):
     return center_index(request)

@@ -380,10 +380,10 @@ class LoggedInViewsTest(TestCase):
         Logged user verify list of centers
         """
         response = self.client.get(reverse('center.index'))
-        self.assertTrue('centers' in response.context)
+        self.assertTrue('objects_center' in response.context)
 
-        self.assertEqual(response.context['centers'].object_list[0].name, u'Associação Nacional de História - ANPUH')
-        self.assertEqual(response.context['centers'].object_list.count(), 1)
+        self.assertEqual(response.context['objects_center'].object_list[0].name, u'Associação Nacional de História - ANPUH')
+        self.assertEqual(response.context['objects_center'].object_list.count(), 1)
 
 
     @with_sample_journal
@@ -442,11 +442,11 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('issues' in response.context)
+        self.assertTrue('objects_issue' in response.context)
 
         #testing content
-        self.assertEqual(u'29', unicode(response.context['issues'].object_list[0].volume))
-        self.assertTrue(1, len(response.context['issues'].object_list))
+        self.assertEqual(u'29', unicode(response.context['objects_issue'].object_list[0].volume))
+        self.assertTrue(1, len(response.context['objects_issue'].object_list))
 
     @with_sample_center
     def test_search_center(self):
@@ -461,11 +461,11 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('centers' in response.context)
+        self.assertTrue('objects_center' in response.context)
 
         #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['centers'].object_list[0].name))
-        self.assertTrue(1, len(response.context['centers'].object_list))
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_center'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_center'].object_list))
 
     @with_sample_journal
     def test_toggle_journal_availability(self):
