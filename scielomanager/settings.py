@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'journalmanager',
     'south',
+    'scielo_extensions',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(

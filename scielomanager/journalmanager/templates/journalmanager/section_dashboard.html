@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block body_title %}{% trans "Journal Sections" %}{% endblock %}
 
@@ -15,7 +15,7 @@
 {% block body %}
 
 <div class="row-fluid show-grid">
-    <div class="span10"> 
+    <div class="span10">
       <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
     </div>
     <div class="span2">
@@ -42,6 +42,6 @@
     <tbody>
 </table>
 
-{% pagination objects_section %} 
+{% pagination objects_section %}
 
 {% endblock %}
