@@ -101,7 +101,7 @@ class SectionImport:
 
         return section
 
-    def run_import(self, json_file, collection):
+    def run_import(self, json_file):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -109,16 +109,8 @@ class SectionImport:
 
         json_parsed={}
 
-        if __name__ == '__main__':
-            section_json_file = open(json_file,'r')
-            section_json_parsed = json.loads(section_json_file.read())
-        else:
-            section_json_parsed = section_json_file # Para testes, carregado pelo unittest
+        section_json_file = open(json_file,'r')
+        section_json_parsed = json.loads(section_json_file.read())
 
         for record in section_json_parsed:
             loaded_section = self.load_section(record)
-
-import_section = SectionImport()
-import_result = import_section.run_import('section.json', 'Brasil')
-
-print import_section.get_summary()
