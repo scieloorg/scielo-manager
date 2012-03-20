@@ -190,7 +190,7 @@ class LoggedInViewsTest(TestCase):
         sample_uselicense.save()
 
         sample_indexdatabase = tests_assets.get_sample_index_database()
-        sample_indexdatabase.save()       
+        sample_indexdatabase.save()
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
@@ -320,7 +320,7 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
             tests_assets.get_sample_center_dataform({
-                'center-name': u'Associação Nacional de História - ANPUH - modified', 
+                'center-name': u'Associação Nacional de História - ANPUH - modified',
                 'centercollections-0-collection': self.collection.pk
                 }))
 
@@ -579,7 +579,7 @@ class LoggedInViewsTest(TestCase):
         """
         response = self.client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
                 'usercollections-0-collection': self.usercollections.pk,
-                'usercollections-0-is_manager': True, 
+                'usercollections-0-is_manager': True,
                 'usercollections-0-is_default': True,}))
 
         self.assertRedirects(response, reverse('user.index'))
@@ -601,11 +601,11 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('user.edit', args=[user.pk]))
         self.assertEqual(response.context['user'], user)
 
-        response = self.client.post(reverse('user.edit', args=(user.pk,)), 
+        response = self.client.post(reverse('user.edit', args=(user.pk,)),
                 tests_assets.get_sample_user_dataform({
                 'user-username': 'dummyuser_edit',
                 'usercollections-0-collection': self.collection.pk,
-                'usercollections-0-is_manager': True, 
+                'usercollections-0-is_manager': True,
                 'usercollections-0-is_default': True,
                 }))
 
@@ -619,7 +619,7 @@ class LoggedInViewsTest(TestCase):
                 "<User: dummyuser_edit>",
               ]
           )
-       
+
 class LoggedOutViewsTest(TestCase):
 
     def setUp(self):
@@ -646,7 +646,7 @@ class LoggedOutViewsTest(TestCase):
 
     def test_user_login(self):
         """
-        Logged out user try login and verify session 
+        Logged out user try login and verify session
         """
         #Login
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
@@ -655,7 +655,7 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.get(reverse('journal.index'))
         self.assertEqual(response.status_code, 200)
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertTrue('_auth_user_id' in self.client.session)
 
     def test_user_logout(self):
@@ -672,7 +672,7 @@ class LoggedOutViewsTest(TestCase):
 
         self.assertTrue('SciELO Manager' in response.content)
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
     def test_user_login_next(self):
@@ -683,12 +683,12 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':'/journal/?page=14'})
         self.assertRedirects(response, reverse('journal.index') + '?page=14')
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertTrue('_auth_user_id' in self.client.session)
 
     def test_user_login_unactive(self):
         """
-        Logged out user try login with is_active=False and verify user session 
+        Logged out user try login with is_active=False and verify user session
         """
 
         self.user.is_active = False
@@ -697,24 +697,24 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
 
         #Testing content
-        self.assertTrue(u'Sua conta não está ativada. Por favor, entre em contato com a SciELO ou verifique seu e-mail' in response.content.decode('utf-8'))
+        self.assertTrue(u'Your account is not active' in response.content.decode('utf-8'))
 
         self.user.is_active = True
         self.user.save()
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
     def test_user_login_failed(self):
         """
-        Logged out user try login with password=1234 and verify user session 
+        Logged out user try login with password=1234 and verify user session
         """
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '1234', 'next':''})
 
         #Testing content
-        self.assertTrue(u'Seu usuário e senha não conferem. Por favor, tente novamente.' in response.content.decode('utf-8'))
+        self.assertTrue(u'Your username and password did not match' in response.content.decode('utf-8'))
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
     def test_my_account(self):
@@ -788,7 +788,7 @@ class ComponentsTest(TestCase):
 
 class ModelBackendTest(TestCase):
     """
-    Testa as especializações de metodos de backend ModelBackend 
+    Testa as especializações de metodos de backend ModelBackend
     """
 
     def setUp(self):
@@ -797,11 +797,11 @@ class ModelBackendTest(TestCase):
         self.user.save()
         self.profile = tests_assets.get_sample_userprofile(user=self.user)
         self.profile.save()
-        
+
 
     def test_authenticate(self):
         """
-        test_authentication 
+        test_authentication
 
         Covered Tests
         1. authenticating user with true username and password
