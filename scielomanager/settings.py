@@ -39,7 +39,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'pt-br'
 
 SITE_ID = 1
 
@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'journalmanager',
     'south',
+    'scielo_extensions',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -149,7 +150,7 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'journalmanager.context_processors.from_settings',
+    'scielo_extensions.context_processors.from_settings',
 )
 
 # Messages framework
