@@ -189,14 +189,6 @@ def add_user(request, user_id=None):
                               context_instance=RequestContext(request))
 
 @login_required
-def toggle_user_availability(request, user_id):
-  user = get_object_or_404(models.User, pk = user_id)
-  user.is_active = not user.is_active
-  user.save()
-
-  return HttpResponseRedirect(reverse('user.index'))
-
-@login_required
 def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
@@ -480,6 +472,26 @@ def center_index(request):
                        })
     return HttpResponse(t.render(c))
 
+
+@login_required
+def toggle_user_availability(request, user_id):
+
+  if request.is_ajax():
+
+    user = get_object_or_404(models.User, pk = user_id)
+    user.is_active = not user.is_active
+    user.save()
+
+    response_data = json.dumps({
+      "result": str(user.is_active),
+      "object_id": user.id
+      })
+
+    #ajax response json
+    return HttpResponse(response_data, mimetype="application/json")
+  else:
+    #bad request
+    return HttpResponse(status=400)
 
 @login_required
 def search_center(request):
