@@ -176,8 +176,14 @@ class JournalImport:
 
         return True
 
+    def load_title(self, journal, titles, category):
 
-
+        for i in titles:
+            title = JournalTitle()            
+            title.title = i
+            title.category = category
+            journal.journaltitle_set.add(title)
+            self.charge_summary("title")
 
     def load_journal(self, collection, loaded_publisher, record):
         """
@@ -269,32 +275,32 @@ class JournalImport:
 
         # text language
         if record.has_key('350'):
-            self.load_textlanguages(journal,record['350'])
+            self.load_textlanguage(journal,record['350'])
 
         # study area
         if record.has_key('441'):
-            self.load_studyareas(journal,record['441'])
+            self.load_studyarea(journal,record['441'])
 
         # mission
         if record.has_key('901'):
-            self.load_missions(journal,record['901'])
+            self.load_mission(journal,record['901'])
 
         # historic
         if record.has_key('51'):
-            self.load_historics(journal,record['51'])
+            self.load_historic(journal,record['51'])
 
         # titles
         if record.has_key('421'):
-            self.load_titles(journal,record['421'],'medline')
+            self.load_title(journal,record['421'],'medline')
 
         if record.has_key('150'):
-            self.load_titles(journal,record['150'],'short')
+            self.load_title(journal,record['150'],'shorttitle')
 
         if record.has_key('151'):
-            self.load_titles(journal,record['151'],'lilacs')
+            self.load_title(journal,record['151'],'lilacs')
 
         if record.has_key('230'):
-            self.load_titles(journal,record['230'],'parallel')
+            self.load_title(journal,record['230'],'paralleltitle')
 
 
         return journal
