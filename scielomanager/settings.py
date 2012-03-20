@@ -15,6 +15,19 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'journalmanager',         # Or path to database file if using sqlite3.
+        'USER': 'postgres',               # Not used with sqlite3.
+        'PASSWORD': '',                   # Not used with sqlite3.
+        'HOST': '',                       # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                       # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -197,4 +210,8 @@ PAGINATION__ITEMS_PER_PAGE = 20
 # ...because (1) we want to be able to add to settings in this file, and
 # not only overwrite them, and (2) we do not want the app to launch if the
 # 'settings_local.include' file is not provided
-execfile(os.path.join(PROJECT_PATH,'settings_local.include'))
+try:
+    execfile(os.path.join(PROJECT_PATH,'settings_local.include'))
+except IOError:
+    #use default options
+    pass
