@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -27,7 +27,7 @@
         <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
         <div class="controls">
            {{ add_form.title }}
-           {% field_help add_form.title.label add_form.title.help_text term-journal-title %} 
+           {% field_help add_form.title.label add_form.title.help_text term-journal-title %}
         </div>
     </div>
     <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
@@ -50,7 +50,7 @@
       <table id="collectionsformset" class="table table-bordered table-striped">
       <thead>
           <tr>
-              <th>{% trans "Collections" %} 
+              <th>{% trans "Collections" %}
               	  {% field_help collectionsformset.forms.0.collection.label collectionsformset.forms.0.collection.help_text term-collections %}
               </th>
               <th>{% trans "options" %}</th>
@@ -148,7 +148,7 @@
                   {{ form.study_area }}
               </td>
           </tr>
-          
+
           {% endfor %}
       </tbody>
 
@@ -453,7 +453,7 @@
         <label class="control-label" for="alphabets">{% trans add_form.alphabet.label_tag %}</label>
         <div class="controls">
            {{ add_form.alphabet }}
-           {% field_help add_form.alphabet.label add_form.alphabet.help_text term-alphabet %} 
+           {% field_help add_form.alphabet.label add_form.alphabet.help_text term-alphabet %}
         </div>
     </div>
     <div class="control-group {% if add_form.national_code.errors %}error{% endif %}">
