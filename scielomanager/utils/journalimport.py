@@ -49,13 +49,6 @@ class JournalImport:
         
         self._summary[attribute] += 1
 
-    def get_collection(self, collection_name):
-        """
-        Function: get_collection 
-        Recupera objeto coleção de acordo com o nome da coleção passado por parametro
-        """
-        return Collection.objects.get(name=collection_name)
-
     def have_similar_publishers(self, match_string):
         """
         Function: have_similar_publishers
@@ -85,6 +78,7 @@ class JournalImport:
         """
 
         publisher = Publisher()
+        
         # Publishers Import
         publisher.name = record['480'][0]
         publisher.collection = collection
@@ -312,13 +306,9 @@ class JournalImport:
         """
 
         json_parsed={} 
-        collection = self.get_collection(collection)
 
-        if __name__ == '__main__':
-            json_file = open(json_file,'r')
-            json_parsed = json.loads(json_file.read())
-        else:
-            json_parsed = json_file # Para testes, carregado pelo unittest
+        json_file = open(json_file,'r')
+        json_parsed = json.loads(json_file.read())
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
@@ -330,8 +320,3 @@ class JournalImport:
         Retorna o resumo de carga de registros
         """
         return self._summary
-
-import_journal = JournalImport()
-import_result = import_journal.run_import('journal.json', 'Brasil')
-
-print import_journal.get_summary()
