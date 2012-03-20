@@ -5,7 +5,7 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
 
 from journalmanager import models
-from journalmanager import fields
+from scielo_extensions import formfields as fields
 
 class JournalForm(ModelForm):
 
@@ -129,36 +129,36 @@ class SectionForm(ModelForm):
 class InstitutionCollectionsForm(ModelForm):
     class Meta:
       model = models.Institution
-      widgets = { 
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      widgets = {
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class PublisherCollectionsForm(ModelForm):
     class Meta:
       model = models.Publisher
-      widgets = { 
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      widgets = {
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class CenterCollectionsForm(ModelForm):
     class Meta:
       model = models.Center
-      widgets = { 
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      widgets = {
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
-      widgets = { 
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+      widgets = {
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
       }
 
 class JournalCollectionsForm(ModelForm):
     class Meta:
       model = models.JournalCollections
       widgets = {
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}), 
+        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
       }
 
 

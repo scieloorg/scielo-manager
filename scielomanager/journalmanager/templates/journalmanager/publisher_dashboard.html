@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block extrahead %}
 
@@ -30,7 +30,7 @@
 </div><!--row-fluid Search box-->
 
 <div class="row-fluid show-grid">
-<div class="span10"> 
+<div class="span10">
   <a class="btn btn-primary" href="{% url publisher.add %}">{% trans 'New' %}</a>
 </div>
 <div class="span2">
