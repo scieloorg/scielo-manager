@@ -28,7 +28,7 @@ def get_user_collections(user_id):
 
     user_collections = User.objects.get(pk=user_id).usercollections_set.all()
 
-    return user_collections        
+    return user_collections
 
 def index(request):
     t = loader.get_template('journalmanager/home_journal.html')
@@ -85,7 +85,7 @@ def generic_toggle_availability(request, object_id, model):
 
 @login_required
 def user_index(request):
-    
+
     user_collections = get_user_collections(request.user.id)
     user_collections_managed = user_collections.filter(is_manager=True)
 
@@ -157,9 +157,9 @@ def add_user(request, user_id=None):
 
     # Getting Collections from the logged user.
     user_collections = get_user_collections(request.user.id)
-    
+
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
-    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections, 
+    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
         form=UserCollectionsForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
@@ -193,6 +193,7 @@ def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
     """
+    from django.utils.functional import curry
     user_collections = get_user_collections(request.user.id)
 
     if  journal_id == None:
@@ -205,7 +206,8 @@ def add_journal(request, journal_id = None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
-    JournalCollectionsFormSet = inlineformset_factory(models.Journal, models.JournalCollections, extra=1, can_delete=True)
+    JournalCollectionsFormSet = inlineformset_factory(models.Journal, models.JournalCollections, form=JournalCollectionsForm, extra=1, can_delete=True)
+    JournalCollectionsFormSet.form = staticmethod(curry(JournalCollectionsForm, collections_qset=user_collections))
     JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
@@ -267,7 +269,7 @@ def add_publisher(request, publisher_id=None):
 
     user_collections = get_user_collections(request.user.id)
 
-    PublisherCollectionsFormSet = inlineformset_factory(models.Publisher, models.InstitutionCollections, 
+    PublisherCollectionsFormSet = inlineformset_factory(models.Publisher, models.InstitutionCollections,
       form=PublisherCollectionsForm, extra=1, can_delete=True)
 
     if request.method == "POST":
@@ -430,7 +432,7 @@ def add_center(request, center_id=None):
 
     user_collections = get_user_collections(request.user.id)
 
-    CenterCollectionsFormSet = inlineformset_factory(models.Center, models.InstitutionCollections, 
+    CenterCollectionsFormSet = inlineformset_factory(models.Center, models.InstitutionCollections,
       form=CenterCollectionsForm, extra=1, can_delete=True)
 
 
@@ -455,7 +457,7 @@ def add_center(request, center_id=None):
                               'centercollectionsformset': centercollectionsformset,
                               },
                               context_instance = RequestContext(request))
-    
+
 
 @login_required
 def center_index(request):

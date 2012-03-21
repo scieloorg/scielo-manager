@@ -27,7 +27,7 @@ class UserProfile(models.Model):
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
 
 class Collection(models.Model):
-    collection = models.ManyToManyField(User, related_name='user_collection', 
+    collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
     url = models.URLField(_('Instance URL'), )
@@ -43,7 +43,7 @@ class UserCollections(models.Model):
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
-    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, 
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False,
         blank=False)
 
 class Institution(models.Model):
@@ -137,7 +137,7 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
-     
+
 class InstitutionCollections(models.Model):
     institution = models.ForeignKey(Institution)
     collection= models.ForeignKey(Collection, null=False)
@@ -145,6 +145,9 @@ class InstitutionCollections(models.Model):
 class JournalCollections(models.Model):
     journal = models.ForeignKey(Journal)
     collection = models.ForeignKey(Collection, null=False, help_text=helptexts.JOURNALCOLLECTIONS_COLLECTION)
+
+    def __unicode__(self):
+        return self.collection
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)
@@ -241,7 +244,7 @@ class Issue(models.Model):
 
     def identification(self):
 
-        if self.number is not None:  
+        if self.number is not None:
             n = self.number
             if n != 'ahead' and n != 'review':
                 n ='(' + self.number + ')'

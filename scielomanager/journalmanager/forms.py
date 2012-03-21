@@ -155,6 +155,23 @@ class UserCollectionsForm(ModelForm):
       }
 
 class JournalCollectionsForm(ModelForm):
+    collection = forms.ModelChoiceField(models.JournalCollections.objects.none(), required=True)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Collection field queryset is overridden to display only
+        collections related to a user.
+
+        ``collections_qset`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        collections_qset = kwargs.pop('collections_qset', None)
+        super(JournalCollectionsForm, self).__init__(*args, **kwargs)
+
+        if collections_qset is not None:
+            self.fields['collection'].queryset = models.Collection.objects.filter(pk__in = (collection.collection.pk for collection in collections_qset))
+
+
     class Meta:
       model = models.JournalCollections
       widgets = {
