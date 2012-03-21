@@ -15,6 +15,19 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'journalmanager',         # Or path to database file if using sqlite3.
+        'USER': 'postgres',               # Not used with sqlite3.
+        'PASSWORD': '',                   # Not used with sqlite3.
+        'HOST': '',                       # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                       # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -127,6 +140,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'journalmanager',
     'south',
+    'scielo_extensions',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -136,7 +150,7 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'journalmanager.context_processors.from_settings',
+    'scielo_extensions.context_processors.from_settings',
 )
 
 # Messages framework

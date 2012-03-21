@@ -190,7 +190,7 @@ class LoggedInViewsTest(TestCase):
         sample_uselicense.save()
 
         sample_indexdatabase = tests_assets.get_sample_index_database()
-        sample_indexdatabase.save()       
+        sample_indexdatabase.save()
 
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
@@ -320,7 +320,7 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
             tests_assets.get_sample_center_dataform({
-                'center-name': u'Associação Nacional de História - ANPUH - modified', 
+                'center-name': u'Associação Nacional de História - ANPUH - modified',
                 'centercollections-0-collection': self.collection.pk
                 }))
 
@@ -345,13 +345,13 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('journals' in response.context)
+        self.assertTrue('objects_journal' in response.context)
         self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-            unicode(response.context['journals'].object_list[0].title))
-        self.assertTrue(1, len(response.context['journals'].object_list))
+            unicode(response.context['objects_journal'].object_list[0].title))
+        self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_journal
     def test_publisher_index(self):
@@ -366,13 +366,13 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('publishers' in response.context)
+        self.assertTrue('objects_publisher' in response.context)
         self.assertTrue('user_collections' in response.context)
 
         #testing content
         self.assertEqual(u'Associação Nacional de História - ANPUH',
-            unicode(response.context['publishers'].object_list[0].name))
-        self.assertTrue(1, len(response.context['publishers'].object_list))
+            unicode(response.context['objects_publisher'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
     @with_sample_center
     def test_center_index(self):
@@ -380,10 +380,10 @@ class LoggedInViewsTest(TestCase):
         Logged user verify list of centers
         """
         response = self.client.get(reverse('center.index'))
-        self.assertTrue('centers' in response.context)
+        self.assertTrue('objects_center' in response.context)
 
-        self.assertEqual(response.context['centers'].object_list[0].name, u'Associação Nacional de História - ANPUH')
-        self.assertEqual(response.context['centers'].object_list.count(), 1)
+        self.assertEqual(response.context['objects_center'].object_list[0].name, u'Associação Nacional de História - ANPUH')
+        self.assertEqual(response.context['objects_center'].object_list.count(), 1)
 
 
     @with_sample_journal
@@ -418,13 +418,13 @@ class LoggedInViewsTest(TestCase):
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
-        #values passed to template
-        self.assertTrue('publishers' in response.context)
+        # #values passed to template
+        self.assertTrue('objects_publisher' in response.context)
         self.assertTrue('user_collections' in response.context)
 
-        #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['publishers'].object_list[0].name))
-        self.assertTrue(1, len(response.context['publishers'].object_list))
+        # #testing content
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
     @with_sample_issue
     def test_search_issue(self):
@@ -442,11 +442,11 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('issues' in response.context)
+        self.assertTrue('objects_issue' in response.context)
 
         #testing content
-        self.assertEqual(u'29', unicode(response.context['issues'].object_list[0].volume))
-        self.assertTrue(1, len(response.context['issues'].object_list))
+        self.assertEqual(u'29', unicode(response.context['objects_issue'].object_list[0].volume))
+        self.assertTrue(1, len(response.context['objects_issue'].object_list))
 
     @with_sample_center
     def test_search_center(self):
@@ -461,11 +461,11 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('centers' in response.context)
+        self.assertTrue('objects_center' in response.context)
 
         #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['centers'].object_list[0].name))
-        self.assertTrue(1, len(response.context['centers'].object_list))
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_center'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_center'].object_list))
 
     @with_sample_journal
     def test_toggle_journal_availability(self):
@@ -517,31 +517,29 @@ class LoggedInViewsTest(TestCase):
 
     def test_toggle_user_availability(self):
         pre_user = User.objects.all()[0]
-        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]))
+        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         pos_user = User.objects.all()[0]
 
         self.assertEqual(pre_user, pos_user)
         self.assertTrue(pre_user.is_active is not pos_user.is_active)
 
         response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 404)
-
-        response = self.client.get(reverse('user.toggle_availability', args=[pre_user.pk]))
+        self.assertEqual(response.status_code, 400)
 
     @with_sample_journal
     def test_journal_availability_list(self):
 
         pre_journal = Journal.objects.all()[0]
         response = self.client.get(reverse('journal.index') + '?is_available=1')
-        self.assertEqual(response.context['journals'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
 
         #change object atribute is_available
         pre_journal.is_available = False
         pre_journal.save()
 
         response = self.client.get(reverse('journal.index') + '?is_available=0')
-        self.assertEqual(response.context['journals'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['journals'].object_list), 1)
+        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['objects_journal'].object_list), 1)
 
 
     @with_sample_journal
@@ -549,15 +547,15 @@ class LoggedInViewsTest(TestCase):
 
         publisher = Publisher.objects.all()[0]
         response = self.client.get(reverse('publisher.index'))
-        self.assertEqual(response.context['publishers'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, True)
 
         #change atribute is_available
         publisher.is_available = False
         publisher.save()
 
         response = self.client.get(reverse('publisher.index') + '?is_available=0')
-        self.assertEqual(response.context['publishers'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['publishers'].object_list), 1)
+        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['objects_publisher'].object_list), 1)
 
 
     @with_sample_issue
@@ -565,15 +563,15 @@ class LoggedInViewsTest(TestCase):
 
         issue = Issue.objects.all()[0]
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]))
-        self.assertEqual(response.context['issues'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, True)
 
         #change atribute is_available
         issue.is_available = False
         issue.save()
 
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
-        self.assertEqual(response.context['issues'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['issues'].object_list), 1)
+        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
+        self.assertEqual(len(response.context['objects_issue'].object_list), 1)
 
     def test_add_user(self):
         """
@@ -581,7 +579,7 @@ class LoggedInViewsTest(TestCase):
         """
         response = self.client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
                 'usercollections-0-collection': self.usercollections.pk,
-                'usercollections-0-is_manager': True, 
+                'usercollections-0-is_manager': True,
                 'usercollections-0-is_default': True,}))
 
         self.assertRedirects(response, reverse('user.index'))
@@ -603,11 +601,11 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('user.edit', args=[user.pk]))
         self.assertEqual(response.context['user'], user)
 
-        response = self.client.post(reverse('user.edit', args=(user.pk,)), 
+        response = self.client.post(reverse('user.edit', args=(user.pk,)),
                 tests_assets.get_sample_user_dataform({
                 'user-username': 'dummyuser_edit',
                 'usercollections-0-collection': self.collection.pk,
-                'usercollections-0-is_manager': True, 
+                'usercollections-0-is_manager': True,
                 'usercollections-0-is_default': True,
                 }))
 
@@ -621,7 +619,7 @@ class LoggedInViewsTest(TestCase):
                 "<User: dummyuser_edit>",
               ]
           )
-       
+
 class LoggedOutViewsTest(TestCase):
 
     def setUp(self):
@@ -648,7 +646,7 @@ class LoggedOutViewsTest(TestCase):
 
     def test_user_login(self):
         """
-        Logged out user try login and verify session 
+        Logged out user try login and verify session
         """
         #Login
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
@@ -657,7 +655,7 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.get(reverse('journal.index'))
         self.assertEqual(response.status_code, 200)
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertTrue('_auth_user_id' in self.client.session)
 
     def test_user_logout(self):
@@ -674,7 +672,7 @@ class LoggedOutViewsTest(TestCase):
 
         self.assertTrue('SciELO Manager' in response.content)
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
     def test_user_login_next(self):
@@ -685,12 +683,12 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':'/journal/?page=14'})
         self.assertRedirects(response, reverse('journal.index') + '?page=14')
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertTrue('_auth_user_id' in self.client.session)
 
     def test_user_login_unactive(self):
         """
-        Logged out user try login with is_active=False and verify user session 
+        Logged out user try login with is_active=False and verify user session
         """
 
         self.user.is_active = False
@@ -699,24 +697,24 @@ class LoggedOutViewsTest(TestCase):
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
 
         #Testing content
-        self.assertTrue(u'Sua conta não está ativada. Por favor, entre em contato com a SciELO ou verifique seu e-mail' in response.content.decode('utf-8'))
+        self.assertTrue(u'Your account is not active' in response.content.decode('utf-8'))
 
         self.user.is_active = True
         self.user.save()
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
     def test_user_login_failed(self):
         """
-        Logged out user try login with password=1234 and verify user session 
+        Logged out user try login with password=1234 and verify user session
         """
         response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '1234', 'next':''})
 
         #Testing content
-        self.assertTrue(u'Seu usuário e senha não conferem. Por favor, tente novamente.' in response.content.decode('utf-8'))
+        self.assertTrue(u'Your username and password did not match' in response.content.decode('utf-8'))
 
-        #Verify the value of user session 
+        #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
     def test_my_account(self):
@@ -790,7 +788,7 @@ class ComponentsTest(TestCase):
 
 class ModelBackendTest(TestCase):
     """
-    Testa as especializações de metodos de backend ModelBackend 
+    Testa as especializações de metodos de backend ModelBackend
     """
 
     def setUp(self):
@@ -799,11 +797,11 @@ class ModelBackendTest(TestCase):
         self.user.save()
         self.profile = tests_assets.get_sample_userprofile(user=self.user)
         self.profile.save()
-        
+
 
     def test_authenticate(self):
         """
-        test_authentication 
+        test_authentication
 
         Covered Tests
         1. authenticating user with true username and password

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block extrahead %}
 
 {% endblock %}
 
-{% block body_title %}{% trans "Journal Issues" %}{% endblock %}
+{% block body_title %}{% trans "Journal objects_issue" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
@@ -31,11 +31,11 @@
 </div><!--row-fluid Search box-->
 
 <div class="row-fluid show-grid">
-  <div class="span10"> 
+  <div class="span10">
     <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
   </div>
   <div class="span2">
-      {% simple_pagination issues %}
+      {% simple_pagination objects_issue %}
   </div>
 </div>
 
@@ -54,7 +54,7 @@
     </tr>
 </thead>
 <tbody>
-  {% for issue in issues.object_list %}
+  {% for issue in objects_issue.object_list %}
   <tr id="{{issue.pk}}">
     <td>
       <h4>
@@ -81,7 +81,7 @@
 <tbody>
 </table>
 
-{% pagination issues %}
+{% pagination objects_issue %}
 {% endblock %}
 
 {% block extrafooter %}
