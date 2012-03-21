@@ -492,23 +492,38 @@ def add_center(request, center_id=None):
 @login_required
 def generic_toggle_availability(request, object_id, model):
 
-  if request.is_ajax():
+    if request.is_ajax():
 
-    model = get_object_or_404(model, pk = object_id)
-    model.is_available = not model.is_available
-    model.save()
+      model = get_object_or_404(model, pk = object_id)
+      model.is_available = not model.is_available
+      model.save()
 
-    response_data = json.dumps({
-      "result": str(model.is_available),
-      "object_id": model.id
-      })
+      response_data = json.dumps({
+        "result": str(model.is_available),
+        "object_id": model.id
+        })
 
-    #ajax response json
-    return HttpResponse(response_data, mimetype="application/json")
-  else:
-    #bad request
-    return HttpResponse(status=400)
-    
+      #ajax response json
+      return HttpResponse(response_data, mimetype="application/json")
+    else:
+      #bad request
+      return HttpResponse(status=400)
+
+@login_required
+def generic_bulk_action(request, model, action_name = None):
+
+    if request.method == 'POST':
+        items = request.POST.getlist('action') 
+        
+        for item in items:
+            model = get_object_or_404(model, pk = item)
+            model.is_available = not model.is_available
+            model.save()
+
+        query_string = '?is_available=0' if request.GET.get('is_available') else ''
+
+    return HttpResponseRedirect(reverse('journal.index') + query_string)
+
 @login_required
 def search_center(request):
     return center_index(request)
