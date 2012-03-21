@@ -21,21 +21,22 @@ $(document).ready(function() {
   });//each
 
   $('#check_all').click(function(){ 
-
     if ($('#check_all').attr('checked')){
       $('input[name="action"]').attr('checked', true)
     }else{
       $('input[name="action"]').attr('checked', false)
     }
-    
-  })
+  });
 
-  $('a#bulk_action_enable_disable').click(function(){ 
-
-    $("#bulk_action").attr('action', $("a#bulk_action_enable_disable").attr('rel'))
+  $('a#bulk_action_enable').click(function(){ 
+    $("#bulk_action").attr('action', $("a#bulk_action_enable").attr('rel'))
     $("#bulk_action").submit()
+  });
 
-  })
+  $('a#bulk_action_disable').click(function(){ 
+    $("#bulk_action").attr('action', $("a#bulk_action_disable").attr('rel'))
+    $("#bulk_action").submit()
+  });
 
 });//load
 

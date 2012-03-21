@@ -37,22 +37,27 @@
 
 <div class="row-fluid">
   <ul class="nav nav-tabs">
+    <li class="{% if not request.GET.is_available %} active {% endif %}"><a href="{% url journal.index %}">{% trans "All" %}</a></li>
+    <li class="{% if request.GET.is_available == '1' %} active {% endif %}"><a href="{% url journal.index %}?is_available=1"> {% trans "Enabled Journals" %}</a></li>
+    <li class="{% if request.GET.is_available == '0' %} active {% endif %}"><a href="{% url journal.index %}?is_available=0">{% trans "Disabled Journals" %}</a></li>
     <li class="dropdown" id="menu1">
-      <a class="dropdown-toggle" data-toggle="dropdown" href="#menu1">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
       {% trans "Actions" %}
       <b class="caret"></b>
       </a>
       <ul class="dropdown-menu">
-        {% if not request.GET.is_available %} 
-          <li><a id="bulk_action_enable_disable" rel="{% url journal.bulk_action %}" href="javascript:void(0)">{% trans "Disable" %}</a></li>
-        {% else %}
-          <li><a id="bulk_action_enable_disable" rel="{% url journal.bulk_action %}?is_available=0" href="javascript:void(0)">{% trans "Enable" %}</a></li>
+        {% if not request.GET.is_available %}
+          <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}" href="javascript:void(0)">{% trans "Disable" %}</a></li>
+          <li><a id="bulk_action_disable" rel="{% url journal.bulk_action 'is_available' '1' %}" href="javascript:void(0)">{% trans "Enable" %}</a></li>
+        {% endif %}
+        {% if request.GET.is_available == '1' %}
+          <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}?is_available=1" href="javascript:void(0)">{% trans "Disable" %}</a></li>
+        {% endif %}
+        {% if request.GET.is_available == '0' %}
+          <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '1' %}?is_available=0" href="javascript:void(0)">{% trans "Enable" %}</a></li>
         {% endif %}
       </ul>
-    </li>
-      <li class="{% if not request.GET.is_available %} active {% endif %}"><a href="{% url journal.index %}">{% trans "All" %}</a></li>
-      <li class="{% if request.GET.is_available == 1 %} active {% endif %}"><a href="{% url journal.index %}?is_available=1"> {% trans "Enabled Journals" %}</a></li>
-      <li class="{% if request.GET.is_available == 0%} active {% endif %}"><a href="{% url journal.index %}?is_available=0">{% trans "Disabled Journals" %}</a></li>
+   </li>
   </ul>
 </div>
 
@@ -71,7 +76,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for journal in journals.object_list %}
+    {% for journal in objects_journal.object_list %}
     <tr id="{{ journal.pk }}">
       <td>
         <input type="checkbox" name="action" value="{{ journal.id }}">
@@ -100,13 +105,6 @@
               {% trans 'Sections' %}
             </a>
           </li>
-          <li>
-            {% if journal.is_available %}
-              <button id="action_disable_disable" class="btn btn-mini btn-danger" value="{% url journal.toggle_availability journal.pk %}">{% trans 'disable' %}</button>
-            {% else %}
-              <button id="action_disable_disable" class="btn btn-mini btn-success" value="{% url journal.toggle_availability journal.pk %}">{% trans 'enable' %}</button>
-            {% endif %}
-          </li>
         </ul>
       </td>
       <td>{{ journal.print_issn }}</td>
@@ -125,7 +123,7 @@
   <tbody>
   </table>
 </form>
-{% pagination journals %}
+{% pagination objects_journal %}
 {% endblock %}
 
 {% block extrafooter %}

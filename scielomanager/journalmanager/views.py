@@ -47,10 +47,10 @@ def generic_index(request, model, journal_id = None):
 
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available', 1))
+        objects_all = model.objects.available(request.GET.get('is_available'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -82,6 +82,21 @@ def generic_toggle_availability(request, object_id, model):
   else:
     #bad request
     return HttpResponse(status=400)
+
+@login_required
+def generic_bulk_action(request, model, action_name, value = None):
+
+    if request.method == 'POST':
+        items = request.POST.getlist('action') 
+        for item in items:
+            model = get_object_or_404(model, pk = item)
+            if action_name == 'is_available':
+                model.is_available = int(value)
+                model.save()
+
+    query_string = '?is_available=' + request.GET.get('is_available') if request.GET.get('is_available') else ''
+
+    return HttpResponseRedirect(reverse('journal.index') + query_string)
 
 @login_required
 def user_index(request):
@@ -492,21 +507,6 @@ def toggle_user_availability(request, user_id):
   else:
     #bad request
     return HttpResponse(status=400)
-
-@login_required
-def generic_bulk_action(request, model, action_name = None):
-
-    if request.method == 'POST':
-        items = request.POST.getlist('action') 
-        
-        for item in items:
-            model = get_object_or_404(model, pk = item)
-            model.is_available = not model.is_available
-            model.save()
-
-        query_string = '?is_available=0' if request.GET.get('is_available') else ''
-
-    return HttpResponseRedirect(reverse('journal.index') + query_string)
 
 @login_required
 def search_center(request):

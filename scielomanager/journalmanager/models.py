@@ -16,12 +16,15 @@ class AppCustomManager(models.Manager):
     Domain specific model managers.
     """
 
-    def available(self, avalability=True):
+    def available(self, avalability=None):
         """
         Filter the queryset based on its availability.
         """
-        return super(AppCustomManager, self).get_query_set().filter(is_available=avalability)
-
+        if avalability == None:
+            return super(AppCustomManager, self).get_query_set()
+        else:
+            return super(AppCustomManager, self).get_query_set().filter(is_available=avalability)
+        
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
