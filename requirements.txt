@@ -2,3 +2,4 @@ Django==1.3.1
 South==0.7.3
 psycopg2==2.4.1
 wsgiref==0.1.2
+scielo-django-extensions==0.1
