@@ -38,8 +38,8 @@
 <div class="row-fluid">
   <ul class="nav nav-tabs">
     <li class="{% if not request.GET.is_available %} active {% endif %}"><a href="{% url journal.index %}">{% trans "All" %}</a></li>
-    <li class="{% if request.GET.is_available == '1' %} active {% endif %}"><a href="{% url journal.index %}?is_available=1"> {% trans "Enabled Journals" %}</a></li>
-    <li class="{% if request.GET.is_available == '0' %} active {% endif %}"><a href="{% url journal.index %}?is_available=0">{% trans "Disabled Journals" %}</a></li>
+    <li class="{% if request.GET.is_available == '1' %} active {% endif %}"><a href="{% url journal.index %}?is_available=1"> {% trans "Enabled Selection" %}</a></li>
+    <li class="{% if request.GET.is_available == '0' %} active {% endif %}"><a href="{% url journal.index %}?is_available=0">{% trans "Disabled Selection" %}</a></li>
     <li class="dropdown" id="menu1">
       <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
       {% trans "Actions" %}

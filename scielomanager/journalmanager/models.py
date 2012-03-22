@@ -16,14 +16,16 @@ class AppCustomManager(models.Manager):
     Domain specific model managers.
     """
 
-    def available(self, avalability=None):
+    def available(self, availability=None):
         """
         Filter the queryset based on its availability.
         """
-        if avalability == None:
-            return super(AppCustomManager, self).get_query_set()
-        else:
-            return super(AppCustomManager, self).get_query_set().filter(is_available=avalability)
+        data_queryset = super(AppCustomManager, self).get_query_set()
+        if availability is not None:
+            if not isinstance(availability, bool):
+                data_queryset = data_queryset.filter(is_available=availability)
+
+        return data_queryset
         
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
