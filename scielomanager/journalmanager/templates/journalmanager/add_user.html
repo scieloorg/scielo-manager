@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load journalmanager_template_tags %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -26,6 +27,7 @@
             <label class="control-label" for="username">{% trans add_form.username.label_tag %}</label>
             <div class="controls">
                 {{ add_form.username }}
+                {% field_help add_form.username.label add_form.username.help_text term-institution-name %}
             </div>
         </div>
         <div class="control-group {% if add_form.first_name.errors %}error{% endif %}">
@@ -37,7 +39,7 @@
         <div class="control-group {% if add_form.last_name.errors %}error{% endif %}">
             <label class="control-label" for="last_name">{% trans add_form.last_name.label_tag %}</label>
             <div class="controls">
-                {{ add_form.last_name }}
+                {{ add_form.last_name }}  
             </div>
         </div>
         {% for form in userprofileformset.forms %}
@@ -45,7 +47,7 @@
         <div class="control-group {% if form.email.errors %}error{% endif %}">
             <label class="control-label" for="email">{% trans form.email.label_tag %}</label>
             <div class="controls">
-                {{ form.email }}
+                {{ form.email }}   
             </div>
         </div>
         {% endfor %}
@@ -60,6 +62,7 @@
             <label class="control-label" for="controls">{% trans add_form.password.label_tag %}</label>
             <div class="controls">
                 {{ add_form.password }}
+                {{ add_form.password.help_text|safe }}
             </div>
         </div>
         <div class="control-group {% if add_form.is_active.errors %}error{% endif %}">
@@ -69,12 +72,15 @@
             </div>
         </div>
     </div>
+    
     <span class="label">{% trans "User Collections" %}</span>
     <div class="well">
         <table id="usercollectionsformset" class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>{% trans "Collection" %}</th>
+                <th>{% trans "Collection" %}
+                	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
+                </th>
                 <th>{% trans "is_manager" %}</th>
                 <th>{% trans "is_default" %}</th>
                 <th>{% trans "options" %}</th>
@@ -82,6 +88,7 @@
         </thead>
         <tbody>
             {% for form in usercollectionsformset.forms %}
+            
             <tr id="{{ form.prefix }}-row">
                 <td>
                     {% for field in form.hidden_fields %}{{ field }}{% endfor %}
@@ -118,6 +125,8 @@
 
         $( "#id_user-collection" ).combobox({ autoFocus: true });
 
+        $(".help-text").popover('hide');
+        
         $( "#toggle" ).click(function() {
             $( "#id_collection" ).toggle();
         });

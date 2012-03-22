@@ -3,6 +3,60 @@ from django.utils.translation import ugettext_lazy as _
 
 from scielomanager import settings
 
+INSTITUTION__NAME = _("""Enter institution name.""")
+
+INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the journal, max 8 characters length, in capital letter or not.""")
+
+INSTITUTION__COUNTRY = _("""Country of the Publication.""")
+
+INSTITUTION__STATE = _("""Enter in this field the location in the country of the publication, but not the city or town""")
+
+INSTITUTION__CITY = _("""Enter the name of the city in full in the language in which it appears in the publication.""")
+
+INSTITUTION__ADDRESS = _("""Enter address""")
+
+INSTITUTION__ADDRESS_NUMBER = _("""Address...  """)
+
+INSTITUTION__ADDRESS_COMPLEMENT = _("""Complement...  """)
+
+INSTITUTION__ZIP_CODE = _("""Zip Code  """)
+
+INSTITUTION__PHONE = _("""Phone  """)
+
+INSTITUTION__FAX = _("""Fax  """)
+
+INSTITUTION__CEL = _("""Cel  """)
+
+INSTITUTION__MAIL = _("""Email  """)
+
+INSTITUTION__VALIDATED = _("""Validated... """)
+
+INSTITUTION__IS_AVAILABLE = _("""Is Available? """)
+
+INSTITUTIONCOLLECTIONS__COLLECTION = _("""Select the collections to which the journal belong.""")
+
+ISSUE__TITLE = _("""Enter issue title.""")
+
+ISSUE__VOLUME = _(""" """)
+
+ISSUE__NUMBER = _(""" """)
+
+ISSUE__PUBLICATION_DATE = _(""" """)
+
+ISSUE__BIBLIOGRAPHIC_STRIP = _(""" """)
+
+ISSUE__USE_LICENSE = _(""" """)
+
+ISSUE__PUBLISHER_FULLNAME = _(""" """)
+
+ISSUE__TOTAL_DOCUMENTS = _(""" """)
+
+ISSUE__CTRL_VOCABULARY = _(""" """)
+
+ISSUE__EDITORIAL_STANDARD = _(""" """)
+
+ISSUE__SECTION = _(""" """)
+
 JOURNAL__ACRONYM = _("""Enter in this field the acronym of the journal, max 8 characters length, in capital letter or not.""")
 
 JOURNAL__ALPHABET = _("""Enter data in this field the alphabet of the Original Title of the journal title.""")
@@ -14,6 +68,8 @@ JOURNAL__COPYRIGHTER = _("""Enter a Copyrighter.""")
 JOURNAL__CTRL_VOCABULARY = _("""Enter in this field the controlled vocabulary used to the key words.""")
 
 JOURNAL__EDITORIAL_STANDARD = _("""Standard used to the bibliographic references presentation.""")
+
+JOURNAL__PRINT_ISSN = _("""Print ISSN.""")
 
 JOURNAL__ELETRONIC_ISSN = _("""Eletronic ISSN.""")
 
@@ -38,8 +94,6 @@ JOURNAL__NATIONAL_CODE = _("""Code which identifies the title in the national sy
 JOURNAL__NOTES = _("""Enter in this field, in free style, all information of interest to the Center about the serial.""")
 
 JOURNAL__PREVIOUS_TITLE = _("""Previous title in the language and form in which it appears.""")
-
-JOURNAL__PRINT_ISSN = _("""Print ISSN.""")
 
 JOURNAL__PUB_LEVEL = _(""" Publication Level """)
 
@@ -76,3 +130,8 @@ JOURNALSTUDYAREA__STUDYAREA = _("""Select one or more subjects related to the jo
 
 JOURNALPARALLELTITLES__FORM = _("""Enter parallel titles in accordance with the sequence and
     typography in which they appear on the title page or its substitute.""")
+
+JOURNALTITLE__TITLE = _("""Titles... """)
+
+USERCOLLECTIONS_COLLECTION = _("""Select the collections to which the journal belong.""")
+
