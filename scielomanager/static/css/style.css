@@ -2,7 +2,7 @@
 /*Toggle action list visibility on mouse over a table row*/
 
 ul._actions {
-    margin: 5px;
+    margin: 1px;
     padding: 0;
 }
 
@@ -57,3 +57,7 @@ button.ui-button-icon-only {
 .strikethrough{
     text-decoration: line-through;
 }
+/*Customize the td from bootstrap*/
+.table th, .table td {
+    padding: 3px;
+    }

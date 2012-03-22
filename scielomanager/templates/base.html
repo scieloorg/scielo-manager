@@ -71,6 +71,12 @@
             {% endif %}
             {% endblock %}
           </div><!--well login box-->
+          <div class="well form-search">
+          <form class="form-search" action="{% url journal.search %}" method="get">
+            <input class="span2 search-query" placeholder="Search" name="q"/>
+            <button class="btn" type="submit"><i class="icon-search"></i></button>
+          </form>
+          </div>
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               {% if user.is_authenticated %}
