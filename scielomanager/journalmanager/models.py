@@ -88,6 +88,7 @@ class Journal(models.Model):
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, help_text=helptexts.JOURNAL__CENTER)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
+    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS) #ajustar ref do help_text
 
     #Fields
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
@@ -141,13 +142,6 @@ class Journal(models.Model):
 class InstitutionCollections(models.Model):
     institution = models.ForeignKey(Institution)
     collection= models.ForeignKey(Collection, null=False)
-
-class JournalCollections(models.Model):
-    journal = models.ForeignKey(Journal)
-    collection = models.ForeignKey(Collection, null=False, help_text=helptexts.JOURNALCOLLECTIONS_COLLECTION)
-
-    def __unicode__(self):
-        return self.collection
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)

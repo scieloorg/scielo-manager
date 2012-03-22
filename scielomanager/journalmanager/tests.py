@@ -199,7 +199,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'collection-0-collection': self.usercollections.pk,
+                                                     'journal-collections': [self.usercollections.pk],
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-center': sample_center.pk, }))
 
@@ -212,7 +212,7 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
-                                                     'collection-0-collection': self.usercollections.pk,
+                                                     'journal-collections': [self.usercollections.pk],
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
