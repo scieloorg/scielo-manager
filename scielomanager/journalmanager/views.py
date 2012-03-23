@@ -1,4 +1,5 @@
 import json
+import urllib
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -47,10 +48,10 @@ def generic_index(request, model, journal_id = None):
 
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available', 1))
+        objects_all = model.objects.available(request.GET.get('is_available'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -82,6 +83,19 @@ def generic_toggle_availability(request, object_id, model):
   else:
     #bad request
     return HttpResponse(status=400)
+
+@login_required
+def generic_bulk_action(request, model, action_name, value = None):
+
+    if request.method == 'POST':
+        items = request.POST.getlist('action') 
+        for item in items:
+            model = get_object_or_404(model, pk = item)
+            if action_name == 'is_available':
+                model.is_available = int(value)
+                model.save()
+
+    return HttpResponseRedirect(reverse('journal.index') + '?' + urllib.urlencode(request.GET))
 
 @login_required
 def user_index(request):
