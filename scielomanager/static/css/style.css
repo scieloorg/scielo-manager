@@ -65,3 +65,9 @@ button.ui-button-icon-only {
     height: 25px;
     margin: 0px;
 }
+
+.user_identity {
+    margin-top: 10px;
+    margin-right: 10px;
+    color: #FFFFFF;
+}

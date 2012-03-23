@@ -42,25 +42,21 @@
                   {% endif %}
                 </li>
               </ul>
+              {% if user.is_authenticated %}
+              <ul class="nav pull-right span2">
+                <li class="divider-vertical"></li>
+                <li class="user_identity">{% trans 'User:' %} {{ user.username }}</li>
+                <li>
+                  <div class="btn-group">
+                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-user icon-white"></i></a></button>
+                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off icon-white"></i></a></button>
+                  </div>
+                </li>
+              </ul>
+              {% endif %}
           </div>
         </div>
       </div>
-      <div class="row-fluid pull-left">
-          {% block login %}
-          {% if user.is_authenticated %}
-            <div class="row-fluid">
-              <div class="pull-left">
-                <h4>{% trans 'User:' %} {{ user.username }}</h4>
-              </div>
-              <div class="btn-group pull-right">
-                <button class="btn"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-user"></i></a></button>
-                <button class="btn"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off"></i></a></button>
-              </div>
-            </div>
-            {% else %}
-          {% endif %}
-          {% endblock %}
-      </div><!--/row-fluid-->
       <div class="row-fluid">
         <div class="span3">
           <div class="well sidebar-nav">
