@@ -149,35 +149,35 @@ class InstitutionCollectionsForm(ModelForm):
     class Meta:
       model = models.Institution
       widgets = {
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
+        'collection':forms.Select(attrs={'class':'span8'}),
       }
 
 class PublisherCollectionsForm(ModelForm):
     class Meta:
       model = models.Publisher
       widgets = {
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
+        'collection':forms.Select(attrs={'class':'span8'}),
       }
 
 class CenterCollectionsForm(ModelForm):
     class Meta:
       model = models.Center
       widgets = {
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
+        'collection':forms.Select(attrs={'class':'span8'}),
       }
 
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
       widgets = {
-        'collection':forms.Select(attrs={'class':'span10', 'rows':'3'}),
+        'collection':forms.Select(attrs={'class':'span8'}),
       }
 
 class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
       widgets = {
-        'studyarea':forms.TextInput(attrs={'class':'span10', 'rows':'3'}),
+        'studyarea':forms.TextInput(attrs={'class':'span10'}),
       }
 
 class JournalMissionForm(ModelForm):
@@ -191,7 +191,7 @@ class JournalTitleForm(ModelForm):
     class Meta:
       model = models.JournalTitle
       widgets = {
-        'title': forms.TextInput(attrs={'class':'span6  '}),
+        'title': forms.TextInput(attrs={'class':'span6'}),
       }
 
 class CenterForm(ModelForm):

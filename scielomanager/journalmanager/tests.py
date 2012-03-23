@@ -557,6 +557,17 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['objects_publisher'].object_list), 1)
 
+    @with_sample_journal
+    def test_bulk_action_availability(self):
+        journal = Journal.objects.all()[0]
+
+        response = self.client.get(reverse('journal.index'))
+        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
+
+        self.client.post(reverse('journal.bulk_action', args=['is_available', '0']), {'action': journal.id})
+        
+        response = self.client.get(reverse('journal.index'))
+        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
 
     @with_sample_issue
     def test_issue_availability_list(self):
@@ -572,6 +583,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
         self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['objects_issue'].object_list), 1)
+
 
     def test_add_user(self):
         """
