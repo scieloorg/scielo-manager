@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^new/$', views.add_journal, name='journal.add'),
     url(r'^(?P<journal_id>\d+)/edit/$', views.add_journal, name='journal.edit'),
     url(r'^(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Journal}, name='journal.toggle_availability'),
+    url(r'^bulk_action/(?P<action_name>\w+)/(?P<value>\w+)/$', views.generic_bulk_action, {'model': models.Journal}, name='journal.bulk_action'),
     url(r'^search/$', views.search_journal, name='journal.search'),
 
     # Publisher Tools
