@@ -9,9 +9,6 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
 
-class InstitutionCollectionsInline(admin.StackedInline):
-    model = InstitutionCollections
-
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
@@ -40,7 +37,6 @@ class JournalAdmin(admin.ModelAdmin):
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
     search_fields = ('name',)
-    inlines = [InstitutionCollectionsInline]
 
 class UserProfileInline(admin.TabularInline):
     model = UserProfile

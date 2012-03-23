@@ -8,10 +8,12 @@ from django.utils.translation import ugettext_lazy as _
 from journalmanager import models
 from scielo_extensions import formfields as fields
 
-class JournalForm(ModelForm):
+class UserCollectionContext(ModelForm):
+    """
+    Inherit from this base class if you have a ``collections`` attribute
+    that needs to be contextualized with user collections.
+    """
 
-    print_issn = fields.ISSNField(max_length=9, required=False)
-    eletronic_issn = fields.ISSNField(max_length=9, required=False)
     collections = forms.ModelMultipleChoiceField(models.Collection.objects.none(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more collections')}),
         required=True)
@@ -25,11 +27,20 @@ class JournalForm(ModelForm):
         ``__init__`` method.
         """
         collections_qset = kwargs.pop('collections_qset', None)
-        super(JournalForm, self).__init__(*args, **kwargs)
+        super(UserCollectionContext, self).__init__(*args, **kwargs)
 
         if collections_qset is not None:
-            self.fields['collections'].queryset = models.Collection.objects.filter(pk__in = (collection.collection.pk for collection in collections_qset))
+            self.fields['collections'].queryset = models.Collection.objects.filter(
+                pk__in = (collection.collection.pk for collection in collections_qset))
 
+
+class JournalForm(UserCollectionContext):
+
+    print_issn = fields.ISSNField(max_length=9, required=False)
+    eletronic_issn = fields.ISSNField(max_length=9, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(JournalForm, self).__init__(*args, **kwargs)
 
     def save_all(self, creator):
         journal = self.save(commit=False)
@@ -66,7 +77,11 @@ class JournalForm(ModelForm):
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
-class PublisherForm(ModelForm):
+class PublisherForm(UserCollectionContext):
+
+    def __init__(self, *args, **kwargs):
+        super(PublisherForm, self).__init__(*args, **kwargs)
+
     class Meta:
         model = models.Publisher
 
@@ -145,27 +160,6 @@ class SectionForm(ModelForm):
     class Meta:
       model = models.Section
 
-class InstitutionCollectionsForm(ModelForm):
-    class Meta:
-      model = models.Institution
-      widgets = {
-        'collection':forms.Select(attrs={'class':'span8'}),
-      }
-
-class PublisherCollectionsForm(ModelForm):
-    class Meta:
-      model = models.Publisher
-      widgets = {
-        'collection':forms.Select(attrs={'class':'span8'}),
-      }
-
-class CenterCollectionsForm(ModelForm):
-    class Meta:
-      model = models.Center
-      widgets = {
-        'collection':forms.Select(attrs={'class':'span8'}),
-      }
-
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
@@ -194,7 +188,11 @@ class JournalTitleForm(ModelForm):
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
 
-class CenterForm(ModelForm):
+class CenterForm(UserCollectionContext):
+
+    def __init__(self, *args, **kwargs):
+        super(CenterForm, self).__init__(*args, **kwargs)
+
     class Meta:
         model = models.Center
         exclude = ('collection',)

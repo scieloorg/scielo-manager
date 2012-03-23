@@ -26,7 +26,7 @@ class AppCustomManager(models.Manager):
                 data_queryset = data_queryset.filter(is_available=availability)
 
         return data_queryset
-        
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
@@ -81,6 +81,7 @@ class Institution(models.Model):
 
 class Publisher(Institution):
     objects = AppCustomManager()
+    collections = models.ManyToManyField(Collection)
 
 class Journal(models.Model):
 
@@ -143,10 +144,6 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
-
-class InstitutionCollections(models.Model):
-    institution = models.ForeignKey(Institution)
-    collection= models.ForeignKey(Collection, null=False)
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)

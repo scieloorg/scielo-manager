@@ -145,10 +145,6 @@ def get_sample_publisher_dataform(dict_params=None):
       'publisher-mail': 'teste@scielo.org',
       'publisher-address_complement': '',
       'publisher-is_available': True,
-
-      #Collection formset data
-      'publishercollections-TOTAL_FORMS': 1,
-      'publishercollections-INITIAL_FORMS': 0,
     }
 
     publisher_attrs.update(dict_params)
@@ -390,11 +386,6 @@ def get_sample_center_dataform(dict_params=None):
       'center-mail': 'scielo@scielo.org',
       'center-address_complement': '',
       'center-is_available': True,
-
-      #Collection formset data
-      'centercollections-TOTAL_FORMS': 1,
-      'centercollections-INITIAL_FORMS': 0,
-
     }
 
     center_attrs.update(dict_params)

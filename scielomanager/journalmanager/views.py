@@ -88,7 +88,7 @@ def generic_toggle_availability(request, object_id, model):
 def generic_bulk_action(request, model, action_name, value = None):
 
     if request.method == 'POST':
-        items = request.POST.getlist('action') 
+        items = request.POST.getlist('action')
         for item in items:
             model = get_object_or_404(model, pk = item)
             if action_name == 'is_available':
@@ -273,36 +273,30 @@ def add_publisher(request, publisher_id=None):
     Handles new and existing publishers
     """
 
-    if  publisher_id == None:
+    if  publisher_id is None:
         publisher = models.Publisher()
     else:
         publisher = get_object_or_404(models.Publisher, id = publisher_id)
 
     user_collections = get_user_collections(request.user.id)
 
-    PublisherCollectionsFormSet = inlineformset_factory(models.Publisher, models.InstitutionCollections,
-      form=PublisherCollectionsForm, extra=1, can_delete=True)
-
     if request.method == "POST":
-        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher')
-        publishercollectionsformset = PublisherCollectionsFormSet(request.POST, instance=publisher, prefix='publishercollections')
+        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher',
+            collections_qset=user_collections)
 
-
-        if publisherform.is_valid() and publishercollectionsformset.is_valid():
+        if publisherform.is_valid():
             publisherform.save()
-            publishercollectionsformset.save()
 
             return HttpResponseRedirect(reverse('publisher.index'))
 
     else:
-        publisherform  = PublisherForm(instance=publisher, prefix='publisher')
-        publishercollectionsformset =  PublisherCollectionsFormSet(instance=publisher, prefix='publishercollections')
+        publisherform  = PublisherForm(instance=publisher, prefix='publisher',
+            collections_qset=user_collections)
 
     return render_to_response('journalmanager/add_publisher.html', {
                               'add_form': publisherform,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
-                              'publishercollectionsformset': publishercollectionsformset,
                               },
                               context_instance = RequestContext(request))
 
@@ -443,29 +437,22 @@ def add_center(request, center_id=None):
 
     user_collections = get_user_collections(request.user.id)
 
-    CenterCollectionsFormSet = inlineformset_factory(models.Center, models.InstitutionCollections,
-      form=CenterCollectionsForm, extra=1, can_delete=True)
-
-
     if request.method == 'POST':
-        centerform = CenterForm(request.POST, instance=center, prefix='center')
-        centercollectionsformset = CenterCollectionsFormSet(request.POST, instance=center, prefix='centercollections')
+        centerform = CenterForm(request.POST, instance=center, prefix='center',
+            collections_qset=user_collections)
 
-        if centerform.is_valid() and centercollectionsformset.is_valid():
+        if centerform.is_valid():
             centerform.save()
-            centercollectionsformset.save()
 
             return HttpResponseRedirect(reverse('center.index'))
 
     else:
-        centerform  = CenterForm(instance=center, prefix='center')
-        centercollectionsformset =  CenterCollectionsFormSet(instance=center, prefix='centercollections')
+        centerform  = CenterForm(instance=center, prefix='center', collections_qset=user_collections)
 
     return render_to_response('journalmanager/add_center.html', {
                               'add_form': centerform,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
-                              'centercollectionsformset': centercollectionsformset,
                               },
                               context_instance = RequestContext(request))
 

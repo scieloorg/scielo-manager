@@ -226,14 +226,15 @@ class LoggedInViewsTest(TestCase):
 
         #add publisher - must be added
         response = self.client.post(reverse('publisher.add'),
-            tests_assets.get_sample_publisher_dataform({}))
+            tests_assets.get_sample_publisher_dataform({'publisher-collections': [self.usercollections.pk]}))
 
         self.assertRedirects(response, reverse('publisher.index'))
 
         #edit publisher - must be changed
         testing_publisher = Publisher.objects.get(name = u'Associação Nacional de História - ANPUH')
         response = self.client.post(reverse('publisher.edit', args = (testing_publisher.pk,)),
-            tests_assets.get_sample_publisher_dataform({'publisher-name': 'Modified Title',}))
+            tests_assets.get_sample_publisher_dataform({'publisher-name': 'Modified Title',
+                                                        'publisher-collections': [self.usercollections.pk], }))
 
         self.assertRedirects(response, reverse('publisher.index'))
         modified_testing_publisher = Publisher.objects.get(name = 'Modified Title')
@@ -310,7 +311,7 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.post(reverse('center.add'),
             tests_assets.get_sample_center_dataform({
-                'centercollections-0-collection': self.collection.pk
+                'center-collections': [self.usercollections.pk]
                 }))
 
         self.assertRedirects(response, reverse('center.index'))
@@ -321,7 +322,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
             tests_assets.get_sample_center_dataform({
                 'center-name': u'Associação Nacional de História - ANPUH - modified',
-                'centercollections-0-collection': self.collection.pk
+                'center-collections': [self.usercollections.pk]
                 }))
 
         self.assertRedirects(response, reverse('center.index'))
@@ -565,7 +566,7 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
 
         self.client.post(reverse('journal.bulk_action', args=['is_available', '0']), {'action': journal.id})
-        
+
         response = self.client.get(reverse('journal.index'))
         self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
 
@@ -631,6 +632,63 @@ class LoggedInViewsTest(TestCase):
                 "<User: dummyuser_edit>",
               ]
           )
+
+    def test_contextualized_collection_field_on_add_journal(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Journal, he can only bind that Journal to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 200)
+
+        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
+
+        for qset_item in response.context['add_form'].fields['collections'].queryset:
+            self.assertTrue(qset_item in user_collections)
+
+    def test_contextualized_collection_field_on_add_publisher(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Publisher, he can only bind it to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('publisher.add'))
+        self.assertEqual(response.status_code, 200)
+
+        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
+
+        for qset_item in response.context['add_form'].fields['collections'].queryset:
+            self.assertTrue(qset_item in user_collections)
+
+    def test_contextualized_collection_field_on_add_center(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Center, he can only bind it to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('center.add'))
+        self.assertEqual(response.status_code, 200)
+
+        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
+
+        for qset_item in response.context['add_form'].fields['collections'].queryset:
+            self.assertTrue(qset_item in user_collections)
 
 class LoggedOutViewsTest(TestCase):
 
