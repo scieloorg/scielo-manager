@@ -23,6 +23,7 @@ Development guides
 
    dev/helptexts
    dev/db-diagram
+   dev/mockups
 
 
 Indices and tables

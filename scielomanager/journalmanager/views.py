@@ -1,4 +1,5 @@
 import json
+import urllib
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -99,9 +100,7 @@ def generic_bulk_action(request, model, action_name, value = None):
                 model.is_available = int(value)
                 model.save()
 
-    query_string = '?is_available=' + request.GET.get('is_available') if request.GET.get('is_available') else ''
-
-    return HttpResponseRedirect(reverse('journal.index') + query_string)
+    return HttpResponseRedirect(reverse('journal.index') + '?' + urllib.urlencode(request.GET))
 
 @login_required
 def user_index(request):
