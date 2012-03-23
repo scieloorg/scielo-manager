@@ -60,4 +60,9 @@ button.ui-button-icon-only {
 /*Customize the td from bootstrap*/
 .table th, .table td {
     padding: 3px;
-    }
+}
+/*Customize the nav-list from bootstrap*/
+.nav-list {
+    padding-left: 2px;
+}
+
