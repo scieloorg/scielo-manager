@@ -13,84 +13,59 @@
   </head>
   <body>
     <div class="container-fluid">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="#">SciELO Manager</a>
+              <ul class="nav">
+                <li><a href="/">Home</a></li>
 
-      <div class="row-fluid">
-        <div class="span2">
-          <img src="{% get_static_prefix %}images/scielologo.gif">
+                {% if user.is_authenticated %}
+                <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
+                <li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>
+                <li><a href="{% url center.index %}">{% trans 'Markup Centers' %}</a></li>
+                  {% if perms.auth %}
+                  <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
+                  {% endif %}
+                {% endif %}
+                <li class="divider-vertical"></li>
+                <li>
+                  {% if user.is_authenticated %}
+                    <form id="form_search" class="navbar-search" action="{% url journal.index %}" method="get">
+                      <input class="search-query span2" placeholder="Search" name="q" value="{{request.GET.q}}"/>
+                      <select id="list_model" class="navbar-search span2">
+                        <option value="{% url journal.index %}">Journal</option>
+                        <option value="{% url journal.index %}">Publisher</option>
+                      </select>
+                      <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
+                    </form>
+                  {% endif %}
+                </li>
+              </ul>
+          </div>
         </div>
-        <div class="span8"><h1>SciELO Manager</h1></div>
+      </div>
+      <div class="row-fluid pull-left">
+          {% block login %}
+          {% if user.is_authenticated %}
+            <div class="row-fluid">
+              <div class="pull-left">
+                <h4>{% trans 'User:' %} {{ user.username }}</h4>
+              </div>
+              <div class="btn-group pull-right">
+                <button class="btn"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-user"></i></a></button>
+                <button class="btn"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off"></i></a></button>
+              </div>
+            </div>
+            {% else %}
+          {% endif %}
+          {% endblock %}
       </div><!--/row-fluid-->
-
       <div class="row-fluid">
         <div class="span3">
-          <div class="well">
-            {% block login %}
-            {% if user.is_authenticated %}
-              <h5>{% trans 'Username' %}</h5>
-              <h6>{{ user.username }}</h6>
-              <h5>{% trans 'Collection' %}</h5>
-              <h5>{{ collection }}</h5>
-              <h6>
-                <ul>
-                  {% for collection in user_collections %}
-                  <li>
-                    {{ collection.collection.name }}
-                    {% if collection.is_manager %}
-                      (m)
-                    {% endif %}
-                    {% if collection.is_default %}
-                      (d)
-                    {% endif %}
-                  </li>
-                  {% endfor %}
-                </ul>
-              </h6>
-              <a href="{% url journalmanager.my_account %}">{% trans 'My Account' %}</a>
-              <a href="{% url journalmanager.user_logout %}" title="{% trans 'Logout' %}">{% trans 'Logout' %}</a>
-              {% else %}
-              <form action="{% url journalmanager.user_login %}" method="post">
-                <input type="hidden" value="{{ next|default:'' }}" name="next" />
-                {% csrf_token %}
-                <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/>
-                <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/>
-                <input class="btn" type="submit" value="{% trans 'login' %}" />
-                <ul>
-                  <li><a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a></li>
-                  <li><a href="/accounts/register" title="{% trans 'create an account to submit trial records' %}">{% trans 'Register' %}</a></li>
-                </ul>
-              </form>
-              {% if invalid %}
-              <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
-              {% endif %}
-              {% if active %}
-              <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
-              {% endif %}
-              {% if required %}
-              <div class="loginError">{% trans 'Please login on the system to see this page' %}</div>
-              {% endif %}
-            {% endif %}
-            {% endblock %}
-          </div><!--well login box-->
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               {% if user.is_authenticated %}
-              <li class="nav-header">{% trans 'Tools' %}</li>
-              <li>
-                <a href="{% url journal.index %}">
-                  <img src="/static/images/title_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Journals Dashboard' %}
-                </a>
-              </li>
-              <li>
-                <a href="{% url publisher.index %}"><img src="/static/images/publisher_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Publishers Dashboard' %} </a>
-              </li>
-              <li>
-                <a href="{% url center.index %}"><img src="/static/images/center_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Center Dashboard' %} </a>
-              </li>
-              {% if perms.auth %}
-              <li>
-                <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Users Dashboard' %} </a>
-              </li>
-              {% endif %}
               <li class="nav-header">{% trans 'Short Access' %}</a></li>
               <li><a href="#">{% trans 'Add Journal' %}</a></li>
               <li><a href="#">{% trans 'Add Issue' %}</a></li>
@@ -143,6 +118,12 @@
     <script type="text/javascript" src="{{ jquery_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
+    <script>
+      $(document).ready(function() {
+        options = {placement: 'bottom'};
+        $(".user_menu").tooltip(options);
+      });
+    </script>
     {% block extrafooter %}{% endblock %}
   </body>
 </html>

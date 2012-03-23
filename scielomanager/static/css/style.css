@@ -57,3 +57,11 @@ button.ui-button-icon-only {
 .strikethrough{
     text-decoration: line-through;
 }
+
+#list_model {
+    background-color: #CCCCCC;
+    border: 1px solid #000000;
+    width: 90px;
+    height: 25px;
+    margin: 0px;
+}
