@@ -20,7 +20,7 @@ def get_sample_userprofile(**kwargs):
         'email': 'dev@scielo.org',
     }
     userprofile_attrs.update(kwargs)
-    
+
     return models.UserProfile(**userprofile_attrs)
 
 def get_sample_journal_dataform(dict_params=None):
@@ -65,7 +65,7 @@ def get_sample_journal_dataform(dict_params=None):
       'studyarea-TOTAL_FORMS': 1,
       'studyarea-INITIAL_FORMS': 0,
       'studyarea-0-study_area': 'Agricultural Sciences',
-      
+
       #Mission formset data
       'mission-TOTAL_FORMS': 1,
       'mission-INITIAL_FORMS': 0,
@@ -88,11 +88,6 @@ def get_sample_journal_dataform(dict_params=None):
       'indexcoverage-INITIAL_FORMS': 0,
       'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
       'indexcoverage-0-identify': 'ABDC-Medline',
-
-      #Collection formset data
-      'collection-TOTAL_FORMS': 1,
-      'collection-INITIAL_FORMS': 0,
-
     }
 
     journal_attrs.update(dict_params)
@@ -150,10 +145,6 @@ def get_sample_publisher_dataform(dict_params=None):
       'publisher-mail': 'teste@scielo.org',
       'publisher-address_complement': '',
       'publisher-is_available': True,
-
-      #Collection formset data
-      'publishercollections-TOTAL_FORMS': 1,
-      'publishercollections-INITIAL_FORMS': 0,
     }
 
     publisher_attrs.update(dict_params)
@@ -214,7 +205,7 @@ def get_sample_user_dataform(dict_params=None):
 
         #User formset data
         'userprofile-0-email': 'dummyuser@dummymail.com',
-        'userprofile-TOTAL_FORMS': 1, 
+        'userprofile-TOTAL_FORMS': 1,
         'userprofile-INITIAL_FORMS': 0
 
         }
@@ -372,7 +363,7 @@ def get_sample_center_dataform(dict_params=None):
 
     if dict_params is None:
         dict_params = {}
-      
+
     """
     Returns a center object, without the following attributes (non mandatory or need to be bound
     to another model object):
@@ -395,11 +386,6 @@ def get_sample_center_dataform(dict_params=None):
       'center-mail': 'scielo@scielo.org',
       'center-address_complement': '',
       'center-is_available': True,
-
-      #Collection formset data
-      'centercollections-TOTAL_FORMS': 1,
-      'centercollections-INITIAL_FORMS': 0,
-
     }
 
     center_attrs.update(dict_params)

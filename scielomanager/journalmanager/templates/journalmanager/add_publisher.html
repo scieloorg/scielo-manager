@@ -2,6 +2,11 @@
 {% load i18n %}
 {% load static %}
 
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
+    <link rel="stylesheet" href="{{ jquery_ui_css_url }}" type="text/css" media="all" />
+{% endblock %}
+
 {% block stepmenu_top %}
 {{ block.super }}
 <ul class="breadcrumb">
@@ -110,29 +115,10 @@
     </div>
     <span class="label">{% trans "Publisher Collections" %}</span>
     <div class="well">
-        <table id="publishercollectionsformset" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>{% trans "Collection" %}</th>
-                <th>{% trans "options" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for form in publishercollectionsformset.forms %}
-            <tr id="{{ form.prefix }}-row">
-                <td>
-                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                    {{ form.collection }}
-                </td>
-                <td></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-        <p>
-            {{ publishercollectionsformset.management_form }}
-        </p>
+        <label class"control-label" for="publisher-collections">{% trans add_form.collections.label_tag %}</label>
+        <div class="controls">
+            {{ add_form.collections }}
+        </div>
     </div>
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
     <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
@@ -144,7 +130,7 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
 
  <script>
     $(document).ready(function() {

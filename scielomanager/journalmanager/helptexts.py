@@ -9,6 +9,8 @@ JOURNAL__ALPHABET = _("""Enter data in this field the alphabet of the Original T
 
 JOURNAL__CENTER = _("""Code which identifies the center responsible for the creation of the bibliographic records.""")
 
+JOURNAL__COLLECTIONS = _("""Select the collections to which the journal belongs.""")
+
 JOURNAL__COPYRIGHTER = _("""Enter a Copyrighter.""")
 
 JOURNAL__CTRL_VOCABULARY = _("""Enter in this field the controlled vocabulary used to the key words.""")
@@ -25,7 +27,7 @@ JOURNAL__FINAL_YEAR = _("""Enter the date of the last issue of the journal in IS
 
 JOURNAL__FREQUENCY = _("""Code which identifies the intervals of time in which the issues of the serial are published.""")
 
-JOURNAL__INIT_NUM = _("""Enter the initial number in arabic numerals.""")  
+JOURNAL__INIT_NUM = _("""Enter the initial number in arabic numerals.""")
 
 JOURNAL__INIT_YEAR = _("""Enter the date of the first issue of the journal in ISO format.""")
 
@@ -47,7 +49,7 @@ JOURNAL__PUB_STATUS = _("""Date and status which identify the changes of the jou
 
 JOURNAL__PUBLISHER = _("""Name of the publisher and/or issuing body of the serial.""")
 
-JOURNAL__SCIELO_ISSN = _("""Enter the current ISSN. It can be different or equal to the ISSN used as ID, but it 
+JOURNAL__SCIELO_ISSN = _("""Enter the current ISSN. It can be different or equal to the ISSN used as ID, but it
      is usually the online ISSN.""")
 
 JOURNAL__SPONSOR = _("""Sponsor... """)
@@ -65,8 +67,6 @@ JOURNAL__URL_ONLINE_SUBMISSION= _("""Enter the URL of the submission site.""")
 JOURNAL__URL_JOURNAL = _("""If the journal is published in another site, enter in this field the other site location.""")
 
 JOURNAL__USE_LICENSE = _("""Use license...""")
-
-JOURNALCOLLECTIONS_COLLECTION = _("""Select the collections to which the journal belong.""")
 
 JOURNALINDEXCOVERAGE__DATABASE = _("""Select the database in which the title is indexed.""")
 
