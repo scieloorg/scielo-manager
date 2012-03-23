@@ -46,7 +46,7 @@ class Collection(models.Model):
 
 class UserCollections(models.Model):
     user = models.ForeignKey(User)
-    collection = models.ForeignKey(Collection)
+    collection = models.ForeignKey(Collection, help_text=helptexts.USERCOLLECTIONS_COLLECTION)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, 
         blank=False)
@@ -57,21 +57,21 @@ class Institution(models.Model):
     objects = AppCustomManager()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    name = models.CharField(_('Institution Name'), max_length=128, db_index=True)
-    acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
-    country = models.CharField(_('Country'), max_length=32)
-    state = models.CharField(_('State'), max_length=32, null=False, blank=True,)
-    city = models.CharField(_('City'), max_length=32, null=False, blank=True,)
-    address = models.TextField(_('Address'), )
-    address_number = models.CharField(_('Number'), max_length=8)
-    address_complement = models.CharField(_('Complement'), max_length=128, null=False, blank=True,)
-    zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True)
-    phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True,)
-    fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True,)
-    cel = models.CharField(_('Cel Number'), max_length=16, null=False, blank=True,)
-    mail = models.EmailField(_('Email'),)
-    validated = models.BooleanField(_('Validated'), default=False,)
-    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
+    name = models.CharField(_('Institution Name'), max_length=128, db_index=True, help_text=helptexts.INSTITUTION__NAME)
+    acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, help_text=helptexts.INSTITUTION__ACRONYM)
+    country = models.CharField(_('Country'), max_length=32, help_text=helptexts.INSTITUTION__COUNTRY)
+    state = models.CharField(_('State'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__STATE)
+    city = models.CharField(_('City'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__CITY)
+    address = models.TextField(_('Address'), help_text=helptexts.INSTITUTION__ADDRESS)
+    address_number = models.CharField(_('Number'), max_length=8, help_text=helptexts.INSTITUTION__ADDRESS_NUMBER)
+    address_complement = models.CharField(_('Complement'), max_length=128, null=False, blank=True, help_text=helptexts.INSTITUTION__ADDRESS_COMPLEMENT)
+    zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True, help_text=helptexts.INSTITUTION__ZIP_CODE)
+    phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__PHONE)
+    fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__FAX)
+    cel = models.CharField(_('Cel Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__CEL)
+    mail = models.EmailField(_('Email'), help_text=helptexts.INSTITUTION__MAIL)
+    validated = models.BooleanField(_('Validated'), default=False, help_text=helptexts.INSTITUTION__VALIDATED)
+    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True, help_text=helptexts.INSTITUTION__IS_AVAILABLE)
 
     def __unicode__(self):
         return u'%s' % (self.name)
@@ -145,7 +145,7 @@ class Journal(models.Model):
      
 class InstitutionCollections(models.Model):
     institution = models.ForeignKey(Institution)
-    collection= models.ForeignKey(Collection, null=False)
+    collection= models.ForeignKey(Collection, null=False, help_text=helptexts.INSTITUTIONCOLLECTIONS__COLLECTION)
 
 class JournalCollections(models.Model):
     journal = models.ForeignKey(Journal)
@@ -158,7 +158,7 @@ class JournalStudyArea(models.Model):
 
 class JournalTitle(models.Model):
     journal = models.ForeignKey(Journal)
-    title = models.CharField(_('Title'), null=False, max_length=128)
+    title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
 class JournalTextLanguage(models.Model):
@@ -224,25 +224,25 @@ class Issue(models.Model):
     #Custom manager
     objects = AppCustomManager()
 
-    section = models.ManyToManyField(Section)
+    section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION)
     journal = models.ForeignKey(Journal, null=True, blank=False)
-    title = models.CharField(_('Title'), null=True, blank=True, max_length=256)
-    volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16)
-    number = models.CharField(_('Number'), null=True, blank=True, max_length=16)
+    title = models.CharField(_('Title'), null=True, blank=True, max_length=256, help_text=helptexts.ISSUE__TITLE)
+    volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME)
+    number = models.CharField(_('Number'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__NUMBER)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    publication_date = models.DateField(null=False, blank=False)
+    publication_date = models.DateField(null=False, blank=False, help_text=helptexts.ISSUE__PUBLICATION_DATE)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
-    bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128) #l10n
-    use_license = models.ForeignKey(UseLicense, null=True)
-    publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128)
-    total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0)
+    bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__BIBLIOGRAPHIC_STRIP) #l10n
+    use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
+    publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
+    total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
-        choices=choices.CTRL_VOCABULARY, null=False, blank=True)
+        choices=choices.CTRL_VOCABULARY, null=False, blank=True, help_text=helptexts.ISSUE__CTRL_VOCABULARY)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
-        choices=choices.STANDARD, null=False, blank=True)
+        choices=choices.STANDARD, null=False, blank=True, help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
 
     def identification(self):
 
