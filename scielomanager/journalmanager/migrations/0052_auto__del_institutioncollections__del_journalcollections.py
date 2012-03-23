@@ -8,8 +8,27 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Deleting model 'InstitutionCollections'
+        db.delete_table('journalmanager_institutioncollections')
+
         # Deleting model 'JournalCollections'
         db.delete_table('journalmanager_journalcollections')
+
+        # Adding M2M table for field collections on 'Publisher'
+        db.create_table('journalmanager_publisher_collections', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('publisher', models.ForeignKey(orm['journalmanager.publisher'], null=False)),
+            ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
+        ))
+        db.create_unique('journalmanager_publisher_collections', ['publisher_id', 'collection_id'])
+
+        # Adding M2M table for field collections on 'Center'
+        db.create_table('journalmanager_center_collections', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('center', models.ForeignKey(orm['journalmanager.center'], null=False)),
+            ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
+        ))
+        db.create_unique('journalmanager_center_collections', ['center_id', 'collection_id'])
 
         # Adding M2M table for field collections on 'Journal'
         db.create_table('journalmanager_journal_collections', (
@@ -22,6 +41,14 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
+        # Adding model 'InstitutionCollections'
+        db.create_table('journalmanager_institutioncollections', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
+            ('institution', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Institution'])),
+        ))
+        db.send_create_signal('journalmanager', ['InstitutionCollections'])
+
         # Adding model 'JournalCollections'
         db.create_table('journalmanager_journalcollections', (
             ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
@@ -29,6 +56,12 @@ class Migration(SchemaMigration):
             ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
         ))
         db.send_create_signal('journalmanager', ['JournalCollections'])
+
+        # Removing M2M table for field collections on 'Publisher'
+        db.delete_table('journalmanager_publisher_collections')
+
+        # Removing M2M table for field collections on 'Center'
+        db.delete_table('journalmanager_center_collections')
 
         # Removing M2M table for field collections on 'Journal'
         db.delete_table('journalmanager_journal_collections')
@@ -73,6 +106,7 @@ class Migration(SchemaMigration):
         },
         'journalmanager.center': {
             'Meta': {'ordering': "['name']", 'object_name': 'Center', '_ormbases': ['journalmanager.Institution']},
+            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
             'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.collection': {
@@ -108,12 +142,6 @@ class Migration(SchemaMigration):
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'validated': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
-        },
-        'journalmanager.institutioncollections': {
-            'Meta': {'object_name': 'InstitutionCollections'},
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'institution': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Institution']"})
         },
         'journalmanager.issue': {
             'Meta': {'object_name': 'Issue'},
@@ -221,6 +249,7 @@ class Migration(SchemaMigration):
         },
         'journalmanager.publisher': {
             'Meta': {'ordering': "['name']", 'object_name': 'Publisher', '_ormbases': ['journalmanager.Institution']},
+            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
             'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.section': {

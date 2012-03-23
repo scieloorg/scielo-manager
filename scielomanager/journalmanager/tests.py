@@ -178,6 +178,13 @@ class LoggedInViewsTest(TestCase):
 
 
     def test_add_journal(self):
+        """
+        Covered cases:
+        * Accessing the form
+        * Submission with missing data
+        * Submission with all required data
+        * Edition of a existing record
+        """
         #empty form
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
@@ -195,6 +202,14 @@ class LoggedInViewsTest(TestCase):
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
         sample_center.save()
+
+        #missing data
+        response = self.client.post(reverse('journal.add'),
+            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
+                                                     'journal-collections': [self.usercollections.pk],
+                                                     'indexcoverage-0-database': sample_indexdatabase.pk,}))
+        self.assertTrue('some errors or missing data' in response.content)
+
 
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
