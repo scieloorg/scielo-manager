@@ -2,22 +2,27 @@
 {% load i18n %}
 {% block body_title %}{% trans "User Evaluations" %}{% endblock %}
 {% block body %}
-<form action="{% url journalmanager.user_login %}" method="post">
-    <input type="hidden" value="{{ next|default:'' }}" name="next" />
-    {% csrf_token %}
-    <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/>
-    <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/>
-    <input class="btn" type="submit" value="{% trans 'login' %}" />
-  </form>
-  <a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a>
-  {% if invalid %}
-  <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
-  {% endif %}
-  {% if active %}
-  <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
-  {% endif %}
-  {% if required %}
-  <div class="loginError">{% trans 'Please login on the system to see this page' %}</div>
-  {% endif %}
-
+{% if not user.is_authenticated %}
+<div class="row-fluid">
+    <h1>{% trans 'User Authentication' %}</h1>
+    <div class="well">
+        <form action="{% url journalmanager.user_login %}" method="post">
+            <input type="hidden" value="{{ next|default:'' }}" name="next" />
+            {% csrf_token %}
+            {% trans 'User name or E-mail:' %}<br/>
+            <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/><br/>
+            {% trans 'User password:' %}<br/>
+            <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/><br/>
+            <input class="btn" type="submit" value="{% trans 'login' %}" />
+        </form>
+        <a href="/accounts/password/reset" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a>
+    </div>
+    {% if invalid %}
+    <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
+    {% endif %}
+    {% if active %}
+    <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
+    {% endif %}
+</div>
+{% endif %}
 {% endblock %}
