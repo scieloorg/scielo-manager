@@ -15,12 +15,23 @@
 <div class="container-fluid">
 
 <div class="row-fluid">
-  <div class="span2">
+  <div class="span1">
     <img src="{% get_static_prefix %}images/scielologo.gif">
   </div>
-  <div class="span8"><h1>SciELO Manager</h1></div>
+  <div class="span7"><h1>SciELO Manager</h1></div>
+  {% if user.is_authenticated %}
+    <div class="span4" style="padding-top: 60px;text-align: right;">
+      <form id="form_search" class="form-search" action="/journal/" method="get">
+        <select id="list_model">
+          <option value="/journal/">Journal</option>
+          <option value="/journal/publisher/">Publisher</option>
+        </select>
+        <input class="span2 search-query" placeholder="Search" name="q" value="{{request.GET.q}}"/>
+        <button class="btn" type="submit">{% trans 'Search' %}</button>
+      </form>
+    </div>
+  {% endif %}
 </div><!--/row-fluid-->
-
 <div class="row-fluid">
   <div class="span3">
     <div class="well">
@@ -91,14 +102,6 @@
           <a href="{% url user.index %}"><img src="/static/images/user_manager.png" border="0" width="20px" heigth="20px" /> {% trans 'Users Dashboard' %} </a>
         </li>
         {% endif %}
-        <li class="nav-header">{% trans 'Search' %}</a></li>
-        <form class="form-search" action="{% url journal.search %}" method="get">
-          <input class="span2 search-query" placeholder="Search" name="q" value="{{request.GET.q}}"/>
-          <select>
-            <option>a</option>
-          </select>
-          <button class="btn" type="submit"><i class="icon-search"></i></button>
-        </form>
         <li class="nav-header">{% trans 'Short Access' %}</a></li>
         <li><a href="#">{% trans 'Add Journal' %}</a></li>
         <li><a href="#">{% trans 'Add Issue' %}</a></li>
@@ -151,6 +154,11 @@
 <script type="text/javascript" src="{{ jquery_url }}"></script>
 <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
+<script>
+  $('#list_model').click(function(){
+    $('#form_search').attr('action', $('#list_model').val())
+  });
+  </script>
 {% block extrafooter %}{% endblock %}
 </body>
 </html>
