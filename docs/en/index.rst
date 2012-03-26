@@ -13,6 +13,7 @@ Usage guides
    :maxdepth: 2
 
    glossary
+   about
 
 
 Development guides
