@@ -8,6 +8,7 @@ $(document).ready(function() {
     $("select[multiple]").asmSelect({
         sortable: false,
         animate: true,
-        addItemTarget: 'top'
+        addItemTarget: 'top',
+        hideWhenAdded: true,
     });
 });

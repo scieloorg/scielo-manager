@@ -229,7 +229,7 @@ Glossary
      
 
 
-  Publisher''s Country 
+  Publisher's Country 
      Country of the Publication
 
 
@@ -384,7 +384,34 @@ Glossary
      
   Validated
      help...
-   
+  
+  Issue Title
+     help...
+  
+  Issue Volume
+     help...
+  
+  Issue Number
+     help...
+  
+  Issue Publication Date
+     help...
+  
+  Issue Bibliographic Strip
+     help...
+  
+  Issue Use Licence 
+     help...
+  
+  Issue Publisher Fullname
+     help...
+      
+  Issue Total of documents
+     help...
+  
+  Issue Section
+     help...
+     
   Is manager of the collection?
      help...
    
@@ -397,12 +424,18 @@ Glossary
   Use License
      help...
      
+  User name
+     help
+
   Print ISSN
      help...
-   
+
+  Publisher's Address
+     help...
+     
   Sponsor
      help...
-   
+  
   Treatment Type
      help...
    
