@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block stepmenu_top %}
 {{ block.super }}
@@ -147,9 +147,9 @@
     $(document).ready(function() {
 
         $( "#id_center-collection" ).combobox({ autoFocus: true });
-        
+
         $(".help-text").popover('hide');
-        
+
         $( "#toggle" ).click(function() {
             $( "#id_center" ).toggle();
         });
