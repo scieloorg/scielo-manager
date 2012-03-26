@@ -71,3 +71,9 @@ button.ui-button-icon-only {
     margin-right: 10px;
     color: #FFFFFF;
 }
+
+.footer {
+    background: #CCCCCC;
+    padding-left: 10px;
+    padding-top:  10px;
+}
