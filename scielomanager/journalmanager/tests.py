@@ -437,18 +437,18 @@ class LoggedInViewsTest(TestCase):
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get('/journal/search/?q=Arquivos')
+        response = self.client.get(reverse('journal.index') + '?q=Arquivos')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('journals' in response.context)
+        self.assertTrue('objects_journal' in response.context)
         self.assertTrue('user_collections' in response.context)
 
         #testing content
-        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
-        self.assertTrue(1, len(response.context['journals'].object_list))
+        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['objects_journal'].object_list[0].title))
+        self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_journal
     def test_search_publisher(self):
@@ -457,7 +457,7 @@ class LoggedInViewsTest(TestCase):
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get('/journal/publisher/search/?q=Nacional')
+        response = self.client.get(reverse('publisher.index') + '?q=Nacional')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
@@ -470,28 +470,6 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
-    @with_sample_issue
-    def test_search_issue(self):
-        """
-        View: search_issue
-
-        Tests url dispatch and values returned by the view to the template
-        """
-        journal = Journal.objects.all()[0]
-        issue = Issue.objects.all()[0]
-
-        response = self.client.get('/journal/' + str(journal.pk) + '/issue/search/?q=29')
-
-        #url dispatcher
-        self.assertEqual(response.status_code, 200)
-
-        #values passed to template
-        self.assertTrue('objects_issue' in response.context)
-
-        #testing content
-        self.assertEqual(u'29', unicode(response.context['objects_issue'].object_list[0].volume))
-        self.assertTrue(1, len(response.context['objects_issue'].object_list))
-
     @with_sample_center
     def test_search_center(self):
         """
@@ -499,7 +477,7 @@ class LoggedInViewsTest(TestCase):
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get(u'/journal/center/search/?q=Associação')
+        response = self.client.get(reverse('center.index') + '?q=Associação')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
