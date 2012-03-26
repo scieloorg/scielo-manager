@@ -49,12 +49,6 @@
                    {{ add_form.is_press_release }}
                 </div>
             </div>
-            <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
-                <label class="control-label" for="is_press_release">{% trans add_form.is_press_release.label_tag %}</label>
-                <div class="controls">
-                   {{ add_form.is_press_release }}
-                </div>
-            </div>
             <div class="control-group {% if add_form.publication_date.errors %}error{% endif %}">
                 <label class="control-label" for="publication_date">{% trans add_form.publication_date.label_tag %}</label>
                 <div class="controls">
