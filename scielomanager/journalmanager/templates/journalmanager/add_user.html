@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -39,7 +39,7 @@
         <div class="control-group {% if add_form.last_name.errors %}error{% endif %}">
             <label class="control-label" for="last_name">{% trans add_form.last_name.label_tag %}</label>
             <div class="controls">
-                {{ add_form.last_name }}  
+                {{ add_form.last_name }}
             </div>
         </div>
         {% for form in userprofileformset.forms %}
@@ -47,7 +47,7 @@
         <div class="control-group {% if form.email.errors %}error{% endif %}">
             <label class="control-label" for="email">{% trans form.email.label_tag %}</label>
             <div class="controls">
-                {{ form.email }}   
+                {{ form.email }}
             </div>
         </div>
         {% endfor %}
@@ -72,7 +72,7 @@
             </div>
         </div>
     </div>
-    
+
     <span class="label">{% trans "User Collections" %}</span>
     <div class="well">
         <table id="usercollectionsformset" class="table table-bordered table-striped">
@@ -88,7 +88,7 @@
         </thead>
         <tbody>
             {% for form in usercollectionsformset.forms %}
-            
+
             <tr id="{{ form.prefix }}-row">
                 <td>
                     {% for field in form.hidden_fields %}{{ field }}{% endfor %}
@@ -118,7 +118,7 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
 
  <script>
     $(document).ready(function() {
@@ -126,7 +126,7 @@
         $( "#id_user-collection" ).combobox({ autoFocus: true });
 
         $(".help-text").popover('hide');
-        
+
         $( "#toggle" ).click(function() {
             $( "#id_collection" ).toggle();
         });

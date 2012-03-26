@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load journalmanager_template_tags %}
+{% load scielo_common %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -135,7 +135,7 @@
 {% block extrafooter %}
     <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    
+
      <script>
     $(document).ready(function() {
 
