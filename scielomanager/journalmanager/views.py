@@ -44,6 +44,7 @@ def index(request):
 @login_required
 def generic_index_search(request, model, journal_id = None):
     """
+    Generic list and search
     """
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
@@ -61,6 +62,12 @@ def generic_index_search(request, model, journal_id = None):
 
         if model is models.Journal:
             objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
+
+        if model is models.Center:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+    
+    if objects_all.count() == 0:
+        messages.error(request, _('Your search did not match any documents.'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -343,26 +350,6 @@ def add_issue(request, journal_id, issue_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def search_journal(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default=True)
-
-    #Get journals where title contains the "q" value and collection equal with the user
-    journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q']).order_by('title')
-
-    #Paginated the result
-    journals = get_paginated(journals_filter, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/journal_search_result.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       'user_collections': user_collections,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-
-@login_required
 def publisher_index(request):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default = True)
@@ -374,32 +361,6 @@ def publisher_index(request):
     c = RequestContext(request, {
                        'objects_publisher': publishers,
                        'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def search_publisher(request):
-    return publisher_index(request)
-
-@login_required
-def search_issue(request, journal_id):
-
-    journal = models.Journal.objects.get(pk = journal_id)
-    user_collections = get_user_collections(request.user.id)
-
-    #Get issues where journal.id = journal_id and volume contains "q"
-    selected_issues = models.Issue.objects.filter(journal = journal_id,
-                                                  volume__icontains = request.REQUEST['q']).order_by('publication_date')
-
-    #Paginated the result
-    issues = get_paginated(selected_issues, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/issue_dashboard.html')
-    c = RequestContext(request, {
-                       'objects_issue': issues,
-                       'journal': journal,
-                       'user_collection': user_collections,
-                       'search_query_string': request.REQUEST['q'],
                        })
     return HttpResponse(t.render(c))
 
@@ -501,10 +462,6 @@ def toggle_user_availability(request, user_id):
   else:
     #bad request
     return HttpResponse(status=400)
-
-@login_required
-def search_center(request):
-    return center_index(request)
 
 @login_required
 def my_account(request):

@@ -36,11 +36,12 @@
                 <li class="divider-vertical"></li>
                 <li>
                   {% if user.is_authenticated %}
-                    <form id="form_search" class="navbar-search" action="{{ request.path }}" method="get">
+                    <form id="form_search" class="navbar-search" action="" method="get">
                       <input class="search-query span2" placeholder="Search" name="q" value="{{request.GET.q}}"/>
                       <select id="list_model" class="navbar-search span2">
-                        <option value="{% url journal.index %}?">Journal</option>
-                        <option value="{% url publisher.index %}">Publisher</option>
+                        <option "{% if 'journal' in request.path %} selected {% endif %}" value="{% url journal.index %}">Journal</option>
+                        <option "{% if 'publisher' in request.path %} selected {% endif %}" value="{% url publisher.index %}">Publisher</option>
+                        <option "{% if 'center' in request.path %} selected {% endif %}" value="{% url center.index %}">Center</option>
                       </select>
                       <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
                     </form>
@@ -138,9 +139,13 @@
 <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
 <script>
+
+  $('#form_search').attr('action', $('#list_model :selected').val())
+
   $('#list_model').click(function(){
-    $('#form_search').attr('action', $('#list_model').val())
+    $('#form_search').attr('action', $('#list_model :selected').val())
   });
+
   </script>
 {% block extrafooter %}{% endblock %}
 </body>
