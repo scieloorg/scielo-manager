@@ -42,7 +42,7 @@ def index(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def generic_index(request, model, journal_id = None):
+def generic_index_search(request, model, journal_id = None):
     """
     """
     user_collections = get_user_collections(request.user.id)
@@ -55,8 +55,12 @@ def generic_index(request, model, journal_id = None):
         journal = None
         objects_all = model.objects.available(request.GET.get('is_available'))
 
-    # if request.GET.get('q'):
-    #     objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
+    if request.GET.get('q'):
+        if model is models.Publisher:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+
+        if model is models.Journal:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
