@@ -31,6 +31,11 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
 
+    def save(self, force_insert=False, force_update=False):
+        self.user.email = self.email
+        self.user.save()
+        return super(UserProfile,self).save(force_insert,force_update)
+
 class Collection(models.Model):
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', )
