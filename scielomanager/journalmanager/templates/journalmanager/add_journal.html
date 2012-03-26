@@ -485,9 +485,6 @@
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-tooltip.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-popover.js"></script>
-
  <script>
     $(document).ready(function() {
 
@@ -531,7 +528,6 @@
            formCssClass: 'dynamic-indexcoverageformset-form',
            prefix: '{{ indexcoverageformset.prefix }}'
         });
-
     });
   </script>
 {% endblock %}
