@@ -55,7 +55,7 @@
                 <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/>
                 <input class="btn" type="submit" value="{% trans 'login' %}" />
               </form>
-              <a href="{% registration.password_reset %}" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a>
+              <a href="{% url registration.password_reset %}" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a>
               {% if invalid %}
               <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
               {% endif %}
