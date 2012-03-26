@@ -126,6 +126,7 @@
     </div>
     <span class="label">{% trans "Center Collections" %}</span>
     <div class="well">
+<<<<<<< HEAD
         <table id="centercollectionsformset" class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -151,6 +152,12 @@
         <p>
             {{ centercollectionsformset.management_form }}
         </p>
+=======
+        <label class="control-label" for="center-collections">{% trans add_form.collections.label_tag %}</label>
+        <div class="controls">
+            {{ add_form.collections }}
+        </div>
+>>>>>>> d9fb73d359537650f9007ed05ae7b85bd00af319
     </div>
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
     <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
@@ -162,7 +169,7 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
 
  <script>
     $(document).ready(function() {

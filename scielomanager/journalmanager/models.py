@@ -26,13 +26,13 @@ class AppCustomManager(models.Manager):
                 data_queryset = data_queryset.filter(is_available=availability)
 
         return data_queryset
-        
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
 
 class Collection(models.Model):
-    collection = models.ManyToManyField(User, related_name='user_collection', 
+    collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
     url = models.URLField(_('Instance URL'), )
@@ -48,7 +48,7 @@ class UserCollections(models.Model):
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection, help_text=helptexts.USERCOLLECTIONS_COLLECTION)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
-    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, 
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False,
         blank=False)
 
 class Institution(models.Model):
@@ -81,6 +81,7 @@ class Institution(models.Model):
 
 class Publisher(Institution):
     objects = AppCustomManager()
+    collections = models.ManyToManyField(Collection)
 
 class Journal(models.Model):
 
@@ -93,6 +94,7 @@ class Journal(models.Model):
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, help_text=helptexts.JOURNAL__CENTER)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
+    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS) #ajustar ref do help_text
 
     #Fields
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
@@ -142,6 +144,7 @@ class Journal(models.Model):
 
     class Meta:
         ordering = ['title']
+<<<<<<< HEAD
      
 class InstitutionCollections(models.Model):
     institution = models.ForeignKey(Institution)
@@ -150,6 +153,8 @@ class InstitutionCollections(models.Model):
 class JournalCollections(models.Model):
     journal = models.ForeignKey(Journal)
     collection = models.ForeignKey(Collection, null=False, help_text=helptexts.JOURNALCOLLECTIONS_COLLECTION)
+=======
+>>>>>>> d9fb73d359537650f9007ed05ae7b85bd00af319
 
 class JournalStudyArea(models.Model):
     journal = models.ForeignKey(Journal)
@@ -246,7 +251,7 @@ class Issue(models.Model):
 
     def identification(self):
 
-        if self.number is not None:  
+        if self.number is not None:
             n = self.number
             if n != 'ahead' and n != 'review':
                 n ='(' + self.number + ')'
@@ -265,4 +270,5 @@ class Supplement(Issue):
 
 class Center(Institution):
     objects = AppCustomManager()
+    collections = models.ManyToManyField(Collection)
 
