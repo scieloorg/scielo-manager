@@ -9,9 +9,6 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
 
-class InstitutionCollectionsInline(admin.StackedInline):
-    model = InstitutionCollections
-
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
@@ -34,13 +31,13 @@ class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
     list_filter = ('is_available',)
+    filter_horizontal = ('collections',)
     inlines = [JournalHistoryInline, JournalTextLanguageInline, JournalMissionInline,
         JournalSectionsInline, JournalStudyAreaInline, JournalIndexCoverageInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
     search_fields = ('name',)
-    inlines = [InstitutionCollectionsInline]
 
 class UserProfileInline(admin.TabularInline):
     model = UserProfile
@@ -56,22 +53,24 @@ class UserAdmin(admin.ModelAdmin):
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
 
-if Journal not in admin.site._registry:
-    admin.site.register(Journal, JournalAdmin)
+class CenterAdmin(admin.ModelAdmin):
+    filter_horizontal = ('collections',)
 
-if Institution not in admin.site._registry:
-    admin.site.register(Institution, InstitutionAdmin)
+class PublisherAdmin(admin.ModelAdmin):
+    filter_horizontal = ('collections',)
 
-if Collection not in admin.site._registry:
-    admin.site.register(Collection, CollectionAdmin)
 
+admin.site.register(Journal, JournalAdmin)
+admin.site.register(Institution, InstitutionAdmin)
+admin.site.register(Collection, CollectionAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UseLicense)
 admin.site.register(Section)
 admin.site.register(TranslatedData)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
-admin.site.register(Center)
+admin.site.register(Center, CenterAdmin)
+admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(IndexDatabase)
 admin.site.register(JournalIndexCoverage)
 

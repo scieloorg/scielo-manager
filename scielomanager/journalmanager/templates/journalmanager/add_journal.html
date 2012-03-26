@@ -46,33 +46,15 @@
   </div>
 
   <span class="label">{% trans "Journal Collections" %}</span>
-  <div class="well">
-      <table id="collectionsformset" class="table table-bordered table-striped">
-      <thead>
-          <tr>
-              <th>{% trans "Collections" %}
-              	  {% field_help collectionsformset.forms.0.collection.label collectionsformset.forms.0.collection.help_text term-collections %}
-              </th>
-              <th>{% trans "options" %}</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for form in collectionsformset.forms %}
-          <tr id="{{ form.prefix }}-row">
-              <td>
-                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                  {{ form.collection }}
-              </td>
-              <td></td>
-          </tr>
-          {% endfor %}
-      </tbody>
-      </table>
-      <p>
-          {{ collectionsformset.management_form }}
-      </p>
-  </div>
+    <div class="well">
+      <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
+          <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
+          <div class="controls">
+             {{ add_form.collections }}
+             {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
+          </div>
+      </div>
+    </div>
 
   <span class="label">{% trans "titleformset" %}</span>
   <div class="well">
@@ -312,14 +294,6 @@
            {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
         </div>
     </div>
-    <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
-        <label class="control-label" for="collections">
-		  {% trans add_form.collections.label_tag %}
-        </label>
-        <div class="controls">
-           {{ add_form.collections }}
-        </div>
-    </div>
     <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
         <label class="control-label" for="validated">{% trans add_form.validated.label_tag %}</label>
         <div class="controls">
@@ -525,11 +499,6 @@
         $('#titleformset tbody tr').formset({
            formCssClass: 'dynamic-titleformset-form',
            prefix: '{{ titleformset.prefix }}'
-        });
-
-        $('#collectionsformset tbody tr').formset({
-           formCssClass: 'dynamic-collectionsformset-form',
-           prefix: '{{ collectionsformset.prefix }}'
         });
 
         $('#missionformset tbody tr').formset({

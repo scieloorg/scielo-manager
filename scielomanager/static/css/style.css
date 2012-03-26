@@ -76,4 +76,14 @@ button.ui-button-icon-only {
     margin: 0px;
 }
 
+.user_identity {
+    margin-top: 10px;
+    margin-right: 10px;
+    color: #FFFFFF;
+}
 
+.footer {
+    background: #CCCCCC;
+    padding-left: 10px;
+    padding-top:  10px;
+}

@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load scielo_common %}
+
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
+    <link rel="stylesheet" href="{{ jquery_ui_css_url }}" type="text/css" media="all" />
+{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
@@ -12,7 +18,7 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" action="#">
+    <form method="post" action="#">
     {% csrf_token %}
 
     <span class="label">{% trans "Institution Information" %}</span>
@@ -21,118 +27,114 @@
             <label class="control-label" for="name">{% trans add_form.name.label_tag %}</label>
             <div class="controls">
                 {{ add_form.name }}
+                {% field_help add_form.name.label add_form.name.help_text term-institution-name %}
             </div>
         </div>
         <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.acronym.label_tag %}</label>
             <div class="controls">
                 {{ add_form.acronym }}
+                {% field_help add_form.acronym.label add_form.acronym.help_text term-acronym %}
             </div>
         </div>
         <div class="control-group {% if add_form.country.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.country.label_tag %}</label>
             <div class="controls">
                 {{ add_form.country }}
+                {% field_help add_form.country.label add_form.country.help_text term-publisher-s-country %}
             </div>
         </div>
         <div class="control-group {% if add_form.state.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.state.label_tag %}</label>
             <div class="controls">
                 {{ add_form.state }}
+                {% field_help add_form.state.label add_form.state.help_text term-publisher-s-state %}
             </div>
         </div>
         <div class="control-group {% if add_form.city.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.city.label_tag %}</label>
             <div class="controls">
                 {{ add_form.city }}
+                {% field_help add_form.city.label add_form.city.help_text term-publisher-s-city %}
             </div>
         </div>
-        <div class="control-group {% if add_form.Address.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.Address.label_tag %}</label>
+        <div class="control-group {% if add_form.address.errors %}error{% endif %}">
+            <label class="control-label" for="first_name">{% trans add_form.address.label_tag %}</label>
             <div class="controls">
                 {{ add_form.address }}
+                {% field_help add_form.address.label add_form.address.help_text term-publisher-s-address %}
             </div>
         </div>
-        <div class="control-group {% if add_form.Address_number.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.Address_number.label_tag %}</label>
+        <div class="control-group {% if add_form.address_number.errors %}error{% endif %}">
+            <label class="control-label" for="first_name">{% trans add_form.address_number.label_tag %}</label>
             <div class="controls">
                 {{ add_form.address_number }}
+                {% field_help add_form.address_number.label add_form.address_number.help_text term-address-number %}
             </div>
         </div>
-        <div class="control-group {% if add_form.Address_complement.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.Address_complement.label_tag %}</label>
+        <div class="control-group {% if add_form.address_complement.errors %}error{% endif %}">
+            <label class="control-label" for="first_name">{% trans add_form.address_complement.label_tag %}</label>
             <div class="controls">
                 {{ add_form.address_complement }}
+                {% field_help add_form.address_complement.label add_form.address_complement.help_text term-address-complement %}
             </div>
         </div>
         <div class="control-group {% if add_form.zip_code.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.zip_code.label_tag %}</label>
             <div class="controls">
                 {{ add_form.zip_code }}
+                {% field_help add_form.zip_code.label add_form.zip_code.help_text term-zip_code %}
             </div>
         </div>
         <div class="control-group {% if add_form.phone.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.phone.label_tag %}</label>
             <div class="controls">
                 {{ add_form.phone }}
+                {% field_help add_form.phone.label add_form.phone.help_text term-phone %}
             </div>
         </div>
          <div class="control-group {% if add_form.fax.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.fax.label_tag %}</label>
             <div class="controls">
                 {{ add_form.fax }}
+                {% field_help add_form.fax.label add_form.fax.help_text term-fax %}
             </div>
         </div>
         <div class="control-group {% if add_form.cel.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.cel.label_tag %}</label>
             <div class="controls">
                 {{ add_form.cel }}
+                {% field_help add_form.cel.label add_form.cel.help_text term-cel %}
             </div>
         </div>
         <div class="control-group {% if add_form.mail.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.mail.label_tag %}</label>
             <div class="controls">
                 {{ add_form.mail }}
+                {% field_help add_form.mail.label add_form.mail.help_text term-mail %}
             </div>
         </div>
         <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.validated.label_tag %}</label>
             <div class="controls">
                 {{ add_form.validated }}
+                {% field_help add_form.validated.label add_form.validated.help_text term-validated %}
             </div>
         </div>
         <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
             <label class="control-label" for="first_name">{% trans add_form.is_available.label_tag %}</label>
             <div class="controls">
                 {{ add_form.is_available }}
+                {% field_help add_form.is_available.label add_form.is_available.help_text term-is-available %}
             </div>
         </div>
     </div>
     <span class="label">{% trans "Publisher Collections" %}</span>
     <div class="well">
-        <table id="publishercollectionsformset" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>{% trans "Collection" %}</th>
-                <th>{% trans "options" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for form in publishercollectionsformset.forms %}
-            <tr id="{{ form.prefix }}-row">
-                <td>
-                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                    {{ form.collection }}
-                </td>
-                <td></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-        <p>
-            {{ publishercollectionsformset.management_form }}
-        </p>
+        <label class"control-label" for="publisher-collections">{% trans add_form.collections.label_tag %}</label>
+        <div class="controls">
+            {{ add_form.collections }}
+        </div>
     </div>
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
     <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
@@ -144,12 +146,14 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script> 
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
 
  <script>
     $(document).ready(function() {
 
         $( "#id_publisher-collection" ).combobox({ autoFocus: true });
+
+        $(".help-text").popover('hide');
 
         $( "#toggle" ).click(function() {
             $( "#id_publisher" ).toggle();

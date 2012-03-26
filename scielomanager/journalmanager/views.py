@@ -29,7 +29,7 @@ def get_user_collections(user_id):
 
     user_collections = User.objects.get(pk=user_id).usercollections_set.all()
 
-    return user_collections        
+    return user_collections
 
 def index(request):
     t = loader.get_template('journalmanager/home_journal.html')
@@ -97,7 +97,7 @@ def generic_toggle_availability(request, object_id, model):
 def generic_bulk_action(request, model, action_name, value = None):
 
     if request.method == 'POST':
-        items = request.POST.getlist('action') 
+        items = request.POST.getlist('action')
         for item in items:
             model = get_object_or_404(model, pk = item)
             if action_name == 'is_available':
@@ -108,7 +108,7 @@ def generic_bulk_action(request, model, action_name, value = None):
 
 @login_required
 def user_index(request):
-    
+
     user_collections = get_user_collections(request.user.id)
     user_collections_managed = user_collections.filter(is_manager=True)
 
@@ -180,9 +180,9 @@ def add_user(request, user_id=None):
 
     # Getting Collections from the logged user.
     user_collections = get_user_collections(request.user.id)
-    
+
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
-    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections, 
+    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
         form=UserCollectionsForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
@@ -216,9 +216,10 @@ def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
     """
+    from django.utils.functional import curry
     user_collections = get_user_collections(request.user.id)
 
-    if  journal_id == None:
+    if  journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
@@ -228,21 +229,19 @@ def add_journal(request, journal_id = None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
-    JournalCollectionsFormSet = inlineformset_factory(models.Journal, models.JournalCollections, extra=1, can_delete=True)
     JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
 
-        journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+        journalform = JournalForm(request.POST, instance=journal, prefix='journal', collections_qset=user_collections)
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
-        collectionsformset = JournalCollectionsFormSet(request.POST, instance=journal, prefix='collection')
         indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
-        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() and collectionsformset.is_valid() \
+        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
             and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
@@ -250,24 +249,24 @@ def add_journal(request, journal_id = None):
             missionformset.save()
             textlanguageformset.save()
             histformset.save()
-            collectionsformset.save()
             indexcoverageformset.save()
+            messages.info(request, _('Saved.'))
 
             return HttpResponseRedirect(reverse('journal.index'))
+        else:
+            messages.error(request, _('There are some errors or missing data.'))
 
     else:
-        journalform  = JournalForm(instance=journal, prefix='journal')
+        journalform  = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
-        collectionsformset = JournalCollectionsFormSet(instance=journal, prefix='collection')
         indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
-                              'collectionsformset': collectionsformset,
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
@@ -283,36 +282,30 @@ def add_publisher(request, publisher_id=None):
     Handles new and existing publishers
     """
 
-    if  publisher_id == None:
+    if  publisher_id is None:
         publisher = models.Publisher()
     else:
         publisher = get_object_or_404(models.Publisher, id = publisher_id)
 
     user_collections = get_user_collections(request.user.id)
 
-    PublisherCollectionsFormSet = inlineformset_factory(models.Publisher, models.InstitutionCollections, 
-      form=PublisherCollectionsForm, extra=1, can_delete=True)
-
     if request.method == "POST":
-        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher')
-        publishercollectionsformset = PublisherCollectionsFormSet(request.POST, instance=publisher, prefix='publishercollections')
+        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher',
+            collections_qset=user_collections)
 
-
-        if publisherform.is_valid() and publishercollectionsformset.is_valid():
+        if publisherform.is_valid():
             publisherform.save()
-            publishercollectionsformset.save()
 
             return HttpResponseRedirect(reverse('publisher.index'))
 
     else:
-        publisherform  = PublisherForm(instance=publisher, prefix='publisher')
-        publishercollectionsformset =  PublisherCollectionsFormSet(instance=publisher, prefix='publishercollections')
+        publisherform  = PublisherForm(instance=publisher, prefix='publisher',
+            collections_qset=user_collections)
 
     return render_to_response('journalmanager/add_publisher.html', {
                               'add_form': publisherform,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
-                              'publishercollectionsformset': publishercollectionsformset,
                               },
                               context_instance = RequestContext(request))
 
@@ -453,32 +446,25 @@ def add_center(request, center_id=None):
 
     user_collections = get_user_collections(request.user.id)
 
-    CenterCollectionsFormSet = inlineformset_factory(models.Center, models.InstitutionCollections, 
-      form=CenterCollectionsForm, extra=1, can_delete=True)
-
-
     if request.method == 'POST':
-        centerform = CenterForm(request.POST, instance=center, prefix='center')
-        centercollectionsformset = CenterCollectionsFormSet(request.POST, instance=center, prefix='centercollections')
+        centerform = CenterForm(request.POST, instance=center, prefix='center',
+            collections_qset=user_collections)
 
-        if centerform.is_valid() and centercollectionsformset.is_valid():
+        if centerform.is_valid():
             centerform.save()
-            centercollectionsformset.save()
 
             return HttpResponseRedirect(reverse('center.index'))
 
     else:
-        centerform  = CenterForm(instance=center, prefix='center')
-        centercollectionsformset =  CenterCollectionsFormSet(instance=center, prefix='centercollections')
+        centerform  = CenterForm(instance=center, prefix='center', collections_qset=user_collections)
 
     return render_to_response('journalmanager/add_center.html', {
                               'add_form': centerform,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
-                              'centercollectionsformset': centercollectionsformset,
                               },
                               context_instance = RequestContext(request))
-    
+
 
 @login_required
 def center_index(request):

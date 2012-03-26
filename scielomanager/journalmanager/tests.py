@@ -140,6 +140,34 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('journalmanager.my_account'))
         self.assertEqual(response.status_code, 200)
 
+    def test_password_reset(self):
+        """
+        Users requesting new password by giving e-mail address
+
+        Covered cases:
+        * Validating the reset password interface
+        * Given email exists
+        * Given email does not exists
+        """
+        
+        # Validating the reset password interface
+        response = self.client.get(reverse('registration.password_reset'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(u'Enter your e-mail in the form below' in response.content.decode('utf-8'))
+
+        # Testing password recovery against a registered email
+        response = self.client.post(reverse('registration.password_reset'), {
+            'email': 'dev@scielo.org',
+            })
+        self.assertRedirects(response, reverse('registration.password_reset_done'))
+
+        # Testing password recovery against a UNregistered email
+        response = self.client.post(reverse('registration.password_reset'), {
+            'email': 'juca@bala.com',
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(u'That e-mail address doesn' in response.content.decode('utf-8'))
+
     def test_password_change(self):
         """
         Logged in user changing its password
@@ -178,6 +206,13 @@ class LoggedInViewsTest(TestCase):
 
 
     def test_add_journal(self):
+        """
+        Covered cases:
+        * Accessing the form
+        * Submission with missing data
+        * Submission with all required data
+        * Edition of a existing record
+        """
         #empty form
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
@@ -196,10 +231,18 @@ class LoggedInViewsTest(TestCase):
         sample_center.collection = self.collection
         sample_center.save()
 
+        #missing data
+        response = self.client.post(reverse('journal.add'),
+            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
+                                                     'journal-collections': [self.usercollections.pk],
+                                                     'indexcoverage-0-database': sample_indexdatabase.pk,}))
+        self.assertTrue('some errors or missing data' in response.content)
+
+
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'collection-0-collection': self.usercollections.pk,
+                                                     'journal-collections': [self.usercollections.pk],
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-center': sample_center.pk, }))
 
@@ -212,7 +255,7 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
-                                                     'collection-0-collection': self.usercollections.pk,
+                                                     'journal-collections': [self.usercollections.pk],
                                                      'journal-center': sample_center.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -226,14 +269,15 @@ class LoggedInViewsTest(TestCase):
 
         #add publisher - must be added
         response = self.client.post(reverse('publisher.add'),
-            tests_assets.get_sample_publisher_dataform({}))
+            tests_assets.get_sample_publisher_dataform({'publisher-collections': [self.usercollections.pk]}))
 
         self.assertRedirects(response, reverse('publisher.index'))
 
         #edit publisher - must be changed
         testing_publisher = Publisher.objects.get(name = u'Associação Nacional de História - ANPUH')
         response = self.client.post(reverse('publisher.edit', args = (testing_publisher.pk,)),
-            tests_assets.get_sample_publisher_dataform({'publisher-name': 'Modified Title',}))
+            tests_assets.get_sample_publisher_dataform({'publisher-name': 'Modified Title',
+                                                        'publisher-collections': [self.usercollections.pk], }))
 
         self.assertRedirects(response, reverse('publisher.index'))
         modified_testing_publisher = Publisher.objects.get(name = 'Modified Title')
@@ -310,7 +354,7 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.post(reverse('center.add'),
             tests_assets.get_sample_center_dataform({
-                'centercollections-0-collection': self.collection.pk
+                'center-collections': [self.usercollections.pk]
                 }))
 
         self.assertRedirects(response, reverse('center.index'))
@@ -321,7 +365,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
             tests_assets.get_sample_center_dataform({
                 'center-name': u'Associação Nacional de História - ANPUH - modified',
-                'centercollections-0-collection': self.collection.pk
+                'center-collections': [self.usercollections.pk]
                 }))
 
         self.assertRedirects(response, reverse('center.index'))
@@ -565,7 +609,7 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
 
         self.client.post(reverse('journal.bulk_action', args=['is_available', '0']), {'action': journal.id})
-        
+
         response = self.client.get(reverse('journal.index'))
         self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
 
@@ -631,6 +675,63 @@ class LoggedInViewsTest(TestCase):
                 "<User: dummyuser_edit>",
               ]
           )
+
+    def test_contextualized_collection_field_on_add_journal(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Journal, he can only bind that Journal to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 200)
+
+        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
+
+        for qset_item in response.context['add_form'].fields['collections'].queryset:
+            self.assertTrue(qset_item in user_collections)
+
+    def test_contextualized_collection_field_on_add_publisher(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Publisher, he can only bind it to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('publisher.add'))
+        self.assertEqual(response.status_code, 200)
+
+        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
+
+        for qset_item in response.context['add_form'].fields['collections'].queryset:
+            self.assertTrue(qset_item in user_collections)
+
+    def test_contextualized_collection_field_on_add_center(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Center, he can only bind it to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('center.add'))
+        self.assertEqual(response.status_code, 200)
+
+        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
+
+        for qset_item in response.context['add_form'].fields['collections'].queryset:
+            self.assertTrue(qset_item in user_collections)
 
 class LoggedOutViewsTest(TestCase):
 
