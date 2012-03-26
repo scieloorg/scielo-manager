@@ -58,6 +58,16 @@ button.ui-button-icon-only {
     text-decoration: line-through;
 }
 
+/*Customize the td from bootstrap*/
+.table th, .table td {
+    padding: 3px;
+}
+
+.container {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 #list_model {
     background-color: #CCCCCC;
     border: 1px solid #000000;
