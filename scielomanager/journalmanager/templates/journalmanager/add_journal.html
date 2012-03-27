@@ -186,27 +186,10 @@
 
   <span class="label">{% trans "Text Language" %}</span>
   <div class="well">
-      <table id="textlanguageformset" class="table table-bordered table-striped">
-      <thead>
-          <tr>
-              <th>{% trans "Language" %}</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for form in textlanguageformset.forms %}
-          <tr id="{{ form.prefix }}-row">
-              <td>
-                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                  {{ form.language }}
-              </td>
-          </tr>
-          {% endfor %}
-      </tbody>
-      </table>
-      <p>
-          {{ textlanguageformset.management_form }}
-      </p>
+    <label class="control-label" for="languages">{% trans add_form.languages.label_tag %}</label>
+    <div class="controls">
+       {{ add_form.languages }}
+    </div>
   </div>
 
   <span class="label">{% trans "histformset" %}</span>

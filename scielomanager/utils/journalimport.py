@@ -31,7 +31,7 @@ class JournalImport:
         day = dates[6:8]
         if day == "00":
             day = "01"
-        
+
         month = dates[4:6]
         if month == "00":
             month = "01"
@@ -46,8 +46,8 @@ class JournalImport:
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
         if not self._summary.has_key(attribute):
-            self._summary[attribute] = 0    
-        
+            self._summary[attribute] = 0
+
         self._summary[attribute] += 1
 
     def have_similar_centers(self, match_string):
@@ -101,13 +101,13 @@ class JournalImport:
         """
 
         center = Center()
-        
+
         # Centers Import
         center.name = record['10'][0]
         center.collection = collection
-        
+
         match_string=center.name
-        
+
         similar_key =  self.have_similar_centers(match_string)
 
         loaded_center=""
@@ -133,14 +133,14 @@ class JournalImport:
         """
 
         publisher = Publisher()
-        
+
         # Publishers Import
         publisher.name = record['480'][0]
         publisher.collection = collection
         publisher.address = " ".join(record['63'])
-        
+
         match_string=publisher.name
-        
+
         similar_key =  self.have_similar_publishers(match_string)
 
         loaded_publisher=""
@@ -160,7 +160,7 @@ class JournalImport:
         return loaded_publisher
 
     def load_studyarea(self, journal, areas):
-        
+
         for i in areas:
             studyarea = JournalStudyArea()
             studyarea.study_area = i
@@ -170,10 +170,10 @@ class JournalImport:
     def load_textlanguage(self, journal, langs):
 
         for i in langs:
-            language = JournalTextLanguage()
-            language.language = i
-            journal.journaltextlanguage_set.add(language)
-            self.charge_summary("language")
+            lang_dict = {'pt':'Portuguese', 'en':'English', 'es':'Spanish', 'de':'German', 'it':'Italian', 'fr':'French', 'la':'Latin'}
+            language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
+            journal.languages.add()
+            self.charge_summary("language_%s" % i)
 
     def load_mission(self, journal, missions):
 
@@ -181,13 +181,13 @@ class JournalImport:
 
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
 
-            mission = JournalMission()            
+            mission = JournalMission()
             mission.language = parsed_subfields['l']
             mission.description = parsed_subfields['_']
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
 
-    def load_historic(self, journal, historicals):        
+    def load_historic(self, journal, historicals):
 
         for i in historicals:
 
@@ -228,7 +228,7 @@ class JournalImport:
     def load_title(self, journal, titles, category):
 
         for i in titles:
-            title = JournalTitle()            
+            title = JournalTitle()
             title.title = i
             title.category = category
             journal.journaltitle_set.add(title)
@@ -275,7 +275,7 @@ class JournalImport:
         if record.has_key('303'):
             journal.init_num = record['303'][0]
 
-        if record.has_key('304'): 
+        if record.has_key('304'):
             journal.final_year = record['304'][0]
 
         if record.has_key('305'):
@@ -308,7 +308,7 @@ class JournalImport:
         if record.has_key('5'):
             journal.literature_type = record['5'][0]
 
-        if record.has_key('6'):        
+        if record.has_key('6'):
             journal.treatment_level = record['6'][0]
 
         if record.has_key('330'):
@@ -362,7 +362,7 @@ class JournalImport:
         Dispara processo de importacao de dados
         """
 
-        json_parsed={} 
+        json_parsed={}
 
         json_file = open(json_file,'r')
         json_parsed = json.loads(json_file.read())
@@ -371,7 +371,7 @@ class JournalImport:
             loaded_publisher = self.load_publisher(collection, record)
             loaded_center = self.load_center(collection, record)
             loaded_journal = self.load_journal(collection, loaded_publisher, loaded_center, record)
-        
+
     def get_summary(self):
         """
         Function: get_summary
