@@ -21,6 +21,17 @@
 </ul><!--breadcrumb-->
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <div class="row-fluid show-grid">
   <div class="span6" style="padding:0 0 10px 0">
@@ -109,9 +120,9 @@
         <td>{{ journal.pub_status }}</td>
         <td>
           {%if journal.validated %}
-            <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+            <img src="{% get_static_prefix %}images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
           {%else%}
-            <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+            <img src="{% get_static_prefix %}images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
           {%endif%}
         </td>
       </tr>
