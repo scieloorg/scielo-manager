@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block body_title %}{% trans "User Evaluations" %}{% endblock %}
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+    <li><a href="{% url publisher.add %}">{% trans 'Add Publisher' %}</a></li>
+    <li><a href="{% url center.add %}">{% trans 'Add Markup Center' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
 {% block body %}
 {% if not user.is_authenticated %}
 <div class="row-fluid">

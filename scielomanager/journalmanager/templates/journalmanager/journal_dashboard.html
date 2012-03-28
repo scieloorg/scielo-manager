@@ -21,6 +21,17 @@
 </ul><!--breadcrumb-->
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <div class="row-fluid show-grid">
   <div class="span6" style="padding:0 0 10px 0">
@@ -31,32 +42,32 @@
   </div>
 </div>
 
-{% if objects_journal.object_list.count > 0 %}
-  <div class="row-fluid">
-    <ul class="nav nav-tabs">
-      <li class="{% if not request.GET.is_available %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}">{% trans "All" %}</a></li>
-      <li class="{% if request.GET.is_available == '1' %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}is_available=1"> {% trans "Enabled Journals" %}</a></li>
-      <li class="{% if request.GET.is_available == '0' %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}is_available=0">{% trans "Disabled Journals" %}</a></li>
-      <li class="dropdown" id="menu1">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-        {% trans "Actions" %}
-        <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-          {% if not request.GET.is_available %}
-            <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}" href="javascript:void(0)">{% trans "Disable" %}</a></li>
-            <li><a id="bulk_action_disable" rel="{% url journal.bulk_action 'is_available' '1' %}" href="javascript:void(0)">{% trans "Enable" %}</a></li>
-          {% endif %}
-          {% if request.GET.is_available == '1' %}
-            <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}?is_available=1" href="javascript:void(0)">{% trans "Disable" %}</a></li>
-          {% endif %}
-          {% if request.GET.is_available == '0' %}
-            <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '1' %}?is_available=0" href="javascript:void(0)">{% trans "Enable" %}</a></li>
-          {% endif %}
-        </ul>
-     </li>
+<div class="row-fluid">
+<ul class="nav nav-tabs">
+  <li class="{% if not request.GET.is_available %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}">{% trans "All" %}</a></li>
+  <li class="{% if request.GET.is_available == '1' %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}is_available=1"> {% trans "Enabled Journals" %}</a></li>
+  <li class="{% if request.GET.is_available == '0' %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}is_available=0">{% trans "Disabled Journals" %}</a></li>
+  <li class="dropdown" id="menu1">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+    {% trans "Actions" %}
+    <b class="caret"></b>
+    </a>
+    <ul class="dropdown-menu">
+      {% if not request.GET.is_available %}
+        <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}" href="javascript:void(0)">{% trans "Disable" %}</a></li>
+        <li><a id="bulk_action_disable" rel="{% url journal.bulk_action 'is_available' '1' %}" href="javascript:void(0)">{% trans "Enable" %}</a></li>
+      {% endif %}
+      {% if request.GET.is_available == '1' %}
+        <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}?is_available=1" href="javascript:void(0)">{% trans "Disable" %}</a></li>
+      {% endif %}
+      {% if request.GET.is_available == '0' %}
+        <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '1' %}?is_available=0" href="javascript:void(0)">{% trans "Enable" %}</a></li>
+      {% endif %}
     </ul>
-  </div>
+ </li>
+</ul>
+</div>
+{% if objects_journal.object_list.count > 0 %}
   <form action="javascript:void(0)" method="post" id="bulk_action">
     {% csrf_token %}
     <table class="table table-striped">

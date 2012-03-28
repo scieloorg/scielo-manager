@@ -17,6 +17,15 @@
 </ul><!--breadcrumb-->
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url center.add %}">{% trans 'Add Center' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <div class="row-fluid show-grid">
   <div class="span10">
