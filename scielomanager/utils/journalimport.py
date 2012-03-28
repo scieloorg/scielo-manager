@@ -187,40 +187,40 @@ class JournalImport:
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
 
+<<<<<<< HEAD
     def load_historic(self, journal, historicals):
+=======
+    def load_historic(self, journal, historicals):        
+        import operator
+        
+        lifecycles = {}
+>>>>>>> master
 
         for i in historicals:
-
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
-
-            print journal.title
-            print i
             try:
-                historic = JournalHist()
-                historic.date = self.iso_format(parsed_subfields['a'])
-                historic.status = parsed_subfields['b']
+                lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
             except KeyError:
                 self.charge_summary("history_error_field")
                 return False
 
             try:
-                journal.journalhist_set.add(historic)
-                self.charge_summary("history")
+                lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
+            except KeyError:
+                self.charge_summary("history_error_field")
+                return False
+
+        print lifecycles
+
+        for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
+            try:
+                journalhist = JournalHist()
+                journalhist.date = cyclekey
+                journalhist.status = cyclevalue
+                journal.journalhist_set.add(journalhist)
+                self.charge_summary("life_cycle")
             except exceptions.ValidationError:
                 self.charge_summary("history_error_data")
-
-            try:
-                historic = JournalHist()
-                historic.date = self.iso_format(parsed_subfields['c'])
-                historic.status = parsed_subfields['d']
-            except KeyError:
-                self.charge_summary("history_error_field")
-                return False
-
-            try:
-                journal.journalhist_set.add(historic)
-                self.charge_summary("history")
-            except exceptions.ValidationError:
                 return False
 
         return True
