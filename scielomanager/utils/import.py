@@ -20,6 +20,8 @@ from journalmanager.models import Collection
 
 collectionname = sys.argv[1]
 
+
+
 print 'Checking if Collection %s exists at JournalManager Database' % (collectionname)
 
 try:
