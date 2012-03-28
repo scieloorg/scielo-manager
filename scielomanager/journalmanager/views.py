@@ -248,7 +248,7 @@ def add_journal(request, journal_id = None):
         indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
-            and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
+            and missionformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
