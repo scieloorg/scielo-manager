@@ -18,10 +18,43 @@
 </ul>
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
+{% block formindex %}
+  <div class="well sidebar-nav">
+    <ul class="nav nav-list">
+      <li class="nav-header">{% trans 'Form Index' %}</a></li>
+      <li><a href="#title">{% trans 'Title' %}</a></li>
+      <li><a href="#journal_collection">{% trans 'Journal Collections' %}</a></li>
+      <li><a href="#other_title">{% trans 'Other Titles' %}</a></li>
+      <li><a href="#issn">{% trans 'ISSN' %}</a></li>
+      <li><a href="#subject">{% trans 'Subjects' %}</a></li>
+      <li><a href="#mission">{% trans 'Mission' %}</a></li>
+      <li><a href="#text_language">{% trans 'Text Language' %}</a></li>
+      <li><a href="#life_cycle">{% trans 'Life Cycle' %}</a></li>
+      <li><a href="#system_information">{% trans 'System Information' %}</a></li>
+      <li><a href="#indexing_coverage">{% trans 'Indexing Coverage' %}</a></li>
+      <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
+      <li><a href="#license">{% trans 'Licenses' %}</a></li>
+      <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
+      <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
+    </ul>
+  </div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <form method="post" action="#">
     {% csrf_token %}
-  <span class="label">{% trans "titles" %}</span>
+  <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.title.errors %}error{% endif %}">
         <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
@@ -45,7 +78,7 @@
     </div>
   </div>
 
-  <span class="label">{% trans "Journal Collections" %}</span>
+  <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
     <div class="well">
       <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
           <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
@@ -56,7 +89,7 @@
       </div>
     </div>
 
-  <span class="label">{% trans "titleformset" %}</span>
+  <span class="label"><a name="other_title"></a>{% trans "Other Titles" %}</span>
   <div class="well">
       <table id="titleformset" class="table table-bordered table-striped">
       <thead>
@@ -83,7 +116,7 @@
       </p>
   </div>
 
-  <span class="label">{% trans "ISSN" %}</span>
+  <span class="label"><a name="issn"></a>{% trans "ISSN" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
         <label class="control-label" for="print_issn">{% trans add_form.print_issn.label_tag %}</label>
@@ -117,7 +150,7 @@
         </div>
     </div>
   </div>
-  <span class="label">{% trans "subject" %}</span>
+  <span class="label"><a name="subject"></a>{% trans "subject" %}</span>
   <div class="well">
     <table id="studyareaformset" class="table table-bordered table-striped">
       <thead>
@@ -154,7 +187,7 @@
     </div>
   </div>
 
-  <span class="label">{% trans "Mission" %}</span>
+  <span class="label"><a name="mission"></a>{% trans "Mission" %}</span>
   <div class="well">
       <table id="missionformset" class="table table-bordered table-striped">
       <thead>
@@ -184,7 +217,7 @@
       </p>
   </div>
 
-  <span class="label">{% trans "Text Language" %}</span>
+  <span class="label"><a name="text_language"></a>{% trans "Text Language" %}</span>
   <div class="well">
       <table id="textlanguageformset" class="table table-bordered table-striped">
       <thead>
@@ -209,7 +242,7 @@
       </p>
   </div>
 
-  <span class="label">{% trans "histformset" %}</span>
+  <span class="label"><a name="life_cycle"></a>{% trans "Life Cycle" %}</span>
   <div class="well">
       <table id="histformset" class="table table-bordered table-striped">
       <thead>
@@ -236,7 +269,7 @@
       </p>
   </div>
 
-  <span class="label">{% trans "system" %}</span>
+  <span class="label"><a name="system_information"></a>{% trans "System Information" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
         <label class="control-label" for="acronym">{% trans add_form.acronym.label_tag %}</label>
@@ -307,7 +340,7 @@
         </div>
     </div>
   </div>
-  <span class="label">{% trans "indexing" %}</span>
+  <span class="label"><a name="indexing_coverage"></a>{% trans "Indexing Coverage" %}</span>
   <div class="well">
    <table id="indexcoverageformset" class="table table-bordered table-striped">
       <thead>
@@ -338,7 +371,7 @@
           {{ indexcoverageformset.management_form }}
       </p>
   </div>
-      <span class="label">{% trans "publisher and sponsors" %}</span>
+      <span class="label"><a name="publisher_and_sponsor"></a>{% trans "Publisher and Sponsors" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.publisher.errors %}error{% endif %}">
         <label class="control-label" for="publisher">{% trans add_form.publisher.label_tag %}</label>
@@ -355,7 +388,7 @@
         </div>
     </div>
   </div>
-      <span class="label">{% trans "licenses" %}</span>
+      <span class="label"><a name="license"></a>{% trans "Licenses" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
         <label class="control-label" for="use_license">{% trans add_form.use_license.label_tag %}</label>
@@ -372,94 +405,108 @@
         </div>
     </div>
   </div>
-  <span class="label">{% trans "formal information" %}</span>
+  <span class="label"><a name="formal_information"></a>{% trans "Formal Information" %}</span>
   <div class="well">
-    <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
-        <label class="control-label" for="init_year">{% trans add_form.init_year.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.init_year }}
-           {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.init_vol.errors %}error{% endif %}">
-        <label class="control-label" for="init_vol">{% trans add_form.init_vol.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.init_vol }}
-           {% field_help add_form.init_vol.label add_form.init_vol.help_text term-initial-volume %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.init_num.errors %}error{% endif %}">
-        <label class="control-label" for="init_num">{% trans add_form.init_num.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.init_num }}
-           {% field_help add_form.init_num.label add_form.init_num.help_text term-initial-number %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.final_year.errors %}error{% endif %}">
-        <label class="control-label" for="final_year">{% trans add_form.final_year.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.final_year }}
-           {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.final_vol.errors %}error{% endif %}">
-        <label class="control-label" for="final_vol">{% trans add_form.final_vol.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.final_vol }}
-           {% field_help add_form.final_vol.label add_form.final_vol.help_text term-final-volume %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.final_num.errors %}error{% endif %}">
-        <label class="control-label" for="final_num">{% trans add_form.final_num.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.final_num }}
-           {% field_help add_form.final_num.label add_form.final_num.help_text term-final-number %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.frequency.errors %}error{% endif %}">
-        <label class="control-label" for="frequency">{% trans add_form.frequency.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.frequency }}
-           {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.alphabet.errors %}error{% endif %}">
-        <label class="control-label" for="alphabets">{% trans add_form.alphabet.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.alphabet }}
-           {% field_help add_form.alphabet.label add_form.alphabet.help_text term-alphabet %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.national_code.errors %}error{% endif %}">
-        <label class="control-label" for="national_code">{% trans add_form.national_code.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.national_code }}
-           {% field_help add_form.national_code.label add_form.national_code.help_text term-national-code %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.literature_type.errors %}error{% endif %}">
-        <label class="control-label" for="literature_type">{% trans add_form.literature_type.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.literature_type }}
-           {% field_help add_form.literature_type.label add_form.literature_type.help_text term-literature-type %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.treatment_level.errors %}error{% endif %}">
-        <label class="control-label" for="treatment_level">{% trans add_form.treatment_level.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.treatment_level }}
-           {% field_help add_form.treatment_level.label add_form.treatment_level.help_text term-treatment-type %}
-        </div>
-    </div>
-    <div class="control-group {% if add_form.pub_level.errors %}error{% endif %}">
-        <label class="control-label" for="pub_level">{% trans add_form.pub_level.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.pub_level }}
-           {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
-        </div>
-    </div>
+    <table class="table table-bordered table-striped" sstyle="width:100%">
+      <thead>
+          <tr>
+              <th>{% trans add_form.init_year.label_tag %}</th>
+              <th>{% trans add_form.init_vol.label_tag %}</th>
+              <th>{% trans add_form.init_num.label_tag %}</th>
+          </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          {{ add_form.init_year }}
+          {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
+        </td>
+        <td>
+          {{ add_form.init_vol }}
+          {% field_help add_form.init_vol.label add_form.init_vol.help_text term-initial-volume %}</td>
+        <td>
+          {{ add_form.init_num }}
+          {% field_help add_form.init_num.label add_form.init_num.help_text term-initial-number %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <table class="table table-bordered table-striped" sstyle="width:100%">
+      <thead>
+          <tr>
+              <th>{% trans add_form.final_year.label_tag %}</th>
+              <th>{% trans add_form.final_vol.label_tag %}</th>
+              <th>{% trans add_form.final_num.label_tag %}</th>
+          </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+         {{ add_form.final_year }}
+         {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
+        </td>
+        <td>
+         {{ add_form.final_vol }}
+         {% field_help add_form.final_vol.label add_form.final_vol.help_text term-final-volume %}
+        </td>
+        <td>
+          {{ add_form.final_num }}
+          {% field_help add_form.final_num.label add_form.final_num.help_text term-final-number %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <table class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans add_form.frequency.label_tag %}</th>
+              <th>{% trans add_form.alphabet.label_tag %}</th>
+              <th>{% trans add_form.national_code.label_tag %}</th>
+          </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          {{ add_form.frequency }}
+          {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
+        </td>
+        <td>
+          {{ add_form.alphabet }}
+          {% field_help add_form.alphabet.label add_form.alphabet.help_text term-alphabet %}  
+        </td>
+        <td>
+          {{ add_form.national_code }}
+          {% field_help add_form.national_code.label add_form.national_code.help_text term-national-code %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <table class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans add_form.literature_type.label_tag %}</th>
+              <th>{% trans add_form.treatment_level.label_tag %}</th>
+              <th>{% trans add_form.pub_level.label_tag %}</th>
+          </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+         {{ add_form.literature_type }}
+         {% field_help add_form.literature_type.label add_form.literature_type.help_text term-literature-type %}
+        </td>
+        <td>
+          {{ add_form.treatment_level }}
+          {% field_help add_form.treatment_level.label add_form.treatment_level.help_text term-treatment-type %}
+        <td>
+          {{ add_form.pub_level }}
+          {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
-      <span class="label">{% trans "further" %}</span>
+      <span class="label"><a name="further_information"></a>{% trans "Further Information" %}</span>
   <div class="well">
       <div class="control-group {% if add_form.notes.errors %}error{% endif %}">
           <label class="control-label" for="notes">{% trans add_form.notes.label_tag %}</label>
@@ -481,6 +528,8 @@
     <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/datepicker/datepicker.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/datepicker/jquery.ui.datepicker-pt-BR.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
  <script>
     $(document).ready(function() {

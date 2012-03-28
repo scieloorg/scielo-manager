@@ -18,6 +18,15 @@
 </ul>
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url user.add %}">{% trans 'Add User' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <span class="label">{% trans "User Information" %}</span>
 <form method="post" action="#">
