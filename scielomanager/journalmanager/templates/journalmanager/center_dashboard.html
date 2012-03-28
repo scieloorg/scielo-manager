@@ -13,7 +13,7 @@
 {{ block.super }}
 <ul class="breadcrumb">
   <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-  <li class="active">{% trans 'objects_center DashBoard' %}</li>
+  <li class="active">{% trans 'Markup Center DashBoard' %}</li>
 </ul><!--breadcrumb-->
 {% endblock %}
 
@@ -21,7 +21,7 @@
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
     <li class="nav-header">{% trans 'Short Access' %}</a></li>
-    <li><a href="{% url center.add %}">{% trans 'Add Center' %}</a></li>
+    <li><a href="{% url center.add %}">{% trans 'Add Markup Center' %}</a></li>
   </ul>
 </div><!--well sidebar-nav-->
 {% endblock %}
@@ -38,8 +38,8 @@
 
 <div class="row-fluid">
   <span>{% trans 'Show by: ' %}</span>
-  <a href="{% url center.index %}">{% trans "Enabled Center" %}</a>
-  <a href="{% url center.index %}?is_available=0">{% trans "Disabled Center" %}</a>
+  <a href="{% url center.index %}">{% trans "Enabled Markup Center" %}</a>
+  <a href="{% url center.index %}?is_available=0">{% trans "Disabled Markup Center" %}</a>
 </div>
 
 <table class="table table-condensed">
