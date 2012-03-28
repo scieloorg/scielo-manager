@@ -187,14 +187,10 @@ class JournalImport:
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
 
-<<<<<<< HEAD
     def load_historic(self, journal, historicals):
-=======
-    def load_historic(self, journal, historicals):        
         import operator
-        
+
         lifecycles = {}
->>>>>>> master
 
         for i in historicals:
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
