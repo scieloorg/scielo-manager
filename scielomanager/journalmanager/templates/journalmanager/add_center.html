@@ -7,8 +7,8 @@
 {{ block.super }}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url center.index %}">{% trans 'Center Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New Center' %}</li>
+    <li><a href="{% url center.index %}">{% trans 'Markup Center Dashboard' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'New Markup Center' %}</li>
 </ul>
 {% endblock %}
 
@@ -16,7 +16,7 @@
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
     <li class="nav-header">{% trans 'Short Access' %}</a></li>
-    <li><a href="{% url journal.add %}">{% trans 'Add Center' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Markup Center' %}</a></li>
   </ul>
 </div><!--well sidebar-nav-->
 {% endblock %}
@@ -25,7 +25,7 @@
     <form method="post" action="#">
     {% csrf_token %}
 
-    <span class="label">{% trans "Center Information" %}</span>
+    <span class="label">{% trans "Markup Center Information" %}</span>
     <div class="well">
         <div class="control-group {% if add_form.name.errors %}error{% endif %}">
             <label class="control-label" for="name">{% trans add_form.name.label_tag %}</label>
