@@ -170,7 +170,7 @@ class JournalImport:
     def load_textlanguage(self, journal, langs):
 
         for i in langs:
-            lang_dict = {'pt':'Portuguese', 'en':'English', 'es':'Spanish', 'de':'German', 'it':'Italian', 'fr':'French', 'la':'Latin'}
+            from sectionimport import LANG_DICT as lang_dict
             language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
             journal.languages.add()
             self.charge_summary("language_%s" % i)
