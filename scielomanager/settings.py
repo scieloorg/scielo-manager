@@ -27,6 +27,7 @@ DATABASES = {
 }
 
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+GRAVATAR_BASE_URL = 'https://secure.gravatar.com'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

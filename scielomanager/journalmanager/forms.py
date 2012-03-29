@@ -38,6 +38,9 @@ class JournalForm(UserCollectionContext):
 
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
+    languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
+        required=True)
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
@@ -97,7 +100,7 @@ class UserForm(ModelForm):
 
         if commit:
             user.save()
-            self.save_m2m()    
+            self.save_m2m()
         return user
 
 class PasswordChangeForm(forms.Form):
@@ -143,6 +146,23 @@ class IssueForm(ModelForm):
             'final_year': SelectDateWidget(),
         }
 
+class SectionTitleForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        """
+        Section field queryset is overridden to display only
+        sections related to a given journal.
+
+        ``journal_id`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        journal = kwargs.pop('journal', None)
+        super(SectionTitleForm, self).__init__(*args, **kwargs)
+        if journal:
+            self.fields['language'].queryset = models.Language.objects.filter(journal__pk=journal.pk)
+
+    class Meta:
+        model = models.SectionTitle
+
 class SectionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SectionForm, self).__init__(*args, **kwargs)
@@ -160,7 +180,7 @@ class SectionForm(ModelForm):
         return section
 
     class Meta:
-      model = models.Section
+        model = models.Section
 
 class UserCollectionsForm(ModelForm):
     class Meta:
