@@ -92,11 +92,12 @@ button.ui-button-icon-only {
 .user_avatar {
     margin-top: 6px;
     margin-right: 10px;
-    border-radius: 15px;
-    box-shadow: 5px #FFFFFF;
-    -moz-box-shadow: -5px -5px #888;
-    -webkit-box-shadow: -5px -5px #888;
-    box-shadow: -5px -5px #888;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0px 0px 5px #888;
+    -webkit-box-shadow: 0px 0px 5px #888;
+    box-shadow: 0px 0px 5px #888;
 }
 
 .footer {
