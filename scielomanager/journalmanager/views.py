@@ -21,6 +21,8 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 
+from django.core.cache import cache
+
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
@@ -28,7 +30,13 @@ from scielomanager.tools import get_paginated
 
 def get_user_collections(user_id):
 
-    user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+    user_collections = cache.get('user_%s_collections' % user_id)
+
+    if user_collections:
+        return user_collections
+    else:
+        user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+        cache.set('user_%s_collections' % user_id, user_collections)
 
     return user_collections
 
