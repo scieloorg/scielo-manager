@@ -19,6 +19,8 @@ except ImportError:
 setup_environ(settings)
 from journalmanager.models import *
 
+LANG_DICT = {'pt':'Portuguese', 'en':'English', 'es':'Spanish', 'de':'German', 'it':'Italian', 'fr':'French', 'la':'Latin'}
+
 class SectionImport:
 
     def __init__(self):
@@ -89,13 +91,17 @@ class SectionImport:
             section.save(force_insert=True)
             self.charge_summary('sections')
 
+            lang_dict = LANG_DICT
+
             for trans_key,trans in sec.items():
-                translation = TranslatedData()
-                translation.language = trans_key
-                translation.field = 'code'
-                translation.model = 'section'
-                translation.save(force_insert=True)
-                section.title_translations.add(translation)
+                try:
+                    language = Language.objects.get(iso_code=trans_key)
+                except Language.DoesNotExist:
+                    language = Language.objects.create(iso_code=trans_key, name=lang_dict.get(trans_key, '###NOT FOUND###'))
+
+                section_title = SectionTitle(section=section, title=trans, language=language)
+                section_title.save()
+
                 self.charge_summary('translations')
 
 
