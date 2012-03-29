@@ -48,21 +48,23 @@
                 </li>
               </ul>
               {% if user.is_authenticated %}
-	      <ul class="nav pull-right span3">
+	            <ul class="nav pull-right span3">
                 <li class="divider-vertical"></li>
                 <li>
                   <a href="http://gravatar.com"
+                     class="tip-bottom"
                      rel="tooltip"
                      data-original-title="{% trans 'Go to Gravatar.com' %}"
-                     target="_blank" style="margin:0; padding:0;">
+                     target="_blank"
+                     style="margin:0; padding:0;">
                     <img class="user_avatar" src="{{ user.get_profile.avatar_url }}"/>
                   </a>
                 </li>
                 <li class="user_identity"> {{ user.username }} </li>
                 <li>
                   <div class="btn-group">
-                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-cog icon-white"></i></a></button>
-                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off icon-white"></i></a></button>
+                    <a class="btn btn-mini tip-bottom" rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-cog"></i></a>
+                    <a class="btn btn-mini tip-bottom" rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off"></i></a>
                   </div>
                 </li>
               </ul>
@@ -141,12 +143,16 @@
 <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
 <script type="text/javascript">
+  $(document).ready(function(){
+    $('#list_model').change(function(){
+      $('#form_search').attr('action', $('#list_model :selected').val());
+    });
 
-  $('#list_model').change(function(){
     $('#form_search').attr('action', $('#list_model :selected').val());
-  });
 
-  $('#form_search').attr('action', $('#list_model :selected').val());
+    options = {placement:'bottom'}
+    $(".tip-bottom").tooltip(options);
+  });
 
 </script>
 {% block extrafooter %}{% endblock %}
