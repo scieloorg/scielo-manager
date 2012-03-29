@@ -32,6 +32,14 @@ ul._actions li:last-child {
     min-width: 130px;
 }
 
+.span12, .container {
+    width: 100%;
+}
+
+.navbar-inner{
+    padding-right: 5px;
+}
+
 /*Customize jquery-ui.css components*/
 .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
     width: 800px;

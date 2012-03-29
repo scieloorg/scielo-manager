@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block stepmenu_top %}
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
     <li class="active">{% trans 'My Account' %}</li>

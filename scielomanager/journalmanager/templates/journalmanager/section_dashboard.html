@@ -2,10 +2,9 @@
 {% load i18n %}
 {% load scielo_common %}
 
-{% block body_title %}{% trans "Journal Sections" %}{% endblock %}
+{% block page_title %}{% trans "Journal Sections" %}{% endblock %}
 
-{% block stepmenu_top %}
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
     <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
@@ -16,7 +15,7 @@
 {% block shortaccess %}
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li class="nav-header">{% trans 'Short Access' %}</li>
     <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
     <li><a href="#">{% trans 'Add Issue' %}</a></li>
     <li><a href="#">{% trans 'Add Section' %}</a></li>

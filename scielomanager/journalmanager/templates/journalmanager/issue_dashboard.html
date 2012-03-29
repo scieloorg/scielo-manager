@@ -1,27 +1,22 @@
-{% extends "base.html" %}
+{% extends "base_list.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
 
-{% block extrahead %}
+{% block page_title %}{% trans "Journal objects_issue" %}{% endblock %}
 
-{% endblock %}
-
-{% block body_title %}{% trans "Journal objects_issue" %}{% endblock %}
-
-{% block stepmenu_top %}
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
-<li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-<li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-<li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues' %}</li>
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+  <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues' %}</li>
 </ul>
 {% endblock %}
 
 {% block shortaccess %}
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li class="nav-header">{% trans 'Short Access' %}</li>
     <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
     <li><a href="#">{% trans 'Add Issue' %}</a></li>
     <li><a href="#">{% trans 'Add Section' %}</a></li>
@@ -82,10 +77,4 @@
 </table>
 
 {% pagination objects_issue %}
-{% endblock %}
-
-{% block extrafooter %}
-
-  <script type="text/javascript" src="{% get_static_prefix %}js/ajax_enable_disable.js"></script>
-
 {% endblock %}
