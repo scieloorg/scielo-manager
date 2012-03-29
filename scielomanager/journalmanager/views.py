@@ -19,6 +19,7 @@ from django.shortcuts import render_to_response
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+from django.utils.functional import curry
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
@@ -65,7 +66,7 @@ def generic_index_search(request, model, journal_id = None):
 
         if model is models.Center:
             objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
-    
+
     if objects_all.count() == 0:
         messages.error(request, _('Your search did not match any documents.'))
 
@@ -223,7 +224,7 @@ def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
     """
-    from django.utils.functional import curry
+
     user_collections = get_user_collections(request.user.id)
 
     if  journal_id is None:
@@ -234,7 +235,6 @@ def add_journal(request, journal_id = None):
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
-    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
     JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
@@ -244,17 +244,15 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-        textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
         indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
-            and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
+            and missionformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
-            textlanguageformset.save()
             histformset.save()
             indexcoverageformset.save()
             messages.info(request, _('Saved.'))
@@ -268,7 +266,6 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
-        textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
         indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
@@ -278,7 +275,6 @@ def add_journal(request, journal_id = None):
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'user_collections': user_collections,
-                              'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
                               'indexcoverageformset': indexcoverageformset,
                               }, context_instance = RequestContext(request))
@@ -376,20 +372,27 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
+    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle, form=SectionTitleForm, extra=1, can_delete=True)
+    SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
     if request.method == 'POST':
         add_form = SectionForm(request.POST, instance=section)
-
-        if add_form.is_valid():
+        section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
+        if add_form.is_valid() and section_title_formset.is_valid():
             add_form.save_all(journal)
-
+            section_title_formset.save()
+            messages.info(request, _('Saved.'))
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+        else:
+            messages.error(request, _('There are some errors or missing data.'))
 
     else:
         add_form = SectionForm(instance=section)
+        section_title_formset = SectionTitleFormSet(instance=section, prefix='titles')
 
     return render_to_response('journalmanager/add_section.html', {
                               'add_form': add_form,
+                              'section_title_formset': section_title_formset,
                               'user_name': request.user.pk,
                               'journal': journal,
                               },

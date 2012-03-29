@@ -12,14 +12,14 @@ class CollectionAdmin(admin.ModelAdmin):
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
-class JournalTextLanguageInline(admin.StackedInline):
-    model = JournalTextLanguage
-
 class JournalHistoryInline(admin.StackedInline):
     model = JournalHist
 
-class JournalSectionsInline(admin.StackedInline):
-    model = Section
+class SectionTitleInline(admin.StackedInline):
+    model = SectionTitle
+
+class SectionAdmin(admin.ModelAdmin):
+    inlines = [SectionTitleInline]
 
 class JournalStudyAreaInline(admin.StackedInline):
     model = JournalStudyArea
@@ -31,9 +31,9 @@ class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
     list_filter = ('is_available',)
-    filter_horizontal = ('collections',)
-    inlines = [JournalHistoryInline, JournalTextLanguageInline, JournalMissionInline,
-        JournalSectionsInline, JournalStudyAreaInline, JournalIndexCoverageInline]
+    filter_horizontal = ('collections','languages')
+    inlines = [JournalHistoryInline, JournalMissionInline,
+        JournalStudyAreaInline, JournalIndexCoverageInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
@@ -65,7 +65,7 @@ admin.site.register(Institution, InstitutionAdmin)
 admin.site.register(Collection, CollectionAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(UseLicense)
-admin.site.register(Section)
+admin.site.register(Section, SectionAdmin)
 admin.site.register(TranslatedData)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
@@ -73,6 +73,7 @@ admin.site.register(Center, CenterAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(IndexDatabase)
 admin.site.register(JournalIndexCoverage)
+admin.site.register(Language)
 
 
 

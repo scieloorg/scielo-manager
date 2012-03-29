@@ -8,7 +8,10 @@ from scielomanager.journalmanager import models
 
 def get_sample_section_dataform(**kwargs):
     section_attrs = {
-      'title': 'Artigo Original',
+      #Titles formset data
+      'titles-TOTAL_FORMS': 1,
+      'titles-INITIAL_FORMS': 0,
+      'titles-0-title': 'TITLES FORMSET TEST',
     }
 
     section_attrs.update(kwargs)
@@ -71,11 +74,6 @@ def get_sample_journal_dataform(dict_params=None):
       'mission-INITIAL_FORMS': 0,
       'mission-0-description': 'To publish original scientific papers about Amazonia...',
       'mission-0-language': 'pt',
-
-      #Text Language formset data
-      'textlanguage-TOTAL_FORMS': 1,
-      'textlanguage-INITIAL_FORMS': 0,
-      'textlanguage-0-language': 'pt',
 
       #History Language formset data
       'hist-TOTAL_FORMS': 1,
@@ -437,3 +435,11 @@ def get_sample_issue():
     }
 
     return models.Issue(**issue_attrs)
+
+def get_sample_language():
+    language_attrs = {
+        'iso_code': 'pt',
+        'name': 'Portuguese',
+    }
+
+    return models.Language(**language_attrs)
