@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
+import urllib
+import hashlib
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
+from django.conf import settings
 from django.db.models.signals import post_save
 
 import choices
@@ -48,6 +51,16 @@ class Language(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
+
+    @property
+    def gravatar_id(self):
+        return hashlib.md5(self.email.lower().strip()).hexdigest()
+
+    @property
+    def avatar_url(self):
+        params = urllib.urlencode({'s': 25, 'd': 'mm'})
+        return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL',
+            'https://secure.gravatar.com'), self.gravatar_id, params)
 
     def save(self, force_insert=False, force_update=False):
         self.user.email = self.email
