@@ -69,15 +69,15 @@
                 {% field_help add_form.address.label add_form.address.help_text term-publisher-s-address %}
             </div>
         </div>
-        <div class="control-group {% if add_form.Address_number.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.Address_number.label_tag %}</label>
+        <div class="control-group {% if add_form.address_number.errors %}error{% endif %}">
+            <label class="control-label" for="first_name">{% trans add_form.address_number.label_tag %}</label>
             <div class="controls">
                 {{ add_form.address_number }}
                 {% field_help add_form.address_number.label add_form.address_number.help_text term-address-number %}
             </div>
         </div>
-        <div class="control-group {% if add_form.Address_complement.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.Address_complement.label_tag %}</label>
+        <div class="control-group {% if add_form.address_complement.errors %}error{% endif %}">
+            <label class="control-label" for="first_name">{% trans add_form.address_complement.label_tag %}</label>
             <div class="controls">
                 {{ add_form.address_complement }}
                 {% field_help add_form.address_complement.label add_form.address_complement.help_text term-address-complement %}
