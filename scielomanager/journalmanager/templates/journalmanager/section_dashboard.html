@@ -12,8 +12,19 @@
     <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Sections' %}</li>
 </ul>
 {% endblock %}
-{% block body %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
+{% block body %}
 <div class="row-fluid show-grid">
     <div class="span10">
       <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
@@ -34,7 +45,7 @@
         <tr>
             <td>
                 <h4>
-                    <a href="{% url section.edit item.journal.pk item.pk %}">{{ item.title }}</a>
+                    <a href="{% url section.edit item.journal.pk item.pk %}">{{ item }}</a>
                 </h4>
             </td>
         </tr>

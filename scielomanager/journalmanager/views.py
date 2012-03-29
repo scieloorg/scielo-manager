@@ -19,6 +19,7 @@ from django.shortcuts import render_to_response
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
+from django.utils.functional import curry
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
@@ -42,7 +43,10 @@ def index(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def generic_index(request, model, journal_id = None):
+def generic_index_search(request, model, journal_id = None):
+    """
+    Generic list and search
+    """
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
@@ -52,6 +56,19 @@ def generic_index(request, model, journal_id = None):
     else:
         journal = None
         objects_all = model.objects.available(request.GET.get('is_available'))
+
+    if request.GET.get('q'):
+        if model is models.Publisher:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+
+        if model is models.Journal:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
+
+        if model is models.Center:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+
+    if objects_all.count() == 0:
+        messages.error(request, _('Your search did not match any documents.'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -207,7 +224,7 @@ def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
     """
-    from django.utils.functional import curry
+
     user_collections = get_user_collections(request.user.id)
 
     if  journal_id is None:
@@ -218,7 +235,6 @@ def add_journal(request, journal_id = None):
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
-    JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
     JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
@@ -228,17 +244,15 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-        textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
         indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
-            and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
+            and missionformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
-            textlanguageformset.save()
             histformset.save()
             indexcoverageformset.save()
             messages.info(request, _('Saved.'))
@@ -252,7 +266,6 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
-        textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
         indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
@@ -262,7 +275,6 @@ def add_journal(request, journal_id = None):
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'user_collections': user_collections,
-                              'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
                               'indexcoverageformset': indexcoverageformset,
                               }, context_instance = RequestContext(request))
@@ -334,26 +346,6 @@ def add_issue(request, journal_id, issue_id=None):
                               context_instance = RequestContext(request))
 
 @login_required
-def search_journal(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default=True)
-
-    #Get journals where title contains the "q" value and collection equal with the user
-    journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q']).order_by('title')
-
-    #Paginated the result
-    journals = get_paginated(journals_filter, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/journal_search_result.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       'user_collections': user_collections,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-
-@login_required
 def publisher_index(request):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default = True)
@@ -369,32 +361,6 @@ def publisher_index(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def search_publisher(request):
-    return publisher_index(request)
-
-@login_required
-def search_issue(request, journal_id):
-
-    journal = models.Journal.objects.get(pk = journal_id)
-    user_collections = get_user_collections(request.user.id)
-
-    #Get issues where journal.id = journal_id and volume contains "q"
-    selected_issues = models.Issue.objects.filter(journal = journal_id,
-                                                  volume__icontains = request.REQUEST['q']).order_by('publication_date')
-
-    #Paginated the result
-    issues = get_paginated(selected_issues, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/issue_dashboard.html')
-    c = RequestContext(request, {
-                       'objects_issue': issues,
-                       'journal': journal,
-                       'user_collection': user_collections,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 def add_section(request, journal_id, section_id=None):
     """
     Handles new and existing sections
@@ -406,20 +372,27 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
+    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle, form=SectionTitleForm, extra=1, can_delete=True)
+    SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
     if request.method == 'POST':
         add_form = SectionForm(request.POST, instance=section)
-
-        if add_form.is_valid():
+        section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
+        if add_form.is_valid() and section_title_formset.is_valid():
             add_form.save_all(journal)
-
+            section_title_formset.save()
+            messages.info(request, _('Saved.'))
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+        else:
+            messages.error(request, _('There are some errors or missing data.'))
 
     else:
         add_form = SectionForm(instance=section)
+        section_title_formset = SectionTitleFormSet(instance=section, prefix='titles')
 
     return render_to_response('journalmanager/add_section.html', {
                               'add_form': add_form,
+                              'section_title_formset': section_title_formset,
                               'user_name': request.user.pk,
                               'journal': journal,
                               },
@@ -492,10 +465,6 @@ def toggle_user_availability(request, user_id):
   else:
     #bad request
     return HttpResponse(status=400)
-
-@login_required
-def search_center(request):
-    return center_index(request)
 
 @login_required
 def my_account(request):

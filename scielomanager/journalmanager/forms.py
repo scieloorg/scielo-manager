@@ -38,6 +38,9 @@ class JournalForm(UserCollectionContext):
 
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
+    languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
+        required=True)
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
@@ -62,10 +65,10 @@ class JournalForm(UserCollectionContext):
            'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
            'subject_descriptors': forms.Textarea(attrs={'class':'span9'}),
-           'init_year': SelectDateWidget(),
+           'init_year': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker0'}),
            'init_vol': forms.TextInput(attrs={'class':'span1'}),
            'init_num': forms.TextInput(attrs={'class':'span1'}),
-           'final_year': SelectDateWidget(),
+           'final_year': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker1'}),
            'final_vol': forms.TextInput(attrs={'class':'span1'}),
            'final_num': forms.TextInput(attrs={'class':'span1'}),
            'url_main_collection': forms.TextInput(attrs={'class':'span9'}),
@@ -73,7 +76,7 @@ class JournalForm(UserCollectionContext):
            'url_journal': forms.TextInput(attrs={'class':'span9'}),
            'notes': forms.Textarea(attrs={'class':'span9'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
-           'literature_type': forms.Select(attrs={'class':'span8'}),
+           'literature_type': forms.Select(attrs={'class':'span5'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
@@ -94,8 +97,10 @@ class UserForm(ModelForm):
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password"])
+
         if commit:
             user.save()
+            self.save_m2m()
         return user
 
 class PasswordChangeForm(forms.Form):
@@ -141,6 +146,23 @@ class IssueForm(ModelForm):
             'final_year': SelectDateWidget(),
         }
 
+class SectionTitleForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        """
+        Section field queryset is overridden to display only
+        sections related to a given journal.
+
+        ``journal_id`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        journal = kwargs.pop('journal', None)
+        super(SectionTitleForm, self).__init__(*args, **kwargs)
+        if journal:
+            self.fields['language'].queryset = models.Language.objects.filter(journal__pk=journal.pk)
+
+    class Meta:
+        model = models.SectionTitle
+
 class SectionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SectionForm, self).__init__(*args, **kwargs)
@@ -158,7 +180,7 @@ class SectionForm(ModelForm):
         return section
 
     class Meta:
-      model = models.Section
+        model = models.Section
 
 class UserCollectionsForm(ModelForm):
     class Meta:

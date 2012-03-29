@@ -24,13 +24,14 @@ class JournalImport:
 
     def __init__(self):
         self._publishers_pool = []
+        self._centers_pool = []
         self._summary = {}
 
     def iso_format(self, dates, string='-'):
         day = dates[6:8]
         if day == "00":
             day = "01"
-        
+
         month = dates[4:6]
         if month == "00":
             month = "01"
@@ -45,9 +46,31 @@ class JournalImport:
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
         if not self._summary.has_key(attribute):
-            self._summary[attribute] = 0    
-        
+            self._summary[attribute] = 0
+
         self._summary[attribute] += 1
+
+    def have_similar_centers(self, match_string):
+        """
+        Function: have_similar_centers
+        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
+        instituticoes duplicadas.
+        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
+        False.
+        """
+        center_id=""
+
+        if len(self._centers_pool) > 0:
+            for inst in self._centers_pool:
+                if inst["match_string"] == match_string:
+                    center_id = inst["id"]
+                    break
+                else:
+                    center_id = False
+        else:
+            center_id = False
+
+        return center_id
 
     def have_similar_publishers(self, match_string):
         """
@@ -71,6 +94,38 @@ class JournalImport:
 
         return publisher_id
 
+    def load_center(self, collection, record):
+        """
+        Function: load_center
+        Retorna um objeto Center() caso a gravação do mesmo em banco de dados for concluida
+        """
+
+        center = Center()
+
+        # Centers Import
+        center.name = record['10'][0]
+        center.collection = collection
+
+        match_string=center.name
+
+        similar_key =  self.have_similar_centers(match_string)
+
+        loaded_center=""
+
+        if similar_key != False:
+            similar_center=Center.objects.get(id=similar_key)
+            similar_center.save()
+            self.charge_summary("centers_duplication_fix")
+            loaded_center = similar_center
+        else:
+            center.save(force_insert=True)
+            self.charge_summary("centers")
+            loaded_center = center
+            self._centers_pool.append(dict({"id":center.id,"match_string":match_string}))
+
+        return loaded_center
+
+
     def load_publisher(self, collection, record):
         """
         Function: load_publisher
@@ -78,14 +133,14 @@ class JournalImport:
         """
 
         publisher = Publisher()
-        
+
         # Publishers Import
         publisher.name = record['480'][0]
         publisher.collection = collection
         publisher.address = " ".join(record['63'])
-        
+
         match_string=publisher.name
-        
+
         similar_key =  self.have_similar_publishers(match_string)
 
         loaded_publisher=""
@@ -105,7 +160,7 @@ class JournalImport:
         return loaded_publisher
 
     def load_studyarea(self, journal, areas):
-        
+
         for i in areas:
             studyarea = JournalStudyArea()
             studyarea.study_area = i
@@ -115,10 +170,10 @@ class JournalImport:
     def load_textlanguage(self, journal, langs):
 
         for i in langs:
-            language = JournalTextLanguage()
-            language.language = i
-            journal.journaltextlanguage_set.add(language)
-            self.charge_summary("language")
+            from sectionimport import LANG_DICT as lang_dict
+            language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
+            journal.languages.add()
+            self.charge_summary("language_%s" % i)
 
     def load_mission(self, journal, missions):
 
@@ -126,46 +181,42 @@ class JournalImport:
 
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
 
-            mission = JournalMission()            
+            mission = JournalMission()
             mission.language = parsed_subfields['l']
             mission.description = parsed_subfields['_']
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
 
-    def load_historic(self, journal, historicals):        
+    def load_historic(self, journal, historicals):
+        import operator
+
+        lifecycles = {}
 
         for i in historicals:
-
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
-
-            print journal.title
-            print i
             try:
-                historic = JournalHist()
-                historic.date = self.iso_format(parsed_subfields['a'])
-                historic.status = parsed_subfields['b']
+                lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
             except KeyError:
                 self.charge_summary("history_error_field")
                 return False
 
             try:
-                journal.journalhist_set.add(historic)
-                self.charge_summary("history")
+                lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
+            except KeyError:
+                self.charge_summary("history_error_field")
+                return False
+
+        print lifecycles
+
+        for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
+            try:
+                journalhist = JournalHist()
+                journalhist.date = cyclekey
+                journalhist.status = cyclevalue
+                journal.journalhist_set.add(journalhist)
+                self.charge_summary("life_cycle")
             except exceptions.ValidationError:
                 self.charge_summary("history_error_data")
-
-            try:
-                historic = JournalHist()
-                historic.date = self.iso_format(parsed_subfields['c'])
-                historic.status = parsed_subfields['d']
-            except KeyError:
-                self.charge_summary("history_error_field")
-                return False
-
-            try:
-                journal.journalhist_set.add(historic)
-                self.charge_summary("history")
-            except exceptions.ValidationError:
                 return False
 
         return True
@@ -173,13 +224,13 @@ class JournalImport:
     def load_title(self, journal, titles, category):
 
         for i in titles:
-            title = JournalTitle()            
+            title = JournalTitle()
             title.title = i
             title.category = category
             journal.journaltitle_set.add(title)
             self.charge_summary("title")
 
-    def load_journal(self, collection, loaded_publisher, record):
+    def load_journal(self, collection, loaded_publisher, loaded_center, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -220,7 +271,7 @@ class JournalImport:
         if record.has_key('303'):
             journal.init_num = record['303'][0]
 
-        if record.has_key('304'): 
+        if record.has_key('304'):
             journal.final_year = record['304'][0]
 
         if record.has_key('305'):
@@ -253,7 +304,7 @@ class JournalImport:
         if record.has_key('5'):
             journal.literature_type = record['5'][0]
 
-        if record.has_key('6'):        
+        if record.has_key('6'):
             journal.treatment_level = record['6'][0]
 
         if record.has_key('330'):
@@ -263,6 +314,8 @@ class JournalImport:
             journal.secs_code = record['37'][0]
 
         journal.publisher = loaded_publisher
+        journal.center = loaded_center
+
         journal.creator_id = 1
         journal.save(force_insert=True)
         self.charge_summary("journals")
@@ -305,15 +358,16 @@ class JournalImport:
         Dispara processo de importacao de dados
         """
 
-        json_parsed={} 
+        json_parsed={}
 
         json_file = open(json_file,'r')
         json_parsed = json.loads(json_file.read())
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_publisher, record)
-        
+            loaded_center = self.load_center(collection, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_center, record)
+
     def get_summary(self):
         """
         Function: get_summary

@@ -149,7 +149,7 @@ class LoggedInViewsTest(TestCase):
         * Given email exists
         * Given email does not exists
         """
-        
+
         # Validating the reset password interface
         response = self.client.get(reverse('registration.password_reset'))
         self.assertEqual(response.status_code, 200)
@@ -231,6 +231,9 @@ class LoggedInViewsTest(TestCase):
         sample_center.collection = self.collection
         sample_center.save()
 
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
         #missing data
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
@@ -244,7 +247,8 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
-                                                     'journal-center': sample_center.pk, }))
+                                                     'journal-center': sample_center.pk,
+                                                     'journal-languages': [sample_language.pk], }))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -256,7 +260,8 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-center': sample_center.pk, }))
+                                                     'journal-center': sample_center.pk,
+                                                     'journal-languages': [sample_language.pk], }))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
@@ -292,26 +297,35 @@ class LoggedInViewsTest(TestCase):
         from models import Section
         journal = Journal.objects.all()[0]
 
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
+        journal.languages.add(sample_language)
+
         #empty form
         response = self.client.get(reverse('section.add', args=[journal.pk]))
         self.assertEqual(response.status_code, 200)
 
         #add section
         response = self.client.post(reverse('section.add', args=[journal.pk]),
-            tests_assets.get_sample_section_dataform())
-
+            tests_assets.get_sample_section_dataform(**{
+                    'journal': journal.pk,
+                    'titles-0-language': sample_language.pk,
+                }))
         self.assertRedirects(response, reverse('section.index', args=[journal.pk]))
 
         #edit section
-        testing_section = Section.objects.get(title='Artigo Original')
+        testing_section = Section.objects.get(sectiontitle__title='TITLES FORMSET TEST')
         previous_code = testing_section.code
 
         response = self.client.post(reverse('section.edit', args=[journal.pk, testing_section.pk]),
-            tests_assets.get_sample_section_dataform(title='Modified Original Article',
-                                                     code='qwerty'))
+            tests_assets.get_sample_section_dataform(**{
+                'titles-0-title':'Modified Original Article',
+                'titles-0-language': sample_language.pk,
+                'code': 'qwerty'}))
 
         self.assertRedirects(response, reverse('section.index', args=[journal.pk]))
-        modified_section = Section.objects.get(title='Modified Original Article')
+        modified_section = Section.objects.get(sectiontitle__title='Modified Original Article')
 
         self.assertEqual(testing_section, modified_section)
         self.assertEqual(modified_section.code, previous_code) #code must be read-only
@@ -437,18 +451,18 @@ class LoggedInViewsTest(TestCase):
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get('/journal/search/?q=Arquivos')
+        response = self.client.get(reverse('journal.index') + '?q=Arquivos')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
         #values passed to template
-        self.assertTrue('journals' in response.context)
+        self.assertTrue('objects_journal' in response.context)
         self.assertTrue('user_collections' in response.context)
 
         #testing content
-        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['journals'].object_list[0].title))
-        self.assertTrue(1, len(response.context['journals'].object_list))
+        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['objects_journal'].object_list[0].title))
+        self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_journal
     def test_search_publisher(self):
@@ -457,7 +471,7 @@ class LoggedInViewsTest(TestCase):
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get('/journal/publisher/search/?q=Nacional')
+        response = self.client.get(reverse('publisher.index') + '?q=Nacional')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
@@ -470,28 +484,6 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
-    @with_sample_issue
-    def test_search_issue(self):
-        """
-        View: search_issue
-
-        Tests url dispatch and values returned by the view to the template
-        """
-        journal = Journal.objects.all()[0]
-        issue = Issue.objects.all()[0]
-
-        response = self.client.get('/journal/' + str(journal.pk) + '/issue/search/?q=29')
-
-        #url dispatcher
-        self.assertEqual(response.status_code, 200)
-
-        #values passed to template
-        self.assertTrue('objects_issue' in response.context)
-
-        #testing content
-        self.assertEqual(u'29', unicode(response.context['objects_issue'].object_list[0].volume))
-        self.assertTrue(1, len(response.context['objects_issue'].object_list))
-
     @with_sample_center
     def test_search_center(self):
         """
@@ -499,7 +491,7 @@ class LoggedInViewsTest(TestCase):
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get(u'/journal/center/search/?q=Associação')
+        response = self.client.get(reverse('center.index') + '?q=Associação')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
@@ -732,6 +724,31 @@ class LoggedInViewsTest(TestCase):
 
         for qset_item in response.context['add_form'].fields['collections'].queryset:
             self.assertTrue(qset_item in user_collections)
+
+    @with_sample_journal
+    def test_contextualized_language_field_on_add_section(self):
+        """
+        A user has a manytomany relation to Collection entities. So, when a
+        user is registering a new Center, he can only bind it to
+        the Collections he relates to.
+
+        Covered cases:
+        * Check if all collections presented on the form are related to the
+          user.
+        """
+        from models import Journal
+        journal = Journal.objects.all()[0]
+
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
+        journal.languages.add(sample_language)
+
+        response = self.client.get(reverse('section.add', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+        for qset_item in response.context['section_title_formset'].forms[0].fields['language'].queryset:
+            self.assertTrue(qset_item in journal.languages.all())
 
 class LoggedOutViewsTest(TestCase):
 

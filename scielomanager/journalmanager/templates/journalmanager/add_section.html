@@ -19,25 +19,57 @@
 </ul>
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <form method="post" action="#">
-    {% csrf_token %}
+  {% csrf_token %}
 
-    {% for field in form %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }}: {{ field }}
-        </div>
-    {% endfor %}
-
+  {% for field in form %}
+      <div class="fieldWrapper">
+          {{ field.errors }}
+          {{ field.label_tag }}: {{ field }}
+      </div>
+  {% endfor %}
+  <span class="label">{% trans "Titles" %}</span>
+  <div class="well">
+      <table id="titleformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Title" %}</th>
+              <th>{% trans "Language" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+           {% for form in section_title_formset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.title }}
+              </td>
+              <td>{{ form.language }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ section_title_formset.management_form }}
+      </p>
+  </div>
     <span class="label">{% trans "Section Information" %}</span>
     <div class="well">
         <div class="clearfix {% if add_form.title.errors %}error{% endif %}">
-            {{ add_form.title.label_tag }}
-            <div class="input">
-                {{ add_form.title }}
-                {% if add_form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-            </div>
+
         </div>
         <div class="clearfix">
             {{ add_form.code.label_tag }}
@@ -66,6 +98,7 @@
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-tooltip.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap-popover.js"></script>
+    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -76,6 +109,11 @@
                 $( "#id_publisher" ).toggle();
             });
             $(".help-text").popover('hide');
+
+            $('#titleformset tbody tr').formset({
+              formCssClass: 'dynamic-titleformset-form',
+              prefix: '{{ section_title_formset.prefix }}'
+            });
         });
     </script>
 {% endblock %}

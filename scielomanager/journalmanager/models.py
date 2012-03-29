@@ -1,11 +1,15 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
+import urllib
+import hashlib
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as __
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
+from django.conf import settings
 from django.db.models.signals import post_save
 
 import choices
@@ -27,9 +31,36 @@ class AppCustomManager(models.Manager):
 
         return data_queryset
 
+class Language(models.Model):
+    """
+    Represents ISO 639-1 Language Code and its language name in English. Django
+    automaticaly translates language names, if you write them right.
+
+    http://en.wikipedia.org/wiki/ISO_639-1_language_matrix
+    """
+
+    iso_code = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
+    name = models.CharField(_('Language Name (in English)'), max_length=64)
+
+    def __unicode__(self):
+        return __(self.name)
+
+    class Meta:
+        ordering = ['name']
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
+
+    @property
+    def gravatar_id(self):
+        return hashlib.md5(self.email.lower().strip()).hexdigest()
+
+    @property
+    def avatar_url(self):
+        params = urllib.urlencode({'s': 25, 'd': 'mm'})
+        return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL',
+            'https://secure.gravatar.com'), self.gravatar_id, params)
 
     def save(self, force_insert=False, force_update=False):
         self.user.email = self.email
@@ -100,13 +131,14 @@ class Journal(models.Model):
     center = models.ForeignKey('Center', related_name='center_id', null=True, blank=False, help_text=helptexts.JOURNAL__CENTER)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS) #ajustar ref do help_text
+    languages = models.ManyToManyField('Language')
 
     #Fields
     title = models.CharField(_('Journal Title'),max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
-    scielo_issn = models.CharField(_('SciELO ISSN'),max_length=16,
+    scielo_issn = models.CharField(_('Which ISSN is in use at SciELO?'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True, help_text=helptexts.JOURNAL__SCIELO_ISSN)
     print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__PRINT_ISSN)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
@@ -160,10 +192,6 @@ class JournalTitle(models.Model):
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
-class JournalTextLanguage(models.Model):
-    journal = models.ForeignKey(Journal)
-    language = models.CharField(_('Text Languages'),max_length=64,choices=LANGUAGES,blank=True,null=False)
-
 class JournalHist(models.Model):
     journal = models.ForeignKey(Journal)
     date = models.DateField(_('Date'), editable=True, blank=True)
@@ -203,20 +231,27 @@ class TranslatedData(models.Model):
     def __unicode__(self):
         return self.translation if self.translation is not None else 'Missing trans: {0}.{1}'.format(self.model, self.field)
 
+class SectionTitle(models.Model):
+    section = models.ForeignKey('Section')
+    title = models.CharField(_('Title'), max_length=256, blank=False)
+    language = models.ForeignKey('Language', blank=False)
+
 class Section(models.Model):
     #Custom manager
     objects = AppCustomManager()
 
-    title = models.CharField(_('Title'), null=False, blank=False, max_length=256)
-    title_translations = models.ManyToManyField(TranslatedData, null=True, blank=True,)
     journal = models.ForeignKey(Journal, null=True, blank=True)
+
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=False)
 
     def __unicode__(self):
-        return self.title
+        try:
+            return self.sectiontitle_set.all()[0].title
+        except IndexError:
+            return '##TITLE MISSING##' if not self.code else self.code
 
 class Issue(models.Model):
 
