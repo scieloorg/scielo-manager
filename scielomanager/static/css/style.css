@@ -89,6 +89,11 @@ button.ui-button-icon-only {
     color: #FFFFFF;
 }
 
+.user_avatar {
+    margin-top: 6px;
+    margin-right: 10px;
+}
+
 .footer {
     background: #CCCCCC;
     padding-left: 10px;

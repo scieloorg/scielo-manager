@@ -51,7 +51,8 @@
               {% if user.is_authenticated %}
               <ul class="nav pull-right span2">
                 <li class="divider-vertical"></li>
-                <li class="user_identity">{% trans 'User:' %} {{ user.username }}</li>
+                <li class="user_avatar"><img src="https://secure.gravatar.com/avatar/8b09d1fd6b426a5873362967360612cb?s=25"/></li>
+                <li class="user_identity"> {{ user.username }} </li>
                 <li>
                   <div class="btn-group">
                     <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-user icon-white"></i></a></button>
