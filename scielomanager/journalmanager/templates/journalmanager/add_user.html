@@ -1,19 +1,12 @@
-{% extends "base.html" %}
+{% extends "base_form.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
 
-{% block extrahead %}
-    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
-    <link rel="stylesheet" href="{{ jquery_ui_css_url }}" type="text/css" media="all" />
-{% endblock %}
-
-{% block stepmenu_top %}
-
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url user.index %}">{% trans 'Users' %}</a> <span class="divider">/</span></li>
+    <li><a href="{% url user.index %}">{% trans 'Users DashBoard' %}</a> <span class="divider">/</span></li>
     <li class="active">{% trans 'New User' %}</li>
 </ul>
 {% endblock %}
@@ -24,7 +17,7 @@
     <li class="nav-header">{% trans 'Short Access' %}</a></li>
     <li><a href="{% url user.add %}">{% trans 'Add User' %}</a></li>
   </ul>
-</div><!--well sidebar-nav-->
+</div>
 {% endblock %}
 
 {% block body %}
@@ -123,12 +116,7 @@
 {% endblock %}
 
 {% block extrafooter %}
-    <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
-    <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
-
+{{ block.super }}
  <script>
     $(document).ready(function() {
 

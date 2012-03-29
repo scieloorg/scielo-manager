@@ -1,10 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_form.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
 
-{% block stepmenu_top %}
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
     <li><a href="{% url center.index %}">{% trans 'Center Dashboard' %}</a> <span class="divider">/</span></li>
@@ -18,7 +17,7 @@
     <li class="nav-header">{% trans 'Short Access' %}</a></li>
     <li><a href="{% url journal.add %}">{% trans 'Add Center' %}</a></li>
   </ul>
-</div><!--well sidebar-nav-->
+</div>
 {% endblock %}
 
 {% block body %}
@@ -146,12 +145,7 @@
 {% endblock %}
 
 {% block extrafooter %}
-    <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
-    <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
-    <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
-
+{{ block.super }}
  <script>
     $(document).ready(function() {
 

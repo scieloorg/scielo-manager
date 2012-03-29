@@ -1,16 +1,11 @@
-{% extends "base.html" %}
+{% extends "base_list.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
 
-{% block extrahead %}
+{% block page_title %}{% trans "Publishers" %}{% endblock %}
 
-{% endblock %}
-
-{% block body_title %}{% trans "objects_publisher" %}{% endblock %}
-
-{% block stepmenu_top %}
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
 <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
 <li class="active">{% trans 'Publishers DashBoard' %}</li>
@@ -20,7 +15,7 @@
 {% block shortaccess %}
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li class="nav-header">{% trans 'Short Access' %}</li>
     <li><a href="{% url publisher.add %}">{% trans 'Add Publisher' %}</a></li>
   </ul>
 </div><!--well sidebar-nav-->
@@ -85,10 +80,4 @@
 <tbody>
 </table>
 {% pagination objects_publisher %}
-{% endblock %}
-
-{% block extrafooter %}
-
-<script type="text/javascript" src="{% get_static_prefix %}js/ajax_enable_disable.js"></script>
-
 {% endblock %}
