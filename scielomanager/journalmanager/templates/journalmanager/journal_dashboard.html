@@ -1,35 +1,32 @@
-{% extends "base.html" %}
+{% extends "base_list.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
 {% load query_string %}
 
-{% block body_title %}{% trans "User Journals" %}{% endblock %}
+{% block page_title %}{% trans "Journals" %}{% endblock %}
 
-{% block stepmenu_top %}
-{{ block.super }}
-<ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-
-  {% if request.GET.q %}
-     <li><a href="{% url journal.index %}">{% trans 'Journals DashBoard' %}</a> <span class="divider">/</span></li>
-     <li class="active">{% trans 'Search' %}</li>
-  {% else %}
-    <li class="active">{% trans 'Journals DashBoard' %}</li>
-  {% endif %}
-  
-</ul><!--breadcrumb-->
+{% block breadcrumb %}
+  <ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    {% if request.GET.q %}
+       <li><a href="{% url journal.index %}">{% trans 'Journals DashBoard' %}</a> <span class="divider">/</span></li>
+       <li class="active">{% trans 'Search' %}</li>
+    {% else %}
+      <li class="active">{% trans 'Journals DashBoard' %}</li>
+    {% endif %}
+  </ul>
 {% endblock %}
 
 {% block shortaccess %}
 <div class="well sidebar-nav">
   <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li class="nav-header">{% trans 'Short Access' %}</li>
     <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
     <li><a href="#">{% trans 'Add Issue' %}</a></li>
     <li><a href="#">{% trans 'Add Section' %}</a></li>
   </ul>
-</div><!--well sidebar-nav-->
+</div>
 {% endblock %}
 
 {% block body %}
@@ -132,10 +129,4 @@
   </form>
 {% endif %}
 {% pagination objects_journal %}
-{% endblock %}
-
-{% block extrafooter %}
-
-<script type="text/javascript" src="{% get_static_prefix %}js/ajax_enable_disable.js"></script>
-
 {% endblock %}
