@@ -4,7 +4,10 @@ import json
 import os
 import difflib
 
+import subfield
+
 from django.core.management import setup_environ
+from django.core import exceptions
 
 try:
     from scielomanager import settings
@@ -20,9 +23,22 @@ from journalmanager.models import *
 class JournalImport:
 
     def __init__(self):
-        self._institutions_pool = []
+        self._publishers_pool = []
+        self._centers_pool = []
         self._summary = {}
 
+    def iso_format(self, dates, string='-'):
+        day = dates[6:8]
+        if day == "00":
+            day = "01"
+        
+        month = dates[4:6]
+        if month == "00":
+            month = "01"
+
+        dateformated = "%s-%s-%s" % (dates[0:4],month,day)
+
+        return dateformated
 
     def charge_summary(self, attribute):
         """
@@ -34,69 +50,187 @@ class JournalImport:
         
         self._summary[attribute] += 1
 
-    def get_collection(self, collection_name):
+    def have_similar_centers(self, match_string):
         """
-        Function: get_collection 
-        Recupera objeto coleção de acordo com o nome da coleção passado por parametro
-        """
-        return Collection.objects.get(name=collection_name)
-
-    def have_similar_institutions(self, match_string):
-        """
-        Function: have_similar_institutions
+        Function: have_similar_centers
         Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
         instituticoes duplicadas.
         Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
         False.
         """
-        institution_id=""
+        center_id=""
 
-        if len(self._institutions_pool) > 0:
-            for inst in self._institutions_pool:
+        if len(self._centers_pool) > 0:
+            for inst in self._centers_pool:
                 if inst["match_string"] == match_string:
-                    institution_id = inst["id"]
+                    center_id = inst["id"]
                     break
                 else:
-                    institution_id = False
+                    center_id = False
         else:
-            institution_id = False
+            center_id = False
 
-        return institution_id
+        return center_id
 
-    def load_institution(self, collection, record):
+    def have_similar_publishers(self, match_string):
         """
-        Function: load_institution
-        Retorna um objeto Institution() caso a gravação do mesmo em banco de dados for concluida
+        Function: have_similar_publishers
+        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
+        instituticoes duplicadas.
+        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
+        False.
+        """
+        publisher_id=""
+
+        if len(self._publishers_pool) > 0:
+            for inst in self._publishers_pool:
+                if inst["match_string"] == match_string:
+                    publisher_id = inst["id"]
+                    break
+                else:
+                    publisher_id = False
+        else:
+            publisher_id = False
+
+        return publisher_id
+
+    def load_center(self, collection, record):
+        """
+        Function: load_center
+        Retorna um objeto Center() caso a gravação do mesmo em banco de dados for concluida
         """
 
-        institution = Institution()
-        # Institutions Import
-        institution.name = record['480'][0]
-        institution.collection = collection
-        institution.Address = " ".join(record['63'])
+        center = Center()
         
-        match_string=institution.name
+        # Centers Import
+        center.name = record['10'][0]
+        center.collection = collection
         
-        similar_key =  self.have_similar_institutions(match_string)
+        match_string=center.name
+        
+        similar_key =  self.have_similar_centers(match_string)
 
-        loaded_institution=""
+        loaded_center=""
 
         if similar_key != False:
-            similar_institution=Institution.objects.get(id=similar_key)
-            similar_institution.Address += "\n"+institution.Address
-            similar_institution.save()
-            self.charge_summary("institutions_duplication_fix")
-            loaded_institution = similar_institution
+            similar_center=Center.objects.get(id=similar_key)
+            similar_center.save()
+            self.charge_summary("centers_duplication_fix")
+            loaded_center = similar_center
         else:
-            institution.save(force_insert=True)
-            self.charge_summary("institutions")
-            loaded_institution = institution
-            self._institutions_pool.append(dict({"id":institution.id,"match_string":match_string}))
+            center.save(force_insert=True)
+            self.charge_summary("centers")
+            loaded_center = center
+            self._centers_pool.append(dict({"id":center.id,"match_string":match_string}))
 
-        return loaded_institution
+        return loaded_center
 
 
-    def load_journal(self, collection, loaded_institution, record):
+    def load_publisher(self, collection, record):
+        """
+        Function: load_publisher
+        Retorna um objeto Publisher() caso a gravação do mesmo em banco de dados for concluida
+        """
+
+        publisher = Publisher()
+        
+        # Publishers Import
+        publisher.name = record['480'][0]
+        publisher.collection = collection
+        publisher.address = " ".join(record['63'])
+        
+        match_string=publisher.name
+        
+        similar_key =  self.have_similar_publishers(match_string)
+
+        loaded_publisher=""
+
+        if similar_key != False:
+            similar_publisher=Publisher.objects.get(id=similar_key)
+            similar_publisher.address += "\n"+publisher.address
+            similar_publisher.save()
+            self.charge_summary("publishers_duplication_fix")
+            loaded_publisher = similar_publisher
+        else:
+            publisher.save(force_insert=True)
+            self.charge_summary("publishers")
+            loaded_publisher = publisher
+            self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
+
+        return loaded_publisher
+
+    def load_studyarea(self, journal, areas):
+        
+        for i in areas:
+            studyarea = JournalStudyArea()
+            studyarea.study_area = i
+            journal.journalstudyarea_set.add(studyarea)
+            self.charge_summary("studyarea")
+
+    def load_textlanguage(self, journal, langs):
+
+        for i in langs:
+            language = JournalTextLanguage()
+            language.language = i
+            journal.journaltextlanguage_set.add(language)
+            self.charge_summary("language")
+
+    def load_mission(self, journal, missions):
+
+        for i in missions:
+
+            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+
+            mission = JournalMission()            
+            mission.language = parsed_subfields['l']
+            mission.description = parsed_subfields['_']
+            journal.journalmission_set.add(mission)
+            self.charge_summary("mission")
+
+    def load_historic(self, journal, historicals):        
+        import operator
+        
+        lifecycles = {}
+
+        for i in historicals:
+            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+            try:
+                lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
+            except KeyError:
+                self.charge_summary("history_error_field")
+                return False
+
+            try:
+                lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
+            except KeyError:
+                self.charge_summary("history_error_field")
+                return False
+
+        print lifecycles
+
+        for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
+            try:
+                journalhist = JournalHist()
+                journalhist.date = cyclekey
+                journalhist.status = cyclevalue
+                journal.journalhist_set.add(journalhist)
+                self.charge_summary("life_cycle")
+            except exceptions.ValidationError:
+                self.charge_summary("history_error_data")
+                return False
+
+        return True
+
+    def load_title(self, journal, titles, category):
+
+        for i in titles:
+            title = JournalTitle()            
+            title.title = i
+            title.category = category
+            journal.journaltitle_set.add(title)
+            self.charge_summary("title")
+
+    def load_journal(self, collection, loaded_publisher, loaded_center, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -125,49 +259,96 @@ class JournalImport:
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
         journal.subject_descriptors = ', '.join(record['440'])
-        journal.study_area = ', '.join(record['441'])
+
+        # Text Language
 
         if record.has_key('301'):
             journal.init_year = record['301'][0]
+
         if record.has_key('302'):
             journal.init_vol = record['302'][0]
+
         if record.has_key('303'):
             journal.init_num = record['303'][0]
+
         if record.has_key('304'): 
             journal.final_year = record['304'][0]
+
         if record.has_key('305'):
             journal.final_vol = record['305'][0]
+
         if record.has_key('306'):
             journal.final_num = record['306'][0]
+
         if record.has_key('380'):
             journal.frequency = record['380'][0]
+
         if record.has_key('50'):
             journal.pub_status = record['50'][0]
+
         if record.has_key('340'):
             journal.alphabet = record['340'][0]
+
         if record.has_key('430'):
             journal.classification = record['430'][0]
+
         if record.has_key('20'):
             journal.national_code = record['20'][0]
+
         if record.has_key('117'):
             journal.editorial_standard = record['117'][0]
+
         if record.has_key('85'):
             journal.ctrl_vocabulary = record['85'][0]
+
         if record.has_key('5'):
             journal.literature_type = record['5'][0]
+
         if record.has_key('6'):        
             journal.treatment_level = record['6'][0]
+
         if record.has_key('330'):
             journal.pub_level = record['330'][0]
-        #journal.indexing_coverage.add(join(record['450'])) 
+
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
 
-        journal.institution = loaded_institution
+        journal.publisher = loaded_publisher
+        journal.center = loaded_center
+
         journal.creator_id = 1
         journal.save(force_insert=True)
         self.charge_summary("journals")
-        journal.collections.add(collection)
+
+        # text language
+        if record.has_key('350'):
+            self.load_textlanguage(journal,record['350'])
+
+        # study area
+        if record.has_key('441'):
+            self.load_studyarea(journal,record['441'])
+
+        # mission
+        if record.has_key('901'):
+            self.load_mission(journal,record['901'])
+
+        # historic
+        if record.has_key('51'):
+            self.load_historic(journal,record['51'])
+
+        # titles
+        if record.has_key('421'):
+            self.load_title(journal,record['421'],'medline')
+
+        if record.has_key('150'):
+            self.load_title(journal,record['150'],'shorttitle')
+
+        if record.has_key('151'):
+            self.load_title(journal,record['151'],'lilacs')
+
+        if record.has_key('230'):
+            self.load_title(journal,record['230'],'paralleltitle')
+
 
         return journal
 
@@ -178,17 +359,14 @@ class JournalImport:
         """
 
         json_parsed={} 
-        collection = self.get_collection(collection)
 
-        if __name__ == '__main__':
-            json_file = open(json_file,'r')
-            json_parsed = json.loads(json_file.read())
-        else:
-            json_parsed = json_file # Para testes, carregado pelo unittest
+        json_file = open(json_file,'r')
+        json_parsed = json.loads(json_file.read())
 
         for record in json_parsed:
-            loaded_institution = self.load_institution(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_institution, record)
+            loaded_publisher = self.load_publisher(collection, record)
+            loaded_center = self.load_center(collection, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_center, record)
         
     def get_summary(self):
         """
@@ -196,8 +374,3 @@ class JournalImport:
         Retorna o resumo de carga de registros
         """
         return self._summary
-
-import_journal = JournalImport()
-import_result = import_journal.run_import('journal.json', 'Brasil')
-
-print import_journal.get_summary()

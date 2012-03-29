@@ -1,38 +1,38 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block body_title %}{% trans "User Evaluations" %}{% endblock %}
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+    <li><a href="{% url publisher.add %}">{% trans 'Add Publisher' %}</a></li>
+    <li><a href="{% url center.add %}">{% trans 'Add Markup Center' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
 {% block body %}
-<h1>{% trans "About SciELO Manager Tools" %}</h1>
-<h2><img src="/static/images/title_manager.png" border="0" width="30px" height="30px" /> {% trans "Journal Manager" %}</h2>
-<p>
-{% blocktrans %} Nulla facilisi. Aliquam tincidunt mi et libero volutpat lacinia. Sed ante lectus, dapibus venenatis facilisis eget,
-bibendum eu lectus. Proin felis lacus, porta sed posuere non, sollicitudin nec arcu. Sed dignissim ultrices faucibus.
-Duis nec ante sit amet ligula laoreet gravida. Ut a rhoncus enim. Proin id est nunc, in pretium augue. Pellentesque
-hendrerit sapien nec elit elementum gravida. In vulputate porta turpis sed sodales. Nam ultrices urna non tellus malesuada
-tincidunt. Donec at quam ac felis condimentum congue. Curabitur commodo nulla eget nibh mattis et aliquam tortor blandit.
-Donec sed ipsum a lorem euismod semper. Nullam non scelerisque leo. {% endblocktrans %}
-</p>
-
-<h2><img src="/static/images/publisher_manager.png" border="0" width="30px" height="30px" /> {% trans "Institution Manager" %}</h2>
-<p>
-{% blocktrans %} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quam arcu, porta vel dictum et, accumsan
-vel lectus. Donec et neque diam, a ultrices sapien. Nunc hendrerit venenatis orci nec imperdiet. Donec bibendum,
-ligula nec pretium interdum, ante ante ornare augue, id interdum sem neque eu magna. Fusce neque massa, feugiat
-id convallis id, viverra sit amet lectus. Aenean eleifend, eros sollicitudin accumsan dictum, orci enim auctor purus,
-eu egestas risus libero ac leo. Praesent vitae sem ante. Nam euismod nulla varius nulla cursus varius. Ut elit justo,
-bibendum vel vestibulum eget, eleifend quis nunc. Phasellus imperdiet dignissim imperdiet. Suspendisse sit amet quam enim.
-Suspendisse at odio non justo aliquam commodo. Praesent eu dui vitae libero pulvinar blandit vel sed leo. Sed auctor, dui
-in euismod condimentum, lacus nisl sagittis arcu, sit amet pharetra leo dolor nec erat. Proin gravida accumsan nisl a lobortis.
-{% endblocktrans %}
-</p>
-
-<h2><img src="/static/images/user_manager.png" border="0" width="30px" height="30px" /> {% trans "User Manager" %}</h2>
-<p>
-{% blocktrans %}  Phasellus rhoncus vehicula neque eu tincidunt. Etiam vestibulum purus eget tortor convallis gravida. Proin semper semper
-eleifend. Morbi euismod quam a lacus sagittis accumsan. Quisque consectetur, mauris eget commodo condimentum, quam ipsum
-rutrum libero, id ullamcorper augue odio et ante. Praesent et quam lacus. Morbi a metus quis purus tincidunt elementum et
-ac nunc. Donec a lorem sit amet urna dictum porttitor. Nulla lacus ligula, gravida id sagittis in, tincidunt sit amet lectus.
-Donec pretium luctus felis eu egestas. {% endblocktrans %}
-</p>
-
+{% if not user.is_authenticated %}
+<div class="row-fluid">
+    <h1>{% trans 'User Authentication' %}</h1>
+    <form action="{% url journalmanager.user_login %}" method="post">
+        <input type="hidden" value="{{ next|default:'' }}" name="next" />
+        {% csrf_token %}
+        {% trans 'User name or E-mail:' %}<br/>
+        <input class="input-small" placeholder="{% trans 'Username' %}" type="text" name="username" class="textEntry" id="id_username"/><br/>
+        {% trans 'User password:' %}<br/>
+        <input class="input-small" placeholder="{% trans 'Password' %}" type="password" id="id_password" class="textEntry" name="password"/><br/>
+        <input class="btn" type="submit" value="{% trans 'login' %}" />
+    </form>
+    <a href="{% url registration.password_reset %}" title="{% trans 'Forgot password?' %}">{% trans 'Forgot password?' %}</a>
+    {% if invalid %}
+    <div class="loginError">{% trans 'Your username and password did not match. Please try again.' %}</div>
+    {% endif %}
+    {% if active %}
+    <div class="loginError">{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
+    {% endif %}
+</div>
+{% endif %}
 {% endblock %}

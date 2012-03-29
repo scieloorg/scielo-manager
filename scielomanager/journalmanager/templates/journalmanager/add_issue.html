@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load scielo_common %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -16,6 +17,17 @@
 </ul>
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
     <span class="label">{% trans "Issue Information" %}</span>
     <form method="post" action="#">{% csrf_token %}
@@ -24,6 +36,7 @@
                 <label class="control-label" for="title">{% trans add_form.title.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.title }}
+                   {% field_help add_form.title.label add_form.title.help_text term-issue-title %}
                    {% if add_form.title.errors %}<span class="help-inline">add_form.title.errors</span>{% endif %}
                 </div>
             </div>
@@ -31,18 +44,14 @@
                 <label class="control-label" for="volume">{% trans add_form.volume.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.volume }}
+                   {% field_help add_form.volume.label add_form.volume.help_text term-issue-volume %}
                 </div>
             </div>
             <div class="control-group {% if add_form.number.errors %}error{% endif %}">
                 <label class="control-label" for="number">{% trans add_form.number.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.number }}
-                </div>
-            </div>
-            <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
-                <label class="control-label" for="is_press_release">{% trans add_form.is_press_release.label_tag %}</label>
-                <div class="controls">
-                   {{ add_form.is_press_release }}
+                   {% field_help add_form.number.label add_form.number.help_text term-issue-number %}
                 </div>
             </div>
             <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
@@ -55,6 +64,7 @@
                 <label class="control-label" for="publication_date">{% trans add_form.publication_date.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.publication_date }}
+                   {% field_help add_form.publication_date.label add_form.publication_date.help_text term-issue-publication-date %}
                    {% if add_form.publication_date.errors %}<span class="help-inline">{{ add_form.publication_date.errors }}</span>{% endif %}
                 </div>
             </div>
@@ -74,12 +84,14 @@
                 <label class="control-label" for="bibliographic_strip">{% trans add_form.bibliographic_strip.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.bibliographic_strip }}
+                   {% field_help add_form.bibliographic_strip.label add_form.bibliographic_strip.help_text term-issue-bibliographic-strip %}
                 </div>
             </div>
             <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
                 <label class="control-label" for="use_license">{% trans add_form.use_license.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.use_license }}
+                   {% field_help add_form.use_license.label add_form.use_license.help_text term-issue-use-license %}
                    {% if add_form.use_license.errors %}<span class="help-inline">{{ add_form.use_license.errors }}</span>{% endif %}
                 </div>
             </div>
@@ -87,30 +99,35 @@
                 <label class="control-label" for="publisher_fullname">{% trans add_form.publisher_fullname.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.publisher_fullname }}
+                   {% field_help add_form.publisher_fullname.label add_form.publisher_fullname.help_text term-issue-publisher-fullname %}
                 </div>
             </div>
             <div class="control-group {% if add_form.total_documents.errors %}error{% endif %}">
                 <label class="control-label" for="total_documents">{% trans add_form.total_documents.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.total_documents }}
+                   {% field_help add_form.total_documents.label add_form.total_documents.help_text term-issue-total-documents %}
                 </div>
             </div>
             <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
                 <label class="control-label" for="ctrl_vocabulary">{% trans add_form.ctrl_vocabulary.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.ctrl_vocabulary }}
+                   {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
                 </div>
             </div>
             <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
                 <label class="control-label" for="editorial_standard">{% trans add_form.editorial_standard.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.editorial_standard }}
+                   {% field_help add_form.editorial_standard.label add_form.editorial_standard.help_text term-editorial-standard %}
                 </div>
             </div>
             <div class="control-group {% if add_form.section.errors %}error{% endif %}">
                 <label class="control-label" for="section">{% trans add_form.section.label_tag %}</label>
                 <div class="controls">
                    {{ add_form.section }}
+                   {% field_help add_form.section.label add_form.section.help_text term-issue-section %}
                    {% if add_form.section.errors %}<span class="help-inline">{{ add_form.section.errors }}</span>{% endif %}
                 </div>
             </div>
@@ -123,4 +140,13 @@
 {% block extrafooter %}
     <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
     <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
+
+     <script>
+    $(document).ready(function() {
+
+        $(".help-text").popover('hide');
+
+    });
+  </script>
+
 {% endblock %}

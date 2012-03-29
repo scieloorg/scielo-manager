@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load append_to_get %}
+{% load scielo_common %}
 
 {% block body_title %}{% trans "Journal Sections" %}{% endblock %}
 
@@ -12,33 +12,28 @@
     <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Sections' %}</li>
 </ul>
 {% endblock %}
+
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
-<div class="row-fluid">
-    <div class="span12">
-        <div class="search">
-        </div>
-    </div>
-</div><!--row-fluid Search box-->
-<div class="row-fluid">
+<div class="row-fluid show-grid">
     <div class="span10">
-        <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
+      <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
     </div>
     <div class="span2">
-        <div class="btn-group">
-            <a class="btn" href="#">{% trans 'View' %}</a>
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="{% url section.index journal.id %}"><i class="icon-plus-sign"></i>  {% trans "Enabled" %}</a>
-                </li>
-                <li>
-                    <a href="{% url section.index journal.id %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled" %}</a>
-                </li>
-            </ul>
-        </div>
-</div><!--row-fluid Search box-->
+        {% simple_pagination objects_section %}
+    </div>
+</div>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -46,29 +41,18 @@
         </tr>
     </thead>
     <tbody>
-        {% for ct in items.object_list %}
+        {% for item in objects_section.object_list %}
         <tr>
             <td>
                 <h4>
-                    <a href="{% url section.edit ct.journal.pk ct.pk %}">{{ ct.title }}</a>
+                    <a href="{% url section.edit item.journal.pk item.pk %}">{{ item.title }}</a>
                 </h4>
             </td>
         </tr>
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ items.start_index }}-{{ items.end_index }} {% trans 'of' %} {{ items.paginator.count }}
-<div class="pagination">
-    <ul>
-        <li class="prev {% if not items.has_previous %}disabled{% endif %}">
-            <a href="{% append_to_get page=items.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
-        </li>
-        {% for page in items.paginator.page_range %}
-        <li {% if items.number == page %}class="active"{% endif %}><a href="?{% append_to_get page=page %}">{{ page }}</a></li>
-        {% endfor %}
-        <li class="next {% if not items.has_next %}disabled{% endif %}">
-            <a href="{% append_to_get page=items.next_page_number %}">{% trans 'Next' %} &rarr;</a>
-        </li>
-    </ul>
-</div>
+
+{% pagination objects_section %}
+
 {% endblock %}

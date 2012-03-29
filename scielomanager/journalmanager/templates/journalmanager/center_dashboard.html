@@ -1,113 +1,100 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load append_to_get %}
+{% load static %}
+{% load scielo_common %}
 
 {% block extrahead %}
 
 {% endblock %}
 
-{% block body_title %}{% trans "Centers" %}{% endblock %}
+{% block body_title %}{% trans "objects_center" %}{% endblock %}
 
 {% block stepmenu_top %}
 {{ block.super }}
 <ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'Centers DashBoard' %}</li>
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li class="active">{% trans 'Markup Center DashBoard' %}</li>
 </ul><!--breadcrumb-->
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url center.add %}">{% trans 'Add Markup Center' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
-<div class="row-fluid">
-    <div class="span12">
-        <div class="search">
-            <form class="well form-search" action="{% url center.search %}" method="get">
-                <input class="span6 search-query" placeholder="Search" name="q" />
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form>
-        </div>
-    </div>
-</div><!--row-fluid Search box-->
-<div class="row-fluid">
-    <div class="span10">
-        <a class="btn btn-primary" href="{% url center.add %}">{% trans 'New' %}</a>
-    </div>
-    <div class="span2">
-        <div class="btn-group">
-            <a class="btn" href="#">{% trans 'View' %}</a>
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <a href="{% url center.index %}"><i class="icon-plus-sign"></i>  {% trans "Enabled Center" %}</a>
-                </li>
-                <li>
-                    <a href="{% url center.index %}?is_available=0"><i class="icon-minus-sign"></i>  {% trans "Disabled Center" %}</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div><!--row-fluid botões-->
-<table class="table table-condensed">
-    <thead>
-        <tr>
-            <th>{% trans "Name" %}</th>
-            <th>{% trans "Acronym" %}</th>
-            <th>{% trans "Country" %}</th>
-            <th>{% trans "Validated" %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ct in centers.object_list %}
-        <tr>
-            <td>
-                <h4>{{ ct.name }}</h4>
-                <ul class="_actions">
-                    <li>
-                        <a href="{% url center.edit ct.pk %}">
-                            {% trans 'Edit' %}
-                        </a>
-                    </li>
-                    <li>
-                    {% if ct.is_available %}
-                        <a href="{% url center.toggle_availability ct.pk %}"
-                           class="label label-important">
-                            {% trans 'Disable' %}
-                        </a>
-                    {% else %}
-                        <a href="{% url center.toggle_availability ct.pk %}"
-                           class="label label-success">
-                            {% trans 'Enable' %}
-                        </a>
-                    {% endif %}
-                    </li>
-                </ul>
-            </td>
-            <td>{{ ct.acronym }}</td>
-            <td>{{ ct.country }}</td>
-            <td>
-                {%if ct.validated %}
-                    <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
-                {%else%}
-                    <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
-                {%endif%}
-            </td>
-        </tr>
-        {% endfor %}
-    <tbody>
-</table>
-    {% trans 'Showing' %} {{ centers.start_index }}-{{ centers.end_index }} {% trans 'of' %} {{ centers.paginator.count }}
-<div class="pagination">
-    <ul>
-        <li class="prev {% if not centers.has_previous %}disabled{% endif %}">
-            <a href="{% append_to_get page=centers.previous_page_number %}">&larr; {% trans 'Previous' %}</a>
-        </li>
-        {% for page in centers.paginator.page_range %}
-        <li {% if centers.number == page %}class="active"{% endif %}><a href="{% append_to_get page=page %}">{{ page }}</a></li>
-        {% endfor %}
-        <li class="next {% if not centers.has_next %}disabled{% endif %}">
-            <a href="{% append_to_get page=centers.next_page_number %}">{% trans 'Next' %} &rarr;</a>
-        </li>
-    </ul>
+<div class="row-fluid show-grid">
+  <div class="span10">
+    <a class="btn btn-primary" href="{% url center.add %}">{% trans 'New' %}</a>
+  </div>
+  <div class="span2">
+    {% simple_pagination objects_center %}
+  </div>
 </div>
+
+<div class="row-fluid">
+  <span>{% trans 'Show by: ' %}</span>
+  <a href="{% url center.index %}">{% trans "Enabled Markup Center" %}</a>
+  <a href="{% url center.index %}?is_available=0">{% trans "Disabled Markup Center" %}</a>
+</div>
+
+<table class="table table-condensed">
+<thead>
+    <tr>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Acronym" %}</th>
+        <th>{% trans "Country" %}</th>
+        <th>{% trans "Validated" %}</th>
+    </tr>
+</thead>
+<tbody>
+  {% for center in objects_center.object_list %}
+  <tr id="{{center.pk}}">
+    <td>
+      <h4>
+        {% if center.is_available %}
+          <a href="{% url center.edit center.pk %}">{{ center.name }}</a>
+        {% else %}
+          <a class="strikethrough" href="{% url center.edit center.pk %}">{{ center.name }}</a>
+        {% endif %}
+      </h4>
+      <ul class="_actions">
+        <li>
+          <a href="{% url center.edit center.pk %}">
+              {% trans 'Edit' %}
+          </a>
+        </li>
+        <li>
+          {% if center.is_available %}
+            <button id="action_disable_disable" class="btn btn-mini btn-danger" value="{% url center.toggle_availability center.pk %}">{% trans 'disable' %}</button>
+          {% else %}
+            <button id="action_disable_disable" class="btn btn-mini btn-success" value="{% url center.toggle_availability center.pk %}">{% trans 'enable' %}</button>
+          {% endif %}
+        </li>
+      </ul>
+    </td>
+    <td>{{ center.acronym }}</td>
+    <td>{{ center.country }}</td>
+    <td>
+      {% if center.validated %}
+          <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
+      {% else %}
+          <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+<tbody>
+</table>
+{% pagination objects_center %}
+{% endblock %}
+
+{% block extrafooter %}
+
+  <script type="text/javascript" src="{% get_static_prefix %}js/ajax_enable_disable.js"></script>
+
 {% endblock %}

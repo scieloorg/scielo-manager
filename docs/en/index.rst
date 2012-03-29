@@ -13,6 +13,7 @@ Usage guides
    :maxdepth: 2
 
    glossary
+   about
 
 
 Development guides
@@ -22,6 +23,8 @@ Development guides
    :maxdepth: 2
 
    dev/helptexts
+   dev/db-diagram
+   dev/mockups
 
 
 Indices and tables

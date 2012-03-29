@@ -28,15 +28,22 @@ ul._actions li:last-child {
 }
 
 /*Customize bootstrap components*/
-
 .dropdown-menu{
     min-width: 130px;
 }
 
 /*Customize jquery-ui.css components*/
-
 .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
     width: 800px;
+}
+
+.ui-datepicker, .ui-datepicker-header{
+    width: 250px;
+}
+
+.ui-widget {
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 0.8em;
 }
 
 button.ui-button-icon-only {
@@ -52,3 +59,38 @@ button.ui-button-icon-only {
         padding-left:8px;
 
     }
+
+/*Strikethrough disable list*/
+.strikethrough{
+    text-decoration: line-through;
+}
+
+/*Customize the td from bootstrap*/
+.table th, .table td {
+    padding: 3px;
+}
+
+.container {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#list_model {
+    background-color: #CCCCCC;
+    border: 1px solid #000000;
+    width: 90px;
+    height: 25px;
+    margin: 0px;
+}
+
+.user_identity {
+    margin-top: 10px;
+    margin-right: 10px;
+    color: #FFFFFF;
+}
+
+.footer {
+    background: #CCCCCC;
+    padding-left: 10px;
+    padding-top:  10px;
+}

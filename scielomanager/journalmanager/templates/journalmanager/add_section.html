@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load scielo_common %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
@@ -16,6 +17,17 @@
     <li><a href="{% url section.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
     <li class="active">{% trans 'New Section' %}</li>
 </ul>
+{% endblock %}
+
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
 {% endblock %}
 
 {% block body %}
@@ -36,30 +48,12 @@
             <div class="input">
                 {{ add_form.title }}
                 {% if add_form.title.errors %}<span class="help-inline">{% trans "Field required!" %}</span>{% endif %}
-                {% if add_form.title.help_text %}
-                <a class="help-text"
-                   rel="popover"
-                   data-original-title="{% trans 'Help on:' %} {{ add_form.title.label }}"
-                   data-content="{{ add_form.title.help_text }}"
-                   href="#">
-                    <i class="icon-question-sign">&nbsp;</i>{% trans 'Help' %}
-                </a>
-                {% endif %}
             </div>
         </div>
         <div class="clearfix">
             {{ add_form.code.label_tag }}
             <div class="input">
                 {{ add_form.code }}
-                {% if add_form.code.help_text %}
-                <a class="help-text"
-                   rel="popover"
-                   data-original-title="{{ add_form.code.label }}"
-                   data-content="{{ add_form.code.help_text }}"
-                   href="#">
-                    <i class="icon-question-sign">&nbsp;</i>{% trans 'Help' %}
-                </a>
-                {% endif %}
             </div>
         </div>
         <div class="clearfix">
@@ -87,10 +81,10 @@
     <script>
         $(document).ready(function() {
 
-            $( "#id_institution" ).combobox({ autoFocus: true });
+            $( "#id_publisher" ).combobox({ autoFocus: true });
 
             $( "#toggle" ).click(function() {
-                $( "#id_institution" ).toggle();
+                $( "#id_publisher" ).toggle();
             });
             $(".help-text").popover('hide');
         });

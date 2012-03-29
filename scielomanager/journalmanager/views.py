@@ -1,3 +1,5 @@
+import json
+import urllib
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -6,6 +8,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import User
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse
@@ -15,38 +19,122 @@ from django.shortcuts import render_to_response
 from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
 
 
+def get_user_collections(user_id):
+
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+
+    return user_collections
+
 def index(request):
     t = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
-        user_collection = request.user.userprofile_set.get().collection
+        user_collections = get_user_collections(request.user.id)
     else:
-        user_collection = ""
-    c = RequestContext(request,{'collection':user_collection,})
-    return HttpResponse(t.render(c),)
+        user_collections = ""
+
+    c = RequestContext(request,{'user_collections':user_collections,})
+    return HttpResponse(t.render(c))
+
+@login_required
+def generic_index_search(request, model, journal_id = None):
+    """
+    Generic list and search
+    """
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default=True)
+
+    if journal_id:
+        journal = models.Journal.objects.get(pk=journal_id)
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
+    else:
+        journal = None
+        objects_all = model.objects.available(request.GET.get('is_available'))
+
+    if request.GET.get('q'):
+        if model is models.Publisher:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+
+        if model is models.Journal:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
+
+        if model is models.Center:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+    
+    if objects_all.count() == 0:
+        messages.error(request, _('Your search did not match any documents.'))
+
+    objects = get_paginated(objects_all, request.GET.get('page', 1))
+
+    template = loader.get_template('journalmanager/%s_dashboard.html' % model.__name__.lower())
+
+    context = RequestContext(request, {
+                       'objects_%s' %  model.__name__.lower(): objects,
+                       'journal': journal,
+                       'user_collections': user_collections,
+                       })
+    return HttpResponse(template.render(context))
+
+@login_required
+def generic_toggle_availability(request, object_id, model):
+
+  if request.is_ajax():
+
+    model = get_object_or_404(model, pk = object_id)
+    model.is_available = not model.is_available
+    model.save()
+
+    response_data = json.dumps({
+      "result": str(model.is_available),
+      "object_id": model.id
+      })
+
+    #ajax response json
+    return HttpResponse(response_data, mimetype="application/json")
+  else:
+    #bad request
+    return HttpResponse(status=400)
+
+@login_required
+def generic_bulk_action(request, model, action_name, value = None):
+
+    if request.method == 'POST':
+        items = request.POST.getlist('action')
+        for item in items:
+            model = get_object_or_404(model, pk = item)
+            if action_name == 'is_available':
+                model.is_available = int(value)
+                model.save()
+
+    return HttpResponseRedirect(reverse('journal.index') + '?' + urllib.urlencode(request.GET))
 
 @login_required
 def user_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_users = User.objects.filter(userprofile__collection=user_collection)
+
+    user_collections = get_user_collections(request.user.id)
+    user_collections_managed = user_collections.filter(is_manager=True)
+
+    # Filtering users manager by the administrator
+    all_users = models.User.objects.filter(usercollections__collection__in = ( collection.collection.pk for collection in user_collections_managed )).distinct('username')
     users = get_paginated(all_users, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/user_dashboard.html')
 
     c = RequestContext(request, {
                        'users': users,
-                       'collection': user_collection,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
 def user_login(request):
+
     next = request.GET.get('next', None)
+
     if request.method == 'POST':
         next = request.POST['next']
         username = request.POST['username']
@@ -55,13 +143,14 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                user_collection = request.user.userprofile_set.get().collection
+                user_collections = get_user_collections(request.user.id)
+
                 if next != '':
-                    t = loader.get_template(next)
+                    return HttpResponseRedirect(next)
                 else:
                     t = loader.get_template('journalmanager/home_journal.html')
                 c = RequestContext(request, {'active': True,
-                                             'collection': user_collection,})
+                                             'user_collections': user_collections,})
                 return HttpResponse(t.render(c))
             else: #Login Success User inactive
                 t = loader.get_template('journalmanager/home_journal.html')
@@ -76,8 +165,6 @@ def user_login(request):
         t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
-        else:
-            c = RequestContext(request, {'next': next,})
         return HttpResponse(t.render(c))
 
 @login_required
@@ -88,273 +175,147 @@ def user_logout(request):
     return HttpResponse(t.render(c))
 
 @login_required
-def show_user(request,user_id):
-    user_collection = request.user.userprofile_set.get().collection
-    user = models.Institution.objects.get(id=user_id)
-    t = loader.get_template('journalmanager/show_user.html')
-    c = RequestContext(request, {
-                       'user': user,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
 @permission_required('auth.add_user')
-def add_user(request):
-    user_collection = request.user.userprofile_set.get().collection
-    if request.method == 'POST':
-        #instance of form
-        form = UserForm(request.POST)
-        if form.is_valid():
-            #Get the user and create a new evaluation
-            user_collection = request.user.userprofile_set.get().collection
-            fuser = form.save(commit=False)
-            fuser.collection = user_collection
-            fuser.save()
-            # Saving user collection on UserProfile
-            uprof = models.UserProfile();
-            uprof.collection = user_collection;
-            uprof.user = fuser
-            uprof.save()
-            return HttpResponseRedirect("/journal/user")
-        else:
-            add_user_form = UserForm() # An unbound form
-            return render_to_response('journalmanager/add_user.html', {
-                                      'add_user_form': add_user_form,
-                                      'mode': 'add_user',
-                                      'form': form,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
+def add_user(request, user_id=None):
+    """
+    Handles new and existing users
+    """
+    if  user_id == None:
+        user = User()
     else:
-        add_user_form = UserForm() # An unbound form
+        user = get_object_or_404(User, id = user_id)
+
+    # Getting Collections from the logged user.
+    user_collections = get_user_collections(request.user.id)
+
+    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
+    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
+        form=UserCollectionsForm, extra=1, can_delete=True)
+
+    if request.method == 'POST':
+        userform = UserForm(request.POST, instance=user, prefix='user')
+        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile',)
+        usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
+
+        if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
+            userform.save()
+            userprofileformset.save()
+            usercollectionsformset.save()
+
+            return HttpResponseRedirect(reverse('user.index'))
+    else:
+        userform  = UserForm(instance=user, prefix='user')
+        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
+        usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
+
     return render_to_response('journalmanager/add_user.html', {
-                              'add_user_form': add_user_form,
+                              'add_form': userform,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
-                              'collection': user_collection},
+                              'user_collections': user_collections,
+                              'usercollectionsformset': usercollectionsformset,
+                              'userprofileformset': userprofileformset
+                              },
                               context_instance=RequestContext(request))
-
-@login_required
-@permission_required('auth.change_user')
-def edit_user(request,user_id):
-    #recovering Journal Data to input form fields
-    formFilled = User.objects.get(pk=user_id)
-    user_collection = request.user.userprofile_set.get().collection
-    if request.method == 'POST':
-        form = UserForm(request.POST,instance=formFilled)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("/journal/user")
-        else:
-            edit_user_form = UserForm(request.POST,instance=formFilled)
-            return render_to_response('journalmanager/edit_user.html', {
-                                      'edit_user_form': edit_user_form,
-                                      'mode': 'edit_user',
-                                      'user_id': user_id,
-                                      'user_name': request.user.pk,
-                                      'collection': user_collection},
-                                      context_instance=RequestContext(request))
-    else:
-        edit_user_form = UserForm(instance=formFilled)
-    return render_to_response('journalmanager/edit_user.html', {
-                              'edit_user_form': edit_user_form,
-                              'mode': 'edit_user',
-                              'user_id': user_id,
-                              'user_name': request.user.pk,
-                              'collection': user_collection},
-                              context_instance=RequestContext(request))
-
-@login_required
-def show_journal(request, journal_id):
-    user_collection = request.user.userprofile_set.get().collection
-    journal = models.Journal.objects.get(pk = journal_id)
-    t = loader.get_template('journalmanager/show_journal.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def journal_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_journals = models.Journal.objects.available(request.GET.get('is_available', 1)).filter(collections = user_collection)
-
-    journals = get_paginated(all_journals, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/journal_dashboard.html')
-    c = RequestContext(request, {
-                       'journals': journals,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def add_journal(request, journal_id = None):
-
     """
     Handles new and existing journals
     """
-    user_collection = request.user.userprofile_set.get().collection
+    from django.utils.functional import curry
+    user_collections = get_user_collections(request.user.id)
 
-    if  journal_id == None:
+    if  journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
 
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
+    JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
     JournalTextLanguageFormSet = inlineformset_factory(models.Journal, models.JournalTextLanguage, extra=1, can_delete=True)
-    JournalAbstrLanguageFormSet = inlineformset_factory(models.Journal, models.JournalAbstrLanguage, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
+    JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
-        journalform = JournalForm(request.POST, instance=journal, prefix='journal')
+
+        journalform = JournalForm(request.POST, instance=journal, prefix='journal', collections_qset=user_collections)
+        studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(request.POST, instance=journal, prefix='textlanguage')
-        abstrlanguageformset = JournalAbstrLanguageFormSet(request.POST, instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
+        indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
-        if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
+        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
+            and missionformset.is_valid() and textlanguageformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
+            studyareaformset.save()
             titleformset.save()
             missionformset.save()
             textlanguageformset.save()
-            abstrlanguageformset.save()
             histformset.save()
+            indexcoverageformset.save()
+            messages.info(request, _('Saved.'))
 
             return HttpResponseRedirect(reverse('journal.index'))
+        else:
+            messages.error(request, _('There are some errors or missing data.'))
 
     else:
-
-        journalform  = JournalForm(instance=journal, prefix='journal')
+        journalform  = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
+        studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         textlanguageformset = JournalTextLanguageFormSet(instance=journal, prefix='textlanguage')
-        abstrlanguageformset = JournalAbstrLanguageFormSet(instance=journal, prefix='abstrlanguage')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
+        indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
+                              'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
-                              'collection': user_collection,
+                              'user_collections': user_collections,
                               'textlanguageformset': textlanguageformset,
                               'histformset': histformset,
-                              'abstrlanguageformset': abstrlanguageformset,
+                              'indexcoverageformset': indexcoverageformset,
                               }, context_instance = RequestContext(request))
 
-
 @login_required
-def toggle_journal_availability(request, journal_id):
-  journal = get_object_or_404(models.Journal, pk = journal_id)
-  journal.is_available = not journal.is_available
-  journal.save()
-
-  return HttpResponseRedirect(reverse('journal.index'))
-
-@login_required
-def show_institution(request, institution_id):
-    #FIXME: models.Intitutions e models.Journals ja se relacionam, avaliar
-    #estas queries.
-    user_collection = request.user.userprofile_set.get().collection
-    institution = models.Institution.objects.get(pk = institution_id)
-    journals = models.Journal.objects.filter(institution = institution_id)
-    t = loader.get_template('journalmanager/show_institution.html')
-    c = RequestContext(request, {
-                       'institution': institution,
-                       'journals': journals,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def institution_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_institutions = models.Institution.objects.available(request.GET.get('is_available', 1)).filter(collection = user_collection)
-
-    institutions = get_paginated(all_institutions, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/institution_dashboard.html')
-    c = RequestContext(request, {
-                       'institutions': institutions,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def add_institution(request, institution_id=None):
+def add_publisher(request, publisher_id=None):
     """
-    Handles new and existing institutions
+    Handles new and existing publishers
     """
 
-    user_collection = request.user.userprofile_set.get().collection
-
-    if request.method == 'POST':
-        institution_form_kwargs = {}
-
-        if institution_id is not None: #edit - preserve form-data
-            filled_form = models.Institution.objects.get(pk = institution_id)
-            institution_form_kwargs['instance'] = filled_form
-
-        add_form = InstitutionForm(request.POST, **institution_form_kwargs)
-
-        if add_form.is_valid():
-            add_form.save_all(collection = user_collection)
-            return HttpResponseRedirect(reverse('institution.index'))
+    if  publisher_id is None:
+        publisher = models.Publisher()
     else:
-        if institution_id is None: #new
-            add_form = InstitutionForm()
-        else:
-            filled_form = models.Institution.objects.get(pk = institution_id)
-            add_form = InstitutionForm(instance = filled_form)
+        publisher = get_object_or_404(models.Publisher, id = publisher_id)
 
-    return render_to_response('journalmanager/add_institution.html', {
-                              'add_form': add_form,
+    user_collections = get_user_collections(request.user.id)
+
+    if request.method == "POST":
+        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher',
+            collections_qset=user_collections)
+
+        if publisherform.is_valid():
+            publisherform.save()
+
+            return HttpResponseRedirect(reverse('publisher.index'))
+
+    else:
+        publisherform  = PublisherForm(instance=publisher, prefix='publisher',
+            collections_qset=user_collections)
+
+    return render_to_response('journalmanager/add_publisher.html', {
+                              'add_form': publisherform,
                               'user_name': request.user.pk,
-                              'collection': user_collection,
+                              'user_collections': user_collections,
                               },
                               context_instance = RequestContext(request))
 
-@login_required
-def toggle_institution_availability(request, institution_id):
-  institution = get_object_or_404(models.Institution, pk = institution_id)
-  institution.is_available = not institution.is_available
-  institution.save()
-
-  return HttpResponseRedirect(reverse('institution.index'))
-
-@login_required
-def show_issue(request, issue_id):
-    issue = models.Issue.objects.get(pk = issue_id)
-    journal = issue.journal
-    t = loader.get_template('journalmanager/show_issue.html')
-    c = RequestContext(request, {
-                       'issue': issue,
-                       'journal': journal,
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def issue_index(request, journal_id):
-    #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
-    #estas queries.
-    journal = models.Journal.objects.get(pk = journal_id)
-    user_collection = request.user.userprofile_set.get().collection
-
-    all_issues = models.Issue.objects.available(request.GET.get('is_available', 1)).filter(journal = journal_id)
-
-    issues = get_paginated(all_issues, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/issue_dashboard.html')
-    c = RequestContext(request, {
-                       'issues': issues,
-                       'journal': journal,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def add_issue(request, journal_id, issue_id=None):
@@ -362,7 +323,7 @@ def add_issue(request, journal_id, issue_id=None):
     Handles new and existing issues
     """
 
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if issue_id is None:
@@ -375,7 +336,7 @@ def add_issue(request, journal_id, issue_id=None):
         add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
 
         if add_form.is_valid():
-            add_form.save_all(user_collection, journal)
+            add_form.save_all(journal)
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
     else:
@@ -385,92 +346,21 @@ def add_issue(request, journal_id, issue_id=None):
                               'add_form': add_form,
                               'journal': journal,
                               'user_name': request.user.pk,
-                              'collection': user_collection},
+                              'user_collections': user_collections},
                               context_instance = RequestContext(request))
 
 @login_required
-def toggle_issue_availability(request, issue_id):
-    issue = get_object_or_404(models.Issue, pk = issue_id)
-    issue.is_available = not issue.is_available
-    issue.save()
+def publisher_index(request):
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default = True)
 
-    return HttpResponseRedirect(reverse('issue.index', args=[issue.journal.pk]))
+    all_publishers = models.Publisher.objects.available(request.GET.get('is_available', 1))
+    publishers = get_paginated(all_publishers, request.GET.get('page', 1))
 
-@login_required
-def search_journal(request):
-    user_collection = request.user.userprofile_set.get().collection
-
-    #Get journals where title contains the "q" value and collection equal with the user
-    journals_filter = models.Journal.objects.filter(title__icontains = request.REQUEST['q'],
-                                                    collections = user_collection).order_by('title')
-
-    #Paginated the result
-    journals = get_paginated(journals_filter, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/journal_search_result.html')
+    t = loader.get_template('journalmanager/publisher_dashboard.html')
     c = RequestContext(request, {
-                       'journals': journals,
-                       'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def search_institution(request):
-    user_collection = request.user.userprofile_set.get().collection
-
-    #Get institutions where title contains the "q" value and collection equal with the user
-    institutions_filter = models.Institution.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection = user_collection).order_by('name')
-
-    #Paginated the result
-    institutions = get_paginated(institutions_filter, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/institution_search_result.html')
-    c = RequestContext(request, {
-                       'institutions': institutions,
-                       'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def search_issue(request, journal_id):
-
-    journal = models.Journal.objects.get(pk = journal_id)
-    user_collection = request.user.userprofile_set.get().collection
-    #Get issues where journal.id = journal_id and volume contains "q"
-    selected_issues = models.Issue.objects.filter(journal = journal_id,
-                                                  volume__icontains = request.REQUEST['q']).order_by('publication_date')
-
-    #Paginated the result
-    issues = get_paginated(selected_issues, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/issue_dashboard.html')
-    c = RequestContext(request, {
-                       'issues': issues,
-                       'journal': journal,
-                       'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'],
-                       })
-    return HttpResponse(t.render(c))
-
-@login_required
-def section_index(request, journal_id):
-    #FIXME: models.Journal e models.Issue ja se relacionam, avaliar
-    #estas queries.
-    journal = models.Journal.objects.get(pk = journal_id)
-    user_collection = request.user.userprofile_set.get().collection
-
-    all_sections = models.Section.objects.available(request.GET.get('is_available', 1)).filter(journal=journal_id)
-
-    sections = get_paginated(all_sections, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/section_dashboard.html')
-    c = RequestContext(request, {
-                       'items': sections,
-                       'journal': journal,
-                       'collection': user_collection,
+                       'objects_publisher': publishers,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
@@ -504,80 +394,107 @@ def add_section(request, journal_id, section_id=None):
                               'journal': journal,
                               },
                               context_instance = RequestContext(request))
-@login_required
-def center_index(request):
-    user_collection = request.user.userprofile_set.get().collection
-    all_centers = models.Center.objects
-    if all_centers:
-        all_centers = all_centers.filter(collection = user_collection)
-
-    centers = get_paginated(all_centers, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/center_dashboard.html')
-    c = RequestContext(request, {
-                       'centers': centers,
-                       'collection': user_collection,
-                       })
-    return HttpResponse(t.render(c))
 
 @login_required
 def add_center(request, center_id=None):
     """
     Handles new and existing centers
     """
+    if  center_id == None:
+        center = models.Center()
+    else:
+        center = get_object_or_404(models.Center, id = center_id)
 
-    user_collection = request.user.userprofile_set.get().collection
+    user_collections = get_user_collections(request.user.id)
 
     if request.method == 'POST':
-        center_form_kwargs = {}
+        centerform = CenterForm(request.POST, instance=center, prefix='center',
+            collections_qset=user_collections)
 
-        if center_id is not None: #edit - preserve form-data
-            filled_form = models.Center.objects.get(pk = center_id)
-            center_form_kwargs['instance'] = filled_form
+        if centerform.is_valid():
+            centerform.save()
 
-        add_form = CenterForm(request.POST, **center_form_kwargs)
-
-        if add_form.is_valid():
-            add_form.save_all(collection = user_collection)
             return HttpResponseRedirect(reverse('center.index'))
+
     else:
-        if center_id is None: #new
-            add_form = CenterForm()
-        else:
-            filled_form = models.Center.objects.get(pk = center_id)
-            add_form = CenterForm(instance = filled_form)
+        centerform  = CenterForm(instance=center, prefix='center', collections_qset=user_collections)
 
     return render_to_response('journalmanager/add_center.html', {
-                              'add_form': add_form,
+                              'add_form': centerform,
                               'user_name': request.user.pk,
-                              'collection': user_collection,
+                              'user_collections': user_collections,
                               },
                               context_instance = RequestContext(request))
 
-@login_required
-def toggle_center_availability(request, center_id):
-  center = get_object_or_404(models.Center, pk = center_id)
-  center.is_available = not center.is_available
-  center.save()
-
-  return HttpResponseRedirect(reverse('center.index'))
 
 @login_required
-def search_center(request):
-    user_collection = request.user.userprofile_set.get().collection
+def center_index(request):
+    user_collections = get_user_collections(request.user.id)
+    default_collections = user_collections.filter(is_default = True)
 
-    #Get centers where title contains the "q" value and collection equal with the user
-    center_filter = models.Center.objects.filter(name__icontains = request.REQUEST['q'],
-                                                            collection = user_collection).order_by('name')
-
-    #Paginated the result
-    centers = get_paginated(center_filter, request.GET.get('page', 1))
+    all_centers = models.Center.objects.available(request.GET.get('is_available', 1))
+    centers = get_paginated(all_centers, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/center_dashboard.html')
     c = RequestContext(request, {
-                       'centers': centers,
-                       'collection': user_collection,
-                       'search_query_string': request.REQUEST['q'],
+                       'objects_center': centers,
+                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
+
+@login_required
+def toggle_user_availability(request, user_id):
+
+  if request.is_ajax():
+
+    user = get_object_or_404(models.User, pk = user_id)
+    user.is_active = not user.is_active
+    user.save()
+
+    response_data = json.dumps({
+      "result": str(user.is_active),
+      "object_id": user.id
+      })
+
+    #ajax response json
+    return HttpResponse(response_data, mimetype="application/json")
+  else:
+    #bad request
+    return HttpResponse(status=400)
+
+@login_required
+def my_account(request):
+    t = loader.get_template('journalmanager/my_account.html')
+    c = RequestContext(request, {})
+    return HttpResponse(t.render(c))
+
+@login_required
+def password_change(request):
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            if cleaned_data['new_password'] != cleaned_data['new_password_again']:
+                messages.error(request, _('Your new password and new password confirmation must match.'))
+                return HttpResponseRedirect(reverse('journalmanager.password_change'))
+
+            auth_user = authenticate(username=request.user.username,
+                                     password=cleaned_data['password'])
+            if auth_user:
+                auth_user.set_password(cleaned_data['new_password'])
+                auth_user.save()
+            else:
+                messages.error(request, _('Your current password does not match. Please try again.'))
+                return HttpResponseRedirect(reverse('journalmanager.password_change'))
+
+            messages.info(request, _('Your new password has been set.'))
+            return HttpResponseRedirect(reverse('journalmanager.my_account'))
+    else:
+        form = PasswordChangeForm()
+
+    return render_to_response(
+        'journalmanager/password_change.html',
+        {'form': form},
+        context_instance = RequestContext(request))

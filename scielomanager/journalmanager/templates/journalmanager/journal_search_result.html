@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load scielo_common %}
 
 {% block extrahead %}
 
@@ -15,6 +16,17 @@
 </ul><!--breadcrumb-->
 {% endblock %}
 
+{% block shortaccess %}
+<div class="well sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header">{% trans 'Short Access' %}</a></li>
+    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
+    <li><a href="#">{% trans 'Add Issue' %}</a></li>
+    <li><a href="#">{% trans 'Add Section' %}</a></li>
+  </ul>
+</div><!--well sidebar-nav-->
+{% endblock %}
+
 {% block body %}
 <div class="row-fluid">
     <div class="span12">
@@ -27,11 +39,16 @@
         </div>
     </div>
 </div><!--row-fluid Search box-->
-<div class="row-fluid">
-    <div class="span2">
-        <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
+
+<div class="row-fluid show-grid">
+    <div class="span10">
+      <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
     </div>
-</div><!--row-fluid botões-->
+    <div class="span2">
+        {% simple_pagination journals %}
+    </div>
+</div>
+
 {% if journals.paginator.count > 0 %}
 <table class="table table-condensed">
     <thead>
@@ -95,20 +112,7 @@
         {% endfor %}
     <tbody>
 </table>
-{% trans 'Showing' %} {{ journals.start_index }} {% trans 'of' %} {{ journals.paginator.count }}
-<div class="pagination">
-    <ul>
-        <li class="prev {% if not journals.has_previous %}disabled{% endif %}">
-            <a href="?page={{ journals.previous_page_number }}&q={{ search_query_string }}">&larr; {% trans 'Previous' %}</a>
-        </li>
-        {% for page in journals.paginator.page_range %}
-        <li {% if journals.number == page %}class="active"{% endif %}><a href="?page={{ page }}&q={{ search_query_string }}">{{ page }}</a></li>
-        {% endfor %}
-        <li class="next {% if not journals.has_next %}disabled{% endif %}">
-            <a href="?page={{ journals.next_page_number }}&q={{ search_query_string }}">{% trans 'Next' %} &rarr;</a>
-        </li>
-    </ul>
-</div>
+{% pagination journals %}
 {% else %}
 <div class="row-fluid">
     <div class="alert alert-error">

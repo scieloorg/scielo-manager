@@ -2,6 +2,8 @@
 # Django settings for scielomanager project.
 import os
 
+from django.contrib.messages import constants as messages
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -12,6 +14,19 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'journalmanager',         # Or path to database file if using sqlite3.
+        'USER': 'postgres',               # Not used with sqlite3.
+        'PASSWORD': '',                   # Not used with sqlite3.
+        'HOST': '',                       # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                       # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -24,7 +39,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'pt-br'
+LANGUAGE_CODE = 'en'
 
 SITE_ID = 1
 
@@ -97,6 +112,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -116,7 +132,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    #'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
@@ -124,6 +140,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'journalmanager',
     'south',
+    'scielo_extensions',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -132,9 +149,18 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.csrf',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
-    'journalmanager.context_processors.from_settings',
+    'django.contrib.messages.context_processors.messages',
+    'scielo_extensions.context_processors.from_settings',
 )
 
+# Messages framework
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+MESSAGE_TAGS = {
+    messages.INFO: 'alert-heading',
+    messages.SUCCESS: 'alert-heading',
+    messages.WARNING: 'alert-error',
+    messages.ERROR: 'alert-error',
+}
 
 FIXTURE_DIRS = ('fixtures',)
 

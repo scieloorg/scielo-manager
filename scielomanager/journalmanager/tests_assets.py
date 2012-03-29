@@ -15,61 +15,141 @@ def get_sample_section_dataform(**kwargs):
 
     return section_attrs
 
-def get_sample_journal_dataform(**kwargs):
+def get_sample_userprofile(**kwargs):
+    userprofile_attrs = {
+        'email': 'dev@scielo.org',
+    }
+    userprofile_attrs.update(kwargs)
+
+    return models.UserProfile(**userprofile_attrs)
+
+def get_sample_journal_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
     journal_attrs = {
-      'sponsor': 'FAPESP',
-      'ctrl_vocabulary': 'decs',
-      'national_code': '083653-2',
-      'frequency': 'Q',
-      'final_num': '',
-      'validated': False,
-      'treatment_level': 'c',
-      'eletronic_issn': '',
-      'init_vol': '1',
-      'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-      'study_area': 'Health Sciences',
-      'editorial_standard': 'vancouv',
-      'scielo_issn': 'print',
-      'secs_code': '6633',
-      'init_year': '1986',
-      'updated': '2012-01-19 15:44:21',
-      'acronym': 'ABCD',
-      'pub_level': 'CT',
-      'init_num': '1',
-      'literature_type': 'S',
-      'created': '2012-01-19 15:44:21',
-      'final_vol': '',
-      'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'pub_status': 'C',
-      'alphabet': 'B',
-      'print_issn': '0102-6720',
+      'journal-sponsor': 'FAPESP',
+      'journal-ctrl_vocabulary': 'decs',
+      'journal-national_code': '083653-2',
+      'journal-frequency': 'Q',
+      'journal-final_num': '',
+      'journal-validated': False,
+      'journal-treatment_level': 'c',
+      'journal-eletronic_issn': '',
+      'journal-init_vol': '1',
+      'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
+      'journal-editorial_standard': 'vancouv',
+      'journal-scielo_issn': 'print',
+      'journal-secs_code': '6633',
+      'journal-init_year': '1986',
+      'journal-updated': '2012-01-19 15:44:21',
+      'journal-acronym': 'ABCD',
+      'journal-pub_level': 'CT',
+      'journal-init_num': '1',
+      'journal-literature_type': 'S',
+      'journal-created': '2012-01-19 15:44:21',
+      'journal-final_vol': '',
+      'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
+      'journal-pub_status': 'C',
+      'journal-alphabet': 'B',
+      'journal-print_issn': '0102-6720',
+
+      #Title formset data
+      'title-TOTAL_FORMS': 1,
+      'title-INITIAL_FORMS': 0,
+      'title-0-title': 'TITLE FORMSET TEST',
+      'title-0-category': 'other',
+
+      #Study Area formset data
+      'studyarea-TOTAL_FORMS': 1,
+      'studyarea-INITIAL_FORMS': 0,
+      'studyarea-0-study_area': 'Agricultural Sciences',
+
+      #Mission formset data
+      'mission-TOTAL_FORMS': 1,
+      'mission-INITIAL_FORMS': 0,
+      'mission-0-description': 'To publish original scientific papers about Amazonia...',
+      'mission-0-language': 'pt',
+
+      #Text Language formset data
+      'textlanguage-TOTAL_FORMS': 1,
+      'textlanguage-INITIAL_FORMS': 0,
+      'textlanguage-0-language': 'pt',
+
+      #History Language formset data
+      'hist-TOTAL_FORMS': 1,
+      'hist-INITIAL_FORMS': 0,
+      'hist-0-date': '2005-10-10',
+      'hist-0-status': 'C',
+
+      #History Language formset data
+      'indexcoverage-TOTAL_FORMS': 1,
+      'indexcoverage-INITIAL_FORMS': 0,
+      'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
+      'indexcoverage-0-identify': 'ABDC-Medline',
     }
 
-    journal_attrs.update(kwargs)
+    journal_attrs.update(dict_params)
 
     return journal_attrs
 
-def get_sample_institution_dataform(**kwargs):
+def get_sample_institution_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
     institution_attrs = {
-      'city': '',
-      'fax': '',
-      'validated': True,
-      'name': u'Associação Nacional de História - ANPUH',
-      'Address_number': '222',
-      'acronym': 'rbh',
-      'country': 'BR',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': 'teste@scielo.org',
-      'Address_complement': '',
-      'is_available': True,
+      'institution-city': '',
+      'institution-fax': '',
+      'institution-validated': True,
+      'institution-name': u'Associação Nacional de História - ANPUH',
+      'institution-Address_number': '222',
+      'institution-acronym': 'rbh',
+      'institution-country': 'BR',
+      'institution-cel': '',
+      'institution-phone': '',
+      'institution-state': '',
+      'institution-Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'institution-mail': 'teste@scielo.org',
+      'institution-Address_complement': '',
+      'institution-is_available': True,
+
+      #Collection formset data
+      'institutioncollections-TOTAL_FORMS': 1,
+      'institutioncollections-INITIAL_FORMS': 0,
+
     }
 
-    institution_attrs.update(kwargs)
+    institution_attrs.update(dict_params)
 
-    return institution_attrs
+    return publisher_attrs
+
+def get_sample_publisher_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    publisher_attrs = {
+      'publisher-city': '',
+      'publisher-fax': '',
+      'publisher-validated': True,
+      'publisher-name': u'Associação Nacional de História - ANPUH',
+      'publisher-address_number': '222',
+      'publisher-acronym': 'rbh',
+      'publisher-country': 'BR',
+      'publisher-cel': '',
+      'publisher-phone': '',
+      'publisher-state': '',
+      'publisher-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'publisher-mail': 'teste@scielo.org',
+      'publisher-address_complement': '',
+      'publisher-is_available': True,
+    }
+
+    publisher_attrs.update(dict_params)
+
+    return publisher_attrs
 
 def get_sample_issue_dataform(**kwargs):
     """
@@ -104,6 +184,36 @@ def get_sample_uselicense_dataform(**kwargs):
 
     return uselicense_attrs
 
+def get_sample_user_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    user_attrs = {
+        'user-username': 'dummyuser_add',
+        'user-first_name': 'Dummy',
+        'user-last_name': 'User',
+        'user-is_active': True,
+        'user-is_superuser': True,
+        'user-is_staff': True,
+        'user-password': 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799',
+        'user-email': 'dev@scielo.org',
+
+        #Collection formset data
+        'usercollections-TOTAL_FORMS': 1,
+        'usercollections-INITIAL_FORMS': 0,
+
+        #User formset data
+        'userprofile-0-email': 'dummyuser@dummymail.com',
+        'userprofile-TOTAL_FORMS': 1,
+        'userprofile-INITIAL_FORMS': 0
+
+        }
+
+    user_attrs.update(dict_params)
+
+    return user_attrs
+
 def get_sample_journal():
     """
     Journal object factory
@@ -113,7 +223,7 @@ def get_sample_journal():
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'institution', 'center', 'notes',]
+       'publisher', 'center', 'notes',]
     """
 
     journal_attrs = {
@@ -127,7 +237,6 @@ def get_sample_journal():
       'eletronic_issn': '',
       'init_vol': '1',
       'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
-      'study_area': 'Health Sciences',
       'editorial_standard': 'vancouv',
       'scielo_issn': 'print',
       'secs_code': '6633',
@@ -163,15 +272,16 @@ def get_sample_creator(is_active = True, is_superuser = True, is_staff = True):
 
     return User(**user_attrs)
 
-def get_sample_userprofile(user, collection):
+def get_sample_usercollections(user, collection):
 
-    profile_attrs = {
-      'is_manager': False,
+    usercollections_attrs = {
+      'is_manager': True,
+      'is_default': False,
       'user': user,
       'collection': collection,
     }
 
-    return models.UserProfile(**profile_attrs)
+    return models.UserCollections(**usercollections_attrs)
 
 
 def get_sample_collection(validated = True):
@@ -184,32 +294,33 @@ def get_sample_collection(validated = True):
 
     return models.Collection(**collection_attrs)
 
-def get_sample_institution(validated = True):
+def get_sample_publisher(validated = True):
     """
-    Returns a institution object, without the following attributes (non mandatory or need to be bound
+    Returns a publisher object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['city', 'fax', 'Address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'Address_complement']
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
     """
 
-    institution_attrs = {
+    publisher_attrs = {
       'city': '',
       'fax': '',
       'validated': validated,
       'name': u'Associação Nacional de História - ANPUH',
-      'Address_number': '',
+      'address_number': '',
       'acronym': 'rbh',
       'country': '',
       'cel': '',
       'phone': '',
       'state': '',
-      'Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
-      'Address_complement': '',
+      'address_complement': '',
       'is_available': True,
+
     }
 
-    return models.Institution(**institution_attrs)
+    return models.Publisher(**publisher_attrs)
 
 def get_sample_uselicense():
 
@@ -221,14 +332,82 @@ def get_sample_uselicense():
 
     return models.UseLicense(**uselicense_attrs)
 
-def get_sample_indexing_coverage():
+def get_sample_center(validated = True):
+    """
+    Returns a center object, without the following attributes (non mandatory or need to be bound
+    to another model object):
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
+    """
 
-    indexing_coverage_attrs = {
-        'database_name': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
-        'database_acronym': 'lilacs',
+    center_attrs = {
+      'city': '',
+      'fax': '',
+      'validated': validated,
+      'name': u'Associação Nacional de História - ANPUH',
+      'address_number': '',
+      'acronym': 'rbh',
+      'country': '',
+      'cel': '',
+      'phone': '',
+      'state': '',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'mail': '',
+      'address_complement': '',
+      'is_available': True,
     }
 
-    return models.IndexingCoverage(**indexing_coverage_attrs)
+    return models.Center(**center_attrs)
+
+def get_sample_center_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    """
+    Returns a center object, without the following attributes (non mandatory or need to be bound
+    to another model object):
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
+    """
+
+    center_attrs = {
+      'center-city': '',
+      'center-fax': '',
+      'center-validated': True,
+      'center-name': u'Associação Nacional de História - ANPUH',
+      'center-address_number': '123456',
+      'center-acronym': 'rbh',
+      'center-country': 'São Paulo',
+      'center-cel': '',
+      'center-phone': '',
+      'center-state': '',
+      'center-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'center-mail': 'scielo@scielo.org',
+      'center-address_complement': '',
+      'center-is_available': True,
+    }
+
+    center_attrs.update(dict_params)
+
+    return center_attrs
+
+def get_sample_index_coverage():
+
+    indexing_coverage_attrs = {
+        'title': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
+        'identify': 'lil-llccs',
+    }
+
+    return models.JournalIndexCoverage(**indexing_coverage_attrs)
+
+def get_sample_index_database():
+
+    indexing_index_database_attrs = {
+        'name': u'Lilacs',
+    }
+
+    return models.IndexDatabase(**indexing_index_database_attrs)
 
 def get_sample_section():
     """

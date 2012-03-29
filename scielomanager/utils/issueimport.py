@@ -28,10 +28,7 @@ class IssueImport:
         self._summary = {}
         self._journals = {}
 
-        if __name__ == '__main__':
-            journal_json_parsed = json.loads(open('journal.json','r').read())
-        else: # Para testes, carregado pelo unittest
-            journal_json_parsed = journal_json_file 
+        journal_json_parsed = json.loads(open('journal.json','r').read())
         
         self.load_journals(journal_json_parsed) # carregando dicionário de periódicos self._journals
 
@@ -196,7 +193,7 @@ class IssueImport:
                 self._journals[record['935'][0]]['use_license'] = False
 
         
-    def run_import(self, issue_json_file):
+    def run_import(self, json_file):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -204,15 +201,8 @@ class IssueImport:
 
         json_parsed={} 
 
-        if __name__ == '__main__':
-            issue_json_parsed = json.loads(open(issue_json_file,'r').read())
-        else: # Para testes, carregado pelo unittest
-            issue_json_parsed = issue_json_file 
+        issue_json_file = open(json_file,'r')
+        issue_json_parsed = json.loads(issue_json_file.read())
 
         for record in issue_json_parsed:
             loaded_issue = self.load_issue(record)
-
-import_issue = IssueImport()
-import_result = import_issue.run_import('issue.json')
-
-print import_issue.get_summary()
