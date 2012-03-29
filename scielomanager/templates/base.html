@@ -51,11 +51,18 @@
               {% if user.is_authenticated %}
               <ul class="nav pull-right span2">
                 <li class="divider-vertical"></li>
-                <li><img class="user_avatar" src="https://secure.gravatar.com/avatar/8b09d1fd6b426a5873362967360612cb?s=25"/></li>
+                <li>
+                  <a href="http://gravatar.com"
+                     rel="tooltip"
+                     data-original-title="{% trans 'Go to Gravatar.com' %}"
+                     target="_blank">
+                    <img class="user_avatar" src="{{ user.get_profile.avatar_url }}"/>
+                  </a>
+                </li>
                 <li class="user_identity"> {{ user.username }} </li>
                 <li>
                   <div class="btn-group">
-                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-user icon-white"></i></a></button>
+                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-cog icon-white"></i></a></button>
                     <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off icon-white"></i></a></button>
                   </div>
                 </li>
