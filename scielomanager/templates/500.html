@@ -1,10 +1,20 @@
-{% extends "base.html" %}
-{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
+    <title>Error 500 (Page unavailable)</title>
+    <link rel="shortcut icon" href="/static/favicon.ico"/>
+    <style>
+    *{margin:0;padding:0}html{font:15px/22px arial,sans-serif;background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}
+    </style>
+  </head>
+  <body>
+    <a href="http://www.scielo.org">
+      <img src="http://www.scielo.br/img/en/scielobre.gif" alt="SciELO">
+    </a>
+    <p>The requested page is not available on this server.<br/>
+    Our engineers have been notified.</p>
+    <ins>HTTP Error 500</ins>
+  </body>
+</html>
 
-{% block body %}
-
-<h2>{% trans "Internal Server Error (500)" %}</h2>
-
-<p>{% trans "The server encountered an unexpected condition which prevented it from fulfilling the request." %}</p>
-
-{% endblock %}
