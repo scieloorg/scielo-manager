@@ -8,7 +8,7 @@ Base Mockup
 
 **A. Top Header**
 
-1. Website Logotipo at the left 
+1. Website Logotipo at the left
 2. User authentication and identification at the right
 
 **B. Top Menu**
@@ -22,7 +22,7 @@ Base Mockup
 **D. Left Menu Actions**
 
 1. Change according to the selected catalog at the **Top Menu**
-2. Give a list of available services for an specific catalog, and according to the user permissions  
+2. Give a list of available services for an specific catalog, and according to the user permissions
 
 **E. Central Area**
 
@@ -33,5 +33,5 @@ Base Mockup
 3. Support Links
 4. List box to change the Interface Language
 
-.. image:: ../../images/base.png
+.. image:: ../images/base.png
 
