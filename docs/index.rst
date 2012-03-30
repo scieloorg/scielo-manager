@@ -13,9 +13,13 @@ Usage guides
    glossary
    about
 
+.. _html_development_guides:
 
 Development guides
 ==================
+
+Technical guides and artifacts explaining software components
+and design decisions.
 
 .. toctree::
    :maxdepth: 2

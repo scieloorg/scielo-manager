@@ -47,7 +47,7 @@ When a more detailed level of information is needed, we must follow the steps:
 Template Tag
 ------------
 
-Uses the custom template tag ``{% load journalmanager_template_tags %}``.
+Uses the custom template tag ``{% load scielo_common %}``. This tag lives inside a package called: ``scielo-django-extensions``, and you can install it using pip.
 
 In order to add the help widget, you need to use the ``field_help`` django template tag::
 
