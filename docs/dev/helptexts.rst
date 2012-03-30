@@ -1,4 +1,7 @@
-.. _ReSTQuickRef: http://docutils.sourceforge.net/docs/user/rst/quickref.html#definition-lists
+.. index::
+   single: how to deal with help texts
+
+.. _deal_with_help_texts:
 
 How to deal with help texts
 ===========================
@@ -10,6 +13,7 @@ description for these fields.
 
 We decided to separate help texts in two levels: The Short and the Detailed description versions.
 
+.. _short_description:
 
 Short Description
 -----------------
@@ -32,6 +36,7 @@ Example::
   JOURNALPARALLELTITLES__FORM = _("""Enter parallel titles in accordance with the sequence and
     typography in which they appear on the title page or its substitute.""")
 
+.. _detailed_description:
 
 Detailed Description
 --------------------
@@ -43,6 +48,7 @@ When a more detailed level of information is needed, we must follow the steps:
    details about the syntax.
 3. Push to the project's main repository and the documentation will be built automagically.
 
+.. _template_tag:
 
 Template Tag
 ------------
@@ -56,3 +62,6 @@ In order to add the help widget, you need to use the ``field_help`` django templ
 Example, for the ``title`` field would be::
 
   {% field_help add_form.title.label add_form.title.help_text term-title %}
+
+
+.. _ReSTQuickRef: http://docutils.sourceforge.net/docs/user/rst/quickref.html#definition-lists
