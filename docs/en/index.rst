@@ -25,7 +25,7 @@ Development guides
    dev/helptexts
    dev/db-diagram
    dev/mockups
-
+   dev/notes
 
 Indices and tables
 ==================
