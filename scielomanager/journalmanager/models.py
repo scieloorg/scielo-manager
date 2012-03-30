@@ -300,4 +300,3 @@ class Supplement(Issue):
 class Center(Institution):
     objects = AppCustomManager()
     collections = models.ManyToManyField(Collection)
-
