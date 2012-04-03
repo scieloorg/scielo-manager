@@ -36,10 +36,6 @@ ul._actions li:last-child {
     width: 100%;
 }
 
-.navbar-inner{
-    padding-right: 5px;
-}
-
 /*Customize jquery-ui.css components*/
 .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
     width: 800px;
@@ -108,8 +104,41 @@ button.ui-button-icon-only {
     box-shadow: 0px 0px 5px #888;
 }
 
-.footer {
-    background: #CCCCCC;
-    padding-left: 10px;
-    padding-top:  10px;
+/*Login area*/
+.banner-container{
+    margin-top: 5px; 
+    margin-left: auto; 
+    margin-right: auto; 
+    width: 290px;
+}
+
+.banner{
+    text-align: right;
+    padding: 82px 29px 11px 0;
+    background-image: url('/static/images/logo.png');
+    background-repeat: no-repeat;
+    width: 260px;
+}
+
+.login{
+    margin-left: auto; 
+    margin-right: auto; 
+    display: block; 
+    width: 400px; 
+    border: 1px solid #CCC;
+    padding: 30px;
+    margin-top: 10px;    
+}
+
+.login_reset{
+    margin-left: auto; 
+    margin-right: auto; 
+    display: block; 
+    width: 600px;     
+}
+
+.footer{
+    border-top: 1px solid #E5E5E5;
+    margin-top: 10px;
+    padding: 15px 0 15px;
 }
