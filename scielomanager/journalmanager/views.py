@@ -26,6 +26,9 @@ from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
 
 
+MSG_FORM_SAVED = _('Saved.')
+MSG_FORM_MISSING = _('There are some errors or missing data.')
+
 def get_user_collections(user_id):
 
     user_collections = User.objects.get(pk=user_id).usercollections_set.all()
@@ -203,7 +206,10 @@ def add_user(request, user_id=None):
             userprofileformset.save()
             usercollectionsformset.save()
 
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('user.index'))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
     else:
         userform  = UserForm(instance=user, prefix='user')
         userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
@@ -255,11 +261,11 @@ def add_journal(request, journal_id = None):
             missionformset.save()
             histformset.save()
             indexcoverageformset.save()
-            messages.info(request, _('Saved.'))
+            messages.info(request, MSG_FORM_SAVED)
 
             return HttpResponseRedirect(reverse('journal.index'))
         else:
-            messages.error(request, _('There are some errors or missing data.'))
+            messages.error(request, MSG_FORM_MISSING)
 
     else:
         journalform  = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
@@ -298,9 +304,10 @@ def add_publisher(request, publisher_id=None):
 
         if publisherform.is_valid():
             publisherform.save()
-
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('publisher.index'))
-
+        else:
+            messages.error(request, MSG_FORM_MISSING)
     else:
         publisherform  = PublisherForm(instance=publisher, prefix='publisher',
             collections_qset=user_collections)
@@ -333,8 +340,10 @@ def add_issue(request, journal_id, issue_id=None):
 
         if add_form.is_valid():
             add_form.save_all(journal)
-
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
     else:
         add_form = IssueForm(journal_id=journal.pk, instance=issue)
 
@@ -381,10 +390,10 @@ def add_section(request, journal_id, section_id=None):
         if add_form.is_valid() and section_title_formset.is_valid():
             add_form.save_all(journal)
             section_title_formset.save()
-            messages.info(request, _('Saved.'))
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
         else:
-            messages.error(request, _('There are some errors or missing data.'))
+            messages.error(request, MSG_FORM_MISSING)
 
     else:
         add_form = SectionForm(instance=section)
@@ -416,8 +425,10 @@ def add_center(request, center_id=None):
 
         if centerform.is_valid():
             centerform.save()
-
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('center.index'))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
 
     else:
         centerform  = CenterForm(instance=center, prefix='center', collections_qset=user_collections)
