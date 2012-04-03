@@ -166,6 +166,8 @@ def user_login(request):
         t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
+        else: 
+            c = RequestContext(request, {'required': True})
         return HttpResponse(t.render(c))
 
 @login_required
