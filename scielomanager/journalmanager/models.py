@@ -153,18 +153,11 @@ class Journal(models.Model):
         choices=choices.FREQUENCY,null=False,blank=True, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'),max_length=16,
         choices=choices.PUBLICATION_STATUS,null=False,blank=True, help_text=helptexts.JOURNAL__PUB_STATUS)
-    alphabet = models.CharField(_('Alphabet'),max_length=16,
-        choices=choices.ALPHABET,null=False,blank=True, help_text=helptexts.JOURNAL__ALPHABET)
     sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True, help_text=helptexts.JOURNAL__SPONSOR)
-    national_code = models.CharField(_('National Code'), max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__NATIONAL_CODE)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
         choices=choices.CTRL_VOCABULARY,null=False,blank=True, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
-    literature_type = models.CharField(_('Literature Type'),max_length=64,
-        choices=choices.LITERATURE_TYPE,null=False,blank=True, help_text=helptexts.JOURNAL__LITERATURE_TYPE)
-    treatment_level = models.CharField(_('Treatment Type'),max_length=64,
-        choices=choices.TREATMENT_LEVEL,null=False,blank=True, help_text=helptexts.JOURNAL__TREATMENT_LEVEL)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
         choices=choices.PUBLICATION_LEVEL,null=False,blank=True, help_text=helptexts.JOURNAL__PUB_LEVEL)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)

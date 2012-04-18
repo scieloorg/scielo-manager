@@ -436,8 +436,7 @@
       <thead>
           <tr>
               <th>{% trans add_form.frequency.label_tag %}</th>
-              <th>{% trans add_form.alphabet.label_tag %}</th>
-              <th>{% trans add_form.national_code.label_tag %}</th>
+              <th>{% trans add_form.pub_level.label_tag %}</th>
           </tr>
       </thead>
       <tbody>
@@ -446,34 +445,6 @@
           {{ add_form.frequency }}
           {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
         </td>
-        <td>
-          {{ add_form.alphabet }}
-          {% field_help add_form.alphabet.label add_form.alphabet.help_text term-alphabet %}  
-        </td>
-        <td>
-          {{ add_form.national_code }}
-          {% field_help add_form.national_code.label add_form.national_code.help_text term-national-code %}
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <table class="table table-bordered table-striped">
-      <thead>
-          <tr>
-              <th>{% trans add_form.literature_type.label_tag %}</th>
-              <th>{% trans add_form.treatment_level.label_tag %}</th>
-              <th>{% trans add_form.pub_level.label_tag %}</th>
-          </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>
-         {{ add_form.literature_type }}
-         {% field_help add_form.literature_type.label add_form.literature_type.help_text term-literature-type %}
-        </td>
-        <td>
-          {{ add_form.treatment_level }}
-          {% field_help add_form.treatment_level.label add_form.treatment_level.help_text term-treatment-type %}
         <td>
           {{ add_form.pub_level }}
           {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
