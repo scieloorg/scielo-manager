@@ -282,13 +282,6 @@
            {% field_help add_form.url_journal.label add_form.url_journal.help_text term-url-of-the-journal %}
         </div>
     </div>
-    <div class="control-group {% if add_form.center.errors %}error{% endif %}">
-        <label class="control-label" for="center">{% trans add_form.center.label_tag %}</label>
-        <div class="controls">
-           {{ add_form.center }}
-           {% field_help add_form.center.label add_form.center.help_text term-center %}
-        </div>
-    </div>
     <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
         <label class="control-label" for="editorial_standard">{% trans add_form.editorial_standard.label_tag %}</label>
         <div class="controls">

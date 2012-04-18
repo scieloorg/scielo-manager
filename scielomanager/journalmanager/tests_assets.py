@@ -221,7 +221,7 @@ def get_sample_journal():
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'publisher', 'center', 'notes',]
+       'publisher', 'notes',]
     """
 
     journal_attrs = {
@@ -329,66 +329,6 @@ def get_sample_uselicense():
     }
 
     return models.UseLicense(**uselicense_attrs)
-
-def get_sample_center(validated = True):
-    """
-    Returns a center object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'address_complement']
-    """
-
-    center_attrs = {
-      'city': '',
-      'fax': '',
-      'validated': validated,
-      'name': u'Associação Nacional de História - ANPUH',
-      'address_number': '',
-      'acronym': 'rbh',
-      'country': '',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': '',
-      'address_complement': '',
-      'is_available': True,
-    }
-
-    return models.Center(**center_attrs)
-
-def get_sample_center_dataform(dict_params=None):
-
-    if dict_params is None:
-        dict_params = {}
-
-    """
-    Returns a center object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'address_complement']
-    """
-
-    center_attrs = {
-      'center-city': '',
-      'center-fax': '',
-      'center-validated': True,
-      'center-name': u'Associação Nacional de História - ANPUH',
-      'center-address_number': '123456',
-      'center-acronym': 'rbh',
-      'center-country': 'São Paulo',
-      'center-cel': '',
-      'center-phone': '',
-      'center-state': '',
-      'center-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'center-mail': 'scielo@scielo.org',
-      'center-address_complement': '',
-      'center-is_available': True,
-    }
-
-    center_attrs.update(dict_params)
-
-    return center_attrs
 
 def get_sample_index_coverage():
 

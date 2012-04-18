@@ -28,7 +28,6 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
                 <li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>
-                <li><a href="{% url center.index %}">{% trans 'Markup Centers' %}</a></li>
                   {% if perms.auth %}
                   <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
                   {% endif %}
@@ -39,7 +38,6 @@
                       <select id="list_model" class="navbar-search span2">
                         <option{% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">Journal</option>
                         <option{% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">Publisher</option>
-                        <option{% if 'center' in request.path %} selected {% endif %} value="{% url center.index %}">Center</option>
                       </select>
                       <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
                     </form>
