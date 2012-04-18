@@ -202,18 +202,6 @@ class JournalMission(models.Model):
     description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
 
-class IndexDatabase(models.Model):
-    name = models.CharField(_('Database Name'), max_length=256, null=False, blank=True)
-
-    def __unicode__(self):
-        return self.name
-
-class JournalIndexCoverage(models.Model):
-    journal = models.ForeignKey(Journal)
-    database = models.ForeignKey(IndexDatabase, null=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
-    title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
-    identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
-
 class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)

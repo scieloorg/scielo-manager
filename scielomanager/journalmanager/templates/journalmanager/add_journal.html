@@ -35,7 +35,6 @@
       <li><a href="#text_language">{% trans 'Text Language' %}</a></li>
       <li><a href="#life_cycle">{% trans 'Life Cycle' %}</a></li>
       <li><a href="#system_information">{% trans 'System Information' %}</a></li>
-      <li><a href="#indexing_coverage">{% trans 'Indexing Coverage' %}</a></li>
       <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
       <li><a href="#license">{% trans 'Licenses' %}</a></li>
       <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
@@ -316,37 +315,6 @@
         </div>
     </div>
   </div>
-  <span class="label"><a name="indexing_coverage"></a>{% trans "Indexing Coverage" %}</span>
-  <div class="well">
-   <table id="indexcoverageformset" class="table table-bordered table-striped">
-      <thead>
-          <tr>
-              <th>
-              	{% trans "Database" %}
-              	{% field_help indexcoverageformset.forms.0.database.label indexcoverageformset.forms.0.database.help_text term-indexing %}
-              </th>
-              <th>{% trans "Title" %}</th>
-              <th>{% trans "Identify" %}</th>
-          </tr>
-      </thead>
-            <tbody>
-           {% for form in indexcoverageformset.forms %}
-          <tr id="{{ form.prefix }}-row">
-              <td>
-                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                  {{ form.database }}
-              </td>
-              <td>{{ form.title }}</td>
-              <td>{{ form.identify }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-      </table>
-      <p>
-          {{ indexcoverageformset.management_form }}
-      </p>
-  </div>
       <span class="label"><a name="publisher_and_sponsor"></a>{% trans "Publisher and Sponsors" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.publisher.errors %}error{% endif %}">
@@ -541,10 +509,6 @@
            prefix: '{{ histformset.prefix }}'
         });
 
-        $('#indexcoverageformset tbody tr').formset({
-           formCssClass: 'dynamic-indexcoverageformset-form',
-           prefix: '{{ indexcoverageformset.prefix }}'
-        });
     });
   </script>
 {% endblock %}

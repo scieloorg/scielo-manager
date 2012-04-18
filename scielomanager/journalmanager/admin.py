@@ -24,16 +24,13 @@ class SectionAdmin(admin.ModelAdmin):
 class JournalStudyAreaInline(admin.StackedInline):
     model = JournalStudyArea
 
-class JournalIndexCoverageInline(admin.StackedInline):
-    model = JournalIndexCoverage
-
 class JournalAdmin(admin.ModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
     list_filter = ('is_available',)
     filter_horizontal = ('collections','languages')
     inlines = [JournalHistoryInline, JournalMissionInline,
-        JournalStudyAreaInline, JournalIndexCoverageInline]
+        JournalStudyAreaInline]
 
 class InstitutionAdmin(admin.ModelAdmin):
     list_display = ('name','validated')
@@ -59,7 +56,6 @@ class CenterAdmin(admin.ModelAdmin):
 class PublisherAdmin(admin.ModelAdmin):
     filter_horizontal = ('collections',)
 
-
 admin.site.register(Journal, JournalAdmin)
 admin.site.register(Institution, InstitutionAdmin)
 admin.site.register(Collection, CollectionAdmin)
@@ -71,11 +67,4 @@ admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
 admin.site.register(Center, CenterAdmin)
 admin.site.register(Publisher, PublisherAdmin)
-admin.site.register(IndexDatabase)
-admin.site.register(JournalIndexCoverage)
 admin.site.register(Language)
-
-
-
-
-
