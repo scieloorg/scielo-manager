@@ -126,10 +126,6 @@ PDF_DOWNLOAD = [
     ('na','Not Available'),
 ] 
 TITLE_CATEGORY = [
-    ('medline','Medline'),
-    ('lilacs','LILACS'),
-    ('iso','ISO'),
     ('paralleltitle','Parallel Title'),
-    ('shorttitle','Short Title'),
     ('other','Other'), 
 ]

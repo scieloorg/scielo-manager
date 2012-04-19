@@ -56,12 +56,18 @@
            {% field_help add_form.title.label add_form.title.help_text term-journal-title %}
         </div>
     </div>
+    <div class="control-group {% if add_form.title_iso.errors %}error{% endif %}">
+        <label class="control-label" for="title_iso">{% trans add_form.title_iso.label_tag %}</label>
+        <div class="controls">
+           {{ add_form.title_iso }}
+        </div>
+    </div> 
     <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
         <label class="control-label" for="short_title">{% trans add_form.short_title.label_tag %}</label>
         <div class="controls">
            {{ add_form.short_title }}
         </div>
-    </div>
+    </div> 
     <div class="control-group {% if add_form.previous_title.errors %}error{% endif %}">
         <label class="control-label" for="previous_title">{% trans add_form.previous_title.label_tag %}</label>
         <div class="controls">
@@ -69,26 +75,11 @@
            {% field_help add_form.previous_title.label add_form.previous_title.help_text term-previous-title %}
         </div>
     </div>
-  </div>
-
-  <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
-    <div class="well">
-      <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
-          <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
-          <div class="controls">
-             {{ add_form.collections }}
-             {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
-          </div>
-      </div>
-    </div>
-
-  <span class="label"><a name="other_title"></a>{% trans "Other Titles" %}</span>
-  <div class="well">
       <table id="titleformset" class="table table-bordered table-striped">
       <thead>
           <tr>
-              <th>{% trans "Title" %}</th>
-              <th>{% trans "Category" %}</th>
+              <td>{% trans "Other Titles" %}</td>
+              <td>{% trans "Category" %}</td>
           </tr>
       </thead>
       <tbody>
@@ -108,6 +99,17 @@
           {{ titleformset.management_form }}
       </p>
   </div>
+ 
+  <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
+    <div class="well">
+      <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
+          <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
+          <div class="controls">
+             {{ add_form.collections }}
+             {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
+          </div>
+      </div>
+    </div>
 
   <span class="label"><a name="issn"></a>{% trans "ISSN" %}</span>
   <div class="well">
