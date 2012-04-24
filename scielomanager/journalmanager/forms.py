@@ -1,7 +1,6 @@
 # coding: utf-8
 from django import forms
 from django.forms import ModelForm, DateField
-from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
 
@@ -141,9 +140,7 @@ class IssueForm(ModelForm):
         model = models.Issue
         exclude = ('collection', 'journal', 'created', 'updated')
         widgets = {
-            'publication_date': SelectDateWidget(),
-            'init_year': SelectDateWidget(),
-            'final_year': SelectDateWidget(),
+            'publication_date': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker'}),
         }
 
 class SectionTitleForm(ModelForm):

@@ -6,15 +6,6 @@
 
 $(document).ready(function() {
 
-	// 	$.each($('input#datepicker'), function(){
-	// 			$(this).datepicker({
-	// 			changeMonth: true,
-	// 			changeYear: true,
-	// 			showButtonPanel: true,
-	// 			dateFormat:  "yy-mm-dd"
-	// 		});
-	// });
-
 	$('input').filter('.datepicker').datepicker({
 					changeMonth: true,
 					changeYear: true,
