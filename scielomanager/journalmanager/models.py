@@ -312,4 +312,5 @@ class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
 class Center(Institution):
+    objects = AppCustomManager()
     collections = models.ManyToManyField(Collection)
