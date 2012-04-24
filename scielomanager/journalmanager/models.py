@@ -12,10 +12,12 @@ from django.conf.global_settings import LANGUAGES
 from django.conf import settings
 from django.db.models.signals import post_save
 
+import caching.base
+
 import choices
 import helptexts
 
-class AppCustomManager(models.Manager):
+class AppCustomManager(caching.base.CachingManager):
     """
     Domain specific model managers.
     """
@@ -24,21 +26,21 @@ class AppCustomManager(models.Manager):
         """
         Filter the queryset based on its availability.
         """
-        data_queryset = super(AppCustomManager, self).get_query_set()
+        data_queryset = self.get_query_set()
         if availability is not None:
             if not isinstance(availability, bool):
                 data_queryset = data_queryset.filter(is_available=availability)
 
         return data_queryset
 
-class Language(models.Model):
+class Language(caching.base.CachingMixin, models.Model):
     """
     Represents ISO 639-1 Language Code and its language name in English. Django
     automaticaly translates language names, if you write them right.
 
     http://en.wikipedia.org/wiki/ISO_639-1_language_matrix
     """
-
+    objects = caching.base.CachingManager()
     iso_code = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     name = models.CharField(_('Language Name (in English)'), max_length=64)
 
@@ -48,7 +50,8 @@ class Language(models.Model):
     class Meta:
         ordering = ['name']
 
-class UserProfile(models.Model):
+class UserProfile(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
 
@@ -67,7 +70,8 @@ class UserProfile(models.Model):
         self.user.save()
         return super(UserProfile,self).save(force_insert,force_update)
 
-class Collection(models.Model):
+class Collection(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
@@ -80,14 +84,15 @@ class Collection(models.Model):
     class Meta:
         ordering = ['name']
 
-class UserCollections(models.Model):
+class UserCollections(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection, help_text=helptexts.USERCOLLECTIONS_COLLECTION)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False,
         blank=False)
 
-class Institution(models.Model):
+class Institution(caching.base.CachingMixin, models.Model):
 
     #Custom manager
     objects = AppCustomManager()
@@ -119,7 +124,7 @@ class Publisher(Institution):
     objects = AppCustomManager()
     collections = models.ManyToManyField(Collection)
 
-class Journal(models.Model):
+class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
     objects = AppCustomManager()
@@ -182,39 +187,46 @@ class Journal(models.Model):
     class Meta:
         ordering = ['title']
 
-class JournalStudyArea(models.Model):
+class JournalStudyArea(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     journal = models.ForeignKey(Journal)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True, help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
 
-class JournalTitle(models.Model):
+class JournalTitle(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     journal = models.ForeignKey(Journal)
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
-class JournalHist(models.Model):
+class JournalHist(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     journal = models.ForeignKey(Journal)
     date = models.DateField(_('Date'), editable=True, blank=True)
     status = models.CharField(_('Status'), choices=choices.JOURNAL_HIST_STATUS, null=False, blank=True, max_length=2)
 
-class JournalMission(models.Model):
+class JournalMission(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     journal = models.ForeignKey(Journal, null=False)
     description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
 
-class IndexDatabase(models.Model):
+class IndexDatabase(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     name = models.CharField(_('Database Name'), max_length=256, null=False, blank=True)
 
     def __unicode__(self):
         return self.name
 
-class JournalIndexCoverage(models.Model):
+class JournalIndexCoverage(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     journal = models.ForeignKey(Journal)
     database = models.ForeignKey(IndexDatabase, null=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     title = models.CharField(_('Title'), max_length=256, null=False, blank=True)
     identify = models.CharField(_('Identify'), max_length=256, null=False, blank=True)
 
-class UseLicense(models.Model):
+class UseLicense(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
     disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
@@ -222,7 +234,8 @@ class UseLicense(models.Model):
     def __unicode__(self):
         return self.license_code
 
-class TranslatedData(models.Model):
+class TranslatedData(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     translation = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
     language = models.CharField(_('Language'), choices=choices.LANGUAGE, null=False, blank=False, max_length=32)
     model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
@@ -231,12 +244,13 @@ class TranslatedData(models.Model):
     def __unicode__(self):
         return self.translation if self.translation is not None else 'Missing trans: {0}.{1}'.format(self.model, self.field)
 
-class SectionTitle(models.Model):
+class SectionTitle(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
     section = models.ForeignKey('Section')
     title = models.CharField(_('Title'), max_length=256, blank=False)
     language = models.ForeignKey('Language', blank=False)
 
-class Section(models.Model):
+class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
     objects = AppCustomManager()
 
@@ -253,7 +267,7 @@ class Section(models.Model):
         except IndexError:
             return '##TITLE MISSING##' if not self.code else self.code
 
-class Issue(models.Model):
+class Issue(caching.base.CachingMixin, models.Model):
 
     #Custom manager
     objects = AppCustomManager()
