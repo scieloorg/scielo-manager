@@ -75,7 +75,6 @@ class JournalForm(UserCollectionContext):
            'url_journal': forms.TextInput(attrs={'class':'span9'}),
            'notes': forms.Textarea(attrs={'class':'span9'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
-           'literature_type': forms.Select(attrs={'class':'span5'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
