@@ -27,17 +27,17 @@
     <ul class="nav nav-list">
      <li class="nav-header" style="cursor: pointer; cursor: hand">{% trans 'Form Index' %}</li><a>
       <li><a href="#title">{% trans 'Title' %}</a></li>
-      <li><a href="#journal_collection">{% trans 'Journal Collections' %}</a></li>
       <li><a href="#other_title">{% trans 'Other Titles' %}</a></li>
       <li><a href="#issn">{% trans 'ISSN' %}</a></li>
+      <li><a href="#journal_collection">{% trans 'Journal Collections' %}</a></li>
       <li><a href="#subject">{% trans 'Subjects' %}</a></li>
       <li><a href="#mission">{% trans 'Mission' %}</a></li>
       <li><a href="#text_language">{% trans 'Text Language' %}</a></li>
-      <li><a href="#life_cycle">{% trans 'Life Cycle' %}</a></li>
       <li><a href="#system_information">{% trans 'System Information' %}</a></li>
       <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
       <li><a href="#license">{% trans 'Licenses' %}</a></li>
       <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
+      <li><a href="#life_cycle">{% trans 'Life Cycle' %}</a></li>
       <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
     </ul>
   </div>
@@ -74,6 +74,10 @@
            {% field_help add_form.previous_title.label add_form.previous_title.help_text term-previous-title %}
         </div>
     </div>
+  </div>
+
+  <span class="label"><a name="other_title"></a>{% trans "Other Titles" %}</span>
+  <div class="well">
       <table id="titleformset" class="table table-bordered table-striped">
       <thead>
           <tr>
@@ -144,6 +148,18 @@
         </div>
     </div>
   </div>
+
+  <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
+    <div class="well">
+      <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
+          <label class="control-label" for="collections">{% trans add_form.collections.label_tag %}</label>
+          <div class="controls">
+             {{ add_form.collections }}
+             {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
+          </div>
+      </div>
+    </div>
+
   <span class="label"><a name="subject"></a>{% trans "subject" %}</span>
   <div class="well">
     <table id="studyareaformset" class="table table-bordered table-striped">
@@ -219,32 +235,6 @@
     </div>
   </div>
 
-  <span class="label"><a name="life_cycle"></a>{% trans "Life Cycle" %}</span>
-  <div class="well">
-      <table id="histformset" class="table table-bordered table-striped">
-      <thead>
-          <tr>
-              <th>{% trans "Date" %}</th>
-              <th>{% trans "Status" %}</th>
-          </tr>
-      </thead>
-      <tbody>
-           {% for form in histformset.forms %}
-          <tr id="{{ form.prefix }}-row">
-              <td>
-                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                  {{ form.date }}
-              </td>
-              <td>{{ form.status }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-      </table>
-      <p>
-          {{ histformset.management_form }}
-      </p>
-  </div>
 
   <span class="label"><a name="system_information"></a>{% trans "System Information" %}</span>
   <div class="well">
@@ -310,7 +300,8 @@
         </div>
     </div>
   </div>
-      <span class="label"><a name="publisher_and_sponsor"></a>{% trans "Publisher and Sponsors" %}</span>
+
+  <span class="label"><a name="publisher_and_sponsor"></a>{% trans "Publisher and Sponsors" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.publisher.errors %}error{% endif %}">
         <label class="control-label" for="publisher">{% trans add_form.publisher.label_tag %}</label>
@@ -327,6 +318,7 @@
         </div>
     </div>
   </div>
+
       <span class="label"><a name="license"></a>{% trans "Licenses" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
@@ -344,6 +336,7 @@
         </div>
     </div>
   </div>
+
   <span class="label"><a name="formal_information"></a>{% trans "Formal Information" %}</span>
   <div class="well">
     <table class="table table-bordered table-striped" sstyle="width:100%">
@@ -416,6 +409,34 @@
       </tbody>
     </table>
   </div>
+
+  <span class="label"><a name="life_cycle"></a>{% trans "Life Cycle" %}</span>
+  <div class="well">
+      <table id="histformset" class="table table-bordered table-striped">
+      <thead>
+          <tr>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Status" %}</th>
+          </tr>
+      </thead>
+      <tbody>
+           {% for form in histformset.forms %}
+          <tr id="{{ form.prefix }}-row">
+              <td>
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.date }}
+              </td>
+              <td>{{ form.status }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      </table>
+      <p>
+          {{ histformset.management_form }}
+      </p>
+  </div>
+
       <span class="label"><a name="further_information"></a>{% trans "Further Information" %}</span>
   <div class="well">
       <div class="control-group {% if add_form.notes.errors %}error{% endif %}">
