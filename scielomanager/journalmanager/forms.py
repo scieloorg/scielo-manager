@@ -58,8 +58,9 @@ class JournalForm(UserCollectionContext):
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class':'span9'}),
+           'title_iso': forms.TextInput(attrs={'class':'span9'}),
+           'short_title': forms.TextInput(attrs={'class':'span9'}),
            'previous_title': forms.Select(attrs={'class':'span9'}),
-           'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
            'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
