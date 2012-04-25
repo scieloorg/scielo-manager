@@ -205,12 +205,3 @@ class JournalTitleForm(ModelForm):
       widgets = {
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
-
-class CenterForm(UserCollectionContext):
-
-    def __init__(self, *args, **kwargs):
-        super(CenterForm, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = models.Center
-        exclude = ('collection',)

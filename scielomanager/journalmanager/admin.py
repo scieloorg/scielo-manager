@@ -53,12 +53,8 @@ class UserAdmin(admin.ModelAdmin):
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
 
-class CenterAdmin(admin.ModelAdmin):
-    filter_horizontal = ('collections',)
-
 class PublisherAdmin(admin.ModelAdmin):
     filter_horizontal = ('collections',)
-
 
 admin.site.register(Journal, JournalAdmin)
 admin.site.register(Institution, InstitutionAdmin)
@@ -69,13 +65,8 @@ admin.site.register(Section, SectionAdmin)
 admin.site.register(TranslatedData)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
-admin.site.register(Center, CenterAdmin)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(IndexDatabase)
 admin.site.register(JournalIndexCoverage)
 admin.site.register(Language)
-
-
-
-
 

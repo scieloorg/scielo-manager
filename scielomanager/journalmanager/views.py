@@ -67,9 +67,6 @@ def generic_index_search(request, model, journal_id = None):
         if model is models.Journal:
             objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
 
-        if model is models.Center:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
-
     if objects_all.count() == 0:
         messages.error(request, _('Your search did not match any documents.'))
 
@@ -408,56 +405,6 @@ def add_section(request, journal_id, section_id=None):
                               'journal': journal,
                               },
                               context_instance = RequestContext(request))
-
-@login_required
-def add_center(request, center_id=None):
-    """
-    Handles new and existing centers
-    """
-    if  center_id == None:
-        center = models.Center()
-    else:
-        center = get_object_or_404(models.Center, id = center_id)
-
-    user_collections = get_user_collections(request.user.id)
-
-    if request.method == 'POST':
-        centerform = CenterForm(request.POST, instance=center, prefix='center',
-            collections_qset=user_collections)
-
-        if centerform.is_valid():
-            centerform.save()
-            messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('center.index'))
-        else:
-            messages.error(request, MSG_FORM_MISSING)
-
-    else:
-        centerform  = CenterForm(instance=center, prefix='center', collections_qset=user_collections)
-
-    return render_to_response('journalmanager/add_center.html', {
-                              'add_form': centerform,
-                              'user_name': request.user.pk,
-                              'user_collections': user_collections,
-                              },
-                              context_instance = RequestContext(request))
-
-
-@login_required
-def center_index(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default = True)
-
-    all_centers = models.Center.objects.available(request.GET.get('is_available', 1))
-    centers = get_paginated(all_centers, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/center_dashboard.html')
-    c = RequestContext(request, {
-                       'objects_center': centers,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
-
 
 @login_required
 def toggle_user_availability(request, user_id):

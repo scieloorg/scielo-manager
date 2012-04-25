@@ -30,12 +30,6 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/issue/(?P<issue_id>\d+)/edit/$', views.add_issue, name='issue.edit' ),
     url(r'^issue/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Issue}, name='issue.toggle_availability' ),
 
-    # Center Tools
-    url(r'^center/$', views.generic_index_search, {'model': models.Center}, name='center.index' ),
-    url(r'^center/new/$', views.add_center, name='center.add' ),
-    url(r'^center/(?P<center_id>\d+)/edit/$', views.add_center, name='center.edit' ),
-    url(r'^center/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Center}, name='center.toggle_availability' ),
-
     # Users Tools
     url(r'^user/$', views.user_index, name="user.index"),
     url(r'^user/new/$', views.add_user, name="user.add"),
