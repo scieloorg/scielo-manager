@@ -64,7 +64,3 @@ admin.site.register(Issue, IssueAdmin)
 admin.site.register(Supplement)
 admin.site.register(Publisher, PublisherAdmin)
 admin.site.register(Language)
-<<<<<<< HEAD
-
-=======
->>>>>>> jamil/tk208
