@@ -77,11 +77,6 @@ def get_sample_journal_dataform(dict_params=None):
       'hist-0-date': '2005-10-10',
       'hist-0-status': 'C',
 
-      #History Language formset data
-      'indexcoverage-TOTAL_FORMS': 1,
-      'indexcoverage-INITIAL_FORMS': 0,
-      'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
-      'indexcoverage-0-identify': 'ABDC-Medline',
     }
 
     journal_attrs.update(dict_params)
@@ -216,7 +211,7 @@ def get_sample_journal():
     to another model object):
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
-       'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
+       'use_license', 'previous_title_id', 'url_main_collection',
        'publisher', 'center', 'notes',]
     """
 
@@ -381,15 +376,6 @@ def get_sample_center_dataform(dict_params=None):
     center_attrs.update(dict_params)
 
     return center_attrs
-
-def get_sample_index_coverage():
-
-    indexing_coverage_attrs = {
-        'title': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
-        'identify': 'lil-llccs',
-    }
-
-    return models.JournalIndexCoverage(**indexing_coverage_attrs)
 
 def get_sample_index_database():
 

@@ -224,9 +224,6 @@ class LoggedInViewsTest(TestCase):
         sample_uselicense = tests_assets.get_sample_uselicense()
         sample_uselicense.save()
 
-        sample_indexdatabase = tests_assets.get_sample_index_database()
-        sample_indexdatabase.save()
-
         sample_center = tests_assets.get_sample_center()
         sample_center.collection = self.collection
         sample_center.save()
@@ -238,7 +235,8 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'indexcoverage-0-database': sample_indexdatabase.pk,}))
+                                                     }))
+
         self.assertTrue('some errors or missing data' in response.content)
 
 
@@ -246,9 +244,8 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-center': sample_center.pk,
-                                                     'journal-languages': [sample_language.pk], }))
+                                                     'journal-languages': [sample_language.pk]}))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -258,7 +255,6 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-center': sample_center.pk,
                                                      'journal-languages': [sample_language.pk], }))
