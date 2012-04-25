@@ -25,7 +25,6 @@ from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
 
-
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 
