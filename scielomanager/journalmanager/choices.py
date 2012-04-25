@@ -28,16 +28,6 @@ PUBLICATION_STATUS = [
     ('?','Unknow'),   
 ]
 
-ALPHABET = [
-    ('B','Extensive Roman'),
-    ('O','Another Alphabet'),
-    ('A','Basic Roman'),
-    ('E','Chinese'),
-    ('C','Cirilic'),
-    ('D','japanese'),
-    ('K','Korean'),    
-]
-
 LANGUAGE = [
     ('pt','português'),
     ('en','inglês'),
@@ -78,38 +68,6 @@ CTRL_VOCABULARY = [
     ('decs','Health Sciences Descriptors'),
 ]
 
-LITERATURE_TYPE = [
-    ('C','Conference'),
-    ('SCP','Conference and Project papers as periodical series'),
-    ('MC','Conference papers as Monograph'),
-    ('MSC','Conference papers as Monograph Series'),
-    ('SC','Conference papers as Periodical Series'),
-    ('NC','Conference papers in a non conventional form'),
-    ('N','Document in a non conventional form'),
-    ('M','Monograph'),
-    ('MS','Monograph Series'),
-    ('P','Project'),
-    ('MCP','Project and Conference papers as Monograph'),
-    ('MO','Project papers as Monograph'),
-    ('MSP','Project papers as Monograph Series'),
-    ('SP','Project papers as Periodical Series'),
-    ('NP','Project papers in a non conventional form'),
-    ('S','Serial'),
-    ('T','Thesis and Dissertation'),
-    ('TS','Thesis Series'),
-]
-
-TREATMENT_LEVEL = [
-    ('am','analytical of a monograph'),
-    ('amc','analytical of a monograph in collection'),
-    ('ams','analytical of a monograph in a serial'),
-    ('as','analytical of a serial'),
-    ('c','collective level'),
-    ('mc','monographic in a collection'),
-    ('m','monographic level'),
-    ('ms','monographic series level'),
-]
-
 PUBLICATION_LEVEL = [
     ('CT','Scientific Technical'),
     ('DI','Divulgation')
@@ -120,6 +78,7 @@ JOURNAL_HIST_STATUS = [
     ('D','Deceased'),
     ('S','Suspended'),
 ]
+
 PDF_DOWNLOAD = [
     ('art','article based - a PDF file for each article'),
     ('iss','issue based - a PDF file for each issue'),
