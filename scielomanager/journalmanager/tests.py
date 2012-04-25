@@ -10,7 +10,6 @@ from scielomanager.journalmanager.models import Collection
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Publisher
 from scielomanager.journalmanager.models import Issue
-from scielomanager.journalmanager.models import Center
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -35,18 +34,6 @@ def with_sample_issue(func):
         func(self)
         self._destroy_issue()
     return decorated
-
-def with_sample_center(func):
-    """
-    Decorator that creates a sample Journal instance
-    and destructs it at the end of the execution.
-    """
-    def decorated(self=None):
-        self._create_center()
-        func(self)
-        self._destroy_center()
-    return decorated
-
 
 class LoggedInViewsTest(TestCase):
     """
@@ -104,15 +91,6 @@ class LoggedInViewsTest(TestCase):
 
     def _destroy_issue(self):
         self._destroy_journal
-
-    def _create_center(self):
-
-        sample_center = tests_assets.get_sample_center()
-        sample_center.collection = self.collection
-        sample_center.save()
-
-    def _destroy_center(self):
-        Center.objects.get(name = u'Associação Nacional de História - ANPUH').delete()
 
     def test_index(self):
         """
@@ -227,10 +205,6 @@ class LoggedInViewsTest(TestCase):
         sample_indexdatabase = tests_assets.get_sample_index_database()
         sample_indexdatabase.save()
 
-        sample_center = tests_assets.get_sample_center()
-        sample_center.collection = self.collection
-        sample_center.save()
-
         sample_language = tests_assets.get_sample_language()
         sample_language.save()
 
@@ -247,7 +221,6 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
-                                                     'journal-center': sample_center.pk,
                                                      'journal-languages': [sample_language.pk], }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -260,7 +233,6 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-center': sample_center.pk,
                                                      'journal-languages': [sample_language.pk], }))
 
         self.assertRedirects(response, reverse('journal.index'))
@@ -360,35 +332,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.edit', args=[journal.pk, journal.issue_set.all()[0].pk]))
         self.assertEqual(response.status_code, 200)
 
-    def test_add_center(self):
-
-        #empty form
-        response = self.client.get(reverse('center.add'))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('center.add'),
-            tests_assets.get_sample_center_dataform({
-                'center-collections': [self.usercollections.pk]
-                }))
-
-        self.assertRedirects(response, reverse('center.index'))
-
-        response = self.client.get(reverse('center.edit', args=[Center.objects.all()[0].pk]))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
-            tests_assets.get_sample_center_dataform({
-                'center-name': u'Associação Nacional de História - ANPUH - modified',
-                'center-collections': [self.usercollections.pk]
-                }))
-
-        self.assertRedirects(response, reverse('center.index'))
-
-        self.assertQuerysetEqual(Center.objects.all(), [
-                "<Center: Associação Nacional de História - ANPUH - modified>",
-              ]
-          )
-
     @with_sample_journal
     def test_journal_index(self):
         """
@@ -432,17 +375,6 @@ class LoggedInViewsTest(TestCase):
             unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
-    @with_sample_center
-    def test_center_index(self):
-        """
-        Logged user verify list of centers
-        """
-        response = self.client.get(reverse('center.index'))
-        self.assertTrue('objects_center' in response.context)
-
-        self.assertEqual(response.context['objects_center'].object_list[0].name, u'Associação Nacional de História - ANPUH')
-        self.assertEqual(response.context['objects_center'].object_list.count(), 1)
-
 
     @with_sample_journal
     def test_search_journal(self):
@@ -484,25 +416,6 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
-    @with_sample_center
-    def test_search_center(self):
-        """
-        View: search_center
-
-        Tests url dispatch and values returned by the view to the template
-        """
-        response = self.client.get(reverse('center.index') + '?q=Associação')
-
-        #url dispatcher
-        self.assertEqual(response.status_code, 200)
-
-        #values passed to template
-        self.assertTrue('objects_center' in response.context)
-
-        #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_center'].object_list[0].name))
-        self.assertTrue(1, len(response.context['objects_center'].object_list))
-
     @with_sample_journal
     def test_toggle_journal_availability(self):
         pre_journal = Journal.objects.all()[0]
@@ -537,18 +450,6 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(pre_issue.is_available is not pos_issue.is_available)
 
         response = self.client.get(reverse('issue.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 400)
-
-    @with_sample_center
-    def test_toggle_center_availability(self):
-        pre_center = Center.objects.all()[0]
-        response = self.client.get(reverse('center.toggle_availability', args=[pre_center.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        pos_center = Center.objects.all()[0]
-
-        self.assertEqual(pre_center, pos_center)
-        self.assertTrue(pre_center.is_available is not pos_center.is_available)
-
-        response = self.client.get(reverse('center.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
     def test_toggle_user_availability(self):
@@ -706,30 +607,11 @@ class LoggedInViewsTest(TestCase):
         for qset_item in response.context['add_form'].fields['collections'].queryset:
             self.assertTrue(qset_item in user_collections)
 
-    def test_contextualized_collection_field_on_add_center(self):
-        """
-        A user has a manytomany relation to Collection entities. So, when a
-        user is registering a new Center, he can only bind it to
-        the Collections he relates to.
-
-        Covered cases:
-        * Check if all collections presented on the form are related to the
-          user.
-        """
-        from journalmanager.views import get_user_collections
-        response = self.client.get(reverse('center.add'))
-        self.assertEqual(response.status_code, 200)
-
-        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
-
-        for qset_item in response.context['add_form'].fields['collections'].queryset:
-            self.assertTrue(qset_item in user_collections)
-
     @with_sample_journal
     def test_contextualized_language_field_on_add_section(self):
         """
         A user has a manytomany relation to Collection entities. So, when a
-        user is registering a new Center, he can only bind it to
+        user is registering a new Section, he can only bind it to
         the Collections he relates to.
 
         Covered cases:
