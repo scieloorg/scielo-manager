@@ -201,6 +201,8 @@ TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
 
 PAGINATION__ITEMS_PER_PAGE = 20
 
+CACHE_PREFIX = 'scielomanager:'
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -208,7 +210,7 @@ CACHES = {
     }
 }
 
-# CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
+CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
 ### END App customization settings
 #################################################################

@@ -2,12 +2,22 @@
 from django.contrib import admin
 from scielomanager.journalmanager.models import *
 from django.contrib.auth.admin import UserAdmin
+from django.core.cache import cache 
 
 admin.site.unregister(User)
 
-class CollectionAdmin(admin.ModelAdmin):
+class CustomModelAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        cache.clear()
+        qs = super(admin.ModelAdmin, self).queryset(request)
+        return qs 
+
+class CollectionAdmin(CustomModelAdmin):
     list_display = ('name', 'validated')
     search_fields = ('name',)
+
+admin.site.register(Collection, CollectionAdmin)
 
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
@@ -18,13 +28,15 @@ class JournalHistoryInline(admin.StackedInline):
 class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
-class SectionAdmin(admin.ModelAdmin):
+class SectionAdmin(CustomModelAdmin):
     inlines = [SectionTitleInline]
+
+admin.site.register(Section, SectionAdmin)
 
 class JournalStudyAreaInline(admin.StackedInline):
     model = JournalStudyArea
 
-class JournalAdmin(admin.ModelAdmin):
+class JournalAdmin(CustomModelAdmin):
     list_display = ('title', 'validated')
     search_fields = ('title',)
     list_filter = ('is_available',)
@@ -32,9 +44,13 @@ class JournalAdmin(admin.ModelAdmin):
     inlines = [JournalHistoryInline, JournalMissionInline,
         JournalStudyAreaInline]
 
-class InstitutionAdmin(admin.ModelAdmin):
+admin.site.register(Journal, JournalAdmin)
+
+class InstitutionAdmin(CustomModelAdmin):
     list_display = ('name','validated')
     search_fields = ('name',)
+
+admin.site.register(Institution, InstitutionAdmin)
 
 class UserProfileInline(admin.TabularInline):
     model = UserProfile
@@ -43,24 +59,38 @@ class UserCollectionsInline(admin.TabularInline):
     model = UserCollections
     extra = 1
 
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(CustomModelAdmin):
     exclude = ('email', )
     inlines = (UserProfileInline, UserCollectionsInline)
 
-class IssueAdmin(admin.ModelAdmin):
+admin.site.register(User, UserAdmin)
+
+class IssueAdmin(CustomModelAdmin):
     list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
 
-class PublisherAdmin(admin.ModelAdmin):
+admin.site.register(Issue, IssueAdmin)
+
+class PublisherAdmin(CustomModelAdmin):
     filter_horizontal = ('collections',)
 
-admin.site.register(Journal, JournalAdmin)
-admin.site.register(Institution, InstitutionAdmin)
-admin.site.register(Collection, CollectionAdmin)
-admin.site.register(User, UserAdmin)
-admin.site.register(UseLicense)
-admin.site.register(Section, SectionAdmin)
-admin.site.register(TranslatedData)
-admin.site.register(Issue, IssueAdmin)
-admin.site.register(Supplement)
 admin.site.register(Publisher, PublisherAdmin)
-admin.site.register(Language)
+
+class UseLicenseAdmin(CustomModelAdmin):
+    pass
+
+admin.site.register(UseLicense, UseLicenseAdmin)
+
+class LanguageAdmin(CustomModelAdmin):
+    pass
+
+admin.site.register(Language, LanguageAdmin)
+
+class TranslatedDataAdmin(CustomModelAdmin):
+    pass
+
+admin.site.register(TranslatedData)
+
+class SupplementAdmin(CustomModelAdmin):
+    pass
+
+admin.site.register(Supplement, SupplementAdmin)
