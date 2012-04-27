@@ -41,6 +41,7 @@ class Language(caching.base.CachingMixin, models.Model):
     http://en.wikipedia.org/wiki/ISO_639-1_language_matrix
     """
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     iso_code = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     name = models.CharField(_('Language Name (in English)'), max_length=64)
 
@@ -52,6 +53,7 @@ class Language(caching.base.CachingMixin, models.Model):
 
 class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     user = models.OneToOneField(User)
     email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
 
@@ -72,6 +74,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
 class Collection(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
@@ -86,6 +89,7 @@ class Collection(caching.base.CachingMixin, models.Model):
 
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection, help_text=helptexts.USERCOLLECTIONS_COLLECTION)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
@@ -96,6 +100,7 @@ class Institution(caching.base.CachingMixin, models.Model):
 
     #Custom manager
     objects = AppCustomManager()
+    nocacheobjects = models.Manager()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=128, db_index=True, help_text=helptexts.INSTITUTION__NAME)
@@ -122,12 +127,14 @@ class Institution(caching.base.CachingMixin, models.Model):
 
 class Publisher(Institution):
     objects = AppCustomManager()
+    nocacheobjects = models.Manager()
     collections = models.ManyToManyField(Collection)
 
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
     objects = AppCustomManager()
+    nocacheobjects = models.Manager()
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
@@ -183,30 +190,35 @@ class Journal(caching.base.CachingMixin, models.Model):
 
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal)
     study_area = models.CharField(_('Study Area'),max_length=256,
         choices=choices.SUBJECTS,null=False,blank=True, help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal)
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
 class JournalHist(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal)
     date = models.DateField(_('Date'), editable=True, blank=True)
     status = models.CharField(_('Status'), choices=choices.JOURNAL_HIST_STATUS, null=False, blank=True, max_length=2)
 
 class JournalMission(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, null=False)
     description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
 
 class UseLicense(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
 
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
@@ -217,6 +229,7 @@ class UseLicense(caching.base.CachingMixin, models.Model):
 
 class TranslatedData(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     translation = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
     language = models.CharField(_('Language'), choices=choices.LANGUAGE, null=False, blank=False, max_length=32)
     model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
@@ -227,6 +240,7 @@ class TranslatedData(caching.base.CachingMixin, models.Model):
 
 class SectionTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
     section = models.ForeignKey('Section')
     title = models.CharField(_('Title'), max_length=256, blank=False)
     language = models.ForeignKey('Language', blank=False)
@@ -234,6 +248,7 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
 class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
     objects = AppCustomManager()
+    nocacheobjects = models.Manager()
 
     journal = models.ForeignKey(Journal, null=True, blank=True)
 
@@ -252,6 +267,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     #Custom manager
     objects = AppCustomManager()
+    nocacheobjects = models.Manager()
 
     section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION)
     journal = models.ForeignKey(Journal, null=True, blank=False)
