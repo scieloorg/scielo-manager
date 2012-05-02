@@ -151,7 +151,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
-    scielo_issn = models.CharField(_('Which ISSN is in use at SciELO?'),max_length=16,
+    scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True, help_text=helptexts.JOURNAL__SCIELO_ISSN)
     print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__PRINT_ISSN)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)

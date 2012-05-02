@@ -108,10 +108,9 @@
     <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
         <label class="control-label" for="print_issn">{% trans add_form.print_issn.label_tag %}</label>
         <div class="controls">
-        	           {{ add_form.print_issn }}
+        	 {{ add_form.print_issn }}
            {% field_help add_form.print_issn.label add_form.print_issn.help_text term-print-issn %}
         <span class="help-inline">
-
            {% for error in add_form.print_issn.errors %}
               {{ error }}
            {% endfor %}

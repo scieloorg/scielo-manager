@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from journalmanager import models
 from scielo_extensions import formfields as fields
+from django.forms.util import ErrorList
 
 class UserCollectionContext(ModelForm):
     """
@@ -50,6 +51,18 @@ class JournalForm(UserCollectionContext):
         journal.save()
         self.save_m2m()
         return journal
+
+    def clean(self):
+        cleaned_data = super(JournalForm, self).clean()
+        print_issn = cleaned_data.get("print_issn")
+        eletronic_issn = cleaned_data.get("eletronic_issn")
+
+        if not (print_issn or eletronic_issn):
+            if not self._errors:
+                self._errors["print_issn"] = ErrorList([u"Eletronic ISSN or Print ISSN must be filled."])
+                self._errors["eletronic_issn"] = ErrorList([u"Eletronic ISSN or Print ISSN must be filled."])
+                
+        return cleaned_data
 
     class Meta:
 
