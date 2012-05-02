@@ -27,6 +27,8 @@ from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
 
+MSG_FORM_SAVED = _('Saved.')
+MSG_FORM_MISSING = _('There are some errors or missing data.')
 
 def get_user_collections(user_id):
 
@@ -71,9 +73,6 @@ def generic_index_search(request, model, journal_id = None):
 
         if model is models.Journal:
             objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
-
-        if model is models.Center:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
 
     if objects_all.count() == 0:
         messages.error(request, _('Your search did not match any documents.'))
@@ -174,6 +173,8 @@ def user_login(request):
         t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
+        else: 
+            c = RequestContext(request, {'required': True})
         return HttpResponse(t.render(c))
 
 @login_required
@@ -211,7 +212,10 @@ def add_user(request, user_id=None):
             userprofileformset.save()
             usercollectionsformset.save()
 
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('user.index'))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
     else:
         userform  = UserForm(instance=user, prefix='user')
         userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
@@ -244,7 +248,6 @@ def add_journal(request, journal_id = None):
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
     JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
-    JournalIndexCoverageFormSet = inlineformset_factory(models.Journal, models.JournalIndexCoverage, extra=1, can_delete=True)
 
     if request.method == "POST":
 
@@ -253,21 +256,19 @@ def add_journal(request, journal_id = None):
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
-        indexcoverageformset = JournalIndexCoverageFormSet(request.POST, instance=journal, prefix='indexcoverage')
 
-        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() and indexcoverageformset.is_valid() \
+        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
             and missionformset.is_valid() and histformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
             histformset.save()
-            indexcoverageformset.save()
-            messages.info(request, _('Saved.'))
+            messages.info(request, MSG_FORM_SAVED)
 
             return HttpResponseRedirect(reverse('journal.index'))
         else:
-            messages.error(request, _('There are some errors or missing data.'))
+            messages.error(request, MSG_FORM_MISSING)
 
     else:
         journalform  = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
@@ -275,7 +276,6 @@ def add_journal(request, journal_id = None):
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
         histformset = JournalHistFormSet(instance=journal, prefix='hist')
-        indexcoverageformset = JournalIndexCoverageFormSet(instance=journal, prefix='indexcoverage')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
@@ -284,7 +284,6 @@ def add_journal(request, journal_id = None):
                               'missionformset': missionformset,
                               'user_collections': user_collections,
                               'histformset': histformset,
-                              'indexcoverageformset': indexcoverageformset,
                               }, context_instance = RequestContext(request))
 
 @login_required
@@ -306,9 +305,10 @@ def add_publisher(request, publisher_id=None):
 
         if publisherform.is_valid():
             publisherform.save()
-
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('publisher.index'))
-
+        else:
+            messages.error(request, MSG_FORM_MISSING)
     else:
         publisherform  = PublisherForm(instance=publisher, prefix='publisher',
             collections_qset=user_collections)
@@ -341,8 +341,10 @@ def add_issue(request, journal_id, issue_id=None):
 
         if add_form.is_valid():
             add_form.save_all(journal)
-
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
     else:
         add_form = IssueForm(journal_id=journal.pk, instance=issue)
 
@@ -389,10 +391,10 @@ def add_section(request, journal_id, section_id=None):
         if add_form.is_valid() and section_title_formset.is_valid():
             add_form.save_all(journal)
             section_title_formset.save()
-            messages.info(request, _('Saved.'))
+            messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
         else:
-            messages.error(request, _('There are some errors or missing data.'))
+            messages.error(request, MSG_FORM_MISSING)
 
     else:
         add_form = SectionForm(instance=section)
@@ -405,54 +407,6 @@ def add_section(request, journal_id, section_id=None):
                               'journal': journal,
                               },
                               context_instance = RequestContext(request))
-
-@login_required
-def add_center(request, center_id=None):
-    """
-    Handles new and existing centers
-    """
-    if  center_id == None:
-        center = models.Center()
-    else:
-        center = get_object_or_404(models.Center, id = center_id)
-
-    user_collections = get_user_collections(request.user.id)
-
-    if request.method == 'POST':
-        centerform = CenterForm(request.POST, instance=center, prefix='center',
-            collections_qset=user_collections)
-
-        if centerform.is_valid():
-            centerform.save()
-
-            return HttpResponseRedirect(reverse('center.index'))
-
-    else:
-        centerform  = CenterForm(instance=center, prefix='center', collections_qset=user_collections)
-
-    return render_to_response('journalmanager/add_center.html', {
-                              'add_form': centerform,
-                              'user_name': request.user.pk,
-                              'user_collections': user_collections,
-                              },
-                              context_instance = RequestContext(request))
-
-
-@login_required
-def center_index(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default = True)
-
-    all_centers = models.Center.objects.available(request.GET.get('is_available', 1))
-    centers = get_paginated(all_centers, request.GET.get('page', 1))
-
-    t = loader.get_template('journalmanager/center_dashboard.html')
-    c = RequestContext(request, {
-                       'objects_center': centers,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
-
 
 @login_required
 def toggle_user_availability(request, user_id):

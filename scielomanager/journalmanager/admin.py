@@ -5,10 +5,6 @@ from django.contrib.auth.admin import UserAdmin
 
 admin.site.unregister(User)
 
-class CollectionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'validated')
-    search_fields = ('name',)
-
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
@@ -18,27 +14,6 @@ class JournalHistoryInline(admin.StackedInline):
 class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
-class SectionAdmin(admin.ModelAdmin):
-    inlines = [SectionTitleInline]
-
-class JournalStudyAreaInline(admin.StackedInline):
-    model = JournalStudyArea
-
-class JournalIndexCoverageInline(admin.StackedInline):
-    model = JournalIndexCoverage
-
-class JournalAdmin(admin.ModelAdmin):
-    list_display = ('title', 'validated')
-    search_fields = ('title',)
-    list_filter = ('is_available',)
-    filter_horizontal = ('collections','languages')
-    inlines = [JournalHistoryInline, JournalMissionInline,
-        JournalStudyAreaInline, JournalIndexCoverageInline]
-
-class InstitutionAdmin(admin.ModelAdmin):
-    list_display = ('name','validated')
-    search_fields = ('name',)
-
 class UserProfileInline(admin.TabularInline):
     model = UserProfile
 
@@ -46,35 +21,101 @@ class UserCollectionsInline(admin.TabularInline):
     model = UserCollections
     extra = 1
 
+class JournalStudyAreaInline(admin.StackedInline):
+    model = JournalStudyArea
+
+class CollectionAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Collection.nocacheobjects
+
+    list_display = ('name', 'validated')
+    search_fields = ('name',)
+
+admin.site.register(Collection, CollectionAdmin)
+
+class SectionAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Section.nocacheobjects
+
+admin.site.register(Section, SectionAdmin)
+
+class JournalAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Journal.nocacheobjects
+
+    list_display = ('title', 'validated')
+    search_fields = ('title',)
+    list_filter = ('is_available',)
+    filter_horizontal = ('collections','languages')
+    inlines = [JournalHistoryInline, JournalMissionInline,
+        JournalStudyAreaInline]
+
+admin.site.register(Journal, JournalAdmin)
+
+class InstitutionAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Institution.nocacheobjects
+
+    list_display = ('name','validated')
+    search_fields = ('name',)
+
+admin.site.register(Institution, InstitutionAdmin)
+
 class UserAdmin(admin.ModelAdmin):
     exclude = ('email', )
     inlines = (UserProfileInline, UserCollectionsInline)
 
+admin.site.register(User, UserAdmin)
+
 class IssueAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Issue.nocacheobjects
+
     list_display = ('journal', 'volume', 'number', 'is_available', 'is_marked_up')
 
-class CenterAdmin(admin.ModelAdmin):
-    filter_horizontal = ('collections',)
+admin.site.register(Issue, IssueAdmin)
 
 class PublisherAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Publisher.nocacheobjects
+
     filter_horizontal = ('collections',)
 
-
-admin.site.register(Journal, JournalAdmin)
-admin.site.register(Institution, InstitutionAdmin)
-admin.site.register(Collection, CollectionAdmin)
-admin.site.register(User, UserAdmin)
-admin.site.register(UseLicense)
-admin.site.register(Section, SectionAdmin)
-admin.site.register(TranslatedData)
-admin.site.register(Issue, IssueAdmin)
-admin.site.register(Supplement)
-admin.site.register(Center, CenterAdmin)
 admin.site.register(Publisher, PublisherAdmin)
-admin.site.register(IndexDatabase)
-admin.site.register(JournalIndexCoverage)
-admin.site.register(Language)
 
+class UseLicenseAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return UseLicense.nocacheobjects
+
+admin.site.register(UseLicense, UseLicenseAdmin)
+
+class LanguageAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Language.nocacheobjects
+
+admin.site.register(Language, LanguageAdmin)
+
+class TranslatedDataAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return TranslatedData.nocacheobjects
+
+admin.site.register(TranslatedData)
+
+class SupplementAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Supplement.nocacheobjects
+
+admin.site.register(Supplement, SupplementAdmin)
 
 
 

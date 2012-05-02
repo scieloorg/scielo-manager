@@ -158,7 +158,7 @@ TEMPLATE_CONTEXT_PROCESSORS =(
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MESSAGE_TAGS = {
     messages.INFO: 'alert-heading',
-    messages.SUCCESS: 'alert-heading',
+    messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-error',
     messages.ERROR: 'alert-error',
 }
@@ -200,6 +200,17 @@ MANAGED_LANGUAGES_CHOICES = (
 TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
 
 PAGINATION__ITEMS_PER_PAGE = 20
+
+CACHE_PREFIX = 'scielomanager:'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
+CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
 ### END App customization settings
 #################################################################

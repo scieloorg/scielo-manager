@@ -34,14 +34,14 @@ def get_sample_journal_dataform(dict_params=None):
     journal_attrs = {
       'journal-sponsor': 'FAPESP',
       'journal-ctrl_vocabulary': 'decs',
-      'journal-national_code': '083653-2',
       'journal-frequency': 'Q',
       'journal-final_num': '',
       'journal-validated': False,
-      'journal-treatment_level': 'c',
       'journal-eletronic_issn': '',
       'journal-init_vol': '1',
       'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
+      'journal-title_iso': u'ABCD. Arquivos B. de C. D. (São Paulo)',
+      'journal-short_title': u'ABCD.(São Paulo)',
       'journal-editorial_standard': 'vancouv',
       'journal-scielo_issn': 'print',
       'journal-secs_code': '6633',
@@ -50,12 +50,10 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-acronym': 'ABCD',
       'journal-pub_level': 'CT',
       'journal-init_num': '1',
-      'journal-literature_type': 'S',
       'journal-created': '2012-01-19 15:44:21',
       'journal-final_vol': '',
       'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'journal-pub_status': 'C',
-      'journal-alphabet': 'B',
       'journal-print_issn': '0102-6720',
 
       #Title formset data
@@ -81,11 +79,6 @@ def get_sample_journal_dataform(dict_params=None):
       'hist-0-date': '2005-10-10',
       'hist-0-status': 'C',
 
-      #History Language formset data
-      'indexcoverage-TOTAL_FORMS': 1,
-      'indexcoverage-INITIAL_FORMS': 0,
-      'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
-      'indexcoverage-0-identify': 'ABDC-Medline',
     }
 
     journal_attrs.update(dict_params)
@@ -220,21 +213,21 @@ def get_sample_journal():
     to another model object):
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
-       'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
+       'use_license', 'previous_title_id', 'url_main_collection',
        'publisher', 'center', 'notes',]
     """
 
     journal_attrs = {
       'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
-      'national_code': '083653-2',
       'frequency': 'Q',
       'final_num': '',
       'validated': False,
-      'treatment_level': 'c',
       'eletronic_issn': '',
       'init_vol': '1',
       'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
+      'title_iso': u'ABCD. Arquivos B. de C. D. (São Paulo)',
+      'short_title': u'ABCD.(São Paulo)',
       'editorial_standard': 'vancouv',
       'scielo_issn': 'print',
       'secs_code': '6633',
@@ -243,12 +236,10 @@ def get_sample_journal():
       'acronym': 'ABCD',
       'pub_level': 'CT',
       'init_num': '1',
-      'literature_type': 'S',
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'pub_status': 'C',
-      'alphabet': 'B',
       'print_issn': '0102-6720',
       'is_available': True,
     }
@@ -329,75 +320,6 @@ def get_sample_uselicense():
     }
 
     return models.UseLicense(**uselicense_attrs)
-
-def get_sample_center(validated = True):
-    """
-    Returns a center object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'address_complement']
-    """
-
-    center_attrs = {
-      'city': '',
-      'fax': '',
-      'validated': validated,
-      'name': u'Associação Nacional de História - ANPUH',
-      'address_number': '',
-      'acronym': 'rbh',
-      'country': '',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': '',
-      'address_complement': '',
-      'is_available': True,
-    }
-
-    return models.Center(**center_attrs)
-
-def get_sample_center_dataform(dict_params=None):
-
-    if dict_params is None:
-        dict_params = {}
-
-    """
-    Returns a center object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'address_complement']
-    """
-
-    center_attrs = {
-      'center-city': '',
-      'center-fax': '',
-      'center-validated': True,
-      'center-name': u'Associação Nacional de História - ANPUH',
-      'center-address_number': '123456',
-      'center-acronym': 'rbh',
-      'center-country': 'São Paulo',
-      'center-cel': '',
-      'center-phone': '',
-      'center-state': '',
-      'center-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'center-mail': 'scielo@scielo.org',
-      'center-address_complement': '',
-      'center-is_available': True,
-    }
-
-    center_attrs.update(dict_params)
-
-    return center_attrs
-
-def get_sample_index_coverage():
-
-    indexing_coverage_attrs = {
-        'title': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
-        'identify': 'lil-llccs',
-    }
-
-    return models.JournalIndexCoverage(**indexing_coverage_attrs)
 
 def get_sample_index_database():
 

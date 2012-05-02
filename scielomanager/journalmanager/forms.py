@@ -1,7 +1,6 @@
 # coding: utf-8
 from django import forms
 from django.forms import ModelForm, DateField
-from django.forms.extras.widgets import SelectDateWidget
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
 
@@ -59,8 +58,9 @@ class JournalForm(UserCollectionContext):
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class':'span9'}),
+           'title_iso': forms.TextInput(attrs={'class':'span9'}),
+           'short_title': forms.TextInput(attrs={'class':'span9'}),
            'previous_title': forms.Select(attrs={'class':'span9'}),
-           'short_title': forms.TextInput(attrs={'class':'span8'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
            'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
@@ -76,7 +76,6 @@ class JournalForm(UserCollectionContext):
            'url_journal': forms.TextInput(attrs={'class':'span9'}),
            'notes': forms.Textarea(attrs={'class':'span9'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
-           'literature_type': forms.Select(attrs={'class':'span5'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
         }
 
@@ -141,9 +140,7 @@ class IssueForm(ModelForm):
         model = models.Issue
         exclude = ('collection', 'journal', 'created', 'updated')
         widgets = {
-            'publication_date': SelectDateWidget(),
-            'init_year': SelectDateWidget(),
-            'final_year': SelectDateWidget(),
+            'publication_date': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker'}),
         }
 
 class SectionTitleForm(ModelForm):
@@ -209,12 +206,3 @@ class JournalTitleForm(ModelForm):
       widgets = {
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
-
-class CenterForm(UserCollectionContext):
-
-    def __init__(self, *args, **kwargs):
-        super(CenterForm, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = models.Center
-        exclude = ('collection',)

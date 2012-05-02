@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
   </head>
   <body>
+  {% if user.is_authenticated %}
     <div class="container-fluid">
       <div class="navbar">
         <div class="navbar-inner">
@@ -22,33 +23,29 @@
             <span class="icon-bar"></span>
           </a>
             <a class="brand" href="#">SciELO Manager</a>
+            <div class="nav-collapse collapse" style="height: 0px;">
               <ul class="nav">
                 <li><a href="/">Home</a></li>
-                {% if user.is_authenticated %}
                 <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
                 <li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>
-                <li><a href="{% url center.index %}">{% trans 'Markup Centers' %}</a></li>
                   {% if perms.auth %}
                   <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
                   {% endif %}
-                {% endif %}
                 <li class="divider-vertical"></li>
                 <li>
-                  {% if user.is_authenticated %}
                     <form id="form_search" class="navbar-search" action="" method="get">
                       <input class="search-query span2" placeholder="Search" name="q" value="{{request.GET.q}}"/>
                       <select id="list_model" class="navbar-search span2">
                         <option{% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">Journal</option>
                         <option{% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">Publisher</option>
-                        <option{% if 'center' in request.path %} selected {% endif %} value="{% url center.index %}">Center</option>
                       </select>
                       <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
                     </form>
-                  {% endif %}
                 </li>
               </ul>
+              {% endif %}
               {% if user.is_authenticated %}
-	            <ul class="nav pull-right span3">
+	            <ul class="nav pull-right">
                 <li class="divider-vertical"></li>
                 <li>
                   <a href="http://gravatar.com"
@@ -60,19 +57,27 @@
                     <img class="user_avatar" src="{{ user.get_profile.avatar_url }}"/>
                   </a>
                 </li>
-                <li class="user_identity"> {{ user.username }} </li>
+                <li class="user_identity"> {{ user.email }} </li>
                 <li>
-                  <div class="btn-group">
+                  <div class="btn-group" style="padding-top: 5px;">
                     <a class="btn btn-mini tip-bottom" rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-cog"></i></a>
                     <a class="btn btn-mini tip-bottom" rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off"></i></a>
                   </div>
                 </li>
               </ul>
               {% endif %}
+            </div>
           </div>
         </div>
       </div>
-      <div class="row-fluid">
+      <div class="row-fluid" style="min-height: 380px">
+        {% block body_login %}
+        {% if not user.is_authenticated %}
+        <div class="banner-container">
+          <div class="banner"><h1>{% trans 'Manager' %}<h1></div>
+        </div>
+        {% endif %}
+        {% endblock %}
         {% if user.is_authenticated %}
         <div class="span2">
           {% block shortaccess %}{% endblock %}
@@ -89,7 +94,7 @@
             {% block breadcrumb %}{% endblock %}
             {% block body %}{% endblock %}
           </div><!--mainContent-->
-        </div><!--span9 content-->
+        </div><!--span10 content-->
       </div>
 
       <div class="footer row-fluid">
@@ -121,21 +126,22 @@
             <li><a href="http://docs.scielo.org/en/latest/index.html">{% trans 'About' %}</a></li>
           </ul>
         </div>
-        <div class="pull-right span2">
+        <div class="span2">
           <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
             <input type="hidden" id="language" name="language">
             {% csrf_token %}
-            <select id="lang_options">
+            <select id="lang_options" class="span2">
               <option value="pt-br" {% if LANGUAGE_CODE == 'pt-br' %}selected{% endif %}>Português</option>
               <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
               <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
             </select>
           </form>
-        </div><!--span2-->
-        <div class="span1">
-          <a href="#">{% trans 'Back to top' %}</a>
         </div>
-
+        <div class="span1">
+          <p>
+            <a href="#">{% trans 'Back to top' %}</a>
+          </p>
+        </div>
       </div><!--row-fluid footer-->
     </div><!--container-fluid-->
 
