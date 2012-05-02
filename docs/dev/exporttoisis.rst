@@ -108,3 +108,36 @@ Remoção de Campos desnecessários
 ================================
 
 De acordo com reunião realizada em 27 de março alguns campos no contexto da SciELO não serão mais cosiderados pelo SciELO Manager, entretanto para manter a compatibilidade com a atual estrutura de dados os valores deste campo serão inseridos nas bases de dados de forma automática pois seus valores sempre foram os mesmos durante os 15 anos de operação do SciELO.
+
+1. Later Title
+  
+  Será controlado automaticamente pelo campo "título anterior". Deve ser mantido na exportação para compatibilidade.
+
+2. Center
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. Tem relação com o centro reponsável pela marcação de um documento.
+
+3. Final Volume
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+4. Final Number
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+5. Alphabet
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+6. National Code
+
+  Excluído da aplicação. Deve ser mantido na exportação para compatibilidade. Exemplo: BR1.1
+  Deve ser parametrizado na exportação.
+
+7. Literature Type
+
+  Excluído da aplicação. Deve ser cravado o valor "S" para manter compatibilidade.
+
+8. Treatment Level
+
+  Excluído da aplicação. Deve ser cravado o valor "Collective Level" para manter compatibilidade.
