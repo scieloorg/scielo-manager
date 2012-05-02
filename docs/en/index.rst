@@ -25,7 +25,15 @@ Development guides
    dev/helptexts
    dev/db-diagram
    dev/mockups
+   dev/exporttoisis
 
+Meetings
+========
+
+.. toctree::
+   :maxdepth: 2
+
+   meetings/20120403
 
 Indices and tables
 ==================
