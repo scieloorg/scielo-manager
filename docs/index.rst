@@ -28,6 +28,7 @@ and design decisions.
    dev/db-diagram
    dev/mockups
    dev/notes
+   dev/exporttoisis
 
 Indices and tables
 ==================

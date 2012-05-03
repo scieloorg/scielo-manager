@@ -258,7 +258,7 @@ class JournalImport:
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
-        journal.subject_descriptors = ', '.join(record['440'])
+        journal.subject_descriptors = '; '.join(record['440'])
 
         # Text Language
 
