@@ -179,7 +179,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
-    validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
+    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True )
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
     def __unicode__(self):
@@ -214,7 +214,7 @@ class JournalMission(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, null=False)
     description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
-    language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
+    language = models.ForeignKey('Language', blank=False, null=True)
 
 class UseLicense(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
