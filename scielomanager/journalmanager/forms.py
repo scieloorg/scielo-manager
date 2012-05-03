@@ -53,14 +53,13 @@ class JournalForm(UserCollectionContext):
         return journal
 
     def clean(self):
-        cleaned_data = super(JournalForm, self).clean()
+        cleaned_data = self.cleaned_data
         print_issn = cleaned_data.get("print_issn")
         eletronic_issn = cleaned_data.get("eletronic_issn")
 
-        if not (print_issn or eletronic_issn):
-            if not self._errors:
-                self._errors["print_issn"] = ErrorList([u"Eletronic ISSN or Print ISSN must be filled."])
-                self._errors["eletronic_issn"] = ErrorList([u"Eletronic ISSN or Print ISSN must be filled."])
+        if not (print_issn and eletronic_issn):
+            msg = u'Eletronic ISSN or Print ISSN must be filled.'
+            self._errors['scielo_issn'] = self.error_class([msg])
                 
         return cleaned_data
 

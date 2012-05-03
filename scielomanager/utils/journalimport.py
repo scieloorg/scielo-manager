@@ -230,7 +230,7 @@ class JournalImport:
             journal.journaltitle_set.add(title)
             self.charge_summary("title")
 
-    def load_journal(self, collection, loaded_publisher, loaded_center, record):
+    def load_journal(self, collection, loaded_publisher, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -314,7 +314,7 @@ class JournalImport:
             journal.secs_code = record['37'][0]
 
         journal.publisher = loaded_publisher
-        journal.center = loaded_center
+        #journal.center = loaded_center
 
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -365,8 +365,8 @@ class JournalImport:
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
-            loaded_center = self.load_center(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_center, record)
+            #loaded_center = self.load_center(collection, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, record)
 
     def get_summary(self):
         """
