@@ -1,5 +1,7 @@
 import json
 import urllib
+from collections import OrderedDict
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -51,6 +53,29 @@ def index(request):
 
     c = RequestContext(request,{'user_collections':user_collections,})
     return HttpResponse(t.render(c))
+
+@login_required
+def issue_index(request, journal_id):
+    user_collections = get_user_collections(request.user.id)
+    journal = models.Journal.objects.get(pk=journal_id)
+    objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(journal=journal_id).order_by('-publication_date')
+
+    by_years = OrderedDict()
+    for issue in objects_all:
+        year_node = by_years.setdefault(issue.publication_date.year, {})
+        volume_node = year_node.setdefault(issue.volume, [])
+
+        volume_node.append(issue)
+
+    objects = get_paginated(objects_all, request.GET.get('page', 1))
+    template = loader.get_template('journalmanager/issue_dashboard.html')
+    context = RequestContext(request, {
+                       'objects_issue': objects,
+                       'journal': journal,
+                       'user_collections': user_collections,
+                       'issue_grid': by_years,
+                       })
+    return HttpResponse(template.render(context))
 
 @login_required
 def generic_index_search(request, model, journal_id = None):
@@ -173,7 +198,7 @@ def user_login(request):
         t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
-        else: 
+        else:
             c = RequestContext(request, {'required': True})
         return HttpResponse(t.render(c))
 
