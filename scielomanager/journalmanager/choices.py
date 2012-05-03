@@ -35,24 +35,13 @@ LANGUAGE = [
 ]
 
 FREQUENCY = [
-    ('A','Annual'),
-    ('G','Biennial (every two years)'),
-    ('B','Bimonthly (every two months)'),
-    ('E','Biweekly (every two weeks)'),
-    ('D','Daily'),
-    ('K','Irregular (know to be so)'),
     ('M','Monthly'),
-    ('Z','Other Frequencies'),
+    ('B','Bimonthly (every two months)'),
     ('Q','Quaterly'),
-    ('F','Semiannual (twice a year)'),
-    ('S','Semimonthly (twice a month)'),
-    ('C','Semiweekly (twice a week)'),
-    ('J','Three times a month'),
-    ('I','Three times a week'),
     ('T','Three times a year'),
-    ('H','Triennial (Every three years)'),
-    ('?','Unknow'),
-    ('W','Weekly'),
+    ('F','Semiannual (twice a year)'),
+    ('A','Annual'),
+    ('K','Irregular (know to be so)'),
 ]
 
 STANDARD = [
