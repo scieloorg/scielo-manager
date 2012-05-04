@@ -1,7 +1,11 @@
 import json
 import urllib
-from collections import OrderedDict
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+    
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -67,10 +71,8 @@ def issue_index(request, journal_id):
 
         volume_node.append(issue)
 
-    objects = get_paginated(objects_all, request.GET.get('page', 1))
     template = loader.get_template('journalmanager/issue_dashboard.html')
     context = RequestContext(request, {
-                       'objects_issue': objects,
                        'journal': journal,
                        'user_collections': user_collections,
                        'issue_grid': by_years,
