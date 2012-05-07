@@ -29,52 +29,29 @@
   <div class="span10">
     <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
   </div>
-  <div class="span2">
-      {% simple_pagination objects_issue %}
-  </div>
 </div>
 
-<div class="row-fluid">
-  <span>{% trans 'Show by: ' %}</span>
-  <a href="{% url issue.index journal.id %}"> {% trans "Enabled Issue" %}</a>
-  <a href="{% url issue.index journal.id %}?is_available=0">  {% trans "Disabled Issue" %}</a>
-</div>
-
-<table class="table table-striped">
-<thead>
+<table class="table table table-striped table-bordered table-condensed">
+  <thead>
     <tr>
-        <th>{% trans "Identification" %}</th>
-        <th>{% trans "Publication date" %}</th>
-        <th>{% trans "Is Marked Up?" %}</th>
+      <th>{% trans 'Year' %}</th>
+      <th>{% trans 'Volume' %}</th>
+      <th>{% trans 'Numbers' %}</th>
     </tr>
-</thead>
-<tbody>
-  {% for issue in objects_issue.object_list %}
-  <tr id="{{issue.pk}}">
-    <td>
-      <h4>
-        {% if issue.is_available %}
-           <a href="{% url issue.edit issue.journal.pk issue.id %}">{{ issue.identification }}</a>
-        {% else %}
-           <a class="strikethrough" href="{% url issue.edit issue.journal.pk issue.id %}">{{ issue.identification }}</a>
-        {% endif %}
-      </h4>
-      <ul class="_actions">
-        <li>
-          {% if issue.is_available %}
-            <button id="action_disable_disable" class="btn btn-mini btn-danger" value="{% url issue.toggle_availability issue.pk %}">{% trans 'disable' %}</button>
-          {% else %}
-            <button id="action_disable_disable" class="btn btn-mini btn-success" value="{% url issue.toggle_availability issue.pk %}">{% trans 'enable' %}</button>
-          {% endif %}
-        </li>
-      </ul>
-    </td>
-    <td>{{ issue.publication_date }}</td>
-    <td>{{ issue.is_marked_up}}</td>
-  </tr>
+  </thead>
+  <tbody>
+  {% for year, vols in issue_grid.items %}
+    {% for vol, nums in vols.items %}
+    <tr>
+      <td>{{ year }}</td>
+      <td>{{ vol|default:'-' }}</td>
+      {% for num in nums %}
+        <td><a href="{% url issue.edit num.journal.pk num.id %}">{{ num.number }}</a></td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
   {% endfor %}
-<tbody>
+  </tbody>
 </table>
 
-{% pagination objects_issue %}
 {% endblock %}

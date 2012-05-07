@@ -5,3 +5,4 @@ wsgiref==0.1.2
 scielo-django-extensions==0.1
 python-memcached==1.48
 django-cache-machine==0.6
+ordereddict==1.1

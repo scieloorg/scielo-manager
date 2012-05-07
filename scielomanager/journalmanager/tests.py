@@ -505,18 +505,24 @@ class LoggedInViewsTest(TestCase):
     @with_sample_issue
     def test_issue_availability_list(self):
 
-        issue = Issue.objects.all()[0]
-        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]))
-        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, True)
+        first_issue = Issue.objects.all()[0]
+        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]))
+        
+        for year, volumes in response.context['issue_grid'].items():
+            for volume, issues in volumes.items():
+                for issue in issues:
+                    self.assertEqual(issue.is_available, True)
 
         #change atribute is_available
-        issue.is_available = False
-        issue.save()
+        first_issue.is_available = False
+        first_issue.save()
 
-        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
-        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['objects_issue'].object_list), 1)
-
+        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
+        
+        for year, volumes in response.context['issue_grid'].items():
+            for volume, issues in volumes.items():
+                for issue in issues:
+                    self.assertEqual(issue.is_available, False)
 
     def test_add_user(self):
         """
