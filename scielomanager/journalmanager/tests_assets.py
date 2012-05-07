@@ -37,7 +37,7 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-frequency': 'Q',
       'journal-final_num': '',
       'journal-validated': False,
-      'journal-eletronic_issn': '',
+      'journal-eletronic_issn': '0102-6720',
       'journal-init_vol': '1',
       'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
       'journal-title_iso': u'ABCD. Arquivos B. de C. D. (São Paulo)',
