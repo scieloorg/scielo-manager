@@ -71,7 +71,7 @@ def get_sample_journal_dataform(dict_params=None):
       'mission-TOTAL_FORMS': 1,
       'mission-INITIAL_FORMS': 0,
       'mission-0-description': 'To publish original scientific papers about Amazonia...',
-      'mission-0-language': 'pt',
+      'mission-0-language': 1,
 
       #History Language formset data
       'hist-TOTAL_FORMS': 1,
