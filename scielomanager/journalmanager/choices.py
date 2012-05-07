@@ -17,7 +17,7 @@ SUBJECTS = [
     ('Humanities','Humanities'),
     ('Linguistics, Letters and Arts','Linguistics, Letters and Arts'),
     ('Mathematics','Mathematics'),
-    ('Social Sciences','Social Sciences'),    
+    ('Social Sciences','Social Sciences'),
 ]
 
 PUBLICATION_STATUS = [
@@ -25,7 +25,7 @@ PUBLICATION_STATUS = [
     ('D','Ceased'),
     ('R','Reports Only'),
     ('S','Suspended'),
-    ('?','Unknow'),   
+    ('?','Unknow'),
 ]
 
 LANGUAGE = [
@@ -72,8 +72,15 @@ PDF_DOWNLOAD = [
     ('art','article based - a PDF file for each article'),
     ('iss','issue based - a PDF file for each issue'),
     ('na','Not Available'),
-] 
+]
 TITLE_CATEGORY = [
     ('paralleltitle','Parallel Title'),
-    ('other','Other'), 
+    ('other','Other'),
+]
+
+JOURNAL_PUBLICATION_STATUS = [
+    ('current', 'Current'),
+    ('deceased', 'Deceased'),
+    ('suspended', 'Suspended'),
+    ('inprogress', 'In Progress'),
 ]

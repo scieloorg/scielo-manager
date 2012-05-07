@@ -188,6 +188,22 @@ class Journal(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ['title']
 
+class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
+    """
+    Records the status changes for a given Journal.
+
+    Known status:
+    * Current
+    * Deceased
+    * Suspended
+    * In progress
+    """
+
+    objects = caching.base.CachingManager()
+    journal = models.ForeignKey(Journal)
+    status = models.CharField(_('Publication Status'), choices=choices.JOURNAL_PUBLICATION_STATUS)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
