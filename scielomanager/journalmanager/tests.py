@@ -10,6 +10,8 @@ from scielomanager.journalmanager.models import Collection
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Publisher
 from scielomanager.journalmanager.models import Issue
+from scielomanager.journalmanager.models import UserCollections
+from scielomanager.journalmanager.models import Section
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -60,12 +62,26 @@ class LoggedInViewsTest(TestCase):
         self.client = Client()
         self.client.login(username='dummyuser', password='123')
 
+    def tearDown(self):
+        """
+        Destroying the data
+        """
+
+        Journal.objects.all().delete()
+        Publisher.objects.all().delete()
+        Issue.objects.all().delete()
+        UserCollections.objects.all().delete()
+        User.objects.all().delete()
+        Section.objects.all().delete()
+        Collection.objects.all().delete()
+
     def _create_journal(self):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
         sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.collection = self.collection
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection,]
         sample_publisher.save()
 
         sample_journal.publisher = sample_publisher
@@ -477,7 +493,6 @@ class LoggedInViewsTest(TestCase):
 
     @with_sample_journal
     def test_publisher_availability_list(self):
-
         publisher = Publisher.objects.all()[0]
         response = self.client.get(reverse('publisher.index'))
         self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, True)
@@ -516,54 +531,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
         self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['objects_issue'].object_list), 1)
-
-
-    def test_add_user(self):
-        """
-        Create user and verify content on database
-        """
-        response = self.client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
-                'usercollections-0-collection': self.usercollections.pk,
-                'usercollections-0-is_manager': True,
-                'usercollections-0-is_default': True,}))
-
-        self.assertRedirects(response, reverse('user.index'))
-
-        self.assertEqual(str(User.objects.all()[1].username), tests_assets.get_sample_user_dataform()['user-username'])
-
-        self.assertQuerysetEqual(User.objects.all(), [
-                "<User: dummyuser>",
-                "<User: dummyuser_add>",
-              ]
-          )
-
-    def test_edit_user(self):
-        """
-        Edit user and verify content on database
-        """
-        user = User.objects.all()[0]
-
-        response = self.client.get(reverse('user.edit', args=[user.pk]))
-        self.assertEqual(response.context['user'], user)
-
-        response = self.client.post(reverse('user.edit', args=(user.pk,)),
-                tests_assets.get_sample_user_dataform({
-                'user-username': 'dummyuser_edit',
-                'usercollections-0-collection': self.collection.pk,
-                'usercollections-0-is_manager': True,
-                'usercollections-0-is_default': True,
-                }))
-
-        self.assertRedirects(response, reverse('user.index'))
-
-        user = User.objects.all()[0]
-
-        self.assertEqual(user.username, u'dummyuser_edit')
-
-        self.assertQuerysetEqual(User.objects.all(), [
-                "<User: dummyuser_edit>",
-              ]
-          )
 
     def test_contextualized_collection_field_on_add_journal(self):
         """
@@ -629,6 +596,17 @@ class LoggedInViewsTest(TestCase):
             self.assertTrue(qset_item in journal.languages.all())
 
 class LoggedOutViewsTest(TestCase):
+
+    def test_index(self):
+        """
+        Logged out user try access index page
+        """
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue('SciELO Manager' in response.content)
+
+class UserViewsTest(TestCase):
 
     def setUp(self):
         """
@@ -738,6 +716,60 @@ class LoggedOutViewsTest(TestCase):
         """
         response = self.client.get(reverse('journalmanager.password_change'))
         self.assertRedirects(response, reverse('journalmanager.user_login') + '?next=/myaccount/password/')
+
+
+    def test_add_user(self):
+        """
+        Login and Create user and verify content on database
+        """
+        client = Client()
+        client.login(username='dummyuser', password='123')
+
+        response = client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
+                'usercollections-0-collection': self.usercollections.pk,
+                'usercollections-0-is_manager': True,
+                'usercollections-0-is_default': True,}))
+
+        self.assertRedirects(response, reverse('user.index'))
+
+        self.assertEqual(str(User.objects.all()[1].username), tests_assets.get_sample_user_dataform()['user-username'])
+
+        self.assertQuerysetEqual(User.objects.all(), [
+                "<User: dummyuser>",
+                "<User: dummyuser_add>",
+              ]
+          )
+
+    def test_edit_user(self):
+        """
+        Login user and Edit user and verify content on database
+        """
+        client = Client()
+        client.login(username='dummyuser', password='123')
+
+        user = User.objects.all()[0]
+
+        response = client.get(reverse('user.edit', args=[user.pk]))
+        self.assertEqual(response.context['user'], user)
+
+        response = client.post(reverse('user.edit', args=(user.pk,)),
+                tests_assets.get_sample_user_dataform({
+                'user-username': 'dummyuser_edit',
+                'usercollections-0-collection': self.collection.pk,
+                'usercollections-0-is_manager': True,
+                'usercollections-0-is_default': True,
+                }))
+
+        self.assertRedirects(response, reverse('user.index'))
+
+        user = User.objects.all()[0]
+
+        self.assertEqual(user.username, u'dummyuser_edit')
+
+        self.assertQuerysetEqual(User.objects.all(), [
+                "<User: dummyuser_edit>",
+              ]
+          )
 
 class ToolsTest(TestCase):
     def test_paginator_factory(self):
