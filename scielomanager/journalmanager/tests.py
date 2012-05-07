@@ -10,6 +10,7 @@ from scielomanager.journalmanager.models import Collection
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Publisher
 from scielomanager.journalmanager.models import Issue
+from scielomanager.journalmanager.models import Language
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -218,7 +219,8 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-languages': [sample_language.pk]}))
+                                                     'journal-languages': [sample_language.pk],
+                                                     'mission-0-language': sample_language.pk,}))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -229,7 +231,8 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-languages': [sample_language.pk], }))
+                                                     'journal-languages': [sample_language.pk],
+                                                     'mission-0-language': sample_language.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
@@ -316,9 +319,13 @@ class LoggedInViewsTest(TestCase):
         sample_section.journal = journal
         sample_section.save()
 
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
         response = self.client.post(reverse('issue.add', args=[journal.pk]),
-            tests_assets.get_sample_issue_dataform(section=sample_section.pk,
-                                                   use_license=sample_license.pk))
+            tests_assets.get_sample_issue_dataform({'section':sample_section.pk,
+                                                   'use_license':sample_license.pk,
+                                                   'title-0-language':sample_language.pk,}))
 
         self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
 
