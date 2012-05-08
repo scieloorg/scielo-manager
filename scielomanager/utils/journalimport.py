@@ -114,8 +114,8 @@ class JournalImport:
 
     def load_textlanguage(self, journal, langs):
 
+        from sectionimport import LANG_DICT as lang_dict
         for i in langs:
-            from sectionimport import LANG_DICT as lang_dict
             language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
             journal.languages.add()
             self.charge_summary("language_%s" % i)
@@ -127,7 +127,10 @@ class JournalImport:
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
 
             mission = JournalMission()
-            mission.language = parsed_subfields['l']
+            try:
+                mission.language = Language.nocacheobjects.get(parsed_subfields['l'])
+            except:
+                pass
             mission.description = parsed_subfields['_']
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
