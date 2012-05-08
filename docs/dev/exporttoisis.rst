@@ -96,13 +96,30 @@ Requisitos da Exportação
 Estrutura de dados
 ==================
 
-**Título**
+Título
+``````
 
-**Fascículo**
+Fascículo
+`````````
 
-**Artigo**
+**Fascículos Especiais (Press Release, Ahead, Review in Progress)**
 
-**Code**
+
+Ficou definido que para esses tipos de fascículos não será feita nenhuma mudança de modelo devido à característica do campo **Number** e **Volume** que pode receber qualquer tipo de conteúdo para identificar um fascículo.
+
+Considerando que esse conteúdo é livre não caberá normalização.
+
+A regra de negócio para esses dados será a seguinte:
+
+1. Informação de número especial "es/esp", único "unico", composição de números "10-14", números compostos de letras "1a, 1b", etc, deverão ser inseridas no próprio campo **Number** que será de preenchimento livre. Cabe ao documentalista garantir a integridade entre a sequencia de números no SciELO e a sequencia de números da revista.
+
+2. Ahead, Review, Press Release, não mais serão criados pelo SciELO Manager, será considerado que todos periódicos possuem um único Ahead, Review, Press Release. Cabe ao processo de exportação gerar esses fascículos especiais para cada periódico e tratar a apresentação do mesmo no site público caso algum artigo seja marcado como pertencente a um desses fascículos especiais. 
+
+Artigo
+``````
+
+Code
+````
 
 Remoção de Campos desnecessários
 ================================
