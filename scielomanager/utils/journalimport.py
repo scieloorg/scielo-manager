@@ -24,7 +24,6 @@ class JournalImport:
 
     def __init__(self):
         self._publishers_pool = []
-        self._centers_pool = []
         self._summary = {}
 
     def iso_format(self, dates, string='-'):
@@ -50,28 +49,6 @@ class JournalImport:
 
         self._summary[attribute] += 1
 
-    def have_similar_centers(self, match_string):
-        """
-        Function: have_similar_centers
-        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
-        instituticoes duplicadas.
-        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
-        False.
-        """
-        center_id=""
-
-        if len(self._centers_pool) > 0:
-            for inst in self._centers_pool:
-                if inst["match_string"] == match_string:
-                    center_id = inst["id"]
-                    break
-                else:
-                    center_id = False
-        else:
-            center_id = False
-
-        return center_id
-
     def have_similar_publishers(self, match_string):
         """
         Function: have_similar_publishers
@@ -93,38 +70,6 @@ class JournalImport:
             publisher_id = False
 
         return publisher_id
-
-    def load_center(self, collection, record):
-        """
-        Function: load_center
-        Retorna um objeto Center() caso a gravação do mesmo em banco de dados for concluida
-        """
-
-        center = Center()
-
-        # Centers Import
-        center.name = record['10'][0]
-        center.collection = collection
-
-        match_string=center.name
-
-        similar_key =  self.have_similar_centers(match_string)
-
-        loaded_center=""
-
-        if similar_key != False:
-            similar_center=Center.objects.get(id=similar_key)
-            similar_center.save()
-            self.charge_summary("centers_duplication_fix")
-            loaded_center = similar_center
-        else:
-            center.save(force_insert=True)
-            self.charge_summary("centers")
-            loaded_center = center
-            self._centers_pool.append(dict({"id":center.id,"match_string":match_string}))
-
-        return loaded_center
-
 
     def load_publisher(self, collection, record):
         """
@@ -314,7 +259,6 @@ class JournalImport:
             journal.secs_code = record['37'][0]
 
         journal.publisher = loaded_publisher
-        #journal.center = loaded_center
 
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -348,8 +292,7 @@ class JournalImport:
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')
-
-
+            
         return journal
 
     def run_import(self, json_file, collection):
@@ -365,7 +308,6 @@ class JournalImport:
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
-            #loaded_center = self.load_center(collection, record)
             loaded_journal = self.load_journal(collection, loaded_publisher, record)
 
     def get_summary(self):
