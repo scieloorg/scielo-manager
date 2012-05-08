@@ -1,5 +1,11 @@
 import json
 import urllib
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+    
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -32,13 +38,9 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 
 def get_user_collections(user_id):
 
-    user_collections = cache.get('user_%s_collections' % user_id)
 
-    if user_collections:
-        return user_collections
-    else:
-        user_collections = User.objects.get(pk=user_id).usercollections_set.all()
-        cache.set('user_%s_collections' % user_id, user_collections)
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+
 
     return user_collections
 
@@ -53,6 +55,27 @@ def index(request):
     return HttpResponse(t.render(c))
 
 @login_required
+def issue_index(request, journal_id):
+    user_collections = get_user_collections(request.user.id)
+    journal = models.Journal.objects.get(pk=journal_id)
+    objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(journal=journal_id).order_by('-publication_date')
+
+    by_years = OrderedDict()
+    for issue in objects_all:
+        year_node = by_years.setdefault(issue.publication_date.year, {})
+        volume_node = year_node.setdefault(issue.volume, [])
+
+        volume_node.append(issue)
+
+    template = loader.get_template('journalmanager/issue_dashboard.html')
+    context = RequestContext(request, {
+                       'journal': journal,
+                       'user_collections': user_collections,
+                       'issue_grid': by_years,
+                       })
+    return HttpResponse(template.render(context))
+
+@login_required
 def generic_index_search(request, model, journal_id = None):
     """
     Generic list and search
@@ -60,19 +83,20 @@ def generic_index_search(request, model, journal_id = None):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
+
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
         objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available'))
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=user_collections).distinct()
 
     if request.GET.get('q'):
         if model is models.Publisher:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('name')
 
         if model is models.Journal:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('title')
 
     if objects_all.count() == 0:
         messages.error(request, _('Your search did not match any documents.'))
@@ -173,7 +197,7 @@ def user_login(request):
         t = loader.get_template('journalmanager/home_journal.html')
         if next:
             c = RequestContext(request, {'required': True, 'next': next,})
-        else: 
+        else:
             c = RequestContext(request, {'required': True})
         return HttpResponse(t.render(c))
 
@@ -335,22 +359,27 @@ def add_issue(request, journal_id, issue_id=None):
     else:
         issue = models.Issue.objects.get(pk=issue_id)
 
+    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle, form=IssueTitleForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
         add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
+        titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
-        if add_form.is_valid():
+        if add_form.is_valid() and titleformset.is_valid():
             add_form.save_all(journal)
+            titleformset.save()
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
         add_form = IssueForm(journal_id=journal.pk, instance=issue)
+        titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
     return render_to_response('journalmanager/add_issue.html', {
                               'add_form': add_form,
                               'journal': journal,
+                              'titleformset': titleformset,
                               'user_name': request.user.pk,
                               'user_collections': user_collections},
                               context_instance = RequestContext(request))

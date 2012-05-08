@@ -141,7 +141,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
-    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS) #ajustar ref do help_text
+    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     languages = models.ManyToManyField('Language')
 
     #Fields
@@ -271,7 +271,6 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION)
     journal = models.ForeignKey(Journal, null=True, blank=False)
-    title = models.CharField(_('Title'), null=True, blank=True, max_length=256, help_text=helptexts.ISSUE__TITLE)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__NUMBER)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
@@ -304,6 +303,13 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     def __unicode__(self):
         return self.identification()
+
+class IssueTitle(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    issue = models.ForeignKey(Issue)
+    language = models.ForeignKey('Language', blank=False, null=True)
+    title = models.CharField(_('Title'), null=False, max_length=128)
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
