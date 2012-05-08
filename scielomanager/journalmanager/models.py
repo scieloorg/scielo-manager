@@ -343,17 +343,17 @@ class Supplement(Issue):
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-@receiver(pre_save, sender=Journal)
+@receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """
     Fetch the `pub_status` value from the db before the data is modified.
     """
     try:
-        kwargs['instance']._pub_status = Journal.objects.get(pk=kwargs['instance'].pk).pub_status
+        kwargs['instance']._pub_status = Journal.nocacheobjects.get(pk=kwargs['instance'].pk).pub_status
     except Journal.DoesNotExist:
         return None
 
-@receiver(post_save, sender=Journal)
+@receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
 def journal_pub_status_post_save(sender, instance, created, **kwargs):
     """
     Check if the `pub_status` value is new or has been modified.
