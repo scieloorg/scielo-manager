@@ -362,22 +362,27 @@ def add_issue(request, journal_id, issue_id=None):
     else:
         issue = models.Issue.objects.get(pk=issue_id)
 
+    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle, form=IssueTitleForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
         add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
+        titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
-        if add_form.is_valid():
+        if add_form.is_valid() and titleformset.is_valid():
             add_form.save_all(journal)
+            titleformset.save()
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
         add_form = IssueForm(journal_id=journal.pk, instance=issue)
+        titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
     return render_to_response('journalmanager/add_issue.html', {
                               'add_form': add_form,
                               'journal': journal,
+                              'titleformset': titleformset,
                               'user_name': request.user.pk,
                               'user_collections': user_collections},
                               context_instance = RequestContext(request))

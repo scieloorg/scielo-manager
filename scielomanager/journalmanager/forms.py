@@ -206,3 +206,11 @@ class JournalTitleForm(ModelForm):
       widgets = {
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
+
+class IssueTitleForm(ModelForm):
+    class Meta:
+      model = models.IssueTitle
+      widgets = {
+        'title': forms.TextInput(attrs={'class':'span6'}),
+      }
+
