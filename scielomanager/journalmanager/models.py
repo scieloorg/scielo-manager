@@ -342,14 +342,17 @@ def journal_pub_status_pre_save(sender, **kwargs):
     """
     Fetch the `pub_status` value from the db before the data is modified.
     """
-    kwargs['instance']._pub_status = Journal.objects.get(pk=kwargs['instance'].pk).pub_status
+    try:
+        kwargs['instance']._pub_status = Journal.objects.get(pk=kwargs['instance'].pk).pub_status
+    except Journal.DoesNotExist:
+        return None
 
 @receiver(post_save, sender=Journal)
 def journal_pub_status_post_save(sender, instance, created, **kwargs):
     """
     Check if the `pub_status` value is new or has been modified.
     """
-    if getattr(instance, 'pub_status') and instance.pub_status == instance._pub_status:
+    if getattr(instance, '_pub_status', None) and instance.pub_status == instance._pub_status:
         return None
 
     JournalPublicationEvents.objects.create(journal=instance,
