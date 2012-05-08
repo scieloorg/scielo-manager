@@ -25,14 +25,13 @@
 
 {% block body %}
   <form method="post" action="#">{% csrf_token %}
-
-    <span class="label"><a name="other_title"></a>{% trans "Titles" %}</span>
+    <span class="label">{% trans "Issue Information" %}</span>
     <div class="well">
-        <table id="titleformset" class="table table-bordered table-striped">
+       <table id="titleformset" class="table table-bordered table-striped">
         <thead>
             <tr>
-                <td>{% trans "Titles" %}</td>
-                <td>{% trans "Language" %}</td>
+                <th>{% trans "Titles" %}</th>
+                <th>{% trans "Language" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -51,10 +50,6 @@
         <p>
             {{ titleformset.management_form }}
         </p>
-    </div>
-
-    <span class="label">{% trans "Issue Information" %}</span>
-    <div class="well">
         <div class="control-group {% if add_form.volume.errors %}error{% endif %}">
             <label class="control-label" for="volume">{% trans add_form.volume.label_tag %}</label>
             <div class="controls">
