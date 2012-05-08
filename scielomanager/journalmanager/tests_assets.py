@@ -37,7 +37,7 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-frequency': 'Q',
       'journal-final_num': '',
       'journal-validated': False,
-      'journal-eletronic_issn': '',
+      'journal-eletronic_issn': '0102-6720',
       'journal-init_vol': '1',
       'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
       'journal-title_iso': u'ABCD. Arquivos B. de C. D. (São Paulo)',
@@ -71,7 +71,7 @@ def get_sample_journal_dataform(dict_params=None):
       'mission-TOTAL_FORMS': 1,
       'mission-INITIAL_FORMS': 0,
       'mission-0-description': 'To publish original scientific papers about Amazonia...',
-      'mission-0-language': 1,
+
 
       #History Language formset data
       'hist-TOTAL_FORMS': 1,
@@ -142,11 +142,14 @@ def get_sample_publisher_dataform(dict_params=None):
 
     return publisher_attrs
 
-def get_sample_issue_dataform(**kwargs):
+def get_sample_issue_dataform(dict_params=None):
     """
     Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
         'bibliographic_strip', 'section', 'use_license']
     """
+    if dict_params is None:
+        dict_params = {}
+
     issue_attrs = {
         'total_documents': 16,
         'ctrl_vocabulary': '',
@@ -157,9 +160,15 @@ def get_sample_issue_dataform(**kwargs):
         'is_press_release': False,
         'publication_date': '1998-09-01',
         'is_marked_up': False,
+
+        #Title formset data
+        'title-TOTAL_FORMS': 1,
+        'title-INITIAL_FORMS': 0,
+        'title-0-title': 'TITLE FORMSET TEST',
+
     }
 
-    issue_attrs.update(kwargs)
+    issue_attrs.update(dict_params)
 
     return issue_attrs
 
