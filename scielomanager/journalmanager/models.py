@@ -151,7 +151,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     acronym = models.CharField(_('Acronym'),max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
-    scielo_issn = models.CharField(_('Which ISSN is in use at SciELO?'),max_length=16,
+    scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'),max_length=16,
         choices=choices.SCIELO_ISSN,null=False,blank=True, help_text=helptexts.JOURNAL__SCIELO_ISSN)
     print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__PRINT_ISSN)
     eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
@@ -179,7 +179,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
-    validated = models.BooleanField(_('Validated'), default=False,null=False,blank=True )
+    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True )
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
 
     def __unicode__(self):
@@ -214,7 +214,7 @@ class JournalMission(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, null=False)
     description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
-    language = models.CharField(_('Language'), null=False, max_length=128, choices=LANGUAGES)
+    language = models.ForeignKey('Language', blank=False, null=True)
 
 class UseLicense(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -271,7 +271,6 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION)
     journal = models.ForeignKey(Journal, null=True, blank=False)
-    title = models.CharField(_('Title'), null=True, blank=True, max_length=256, help_text=helptexts.ISSUE__TITLE)
     volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME)
     number = models.CharField(_('Number'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__NUMBER)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
@@ -304,6 +303,13 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     def __unicode__(self):
         return self.identification()
+
+class IssueTitle(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    issue = models.ForeignKey(Issue)
+    language = models.ForeignKey('Language', blank=False, null=True)
+    title = models.CharField(_('Title'), null=False, max_length=128)
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)

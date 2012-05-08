@@ -234,7 +234,8 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-languages': [sample_language.pk]}))
+                                                     'journal-languages': [sample_language.pk],
+                                                     'mission-0-language': sample_language.pk,}))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -245,7 +246,8 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-publisher': sample_publisher.pk,
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-languages': [sample_language.pk], }))
+                                                     'journal-languages': [sample_language.pk],
+                                                     'mission-0-language': sample_language.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
@@ -332,9 +334,13 @@ class LoggedInViewsTest(TestCase):
         sample_section.journal = journal
         sample_section.save()
 
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
         response = self.client.post(reverse('issue.add', args=[journal.pk]),
-            tests_assets.get_sample_issue_dataform(section=sample_section.pk,
-                                                   use_license=sample_license.pk))
+            tests_assets.get_sample_issue_dataform({'section':sample_section.pk,
+                                                   'use_license':sample_license.pk,
+                                                   'title-0-language':sample_language.pk,}))
 
         self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
 
@@ -520,17 +526,24 @@ class LoggedInViewsTest(TestCase):
     @with_sample_issue
     def test_issue_availability_list(self):
 
-        issue = Issue.objects.all()[0]
-        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]))
-        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, True)
+        first_issue = Issue.objects.all()[0]
+        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]))
+        
+        for year, volumes in response.context['issue_grid'].items():
+            for volume, issues in volumes.items():
+                for issue in issues:
+                    self.assertEqual(issue.is_available, True)
 
         #change atribute is_available
-        issue.is_available = False
-        issue.save()
+        first_issue.is_available = False
+        first_issue.save()
 
-        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
-        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['objects_issue'].object_list), 1)
+        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
+        
+        for year, volumes in response.context['issue_grid'].items():
+            for volume, issues in volumes.items():
+                for issue in issues:
+                    self.assertEqual(issue.is_available, False)
 
     def test_contextualized_collection_field_on_add_journal(self):
         """
