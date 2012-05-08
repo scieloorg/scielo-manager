@@ -141,7 +141,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
-    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS) #ajustar ref do help_text
+    collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     languages = models.ManyToManyField('Language')
 
     #Fields

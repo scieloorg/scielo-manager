@@ -38,13 +38,9 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 
 def get_user_collections(user_id):
 
-    user_collections = cache.get('user_%s_collections' % user_id)
 
-    if user_collections:
-        return user_collections
-    else:
-        user_collections = User.objects.get(pk=user_id).usercollections_set.all()
-        cache.set('user_%s_collections' % user_id, user_collections)
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+
 
     return user_collections
 
@@ -87,19 +83,20 @@ def generic_index_search(request, model, journal_id = None):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
+
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
         objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available'))
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=user_collections).distinct()
 
     if request.GET.get('q'):
         if model is models.Publisher:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q']).order_by('name')
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('name')
 
         if model is models.Journal:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q']).order_by('title')
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('title')
 
     if objects_all.count() == 0:
         messages.error(request, _('Your search did not match any documents.'))
