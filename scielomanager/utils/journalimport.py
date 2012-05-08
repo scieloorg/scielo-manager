@@ -94,38 +94,6 @@ class JournalImport:
 
         return publisher_id
 
-    def load_center(self, collection, record):
-        """
-        Function: load_center
-        Retorna um objeto Center() caso a gravação do mesmo em banco de dados for concluida
-        """
-
-        center = Center()
-
-        # Centers Import
-        center.name = record['10'][0]
-        center.collection = collection
-
-        match_string=center.name
-
-        similar_key =  self.have_similar_centers(match_string)
-
-        loaded_center=""
-
-        if similar_key != False:
-            similar_center=Center.objects.get(id=similar_key)
-            similar_center.save()
-            self.charge_summary("centers_duplication_fix")
-            loaded_center = similar_center
-        else:
-            center.save(force_insert=True)
-            self.charge_summary("centers")
-            loaded_center = center
-            self._centers_pool.append(dict({"id":center.id,"match_string":match_string}))
-
-        return loaded_center
-
-
     def load_publisher(self, collection, record):
         """
         Function: load_publisher
@@ -169,8 +137,8 @@ class JournalImport:
 
     def load_textlanguage(self, journal, langs):
 
+        from sectionimport import LANG_DICT as lang_dict
         for i in langs:
-            from sectionimport import LANG_DICT as lang_dict
             language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
             journal.languages.add()
             self.charge_summary("language_%s" % i)
@@ -182,7 +150,10 @@ class JournalImport:
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
 
             mission = JournalMission()
-            mission.language = parsed_subfields['l']
+            try:
+                mission.language = Language.nocacheobjects.get(parsed_subfields['l'])
+            except:
+                pass
             mission.description = parsed_subfields['_']
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
@@ -230,7 +201,7 @@ class JournalImport:
             journal.journaltitle_set.add(title)
             self.charge_summary("title")
 
-    def load_journal(self, collection, loaded_publisher, loaded_center, record):
+    def load_journal(self, collection, loaded_publisher, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -314,7 +285,6 @@ class JournalImport:
             journal.secs_code = record['37'][0]
 
         journal.publisher = loaded_publisher
-        journal.center = loaded_center
 
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -365,8 +335,7 @@ class JournalImport:
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
-            loaded_center = self.load_center(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_center, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, record)
 
     def get_summary(self):
         """
