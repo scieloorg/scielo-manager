@@ -10,12 +10,14 @@ from django.utils.translation import ugettext as __
 from django.contrib.contenttypes import generic
 from django.conf.global_settings import LANGUAGES
 from django.conf import settings
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 
 import caching.base
 
 import choices
 import helptexts
+
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -164,8 +166,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
         choices=choices.FREQUENCY,null=False,blank=True, help_text=helptexts.JOURNAL__FREQUENCY)
-    pub_status = models.CharField(_('Publication Status'),max_length=16,
-        choices=choices.PUBLICATION_STATUS,null=False,blank=True, help_text=helptexts.JOURNAL__PUB_STATUS)
+    pub_status = models.CharField(_('Publication Status'), max_length=16,
+        choices=choices.PUBLICATION_STATUS, null=False, blank=True, help_text=helptexts.JOURNAL__PUB_STATUS)
     sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True, help_text=helptexts.JOURNAL__SPONSOR)
     editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
         choices=choices.STANDARD,null=False,blank=True, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
@@ -198,11 +200,19 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     * Suspended
     * In progress
     """
-
     objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+
     journal = models.ForeignKey(Journal)
-    status = models.CharField(_('Publication Status'), choices=choices.JOURNAL_PUBLICATION_STATUS)
+    status = models.CharField(max_length=16)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.status
+
+    class Meta:
+        verbose_name = 'journal publication event'
+        verbose_name_plural = 'Journal Publication Events'
 
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -324,3 +334,23 @@ class Issue(caching.base.CachingMixin, models.Model):
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
+####
+# Pre and Post save to handle `Journal.pub_status` data modification.
+####
+@receiver(pre_save, sender=Journal)
+def journal_pub_status_pre_save(sender, **kwargs):
+    """
+    Fetch the `pub_status` value from the db before the data is modified.
+    """
+    kwargs['instance']._pub_status = Journal.objects.get(pk=kwargs['instance'].pk).pub_status
+
+@receiver(post_save, sender=Journal)
+def journal_pub_status_post_save(sender, instance, created, **kwargs):
+    """
+    Check if the `pub_status` value is new or has been modified.
+    """
+    if getattr(instance, 'pub_status') and instance.pub_status == instance._pub_status:
+        return None
+
+    JournalPublicationEvents.objects.create(journal=instance,
+        status=instance.pub_status)
