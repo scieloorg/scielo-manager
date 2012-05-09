@@ -80,6 +80,15 @@ class IssueAdmin(admin.ModelAdmin):
 
 admin.site.register(Issue, IssueAdmin)
 
+class SponsorAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Sponsor.nocacheobjects
+
+    filter_horizontal = ('collections',)
+
+admin.site.register(Sponsor, SponsorAdmin)
+
 class PublisherAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
@@ -117,6 +126,14 @@ class SupplementAdmin(admin.ModelAdmin):
 
 admin.site.register(Supplement, SupplementAdmin)
 
+class JournalPublicationEventsAdmin(admin.ModelAdmin):
+    list_display = ['journal', 'status', 'created_at',]
+    list_filter = ['status',]
+    search_fields = ['journal',]
 
+    def queryset(self, request):
+        return JournalPublicationEvents.nocacheobjects
+
+admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
 
 
