@@ -74,7 +74,6 @@
         <th>{% trans "Journal Title" %}</th>
         <th>{% trans "Print ISSN" %}</th>
         <th>{% trans "Electronic ISSN" %}</th>
-        <th>{% trans "Publisher" %}</th>
         <th>{% trans "Status" %}</th>
         <th>{% trans "Validated" %}</th>
       </tr>
@@ -113,7 +112,6 @@
         </td>
         <td>{{ journal.print_issn }}</td>
         <td>{{ journal.eletronic_issn }}</td>
-        <td>{{ journal.publisher }}</td>
         <td>{{ journal.pub_status }}</td>
         <td>
           {%if journal.validated %}

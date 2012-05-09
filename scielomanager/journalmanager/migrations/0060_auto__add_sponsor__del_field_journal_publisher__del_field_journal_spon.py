@@ -8,20 +8,62 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'IssueTitle'
-        db.create_table('journalmanager_issuetitle', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'])),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'], null=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
+        # Adding model 'Sponsor'
+        db.create_table('journalmanager_sponsor', (
+            ('institution_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.Institution'], unique=True, primary_key=True)),
         ))
-        db.send_create_signal('journalmanager', ['IssueTitle'])
+        db.send_create_signal('journalmanager', ['Sponsor'])
+
+        # Adding M2M table for field collections on 'Sponsor'
+        db.create_table('journalmanager_sponsor_collections', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('sponsor', models.ForeignKey(orm['journalmanager.sponsor'], null=False)),
+            ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
+        ))
+        db.create_unique('journalmanager_sponsor_collections', ['sponsor_id', 'collection_id'])
+
+        # Deleting field 'Journal.publisher'
+        db.delete_column('journalmanager_journal', 'publisher_id')
+
+        # Deleting field 'Journal.sponsor'
+        db.delete_column('journalmanager_journal', 'sponsor')
+
+        # Adding M2M table for field publisher on 'Journal'
+        db.create_table('journalmanager_journal_publisher', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
+            ('publisher', models.ForeignKey(orm['journalmanager.publisher'], null=False))
+        ))
+        db.create_unique('journalmanager_journal_publisher', ['journal_id', 'publisher_id'])
+
+        # Adding M2M table for field sponsor on 'Journal'
+        db.create_table('journalmanager_journal_sponsor', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
+            ('sponsor', models.ForeignKey(orm['journalmanager.sponsor'], null=False))
+        ))
+        db.create_unique('journalmanager_journal_sponsor', ['journal_id', 'sponsor_id'])
 
 
     def backwards(self, orm):
         
-        # Deleting model 'IssueTitle'
-        db.delete_table('journalmanager_issuetitle')
+        # Deleting model 'Sponsor'
+        db.delete_table('journalmanager_sponsor')
+
+        # Removing M2M table for field collections on 'Sponsor'
+        db.delete_table('journalmanager_sponsor_collections')
+
+        # User chose to not deal with backwards NULL issues for 'Journal.publisher'
+        raise RuntimeError("Cannot reverse this migration. 'Journal.publisher' and its values cannot be restored.")
+
+        # Adding field 'Journal.sponsor'
+        db.add_column('journalmanager_journal', 'sponsor', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True), keep_default=False)
+
+        # Removing M2M table for field publisher on 'Journal'
+        db.delete_table('journalmanager_journal_publisher')
+
+        # Removing M2M table for field sponsor on 'Journal'
+        db.delete_table('journalmanager_journal_sponsor')
 
 
     models = {
@@ -105,7 +147,6 @@ class Migration(SchemaMigration):
             'publication_date': ('django.db.models.fields.DateField', [], {}),
             'publisher_fullname': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Section']", 'symmetrical': 'False'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'total_documents': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']", 'null': 'True'}),
@@ -143,11 +184,11 @@ class Migration(SchemaMigration):
             'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'blank': 'True'}),
             'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'pub_status': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'publisher': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'journal_institution'", 'to': "orm['journalmanager.Publisher']"}),
+            'publisher': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'journal_institution'", 'symmetrical': 'False', 'to': "orm['journalmanager.Publisher']"}),
             'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'short_title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'db_index': 'True'}),
-            'sponsor': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'sponsor': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'journal_sponsor'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['journalmanager.Sponsor']"}),
             'subject_descriptors': ('django.db.models.fields.CharField', [], {'max_length': '512', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
             'title_iso': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'db_index': 'True'}),
@@ -171,6 +212,13 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True'})
+        },
+        'journalmanager.journalpublicationevents': {
+            'Meta': {'object_name': 'JournalPublicationEvents'},
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
         },
         'journalmanager.journalstudyarea': {
             'Meta': {'object_name': 'JournalStudyArea'},
@@ -211,6 +259,11 @@ class Migration(SchemaMigration):
             'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
             'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Section']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+        },
+        'journalmanager.sponsor': {
+            'Meta': {'ordering': "['name']", 'object_name': 'Sponsor', '_ormbases': ['journalmanager.Institution']},
+            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
+            'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.supplement': {
             'Meta': {'object_name': 'Supplement', '_ormbases': ['journalmanager.Issue']},
