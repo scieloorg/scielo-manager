@@ -114,7 +114,33 @@ def get_sample_institution_dataform(dict_params=None):
 
     institution_attrs.update(dict_params)
 
-    return publisher_attrs
+    return institution_attrs
+
+def get_sample_sponsor_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    sponsor_attrs = {
+      'sponsor-city': '',
+      'sponsor-fax': '',
+      'sponsor-validated': True,
+      'sponsor-name': u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
+      'sponsor-address_number': '222',
+      'sponsor-acronym': 'FAPESP',
+      'sponsor-country': 'BR',
+      'sponsor-cel': '',
+      'sponsor-phone': '',
+      'sponsor-state': '',
+      'sponsor-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'sponsor-mail': 'fapesp@scielo.org',
+      'sponsor-address_complement': '',
+      'sponsor-is_available': True,
+    }
+
+    sponsor_attrs.update(dict_params)
+
+    return sponsor_attrs
 
 def get_sample_publisher_dataform(dict_params=None):
 
@@ -227,7 +253,6 @@ def get_sample_journal():
     """
 
     journal_attrs = {
-      'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
       'frequency': 'Q',
       'final_num': '',
@@ -291,6 +316,34 @@ def get_sample_collection(validated = True):
     }
 
     return models.Collection(**collection_attrs)
+
+def get_sample_sponsor(validated = True):
+    """
+    Returns a sponsor object, without the following attributes (non mandatory or need to be bound
+    to another model object):
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
+    """
+
+    sponsor_attrs = {
+      'city': '',
+      'fax': '',
+      'validated': validated,
+      'name': u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
+      'address_number': '',
+      'acronym': 'FAPESP',
+      'country': '',
+      'cel': '',
+      'phone': '',
+      'state': '',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'mail': '',
+      'address_complement': '',
+      'is_available': True,
+
+    }
+
+    return models.Sponsor(**sponsor_attrs)
 
 def get_sample_publisher(validated = True):
     """
