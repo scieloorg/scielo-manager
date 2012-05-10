@@ -270,8 +270,10 @@ class JournalImport:
         journal.eletronic_issn = electronic_issn
         journal.subject_descriptors = '; '.join(record['440'])
 
-        # Text Language
+        if record.has_key('450'):
+            journal.index_coverage = '; '.join(record['450'])
 
+        # Text Language
         if record.has_key('301'):
             journal.init_year = record['301'][0]
 
@@ -352,13 +354,13 @@ class JournalImport:
 
         # titles
         if record.has_key('421'):
-            self.load_title(journal,record['421'],'medline')
+            self.load_title(journal,record['421'],'other')
 
         if record.has_key('150'):
-            self.load_title(journal,record['150'],'shorttitle')
+            self.load_title(journal,record['150'],'other')
 
         if record.has_key('151'):
-            self.load_title(journal,record['151'],'lilacs')
+            self.load_title(journal,record['151'],'other')
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')

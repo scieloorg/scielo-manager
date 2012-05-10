@@ -88,6 +88,7 @@ class JournalForm(UserCollectionContext):
            'notes': forms.Textarea(attrs={'class':'span9'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
+           'index_coverage': forms.Textarea(attrs={'class':'span9'}),
         }
 
 class PublisherForm(UserCollectionContext):
