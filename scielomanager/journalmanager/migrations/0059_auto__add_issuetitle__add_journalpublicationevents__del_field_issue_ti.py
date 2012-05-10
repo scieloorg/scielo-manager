@@ -8,12 +8,36 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Adding model 'IssueTitle'
+        db.create_table('journalmanager_issuetitle', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'])),
+            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'], null=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
+        ))
+        db.send_create_signal('journalmanager', ['IssueTitle'])
+
+        # Adding model 'JournalPublicationEvents'
+        db.create_table('journalmanager_journalpublicationevents', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
+            ('status', self.gf('django.db.models.fields.CharField')(max_length=16)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+        ))
+        db.send_create_signal('journalmanager', ['JournalPublicationEvents'])
+
         # Deleting field 'Issue.title'
         db.delete_column('journalmanager_issue', 'title')
 
 
     def backwards(self, orm):
         
+        # Deleting model 'IssueTitle'
+        db.delete_table('journalmanager_issuetitle')
+
+        # Deleting model 'JournalPublicationEvents'
+        db.delete_table('journalmanager_journalpublicationevents')
+
         # Adding field 'Issue.title'
         db.add_column('journalmanager_issue', 'title', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True), keep_default=False)
 
@@ -164,6 +188,13 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True'})
+        },
+        'journalmanager.journalpublicationevents': {
+            'Meta': {'object_name': 'JournalPublicationEvents'},
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
         },
         'journalmanager.journalstudyarea': {
             'Meta': {'object_name': 'JournalStudyArea'},

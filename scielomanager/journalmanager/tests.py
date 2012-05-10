@@ -84,7 +84,14 @@ class LoggedInViewsTest(TestCase):
         sample_publisher.collections = [self.collection,]
         sample_publisher.save()
 
-        sample_journal.publisher = sample_publisher
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.save()
+
+        sample_journal.save()
+        sample_journal.publisher = [sample_publisher,]
+        sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
 
@@ -215,6 +222,10 @@ class LoggedInViewsTest(TestCase):
         sample_publisher.collection = self.collection
         sample_publisher.save()
 
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.collection = self.collection
+        sample_sponsor.save()
+
         sample_uselicense = tests_assets.get_sample_uselicense()
         sample_uselicense.save()
 
@@ -223,7 +234,8 @@ class LoggedInViewsTest(TestCase):
 
         #missing data
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
+            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
+                                                     'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-collections': [self.usercollections.pk],
                                                      }))
 
@@ -231,7 +243,8 @@ class LoggedInViewsTest(TestCase):
 
 
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
+            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
+                                                     'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-languages': [sample_language.pk],
@@ -243,7 +256,8 @@ class LoggedInViewsTest(TestCase):
         testing_journal = Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)')
         response = self.client.post(reverse('journal.edit', args = (testing_journal.pk,)),
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
-                                                     'journal-publisher': sample_publisher.pk,
+                                                     'journal-publisher': [sample_publisher.pk],
+                                                     'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-languages': [sample_language.pk],

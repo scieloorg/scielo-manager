@@ -74,7 +74,6 @@ class JournalForm(UserCollectionContext):
            'short_title': forms.TextInput(attrs={'class':'span9'}),
            'previous_title': forms.Select(attrs={'class':'span9'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
            'subject_descriptors': forms.Textarea(attrs={'class':'span9'}),
            'init_year': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker0'}),

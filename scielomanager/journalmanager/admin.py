@@ -80,6 +80,15 @@ class IssueAdmin(admin.ModelAdmin):
 
 admin.site.register(Issue, IssueAdmin)
 
+class SponsorAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Sponsor.nocacheobjects
+
+    filter_horizontal = ('collections',)
+
+admin.site.register(Sponsor, SponsorAdmin)
+
 class PublisherAdmin(admin.ModelAdmin):
 
     def queryset(self, request):

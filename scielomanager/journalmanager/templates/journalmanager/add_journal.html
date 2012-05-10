@@ -451,17 +451,9 @@
 {{ block.super }}
  <script>
     $(document).ready(function() {
-         $('#well-rezi-fixed').draggable();
-
-        $( "#id_publisher" ).combobox({ autoFocus: true });
+        $('#well-rezi-fixed').draggable();
 
         $(".help-text").popover('hide');
-
-        $( "#id_journal-publisher" ).combobox({ autoFocus: true });
-
-        $( "#toggle" ).click(function() {
-            $( "#id_publisher" ).toggle();
-        });
 
         //multiple-formsets
         $('#titleformset tbody tr').formset({
