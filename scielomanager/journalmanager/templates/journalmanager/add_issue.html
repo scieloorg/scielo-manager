@@ -90,13 +90,6 @@
                {{ add_form.is_marked_up }}
             </div>
         </div>
-        <div class="control-group {% if add_form.bibliographic_strip.errors %}error{% endif %}">
-            <label class="control-label" for="bibliographic_strip">{% trans add_form.bibliographic_strip.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.bibliographic_strip }}
-               {% field_help add_form.bibliographic_strip.label add_form.bibliographic_strip.help_text term-issue-bibliographic-strip %}
-            </div>
-        </div>
         <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
             <label class="control-label" for="use_license">{% trans add_form.use_license.label_tag %}</label>
             <div class="controls">

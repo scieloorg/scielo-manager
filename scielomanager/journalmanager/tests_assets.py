@@ -171,7 +171,7 @@ def get_sample_publisher_dataform(dict_params=None):
 def get_sample_issue_dataform(dict_params=None):
     """
     Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
-        'bibliographic_strip', 'section', 'use_license']
+        'section', 'use_license']
     """
     if dict_params is None:
         dict_params = {}
