@@ -19,6 +19,12 @@ urlpatterns = patterns('',
     url(r'^publisher/(?P<publisher_id>\d+)/edit/$', views.add_publisher, name='publisher.edit' ),
     url(r'^publisher/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Publisher}, name='publisher.toggle_availability' ),
 
+    # Sponsor Tools
+    url(r'^sponsor/$', views.generic_index_search, {'model': models.Sponsor}, name='sponsor.index' ),
+    url(r'^sponsor/new/$', views.add_sponsor, name='sponsor.add' ),
+    url(r'^sponsor/(?P<sponsor_id>\d+)/edit/$', views.add_sponsor, name='sponsor.edit' ),
+    url(r'^sponsor/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Sponsor}, name='sponsor.toggle_availability' ),
+
     # Section Tools
     url(r'^(?P<journal_id>\d+)/section/$', views.generic_index_search, {'model': models.Section}, name='section.index' ),
     url(r'^(?P<journal_id>\d+)/section/new/$', views.add_section, name='section.add' ),

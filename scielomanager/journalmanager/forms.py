@@ -98,6 +98,13 @@ class PublisherForm(UserCollectionContext):
     class Meta:
         model = models.Publisher
 
+class SponsorForm(UserCollectionContext):
+
+    def __init__(self, *args, **kwargs):
+        super(SponsorForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = models.Sponsor
 
 class UserForm(ModelForm):
     class Meta:

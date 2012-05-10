@@ -92,6 +92,9 @@ def generic_index_search(request, model, journal_id = None):
         objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=user_collections).distinct()
 
     if request.GET.get('q'):
+        if model is models.Sponsor:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('name')
+
         if model is models.Publisher:
             objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('name')
 
@@ -309,6 +312,40 @@ def add_journal(request, journal_id = None):
                               'user_collections': user_collections,
                               'histformset': histformset,
                               }, context_instance = RequestContext(request))
+
+@login_required
+def add_sponsor(request, sponsor_id=None):
+    """
+    Handles new and existing sponsors
+    """
+
+    if  sponsor_id is None:
+        sponsor = models.Sponsor()
+    else:
+        sponsor = get_object_or_404(models.Sponsor, id = sponsor_id)
+
+    user_collections = get_user_collections(request.user.id)
+
+    if request.method == "POST":
+        sponsorform = SponsorForm(request.POST, instance=sponsor, prefix='sponsor',
+            collections_qset=user_collections)
+
+        if sponsorform.is_valid():
+            sponsorform.save()
+            messages.info(request, MSG_FORM_SAVED)
+            return HttpResponseRedirect(reverse('sponsor.index'))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        sponsorform  = SponsorForm(instance=sponsor, prefix='sponsor',
+            collections_qset=user_collections)
+
+    return render_to_response('journalmanager/add_sponsor.html', {
+                              'add_form': sponsorform,
+                              'user_name': request.user.pk,
+                              'user_collections': user_collections,
+                              },
+                              context_instance = RequestContext(request))
 
 @login_required
 def add_publisher(request, publisher_id=None):
