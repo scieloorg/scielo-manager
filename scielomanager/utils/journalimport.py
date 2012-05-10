@@ -3,8 +3,8 @@
 import json
 import os
 import difflib
-
 import subfield
+from datetime import date
 
 from django.core.management import setup_environ
 from django.core import exceptions
@@ -202,20 +202,18 @@ class JournalImport:
         lifecycles = {}
 
         for i in historicals:
-            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+            expanded = subfield.expand(i)
+            parsed_subfields = dict(expanded)
             try:
                 lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
             except KeyError:
                 self.charge_summary("history_error_field")
-                return False
 
             try:
                 lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
             except KeyError:
                 self.charge_summary("history_error_field")
-                return False
 
-        print lifecycles
 
         for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
             try:
@@ -224,6 +222,8 @@ class JournalImport:
                 journalhist.status = cyclevalue
                 journalhist.journal = journal
                 journalhist.save()
+                journalhist.created_at = cyclekey
+                journalhist.save() #Updating to real date, once when saving the model is given a automatica value
                 self.charge_summary("publication_events")
             except exceptions.ValidationError:
                 self.charge_summary("publications_events_error_data")
@@ -380,6 +380,9 @@ class JournalImport:
             loaded_publisher = self.load_publisher(collection, record)
             loaded_sponsor = self.load_sponsor(collection, record)
             loaded_journal = self.load_journal(collection, loaded_publisher, loaded_sponsor, record)
+
+        # Cleaning data
+        JournalPublicationEvents.objects.filter(created_at__month=date.today().month, created_at__year=date.today().year).delete()
 
     def get_summary(self):
         """
