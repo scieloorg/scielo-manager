@@ -3,8 +3,6 @@ from django.contrib import admin
 from scielomanager.journalmanager.models import *
 from django.contrib.auth.admin import UserAdmin
 
-admin.site.unregister(User)
-
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
@@ -13,13 +11,6 @@ class JournalHistoryInline(admin.StackedInline):
 
 class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
-
-class UserProfileInline(admin.TabularInline):
-    model = UserProfile
-
-class UserCollectionsInline(admin.TabularInline):
-    model = UserCollections
-    extra = 1
 
 class JournalStudyAreaInline(admin.StackedInline):
     model = JournalStudyArea
@@ -65,10 +56,20 @@ class InstitutionAdmin(admin.ModelAdmin):
 
 admin.site.register(Institution, InstitutionAdmin)
 
-class UserAdmin(admin.ModelAdmin):
-    exclude = ('email', )
+class UserCollectionsInline(admin.TabularInline):
+    model = UserCollections
+    extra = 1
+    can_delete = True
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    max_num = 1
+    can_delete = True
+
+class UserAdmin(UserAdmin):
     inlines = (UserProfileInline, UserCollectionsInline)
 
+admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 class IssueAdmin(admin.ModelAdmin):
