@@ -277,12 +277,12 @@ class Section(caching.base.CachingMixin, models.Model):
     objects = AppCustomManager()
     nocacheobjects = models.Manager()
 
-    journal = models.ForeignKey(Journal, null=True, blank=True)
+    journal = models.ForeignKey(Journal)
 
-    code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
+    code = models.CharField(_('Code'), max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=False)
+    is_available = models.BooleanField(_('Is Available?'), default=True, blank=True)
 
     def __unicode__(self):
         try:
