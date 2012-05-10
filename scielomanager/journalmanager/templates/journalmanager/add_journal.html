@@ -235,32 +235,40 @@
 
   <span class="label"><a name="mission"></a>{% trans "Mission" %}</span>
   <div class="well">
-      <table id="missionformset" class="table table-bordered table-striped">
-      <thead>
-          <tr>
-            <td>
-              	{% trans "Description" %}
-              	{% field_help missionformset.forms.0.description.label missionformset.forms.0.description.help_text term-mission %}
-            </td>
-            <td>{% trans "Language" %}</td>
-          </tr>
-      </thead>
-      <tbody>
-          {% for form in missionformset.forms %}
-          <tr id="{{ form.prefix }}-row">
-              <td>
-                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                  {{ form.description }}
-              </td>
-              <td>{{ form.language }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-      </table>
-      <p>
-          {{ missionformset.management_form }}
-      </p>
+    <table id="missionformset" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+          <td>
+          	{% trans "Description" %}
+          	{% field_help missionformset.forms.0.description.label missionformset.forms.0.description.help_text term-mission %}
+          </td>
+          <td>
+            {% trans "Language" %}
+          </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for form in missionformset.forms %}
+        <tr id="{{ form.prefix }}-row">
+          <td>
+            <div class="control-group {% if form.errors %}error{% endif %}">
+              {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+              {{ form.description }}
+            </div>
+          </td>
+          <td>
+            <div class="control-group {% if form.errors %}error{% endif %}">
+              {{ form.language }}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <p>
+      {{ missionformset.management_form }}
+    </p>
   </div>
 
   <span class="label"><a name="text_language"></a>{% trans "Text Language" %}</span>
@@ -474,15 +482,22 @@
       <tbody>
       <tr>
         <td>
-          {{ add_form.init_year }}
-          {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
+          <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
+            {{ add_form.init_year }}
+            {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
+          </div>
         </td>
         <td>
-          {{ add_form.init_vol }}
-          {% field_help add_form.init_vol.label add_form.init_vol.help_text term-initial-volume %}</td>
+          <div class="control-group {% if add_form.init_vol.errors %}error{% endif %}">
+            {{ add_form.init_vol }}
+            {% field_help add_form.init_vol.label add_form.init_vol.help_text term-initial-volume %}
+          </div>
+        </td>
         <td>
-          {{ add_form.init_num }}
-          {% field_help add_form.init_num.label add_form.init_num.help_text term-initial-number %}
+          <div class="control-group {% if add_form.init_num.errors %}error{% endif %}">
+            {{ add_form.init_num }}
+            {% field_help add_form.init_num.label add_form.init_num.help_text term-initial-number %}
+          </div>
         </td>
       </tr>
       </tbody>
@@ -552,12 +567,16 @@
       <tbody>
       <tr>
         <td>
-          {{ add_form.frequency }}
-          {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
+          <div class="control-group {% if add_form.frequency.errors %}error{% endif %}">
+            {{ add_form.frequency }}
+            {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
+          </div>
         </td>
         <td>
-          {{ add_form.pub_level }}
-          {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
+          <div class="control-group {% if add_form.pub_level.errors %}error{% endif %}">
+            {{ add_form.pub_level }}
+            {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
+          </div>
         </td>
       </tr>
       </tbody>

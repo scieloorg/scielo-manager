@@ -148,36 +148,37 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
-    title_iso = models.CharField(_('Title ISO'), max_length=256, db_index=True, null=True)
+    title_iso = models.CharField(_('Title ISO'), max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'), max_length=256, db_index=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    acronym = models.CharField(_('Acronym'),max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
-    scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'),max_length=16,
-        choices=choices.SCIELO_ISSN,null=False,blank=True, help_text=helptexts.JOURNAL__SCIELO_ISSN)
-    print_issn = models.CharField(_('Print ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__PRINT_ISSN)
-    eletronic_issn = models.CharField(_('Eletronic ISSN'),max_length=9,null=False,blank=True, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
-    subject_descriptors = models.CharField(_('Subject / Descriptors'),max_length=512,null=False,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
-    init_year = models.CharField(_('Initial Date'),max_length=10,null=True,blank=True, help_text=helptexts.JOURNAL__INIT_YEAR)
-    init_vol = models.CharField(_('Initial Volume'), max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__INIT_VOL)
-    init_num = models.CharField(_('Initial Number'), max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__INIT_NUM)
-    final_year = models.CharField(_('Final Date'),max_length=10,null=True,blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
+    acronym = models.CharField(_('Acronym'), max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
+    scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'), max_length=16,
+        choices=choices.SCIELO_ISSN, help_text=helptexts.JOURNAL__SCIELO_ISSN)
+    print_issn = models.CharField(_('Print ISSN'), max_length=9, help_text=helptexts.JOURNAL__PRINT_ISSN)
+    eletronic_issn = models.CharField(_('Eletronic ISSN'), max_length=9, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
+    subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512,
+        help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
+    init_year = models.CharField(_('Initial Date'), max_length=10, help_text=helptexts.JOURNAL__INIT_YEAR)
+    init_vol = models.CharField(_('Initial Volume'), max_length=4, help_text=helptexts.JOURNAL__INIT_VOL)
+    init_num = models.CharField(_('Initial Number'), max_length=4, help_text=helptexts.JOURNAL__INIT_NUM)
+    final_year = models.CharField(_('Final Date'), max_length=10, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
     final_vol = models.CharField(_('Final Volume'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
     final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
-        choices=choices.FREQUENCY,null=False,blank=True, help_text=helptexts.JOURNAL__FREQUENCY)
+        choices=choices.FREQUENCY, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'), max_length=16,
-        choices=choices.PUBLICATION_STATUS, null=False, blank=True, help_text=helptexts.JOURNAL__PUB_STATUS)
-    sponsor = models.CharField(_('Sponsor'), max_length=256,null=True,blank=True, help_text=helptexts.JOURNAL__SPONSOR)
-    editorial_standard = models.CharField(_('Editorial Standard'),max_length=64,
-        choices=choices.STANDARD,null=False,blank=True, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
-    ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'),max_length=64,
-        choices=choices.CTRL_VOCABULARY,null=False,blank=True, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
+        choices=choices.PUBLICATION_STATUS, help_text=helptexts.JOURNAL__PUB_STATUS)
+    sponsor = models.CharField(_('Sponsor'), max_length=256, help_text=helptexts.JOURNAL__SPONSOR)
+    editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
+        choices=choices.STANDARD, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
+    ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
+        choices=choices.CTRL_VOCABULARY, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
-        choices=choices.PUBLICATION_LEVEL,null=False,blank=True, help_text=helptexts.JOURNAL__PUB_LEVEL)
+        choices=choices.PUBLICATION_LEVEL, help_text=helptexts.JOURNAL__PUB_LEVEL)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
-    copyrighter = models.CharField(_('Copyrighter'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__COPYRIGHTER)
-    url_main_collection = models.CharField(_('URL of main collection'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_MAIN_COLLECTION)
+    copyrighter = models.CharField(_('Copyrighter'), max_length=254, help_text=helptexts.JOURNAL__COPYRIGHTER)
+    url_main_collection = models.CharField(_('URL of main collection'), max_length=64, help_text=helptexts.JOURNAL__URL_MAIN_COLLECTION)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
@@ -218,8 +219,8 @@ class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal)
-    study_area = models.CharField(_('Study Area'),max_length=256,
-        choices=choices.SUBJECTS,null=False,blank=True, help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
+    study_area = models.CharField(_('Study Area'), max_length=256,
+        choices=choices.SUBJECTS, help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -239,7 +240,7 @@ class JournalMission(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, null=False)
-    description = models.TextField(_('Mission'), null=False, help_text=helptexts.JOURNALMISSION_DESCRIPTION)
+    description = models.TextField(_('Mission'), help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.ForeignKey('Language', blank=False, null=True)
 
 class UseLicense(caching.base.CachingMixin, models.Model):
