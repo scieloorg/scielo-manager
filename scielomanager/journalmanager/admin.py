@@ -6,9 +6,6 @@ from django.contrib.auth.admin import UserAdmin
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
 
-class JournalHistoryInline(admin.StackedInline):
-    model = JournalHist
-
 class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
@@ -41,7 +38,7 @@ class JournalAdmin(admin.ModelAdmin):
     search_fields = ('title',)
     list_filter = ('is_available',)
     filter_horizontal = ('collections','languages')
-    inlines = [JournalHistoryInline, JournalMissionInline,
+    inlines = [JournalMissionInline,
         JournalStudyAreaInline]
 
 admin.site.register(Journal, JournalAdmin)

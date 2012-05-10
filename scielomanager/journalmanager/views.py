@@ -271,7 +271,6 @@ def add_journal(request, journal_id = None):
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
-    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
 
     if request.method == "POST":
 
@@ -279,15 +278,13 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-        histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
 
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
-            and missionformset.is_valid() and histformset.is_valid():
+            and missionformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
-            histformset.save()
             messages.info(request, MSG_FORM_SAVED)
 
             return HttpResponseRedirect(reverse('journal.index'))
@@ -299,7 +296,6 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
-        histformset = JournalHistFormSet(instance=journal, prefix='hist')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
@@ -307,7 +303,6 @@ def add_journal(request, journal_id = None):
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'user_collections': user_collections,
-                              'histformset': histformset,
                               }, context_instance = RequestContext(request))
 
 @login_required

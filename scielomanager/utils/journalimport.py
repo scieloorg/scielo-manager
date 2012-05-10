@@ -3,8 +3,8 @@
 import json
 import os
 import difflib
-
 import subfield
+from datetime import date
 
 from django.core.management import setup_environ
 from django.core import exceptions
@@ -24,6 +24,7 @@ class JournalImport:
 
     def __init__(self):
         self._publishers_pool = []
+        self._sponsors_pool = []
         self._summary = {}
 
     def iso_format(self, dates, string='-'):
@@ -71,6 +72,28 @@ class JournalImport:
 
         return publisher_id
 
+    def have_similar_sponsors(self, match_string):
+        """
+        Function: have_similar_sponsors
+        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
+        instituticoes duplicadas.
+        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
+        False.
+        """
+        sponsor_id=""
+
+        if len(self._sponsors_pool) > 0:
+            for inst in self._sponsors_pool:
+                if inst["match_string"] == match_string:
+                    sponsor_id = inst["id"]
+                    break
+                else:
+                    sponsor_id = False
+        else:
+            sponsor_id = False
+
+        return sponsor_id
+
     def load_publisher(self, collection, record):
         """
         Function: load_publisher
@@ -80,6 +103,9 @@ class JournalImport:
         publisher = Publisher()
 
         # Publishers Import
+        if not record.has_key('480'):
+            return []
+
         publisher.name = record['480'][0]
         publisher.collection = collection
         publisher.address = " ".join(record['63'])
@@ -102,7 +128,41 @@ class JournalImport:
             loaded_publisher = publisher
             self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
 
-        return loaded_publisher
+        return [loaded_publisher,]
+
+    def load_sponsor(self, collection, record):
+        """
+        Function: load_sponsor
+        Retorna um objeto Sponsor() caso a gravação do mesmo em banco de dados for concluida
+        """
+
+        sponsor = Sponsor()
+
+        # Sponsors Import
+        if not record.has_key('140'):
+            return []    
+
+        sponsor.name = record['140'][0]
+
+        sponsor.collection = collection
+
+        match_string=sponsor.name.strip()
+
+        similar_key =  self.have_similar_sponsors(match_string)
+
+        loaded_sponsor=""
+
+        if similar_key != False:
+            similar_sponsor=Sponsor.objects.get(id=similar_key)
+            self.charge_summary("sponsors_duplication_fix")
+            loaded_sponsor = similar_sponsor
+        else:
+            sponsor.save(force_insert=True)
+            self.charge_summary("sponsors")
+            loaded_sponsor = sponsor
+            self._sponsors_pool.append(dict({"id":sponsor.id,"match_string":match_string.strip()}))
+
+        return [loaded_sponsor,]
 
     def load_studyarea(self, journal, areas):
 
@@ -116,19 +176,20 @@ class JournalImport:
 
         from sectionimport import LANG_DICT as lang_dict
         for i in langs:
-            language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
-            journal.languages.add()
+            language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
+
+            journal.languages.add(language)
             self.charge_summary("language_%s" % i)
 
     def load_mission(self, journal, missions):
+        from sectionimport import LANG_DICT as lang_dict
 
         for i in missions:
-
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
-
             mission = JournalMission()
             try:
-                mission.language = Language.nocacheobjects.get(parsed_subfields['l'])
+                language = Language.objects.get_or_create(iso_code = parsed_subfields['l'], name = lang_dict.get(parsed_subfields['l'], '###NOT FOUND###'))[0]
+                mission.language = language
             except:
                 pass
             mission.description = parsed_subfields['_']
@@ -141,30 +202,31 @@ class JournalImport:
         lifecycles = {}
 
         for i in historicals:
-            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+            expanded = subfield.expand(i)
+            parsed_subfields = dict(expanded)
             try:
                 lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
             except KeyError:
                 self.charge_summary("history_error_field")
-                return False
 
             try:
                 lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
             except KeyError:
                 self.charge_summary("history_error_field")
-                return False
 
-        print lifecycles
 
         for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
             try:
-                journalhist = JournalHist()
-                journalhist.date = cyclekey
+                journalhist = JournalPublicationEvents()
+                journalhist.created_at = cyclekey
                 journalhist.status = cyclevalue
-                journal.journalhist_set.add(journalhist)
-                self.charge_summary("life_cycle")
+                journalhist.journal = journal
+                journalhist.save()
+                journalhist.created_at = cyclekey
+                journalhist.save() #Updating to real date, once when saving the model is given a automatica value
+                self.charge_summary("publication_events")
             except exceptions.ValidationError:
-                self.charge_summary("history_error_data")
+                self.charge_summary("publications_events_error_data")
                 return False
 
         return True
@@ -178,7 +240,7 @@ class JournalImport:
             journal.journaltitle_set.add(title)
             self.charge_summary("title")
 
-    def load_journal(self, collection, loaded_publisher, record):
+    def load_journal(self, collection, loaded_publisher, loaded_sponsor, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -208,8 +270,10 @@ class JournalImport:
         journal.eletronic_issn = electronic_issn
         journal.subject_descriptors = '; '.join(record['440'])
 
-        # Text Language
+        if record.has_key('450'):
+            journal.index_coverage = '; '.join(record['450'])
 
+        # Text Language
         if record.has_key('301'):
             journal.init_year = record['301'][0]
 
@@ -261,11 +325,16 @@ class JournalImport:
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
 
-        journal.publisher = loaded_publisher
-
         journal.creator_id = 1
         journal.save(force_insert=True)
+
+        journal.collections.add(collection)
+
         self.charge_summary("journals")
+
+        journal.publisher = loaded_publisher
+
+        journal.sponsor = loaded_sponsor
 
         # text language
         if record.has_key('350'):
@@ -279,19 +348,19 @@ class JournalImport:
         if record.has_key('901'):
             self.load_mission(journal,record['901'])
 
-        # historic
+        # historic - JournalPublicationEvents
         if record.has_key('51'):
             self.load_historic(journal,record['51'])
 
         # titles
         if record.has_key('421'):
-            self.load_title(journal,record['421'],'medline')
+            self.load_title(journal,record['421'],'other')
 
         if record.has_key('150'):
-            self.load_title(journal,record['150'],'shorttitle')
+            self.load_title(journal,record['150'],'other')
 
         if record.has_key('151'):
-            self.load_title(journal,record['151'],'lilacs')
+            self.load_title(journal,record['151'],'other')
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')
@@ -311,7 +380,11 @@ class JournalImport:
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_publisher, record)
+            loaded_sponsor = self.load_sponsor(collection, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_sponsor, record)
+
+        # Cleaning data
+        JournalPublicationEvents.objects.filter(created_at__month=date.today().month, created_at__year=date.today().year).delete()
 
     def get_summary(self):
         """
