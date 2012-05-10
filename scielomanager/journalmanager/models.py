@@ -310,7 +310,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     publication_date = models.DateField(null=False, blank=False, help_text=helptexts.ISSUE__PUBLICATION_DATE)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
-    bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__BIBLIOGRAPHIC_STRIP) #l10n
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
     publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
     total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
