@@ -36,7 +36,6 @@ class JournalAdmin(admin.ModelAdmin):
 
     list_display = ('title', 'validated')
     search_fields = ('title',)
-    # list_filter = ('is_available',)
     filter_horizontal = ('collections','languages')
     inlines = [JournalMissionInline,
         JournalStudyAreaInline]
