@@ -512,18 +512,6 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
 
     @with_sample_journal
-    def test_toggle_journal_availability(self):
-        pre_journal = Journal.objects.all()[0]
-        response = self.client.get(reverse('journal.toggle_availability', args=[pre_journal.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        pos_journal = Journal.objects.all()[0]
-
-        self.assertEqual(pre_journal, pos_journal)
-        self.assertTrue(pre_journal.is_available is not pos_journal.is_available)
-
-        response = self.client.get(reverse('journal.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 400)
-
-    @with_sample_journal
     def test_toggle_publisher_availability(self):
         pre_publisher = Publisher.objects.all()[0]
         response = self.client.get(reverse('publisher.toggle_availability', args=[pre_publisher.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
@@ -570,21 +558,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
-    @with_sample_journal
-    def test_journal_availability_list(self):
-
-        pre_journal = Journal.objects.all()[0]
-        response = self.client.get(reverse('journal.index') + '?is_available=1')
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
-
-        #change object atribute is_available
-        pre_journal.is_available = False
-        pre_journal.save()
-
-        response = self.client.get(reverse('journal.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['objects_journal'].object_list), 1)
-
 
     @with_sample_journal
     def test_publisher_availability_list(self):
@@ -614,17 +587,6 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.context['objects_sponsor'].object_list[0].is_available, False)
         self.assertEqual(len(response.context['objects_sponsor'].object_list), 1)
 
-    @with_sample_journal
-    def test_bulk_action_availability(self):
-        journal = Journal.objects.all()[0]
-
-        response = self.client.get(reverse('journal.index'))
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
-
-        self.client.post(reverse('journal.bulk_action', args=['is_available', '0']), {'action': journal.id})
-
-        response = self.client.get(reverse('journal.index'))
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
 
     @with_sample_issue
     def test_issue_availability_list(self):

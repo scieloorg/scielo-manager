@@ -86,11 +86,7 @@
         </td>
         <td>
           <h4>
-            {% if journal.is_available %}
               <a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
-            {% else %}
-              <a class="strikethrough" href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
-            {% endif %}
           </h4>
           <ul class="_actions">
             <li>

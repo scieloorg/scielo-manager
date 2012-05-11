@@ -140,7 +140,7 @@ class Sponsor(Institution):
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = AppCustomManager()
+    objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
     #Relation fields
@@ -187,8 +187,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True, blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
-    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True )
-    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
+    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
 
     def __unicode__(self):
         return self.title
