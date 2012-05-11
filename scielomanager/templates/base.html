@@ -22,12 +22,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-            <a class="brand" href="#">SciELO Manager</a>
+            <a class="brand" href="/">SciELO Manager</a>
             <div class="nav-collapse collapse" style="height: 0px;">
               <ul class="nav">
-                <li><a href="/">Home</a></li>
                 <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
                 <li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>
+                <li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>
                   {% if perms.auth %}
                   <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
                   {% endif %}
@@ -38,6 +38,7 @@
                       <select id="list_model" class="navbar-search span2">
                         <option{% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">Journal</option>
                         <option{% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">Publisher</option>
+                        <option{% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">Sponsor</option>
                       </select>
                       <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
                     </form>
