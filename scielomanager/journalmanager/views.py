@@ -86,7 +86,10 @@ def generic_index_search(request, model, journal_id = None):
         objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        if model is models.Journal:
+            objects_all = model.objects.filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        else:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
 
     if request.GET.get('q'):
         if model is models.Sponsor:
@@ -96,10 +99,10 @@ def generic_index_search(request, model, journal_id = None):
             objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
 
         if model is models.Journal:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
+            objects_all = model.objects.filter(title__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
     if objects_all.count() == 0:
-        messages.error(request, _('Your search did not match any documents.'))
+        messages.error(request, _('No exist documents.'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
