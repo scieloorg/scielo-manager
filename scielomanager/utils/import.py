@@ -31,7 +31,7 @@ try:
 except ObjectDoesNotExist:
     print 'Collection %s does not exists' % (collectionname)
     collection = Collection()
-    collection.name = collectioname
+    collection.name = collectionname
     collection.url = collectionurl
     collection.save()
     print 'Collection %s was created' % (collectionname)
