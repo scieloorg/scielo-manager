@@ -107,7 +107,6 @@ class JournalImport:
             return []
 
         publisher.name = record['480'][0]
-        publisher.collection = collection
         publisher.address = " ".join(record['63'])
 
         match_string=publisher.name
@@ -124,9 +123,11 @@ class JournalImport:
             loaded_publisher = similar_publisher
         else:
             publisher.save(force_insert=True)
+            publisher.collections.add(collection)
             self.charge_summary("publishers")
             loaded_publisher = publisher
             self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
+
 
         return [loaded_publisher,]
 
@@ -144,8 +145,6 @@ class JournalImport:
 
         sponsor.name = record['140'][0]
 
-        sponsor.collection = collection
-
         match_string=sponsor.name.strip()
 
         similar_key =  self.have_similar_sponsors(match_string)
@@ -158,6 +157,7 @@ class JournalImport:
             loaded_sponsor = similar_sponsor
         else:
             sponsor.save(force_insert=True)
+            sponsor.collections.add(collection)
             self.charge_summary("sponsors")
             loaded_sponsor = sponsor
             self._sponsors_pool.append(dict({"id":sponsor.id,"match_string":match_string.strip()}))
