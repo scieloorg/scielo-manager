@@ -11,6 +11,18 @@ class Migration(SchemaMigration):
         # Deleting model 'JournalHist'
         db.delete_table('journalmanager_journalhist')
 
+        # Deleting field 'Journal.is_available'
+        db.delete_column('journalmanager_journal', 'is_available')
+
+        # Adding field 'Journal.index_coverage'
+        db.add_column('journalmanager_journal', 'index_coverage', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
+
+        # Changing field 'Institution.name'
+        db.alter_column('journalmanager_institution', 'name', self.gf('django.db.models.fields.CharField')(max_length=256))
+
+        # Deleting field 'Issue.bibliographic_strip'
+        db.delete_column('journalmanager_issue', 'bibliographic_strip')
+
 
     def backwards(self, orm):
         
@@ -22,6 +34,18 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
         ))
         db.send_create_signal('journalmanager', ['JournalHist'])
+
+        # Adding field 'Journal.is_available'
+        db.add_column('journalmanager_journal', 'is_available', self.gf('django.db.models.fields.BooleanField')(default=True), keep_default=False)
+
+        # Deleting field 'Journal.index_coverage'
+        db.delete_column('journalmanager_journal', 'index_coverage')
+
+        # Changing field 'Institution.name'
+        db.alter_column('journalmanager_institution', 'name', self.gf('django.db.models.fields.CharField')(max_length=128))
+
+        # Adding field 'Issue.bibliographic_strip'
+        db.add_column('journalmanager_issue', 'bibliographic_strip', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True), keep_default=False)
 
 
     models = {
@@ -92,7 +116,6 @@ class Migration(SchemaMigration):
         },
         'journalmanager.issue': {
             'Meta': {'object_name': 'Issue'},
-            'bibliographic_strip': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
@@ -136,7 +159,6 @@ class Migration(SchemaMigration):
             'init_num': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '4', 'blank': 'True'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
-            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'languages': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Language']", 'symmetrical': 'False'}),
             'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'previous_title': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
