@@ -38,7 +38,6 @@
 <thead>
     <tr>
         <th>{% trans "Name" %}</th>
-        <th>{% trans "Sponsor" %}</th>
         <th>{% trans "Validated" %}</th>
     </tr>
 </thead>
@@ -67,7 +66,6 @@
               </li>
           </ul>
       </td>
-      <td>{{ sponsor.sponsor }}</td>
       <td>
           {% if sponsor.validated %}
               <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
