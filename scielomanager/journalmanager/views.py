@@ -5,7 +5,7 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-    
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -411,12 +411,15 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle, form=SectionTitleForm, extra=1, can_delete=True)
+    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
+        form=SectionTitleForm, extra=2, can_delete=False, formset=FirstFieldRequiredFormSet)
     SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
     if request.method == 'POST':
+
         add_form = SectionForm(request.POST, instance=section)
         section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
+
         if add_form.is_valid() and section_title_formset.is_valid():
             add_form.save_all(journal)
             section_title_formset.save()

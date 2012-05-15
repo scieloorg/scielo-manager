@@ -2,6 +2,7 @@
 from django import forms
 from django.forms import ModelForm, DateField
 from django.forms.models import inlineformset_factory
+from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
 
 from journalmanager import models
@@ -60,7 +61,7 @@ class JournalForm(UserCollectionContext):
         if not (print_issn and eletronic_issn):
             msg = u'Eletronic ISSN or Print ISSN must be filled.'
             self._errors['scielo_issn'] = self.error_class([msg])
-                
+
         return cleaned_data
 
     class Meta:
@@ -171,8 +172,10 @@ class SectionTitleForm(ModelForm):
 
     class Meta:
         model = models.SectionTitle
+        fields = ('title', 'language',)
 
 class SectionForm(ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(SectionForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
@@ -190,6 +193,7 @@ class SectionForm(ModelForm):
 
     class Meta:
         model = models.Section
+        exclude = ('journal',)
 
 class UserCollectionsForm(ModelForm):
     class Meta:
@@ -225,4 +229,18 @@ class IssueTitleForm(ModelForm):
       widgets = {
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
+
+
+## Formsets ##
+class FirstFieldRequiredFormSet(BaseInlineFormSet):
+    """
+    Formset class that makes the first item required.
+
+    Usage: ABCFormSet = inlineformset_factory(models.Wrappee, models.Wrapped,
+        extra=1, formset=FirstFieldRequiredFormSet)
+    """
+    def __init__(self, *args, **kwargs):
+        super(FirstFieldRequiredFormSet, self).__init__(*args, **kwargs)
+        self.forms[0].empty_permitted = False
+
 

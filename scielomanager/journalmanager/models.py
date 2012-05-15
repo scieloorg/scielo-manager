@@ -268,9 +268,10 @@ class TranslatedData(caching.base.CachingMixin, models.Model):
 class SectionTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+
     section = models.ForeignKey('Section')
-    title = models.CharField(_('Title'), max_length=256, blank=False)
-    language = models.ForeignKey('Language', blank=False)
+    title = models.CharField(_('Title'), max_length=256, null=False)
+    language = models.ForeignKey('Language')
 
 class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
@@ -279,7 +280,7 @@ class Section(caching.base.CachingMixin, models.Model):
 
     journal = models.ForeignKey(Journal)
 
-    code = models.CharField(_('Code'), max_length=16)
+    code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     is_available = models.BooleanField(_('Is Available?'), default=True, blank=True)
