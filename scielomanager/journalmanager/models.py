@@ -105,7 +105,7 @@ class Institution(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    name = models.CharField(_('Institution Name'), max_length=128, db_index=True, help_text=helptexts.INSTITUTION__NAME)
+    name = models.CharField(_('Institution Name'), max_length=256, db_index=True, help_text=helptexts.INSTITUTION__NAME)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, help_text=helptexts.INSTITUTION__ACRONYM)
     country = models.CharField(_('Country'), max_length=32, help_text=helptexts.INSTITUTION__COUNTRY)
     state = models.CharField(_('State'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__STATE)
@@ -132,15 +132,20 @@ class Publisher(Institution):
     nocacheobjects = models.Manager()
     collections = models.ManyToManyField(Collection)
 
+class Sponsor(Institution):
+    objects = AppCustomManager()
+    nocacheobjects = models.Manager()
+    collections = models.ManyToManyField(Collection)
+
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = AppCustomManager()
+    objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    publisher = models.ForeignKey('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
+    publisher = models.ManyToManyField('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
@@ -180,10 +185,10 @@ class Journal(caching.base.CachingMixin, models.Model):
     copyrighter = models.CharField(_('Copyrighter'), max_length=254, help_text=helptexts.JOURNAL__COPYRIGHTER)
     url_main_collection = models.CharField(_('URL of main collection'), max_length=64, help_text=helptexts.JOURNAL__URL_MAIN_COLLECTION)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
-    url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
+    url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True, blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
-    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True )
-    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True)
+    index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
+    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -228,13 +233,6 @@ class JournalTitle(caching.base.CachingMixin, models.Model):
     journal = models.ForeignKey(Journal)
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
-
-class JournalHist(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    journal = models.ForeignKey(Journal)
-    date = models.DateField(_('Date'), editable=True, blank=True)
-    status = models.CharField(_('Status'), choices=choices.JOURNAL_HIST_STATUS, null=False, blank=True, max_length=2)
 
 class JournalMission(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -307,7 +305,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     publication_date = models.DateField(null=False, blank=False, help_text=helptexts.ISSUE__PUBLICATION_DATE)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
-    bibliographic_strip = models.CharField(_('Custom Bibliographic Strip'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__BIBLIOGRAPHIC_STRIP) #l10n
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
     publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
     total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)

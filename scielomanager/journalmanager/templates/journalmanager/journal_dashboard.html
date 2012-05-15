@@ -74,7 +74,6 @@
         <th>{% trans "Journal Title" %}</th>
         <th>{% trans "Print ISSN" %}</th>
         <th>{% trans "Electronic ISSN" %}</th>
-        <th>{% trans "Publisher" %}</th>
         <th>{% trans "Status" %}</th>
         <th>{% trans "Validated" %}</th>
       </tr>
@@ -87,11 +86,7 @@
         </td>
         <td>
           <h4>
-            {% if journal.is_available %}
               <a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
-            {% else %}
-              <a class="strikethrough" href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
-            {% endif %}
           </h4>
           <ul class="_actions">
             <li>
@@ -113,7 +108,6 @@
         </td>
         <td>{{ journal.print_issn }}</td>
         <td>{{ journal.eletronic_issn }}</td>
-        <td>{{ journal.publisher }}</td>
         <td>{{ journal.pub_status }}</td>
         <td>
           {%if journal.validated %}

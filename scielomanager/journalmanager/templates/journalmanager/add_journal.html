@@ -37,7 +37,6 @@
       <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
       <li><a href="#license">{% trans 'Licenses' %}</a></li>
       <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
-      <li><a href="#life_cycle">{% trans 'Life Cycle' %}</a></li>
       <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
     </ul>
   </div>
@@ -370,6 +369,14 @@
         {{ add_form.ctrl_vocabulary }}
         {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
       </div>
+    </div> 
+
+    <div class="control-group {% if add_form.index_coverage.errors %}error{% endif %}">
+      <label class="control-label" for="index_coverage">{% trans add_form.index_coverage.label_tag %}</label>
+      <div class="controls">
+        {% field_help add_form.index_coverage.label add_form.index_coverage.help_text term-subject-descriptors %}
+        {{ add_form.index_coverage }}
+      </div>
     </div>
 
     <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
@@ -583,6 +590,7 @@
     </table>
   </div>
 
+<<<<<<< HEAD
   <span class="label"><a name="life_cycle"></a>{% trans "Life Cycle" %}</span>
   <div class="well">
     <table id="histformset" class="table table-bordered table-striped">
@@ -610,6 +618,8 @@
     </p>
   </div>
 
+=======
+>>>>>>> scieloorg/master
   <span class="label"><a name="further_information"></a>{% trans "Further Information" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.notes.errors %}error{% endif %}">
@@ -635,17 +645,9 @@
 {{ block.super }}
  <script>
     $(document).ready(function() {
-         $('#well-rezi-fixed').draggable();
-
-        $( "#id_publisher" ).combobox({ autoFocus: true });
+        $('#well-rezi-fixed').draggable();
 
         $(".help-text").popover('hide');
-
-        $( "#id_journal-publisher" ).combobox({ autoFocus: true });
-
-        $( "#toggle" ).click(function() {
-            $( "#id_publisher" ).toggle();
-        });
 
         //multiple-formsets
         $('#titleformset tbody tr').formset({
@@ -666,11 +668,6 @@
         $('#textlanguageformset tbody tr').formset({
            formCssClass: 'dynamic-textlanguageformset-form',
            prefix: '{{ textlanguageformset.prefix }}'
-        });
-
-        $('#histformset tbody tr').formset({
-           formCssClass: 'dynamic-histformset-form',
-           prefix: '{{ histformset.prefix }}'
         });
 
     });

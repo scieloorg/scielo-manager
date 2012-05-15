@@ -38,9 +38,7 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 
 def get_user_collections(user_id):
 
-
     user_collections = User.objects.get(pk=user_id).usercollections_set.all()
-
 
     return user_collections
 
@@ -83,23 +81,28 @@ def generic_index_search(request, model, journal_id = None):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
-
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
         objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=user_collections).distinct()
+        if model is models.Journal:
+            objects_all = model.objects.filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        else:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
 
     if request.GET.get('q'):
+        if model is models.Sponsor:
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
+
         if model is models.Publisher:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('name')
+            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
 
         if model is models.Journal:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(title__icontains = request.REQUEST['q'], collections__in=user_collections).order_by('title')
+            objects_all = model.objects.filter(title__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
     if objects_all.count() == 0:
-        messages.error(request, _('Your search did not match any documents.'))
+        messages.error(request, _('No exist documents.'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -271,7 +274,6 @@ def add_journal(request, journal_id = None):
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
-    JournalHistFormSet = inlineformset_factory(models.Journal, models.JournalHist, extra=1, can_delete=True)
 
     if request.method == "POST":
 
@@ -279,15 +281,13 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-        histformset = JournalHistFormSet(request.POST, instance=journal, prefix='hist')
 
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
-            and missionformset.is_valid() and histformset.is_valid():
+            and missionformset.is_valid():
             journalform.save_all(creator = request.user)
             studyareaformset.save()
             titleformset.save()
             missionformset.save()
-            histformset.save()
             messages.info(request, MSG_FORM_SAVED)
 
             return HttpResponseRedirect(reverse('journal.index'))
@@ -299,7 +299,6 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
-        histformset = JournalHistFormSet(instance=journal, prefix='hist')
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
@@ -307,8 +306,41 @@ def add_journal(request, journal_id = None):
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'user_collections': user_collections,
-                              'histformset': histformset,
                               }, context_instance = RequestContext(request))
+
+@login_required
+def add_sponsor(request, sponsor_id=None):
+    """
+    Handles new and existing sponsors
+    """
+
+    if  sponsor_id is None:
+        sponsor = models.Sponsor()
+    else:
+        sponsor = get_object_or_404(models.Sponsor, id = sponsor_id)
+
+    user_collections = get_user_collections(request.user.id)
+
+    if request.method == "POST":
+        sponsorform = SponsorForm(request.POST, instance=sponsor, prefix='sponsor',
+            collections_qset=user_collections)
+
+        if sponsorform.is_valid():
+            sponsorform.save()
+            messages.info(request, MSG_FORM_SAVED)
+            return HttpResponseRedirect(reverse('sponsor.index'))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        sponsorform  = SponsorForm(instance=sponsor, prefix='sponsor',
+            collections_qset=user_collections)
+
+    return render_to_response('journalmanager/add_sponsor.html', {
+                              'add_form': sponsorform,
+                              'user_name': request.user.pk,
+                              'user_collections': user_collections,
+                              },
+                              context_instance = RequestContext(request))
 
 @login_required
 def add_publisher(request, publisher_id=None):

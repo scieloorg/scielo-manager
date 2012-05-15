@@ -75,7 +75,6 @@ class JournalForm(UserCollectionContext):
            'short_title': forms.TextInput(attrs={'class':'span9'}),
            'previous_title': forms.Select(attrs={'class':'span9'}),
            'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'publisher': forms.Select(attrs={'class':'span8'}),
            'scielo_issn': forms.Select(attrs={'class':'span3'}),
            'subject_descriptors': forms.Textarea(attrs={'class':'span9'}),
            'init_year': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker0'}),
@@ -90,6 +89,7 @@ class JournalForm(UserCollectionContext):
            'notes': forms.Textarea(attrs={'class':'span9'}),
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
+           'index_coverage': forms.Textarea(attrs={'class':'span9'}),
         }
 
 class PublisherForm(UserCollectionContext):
@@ -100,6 +100,13 @@ class PublisherForm(UserCollectionContext):
     class Meta:
         model = models.Publisher
 
+class SponsorForm(UserCollectionContext):
+
+    def __init__(self, *args, **kwargs):
+        super(SponsorForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = models.Sponsor
 
 class UserForm(ModelForm):
     class Meta:
