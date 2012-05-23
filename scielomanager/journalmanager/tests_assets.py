@@ -275,7 +275,6 @@ def get_sample_journal():
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'pub_status': 'C',
       'print_issn': '0102-6720',
-      'is_available': True,
     }
 
     return models.Journal(**journal_attrs)
