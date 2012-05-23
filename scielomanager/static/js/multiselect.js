@@ -6,9 +6,18 @@
 
 $(document).ready(function() {
     $("select[multiple]").asmSelect({
-        sortable: false,
+        sortable: true,
         animate: true,
         addItemTarget: 'top',
         hideWhenAdded: true,
     });
 });
+
+function updateSelect(win, newid, name, component){
+
+  var $option = $("<option></option>").text(name).attr("selected", true);
+  $option.val(newid);
+  $('#' + component).append($option).change();
+  win.close();
+
+}

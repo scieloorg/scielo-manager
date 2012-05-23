@@ -327,7 +327,13 @@ def add_sponsor(request, sponsor_id=None):
             collections_qset=user_collections)
 
         if sponsorform.is_valid():
-            sponsorform.save()
+            newsponsorform = sponsorform.save()
+
+            if request.POST.get('popup', 0):
+                return HttpResponse('<script type="text/javascript">\
+                    opener.updateSelect(window, "%s", "%s", "id_journal-sponsor");</script>' % \
+                    (escape(newsponsorform.id), escape(newsponsorform))) 
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('sponsor.index'))
         else:
@@ -365,7 +371,7 @@ def add_publisher(request, publisher_id=None):
 
             if request.POST.get('popup', 0):
                 return HttpResponse('<script type="text/javascript">\
-                    opener.updateSelect("%s", "%s");</script>' % \
+                    opener.updateSelect(window, "%s", "%s", "id_journal-publisher");</script>' % \
                     (escape(newpublisherform.id), escape(newpublisherform))) 
 
             messages.info(request, MSG_FORM_SAVED)

@@ -124,6 +124,21 @@ class SponsorForm(UserCollectionContext):
     class Meta:
         model = models.Sponsor
 
+        widgets = {
+            'name': forms.TextInput(attrs={'class':'span6'}),
+            'acronym': forms.TextInput(attrs={'class':'span6'}),
+            'country': forms.TextInput(attrs={'class':'span6'}),
+            'state': forms.TextInput(attrs={'class':'span6'}),
+            'city': forms.TextInput(attrs={'class':'span6'}),
+            'address': forms.Textarea(attrs={'class':'span6'}),
+            'address_number': forms.TextInput(attrs={'class':'span6'}),
+            'address_complement': forms.TextInput(attrs={'class':'span6'}),
+            'zip_code': forms.TextInput(attrs={'class':'span6'}),
+            'phone': forms.TextInput(attrs={'class':'span6'}),
+            'fax': forms.TextInput(attrs={'class':'span6'}),
+            'cel': forms.TextInput(attrs={'class':'span6'}),
+            'mail': forms.TextInput(attrs={'class':'span6'}),
+        }
 class UserForm(ModelForm):
     class Meta:
         model = models.User
