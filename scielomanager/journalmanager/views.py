@@ -26,6 +26,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.functional import curry
+from django.utils.html import escape 
 
 from django.core.cache import cache
 
@@ -360,7 +361,13 @@ def add_publisher(request, publisher_id=None):
             collections_qset=user_collections)
 
         if publisherform.is_valid():
-            publisherform.save()
+            newpublisherform = publisherform.save()
+
+            if request.POST.get('popup', 0):
+                return HttpResponse('<script type="text/javascript">\
+                    opener.updateSelect("%s", "%s");</script>' % \
+                    (escape(newpublisherform.id), escape(newpublisherform))) 
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('publisher.index'))
         else:

@@ -299,6 +299,9 @@
         <label class="control-label" for="publisher">{% trans add_form.publisher.label_tag %}</label>
         <div class="controls">
            {{ add_form.publisher }}
+           <a class="popup" href="{% url publisher.add %}?popup=1">
+             <img width="10" height="10" alt="Adicionar Outro(a)" src="/static/images/icon_addlink.gif">
+           </a>
            {% field_help add_form.publisher.label add_form.publisher.help_text term-publisher %}
         </div>
     </div>
@@ -306,6 +309,9 @@
         <label class="control-label" for="sponsor">{% trans add_form.sponsor.label_tag %}</label>
         <div class="controls">
            {{ add_form.sponsor }}
+            <a class="popup" href="{% url sponsor.add %}?popup=1">
+                <img width="10" height="10" alt="Adicionar Outro(a)" src="/static/images/icon_addlink.gif">
+            </a>
            {% field_help add_form.sponsor.label add_form.sponsor.help_text term-sponsor %}
         </div>
     </div>
@@ -355,7 +361,7 @@
       </tr>
       </tbody>
     </table>
-    <table class="table table-bordered table-striped" sstyle="width:100%">
+    <table class="table table-bordered table-striped" style="width:100%">
       <thead>
           <tr>
               <th>{% trans add_form.final_year.label_tag %}</th>
@@ -448,6 +454,12 @@
            prefix: '{{ textlanguageformset.prefix }}'
         });
 
+        $('.popup').popupWindow({
+            scrollbars:1,
+            resizable:1,
+            centerScreen:1,
+            width:600,
+        });
     });
   </script>
 {% endblock %}
