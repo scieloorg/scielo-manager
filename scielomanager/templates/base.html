@@ -71,6 +71,17 @@
           </div>
         </div>
       </div>
+      <div class="subnav">
+        <ul class="nav nav-pills">
+          {% for collection in user_collections %}
+            {% if collection.is_default %}
+              <li  class="active" ><a href="#">{{ collection.collection.name }}</a></li>
+            {% else %}
+              <li ><a href="#">{{ collection.collection.name }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      <div>
       <div class="row-fluid" style="min-height: 380px">
         {% block body_login %}
         {% if not user.is_authenticated %}
