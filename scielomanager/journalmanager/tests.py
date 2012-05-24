@@ -243,7 +243,6 @@ class LoggedInViewsTest(TestCase):
 
         self.assertTrue('some errors or missing data' in response.content)
 
-
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
                                                      'journal-sponsor': [sample_sponsor.pk],
@@ -593,7 +592,7 @@ class LoggedInViewsTest(TestCase):
 
         first_issue = Issue.objects.all()[0]
         response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]))
-        
+
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
                 for issue in issues:
@@ -604,7 +603,7 @@ class LoggedInViewsTest(TestCase):
         first_issue.save()
 
         response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
-        
+
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
                 for issue in issues:

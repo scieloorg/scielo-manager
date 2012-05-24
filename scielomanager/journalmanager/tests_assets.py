@@ -55,6 +55,7 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'journal-pub_status': 'C',
       'journal-print_issn': '0102-6720',
+      'journal-copyrighter': 'Texto do copyrighter',
 
       #Title formset data
       'title-TOTAL_FORMS': 1,

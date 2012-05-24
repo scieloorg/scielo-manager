@@ -147,7 +147,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     publisher = models.ManyToManyField('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
-    use_license = models.ForeignKey('UseLicense', null=True, blank=False, help_text=helptexts.JOURNAL__USE_LICENSE)
+    use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     languages = models.ManyToManyField('Language')
 
@@ -183,7 +183,6 @@ class Journal(caching.base.CachingMixin, models.Model):
         choices=choices.PUBLICATION_LEVEL, help_text=helptexts.JOURNAL__PUB_LEVEL)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254, help_text=helptexts.JOURNAL__COPYRIGHTER)
-    url_main_collection = models.CharField(_('URL of main collection'), max_length=64, help_text=helptexts.JOURNAL__URL_MAIN_COLLECTION)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True, blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
