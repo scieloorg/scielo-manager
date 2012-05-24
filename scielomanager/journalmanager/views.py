@@ -31,7 +31,8 @@ from django.core.cache import cache
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
-from scielomanager.tools import get_paginated
+from scielomanager.tools import get_paginated 
+from scielomanager.tools import get_referer_view
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
@@ -130,10 +131,27 @@ def generic_toggle_availability(request, object_id, model):
       })
 
     #ajax response json
-    return HttpResponse(response_data, mimetype="application/json")
+    return HttpResponse(mimetype="application/json")
   else:
     #bad request
     return HttpResponse(status=400)
+
+@login_required
+def toggle_active_collection(request, user_id, collection_id):
+    '''
+        Redifine the active collection, changing the administrative context to another collection.
+    '''
+
+    # Setting up all user collections.is_default to False
+    user_collections = get_user_collections(request.user.id)
+    user_collections.all().update(is_default = False)
+
+    # Setting up the new default collection
+    user_collections.filter(collection__pk = collection_id).update(is_default = True)
+
+    referer = get_referer_view(request)
+
+    return HttpResponseRedirect(referer)
 
 @login_required
 def generic_bulk_action(request, model, action_name, value = None):
@@ -337,6 +355,40 @@ def add_sponsor(request, sponsor_id=None):
 
     return render_to_response('journalmanager/add_sponsor.html', {
                               'add_form': sponsorform,
+                              'user_name': request.user.pk,
+                              'user_collections': user_collections,
+                              },
+                              context_instance = RequestContext(request))
+
+@login_required
+def add_collection(request, collection_id=None):
+    """
+    Handles new and existing collections
+    """
+
+    if  collection_id is None:
+        collection = models.Collection()
+    else:
+        collection = get_object_or_404(models.Collection, id = collection_id)
+
+    user_collections = get_user_collections(request.user.id)
+
+    if request.method == "POST":
+        collectionform = CollectionForm(request.POST, instance=collection, prefix='collection',
+            collections_qset=user_collections)
+
+        if collectionform.is_valid():
+            collectionform.save()
+            messages.info(request, MSG_FORM_SAVED)
+            return HttpResponseRedirect(reverse('collection.index'))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        collectionform  = CollectionForm(instance=collection, prefix='collection',
+            collections_qset=user_collections)
+
+    return render_to_response('journalmanager/add_collection.html', {
+                              'add_form': collectionform,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
                               },

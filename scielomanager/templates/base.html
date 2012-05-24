@@ -74,11 +74,16 @@
       <div class="subnav">
         <ul class="nav nav-pills">
           {% for collection in user_collections %}
-            {% if collection.is_default %}
-              <li  class="active" ><a href="#">{{ collection.collection.name }}</a></li>
-            {% else %}
-              <li ><a href="#">{{ collection.collection.name }}</a></li>
-            {% endif %}
+              <li {% if collection.is_default %} class="dropdown active" {% else %} class="dropdown" {% endif %} id="menu{{ collection.collection.pk }}">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#{{ collection.collection.pk }}">
+                    {{ collection.collection.name }}
+                    <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a href="{% url collection.edit collection.collection.pk %}">Edit</a></li>
+                    <li><a href="{% url usercollection.toggle_active user.pk collection.collection.pk %}">Activate</a></li>
+                  </ul>
+                </li>
           {% endfor %}
         </ul>
       <div>
