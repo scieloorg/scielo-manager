@@ -24,6 +24,10 @@
     <form method="post" action="#">
     {% csrf_token %}
 
+    {% if request.GET.popup %}
+        <input type="hidden" name="popup" value="1" />
+    {% endif %}
+
     <span class="label">{% trans "Institution Information" %}</span>
     <div class="well">
         <div class="control-group {% if add_form.name.errors %}error{% endif %}">
@@ -139,6 +143,7 @@
             {{ add_form.collections }}
         </div>
     </div>
+
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
     <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
 </form>
@@ -162,6 +167,8 @@
            formCssClass: 'dynamic-publishercollectionsformset-form',
            prefix: '{{ publishercollectionsformset.prefix }}'
         });
+
     });
+
   </script>
 {% endblock %}
