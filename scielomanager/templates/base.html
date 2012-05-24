@@ -36,9 +36,9 @@
                     <form id="form_search" class="navbar-search" action="" method="get">
                       <input class="search-query span2" placeholder="Search" name="q" value="{{request.GET.q}}"/>
                       <select id="list_model" class="navbar-search span2">
-                        <option{% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">Journal</option>
-                        <option{% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">Publisher</option>
-                        <option{% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">Sponsor</option>
+                        <option{% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>
+                        <option{% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>
+                        <option{% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>
                       </select>
                       <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
                     </form>
@@ -80,8 +80,12 @@
                     <b class="caret"></b>
                   </a>
                   <ul class="dropdown-menu">
-                    <li><a href="{% url collection.edit collection.collection.pk %}">Edit</a></li>
-                    <li><a href="{% url usercollection.toggle_active user.pk collection.collection.pk %}">Activate</a></li>
+                    <li><a href="{% url collection.edit collection.collection.pk %}"><i class="icon-edit"></i> {% trans 'Edit' %}</a></li>
+                    <li>
+                      {% if not collection.is_default %}
+                        <a href="{% url usercollection.toggle_active user.pk collection.collection.pk %}"><i class="icon-ok-circle"></i> {% trans 'Activate' %}</a>
+                      {% endif %}  
+                    </li>
                   </ul>
                 </li>
           {% endfor %}

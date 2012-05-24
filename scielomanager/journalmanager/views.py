@@ -387,6 +387,8 @@ def add_collection(request, collection_id=None):
         collectionform  = CollectionForm(instance=collection, prefix='collection',
             collections_qset=user_collections)
 
+    #import pdb
+    #pdb.set_trace()
     return render_to_response('journalmanager/add_collection.html', {
                               'add_form': collectionform,
                               'user_name': request.user.pk,

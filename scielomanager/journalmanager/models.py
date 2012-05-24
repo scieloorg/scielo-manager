@@ -81,7 +81,7 @@ class Collection(caching.base.CachingMixin, models.Model):
         through='UserCollections', )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
     url = models.URLField(_('Instance URL'), )
-    logo = models.ImageField(_('Logo'), upload_to='logos' )
+    logo = models.ImageField(_('Logo'), upload_to='images' )
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True,)
     country = models.CharField(_('Country'), max_length=32,)
     state = models.CharField(_('State'), max_length=32, null=False, blank=True,)
