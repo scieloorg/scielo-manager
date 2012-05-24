@@ -71,6 +71,7 @@
           </div>
         </div>
       </div>
+
       <div class="row-fluid" style="min-height: 380px">
         {% block body_login %}
         {% if not user.is_authenticated %}
@@ -80,22 +81,15 @@
         {% endif %}
         {% endblock %}
         {% if user.is_authenticated %}
-        <div class="span2">
           {% block shortaccess %}{% endblock %}
-          {% block formindex %}{% endblock %}
-        </div><!--span3 left menu-->
         {% endif %}
-        <div class="span10">
-          <div class="mainContent">
-            {% if messages %}
-              {% for message in messages %}
-              <div class="alert {{ message.tags }}">{{ message }}</div>
-              {% endfor %}
-            {% endif %}
-            {% block breadcrumb %}{% endblock %}
-            {% block body %}{% endblock %}
-          </div><!--mainContent-->
-        </div><!--span10 content-->
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+          {% block breadcrumb %}{% endblock %}
+          {% block body %}{% endblock %}
       </div>
 
       <div class="footer row-fluid">
