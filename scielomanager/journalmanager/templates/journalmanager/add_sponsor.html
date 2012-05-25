@@ -24,6 +24,10 @@
     <form method="post" action="#">
     {% csrf_token %}
 
+    {% if request.GET.popup %}
+        <input type="hidden" name="popup" value="1" />
+    {% endif %}
+
     <span class="label">{% trans "Institution Information" %}</span>
     <div class="well">
         <div class="control-group {% if add_form.name.errors %}error{% endif %}">
