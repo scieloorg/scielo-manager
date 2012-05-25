@@ -91,6 +91,10 @@ class LoggedInViewsTest(TestCase):
         sample_sponsor.collections = [self.collection,]
         sample_sponsor.save()
 
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
         sample_journal.save()
         sample_journal.publisher = [sample_publisher,]
         sample_journal.sponsor = [sample_sponsor,]
@@ -362,21 +366,16 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.add', args=[journal.pk]))
         self.assertEqual(response.status_code, 200)
 
-        #add - should work
-        sample_license = tests_assets.get_sample_uselicense()
-        sample_license.save()
-
         sample_section = tests_assets.get_sample_section()
         sample_section.journal = journal
         sample_section.save()
 
         sample_language = tests_assets.get_sample_language()
         sample_language.save()
-
         response = self.client.post(reverse('issue.add', args=[journal.pk]),
             tests_assets.get_sample_issue_dataform({'section':sample_section.pk,
-                                                   'use_license':sample_license.pk,
-                                                   'title-0-language':sample_language.pk,}))
+                                                    'use_license': journal.use_license.pk,
+                                                    'title-0-language':sample_language.pk,}))
 
         self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
 

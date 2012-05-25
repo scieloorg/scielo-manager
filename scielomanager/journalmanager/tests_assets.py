@@ -187,6 +187,8 @@ def get_sample_issue_dataform(dict_params=None):
         'is_press_release': False,
         'publication_date': '1998-09-01',
         'is_marked_up': False,
+        'publisher_fullname': 'Publisher Fullname',
+        'editorial_standard': 'other',
 
         #Title formset data
         'title-TOTAL_FORMS': 1,
