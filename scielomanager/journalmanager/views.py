@@ -39,7 +39,7 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 
 def get_user_collections(user_id):
 
-    user_collections = User.objects.get(pk=user_id).usercollections_set.all()
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by('collection__name')
 
     return user_collections
 
