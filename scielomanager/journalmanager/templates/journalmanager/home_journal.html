@@ -5,16 +5,6 @@
 {% block page_title %}{{block.super}}{% endblock %}
 
 {% block shortaccess %}
-<div class="well sidebar-nav">
-  <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</li>
-    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
-    <li><a href="#">{% trans 'Add Issue' %}</a></li>
-    <li><a href="#">{% trans 'Add Section' %}</a></li>
-    <li><a href="{% url publisher.add %}">{% trans 'Add Publisher' %}</a></li>
-    <li><a href="{% url sponsor.add %}">{% trans 'Add Sponsor' %}</a></li>
-  </ul>
-</div>
 {% endblock %}
 
 {% block body_login %}

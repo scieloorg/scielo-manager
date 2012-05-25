@@ -64,6 +64,16 @@ button.ui-button-icon-only {
 
     }
 
+/*Customize the nav bar*/
+.navbar .brand {
+    margin-left: 1%;
+}
+
+.navbar .nav.pull-right {
+    margin-left: 10px;
+    margin-right: 2%;
+}
+
 /*Strikethrough disable list*/
 .strikethrough{
     text-decoration: line-through;
