@@ -295,22 +295,22 @@ class Issue(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION)
-    journal = models.ForeignKey(Journal, null=True, blank=False)
-    volume = models.CharField(_('Volume'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME)
-    number = models.CharField(_('Number'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__NUMBER)
+    journal = models.ForeignKey(Journal)
+    volume = models.CharField(_('Volume'), max_length=16, help_text=helptexts.ISSUE__VOLUME)
+    number = models.CharField(_('Number'), max_length=16, help_text=helptexts.ISSUE__NUMBER)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    publication_date = models.DateField(null=False, blank=False, help_text=helptexts.ISSUE__PUBLICATION_DATE)
+    publication_date = models.DateField(help_text=helptexts.ISSUE__PUBLICATION_DATE)
     is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
-    publisher_fullname = models.CharField(_('Publisher Full Name'), null=True, blank=True, max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
-    total_documents = models.IntegerField(_('Total of Documents'), null=False, blank=False, default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
+    publisher_fullname = models.CharField(_('Publisher Full Name'), max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
+    total_documents = models.IntegerField(_('Total of Documents'), default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=choices.CTRL_VOCABULARY, null=False, blank=True, help_text=helptexts.ISSUE__CTRL_VOCABULARY)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
-        choices=choices.STANDARD, null=False, blank=True, help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
+        choices=choices.STANDARD, help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
 
     def identification(self):
 

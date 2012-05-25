@@ -102,7 +102,7 @@ def generic_index_search(request, model, journal_id = None):
             objects_all = model.objects.filter(title__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
     if objects_all.count() == 0:
-        messages.error(request, _('No exist documents.'))
+        messages.error(request, _('This list is empty.'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -281,7 +281,6 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
             and missionformset.is_valid():
             journalform.save_all(creator = request.user)
@@ -391,7 +390,8 @@ def add_issue(request, journal_id, issue_id=None):
     else:
         issue = models.Issue.objects.get(pk=issue_id)
 
-    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle, form=IssueTitleForm, extra=1, can_delete=True)
+    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
+        form=IssueTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     if request.method == 'POST':
         add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
