@@ -147,7 +147,6 @@ button.ui-button-icon-only {
 .slide-out-div {
     padding: 10px;
     width: 150px;
-    /*background: #F5F5F5;*/
     border: 1px solid #E5E5E5;
     background-image: -moz-linear-gradient(center top ,#CCCCCC, #E5E5E5 );
     background-repeat: repeat-x;

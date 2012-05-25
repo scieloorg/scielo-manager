@@ -3,7 +3,7 @@ $('.slide-out-div').tabSlideOut({
             tabHandle: '.handle',
             pathToTabImage: '/static/images/left_slide.png',
             imageHeight: '150px',
-            imageWidth: '100px',
+            imageWidth: '20px',
             tabLocation: 'left',
             speed: 400,
             action: 'click',

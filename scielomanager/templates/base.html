@@ -74,11 +74,11 @@
 
       <div class="row-fluid" style="min-height: 380px">
         {% block body_login %}
-        {% if not user.is_authenticated %}
-        <div class="banner-container">
-          <div class="banner"><h1>{% trans 'Manager' %}<h1></div>
-        </div>
-        {% endif %}
+          {% if not user.is_authenticated %}
+          <div class="banner-container">
+            <div class="banner"><h1>{% trans 'Manager' %}<h1></div>
+          </div>
+          {% endif %}
         {% endblock %}
         {% if user.is_authenticated %}
           {% block shortaccess %}{% endblock %}
