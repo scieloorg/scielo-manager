@@ -91,6 +91,10 @@ class LoggedInViewsTest(TestCase):
         sample_sponsor.collections = [self.collection,]
         sample_sponsor.save()
 
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
         sample_journal.save()
         sample_journal.publisher = [sample_publisher,]
         sample_journal.sponsor = [sample_sponsor,]
@@ -243,7 +247,6 @@ class LoggedInViewsTest(TestCase):
 
         self.assertTrue('some errors or missing data' in response.content)
 
-
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
                                                      'journal-sponsor': [sample_sponsor.pk],
@@ -363,21 +366,16 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.add', args=[journal.pk]))
         self.assertEqual(response.status_code, 200)
 
-        #add - should work
-        sample_license = tests_assets.get_sample_uselicense()
-        sample_license.save()
-
         sample_section = tests_assets.get_sample_section()
         sample_section.journal = journal
         sample_section.save()
 
         sample_language = tests_assets.get_sample_language()
         sample_language.save()
-
         response = self.client.post(reverse('issue.add', args=[journal.pk]),
             tests_assets.get_sample_issue_dataform({'section':sample_section.pk,
-                                                   'use_license':sample_license.pk,
-                                                   'title-0-language':sample_language.pk,}))
+                                                    'use_license': journal.use_license.pk,
+                                                    'title-0-language':sample_language.pk,}))
 
         self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
 
@@ -593,7 +591,7 @@ class LoggedInViewsTest(TestCase):
 
         first_issue = Issue.objects.all()[0]
         response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]))
-        
+
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
                 for issue in issues:
@@ -604,7 +602,7 @@ class LoggedInViewsTest(TestCase):
         first_issue.save()
 
         response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
-        
+
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
                 for issue in issues:

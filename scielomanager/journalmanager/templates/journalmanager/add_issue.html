@@ -5,10 +5,10 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New Issue' %}</li>
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
+  <li class="active">{% trans 'New Issue' %}</li>
 </ul>
 {% endblock %}
 
@@ -16,136 +16,204 @@
 {% endblock %}
 
 {% block body %}
-  <form method="post" action="#">{% csrf_token %}
-    <span class="label">{% trans "Issue Information" %}</span>
-    <div class="well">
-       <table id="titleformset" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>{% trans "Titles" %}</th>
-                <th>{% trans "Language" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for form in titleformset.forms %}
-            <tr id="{{ form.prefix }}-row">
-                <td>
-                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                    {{ form.title }}
-                </td>
-                <td>{{ form.language }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-        <p>
-            {{ titleformset.management_form }}
-        </p>
-        <div class="control-group {% if add_form.volume.errors %}error{% endif %}">
-            <label class="control-label" for="volume">{% trans add_form.volume.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.volume }}
-               {% field_help add_form.volume.label add_form.volume.help_text term-issue-volume %}
+<form method="post" action="#">{% csrf_token %}
+  <span class="label">{% trans "Issue Information" %}</span>
+  <div class="well">
+    <table id="titleformset" class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>{% trans "Titles" %}</th>
+          <th>{% trans "Language" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in titleformset.forms %}
+        <tr id="{{ form.prefix }}-row">
+          <td>
+            <div class="control-group {% if add_form.title.errors %}error{% endif %}">
+              {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+              {{ form.title }}
             </div>
-        </div>
-        <div class="control-group {% if add_form.number.errors %}error{% endif %}">
-            <label class="control-label" for="number">{% trans add_form.number.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.number }}
-               {% field_help add_form.number.label add_form.number.help_text term-issue-number %}
+          </td>
+          <td>
+            <div class="control-group {% if add_form.language.errors %}error{% endif %}">
+              {{ form.language }}
             </div>
-        </div>
-        <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
-            <label class="control-label" for="is_press_release">{% trans add_form.is_press_release.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.is_press_release }}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.publication_date.errors %}error{% endif %}">
-            <label class="control-label" for="publication_date">{% trans add_form.publication_date.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.publication_date }}
-               {% field_help add_form.publication_date.label add_form.publication_date.help_text term-issue-publication-date %}
-               {% if add_form.publication_date.errors %}<span class="help-inline">{{ add_form.publication_date.errors }}</span>{% endif %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
-            <label class="control-label" for="is_available">{% trans add_form.is_available.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.is_available }}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.is_marked_up.errors %}error{% endif %}">
-            <label class="control-label" for="is_marked_up">{% trans add_form.is_marked_up.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.is_marked_up }}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
-            <label class="control-label" for="use_license">{% trans add_form.use_license.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.use_license }}
-               {% field_help add_form.use_license.label add_form.use_license.help_text term-issue-use-license %}
-               {% if add_form.use_license.errors %}<span class="help-inline">{{ add_form.use_license.errors }}</span>{% endif %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.publisher_fullname.errors %}error{% endif %}">
-            <label class="control-label" for="publisher_fullname">{% trans add_form.publisher_fullname.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.publisher_fullname }}
-               {% field_help add_form.publisher_fullname.label add_form.publisher_fullname.help_text term-issue-publisher-fullname %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.total_documents.errors %}error{% endif %}">
-            <label class="control-label" for="total_documents">{% trans add_form.total_documents.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.total_documents }}
-               {% field_help add_form.total_documents.label add_form.total_documents.help_text term-issue-total-documents %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
-            <label class="control-label" for="ctrl_vocabulary">{% trans add_form.ctrl_vocabulary.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.ctrl_vocabulary }}
-               {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
-            <label class="control-label" for="editorial_standard">{% trans add_form.editorial_standard.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.editorial_standard }}
-               {% field_help add_form.editorial_standard.label add_form.editorial_standard.help_text term-editorial-standard %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.section.errors %}error{% endif %}">
-            <label class="control-label" for="section">{% trans add_form.section.label_tag %}</label>
-            <div class="controls">
-               {{ add_form.section }}
-               {% field_help add_form.section.label add_form.section.help_text term-issue-section %}
-               {% if add_form.section.errors %}<span class="help-inline">{{ add_form.section.errors }}</span>{% endif %}
-            </div>
-        </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p>
+      {{ titleformset.management_form }}
+    </p>
+
+    <div class="control-group {% if add_form.volume.errors %}error{% endif %}">
+      <label for="{{ add_form.volume.auto_id }}">
+        <span {% if add_form.volume.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.volume.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.volume }}
+        {% field_help add_form.volume.label add_form.volume.help_text term-issue-volume %}
+      </div>
     </div>
-    <input class="btn btn-primary" name="submit" type="submit" value="{% trans 'save' %}">
-    <input class="btn btn-warning" name="reset" type="reset" value="{% trans 'cancel' %}">
-  </form>
+
+    <div class="control-group {% if add_form.number.errors %}error{% endif %}">
+      <label for="{{ add_form.number.auto_id }}">
+        <span {% if add_form.number.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.number.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.number }}
+        {% field_help add_form.number.label add_form.number.help_text term-issue-number %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
+      <label for="{{ add_form.is_press_release.auto_id }}">
+        <span {% if add_form.is_press_release.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.is_press_release.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.is_press_release }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publication_date.errors %}error{% endif %}">
+      <label for="{{ add_form.publication_date.auto_id }}">
+        <span {% if add_form.publication_date.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publication_date.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publication_date }}
+        {% field_help add_form.publication_date.label add_form.publication_date.help_text term-issue-publication-date %}
+        {% if add_form.publication_date.errors %}
+        <span class="help-inline">{{ add_form.publication_date.errors }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
+      <label for="{{ add_form.is_available.auto_id }}">
+        <span {% if add_form.is_available.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.is_available.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.is_available }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.is_marked_up.errors %}error{% endif %}">
+      <label for="{{ add_form.is_marked_up.auto_id }}">
+        <span {% if add_form.is_marked_up.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.is_marked_up.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.is_marked_up }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
+      <label for="{{ add_form.use_license.auto_id }}">
+        <span {% if add_form.use_license.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.use_license.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.use_license }}
+        {% field_help add_form.use_license.label add_form.use_license.help_text term-issue-use-license %}
+        {% if add_form.use_license.errors %}
+        <span class="help-inline">{{ add_form.use_license.errors }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publisher_fullname.errors %}error{% endif %}">
+      <label for="{{ add_form.publisher_fullname.auto_id }}">
+        <span {% if add_form.publisher_fullname.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publisher_fullname.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publisher_fullname }}
+        {% field_help add_form.publisher_fullname.label add_form.publisher_fullname.help_text term-issue-publisher-fullname %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.total_documents.errors %}error{% endif %}">
+      <label for="{{ add_form.total_documents.auto_id }}">
+        <span {% if add_form.total_documents.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.total_documents.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.total_documents }}
+        {% field_help add_form.total_documents.label add_form.total_documents.help_text term-issue-total-documents %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
+      <label for="{{ add_form.ctrl_vocabulary.auto_id }}">
+        <span {% if add_form.ctrl_vocabulary.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.ctrl_vocabulary.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.ctrl_vocabulary }}
+        {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
+      <label for="{{ add_form.editorial_standard.auto_id }}">
+        <span {% if add_form.editorial_standard.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editorial_standard.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editorial_standard }}
+        {% field_help add_form.editorial_standard.label add_form.editorial_standard.help_text term-editorial-standard %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.section.errors %}error{% endif %}">
+      <label for="{{ add_form.section.auto_id }}">
+        <span {% if add_form.section.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.section.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.section }}
+        {% field_help add_form.section.label add_form.section.help_text term-issue-section %}
+        {% if add_form.section.errors %}
+        <span class="help-inline">{{ add_form.section.errors }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <input class="btn btn-primary" name="submit" type="submit" value="{% trans 'save' %}">
+  <input class="btn btn-warning" name="reset" type="reset" value="{% trans 'cancel' %}">
+</form>
 {% endblock %}
 
 {% block extrafooter %}
 {{ block.super }}
-  <script>
-    $(document).ready(function() {
-
-        $(".help-text").popover('hide');
-
-        //multiple-formsets
-        $('#titleformset tbody tr').formset({
-           formCssClass: 'dynamic-titleformset-form',
-           prefix: '{{ titleformset.prefix }}'
-        });
-
+<script>
+  $(document).ready(function() {
+    $(".help-text").popover('hide');
+    //multiple-formsets
+    $('#titleformset tbody tr').formset({
+      formCssClass: 'dynamic-titleformset-form',
+      prefix: '{{ titleformset.prefix }}'
     });
-  </script>
-
+  });
+</script>
 {% endblock %}
