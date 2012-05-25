@@ -97,29 +97,29 @@
 
   <span class="label"><a name="other_title"></a>{% trans "Other Titles" %}</span>
   <div class="well">
-      <table id="titleformset" class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <td>{% trans "Other Titles" %}</td>
-          <td>{% trans "Category" %}</td>
-        </tr>
-      </thead>
-      <tbody>
-        {% for form in titleformset.forms %}
-        <tr id="{{ form.prefix }}-row">
-          <td>
-              {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-              {{ form.title }}
-          </td>
-          <td>{{ form.category }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-      </table>
-      <p>
-          {{ titleformset.management_form }}
-      </p>
+    <table id="titleformset" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <td>{% trans "Other Titles" %}</td>
+        <td>{% trans "Category" %}</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for form in titleformset.forms %}
+      <tr id="{{ form.prefix }}-row">
+        <td>
+          {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+          {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+          {{ form.title }}
+        </td>
+        <td>{{ form.category }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+    <p>
+      {{ titleformset.management_form }}
+    </p>
   </div>
 
   <span class="label"><a name="issn"></a>{% trans "ISSN" %}</span>
@@ -154,12 +154,12 @@
         </span>
       </label>
       <div class="controls">
-      <span class="help-inline">
-         {{ add_form.eletronic_issn }}
-         {% for error in add_form.eletronic_issn.errors %}
+        <span class="help-inline">
+          {{ add_form.eletronic_issn }}
+          {% for error in add_form.eletronic_issn.errors %}
             {{ error }}
-         {% endfor %}
-         </span>
+          {% endfor %}
+        </span>
       </div>
     </div>
 
@@ -170,26 +170,26 @@
         </span>
       </label>
       <div class="controls">
-         {{ add_form.scielo_issn }}
-         {% field_help add_form.scielo_issn.label add_form.scielo_issn.help_text term-scielo-issn %}
+        {{ add_form.scielo_issn }}
+        {% field_help add_form.scielo_issn.label add_form.scielo_issn.help_text term-scielo-issn %}
       </div>
     </div>
   </div>
 
   <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
-    <div class="well">
-      <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
-        <label for="{{ add_form.collections.auto_id }}">
-          <span {% if add_form.collections.field.required %}class="req-field"{% endif %}>
-            {% trans add_form.collections.label %}
-          </span>
-        </label>
-        <div class="controls">
-           {{ add_form.collections }}
-           {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
-        </div>
+  <div class="well">
+    <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
+      <label for="{{ add_form.collections.auto_id }}">
+        <span {% if add_form.collections.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.collections.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.collections }}
+        {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
       </div>
     </div>
+  </div>
 
   <span class="label"><a name="subject"></a>{% trans "Subject" %}</span>
   <div class="well">
@@ -198,55 +198,53 @@
           <tr>
           	<td>
           		{% trans "Study Area" %}
-              	{% field_help studyareaformset.forms.0.study_area.label studyareaformset.forms.0.study_area.help_text term-study-area %}
+            	{% field_help studyareaformset.forms.0.study_area.label studyareaformset.forms.0.study_area.help_text term-study-area %}
             </td>
           </tr>
       </thead>
       <tbody>
-          {% for form in studyareaformset.forms %}
-          <tr id="{{ form.prefix }}-row">
-              <td>
-                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                  {{ form.study_area }}
-              </td>
-          </tr>
-
-          {% endfor %}
+        {% for form in studyareaformset.forms %}
+        <tr id="{{ form.prefix }}-row">
+          <td>
+            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+            {{ form.study_area }}
+          </td>
+        </tr>
+        {% endfor %}
       </tbody>
-
     </table>
     <p>
       {{ studyareaformset.management_form }}
     </p>
     <div class="control-group {% if add_form.subject_descriptors.errors %}error{% endif %}">
-        <label for="{{ add_form.subject_descriptors.auto_id }}">
-          <span {% if add_form.subject_descriptors.field.required %}class="req-field"{% endif %}>
-            {% trans add_form.subject_descriptors.label %}
-          </span>
-        </label>
-        <div class="controls">
-           {% field_help add_form.subject_descriptors.label add_form.subject_descriptors.help_text term-subject-descriptors %}
-           {{ add_form.subject_descriptors }}
-        </div>
+      <label for="{{ add_form.subject_descriptors.auto_id }}">
+        <span {% if add_form.subject_descriptors.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.subject_descriptors.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {% field_help add_form.subject_descriptors.label add_form.subject_descriptors.help_text term-subject-descriptors %}
+        {{ add_form.subject_descriptors }}
+      </div>
     </div>
   </div>
 
   <span class="label"><a name="mission"></a>{% trans "Mission" %}</span>
   <div class="well">
     <table id="missionformset" class="table table-bordered table-striped">
-    <thead>
+      <thead>
         <tr>
           <td>
-          	{% trans "Description" %}
-          	{% field_help missionformset.forms.0.description.label missionformset.forms.0.description.help_text term-mission %}
+            {% trans "Description" %}
+            {% field_help missionformset.forms.0.description.label missionformset.forms.0.description.help_text term-mission %}
           </td>
           <td>
             {% trans "Language" %}
           </td>
         </tr>
-    </thead>
-    <tbody>
+      </thead>
+      <tbody>
         {% for form in missionformset.forms %}
         <tr id="{{ form.prefix }}-row">
           <td>
@@ -263,7 +261,7 @@
           </td>
         </tr>
         {% endfor %}
-    </tbody>
+      </tbody>
     </table>
     <p>
       {{ missionformset.management_form }}
@@ -602,32 +600,26 @@
 {% block extrafooter %}
 {{ block.super }}
  <script>
-    $(document).ready(function() {
-        $('#well-rezi-fixed').draggable();
-
-        $(".help-text").popover('hide');
-
-        //multiple-formsets
-        $('#titleformset tbody tr').formset({
-           formCssClass: 'dynamic-titleformset-form',
-           prefix: '{{ titleformset.prefix }}'
-        });
-
-        $('#missionformset tbody tr').formset({
-           formCssClass: 'dynamic-missionformset-form',
-           prefix: '{{ missionformset.prefix }}'
-        });
-
-        $('#studyareaformset tbody tr').formset({
-           formCssClass: 'dynamic-studyareaformset-form',
-           prefix: '{{ textstudyareaformset.prefix }}'
-        });
-
-        $('#textlanguageformset tbody tr').formset({
-           formCssClass: 'dynamic-textlanguageformset-form',
-           prefix: '{{ textlanguageformset.prefix }}'
-        });
-
+  $(document).ready(function() {
+    $('#well-rezi-fixed').draggable();
+    $(".help-text").popover('hide');
+    //multiple-formsets
+    $('#titleformset tbody tr').formset({
+      formCssClass: 'dynamic-titleformset-form',
+      prefix: '{{ titleformset.prefix }}'
     });
-  </script>
+    $('#missionformset tbody tr').formset({
+      formCssClass: 'dynamic-missionformset-form',
+      prefix: '{{ missionformset.prefix }}'
+    });
+    $('#studyareaformset tbody tr').formset({
+      formCssClass: 'dynamic-studyareaformset-form',
+      prefix: '{{ textstudyareaformset.prefix }}'
+    });
+    $('#textlanguageformset tbody tr').formset({
+      formCssClass: 'dynamic-textlanguageformset-form',
+      prefix: '{{ textlanguageformset.prefix }}'
+    });
+  });
+</script>
 {% endblock %}
