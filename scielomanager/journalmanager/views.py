@@ -5,7 +5,7 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-    
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -103,7 +103,7 @@ def generic_index_search(request, model, journal_id = None):
             objects_all = model.objects.filter(title__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
     if objects_all.count() == 0:
-        messages.error(request, _('No exist documents.'))
+        messages.error(request, _('This list is empty.'))
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
@@ -228,7 +228,7 @@ def add_user(request, user_id=None):
 
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
-        form=UserCollectionsForm, extra=1, can_delete=True)
+        form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')
@@ -282,7 +282,6 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
             and missionformset.is_valid():
             journalform.save_all(creator = request.user)
@@ -404,7 +403,8 @@ def add_issue(request, journal_id, issue_id=None):
     else:
         issue = models.Issue.objects.get(pk=issue_id)
 
-    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle, form=IssueTitleForm, extra=1, can_delete=True)
+    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
+        form=IssueTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     if request.method == 'POST':
         add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
@@ -456,12 +456,15 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle, form=SectionTitleForm, extra=1, can_delete=True)
+    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
+        form=SectionTitleForm, extra=2, can_delete=False, formset=FirstFieldRequiredFormSet)
     SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
     if request.method == 'POST':
+
         add_form = SectionForm(request.POST, instance=section)
         section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
+
         if add_form.is_valid() and section_title_formset.is_valid():
             add_form.save_all(journal)
             section_title_formset.save()

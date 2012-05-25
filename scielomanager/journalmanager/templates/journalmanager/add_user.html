@@ -5,9 +5,9 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url user.index %}">{% trans 'Users DashBoard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New User' %}</li>
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url user.index %}">{% trans 'Users DashBoard' %}</a> <span class="divider">/</span></li>
+  <li class="active">{% trans 'New User' %}</li>
 </ul>
 {% endblock %}
 
@@ -23,95 +23,138 @@
 {% block body %}
 <span class="label">{% trans "User Information" %}</span>
 <form method="post" action="#">
-    {% csrf_token %}
-    <div class="well">
-        <div class="control-group {% if add_form.username.errors %}error{% endif %}">
-            <label class="control-label" for="username">{% trans add_form.username.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.username }}
-                {% field_help add_form.username.label add_form.username.help_text term-institution-name %}
+  {% csrf_token %}
+  <div class="well">
+    <div class="control-group {% if add_form.username.errors %}error{% endif %}">
+      <label for="{{ add_form.username.auto_id }}">
+        <span {% if add_form.username.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.username.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.username }}
+        {% field_help add_form.username.label add_form.username.help_text term-institution-name %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.first_name.errors %}error{% endif %}">
+      <label for="{{ add_form.first_name.auto_id }}">
+        <span {% if add_form.first_name.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.first_name.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.first_name }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.last_name.errors %}error{% endif %}">
+      <label for="{{ add_form.last_name.auto_id }}">
+        <span {% if add_form.last_name.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.last_name.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.last_name }}
+      </div>
+    </div>
+
+    {% for form in userprofileformset.forms %}
+    {{ form.id }}
+    <div class="control-group {% if form.email.errors %}error{% endif %}">
+      <label for="{{ add_form.email.auto_id }}">
+        <span {% if add_form.email.field.required %}class="req-field"{% endif %}>
+          {% trans form.email.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ form.email }}
+      </div>
+    </div>
+    {% endfor %}
+    {{ userprofileformset.management_form }}
+
+    <div class="control-group {% if add_form.groups.errors %}error{% endif %}">
+      <label for="{{ add_form.groups.auto_id }}">
+        <span {% if add_form.groups.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.groups.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.groups }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.password.errors %}error{% endif %}">
+      <label for="{{ add_form.password.auto_id }}">
+        <span {% if add_form.password.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.password.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.password }}
+        {{ add_form.password.help_text|safe }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.is_active.errors %}error{% endif %}">
+      <label for="{{ add_form.is_active.auto_id }}">
+        <span {% if add_form.is_active.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.is_active.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.is_active }}
+      </div>
+    </div>
+  </div>
+
+  <span class="label">{% trans "User Collections" %}</span>
+  <div class="well">
+    <table id="usercollectionsformset" class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>{% trans "Collection" %}
+          	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
+          </th>
+          <th>{% trans "is_manager" %}</th>
+          <th>{% trans "is_default" %}</th>
+          <th>{% trans "options" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in usercollectionsformset.forms %}
+        <tr id="{{ form.prefix }}-row">
+          <td>
+            <div class="control-group {% if form.collection.errors %}error{% endif %}">
+              {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+              {{ form.collection }}
             </div>
-        </div>
-        <div class="control-group {% if add_form.first_name.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.first_name.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.first_name }}
+          </td>
+          <td>
+            <div class="control-group {% if add_form.is_manager.errors %}error{% endif %}">
+              {{ form.is_manager }}
             </div>
-        </div>
-        <div class="control-group {% if add_form.last_name.errors %}error{% endif %}">
-            <label class="control-label" for="last_name">{% trans add_form.last_name.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.last_name }}
+          </td>
+          <td>
+            <div class="control-group {% if add_form.is_default.errors %}error{% endif %}">
+              {{ form.is_default }}
             </div>
-        </div>
-        {% for form in userprofileformset.forms %}
-        {{ form.id }}
-        <div class="control-group {% if form.email.errors %}error{% endif %}">
-            <label class="control-label" for="email">{% trans form.email.label_tag %}</label>
-            <div class="controls">
-                {{ form.email }}
-            </div>
-        </div>
+          </td>
+          <td></td>
+        </tr>
         {% endfor %}
-        {{ userprofileformset.management_form }}
-        <div class="control-group {% if add_form.groups.errors %}error{% endif %}">
-            <label class="control-label" for="groups">{% trans add_form.groups.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.groups }}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.password.errors %}error{% endif %}">
-            <label class="control-label" for="controls">{% trans add_form.password.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.password }}
-                {{ add_form.password.help_text|safe }}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.is_active.errors %}error{% endif %}">
-            <label class="control-label" for="is_active">{% trans add_form.is_active.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.is_active }}
-            </div>
-        </div>
-    </div>
-
-    <span class="label">{% trans "User Collections" %}</span>
-    <div class="well">
-        <table id="usercollectionsformset" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>{% trans "Collection" %}
-                	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
-                </th>
-                <th>{% trans "is_manager" %}</th>
-                <th>{% trans "is_default" %}</th>
-                <th>{% trans "options" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for form in usercollectionsformset.forms %}
-
-            <tr id="{{ form.prefix }}-row">
-                <td>
-                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                    {{ form.collection }}
-                </td>
-                <td>{{ form.is_manager }}</td>
-                <td>{{ form.is_default }}</td>
-                <td></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-        <p>
-            {{ usercollectionsformset.management_form }}
-        </p>
-    </div>
-    <div class="row-fluid">
-        <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}"/>
-        <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
-    </div>
+      </tbody>
+    </table>
+    <p>
+      {{ usercollectionsformset.management_form }}
+    </p>
+  </div>
+  <div class="row-fluid">
+    <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}"/>
+    <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
+  </div>
 </form>
 {% endblock %}
 
@@ -119,20 +162,16 @@
 {{ block.super }}
  <script>
     $(document).ready(function() {
-
-        $( "#id_user-collection" ).combobox({ autoFocus: true });
-
-        $(".help-text").popover('hide');
-
-        $( "#toggle" ).click(function() {
-            $( "#id_collection" ).toggle();
-        });
-
-        //multiple-formsets
-        $('#usercollectionsformset tbody tr').formset({
-           formCssClass: 'dynamic-usercollectionsformset-form',
-           prefix: '{{ usercollectionsformset.prefix }}'
-        });
+      $( "#id_user-collection" ).combobox({ autoFocus: true });
+      $(".help-text").popover('hide');
+      $( "#toggle" ).click(function() {
+          $( "#id_collection" ).toggle();
+      });
+      //multiple-formsets
+      $('#usercollectionsformset tbody tr').formset({
+        formCssClass: 'dynamic-usercollectionsformset-form',
+        prefix: '{{ usercollectionsformset.prefix }}'
+      });
     });
   </script>
 {% endblock %}
