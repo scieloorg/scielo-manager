@@ -366,16 +366,15 @@ def add_collection(request, collection_id=None):
     Handles new and existing collections
     """
 
+    user_collections = get_user_collections(request.user.id)
+
     if  collection_id is None:
         collection = models.Collection()
     else:
         collection = get_object_or_404(models.Collection, id = collection_id)
 
-    user_collections = get_user_collections(request.user.id)
-
     if request.method == "POST":
-        collectionform = CollectionForm(request.POST, instance=collection, prefix='collection',
-            collections_qset=user_collections)
+        collectionform = CollectionForm(request.POST, instance=collection, prefix='collection')
 
         if collectionform.is_valid():
             collectionform.save()
@@ -384,13 +383,16 @@ def add_collection(request, collection_id=None):
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
-        collectionform  = CollectionForm(instance=collection, prefix='collection',
-            collections_qset=user_collections)
+        collectionform  = CollectionForm(instance=collection, prefix='collection')
 
-    #import pdb
-    #pdb.set_trace()
+    try:
+        collection_logo = collection.logo.url
+    except ValueError:
+        collection_logo = False
+
     return render_to_response('journalmanager/add_collection.html', {
                               'add_form': collectionform,
+                              'collection_logo': collection_logo,
                               'user_name': request.user.pk,
                               'user_collections': user_collections,
                               },

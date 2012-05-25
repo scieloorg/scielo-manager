@@ -150,16 +150,15 @@
       <span class="label">{% trans "Collection Logomarca" %}</span>
       <div class="well">
         <div class="control-group {% if add_form.logo.errors %}error{% endif %}">
-          <label for="{{ add_form.logo.auto_id }}">
-            <span {% if add_form.logo.field.required %}class="req-field"{% endif %}>
-              {% trans add_form.logo.label %}
-            </span>
-          </label>
           <div class="controls">
             {{ add_form.logo }}
           </div>
-          <div>
-              <img src="{{ add_form.logo.url }}" />
+          <div align="center">
+              {% if collection_logo %}
+                <img src="{{ collection_logo }}" />
+              {% else %}
+                {% trans "This collections does not have a logomarca" %}
+              {% endif %}
           </div>
         </div>
     </div>

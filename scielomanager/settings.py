@@ -61,7 +61,7 @@ USE_L10N = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-#MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
+MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 #STATIC_ROOT = os.path.join(PROJECT_PATH, 'static/')
 
 # URL prefix for static files.
