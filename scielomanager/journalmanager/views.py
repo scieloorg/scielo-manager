@@ -363,7 +363,7 @@ def add_sponsor(request, sponsor_id=None):
 @login_required
 def add_collection(request, collection_id=None):
     """
-    Handles new and existing collections
+    Handles existing collections
     """
 
     user_collections = get_user_collections(request.user.id)
@@ -379,7 +379,7 @@ def add_collection(request, collection_id=None):
         if collectionform.is_valid():
             collectionform.save()
             messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('collection.index'))
+            return HttpResponseRedirect(reverse('collection.edit',kwargs={'collection_id':collection_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:

@@ -78,7 +78,7 @@ class Collection(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     collection = models.ManyToManyField(User, related_name='user_collection',
-        through='UserCollections', )
+        through='UserCollections', null=True, blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
     url = models.URLField(_('Instance URL'), )
     logo = models.ImageField(_('Logo'), upload_to='img/collections_logos', null=True, blank=True, )
