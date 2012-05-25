@@ -114,8 +114,6 @@ JOURNAL__TITLE = _("""Main title or title proper of the serial, in the language 
 
 JOURNAL__TREATMENT_LEVEL = _("""Treatment Type""")
 
-JOURNAL__URL_MAIN_COLLECTION = _("""Enter the URL of the main collection site. If the journal is published in SciELO Brazil, then www.scielo.br """)
-
 JOURNAL__URL_ONLINE_SUBMISSION= _("""Enter the URL of the submission site.""")
 
 JOURNAL__URL_JOURNAL = _("""If the journal is published in another site, enter in this field the other site location.""")
