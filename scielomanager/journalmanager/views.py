@@ -227,7 +227,7 @@ def add_user(request, user_id=None):
 
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
-        form=UserCollectionsForm, extra=1, can_delete=True)
+        form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')

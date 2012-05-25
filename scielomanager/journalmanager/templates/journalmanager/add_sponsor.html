@@ -21,147 +21,227 @@
 {% endblock %}
 
 {% block body %}
-    <form method="post" action="#">
-    {% csrf_token %}
+<form method="post" action="#">
+  {% csrf_token %}
 
-    <span class="label">{% trans "Institution Information" %}</span>
-    <div class="well">
-        <div class="control-group {% if add_form.name.errors %}error{% endif %}">
-            <label class="control-label" for="name">{% trans add_form.name.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.name }}
-                {% field_help add_form.name.label add_form.name.help_text term-institution-name %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.acronym.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.acronym }}
-                {% field_help add_form.acronym.label add_form.acronym.help_text term-acronym %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.country.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.country.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.country }}
-                {% field_help add_form.country.label add_form.country.help_text term-sponsor-s-country %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.state.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.state.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.state }}
-                {% field_help add_form.state.label add_form.state.help_text term-sponsor-s-state %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.city.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.city.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.city }}
-                {% field_help add_form.city.label add_form.city.help_text term-sponsor-s-city %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.address.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.address.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.address }}
-                {% field_help add_form.address.label add_form.address.help_text term-sponsor-s-address %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.address_number.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.address_number.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.address_number }}
-                {% field_help add_form.address_number.label add_form.address_number.help_text term-address-number %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.address_complement.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.address_complement.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.address_complement }}
-                {% field_help add_form.address_complement.label add_form.address_complement.help_text term-address-complement %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.zip_code.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.zip_code.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.zip_code }}
-                {% field_help add_form.zip_code.label add_form.zip_code.help_text term-zip_code %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.phone.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.phone.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.phone }}
-                {% field_help add_form.phone.label add_form.phone.help_text term-phone %}
-            </div>
-        </div>
-         <div class="control-group {% if add_form.fax.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.fax.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.fax }}
-                {% field_help add_form.fax.label add_form.fax.help_text term-fax %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.cel.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.cel.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.cel }}
-                {% field_help add_form.cel.label add_form.cel.help_text term-cel %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.mail.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.mail.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.mail }}
-                {% field_help add_form.mail.label add_form.mail.help_text term-mail %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.validated.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.validated }}
-                {% field_help add_form.validated.label add_form.validated.help_text term-validated %}
-            </div>
-        </div>
-        <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
-            <label class="control-label" for="first_name">{% trans add_form.is_available.label_tag %}</label>
-            <div class="controls">
-                {{ add_form.is_available }}
-                {% field_help add_form.is_available.label add_form.is_available.help_text term-is-available %}
-            </div>
-        </div>
+  <span class="label">{% trans "Institution Information" %}</span>
+  <div class="well">
+
+    <div class="control-group {% if add_form.name.errors %}error{% endif %}">
+      <label for="{{ add_form.name.auto_id }}">
+        <span {% if add_form.name.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.name.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.name }}
+        {% field_help add_form.name.label add_form.name.help_text term-institution-name %}
+      </div>
     </div>
-    <span class="label">{% trans "Sponsor Collections" %}</span>
-    <div class="well">
-        <label class"control-label" for="sponsor-collections">{% trans add_form.collections.label_tag %}</label>
-        <div class="controls">
-            {{ add_form.collections }}
-        </div>
+
+    <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
+      <label for="{{ add_form.acronym.auto_id }}">
+        <span {% if add_form.acronym.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.acronym.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.acronym }}
+        {% field_help add_form.acronym.label add_form.acronym.help_text term-acronym %}
+      </div>
     </div>
-    <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
-    <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
+
+    <div class="control-group {% if add_form.country.errors %}error{% endif %}">
+      <label for="{{ add_form.country.auto_id }}">
+        <span {% if add_form.country.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.country.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.country }}
+        {% field_help add_form.country.label add_form.country.help_text term-sponsor-s-country %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.state.errors %}error{% endif %}">
+      <label for="{{ add_form.state.auto_id }}">
+        <span {% if add_form.state.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.state.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.state }}
+        {% field_help add_form.state.label add_form.state.help_text term-sponsor-s-state %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.city.errors %}error{% endif %}">
+      <label for="{{ add_form.city.auto_id }}">
+        <span {% if add_form.city.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.city.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.city }}
+        {% field_help add_form.city.label add_form.city.help_text term-sponsor-s-city %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.address.errors %}error{% endif %}">
+      <label for="{{ add_form.address.auto_id }}">
+        <span {% if add_form.address.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.address.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.address }}
+        {% field_help add_form.address.label add_form.address.help_text term-sponsor-s-address %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.address_number.errors %}error{% endif %}">
+      <label for="{{ add_form.address_number.auto_id }}">
+        <span {% if add_form.address_number.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.address_number.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.address_number }}
+        {% field_help add_form.address_number.label add_form.address_number.help_text term-address-number %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.address_complement.errors %}error{% endif %}">
+      <label for="{{ add_form.address_complement.auto_id }}">
+        <span {% if add_form.address_complement.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.address_complement.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.address_complement }}
+        {% field_help add_form.address_complement.label add_form.address_complement.help_text term-address-complement %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.zip_code.errors %}error{% endif %}">
+      <label for="{{ add_form.zip_code.auto_id }}">
+        <span {% if add_form.zip_code.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.zip_code.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.zip_code }}
+        {% field_help add_form.zip_code.label add_form.zip_code.help_text term-zip_code %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.phone.errors %}error{% endif %}">
+      <label for="{{ add_form.phone.auto_id }}">
+        <span {% if add_form.phone.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.phone.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.phone }}
+        {% field_help add_form.phone.label add_form.phone.help_text term-phone %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.fax.errors %}error{% endif %}">
+      <label for="{{ add_form.fax.auto_id }}">
+        <span {% if add_form.fax.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.fax.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.fax }}
+        {% field_help add_form.fax.label add_form.fax.help_text term-fax %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.cel.errors %}error{% endif %}">
+      <label for="{{ add_form.cel.auto_id }}">
+        <span {% if add_form.cel.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.cel.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.cel }}
+        {% field_help add_form.cel.label add_form.cel.help_text term-cel %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.mail.errors %}error{% endif %}">
+      <label for="{{ add_form.mail.auto_id }}">
+        <span {% if add_form.mail.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.mail.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.mail }}
+        {% field_help add_form.mail.label add_form.mail.help_text term-mail %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
+      <label for="{{ add_form.validated.auto_id }}">
+        <span {% if add_form.validated.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.validated.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.validated }}
+        {% field_help add_form.validated.label add_form.validated.help_text term-validated %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
+      <label for="{{ add_form.is_available.auto_id }}">
+        <span {% if add_form.is_available.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.is_available.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.is_available }}
+        {% field_help add_form.is_available.label add_form.is_available.help_text term-is-available %}
+      </div>
+    </div>
+
+  </div>
+
+  <span class="label">{% trans "Sponsor Collections" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
+      <label for="{{ add_form.collections.auto_id }}">
+        <span {% if add_form.collections.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.collections.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.collections }}
+      </div>
+    </div>
+  </div>
+
+  <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
+  <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
 </form>
 {% endblock %}
 
 {% block extrafooter %}
 {{ block.super }}
  <script>
-    $(document).ready(function() {
-
-        $( "#id_sponsor-collection" ).combobox({ autoFocus: true });
-
-        $(".help-text").popover('hide');
-
-        $( "#toggle" ).click(function() {
-            $( "#id_sponsor" ).toggle();
-        });
-
-        //multiple-formsets
-        $('#sponsorcollectionsformset tbody tr').formset({
-           formCssClass: 'dynamic-sponsorcollectionsformset-form',
-           prefix: '{{ sponsorcollectionsformset.prefix }}'
-        });
+  $(document).ready(function() {
+    $( "#id_sponsor-collection" ).combobox({ autoFocus: true });
+    $(".help-text").popover('hide');
+    $( "#toggle" ).click(function() {
+        $( "#id_sponsor" ).toggle();
     });
-  </script>
+    //multiple-formsets
+    $('#sponsorcollectionsformset tbody tr').formset({
+      formCssClass: 'dynamic-sponsorcollectionsformset-form',
+      prefix: '{{ sponsorcollectionsformset.prefix }}'
+    });
+  });
+</script>
 {% endblock %}
