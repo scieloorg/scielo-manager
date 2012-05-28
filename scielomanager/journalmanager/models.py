@@ -158,6 +158,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     publisher = models.ManyToManyField('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
+    sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor',null=True, blank=True, help_text=helptexts.JOURNAL__SPONSOR)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
@@ -186,7 +187,6 @@ class Journal(caching.base.CachingMixin, models.Model):
         choices=choices.FREQUENCY, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'), max_length=16,
         choices=choices.PUBLICATION_STATUS, help_text=helptexts.JOURNAL__PUB_STATUS)
-    sponsor = models.CharField(_('Sponsor'), max_length=256, help_text=helptexts.JOURNAL__SPONSOR)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=choices.STANDARD, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,

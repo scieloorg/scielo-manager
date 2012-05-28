@@ -11,13 +11,13 @@
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
   </head>
-  <body>
+  <body data-offset="50" data-target=".subnav" data-spy="scroll" data-twttr-rendered="true">
 
   {% if user.is_authenticated %}
 
     {% if not request.GET.popup %}
     <div class="container-fluid">
-      <div class="navbar">
+      <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container">
           <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
@@ -95,36 +95,38 @@
       <div>
     {% endif %}
   {% endif %}
-      <div class="row-fluid" style="min-height: 380px">
-        {% block body_login %}
-            {% if not user.is_authenticated %}
-            <div class="banner-container">
-              <div class="banner"><h1>{% trans 'Manager' %}<h1></div>
-            </div>
-           {% endif %}
-        {% endblock %}
-        {% if user.is_authenticated %}
-          {% if not request.GET.popup  %}
-            <div class="span2">
-              {% block shortaccess %}{% endblock %}
-              {% block formindex %}{% endblock %}
-            </div><!--span3 left menu-->
-          {% endif %}
+
+  <div class="row-fluid" style="min-height: 380px; margin-top:60px;">
+    {% block body_login %}
+        {% if not user.is_authenticated %}
+        <div class="banner-container">
+          <div class="banner"><h1>{% trans 'Manager' %}<h1></div>
+        </div>
+       {% endif %}
+    {% endblock %}
+    {% if user.is_authenticated %}
+      <div class="span12">
+        {% if not request.GET.popup  %}
+            {% block breadcrumb %}{% endblock %}
         {% endif %}
-        <div class="span10">
-          <div class="mainContent">
-            {% if messages %}
-              {% for message in messages %}
-              <div class="alert {{ message.tags }}">{{ message }}</div>
-              {% endfor %}
-            {% endif %}
-             {% if not request.GET.popup  %}
-              {% block breadcrumb %}{% endblock %}
-            {% endif %}
-            {% block body %}{% endblock %}
-          </div><!--mainContent-->
-        </div><!--span10 content-->
       </div>
+      {% if not request.GET.popup  %}
+          <div class="span1">
+            {% block shortaccess %}{% endblock %}
+          </div>
+      {% endif %}
+    {% endif %}
+    <div class="span11">
+      <div class="mainContent">
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+  </div>
 
     {% if not request.GET.popup %}
       <div class="footer row-fluid">

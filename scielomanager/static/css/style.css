@@ -64,6 +64,16 @@ button.ui-button-icon-only {
 
     }
 
+/*Customize the nav bar*/
+.navbar .brand {
+    margin-left: 1%;
+}
+
+.navbar .nav.pull-right {
+    margin-left: 10px;
+    margin-right: 2%;
+}
+
 /*Strikethrough disable list*/
 .strikethrough{
     text-decoration: line-through;
@@ -146,3 +156,12 @@ button.ui-button-icon-only {
 .req-field{
     font-weight: bold;
 }
+
+/* Tab Slide Out */
+.slide-out-div {
+    padding: 10px;
+    width: 150px;
+    border: 1px solid #E5E5E5;
+    background-image: -moz-linear-gradient(center top ,#CCCCCC, #E5E5E5 );
+    background-repeat: repeat-x;
+}  
