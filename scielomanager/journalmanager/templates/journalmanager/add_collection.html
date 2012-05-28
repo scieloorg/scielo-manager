@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block body %}
-    <form method="post" action="#">
+    <form method="post" action="#" enctype="multipart/form-data">
     {% csrf_token %}
 
     <span class="label">{% trans "Collection Information" %}</span>

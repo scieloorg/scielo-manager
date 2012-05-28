@@ -212,6 +212,10 @@ CACHES = {
 
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
+FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.MemoryFileUploadHandler",
+ "django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440 # 2.5Mb
 ### END App customization settings
 #################################################################
 

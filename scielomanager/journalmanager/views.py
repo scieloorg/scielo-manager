@@ -33,6 +33,7 @@ from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated 
 from scielomanager.tools import get_referer_view
+from scielomanager.tools import handle_uploaded_file
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
@@ -374,7 +375,7 @@ def add_collection(request, collection_id=None):
         collection = get_object_or_404(models.Collection, id = collection_id)
 
     if request.method == "POST":
-        collectionform = CollectionForm(request.POST, instance=collection, prefix='collection')
+        collectionform = CollectionForm(request.POST, request.FILES, instance=collection, prefix='collection')
 
         if collectionform.is_valid():
             collectionform.save()

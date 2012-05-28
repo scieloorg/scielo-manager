@@ -5,6 +5,15 @@ from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator
 from scielomanager import settings
 
+def handle_uploaded_file(f):
+    upload_suffix = join('img/collections_logos', f.name)
+    upload_path = join(settings.MEDIA_ROOT, upload_suffix)
+    destination = open(upload_path, 'wb+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
+    return upload_suffix
+
 class MultiSelectFormField(forms.MultipleChoiceField):
     widget = forms.CheckboxSelectMultiple
 

@@ -92,7 +92,7 @@ class JournalForm(UserCollectionContext):
         }
 
 class CollectionForm(ModelForm):
-
+  
     def __init__(self, *args, **kwargs):
         super(CollectionForm, self).__init__(*args, **kwargs)
 
