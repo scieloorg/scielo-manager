@@ -13,7 +13,6 @@
 {% block body %}
     <form method="post" action="#" enctype="multipart/form-data">
     {% csrf_token %}
-
     <span class="label">{% trans "Collection Information" %}</span>
     <div class="well">
         <div class="control-group {% if add_form.name.errors %}error{% endif %}">
@@ -161,7 +160,7 @@
               {% endif %}
           </div>
         </div>
-    </div>
+      </div>
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
     <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
 </form>

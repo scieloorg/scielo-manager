@@ -319,12 +319,19 @@ def add_journal(request, journal_id = None):
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
 
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = journalform.cover.url
+    except ValueError:
+        has_cover_url = False
+
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'user_collections': user_collections,
+                              'has_cover_url': has_cover_url,
                               }, context_instance = RequestContext(request))
 
 @login_required
@@ -478,12 +485,21 @@ def add_issue(request, journal_id, issue_id=None):
         add_form = IssueForm(journal_id=journal.pk, instance=issue)
         titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = journalform.cover.url
+    except ValueError:
+        has_cover_url = False
+
+
     return render_to_response('journalmanager/add_issue.html', {
                               'add_form': add_form,
                               'journal': journal,
                               'titleformset': titleformset,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections},
+                              'user_collections': user_collections,
+                              'has_cover_url': has_cover_url,
+                              },
                               context_instance = RequestContext(request))
 
 @login_required

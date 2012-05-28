@@ -16,7 +16,8 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" action="#">{% csrf_token %}
+<form method="post" action="#" enctype="multipart/form-data">
+  {% csrf_token %}
   <span class="label">{% trans "Issue Information" %}</span>
   <div class="well">
     <table id="titleformset" class="table table-bordered table-striped">
@@ -196,6 +197,21 @@
         {% if add_form.section.errors %}
         <span class="help-inline">{{ add_form.section.errors }}</span>
         {% endif %}
+      </div>
+    </div>  
+  </div>
+  <span class="label">{% trans "Issue Cover" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.cover.errors %}error{% endif %}">
+      <div class="controls">
+        {{ add_form.cover }}
+      </div>
+      <div align="center">
+          {% if has_cover_url %}
+            <img src="{{ collection_cover }}" />
+          {% else %}
+            {% trans "This issue does not have a cover, it will use the default journal cover" %}
+          {% endif %}
       </div>
     </div>
   </div>

@@ -200,6 +200,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
+    cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
 
     def __unicode__(self):
         return self.title
@@ -323,6 +324,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         choices=choices.CTRL_VOCABULARY, null=False, blank=True, help_text=helptexts.ISSUE__CTRL_VOCABULARY)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=choices.STANDARD, help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
+    cover = models.ImageField(_('Issue Cover'), upload_to='img/issue_cover/', null=True, blank=True)
 
     def identification(self):
 
