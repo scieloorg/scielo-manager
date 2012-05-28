@@ -141,7 +141,7 @@ class JournalImport:
 
         # Sponsors Import
         if not record.has_key('140'):
-            return []    
+            return []
 
         sponsor.name = record['140'][0]
 
@@ -240,6 +240,9 @@ class JournalImport:
             journal.journaltitle_set.add(title)
             self.charge_summary("title")
 
+    def load_use_license(self):
+        return UseLicense.objects.get_or_create(license_code='###PLACEBO###')[0]
+
     def load_journal(self, collection, loaded_publisher, loaded_sponsor, record):
         """
         Function: load_journal
@@ -249,6 +252,7 @@ class JournalImport:
         issn_type=""
         print_issn=""
         electronic_issn=""
+        use_license = self.load_use_license()
         journal = Journal()
 
         if record['35'][0] == "PRINT":
@@ -268,6 +272,7 @@ class JournalImport:
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
+        journal.use_license = use_license
         journal.subject_descriptors = '; '.join(record['440'])
 
         if record.has_key('450'):
@@ -364,7 +369,7 @@ class JournalImport:
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')
-            
+
         return journal
 
     def run_import(self, json_file, collection):
