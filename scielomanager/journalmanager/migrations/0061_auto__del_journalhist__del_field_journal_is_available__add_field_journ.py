@@ -8,11 +8,17 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Deleting model 'JournalHist'
+        db.delete_table('journalmanager_journalhist')
+
         # Deleting field 'Journal.is_available'
         db.delete_column('journalmanager_journal', 'is_available')
 
+        # Adding field 'Journal.index_coverage'
+        db.add_column('journalmanager_journal', 'index_coverage', self.gf('django.db.models.fields.TextField')(null=True, blank=True), keep_default=False)
+
         # Adding field 'Collection.logo'
-        db.add_column('journalmanager_collection', 'logo', self.gf('django.db.models.fields.files.ImageField')(default='', max_length=100), keep_default=False)
+        db.add_column('journalmanager_collection', 'logo', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True), keep_default=False)
 
         # Adding field 'Collection.acronym'
         db.add_column('journalmanager_collection', 'acronym', self.gf('django.db.models.fields.CharField')(db_index=True, default='', max_length=16, blank=True), keep_default=False)
@@ -30,7 +36,7 @@ class Migration(SchemaMigration):
         db.add_column('journalmanager_collection', 'address', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
 
         # Adding field 'Collection.address_number'
-        db.add_column('journalmanager_collection', 'address_number', self.gf('django.db.models.fields.CharField')(default='', max_length=8), keep_default=False)
+        db.add_column('journalmanager_collection', 'address_number', self.gf('django.db.models.fields.CharField')(default=123, max_length=8), keep_default=False)
 
         # Adding field 'Collection.address_complement'
         db.add_column('journalmanager_collection', 'address_complement', self.gf('django.db.models.fields.CharField')(default='', max_length=128, blank=True), keep_default=False)
@@ -45,7 +51,7 @@ class Migration(SchemaMigration):
         db.add_column('journalmanager_collection', 'fax', self.gf('django.db.models.fields.CharField')(default='', max_length=16, blank=True), keep_default=False)
 
         # Adding field 'Collection.mail'
-        db.add_column('journalmanager_collection', 'mail', self.gf('django.db.models.fields.EmailField')(default='', max_length=75), keep_default=False)
+        db.add_column('journalmanager_collection', 'mail', self.gf('django.db.models.fields.EmailField')(default='fabiobatalha@gmail.com', max_length=75), keep_default=False)
 
         # Changing field 'Institution.name'
         db.alter_column('journalmanager_institution', 'name', self.gf('django.db.models.fields.CharField')(max_length=256))
@@ -56,8 +62,20 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
+        # Adding model 'JournalHist'
+        db.create_table('journalmanager_journalhist', (
+            ('date', self.gf('django.db.models.fields.DateField')(blank=True)),
+            ('status', self.gf('django.db.models.fields.CharField')(max_length=2, blank=True)),
+            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        ))
+        db.send_create_signal('journalmanager', ['JournalHist'])
+
         # Adding field 'Journal.is_available'
         db.add_column('journalmanager_journal', 'is_available', self.gf('django.db.models.fields.BooleanField')(default=True), keep_default=False)
+
+        # Deleting field 'Journal.index_coverage'
+        db.delete_column('journalmanager_journal', 'index_coverage')
 
         # Deleting field 'Collection.logo'
         db.delete_column('journalmanager_collection', 'logo')
@@ -146,11 +164,11 @@ class Migration(SchemaMigration):
             'address_complement': ('django.db.models.fields.CharField', [], {'max_length': '128', 'blank': 'True'}),
             'address_number': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
-            'collection': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'user_collection'", 'symmetrical': 'False', 'through': "orm['journalmanager.UserCollections']", 'to': "orm['auth.User']"}),
+            'collection': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'user_collection'", 'to': "orm['auth.User']", 'through': "orm['journalmanager.UserCollections']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
+            'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'mail': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
