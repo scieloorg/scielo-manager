@@ -12,17 +12,15 @@
 {% endblock %}
 
 {% block shortaccess %}
-<div class="well sidebar-nav">
-  <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
-    <li><a href="{% url sponsor.add %}">{% trans 'Add sponsor' %}</a></li>
-  </ul>
-</div><!--well sidebar-nav-->
 {% endblock %}
 
 {% block body %}
 <form method="post" action="#">
   {% csrf_token %}
+
+  {% if request.GET.popup %}
+    <input type="hidden" value="1" name="popup" />
+  {% endif %}
 
   <span class="label">{% trans "Institution Information" %}</span>
   <div class="well">

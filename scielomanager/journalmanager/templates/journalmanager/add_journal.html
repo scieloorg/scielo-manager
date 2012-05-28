@@ -12,34 +12,24 @@
 {% endblock %}
 
 {% block shortaccess %}
-<div class="well sidebar-nav" style="margin-bottom: 10px;">
+<div class="slide-out-div">
+  <a class="handle" href="#">{% trans 'Access' %}</a>
   <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
-    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
-    <li><a href="#">{% trans 'Add Issue' %}</a></li>
-    <li><a href="#">{% trans 'Add Section' %}</a></li>
+    <li class="nav-header">{% trans 'Form Index' %}</li><a>
+    <li><a href="#title">{% trans 'Title' %}</a></li>
+    <li><a href="#other_title">{% trans 'Other Titles' %}</a></li>
+    <li><a href="#issn">{% trans 'ISSN' %}</a></li>
+    <li><a href="#journal_collection">{% trans 'Journal Collections' %}</a></li>
+    <li><a href="#subject">{% trans 'Subjects' %}</a></li>
+    <li><a href="#mission">{% trans 'Mission' %}</a></li>
+    <li><a href="#text_language">{% trans 'Text Language' %}</a></li>
+    <li><a href="#system_information">{% trans 'System Information' %}</a></li>
+    <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
+    <li><a href="#license">{% trans 'Licenses' %}</a></li>
+    <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
+    <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
   </ul>
 </div>
-{% endblock %}
-
-{% block formindex %}
-  <div id="well-rezi-fixed" class="well" style="position:fixed;top:200px;left:30px;padding:1px;">
-    <ul class="nav nav-list">
-     <li class="nav-header" style="cursor: pointer; cursor: hand">{% trans 'Form Index' %}</li><a>
-      <li><a href="#title">{% trans 'Title' %}</a></li>
-      <li><a href="#other_title">{% trans 'Other Titles' %}</a></li>
-      <li><a href="#issn">{% trans 'ISSN' %}</a></li>
-      <li><a href="#journal_collection">{% trans 'Journal Collections' %}</a></li>
-      <li><a href="#subject">{% trans 'Subjects' %}</a></li>
-      <li><a href="#mission">{% trans 'Mission' %}</a></li>
-      <li><a href="#text_language">{% trans 'Text Language' %}</a></li>
-      <li><a href="#system_information">{% trans 'System Information' %}</a></li>
-      <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
-      <li><a href="#license">{% trans 'Licenses' %}</a></li>
-      <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
-      <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
-    </ul>
-  </div>
 {% endblock %}
 
 {% block body %}
@@ -605,6 +595,7 @@
 
 {% block extrafooter %}
 {{ block.super }}
+<script type="text/javascript" src="{% get_static_prefix %}js/tabslideout.js"></script>
  <script>
   $(document).ready(function() {
     $('#well-rezi-fixed').draggable();
