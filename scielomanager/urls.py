@@ -5,6 +5,7 @@ from django.contrib.auth.views import *
 from django.conf import settings
 
 from scielomanager.journalmanager import views
+from scielomanager.journalmanager import models
 
 admin.autodiscover()
 
@@ -16,6 +17,11 @@ urlpatterns = patterns('',
     url(r'^journal/', include('scielomanager.journalmanager.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+
+    # Collection Tools
+    url(r'^collection/$', views.generic_index_search, {'model': models.Collection}, name='collection.index' ),
+    url(r'^collection/new/$', views.add_collection, name='collection.add' ),
+    url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit' ),
 
     url(r'^accounts/logout/$', views.user_logout, name='journalmanager.user_logout'),
     url(r'^accounts/login/$', views.user_login, name='journalmanager.user_login'),

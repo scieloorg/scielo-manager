@@ -3,9 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from scielomanager import settings
 
+COLLECTION__ACRONYM = _("""Enter in this field the acronym of the journal, max 3 characters length.""")
+
 INSTITUTION__NAME = _("""Enter institution name.""")
 
-INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the journal, max 8 characters length, in capital letter or not.""")
+INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the collection, max 8 characters length.""")
 
 INSTITUTION__COUNTRY = _("""Country of the Publication.""")
 
