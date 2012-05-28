@@ -26,7 +26,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.functional import curry
-from django.utils.html import escape 
+from django.utils.html import escape
 
 from django.core.cache import cache
 
@@ -65,6 +65,10 @@ def issue_index(request, journal_id):
         volume_node = year_node.setdefault(issue.volume, [])
 
         volume_node.append(issue)
+
+    for year, volume in by_years.items(): #ordering by issue number
+        for vol, issues in volume.items():
+            issues.sort(key=lambda x: x.number)
 
     template = loader.get_template('journalmanager/issue_dashboard.html')
     context = RequestContext(request, {
@@ -331,7 +335,7 @@ def add_sponsor(request, sponsor_id=None):
             if request.POST.get('popup', 0):
                 return HttpResponse('<script type="text/javascript">\
                     opener.updateSelect(window, "%s", "%s", "id_journal-sponsor");</script>' % \
-                    (escape(newsponsorform.id), escape(newsponsorform))) 
+                    (escape(newsponsorform.id), escape(newsponsorform)))
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('sponsor.index'))
@@ -371,7 +375,7 @@ def add_publisher(request, publisher_id=None):
             if request.POST.get('popup', 0):
                 return HttpResponse('<script type="text/javascript">\
                     opener.updateSelect(window, "%s", "%s", "id_journal-publisher");</script>' % \
-                    (escape(newpublisherform.id), escape(newpublisherform))) 
+                    (escape(newpublisherform.id), escape(newpublisherform)))
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('publisher.index'))
