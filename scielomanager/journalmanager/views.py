@@ -301,7 +301,7 @@ def add_journal(request, journal_id = None):
 
     if request.method == "POST":
 
-        journalform = JournalForm(request.POST, instance=journal, prefix='journal', collections_qset=user_collections)
+        journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
@@ -323,12 +323,19 @@ def add_journal(request, journal_id = None):
         titleformset = JournalTitleFormSet(instance=journal, prefix='title')
         missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
 
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = journal.cover.url
+    except ValueError:
+        has_cover_url = False
+
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'user_collections': user_collections,
+                              'has_cover_url': has_cover_url,
                               }, context_instance = RequestContext(request))
 
 @login_required
@@ -468,7 +475,7 @@ def add_issue(request, journal_id, issue_id=None):
         form=IssueTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     if request.method == 'POST':
-        add_form = IssueForm(request.POST, journal_id=journal.pk, instance=issue)
+        add_form = IssueForm(request.POST,  request.FILES, journal_id=journal.pk, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
         if add_form.is_valid() and titleformset.is_valid():
@@ -482,12 +489,20 @@ def add_issue(request, journal_id, issue_id=None):
         add_form = IssueForm(journal_id=journal.pk, instance=issue)
         titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = issue.cover.url
+    except ValueError:
+        has_cover_url = False
+
     return render_to_response('journalmanager/add_issue.html', {
                               'add_form': add_form,
                               'journal': journal,
                               'titleformset': titleformset,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections},
+                              'user_collections': user_collections,
+                              'has_cover_url': has_cover_url,
+                              },
                               context_instance = RequestContext(request))
 
 @login_required
