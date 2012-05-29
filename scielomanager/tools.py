@@ -1,9 +1,17 @@
+try:
+    from hashlib import md5
+except:
+    from md5 import new as md5
+
 from django.db import models
 from django import forms
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator
+
 from scielomanager import settings
+from scielomanager.journalmanager import models as journalmanager_models
+
 
 def handle_uploaded_file(f):
     upload_suffix = join('img/collections_logos', f.name)
@@ -99,7 +107,7 @@ def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER
 import re
 
 def get_referer_view(request, default=None):
-    ''' 
+    '''
     Return the referer view of the current request
 
     Example:
@@ -123,3 +131,30 @@ def get_referer_view(request, default=None):
     # add the slash at the relative path's view and finished
     referer = u'/' + u'/'.join(referer[1:])
     return referer
+
+class PendingPostData(object):
+    def __init__(self, data):
+        """
+        data is the request.POST QueryDict.
+        """
+        self.data = data
+
+    def hash_data(self):
+        content = ','.join('%s:%s' % (k.encode('utf-8'), v.encode('utf-8')) for k, v in self.data.items())
+        return md5(content).hexdigest()
+
+    def pend(self, view_name, user):
+        form_hash = self.hash_data()
+        pended_form = journalmanager_models.PendedForm.objects.get_or_create(view_name=view_name,
+            form_hash=form_hash, user=user)[0]
+
+        for name, value in self.data.items():
+            pended_form.data.get_or_create(name=name, value=value)
+
+        return form_hash
+
+    @classmethod
+    def resume(cls, form_hash):
+        form = journalmanager_models.PendedForm.objects.get(form_hash=form_hash)
+        data = dict((d.name, d.value) for d in form.data.all())
+        return data
