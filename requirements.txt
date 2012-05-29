@@ -6,3 +6,4 @@ scielo-django-extensions==0.1
 python-memcached==1.48
 django-cache-machine==0.6
 ordereddict==1.1
+pil==1.1.7

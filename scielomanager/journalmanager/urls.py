@@ -41,6 +41,6 @@ urlpatterns = patterns('',
     url(r'^user/new/$', views.add_user, name="user.add"),
     url(r'^user/(?P<user_id>\d+)/edit/$', views.add_user, name="user.edit"),
     url(r'^user/(?P<user_id>\d+)/toggle_availability/$', views.toggle_user_availability, name='user.toggle_availability' ),
-
+    url(r'^user/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$', views.toggle_active_collection, name='usercollection.toggle_active' ),
 
 )

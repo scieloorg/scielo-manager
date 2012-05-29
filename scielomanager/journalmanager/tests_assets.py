@@ -117,6 +117,25 @@ def get_sample_institution_dataform(dict_params=None):
 
     return institution_attrs
 
+def get_sample_collection_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    sponsor_attrs = {
+      'collection-url': u'http://www.scielo.br/',
+      'collection-validated': True,
+      'collection-name': u'SciELO',
+      'collection-address_number': u'430',
+      'collection-country': u'Brasil',
+      'collection-address': u'Rua Machado Bittencourt',
+      'collection-mail': u'fapesp@scielo.org',
+    }
+
+    sponsor_attrs.update(dict_params)
+
+    return sponsor_attrs
+
 def get_sample_sponsor_dataform(dict_params=None):
 
     if dict_params is None:
@@ -315,6 +334,13 @@ def get_sample_collection(validated = True):
       'url': 'http://www.scielo.br/',
       'validated': validated,
       'name': 'SciELO',
+      'fax': '11 5555-4444',
+      'address_number': '430',
+      'country': 'Brasil',
+      'state': 'São Paulo',
+      'city': 'São Paulo',
+      'address': u'Rua Machado Bittencourt',
+      'mail': 'fapesp@scielo.org',
     }
 
     return models.Collection(**collection_attrs)

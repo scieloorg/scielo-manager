@@ -78,9 +78,21 @@ class Collection(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     collection = models.ManyToManyField(User, related_name='user_collection',
-        through='UserCollections', )
-    name = models.CharField(_('Collection Name'), max_length=128, db_index=True,)
+        through='UserCollections', null=True, blank=True, )
+    name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
     url = models.URLField(_('Instance URL'), )
+    logo = models.ImageField(_('Logo'), upload_to='img/collections_logos', null=True, blank=True, )
+    acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, )
+    country = models.CharField(_('Country'), max_length=32,)
+    state = models.CharField(_('State'), max_length=32, null=False, blank=True,)
+    city = models.CharField(_('City'), max_length=32, null=False, blank=True,)
+    address = models.TextField(_('Address'),)
+    address_number = models.CharField(_('Number'), max_length=8,)
+    address_complement = models.CharField(_('Complement'), max_length=128, null=False, blank=True,)
+    zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True, )
+    phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True, )
+    fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, )
+    mail = models.EmailField(_('Email'), )
     validated = models.BooleanField(_('Validated'), default=False, )
 
     def __unicode__(self):

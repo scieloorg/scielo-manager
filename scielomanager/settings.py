@@ -61,7 +61,7 @@ USE_L10N = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-#MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
+MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 #STATIC_ROOT = os.path.join(PROJECT_PATH, 'static/')
 
 # URL prefix for static files.
@@ -212,6 +212,10 @@ CACHES = {
 
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
+FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.MemoryFileUploadHandler",
+ "django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440 # 2.5Mb
 ### END App customization settings
 #################################################################
 

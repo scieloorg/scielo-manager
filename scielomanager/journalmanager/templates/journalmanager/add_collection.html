@@ -1,0 +1,183 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+    <li class="active">{% trans 'Collection' %}</li>
+</ul>
+{% endblock %}
+
+{% block body %}
+    <form method="post" action="#" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <span class="label">{% trans "Collection Information" %}</span>
+    <div class="well">
+        <div class="control-group {% if add_form.name.errors %}error{% endif %}">
+          <label for="{{ add_form.name.auto_id }}">
+            <span {% if add_form.name.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.name.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.name}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.url.errors %}error{% endif %}">
+          <label for="{{ add_form.url.auto_id }}">
+            <span {% if add_form.url.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.url.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.url}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
+          <label for="{{ add_form.acronym.auto_id }}">
+            <span {% if add_form.acronym.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.acronym.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.acronym}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.country.errors %}error{% endif %}">
+          <label for="{{ add_form.country.auto_id }}">
+            <span {% if add_form.country.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.country.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.country}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.state.errors %}error{% endif %}">
+          <label for="{{ add_form.state.auto_id }}">
+            <span {% if add_form.state.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.state.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.state}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.city.errors %}error{% endif %}">
+          <label for="{{ add_form.city.auto_id }}">
+            <span {% if add_form.city.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.city.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.city}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.address.errors %}error{% endif %}">
+          <label for="{{ add_form.address.auto_id }}">
+            <span {% if add_form.address.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.address.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.address}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.address_number.errors %}error{% endif %}">
+          <label for="{{ add_form.address_number.auto_id }}">
+            <span {% if add_form.address_number.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.address_number.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.address_number}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.address_complement.errors %}error{% endif %}">
+          <label for="{{ add_form.address_complement.auto_id }}">
+            <span {% if add_form.address_complement.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.address_complement.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.address_complement}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.zip_code.errors %}error{% endif %}">
+          <label for="{{ add_form.zip_code.auto_id }}">
+            <span {% if add_form.zip_code.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.zip_code.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.zip_code}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.phone.errors %}error{% endif %}">
+          <label for="{{ add_form.phone.auto_id }}">
+            <span {% if add_form.phone.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.phone.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.phone}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.fax.errors %}error{% endif %}">
+          <label for="{{ add_form.fax.auto_id }}">
+            <span {% if add_form.fax.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.fax.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.fax}}
+          </div>
+        </div>
+        <div class="control-group {% if add_form.mail.errors %}error{% endif %}">
+          <label for="{{ add_form.mail.auto_id }}">
+            <span {% if add_form.mail.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.mail.label %}
+            </span>
+          </label>
+          <div class="controls">
+            {{ add_form.mail}}
+          </div>
+        </div>
+      </div>
+      <span class="label">{% trans "Collection Logomarca" %}</span>
+      <div class="well">
+        <div class="control-group {% if add_form.logo.errors %}error{% endif %}">
+          <div class="controls">
+            {{ add_form.logo }}
+          </div>
+          <div align="center">
+              {% if collection_logo %}
+                <img src="{{ collection_logo }}" />
+              {% else %}
+                {% trans "This collections does not have a logomarca" %}
+              {% endif %}
+          </div>
+        </div>
+    </div>
+    <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}">
+    <input class="btn btn-warning" name="reset" type="reset" value="{% trans "cancel" %}">
+</form>
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+ <script>
+    $(document).ready(function() {
+
+        $(".help-text").popover('hide');
+
+        $( "#toggle" ).click(function() {
+            $( "#id_collection" ).toggle();
+        });
+
+    });
+  </script>
+{% endblock %}

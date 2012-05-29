@@ -92,6 +92,15 @@ class JournalForm(UserCollectionContext):
            'index_coverage': forms.Textarea(attrs={'class':'span9'}),
         }
 
+class CollectionForm(ModelForm):
+  
+    def __init__(self, *args, **kwargs):
+        super(CollectionForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = models.Collection
+        exclude = ('collection', )
+
 class PublisherForm(UserCollectionContext):
 
     def __init__(self, *args, **kwargs):
