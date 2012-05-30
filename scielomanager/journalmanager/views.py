@@ -17,6 +17,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.core.urlresolvers import resolve
 from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -32,12 +33,15 @@ from django.core.cache import cache
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
-from scielomanager.tools import get_paginated 
+from scielomanager.tools import get_paginated
 from scielomanager.tools import get_referer_view
 from scielomanager.tools import handle_uploaded_file
+from scielomanager.tools import PendingPostData
 
 MSG_FORM_SAVED = _('Saved.')
+MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
+MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 def get_user_collections(user_id):
 
@@ -46,14 +50,16 @@ def get_user_collections(user_id):
     return user_collections
 
 def index(request):
-    t = loader.get_template('journalmanager/home_journal.html')
+    template = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
         user_collections = get_user_collections(request.user.id)
+        pending_journals = models.PendedForm.objects.filter(user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
     else:
-        user_collections = ""
+        user_collections = ''
+        pending_journals = ''
 
-    c = RequestContext(request,{'user_collections':user_collections,})
-    return HttpResponse(t.render(c))
+    context = RequestContext(request,{'user_collections':user_collections,'pending_journals': pending_journals})
+    return HttpResponse(template.render(context))
 
 @login_required
 def issue_index(request, journal_id):
@@ -295,33 +301,48 @@ def add_journal(request, journal_id = None):
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
 
+    form_hash = None
+
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
-
         journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
-        if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
-            and missionformset.is_valid():
-            journalform.save_all(creator = request.user)
-            studyareaformset.save()
-            titleformset.save()
-            missionformset.save()
-            messages.info(request, MSG_FORM_SAVED)
-
-            return HttpResponseRedirect(reverse('journal.index'))
+        if 'pend' in request.POST:
+            journal_form_hash = PendingPostData(request.POST).pend(resolve(request.get_full_path()).url_name, request.user)
+            form_hash = journal_form_hash
+            messages.info(request, MSG_FORM_SAVED_PARTIALLY)
         else:
-            messages.error(request, MSG_FORM_MISSING)
+            if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
+                and missionformset.is_valid():
+                journalform.save_all(creator = request.user)
+                studyareaformset.save()
+                titleformset.save()
+                missionformset.save()
+                messages.info(request, MSG_FORM_SAVED)
+
+                return HttpResponseRedirect(reverse('journal.index'))
+            else:
+                messages.error(request, MSG_FORM_MISSING)
 
     else:
-        journalform  = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
-        studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
-        titleformset = JournalTitleFormSet(instance=journal, prefix='title')
-        missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
+        if request.GET.get('resume', None):
+            pended_post_data = PendingPostData.resume(request.GET.get('resume'))
+
+            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+            studyareaformset = JournalStudyAreaFormSet(pended_post_data, instance=journal, prefix='studyarea')
+            titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
+            missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
+        else:
+            journalform  = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
+            studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
+            titleformset = JournalTitleFormSet(instance=journal, prefix='title')
+            missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
+
 
     # Recovering Journal Cover url.
     try:
@@ -336,7 +357,14 @@ def add_journal(request, journal_id = None):
                               'missionformset': missionformset,
                               'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
+                              'form_hash': form_hash if form_hash else request.GET.get('resume', None),
                               }, context_instance = RequestContext(request))
+@login_required
+def del_pended(request, form_hash):
+    pended_form = get_object_or_404(models.PendedForm, form_hash=form_hash, user=request.user)
+    pended_form.delete()
+    messages.info(request, MSG_DELETE_PENDED)
+    return HttpResponseRedirect(reverse('index'))
 
 @login_required
 def add_sponsor(request, sponsor_id=None):
