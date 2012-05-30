@@ -185,8 +185,10 @@ class Journal(caching.base.CachingMixin, models.Model):
     final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
         choices=choices.FREQUENCY, help_text=helptexts.JOURNAL__FREQUENCY)
-    pub_status = models.CharField(_('Publication Status'), max_length=16,
+    pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True,
         choices=choices.PUBLICATION_STATUS, help_text=helptexts.JOURNAL__PUB_STATUS)
+    pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
+    pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=choices.STANDARD, help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -221,9 +223,11 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
-    journal = models.ForeignKey(Journal)
-    status = models.CharField(max_length=16)
-    created_at = models.DateTimeField(auto_now_add=True)
+    journal = models.ForeignKey(Journal, editable=False)
+    status = models.CharField(_('Journal Status'), max_length=16,)
+    reason = models.TextField(_('Reason'), blank=True, default="",)
+    created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
+    changed_by = models.ForeignKey(User, editable=False)
 
     def __unicode__(self):
         return self.status
@@ -374,4 +378,4 @@ def journal_pub_status_post_save(sender, instance, created, **kwargs):
         return None
 
     JournalPublicationEvents.objects.create(journal=instance,
-        status=instance.pub_status)
+        status=instance.pub_status, changed_by_id=instance.pub_status_changed_by.id, reason=instance.pub_status_reason)

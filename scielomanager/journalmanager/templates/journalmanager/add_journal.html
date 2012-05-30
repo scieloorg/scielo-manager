@@ -287,18 +287,6 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.pub_status.errors %}error{% endif %}">
-      <label for="{{ add_form.pub_status.auto_id }}">
-        <span {% if add_form.pub_status.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.pub_status.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.pub_status }}
-        {% field_help add_form.pub_status.label add_form.pub_status.help_text term-publication-status %}
-      </div>
-    </div>
-
     <div class="control-group {% if add_form.url_online_submission.errors %}error{% endif %}">
       <label for="{{ add_form.url_online_submission.auto_id }}">
         <span {% if add_form.url_online_submission.field.required %}class="req-field"{% endif %}>

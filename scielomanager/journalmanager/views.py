@@ -283,6 +283,42 @@ def add_user(request, user_id=None):
                               context_instance=RequestContext(request))
 
 @login_required
+def edit_journal_status(request, journal_id = None):
+    """
+    Handles Journal Status.
+
+    Allow user just to update the status history of a specific journal.
+    """
+
+    user_collections = get_user_collections(request.user.id)
+
+    # Always a new event. Considering that events must not be deleted or changed.
+    journal_history = models.JournalPublicationEvents.objects.filter(journal = journal_id).order_by('-created_at')
+    journal = get_object_or_404(models.Journal, id = journal_id)
+
+    if request.method == "POST":
+        journaleventform = EventJournalForm(request.POST)
+        if journaleventform.is_valid():
+            cleaned_data = journaleventform.cleaned_data
+            journal.pub_status = cleaned_data["pub_status"]
+            journal.pub_status_reason = cleaned_data["pub_status_reason"]
+            journal.pub_status_changed_by = request.user
+            journal.save()
+            messages.info(request, MSG_FORM_SAVED)
+            return HttpResponseRedirect(reverse('journal_status.edit', kwargs={'journal_id':journal_id}))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        journaleventform = EventJournalForm()
+
+    return render_to_response('journalmanager/edit_journal_status.html', {
+                              'add_form': journaleventform,
+                              'user_collections': user_collections,
+                              'journal_history': journal_history,
+                              'journal': journal,
+                              }, context_instance = RequestContext(request))
+
+@login_required
 def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
@@ -305,6 +341,7 @@ def add_journal(request, journal_id = None):
         studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
+
         if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
             and missionformset.is_valid():
             journalform.save_all(creator = request.user)

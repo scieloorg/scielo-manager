@@ -95,6 +95,7 @@ class LoggedInViewsTest(TestCase):
         sample_use_license.save()
 
         sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
         sample_journal.save()
         sample_journal.publisher = [sample_publisher,]
         sample_journal.sponsor = [sample_sponsor,]
@@ -253,7 +254,9 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-languages': [sample_language.pk],
-                                                     'mission-0-language': sample_language.pk,}))
+                                                     'journal-pub_status_changed_by': self.user.pk,
+                                                     'mission-0-language': sample_language.pk,
+                                                     }))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -266,7 +269,9 @@ class LoggedInViewsTest(TestCase):
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-languages': [sample_language.pk],
-                                                     'mission-0-language': sample_language.pk, }))
+                                                     'journal-pub_status_changed_by': self.user.pk,
+                                                     'mission-0-language': sample_language.pk, 
+                                                     }))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')

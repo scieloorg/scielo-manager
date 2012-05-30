@@ -54,6 +54,7 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-final_vol': '',
       'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'journal-pub_status': 'C',
+      'journal-pub_status_changed_by': 'O motivo da mudança é...',
       'journal-print_issn': '0102-6720',
       'journal-copyrighter': 'Texto do copyrighter',
 
@@ -271,7 +272,7 @@ def get_sample_journal():
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
        'use_license', 'previous_title_id', 'url_main_collection',
-       'publisher', 'center', 'notes',]
+       'publisher', 'center', 'notes','pub_status_changed_by']
     """
 
     journal_attrs = {
@@ -296,6 +297,7 @@ def get_sample_journal():
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'pub_status': 'C',
+      'pub_status_reason': 'Motivo da mudança é...',
       'print_issn': '0102-6720',
     }
 
