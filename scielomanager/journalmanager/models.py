@@ -356,6 +356,7 @@ class PendedForm(models.Model):
     view_name = models.CharField(max_length=128)
     form_hash = models.CharField(max_length=32)
     user = models.ForeignKey(User, related_name='pending_forms')
+    created_at = models.DateTimeField(auto_now=True)
 
 class PendedValue(models.Model):
     form = models.ForeignKey(PendedForm, related_name='data')

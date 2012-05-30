@@ -2,6 +2,7 @@ try:
     from hashlib import md5
 except:
     from md5 import new as md5
+import re
 
 from django.db import models
 from django import forms
@@ -104,8 +105,6 @@ def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER
 # On Debian systems, you can find the full text of the license in
 # /usr/share/common-licenses/GPL-2
 
-import re
-
 def get_referer_view(request, default=None):
     '''
     Return the referer view of the current request
@@ -133,6 +132,7 @@ def get_referer_view(request, default=None):
     return referer
 
 class PendingPostData(object):
+
     def __init__(self, data):
         """
         data is the request.POST QueryDict.

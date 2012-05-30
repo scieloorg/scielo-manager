@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" action="#" enctype="multipart/form-data">
+<form method="post" action="{% url journal.add %}" enctype="multipart/form-data">
   {% csrf_token %}
   <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
   <div class="well">
@@ -606,7 +606,7 @@
   <div class="row-fluid">
       <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}"/>
       <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
-      <input class="btn" name="pend" type="submit" value="{% trans "pend" %}"/>
+      <input class="btn btn-large btn-primary" name="pend" style="line-height: 1; position: fixed; bottom: 0; right: 19px;" type="submit" value="{% trans "Save to Continue Later" %}"/>
   </div>
 </form>
 {% endblock %}

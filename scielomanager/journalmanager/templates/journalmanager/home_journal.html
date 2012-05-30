@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load get_title_for_pended %}
 
 {% block page_title %}{{block.super}}{% endblock %}
 
@@ -39,6 +40,33 @@
   <div style="text-align: right;">
     <a href="{% url registration.password_reset %}" title="{% trans 'Forgot your password?' %}">{% trans 'Forgot your password?' %}</a>
   </div>
+</div>
+{% else %}
+<div class="span2 well">
+  <table class="table table-condensed">
+    <thead>
+      <th>{% trans 'Pending Journals' %}<th>
+    </thead>
+    <tbody>
+      {% for pending_journal in pending_journals %}
+      <tr>
+        <td>
+          <a href="{% url journal.add %}?resume={{pending_journal.form_hash}}"
+             class="tip-bottom"
+             rel="tooltip"
+             data-original-title="{% get_title_for_pended pending_journal %}">
+            {{pending_journal.created_at|date:"D, d \de F \de Y - H:i"}}
+          </a>
+        </td>
+        <td>
+        <a href="{% url journal.del_pended pending_journal.form_hash %}" class="btn btn-mini btn-danger" style="font-size: 9px; line-height: 11px; padding: 2px 3px;">{% trans 'Delete' %}</a>
+        </td>
+      <tr>
+      {% empty %}
+      <tr><td>{% trans 'There are no items.' %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 {% endif %}
 {% endblock %}

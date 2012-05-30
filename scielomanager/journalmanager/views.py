@@ -41,6 +41,7 @@ from scielomanager.tools import PendingPostData
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
+MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 def get_user_collections(user_id):
 
@@ -49,14 +50,16 @@ def get_user_collections(user_id):
     return user_collections
 
 def index(request):
-    t = loader.get_template('journalmanager/home_journal.html')
+    template = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
         user_collections = get_user_collections(request.user.id)
+        pending_journals = models.PendedForm.objects.filter(user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
     else:
-        user_collections = ""
+        user_collections = ''
+        pending_journals = ''
 
-    c = RequestContext(request,{'user_collections':user_collections,})
-    return HttpResponse(t.render(c))
+    context = RequestContext(request,{'user_collections':user_collections,'pending_journals': pending_journals})
+    return HttpResponse(template.render(context))
 
 @login_required
 def issue_index(request, journal_id):
@@ -351,6 +354,12 @@ def add_journal(request, journal_id = None):
                               'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
                               }, context_instance = RequestContext(request))
+@login_required
+def del_pended(request, form_hash):
+    pended_form = get_object_or_404(models.PendedForm, form_hash=form_hash, user=request.user)
+    pended_form.delete()
+    messages.info(request, MSG_DELETE_PENDED)
+    return HttpResponseRedirect(reverse('index'))
 
 @login_required
 def add_sponsor(request, sponsor_id=None):
