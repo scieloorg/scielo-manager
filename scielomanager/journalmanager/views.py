@@ -301,6 +301,8 @@ def add_journal(request, journal_id = None):
     else:
         journal = get_object_or_404(models.Journal, id = journal_id)
 
+    form_hash = None
+
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
     JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
@@ -312,6 +314,7 @@ def add_journal(request, journal_id = None):
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
         if 'pend' in request.POST:
             journal_form_hash = PendingPostData(request.POST).pend(resolve(request.get_full_path()).url_name, request.user)
+            form_hash = journal_form_hash
             messages.info(request, MSG_FORM_SAVED_PARTIALLY)
         else:
             if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
@@ -340,6 +343,7 @@ def add_journal(request, journal_id = None):
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset  = JournalMissionFormSet(instance=journal, prefix='mission')
 
+
     # Recovering Journal Cover url.
     try:
         has_cover_url = journal.cover.url
@@ -353,6 +357,7 @@ def add_journal(request, journal_id = None):
                               'missionformset': missionformset,
                               'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
+                              'form_hash': form_hash if form_hash else request.GET.get('resume', None),
                               }, context_instance = RequestContext(request))
 @login_required
 def del_pended(request, form_hash):

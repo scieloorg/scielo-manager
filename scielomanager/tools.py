@@ -144,17 +144,21 @@ class PendingPostData(object):
         return md5(content).hexdigest()
 
     def pend(self, view_name, user):
+
         form_hash = self.hash_data()
+
         pended_form = journalmanager_models.PendedForm.objects.get_or_create(view_name=view_name,
             form_hash=form_hash, user=user)[0]
 
         for name, value in self.data.items():
             pended_form.data.get_or_create(name=name, value=value)
 
-        return form_hash
+        if self.data.get('form_hash', None) and self.data['form_hash'] != 'None':
+            journalmanager_models.PendedForm.objects.get(form_hash=self.data['form_hash']).delete()
 
+        return form_hash
     @classmethod
-    def resume(cls, form_hash):
+    def resume(self, form_hash):
         form = journalmanager_models.PendedForm.objects.get(form_hash=form_hash)
         data = dict((d.name, d.value) for d in form.data.all())
         return data
