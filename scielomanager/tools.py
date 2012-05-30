@@ -4,6 +4,7 @@ except:
     from md5 import new as md5
 import re
 
+from django.http import QueryDict
 from django.db import models
 from django import forms
 from django.core.paginator import EmptyPage
@@ -150,8 +151,9 @@ class PendingPostData(object):
         pended_form = journalmanager_models.PendedForm.objects.get_or_create(view_name=view_name,
             form_hash=form_hash, user=user)[0]
 
-        for name, value in self.data.items():
-            pended_form.data.get_or_create(name=name, value=value)
+        for name, values in self.data.lists():
+            for value in values:
+                pended_form.data.get_or_create(name=name, value=value)
 
         if self.data.get('form_hash', None) and self.data['form_hash'] != 'None':
             journalmanager_models.PendedForm.objects.get(form_hash=self.data['form_hash']).delete()
@@ -160,5 +162,10 @@ class PendingPostData(object):
     @classmethod
     def resume(self, form_hash):
         form = journalmanager_models.PendedForm.objects.get(form_hash=form_hash)
-        data = dict((d.name, d.value) for d in form.data.all())
-        return data
+
+        post_dict = QueryDict('', mutable=True)
+        for d in form.data.all():
+            i = post_dict.setlistdefault(d.name, [])
+            i.append(d.value)
+
+        return post_dict
