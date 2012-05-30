@@ -13,6 +13,7 @@ from scielomanager.journalmanager.models import Sponsor
 from scielomanager.journalmanager.models import Issue
 from scielomanager.journalmanager.models import UserCollections
 from scielomanager.journalmanager.models import Section
+from scielomanager.journalmanager.models import UseLicense
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -59,6 +60,8 @@ class LoggedInViewsTest(TestCase):
         self.collection.save()
         self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
         self.usercollections.save()
+        self.sample_use_license = tests_assets.get_sample_uselicense()
+        self.sample_use_license.save()
 
         self.client = Client()
         self.client.login(username='dummyuser', password='123')
@@ -76,6 +79,7 @@ class LoggedInViewsTest(TestCase):
         User.objects.all().delete()
         Section.objects.all().delete()
         Collection.objects.all().delete()
+        UseLicense.objects.all().delete()
 
     def _create_journal(self):
         sample_journal = tests_assets.get_sample_journal()
@@ -91,10 +95,10 @@ class LoggedInViewsTest(TestCase):
         sample_sponsor.collections = [self.collection,]
         sample_sponsor.save()
 
-        sample_use_license = tests_assets.get_sample_uselicense()
-        sample_use_license.save()
+        #sample_use_license = tests_assets.get_sample_uselicense()
+        #sample_use_license.save()
 
-        sample_journal.use_license = sample_use_license
+        sample_journal.use_license = self.sample_use_license
         sample_journal.pub_status_changed_by = self.user
         sample_journal.save()
         sample_journal.publisher = [sample_publisher,]
@@ -212,7 +216,6 @@ class LoggedInViewsTest(TestCase):
             })
         self.assertRedirects(response, reverse('journalmanager.password_change'))
 
-
     def test_add_journal(self):
         """
         Covered cases:
@@ -233,9 +236,6 @@ class LoggedInViewsTest(TestCase):
         sample_sponsor.collection = self.collection
         sample_sponsor.save()
 
-        sample_uselicense = tests_assets.get_sample_uselicense()
-        sample_uselicense.save()
-
         sample_language = tests_assets.get_sample_language()
         sample_language.save()
 
@@ -251,10 +251,9 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
                                                      'journal-sponsor': [sample_sponsor.pk],
-                                                     'journal-use_license': sample_uselicense.pk,
+                                                     'journal-use_license': self.sample_use_license.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-languages': [sample_language.pk],
-                                                     'journal-pub_status_changed_by': self.user.pk,
                                                      'mission-0-language': sample_language.pk,
                                                      }))
 
@@ -266,10 +265,9 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
                                                      'journal-publisher': [sample_publisher.pk],
                                                      'journal-sponsor': [sample_sponsor.pk],
-                                                     'journal-use_license': sample_uselicense.pk,
+                                                     'journal-use_license': self.sample_use_license.pk,
                                                      'journal-collections': [self.usercollections.pk],
                                                      'journal-languages': [sample_language.pk],
-                                                     'journal-pub_status_changed_by': self.user.pk,
                                                      'mission-0-language': sample_language.pk, 
                                                      }))
 

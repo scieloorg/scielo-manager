@@ -49,6 +49,10 @@ class JournalForm(UserCollectionContext):
     def save_all(self, creator):
         journal = self.save(commit=False)
         journal.creator = creator
+
+        if not journal.pub_status_changed_by_id:
+            journal.pub_status_changed_by = creator
+
         journal.save()
         self.save_m2m()
         return journal
