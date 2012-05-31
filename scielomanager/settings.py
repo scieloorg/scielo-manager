@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'journalmanager',
     'south',
     'scielo_extensions',
+    'widget_tweaks',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(

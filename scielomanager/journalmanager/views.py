@@ -49,6 +49,12 @@ def get_user_collections(user_id):
 
     return user_collections
 
+def section_has_relation(section_id):
+    if len(models.Issue.objects.filter(section=section_id)) == 0 :
+        return False
+    else:
+        return True
+
 def index(request):
     template = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
@@ -83,6 +89,7 @@ def issue_index(request, journal_id):
                        'journal': journal,
                        'user_collections': user_collections,
                        'issue_grid': by_years,
+
                        })
     return HttpResponse(template.render(context))
 
@@ -596,6 +603,8 @@ def add_section(request, journal_id, section_id=None):
     else:
         section = get_object_or_404(models.Section, pk=section_id)
 
+    has_relation = section_has_relation(section.id)
+
     journal = get_object_or_404(models.Journal, pk=journal_id)
     SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
         form=SectionTitleForm, extra=2, can_delete=False, formset=FirstFieldRequiredFormSet)
@@ -623,14 +632,16 @@ def add_section(request, journal_id, section_id=None):
                               'section_title_formset': section_title_formset,
                               'user_name': request.user.pk,
                               'journal': journal,
+                              'has_relation': has_relation,
                               },
                               context_instance = RequestContext(request))
+
 @login_required
 def del_section(request, journal_id, section_id):
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
-    if len(models.Issue.objects.filter(section=section_id)) == 0 :
+    if not section_has_relation(section_id):
         models.Section.objects.get(pk=section_id).delete()
         messages.success(request, MSG_FORM_SAVED)
         return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
