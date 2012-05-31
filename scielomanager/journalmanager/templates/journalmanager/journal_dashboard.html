@@ -96,6 +96,11 @@
                 {% trans 'Sections' %}
               </a>
             </li>
+            <li>
+              <a href="{% url journal_status.edit journal.pk %}">
+                {% trans 'Status' %}
+              </a>
+            </li>
           </ul>
         </td>
         <td>{{ journal.print_issn }}</td>

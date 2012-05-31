@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Journal}, name='journal.toggle_availability'),
     url(r'^bulk_action/(?P<action_name>\w+)/(?P<value>\w+)/$', views.generic_bulk_action, {'model': models.Journal}, name='journal.bulk_action'),
     url(r'^del_pended/(?P<form_hash>\w+)/$', views.del_pended, name='journal.del_pended'),
+    url(r'^(?P<journal_id>\d+)/edit/status/$', views.edit_journal_status, name='journal_status.edit'),
+
 
     # Publisher Tools
     url(r'^publisher/$', views.generic_index_search, {'model': models.Publisher}, name='publisher.index' ),

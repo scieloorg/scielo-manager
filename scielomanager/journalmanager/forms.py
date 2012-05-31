@@ -6,6 +6,7 @@ from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
 
 from journalmanager import models
+from journalmanager import choices
 from scielo_extensions import formfields as fields
 from django.forms.util import ErrorList
 
@@ -34,7 +35,6 @@ class UserCollectionContext(ModelForm):
             self.fields['collections'].queryset = models.Collection.objects.filter(
                 pk__in = (collection.collection.pk for collection in collections_qset))
 
-
 class JournalForm(UserCollectionContext):
 
     print_issn = fields.ISSNField(max_length=9, required=False)
@@ -49,6 +49,10 @@ class JournalForm(UserCollectionContext):
     def save_all(self, creator):
         journal = self.save(commit=False)
         journal.creator = creator
+
+        if not journal.pub_status_changed_by_id:
+            journal.pub_status_changed_by = creator
+
         journal.save()
         self.save_m2m()
         return journal
@@ -70,7 +74,7 @@ class JournalForm(UserCollectionContext):
     class Meta:
 
         model = models.Journal
-
+        exclude = ('pub_status', 'pub_status_changed_by')
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class':'span9'}),
@@ -165,6 +169,10 @@ class UserForm(ModelForm):
             user.save()
             self.save_m2m()
         return user
+
+class EventJournalForm(forms.Form):
+    pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
+    pub_status_reason = forms.CharField(widget=forms.Textarea)
 
 class PasswordChangeForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))

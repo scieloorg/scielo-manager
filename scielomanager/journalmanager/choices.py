@@ -62,12 +62,6 @@ PUBLICATION_LEVEL = [
     ('DI','Divulgation')
 ]
 
-JOURNAL_HIST_STATUS = [
-    ('C','CURRENT'),
-    ('D','Deceased'),
-    ('S','Suspended'),
-]
-
 PDF_DOWNLOAD = [
     ('art','article based - a PDF file for each article'),
     ('iss','issue based - a PDF file for each issue'),
