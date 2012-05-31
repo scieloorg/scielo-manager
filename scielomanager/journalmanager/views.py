@@ -625,6 +625,18 @@ def add_section(request, journal_id, section_id=None):
                               'journal': journal,
                               },
                               context_instance = RequestContext(request))
+@login_required
+def del_section(request, journal_id, section_id):
+
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if len(models.Issue.objects.filter(section=section_id)) == 0 :
+        models.Section.objects.get(pk=section_id).delete()
+        messages.success(request, MSG_FORM_SAVED)
+        return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
+    else:
+        messages.info(request, _('Cant\'t delete, some issues are using this Section'))
+        return HttpResponseRedirect(reverse('section.index', args=[journal_id]))    
 
 @login_required
 def toggle_user_availability(request, user_id):

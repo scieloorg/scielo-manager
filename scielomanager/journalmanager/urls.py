@@ -7,13 +7,13 @@ from scielomanager.journalmanager import models
 urlpatterns = patterns('',
 
     # Journal Tools
-    url(r'^$', views.generic_index_search, {'model': models.Journal},  name="journal.index",),
-    url(r'^new/$', views.add_journal, name='journal.add'),
+    url(r'^$', views.generic_index_search, {'model': models.Journal},  name="journal.index", ),
+    url(r'^new/$', views.add_journal, name='journal.add' ),
     url(r'^(?P<journal_id>\d+)/edit/$', views.add_journal, name='journal.edit'),
-    url(r'^(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Journal}, name='journal.toggle_availability'),
-    url(r'^bulk_action/(?P<action_name>\w+)/(?P<value>\w+)/$', views.generic_bulk_action, {'model': models.Journal}, name='journal.bulk_action'),
-    url(r'^(?P<journal_id>\d+)/edit/status/$', views.edit_journal_status, name='journal_status.edit'),
-    url(r'^del_pended/(?P<form_hash>\w+)/$', views.del_pended, name='journal.del_pended'),
+    url(r'^(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Journal}, name='journal.toggle_availability' ),
+    url(r'^bulk_action/(?P<action_name>\w+)/(?P<value>\w+)/$', views.generic_bulk_action, {'model': models.Journal}, name='journal.bulk_action' ),
+    url(r'^(?P<journal_id>\d+)/edit/status/$', views.edit_journal_status, name='journal_status.edit' ),
+    url(r'^del_pended/(?P<form_hash>\w+)/$', views.del_pended, name='journal.del_pended' ),
 
     # Publisher Tools
     url(r'^publisher/$', views.generic_index_search, {'model': models.Publisher}, name='publisher.index' ),
@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/section/$', views.generic_index_search, {'model': models.Section}, name='section.index' ),
     url(r'^(?P<journal_id>\d+)/section/new/$', views.add_section, name='section.add' ),
     url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/edit/$', views.add_section, name='section.edit' ),
+    url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/del/$', views.del_section, name='section.del' ),
 
     # Issue Tools
     url(r'^(?P<journal_id>\d+)/issue/$', views.issue_index, name='issue.index' ),
@@ -39,9 +40,9 @@ urlpatterns = patterns('',
     url(r'^issue/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability, {'model': models.Issue}, name='issue.toggle_availability' ),
 
     # Users Tools
-    url(r'^user/$', views.user_index, name="user.index"),
-    url(r'^user/new/$', views.add_user, name="user.add"),
-    url(r'^user/(?P<user_id>\d+)/edit/$', views.add_user, name="user.edit"),
+    url(r'^user/$', views.user_index, name="user.index" ),
+    url(r'^user/new/$', views.add_user, name="user.add" ),
+    url(r'^user/(?P<user_id>\d+)/edit/$', views.add_user, name="user.edit" ),
     url(r'^user/(?P<user_id>\d+)/toggle_availability/$', views.toggle_user_availability, name='user.toggle_availability' ),
     url(r'^user/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$', views.toggle_active_collection, name='usercollection.toggle_active' ),
 
