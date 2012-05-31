@@ -95,6 +95,7 @@ class LoggedInViewsTest(TestCase):
         sample_use_license.save()
 
         sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
         sample_journal.save()
         sample_journal.publisher = [sample_publisher,]
         sample_journal.sponsor = [sample_sponsor,]
@@ -120,6 +121,28 @@ class LoggedInViewsTest(TestCase):
 
     def _destroy_issue(self):
         self._destroy_journal
+
+    @with_sample_journal
+    def test_edit_journal_status(self):
+        """
+        View: test_edit_journal_status
+
+        Test the feature created to change the journal Status.
+        """
+        from models import Journal
+        from models import Section
+        journal = Journal.objects.all()[0]
+
+        # Testing access the status page.
+        response = self.client.get(reverse('journal_status.edit', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse('journal_status.edit', args=[journal.pk]), {
+            'pub_status': 'deceased',
+            'pub_status_reason': 'Motivo 1',
+            })
+        self.assertRedirects(response, reverse('journal_status.edit', args=[journal.pk]))
+
 
     def test_index(self):
         """
