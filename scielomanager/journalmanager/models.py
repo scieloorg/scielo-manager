@@ -115,6 +115,7 @@ class Institution(caching.base.CachingMixin, models.Model):
     #Custom manager
     objects = AppCustomManager()
     nocacheobjects = models.Manager()
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=256, db_index=True, help_text=helptexts.INSTITUTION__NAME)
@@ -142,11 +143,13 @@ class Institution(caching.base.CachingMixin, models.Model):
 class Publisher(Institution):
     objects = AppCustomManager()
     nocacheobjects = models.Manager()
+
     collections = models.ManyToManyField(Collection)
 
 class Sponsor(Institution):
     objects = AppCustomManager()
     nocacheobjects = models.Manager()
+
     collections = models.ManyToManyField(Collection)
 
 class Journal(caching.base.CachingMixin, models.Model):
@@ -355,6 +358,23 @@ class IssueTitle(caching.base.CachingMixin, models.Model):
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
+
+class PendedForm(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+
+    view_name = models.CharField(max_length=128)
+    form_hash = models.CharField(max_length=32)
+    user = models.ForeignKey(User, related_name='pending_forms')
+    created_at = models.DateTimeField(auto_now=True)
+
+class PendedValue(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+
+    form = models.ForeignKey(PendedForm, related_name='data')
+    name = models.CharField(max_length=255)
+    value = models.TextField()
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

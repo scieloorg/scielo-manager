@@ -62,11 +62,14 @@ class JournalForm(UserCollectionContext):
         print_issn = cleaned_data.get("print_issn")
         eletronic_issn = cleaned_data.get("eletronic_issn")
 
-        if not (print_issn and eletronic_issn):
+        if not (print_issn or eletronic_issn):
             msg = u'Eletronic ISSN or Print ISSN must be filled.'
             self._errors['scielo_issn'] = self.error_class([msg])
 
         return cleaned_data
+
+    def clean_acronym(self):
+        return self.cleaned_data["acronym"].lower()
 
     class Meta:
 
