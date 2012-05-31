@@ -31,7 +31,7 @@ class AppCustomManager(caching.base.CachingManager):
         data_queryset = self.get_query_set()
         if availability is not None:
             if not isinstance(availability, bool):
-                data_queryset = data_queryset.filter(is_available=availability)
+                data_queryset = data_queryset.filter(is_trashed = not availability)
 
         return data_queryset
 
@@ -132,7 +132,7 @@ class Institution(caching.base.CachingMixin, models.Model):
     cel = models.CharField(_('Cel Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__CEL)
     mail = models.EmailField(_('Email'), help_text=helptexts.INSTITUTION__MAIL)
     validated = models.BooleanField(_('Validated'), default=False, help_text=helptexts.INSTITUTION__VALIDATED)
-    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True, help_text=helptexts.INSTITUTION__IS_AVAILABLE)
+    is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
         return u'%s' % (self.name)
@@ -206,6 +206,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
+    is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
         return self.title
@@ -300,7 +301,7 @@ class Section(caching.base.CachingMixin, models.Model):
     code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    is_available = models.BooleanField(_('Is Available?'), default=True, blank=True)
+    is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
         try:
@@ -322,7 +323,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     publication_date = models.DateField(help_text=helptexts.ISSUE__PUBLICATION_DATE)
-    is_available = models.BooleanField(_('Is Available?'), default=True, null=False, blank=True) #status v42
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
     publisher_fullname = models.CharField(_('Publisher Full Name'), max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
@@ -332,6 +332,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=choices.STANDARD, help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
     cover = models.ImageField(_('Issue Cover'), upload_to='img/issue_cover/', null=True, blank=True)
+    is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def identification(self):
 

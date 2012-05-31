@@ -23,8 +23,17 @@
 
 {% block body %}
 <div class="row-fluid show-grid">
-  <div class="span6" style="padding:0 0 10px 0">
+  <div class="span1" style="padding:0 0 10px 0">
     <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
+  </div>
+  <div class="span5" style="padding:0 0 10px 0">
+    <a href="{% url journal.add %}"
+       class="btn tip-bottom"
+       rel="tooltip"
+       data-original-title="{% trans 'Trashed journals' %}">
+      <i class="icon-trash"></i>
+      {% trans 'Trash' %}
+    </a>
   </div>
   <div class="span6" style="text-align:right">
       {% simple_pagination objects_journal %}
