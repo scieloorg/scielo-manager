@@ -595,7 +595,9 @@
   <div class="row-fluid">
       <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}"/>
       <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
+      {% if is_new %}
       <input class="btn btn-large btn-primary" name="pend" style="line-height: 1; position: fixed; bottom: 10px; right: 19px;" type="submit" value="{% trans "Save to Continue Later" %}"/>
+      {% endif %}
   </div>
 </form>
 {% endblock %}
