@@ -362,6 +362,9 @@ def add_journal(request, journal_id = None):
                 missionformset.save()
                 messages.info(request, MSG_FORM_SAVED)
 
+                if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
+                    models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+
                 return HttpResponseRedirect(reverse('journal.index'))
             else:
                 messages.error(request, MSG_FORM_MISSING)
@@ -395,6 +398,7 @@ def add_journal(request, journal_id = None):
                               'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
                               'form_hash': form_hash if form_hash else request.GET.get('resume', None),
+                              'is_new': False if journal_id else True,
                               }, context_instance = RequestContext(request))
 @login_required
 def del_pended(request, form_hash):
