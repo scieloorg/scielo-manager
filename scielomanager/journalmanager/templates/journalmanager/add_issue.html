@@ -100,17 +100,6 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
-      <label for="{{ add_form.is_available.auto_id }}">
-        <span {% if add_form.is_available.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.is_available.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.is_available }}
-      </div>
-    </div>
-
     <div class="control-group {% if add_form.is_marked_up.errors %}error{% endif %}">
       <label for="{{ add_form.is_marked_up.auto_id }}">
         <span {% if add_form.is_marked_up.field.required %}class="req-field"{% endif %}>
@@ -198,7 +187,7 @@
         <span class="help-inline">{{ add_form.section.errors }}</span>
         {% endif %}
       </div>
-    </div>  
+    </div>
   </div>
   <span class="label">{% trans "Issue Cover" %}</span>
   <div class="well">

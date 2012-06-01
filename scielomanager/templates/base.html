@@ -87,11 +87,20 @@
                 <li>
                   {% if not collection.is_default %}
                     <a href="{% url usercollection.toggle_active user.pk collection.collection.pk %}"><i class="icon-ok-circle"></i> {% trans 'Activate' %}</a>
-                  {% endif %}  
+                  {% endif %}
                 </li>
               </ul>
             </li>
       {% endfor %}
+      <li>
+        <a href="{% url trash.listing %}"
+         class="btn tip-bottom"
+         rel="tooltip"
+         data-original-title="{% trans 'Trashed items' %}">
+        <i class="icon-trash"></i>
+        {% trans 'Trash' %}
+        </a>
+      </li>
     </ul>
   </div>
   <div class="row-fluid" style="min-height: 380px;">

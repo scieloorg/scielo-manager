@@ -74,12 +74,6 @@
         {{ add_form.code }}
       </div>
     </div>
-    <div class="clearfix {% if add_form.is_available.errors %}error{% endif %}">
-      {{ add_form.is_available.label_tag }}
-      <div class="input">
-        {{ add_form.is_available }}
-      </div>
-    </div>
   </div>
   <div class="row-fluid">
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans 'save' %}"/>

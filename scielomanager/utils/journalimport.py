@@ -221,6 +221,7 @@ class JournalImport:
                 journalhist.created_at = cyclekey
                 journalhist.status = cyclevalue
                 journalhist.journal = journal
+                journalhist.changed_by_id = 1
                 journalhist.save()
                 journalhist.created_at = cyclekey
                 journalhist.save() #Updating to real date, once when saving the model is given a automatica value
@@ -329,7 +330,7 @@ class JournalImport:
 
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
-
+        journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
 

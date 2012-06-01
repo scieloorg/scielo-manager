@@ -24,14 +24,19 @@ class AppCustomManager(caching.base.CachingManager):
     Domain specific model managers.
     """
 
-    def available(self, availability=None):
+    def available(self, is_available=True):
         """
         Filter the queryset based on its availability.
         """
         data_queryset = self.get_query_set()
-        if availability is not None:
-            if not isinstance(availability, bool):
-                data_queryset = data_queryset.filter(is_trashed = not availability)
+
+        if not isinstance(is_available, bool):
+            if is_available == 0:
+                is_available = False
+            else:
+                is_available = True
+
+        data_queryset = data_queryset.filter(is_trashed = not is_available)
 
         return data_queryset
 
@@ -155,7 +160,7 @@ class Sponsor(Institution):
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = caching.base.CachingManager()
+    objects = AppCustomManager()
     nocacheobjects = models.Manager()
 
     #Relation fields
@@ -399,4 +404,4 @@ def journal_pub_status_post_save(sender, instance, created, **kwargs):
         return None
 
     JournalPublicationEvents.objects.create(journal=instance,
-        status=instance.pub_status, changed_by_id=instance.pub_status_changed_by.id, reason=instance.pub_status_reason)
+        status=instance.pub_status, changed_by=instance.pub_status_changed_by, reason=instance.pub_status_reason)
