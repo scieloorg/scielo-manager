@@ -735,6 +735,21 @@ class LoggedInViewsTest(TestCase):
         for qset_item in response.context['section_title_formset'].forms[0].fields['language'].queryset:
             self.assertTrue(qset_item in journal.languages.all())
 
+    @with_sample_journal
+    def test_journal_trash(self):
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('trash.listing'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['trashed_docs'].object_list), 0)
+
+        journal = Journal.objects.all()[0]
+        journal.is_trashed = True
+        journal.save()
+
+        response = self.client.get(reverse('trash.listing'))
+        self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
+
+
 class LoggedOutViewsTest(TestCase):
 
     def test_index(self):
