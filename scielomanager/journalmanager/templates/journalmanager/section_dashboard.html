@@ -13,14 +13,7 @@
 {% endblock %}
 
 {% block shortaccess %}
-<div class="well sidebar-nav">
-  <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</li>
-    <li><a href="{% url journal.add %}">{% trans 'Add Journal' %}</a></li>
-    <li><a href="#">{% trans 'Add Issue' %}</a></li>
-    <li><a href="#">{% trans 'Add Section' %}</a></li>
-  </ul>
-</div><!--well sidebar-nav-->
+
 {% endblock %}
 
 {% block body %}
@@ -37,6 +30,7 @@
     <thead>
         <tr>
             <th>{% trans "Section Title" %}</th>
+            <th>{% trans "Actions" %}</th>
         </tr>
     </thead>
     <tbody>
@@ -45,6 +39,11 @@
             <td>
                 <h4>
                     <a href="{% url section.edit item.journal.pk item.pk %}">{{ item }}</a>
+                </h4>   
+            </td>
+            <td>
+                <h4>
+                    <a href="{% url section.del item.journal.pk item.pk %}" class="btn btn-mini btn-danger" style="font-size: 9px; line-height: 11px; padding: 2px 3px;">{% trans 'Delete' %}</a>
                 </h4>
             </td>
         </tr>

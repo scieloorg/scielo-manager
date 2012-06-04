@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'journalmanager',
     'south',
     'scielo_extensions',
+    'widget_tweaks',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -159,7 +160,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MESSAGE_TAGS = {
     messages.INFO: 'alert-heading',
     messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-error',
+    messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-error',
 }
 
