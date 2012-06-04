@@ -106,7 +106,7 @@ def get_sample_institution_dataform(dict_params=None):
       'institution-Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'institution-mail': 'teste@scielo.org',
       'institution-Address_complement': '',
-      'institution-is_available': True,
+      'institution-is_trashed': False,
 
       #Collection formset data
       'institutioncollections-TOTAL_FORMS': 1,
@@ -156,7 +156,7 @@ def get_sample_sponsor_dataform(dict_params=None):
       'sponsor-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'sponsor-mail': 'fapesp@scielo.org',
       'sponsor-address_complement': '',
-      'sponsor-is_available': True,
+      'sponsor-is_trashed': False,
     }
 
     sponsor_attrs.update(dict_params)
@@ -182,7 +182,7 @@ def get_sample_publisher_dataform(dict_params=None):
       'publisher-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'publisher-mail': 'teste@scielo.org',
       'publisher-address_complement': '',
-      'publisher-is_available': True,
+      'publisher-is_trashed': False,
     }
 
     publisher_attrs.update(dict_params)
@@ -203,7 +203,7 @@ def get_sample_issue_dataform(dict_params=None):
         'number': '3',
         'volume': '29',
         'editorial_standard': '',
-        'is_available': True,
+        'is_trashed': False,
         'is_press_release': False,
         'publication_date': '1998-09-01',
         'is_marked_up': False,
@@ -369,7 +369,7 @@ def get_sample_sponsor(validated = True):
       'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
       'address_complement': '',
-      'is_available': True,
+      'is_trashed': False,
 
     }
 
@@ -397,7 +397,7 @@ def get_sample_publisher(validated = True):
       'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
       'address_complement': '',
-      'is_available': True,
+      'is_trashed': False,
 
     }
 
@@ -442,7 +442,7 @@ def get_sample_issue():
         'number': '3',
         'volume': '29',
         'editorial_standard': '',
-        'is_available': True,
+        'is_trashed': False,
         'is_press_release': False,
         'publication_date': '1998-09-01',
         'is_marked_up': False,

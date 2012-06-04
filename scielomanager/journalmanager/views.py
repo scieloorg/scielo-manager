@@ -103,23 +103,23 @@ def generic_index_search(request, model, journal_id = None):
 
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(journal=journal_id)
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(
+            journal=journal_id)
     else:
         journal = None
-        if model is models.Journal:
-            objects_all = model.objects.filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
-        else:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        objects_all = model.objects.available(request.GET.get('is_available')).filter(
+            collections__in=[ uc.collection for uc in user_collections ]).distinct()
 
     if request.GET.get('q'):
-        if model is models.Sponsor:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
+        objects_all = model.objects.available(request.GET.get('is_available'))
 
-        if model is models.Publisher:
-            objects_all = model.objects.available(request.GET.get('is_available')).filter(name__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
+        if model is models.Sponsor or model is models.Publisher:
+            objects_all = objects_all.filter(name__icontains = request.REQUEST['q'],
+                collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
 
         if model is models.Journal:
-            objects_all = model.objects.filter(title__icontains = request.REQUEST['q'], collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
+            objects_all = objects_all.filter(title__icontains = request.REQUEST['q'],
+                collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
     if objects_all.count() == 0:
         messages.error(request, _('This list is empty.'))
@@ -141,11 +141,11 @@ def generic_toggle_availability(request, object_id, model):
   if request.is_ajax():
 
     model = get_object_or_404(model, pk = object_id)
-    model.is_available = not model.is_available
+    model.is_trashed = not model.is_trashed
     model.save()
 
     response_data = json.dumps({
-      "result": str(model.is_available),
+      "result": str(model.is_trashed),
       "object_id": model.id
       })
 
@@ -174,16 +174,24 @@ def toggle_active_collection(request, user_id, collection_id):
 
 @login_required
 def generic_bulk_action(request, model, action_name, value = None):
+    info_msg = None
 
     if request.method == 'POST':
         items = request.POST.getlist('action')
         for item in items:
             model = get_object_or_404(model, pk = item)
             if action_name == 'is_available':
-                model.is_available = int(value)
+                model.is_trashed = True if int(value) == 0 else False
                 model.save()
 
-    return HttpResponseRedirect(reverse('journal.index') + '?' + urllib.urlencode(request.GET))
+        if action_name == 'is_available' and int(value) == 0:
+            info_msg = _('The selected documents had been moved to the Trash.')
+        elif action_name == 'is_available' and int(value) == 1:
+            info_msg = _('The selected documents had been restored.')
+
+    if info_msg:
+        messages.info(request, info_msg)
+    return HttpResponseRedirect(get_referer_view(request))
 
 @login_required
 def user_index(request):
@@ -709,4 +717,23 @@ def password_change(request):
     return render_to_response(
         'journalmanager/password_change.html',
         {'form': form},
+        context_instance = RequestContext(request))
+
+@login_required
+def trash_listing(request):
+    user_collections = get_user_collections(request.user.id)
+
+    if request.GET.get('show', None) in ['journal',]:
+        doc_entity = request.GET['show']
+    else:
+        doc_entity = models.Journal
+
+    trashed_docs = doc_entity.objects.available(False).filter(
+        collections__in=[ uc.collection for uc in user_collections ]).distinct()
+
+    trashed_docs_paginated = get_paginated(trashed_docs, request.GET.get('page', 1))
+
+    return render_to_response(
+        'journalmanager/trash_listing.html',
+        {'trashed_docs': trashed_docs_paginated, 'user_collections': user_collections},
         context_instance = RequestContext(request))

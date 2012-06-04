@@ -49,6 +49,9 @@ urlpatterns = patterns('',
     url(r'^myaccount/password/$', views.password_change, name='journalmanager.password_change'),
 
     (r'^i18n/', include('django.conf.urls.i18n')),
+
+    # Trash
+    url(r'^trash/$', views.trash_listing, name="trash.listing"),
 )
 
 

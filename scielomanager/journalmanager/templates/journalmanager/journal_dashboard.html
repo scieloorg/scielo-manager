@@ -33,9 +33,9 @@
 
 <div class="row-fluid">
 <ul class="nav nav-tabs">
-  <li class="{% if not request.GET.is_available %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}">{% trans "All" %}</a></li>
-  <li class="{% if request.GET.is_available == '1' %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}is_available=1"> {% trans "Enabled Journals" %}</a></li>
-  <li class="{% if request.GET.is_available == '0' %} active {% endif %}"><a href="{% query_string request "q" "include_ampersand" %}is_available=0">{% trans "Disabled Journals" %}</a></li>
+  <li class="{% if not request.GET.is_available %} active {% endif %}">
+    <a href="{% query_string request "q" "include_ampersand" %}">{% trans "All" %}</a>
+  </li>
   <li class="dropdown" id="menu1">
     <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
     {% trans "Actions" %}
@@ -43,17 +43,12 @@
     </a>
     <ul class="dropdown-menu">
       {% if not request.GET.is_available %}
-        <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}" href="javascript:void(0)">{% trans "Disable" %}</a></li>
-        <li><a id="bulk_action_disable" rel="{% url journal.bulk_action 'is_available' '1' %}" href="javascript:void(0)">{% trans "Enable" %}</a></li>
-      {% endif %}
-      {% if request.GET.is_available == '1' %}
-        <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}?is_available=1" href="javascript:void(0)">{% trans "Disable" %}</a></li>
-      {% endif %}
-      {% if request.GET.is_available == '0' %}
-        <li><a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '1' %}?is_available=0" href="javascript:void(0)">{% trans "Enable" %}</a></li>
+        <li>
+          <a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}" href="javascript:void(0)">{% trans "Move to trash" %}</a>
+        </li>
       {% endif %}
     </ul>
- </li>
+  </li>
 </ul>
 </div>
 {% if objects_journal.object_list.count > 0 %}
@@ -78,14 +73,9 @@
         </td>
         <td>
           <h4>
-              <a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
+            <a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
           </h4>
           <ul class="_actions">
-            <li>
-              <a href="{% url journal.edit journal.pk %}">
-                {% trans 'Edit' %}
-              </a>
-            </li>
             <li>
               <a href="{% url issue.index journal.pk %}">
                 {% trans 'Issues' %}
