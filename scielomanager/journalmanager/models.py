@@ -31,9 +31,12 @@ class AppCustomManager(caching.base.CachingManager):
         data_queryset = self.get_query_set()
 
         if not isinstance(is_available, bool):
-            if is_available == 0:
-                is_available = False
-            else:
+            try:
+                if int(is_available) == 0:
+                    is_available = False
+                else:
+                    is_available = True
+            except (ValueError, TypeError):
                 is_available = True
 
         data_queryset = data_queryset.filter(is_trashed = not is_available)

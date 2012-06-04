@@ -134,11 +134,11 @@ def generic_toggle_availability(request, object_id, model):
   if request.is_ajax():
 
     model = get_object_or_404(model, pk = object_id)
-    model.is_available = not model.is_available
+    model.is_trashed = not model.is_trashed
     model.save()
 
     response_data = json.dumps({
-      "result": str(model.is_available),
+      "result": str(model.is_trashed),
       "object_id": model.id
       })
 
