@@ -33,8 +33,20 @@
 
 <div class="row-fluid">
 <ul class="nav nav-tabs">
-  <li class="{% if not request.GET.is_available %} active {% endif %}">
+  <li class="{% if not request.GET.jstatus %} active {% endif %}">
     <a href="{% query_string request "q" "include_ampersand" %}">{% trans "All" %}</a>
+  </li>
+  <li class="{% if request.GET.jstatus == 'current' %} active {% endif %}">
+    <a href="{% query_string request "q" "include_ampersand" %}jstatus=current">{% trans "Current" %}</a>
+  </li>
+  <li class="{% if request.GET.jstatus == 'suspended' %} active {% endif %}">
+    <a href="{% query_string request "q" "include_ampersand" %}jstatus=suspended">{% trans "Suspended" %}</a>
+  </li>
+  <li class="{% if request.GET.jstatus == 'deceased' %} active {% endif %}">
+    <a href="{% query_string request "q" "include_ampersand" %}jstatus=deceased">{% trans "Deceased" %}</a>
+  </li>
+  <li class="{% if request.GET.jstatus == 'inprogress' %} active {% endif %}">
+    <a href="{% query_string request "q" "include_ampersand" %}jstatus=inprogress">{% trans "In progress" %}</a>
   </li>
   <li class="dropdown" id="menu1">
     <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
@@ -62,7 +74,6 @@
         <th>{% trans "Print ISSN" %}</th>
         <th>{% trans "Electronic ISSN" %}</th>
         <th>{% trans "Status" %}</th>
-        <th>{% trans "Validated" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -96,13 +107,6 @@
         <td>{{ journal.print_issn }}</td>
         <td>{{ journal.eletronic_issn }}</td>
         <td>{{ journal.pub_status }}</td>
-        <td>
-          {%if journal.validated %}
-            <img src="{% get_static_prefix %}images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
-          {%else%}
-            <img src="{% get_static_prefix %}images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
-          {%endif%}
-        </td>
       </tr>
       {% endfor %}
     <tbody>

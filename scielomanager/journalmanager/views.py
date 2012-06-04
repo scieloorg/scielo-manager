@@ -101,23 +101,23 @@ def generic_index_search(request, model, journal_id = None):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
+    jstatus = request.GET.get('jstatus','current')
+
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(
-            journal=journal_id)
+        objects_all = model.objects.filter(pub_status=jstatus, journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(
+        objects_all = model.objects.filter(pub_status=jstatus,
             collections__in=[ uc.collection for uc in user_collections ]).distinct()
 
     if request.GET.get('q'):
-        objects_all = model.objects.available(request.GET.get('is_available'))
-
         if model is models.Sponsor or model is models.Publisher:
-            objects_all = objects_all.filter(name__icontains = request.REQUEST['q'],
+            objects_all = model.filter(name__icontains = request.REQUEST['q'],
                 collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
 
         if model is models.Journal:
+            objects_all = model.objects.filter(pub_status=jstatus)
             objects_all = objects_all.filter(title__icontains = request.REQUEST['q'],
                 collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
