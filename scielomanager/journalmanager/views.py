@@ -536,8 +536,10 @@ def add_issue(request, journal_id, issue_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if issue_id is None:
+        data_dict={'use_license': journal.use_license.id, 'editorial_standard': journal.editorial_standard, 'ctrl_vocabulary': journal.ctrl_vocabulary }
         issue = models.Issue()
     else:
+        data_dict = None
         issue = models.Issue.objects.get(pk=issue_id)
 
     IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
@@ -555,7 +557,7 @@ def add_issue(request, journal_id, issue_id=None):
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
-        add_form = IssueForm(journal_id=journal.pk, instance=issue)
+        add_form = IssueForm(journal_id=journal.pk, instance=issue, initial=data_dict)
         titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
     # Recovering Journal Cover url.
