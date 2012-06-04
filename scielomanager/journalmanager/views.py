@@ -31,6 +31,7 @@ from django.utils.html import escape
 
 from django.core.cache import cache
 
+from scielomanager.journalmanager.models import get_user_collections
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
@@ -43,11 +44,7 @@ MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this 
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
-def get_user_collections(user_id):
 
-    user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by('collection__name')
-
-    return user_collections
 
 def section_has_relation(section_id):
     if len(models.Issue.objects.filter(section=section_id)) == 0 :
@@ -175,19 +172,27 @@ def toggle_active_collection(request, user_id, collection_id):
 @login_required
 def generic_bulk_action(request, model, action_name, value = None):
     info_msg = None
+    MSG_MOVED = _('The selected documents had been moved to the Trash.')
+    MSG_RESTORED = _('The selected documents had been restored.')
 
     if request.method == 'POST':
         items = request.POST.getlist('action')
-        for item in items:
-            model = get_object_or_404(model, pk = item)
-            if action_name == 'is_available':
-                model.is_trashed = True if int(value) == 0 else False
-                model.save()
+        for doc_id in items:
+            doc = get_object_or_404(model, pk=doc_id)
 
-        if action_name == 'is_available' and int(value) == 0:
-            info_msg = _('The selected documents had been moved to the Trash.')
-        elif action_name == 'is_available' and int(value) == 1:
-            info_msg = _('The selected documents had been restored.')
+            #toggle doc availability
+            if action_name == 'is_available':
+                if isinstance(doc, models.Journal):
+                    doc.is_trashed = True if int(value) == 0 else False
+                    doc.save()
+                    info_msg = MSG_MOVED if doc.is_trashed else MSG_RESTORED
+                elif isinstance(doc, models.Section):
+                    if not section_has_relation(doc_id):
+                        doc.is_trashed = True if int(value) == 0 else False
+                        doc.save()
+                        info_msg = MSG_MOVED if doc.is_trashed else MSG_RESTORED
+
+
 
     if info_msg:
         messages.info(request, info_msg)
@@ -656,12 +661,14 @@ def del_section(request, journal_id, section_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if not section_has_relation(section_id):
-        models.Section.objects.get(pk=section_id).delete()
+        sec = models.Section.objects.get(pk=section_id)
+        sec.is_trashed = True
+        sec.save()
         messages.success(request, MSG_FORM_SAVED)
         return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
     else:
         messages.info(request, _('Cant\'t delete, some issues are using this Section'))
-        return HttpResponseRedirect(reverse('section.index', args=[journal_id]))    
+        return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
 
 @login_required
 def toggle_user_availability(request, user_id):
@@ -723,13 +730,21 @@ def password_change(request):
 def trash_listing(request):
     user_collections = get_user_collections(request.user.id)
 
-    if request.GET.get('show', None) in ['journal',]:
-        doc_entity = request.GET['show']
+    listing_ref = {
+        'journal': models.Journal,
+        'section': models.Section,
+    }
+
+    if request.GET.get('show', None) in listing_ref:
+        doc_entity = listing_ref[request.GET['show']]
     else:
         doc_entity = models.Journal
 
-    trashed_docs = doc_entity.objects.available(False).filter(
-        collections__in=[ uc.collection for uc in user_collections ]).distinct()
+    try:
+        trashed_docs = doc_entity.objects.all_by_user(request.user, is_available=False)
+    except AttributeError:
+        trashed_docs = models.Journal.objects.all_by_user(request.user, is_available=False)
+        #log the event
 
     trashed_docs_paginated = get_paginated(trashed_docs, request.GET.get('page', 1))
 

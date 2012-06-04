@@ -18,6 +18,14 @@ import caching.base
 import choices
 import helptexts
 
+def get_user_collections(user_id):
+    """
+    Return all the collections of a given user
+    """
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by(
+        'collection__name')
+
+    return user_collections
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -42,6 +50,25 @@ class AppCustomManager(caching.base.CachingManager):
         data_queryset = data_queryset.filter(is_trashed = not is_available)
 
         return data_queryset
+
+
+class JournalCustomManager(AppCustomManager):
+
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        return objects_all
+
+class SectionCustomManager(AppCustomManager):
+
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        return objects_all
+
+
 
 class Language(caching.base.CachingMixin, models.Model):
     """
@@ -163,7 +190,7 @@ class Sponsor(Institution):
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = AppCustomManager()
+    objects = JournalCustomManager()
     nocacheobjects = models.Manager()
 
     #Relation fields
@@ -301,7 +328,7 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
 
 class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
-    objects = AppCustomManager()
+    objects = SectionCustomManager()
     nocacheobjects = models.Manager()
 
     journal = models.ForeignKey(Journal)
