@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
+{% load widget_tweaks %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
@@ -50,12 +51,20 @@
           <div class="control-group {% if form.errors %}error{% endif %}">
             {% for field in form.hidden_fields %}{{ field }}{% endfor %}
             {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-            {{ form.title }}
+            {% if has_relation %}
+              {{ form.title|attr:"disabled:disabled"}}
+            {% else %}
+              {{ form.title}}
+            {% endif %}
           </div>
         </td>
         <td>
           <div class="control-group {% if form.errors %}error{% endif %}">
-            {{ form.language }}
+            {% if has_relation %}
+              {{ form.language|attr:"disabled:disabled"}}
+            {% else %}
+              {{ form.language }}
+            {% endif %}
           </div>
         </td>
       </tr>
