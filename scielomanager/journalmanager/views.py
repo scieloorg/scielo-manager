@@ -167,6 +167,7 @@ def toggle_active_collection(request, user_id, collection_id):
 
 @login_required
 def generic_bulk_action(request, model, action_name, value = None):
+    info_msg = None
 
     if request.method == 'POST':
         items = request.POST.getlist('action')
@@ -176,6 +177,13 @@ def generic_bulk_action(request, model, action_name, value = None):
                 model.is_trashed = True if int(value) == 0 else False
                 model.save()
 
+        if action_name == 'is_available' and int(value) == 0:
+            info_msg = _('The selected documents had been moved to the Trash.')
+        elif action_name == 'is_available' and int(value) == 1:
+            info_msg = _('The selected documents had been restored.')
+
+    if info_msg:
+        messages.info(request, info_msg)
     return HttpResponseRedirect(get_referer_view(request))
 
 @login_required
