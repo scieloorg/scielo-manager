@@ -74,7 +74,7 @@ class Migration(SchemaMigration):
             ('cel', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
             ('mail', self.gf('django.db.models.fields.EmailField')(max_length=75)),
             ('validated', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_available', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
         ))
         db.send_create_signal('journalmanager', ['Institution'])
 
@@ -129,7 +129,9 @@ class Migration(SchemaMigration):
             ('final_vol', self.gf('django.db.models.fields.CharField')(max_length=4, blank=True)),
             ('final_num', self.gf('django.db.models.fields.CharField')(max_length=4, blank=True)),
             ('frequency', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('pub_status', self.gf('django.db.models.fields.CharField')(max_length=16)),
+            ('pub_status', self.gf('django.db.models.fields.CharField')(default='inprogress', max_length=16, null=True, blank=True)),
+            ('pub_status_reason', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
+            ('pub_status_changed_by', self.gf('django.db.models.fields.related.ForeignKey')(related_name='pub_status_changed_by', to=orm['auth.User'])),
             ('editorial_standard', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('ctrl_vocabulary', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('pub_level', self.gf('django.db.models.fields.CharField')(max_length=64)),
@@ -141,6 +143,7 @@ class Migration(SchemaMigration):
             ('index_coverage', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('validated', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('cover', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
+            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
         ))
         db.send_create_signal('journalmanager', ['Journal'])
 
@@ -181,7 +184,9 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
             ('status', self.gf('django.db.models.fields.CharField')(max_length=16)),
+            ('reason', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('changed_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
         ))
         db.send_create_signal('journalmanager', ['JournalPublicationEvents'])
 
@@ -246,7 +251,7 @@ class Migration(SchemaMigration):
             ('code', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
             ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('is_available', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
         ))
         db.send_create_signal('journalmanager', ['Section'])
 
@@ -260,7 +265,6 @@ class Migration(SchemaMigration):
             ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('publication_date', self.gf('django.db.models.fields.DateField')()),
-            ('is_available', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('is_marked_up', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('use_license', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.UseLicense'], null=True)),
             ('publisher_fullname', self.gf('django.db.models.fields.CharField')(max_length=128)),
@@ -268,6 +272,7 @@ class Migration(SchemaMigration):
             ('ctrl_vocabulary', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
             ('editorial_standard', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('cover', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
+            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
         ))
         db.send_create_signal('journalmanager', ['Issue'])
 
@@ -294,6 +299,25 @@ class Migration(SchemaMigration):
             ('suppl_label', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True)),
         ))
         db.send_create_signal('journalmanager', ['Supplement'])
+
+        # Adding model 'PendedForm'
+        db.create_table('journalmanager_pendedform', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('view_name', self.gf('django.db.models.fields.CharField')(max_length=128)),
+            ('form_hash', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='pending_forms', to=orm['auth.User'])),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+        ))
+        db.send_create_signal('journalmanager', ['PendedForm'])
+
+        # Adding model 'PendedValue'
+        db.create_table('journalmanager_pendedvalue', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='data', to=orm['journalmanager.PendedForm'])),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('value', self.gf('django.db.models.fields.TextField')()),
+        ))
+        db.send_create_signal('journalmanager', ['PendedValue'])
 
 
     def backwards(self, orm):
@@ -376,6 +400,12 @@ class Migration(SchemaMigration):
         # Deleting model 'Supplement'
         db.delete_table('journalmanager_supplement')
 
+        # Deleting model 'PendedForm'
+        db.delete_table('journalmanager_pendedform')
+
+        # Deleting model 'PendedValue'
+        db.delete_table('journalmanager_pendedvalue')
+
 
     models = {
         'auth.group': {
@@ -446,7 +476,7 @@ class Migration(SchemaMigration):
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'mail': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
@@ -462,9 +492,9 @@ class Migration(SchemaMigration):
             'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_marked_up': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_press_release': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'number': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
             'publication_date': ('django.db.models.fields.DateField', [], {}),
@@ -502,12 +532,15 @@ class Migration(SchemaMigration):
             'init_num': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
             'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'languages': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Language']", 'symmetrical': 'False'}),
             'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'previous_title': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
             'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '9'}),
             'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'pub_status': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'pub_status': ('django.db.models.fields.CharField', [], {'default': "'inprogress'", 'max_length': '16', 'null': 'True', 'blank': 'True'}),
+            'pub_status_changed_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pub_status_changed_by'", 'to': "orm['auth.User']"}),
+            'pub_status_reason': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
             'publisher': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'journal_institution'", 'symmetrical': 'False', 'to': "orm['journalmanager.Publisher']"}),
             'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
             'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
@@ -531,9 +564,11 @@ class Migration(SchemaMigration):
         },
         'journalmanager.journalpublicationevents': {
             'Meta': {'object_name': 'JournalPublicationEvents'},
+            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'reason': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
         },
         'journalmanager.journalstudyarea': {
@@ -555,6 +590,21 @@ class Migration(SchemaMigration):
             'iso_code': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '64'})
         },
+        'journalmanager.pendedform': {
+            'Meta': {'object_name': 'PendedForm'},
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'form_hash': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pending_forms'", 'to': "orm['auth.User']"}),
+            'view_name': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
+        'journalmanager.pendedvalue': {
+            'Meta': {'object_name': 'PendedValue'},
+            'form': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'data'", 'to': "orm['journalmanager.PendedForm']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'value': ('django.db.models.fields.TextField', [], {})
+        },
         'journalmanager.publisher': {
             'Meta': {'ordering': "['name']", 'object_name': 'Publisher', '_ormbases': ['journalmanager.Institution']},
             'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
@@ -565,7 +615,7 @@ class Migration(SchemaMigration):
             'code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_available': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },

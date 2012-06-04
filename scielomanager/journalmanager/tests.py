@@ -318,9 +318,9 @@ class LoggedInViewsTest(TestCase):
 
     def test_add_collection(self):
         '''
-        Testing edit the collections contents. 
+        Testing edit the collections contents.
 
-        New collections are not being included by the users. Only in Django admin module. 
+        New collections are not being included by the users. Only in Django admin module.
         '''
         testing_collection = Collection.objects.get(name = u'SciELO')
 
@@ -560,7 +560,7 @@ class LoggedInViewsTest(TestCase):
         pos_publisher = Publisher.objects.all()[0]
 
         self.assertEqual(pre_publisher, pos_publisher)
-        self.assertTrue(pre_publisher.is_available is not pos_publisher.is_available)
+        self.assertTrue(pre_publisher.is_trashed is not pos_publisher.is_trashed)
 
         response = self.client.get(reverse('publisher.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
@@ -572,7 +572,7 @@ class LoggedInViewsTest(TestCase):
         pos_sponsor = Sponsor.objects.all()[0]
 
         self.assertEqual(pre_sponsor, pos_sponsor)
-        self.assertTrue(pre_sponsor.is_available is not pos_sponsor.is_available)
+        self.assertTrue(pre_sponsor.is_trashed is not pos_sponsor.is_trashed)
 
         response = self.client.get(reverse('sponsor.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
@@ -584,7 +584,7 @@ class LoggedInViewsTest(TestCase):
         pos_issue = Issue.objects.all()[0]
 
         self.assertEqual(pre_issue, pos_issue)
-        self.assertTrue(pre_issue.is_available is not pos_issue.is_available)
+        self.assertTrue(pre_issue.is_trashed is not pos_issue.is_trashed)
 
         response = self.client.get(reverse('issue.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
@@ -605,28 +605,28 @@ class LoggedInViewsTest(TestCase):
     def test_publisher_availability_list(self):
         publisher = Publisher.objects.all()[0]
         response = self.client.get(reverse('publisher.index'))
-        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_publisher'].object_list[0].is_trashed, False)
 
         #change atribute is_available
-        publisher.is_available = False
+        publisher.is_trashed = True
         publisher.save()
 
         response = self.client.get(reverse('publisher.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, False)
+        self.assertEqual(response.context['objects_publisher'].object_list[0].is_trashed, True)
         self.assertEqual(len(response.context['objects_publisher'].object_list), 1)
 
     @with_sample_journal
     def test_sponsor_availability_list(self):
         sponsor = Sponsor.objects.all()[0]
         response = self.client.get(reverse('sponsor.index'))
-        self.assertEqual(response.context['objects_sponsor'].object_list[0].is_available, True)
+        self.assertEqual(response.context['objects_sponsor'].object_list[0].is_trashed, False)
 
         #change atribute is_available
-        sponsor.is_available = False
+        sponsor.is_trashed = True
         sponsor.save()
 
         response = self.client.get(reverse('sponsor.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_sponsor'].object_list[0].is_available, False)
+        self.assertEqual(response.context['objects_sponsor'].object_list[0].is_trashed, True)
         self.assertEqual(len(response.context['objects_sponsor'].object_list), 1)
 
 
@@ -639,10 +639,10 @@ class LoggedInViewsTest(TestCase):
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
                 for issue in issues:
-                    self.assertEqual(issue.is_available, True)
+                    self.assertEqual(issue.is_trashed, False)
 
         #change atribute is_available
-        first_issue.is_available = False
+        first_issue.is_trashed = True
         first_issue.save()
 
         response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
@@ -650,7 +650,7 @@ class LoggedInViewsTest(TestCase):
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
                 for issue in issues:
-                    self.assertEqual(issue.is_available, False)
+                    self.assertEqual(issue.is_trashed, True)
 
     def test_contextualized_collection_field_on_add_journal(self):
         """
@@ -734,6 +734,21 @@ class LoggedInViewsTest(TestCase):
 
         for qset_item in response.context['section_title_formset'].forms[0].fields['language'].queryset:
             self.assertTrue(qset_item in journal.languages.all())
+
+    @with_sample_journal
+    def test_journal_trash(self):
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('trash.listing'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['trashed_docs'].object_list), 0)
+
+        journal = Journal.objects.all()[0]
+        journal.is_trashed = True
+        journal.save()
+
+        response = self.client.get(reverse('trash.listing'))
+        self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
+
 
 class LoggedOutViewsTest(TestCase):
 

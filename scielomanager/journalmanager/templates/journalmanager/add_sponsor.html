@@ -192,19 +192,6 @@
         {% field_help add_form.validated.label add_form.validated.help_text term-validated %}
       </div>
     </div>
-
-    <div class="control-group {% if add_form.is_available.errors %}error{% endif %}">
-      <label for="{{ add_form.is_available.auto_id }}">
-        <span {% if add_form.is_available.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.is_available.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.is_available }}
-        {% field_help add_form.is_available.label add_form.is_available.help_text term-is-available %}
-      </div>
-    </div>
-
   </div>
 
   <span class="label">{% trans "Sponsor Collections" %}</span>
