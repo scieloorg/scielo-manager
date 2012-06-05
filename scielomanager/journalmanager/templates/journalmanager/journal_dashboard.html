@@ -44,7 +44,9 @@
     <ul class="dropdown-menu">
       {% if not request.GET.is_available %}
         <li>
-          <a id="bulk_action_enable" rel="{% url journal.bulk_action 'is_available' '0' %}" href="javascript:void(0)">{% trans "Move to trash" %}</a>
+          <a id="bulk_action_enable"
+             rel="{% url trash.bulk_action 'journal' 'is_available' '0' %}"
+             href="javascript:void(0)">{% trans "Move to trash" %}</a>
         </li>
       {% endif %}
     </ul>

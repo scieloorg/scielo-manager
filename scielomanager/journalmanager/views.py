@@ -170,10 +170,18 @@ def toggle_active_collection(request, user_id, collection_id):
     return HttpResponseRedirect(referer)
 
 @login_required
-def generic_bulk_action(request, model, action_name, value = None):
+def generic_bulk_action(request, model_name, action_name, value = None):
     info_msg = None
     MSG_MOVED = _('The selected documents had been moved to the Trash.')
     MSG_RESTORED = _('The selected documents had been restored.')
+
+    model_refs = {
+        'journal': models.Journal,
+        'section': models.Section,
+        'publisher': models.Publisher,
+        'sponsor': models.Sponsor,
+    }
+    model = model_refs.get(model_name)
 
     if request.method == 'POST':
         items = request.POST.getlist('action')
@@ -191,8 +199,10 @@ def generic_bulk_action(request, model, action_name, value = None):
                         doc.is_trashed = True if int(value) == 0 else False
                         doc.save()
                         info_msg = MSG_MOVED if doc.is_trashed else MSG_RESTORED
-
-
+                elif isinstance(doc, models.Institution): #Sponsor and Publisher
+                    doc.is_trashed = True if int(value) == 0 else False
+                    doc.save()
+                    info_msg = MSG_MOVED if doc.is_trashed else MSG_RESTORED
 
     if info_msg:
         messages.info(request, info_msg)
@@ -733,6 +743,8 @@ def trash_listing(request):
     listing_ref = {
         'journal': models.Journal,
         'section': models.Section,
+        'sponsor': models.Sponsor,
+        'publisher': models.Publisher,
     }
 
     if request.GET.get('show', None) in listing_ref:

@@ -68,7 +68,16 @@ class SectionCustomManager(AppCustomManager):
             journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
         return objects_all
 
-
+class InstitutionCustomManager(AppCustomManager):
+    """
+    Add capabilities to Institution subclasses to retrieve querysets
+    based on user's collections.
+    """
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        return objects_all
 
 class Language(caching.base.CachingMixin, models.Model):
     """
@@ -176,13 +185,13 @@ class Institution(caching.base.CachingMixin, models.Model):
         ordering = ['name']
 
 class Publisher(Institution):
-    objects = AppCustomManager()
+    objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
 
     collections = models.ManyToManyField(Collection)
 
 class Sponsor(Institution):
-    objects = AppCustomManager()
+    objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
 
     collections = models.ManyToManyField(Collection)
