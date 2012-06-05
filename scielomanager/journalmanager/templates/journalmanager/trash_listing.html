@@ -25,8 +25,25 @@
 
 <div class="row-fluid">
   <ul class="nav nav-tabs">
-    <li class="{% if not request.GET.is_available %} active {% endif %}">
-      <a href="{% query_string request "q" "include_ampersand" %}">{% trans "Journals" %}</a>
+    <li class="{% if request.GET.show == 'journal' %}active{% endif %}">
+      <a href="{% query_string request "q" "include_ampersand" %}show=journal">
+        {% trans "Journals" %}
+      </a>
+    </li>
+    <li class="{% if request.GET.show == 'section' %}active{% endif %}">
+      <a href="{% query_string request "q" "include_ampersand" %}show=section">
+        {% trans "Sections" %}
+      </a>
+    </li>
+    <li class="{% if request.GET.show == 'publisher' %}active{% endif %}">
+      <a href="{% query_string request "q" "include_ampersand" %}show=publisher">
+        {% trans "Publishers" %}
+      </a>
+    </li>
+    <li class="{% if request.GET.show == 'sponsor' %}active{% endif %}">
+      <a href="{% query_string request "q" "include_ampersand" %}show=sponsor">
+        {% trans "Sponsors" %}
+      </a>
     </li>
 
     <li class="dropdown" id="menu1">
@@ -37,7 +54,19 @@
       <ul class="dropdown-menu">
         <li>
           <a id="bulk_action_enable"
-             rel="{% url journal.bulk_action 'is_available' '1' %}"
+          {% if request.GET.show == 'section' %}
+             rel="{% url trash.bulk_action 'section' 'is_available' '1' %}"
+          {% else %}
+            {% if request.GET.show == 'publisher' %}
+             rel="{% url trash.bulk_action 'publisher' 'is_available' '1' %}"
+            {% else %}
+              {% if request.GET.show == 'sponsor' %}
+                rel="{% url trash.bulk_action 'sponsor' 'is_available' '1' %}"
+              {% else %}
+                rel="{% url trash.bulk_action 'journal' 'is_available' '1' %}"
+              {% endif %}
+            {% endif %}
+          {% endif %}
              href="javascript:void(0)">{% trans "Restore" %}</a>
         </li>
       </ul>
@@ -48,28 +77,28 @@
 <form action="javascript:void(0)" method="post" id="bulk_action">
   {% csrf_token %}
   <table class="table table-striped">
-  <thead>
-    <tr>
-      <th><input id="check_all" type="checkbox" name="check_all" value=""></th>
-      <th>{% trans "Title" %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for doc in trashed_docs.object_list %}
-    <tr id="{{ journal.pk }}">
-      <td>
-        <input type="checkbox" name="action" value="{{ doc.id }}">
-      </td>
-      <td>
-        <h4>{{ doc.title }}</h4>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td>{% trans 'There are no items.' %}</td>
-    </tr>
-    {% endfor %}
-  <tbody>
+    <thead>
+      <tr>
+        <th><input id="check_all" type="checkbox" name="check_all" value=""/></th>
+        <th>{% trans "Title" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in trashed_docs.object_list %}
+      <tr id="{{ doc.pk }}">
+        <td>
+          <input type="checkbox" name="action" value="{{ doc.id }}"/>
+        </td>
+        <td>
+          <h4>{{ doc }}</h4>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="2">{% trans 'There are no items.' %}</td>
+      </tr>
+      {% endfor %}
+    <tbody>
   </table>
 </form>
 

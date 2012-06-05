@@ -52,6 +52,8 @@ urlpatterns = patterns('',
 
     # Trash
     url(r'^trash/$', views.trash_listing, name="trash.listing"),
+    url(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
+        views.generic_bulk_action, name='trash.bulk_action' ),
 )
 
 
