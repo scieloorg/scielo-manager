@@ -63,55 +63,57 @@
   </li>
 </ul>
 </div>
-{% if objects_journal.object_list.count > 0 %}
-  <form action="javascript:void(0)" method="post" id="bulk_action">
-    {% csrf_token %}
-    <table class="table table-striped">
-    <thead>
-      <tr>
-        <th><input id="check_all" type="checkbox" name="check_all" value=""></th>
-        <th>{% trans "Journal Title" %}</th>
-        <th>{% trans "Print ISSN" %}</th>
-        <th>{% trans "Electronic ISSN" %}</th>
-        <th>{% trans "Status" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for journal in objects_journal.object_list %}
-      <tr id="{{ journal.pk }}">
-        <td>
-          <input type="checkbox" name="action" value="{{ journal.id }}">
-        </td>
-        <td>
-          <h4>
-            <a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
-          </h4>
-          <ul class="_actions">
-            <li>
-              <a href="{% url issue.index journal.pk %}">
-                {% trans 'Issues' %}
-              </a>
-            </li>
-            <li>
-              <a href="{% url section.index journal.pk %}">
-                {% trans 'Sections' %}
-              </a>
-            </li>
-            <li>
-              <a href="{% url journal_status.edit journal.pk %}">
-                {% trans 'Status' %}
-              </a>
-            </li>
-          </ul>
-        </td>
-        <td>{{ journal.print_issn }}</td>
-        <td>{{ journal.eletronic_issn }}</td>
-        <td>{{ journal.pub_status }}</td>
-      </tr>
-      {% endfor %}
-    <tbody>
-    </table>
-  </form>
-{% endif %}
+<form action="javascript:void(0)" method="post" id="bulk_action">
+  {% csrf_token %}
+  <table class="table table-striped">
+  <thead>
+    <tr>
+      <th><input id="check_all" type="checkbox" name="check_all" value=""></th>
+      <th>{% trans "Journal Title" %}</th>
+      <th>{% trans "Print ISSN" %}</th>
+      <th>{% trans "Electronic ISSN" %}</th>
+      <th>{% trans "Status" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for journal in objects_journal.object_list %}
+    <tr id="{{ journal.pk }}">
+      <td>
+        <input type="checkbox" name="action" value="{{ journal.id }}">
+      </td>
+      <td>
+        <h4>
+          <a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a>
+        </h4>
+        <ul class="_actions">
+          <li>
+            <a href="{% url issue.index journal.pk %}">
+              {% trans 'Issues' %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url section.index journal.pk %}">
+              {% trans 'Sections' %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url journal_status.edit journal.pk %}">
+              {% trans 'Status' %}
+            </a>
+          </li>
+        </ul>
+      </td>
+      <td>{{ journal.print_issn }}</td>
+      <td>{{ journal.eletronic_issn }}</td>
+      <td>{{ journal.pub_status }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+  </table>
+</form>
 {% pagination objects_journal %}
 {% endblock %}
