@@ -33,7 +33,6 @@
     <tr>
         <th>{% trans "Name" %}</th>
         <th>{% trans "Sponsor" %}</th>
-        <th>{% trans "Validated" %}</th>
     </tr>
 </thead>
 <tbody>
@@ -62,14 +61,11 @@
           </ul>
       </td>
       <td>{{ publisher.sponsor }}</td>
-      <td>
-          {% if publisher.validated %}
-              <img src="/static/images/true.png" border="0" width="20px" height="20px" alt="{% trans "metadata validated" %}"/>
-          {% else %}
-              <img src="/static/images/false.png" border="0" width="20px" height="20px" alt="{% trans "metadata not validated" %}"/>
-          {% endif %}
-      </td>
   </tr>
+  {% empty %}
+    <tr>
+      <td>{% trans 'There are no items.' %}</td>
+    </tr>
   {% endfor %}
 <tbody>
 </table>

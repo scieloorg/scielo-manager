@@ -102,28 +102,27 @@ def generic_index_search(request, model, journal_id = None):
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
+    jstatus = request.GET.get('jstatus')
+
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(
-            journal=journal_id)
+        objects_all = model.objects.filter(journal=journal_id)
     else:
         journal = None
-        objects_all = model.objects.available(request.GET.get('is_available')).filter(
-            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        objects_all = model.objects.filter(collections__in=[ uc.collection for uc in user_collections ]).distinct()
 
     if request.GET.get('q'):
-        objects_all = model.objects.available(request.GET.get('is_available'))
-
         if model is models.Sponsor or model is models.Publisher:
-            objects_all = objects_all.filter(name__icontains = request.REQUEST['q'],
+            objects_all = model.objects.filter(name__icontains = request.REQUEST['q'],
                 collections__in=[ uc.collection for uc in user_collections ]).order_by('name')
 
         if model is models.Journal:
+            objects_all = model.objects.filter()
             objects_all = objects_all.filter(title__icontains = request.REQUEST['q'],
                 collections__in=[ uc.collection for uc in user_collections ]).order_by('title')
 
-    if objects_all.count() == 0:
-        messages.error(request, _('This list is empty.'))
+    if jstatus:
+        objects_all = objects_all.filter(pub_status=jstatus)
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
 
