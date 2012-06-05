@@ -50,12 +50,10 @@ def get_user_collections(user_id):
     return user_collections
 
 def section_has_relation(section_id):
-    print len(models.Issue.objects.filter(section=section_id))
+
     if len(models.Issue.objects.filter(section=section_id)) == 0 :
-        print("False")
         return False
     else:
-        print("True")
         return True
 
 def index(request):
@@ -625,7 +623,7 @@ def add_section(request, journal_id, section_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
     SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
         form=SectionTitleForm, extra=2, can_delete=False, formset=FirstFieldRequiredFormSet)
-    
+
     SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
     if request.method == 'POST':
