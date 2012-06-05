@@ -54,10 +54,15 @@ class AppCustomManager(caching.base.CachingManager):
 
 class JournalCustomManager(AppCustomManager):
 
-    def all_by_user(self, user, is_available=True):
+    def all_by_user(self, user, is_available=True, pub_status=None):
         user_collections = get_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
             collections__in=[ uc.collection for uc in user_collections ]).distinct()
+
+        if pub_status:
+            if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
+                objects_all = objects_all.filter(pub_status = pub_status)
+
         return objects_all
 
 class SectionCustomManager(AppCustomManager):
