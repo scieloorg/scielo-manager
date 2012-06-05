@@ -119,6 +119,7 @@ class PublisherForm(UserCollectionContext):
 
         widgets = {
             'name': forms.TextInput(attrs={'class':'span6'}),
+            'complement': forms.Textarea(attrs={'class':'span6'}),
             'acronym': forms.TextInput(attrs={'class':'span6'}),
             'country': forms.TextInput(attrs={'class':'span6'}),
             'state': forms.TextInput(attrs={'class':'span6'}),
@@ -143,6 +144,7 @@ class SponsorForm(UserCollectionContext):
 
         widgets = {
             'name': forms.TextInput(attrs={'class':'span6'}),
+            'address': forms.Textarea(attrs={'class':'span6'}),
             'acronym': forms.TextInput(attrs={'class':'span6'}),
             'country': forms.TextInput(attrs={'class':'span6'}),
             'state': forms.TextInput(attrs={'class':'span6'}),
