@@ -37,6 +37,18 @@
       </div>
     </div>
 
+    <div class="control-group {% if add_form.complement.errors %}error{% endif %}">
+      <label for="{{ add_form.complement.auto_id }}">
+        <span {% if add_form.complement.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.complement.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.complement }}
+        {% field_help add_form.complement.label add_form.complement.help_text term-institution-complement %}
+      </div>
+    </div>
+
     <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
       <label for="{{ add_form.acronym.auto_id }}">
         <span {% if add_form.acronym.field.required %}class="req-field"{% endif %}>

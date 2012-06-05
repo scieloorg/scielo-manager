@@ -7,6 +7,8 @@ COLLECTION__ACRONYM = _("""Enter in this field the acronym of the journal, max 3
 
 INSTITUTION__NAME = _("""Enter institution name.""")
 
+INSTITUTION__COMPLEMENT = _("""Enter institution complements as session, department, nucleo, etc """)
+
 INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the collection, max 8 characters length.""")
 
 INSTITUTION__COUNTRY = _("""Country of the Publication.""")
