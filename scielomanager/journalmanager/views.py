@@ -47,6 +47,7 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
 def section_has_relation(section_id):
+
     if len(models.Issue.objects.filter(section=section_id)) == 0 :
         return False
     else:
@@ -629,14 +630,15 @@ def add_section(request, journal_id, section_id=None):
 
     if section_id is None:
         section = models.Section()
+        has_relation = False
     else:
         section = get_object_or_404(models.Section, pk=section_id)
-
-    has_relation = section_has_relation(section.id)
+        has_relation = section_has_relation(section.id)
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
     SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
         form=SectionTitleForm, extra=2, can_delete=False, formset=FirstFieldRequiredFormSet)
+
     SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
     if request.method == 'POST':
