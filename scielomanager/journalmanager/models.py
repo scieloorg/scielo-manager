@@ -215,6 +215,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
+    other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
 
     def __unicode__(self):
         return self.title
