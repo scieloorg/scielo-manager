@@ -18,6 +18,14 @@ import caching.base
 import choices
 import helptexts
 
+def get_user_collections(user_id):
+    """
+    Return all the collections of a given user
+    """
+    user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by(
+        'collection__name')
+
+    return user_collections
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -42,6 +50,39 @@ class AppCustomManager(caching.base.CachingManager):
         data_queryset = data_queryset.filter(is_trashed = not is_available)
 
         return data_queryset
+
+
+class JournalCustomManager(AppCustomManager):
+
+    def all_by_user(self, user, is_available=True, pub_status=None):
+        user_collections = get_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+
+        if pub_status:
+            if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
+                objects_all = objects_all.filter(pub_status = pub_status)
+
+        return objects_all
+
+class SectionCustomManager(AppCustomManager):
+
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        return objects_all
+
+class InstitutionCustomManager(AppCustomManager):
+    """
+    Add capabilities to Institution subclasses to retrieve querysets
+    based on user's collections.
+    """
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+        return objects_all
 
 class Language(caching.base.CachingMixin, models.Model):
     """
@@ -127,13 +168,14 @@ class Institution(caching.base.CachingMixin, models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=256, db_index=True, help_text=helptexts.INSTITUTION__NAME)
+    complement =models.TextField(_('Institution Complements'), blank=True, default="", help_text=helptexts.INSTITUTION__COMPLEMENT)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, help_text=helptexts.INSTITUTION__ACRONYM)
     country = models.CharField(_('Country'), max_length=32, help_text=helptexts.INSTITUTION__COUNTRY)
     state = models.CharField(_('State'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__STATE)
     city = models.CharField(_('City'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__CITY)
     address = models.TextField(_('Address'), help_text=helptexts.INSTITUTION__ADDRESS)
     address_number = models.CharField(_('Number'), max_length=8, help_text=helptexts.INSTITUTION__ADDRESS_NUMBER)
-    address_complement = models.CharField(_('Complement'), max_length=128, null=False, blank=True, help_text=helptexts.INSTITUTION__ADDRESS_COMPLEMENT)
+    address_complement = models.CharField(_('Address Complement'), max_length=128, null=False, blank=True, help_text=helptexts.INSTITUTION__ADDRESS_COMPLEMENT)
     zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True, help_text=helptexts.INSTITUTION__ZIP_CODE)
     phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__PHONE)
     fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__FAX)
@@ -149,13 +191,13 @@ class Institution(caching.base.CachingMixin, models.Model):
         ordering = ['name']
 
 class Publisher(Institution):
-    objects = AppCustomManager()
+    objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
 
     collections = models.ManyToManyField(Collection)
 
 class Sponsor(Institution):
-    objects = AppCustomManager()
+    objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
 
     collections = models.ManyToManyField(Collection)
@@ -163,7 +205,7 @@ class Sponsor(Institution):
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = AppCustomManager()
+    objects = JournalCustomManager()
     nocacheobjects = models.Manager()
 
     #Relation fields
@@ -215,6 +257,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
+    other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
 
     def __unicode__(self):
         return self.title
@@ -301,7 +344,7 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
 
 class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
-    objects = AppCustomManager()
+    objects = SectionCustomManager()
     nocacheobjects = models.Manager()
 
     journal = models.ForeignKey(Journal)

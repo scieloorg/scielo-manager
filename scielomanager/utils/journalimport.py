@@ -199,6 +199,11 @@ class JournalImport:
     def load_historic(self, journal, historicals):
         import operator
 
+        trans_pub_status = {'c':'current',
+                            'd':'deceased',
+                            's':'duspended',
+                            '?':'inprogress',
+                            }
         lifecycles = {}
 
         for i in historicals:
@@ -219,7 +224,7 @@ class JournalImport:
             try:
                 journalhist = JournalPublicationEvents()
                 journalhist.created_at = cyclekey
-                journalhist.status = cyclevalue
+                journalhist.status = trans_pub_status.get(cyclevalue.lower(),'inprogress')
                 journalhist.journal = journal
                 journalhist.changed_by_id = 1
                 journalhist.save()
@@ -274,10 +279,10 @@ class JournalImport:
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
         journal.use_license = use_license
-        journal.subject_descriptors = '; '.join(record['440'])
+        journal.subject_descriptors = '\n'.join(record['440']).lower()
 
         if record.has_key('450'):
-            journal.index_coverage = '; '.join(record['450'])
+            journal.index_coverage = '\n'.join(record['450']).lower()
 
         # Text Language
         if record.has_key('301'):
