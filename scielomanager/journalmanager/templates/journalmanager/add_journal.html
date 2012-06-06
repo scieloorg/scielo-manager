@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
+{% load widget_tweaks %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
@@ -84,6 +85,19 @@
         {% field_help add_form.previous_title.label add_form.previous_title.help_text term-previous-title %}
       </div>
     </div>
+
+    <div id="other_previous_title" class="control-group {% if add_form.other_previous_title.errors %}error{% endif %}">
+      <label for="{{ add_form.other_previous_title.auto_id }}">
+        <span {% if add_form.other_previous_title.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.other_previous_title.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.other_previous_title }}
+        {% field_help add_form.other_previous_title.label add_form.other_previous_title.help_text term-previous-title %}
+      </div>
+    </div>
+
   </div>
 
   <span class="label"><a name="other_title"></a>{% trans "Other Titles" %}</span>
@@ -451,7 +465,7 @@
       <tr>
         <td>
           <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
-            {{ add_form.init_year }}
+            {{ add_form.init_year|attr:"placeholder:YYYY" }}
             {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
           </div>
         </td>
@@ -499,8 +513,10 @@
       <tbody>
       <tr>
         <td>
-         {{ add_form.final_year }}
-         {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
+          <div class="control-group {% if add_form.final_year.errors %}error{% endif %}">
+            {{ add_form.final_year|attr:"placeholder:YYYY" }}
+            {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
+          </div>
         </td>
         <td>
          {{ add_form.final_vol }}
@@ -595,7 +611,7 @@
 {% block extrafooter %}
 {{ block.super }}
 <script type="text/javascript" src="{% get_static_prefix %}js/tabslideout.js"></script>
- <script>
+ <script> 
   $(document).ready(function() {
     $('#well-rezi-fixed').draggable();
     $(".help-text").popover('hide');
@@ -621,6 +637,21 @@
       resizable:1,
       centerScreen:1,
       width:600,
+    });
+    if($('#id_journal-other_previous_title').val() != ""){
+      $('#id_journal-previous_title').append('<option value="" selected="selected">Outro</option>');
+      $('#other_previous_title').css("display", "block");
+    }else{
+      $('#id_journal-previous_title').append('<option value="">Outro</option>')
+      $('#other_previous_title').css("display", "none");
+    }
+    $('#id_journal-previous_title').change(function(){
+      if($("#id_journal-previous_title option:selected").text() == "Outro"){
+        $('#other_previous_title').css("display", "block");
+      }else{
+        $('#other_previous_title').css("display", "none");
+        $('#id_journal-other_previous_title').val('')
+      }
     });
   });
 </script>

@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 from django import forms
 from django.forms import ModelForm, DateField
 from django.forms.models import inlineformset_factory
@@ -71,6 +72,30 @@ class JournalForm(UserCollectionContext):
     def clean_acronym(self):
         return self.cleaned_data["acronym"].lower()
 
+    def clean_init_year(self):
+
+        regex = r'^(19|20)\d\d$'
+  
+        if self.cleaned_data["init_year"] is not u'' and self.cleaned_data["init_year"] is not None:
+            result = re.match(regex, self.cleaned_data["init_year"])
+
+            if result is None:
+                raise forms.ValidationError(u'Invalid Date')
+
+        return self.cleaned_data["init_year"]
+
+    def clean_final_year(self):
+
+        regex = r'^(19|20)\d\d$'
+  
+        if self.cleaned_data["final_year"] is not u'' and self.cleaned_data["final_year"] is not None:
+            result = re.match(regex, self.cleaned_data["final_year"])
+
+            if result is None:
+                raise forms.ValidationError(u'Invalid Date')
+
+        return self.cleaned_data["final_year"]
+
     class Meta:
 
         model = models.Journal
@@ -97,6 +122,7 @@ class JournalForm(UserCollectionContext):
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
            'index_coverage': forms.Textarea(attrs={'class':'span9'}),
+           'other_previous_title': forms.TextInput(attrs={'class':'span9'}),
         }
 
 class CollectionForm(ModelForm):
@@ -119,6 +145,7 @@ class PublisherForm(UserCollectionContext):
 
         widgets = {
             'name': forms.TextInput(attrs={'class':'span6'}),
+            'complement': forms.Textarea(attrs={'class':'span6'}),
             'acronym': forms.TextInput(attrs={'class':'span6'}),
             'country': forms.TextInput(attrs={'class':'span6'}),
             'state': forms.TextInput(attrs={'class':'span6'}),
@@ -143,6 +170,7 @@ class SponsorForm(UserCollectionContext):
 
         widgets = {
             'name': forms.TextInput(attrs={'class':'span6'}),
+            'address': forms.Textarea(attrs={'class':'span6'}),
             'acronym': forms.TextInput(attrs={'class':'span6'}),
             'country': forms.TextInput(attrs={'class':'span6'}),
             'state': forms.TextInput(attrs={'class':'span6'}),
