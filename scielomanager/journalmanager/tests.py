@@ -29,13 +29,35 @@ def with_sample_journal(func):
 
 def with_sample_issue(func):
     """
-    Decorator that creates a sample Journal instance
+    Decorator that creates a sample Issue instance
     and destructs it at the end of the execution.
     """
     def decorated(self=None):
         self._create_issue()
         func(self)
         self._destroy_issue()
+    return decorated
+
+def with_sample_publisher(func):
+    """
+    Decorator that creates a sample Publisher instance
+    and destructs it at the end of the execution.
+    """
+    def decorated(self=None):
+        self._create_publisher()
+        func(self)
+        self._destroy_publisher()
+    return decorated
+
+def with_sample_sponsor(func):
+    """
+    Decorator that creates a sample Sponsor instance
+    and destructs it at the end of the execution.
+    """
+    def decorated(self=None):
+        self._create_sponsor()
+        func(self)
+        self._destroy_sponsor()
     return decorated
 
 class LoggedInViewsTest(TestCase):
@@ -67,15 +89,8 @@ class LoggedInViewsTest(TestCase):
         """
         Destroying the data
         """
-
-        Journal.objects.all().delete()
-        Publisher.objects.all().delete()
-        Sponsor.objects.all().delete()
-        Issue.objects.all().delete()
-        UserCollections.objects.all().delete()
-        User.objects.all().delete()
-        Section.objects.all().delete()
-        Collection.objects.all().delete()
+        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+            m.objects.all().delete()
 
     def _create_journal(self):
         sample_journal = tests_assets.get_sample_journal()
@@ -105,7 +120,7 @@ class LoggedInViewsTest(TestCase):
         sample_journal.save()
 
     def _destroy_journal(self):
-        Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xe3o Paulo)').delete()
+        pass
 
     def _create_issue(self):
         self._create_journal()
@@ -120,7 +135,25 @@ class LoggedInViewsTest(TestCase):
         sample_section.save()
 
     def _destroy_issue(self):
-        self._destroy_journal
+        pass
+
+    def _create_publisher(self):
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection]
+        sample_publisher.save()
+
+    def _destroy_publisher(self):
+        pass
+
+    def _create_sponsor(self):
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection]
+        sample_sponsor.save()
+
+    def _destroy_sponsor(self):
+        pass
 
     @with_sample_journal
     def test_edit_journal_status(self):
@@ -600,34 +633,34 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
-
-    @with_sample_journal
+    @with_sample_publisher
     def test_publisher_availability_list(self):
         publisher = Publisher.objects.all()[0]
+
         response = self.client.get(reverse('publisher.index'))
-        self.assertEqual(response.context['objects_publisher'].object_list[0].is_trashed, False)
+        for pub in response.context['objects_publisher'].object_list:
+            self.assertEqual(pub.is_trashed, False)
 
         #change atribute is_available
         publisher.is_trashed = True
         publisher.save()
 
         response = self.client.get(reverse('publisher.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_publisher'].object_list[0].is_trashed, True)
-        self.assertEqual(len(response.context['objects_publisher'].object_list), 1)
+        self.assertEqual(len(response.context['objects_publisher'].object_list), 0)
 
-    @with_sample_journal
+    @with_sample_sponsor
     def test_sponsor_availability_list(self):
         sponsor = Sponsor.objects.all()[0]
         response = self.client.get(reverse('sponsor.index'))
-        self.assertEqual(response.context['objects_sponsor'].object_list[0].is_trashed, False)
+        for spr in response.context['objects_sponsor'].object_list:
+            self.assertEqual(spr.is_trashed, False)
 
         #change atribute is_available
         sponsor.is_trashed = True
         sponsor.save()
 
         response = self.client.get(reverse('sponsor.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_sponsor'].object_list[0].is_trashed, True)
-        self.assertEqual(len(response.context['objects_sponsor'].object_list), 1)
+        self.assertEqual(len(response.context['objects_sponsor'].object_list), 0)
 
 
     @with_sample_issue
