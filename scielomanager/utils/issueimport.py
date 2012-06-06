@@ -29,7 +29,7 @@ class IssueImport:
         self._journals = {}
 
         journal_json_parsed = json.loads(open('journal.json','r').read())
-        
+
         self.load_journals(journal_json_parsed) # carregando dicionário de periódicos self._journals
 
     def charge_summary(self, attribute):
@@ -38,8 +38,8 @@ class IssueImport:
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
         if not self._summary.has_key(attribute):
-            self._summary[attribute] = 0    
-        
+            self._summary[attribute] = 0
+
         self._summary[attribute] += 1
 
     def get_summary(self):
@@ -69,8 +69,8 @@ class IssueImport:
             else:
                 return False
         else:
-            return False        
-        
+            return False
+
         transaction.commit()
         return use_license
 
@@ -100,7 +100,7 @@ class IssueImport:
 
         if record.has_key('31'):
             issue.volume = record['31'][0]
-        if record.has_key('32'): 
+        if record.has_key('32'):
             issue.number = record['32'][0]
         if record.has_key('33'):
             issue.title = record['33'][0]
@@ -114,12 +114,16 @@ class IssueImport:
             month = record['65'][0][4:6]
             if month == '00':
                 month = '01'
-            pub_date = u'%s-%s-01T01:01:01' % (year,month)
-            issue.publication_date = datetime.strptime(pub_date, "%Y-%m-%dT%H:%M:%S")
+
+            issue.publication_start_month = month
+            issue.publication_end_month = 0
+            issue.publication_year = year
         else:
             print u'Fasciculo %s %s %s não possui data de publicação' % (record['35'][0],record['31'][0],record['32'][0])
-            issue.publication_date = datetime.now()
-            
+            issue.publication_start_month = 0
+            issue.publication_end_month = 0
+            issue.publication_year = 0000
+
         if record.has_key('91'):
             update = u'%s-%s-01T01:01:01' % (record['91'][0][0:4],record['91'][0][4:6])
             issue.update_date = datetime.strptime(update, "%Y-%m-%dT%H:%M:%S")
@@ -152,20 +156,20 @@ class IssueImport:
 
 
         return issue
-    
+
     def load_journals(self, json_file):
         """
         Function: load_journals
-        Esse metodo cria um dicionário de periódicos com atributos necessários para a criação de 
+        Esse metodo cria um dicionário de periódicos com atributos necessários para a criação de
         fascículos. Alguns registros seram transferidos das bases de periódicos para a base de
         fascículos e nesses caso esse dicionário será utilizado para carregar esses dados.
 
         Os campos a serem carregados no dicionário são:
         540 - licensa de uso
 
-        """   
+        """
         for record in json_file:
-            self._journals[record['400'][0]] = {} 
+            self._journals[record['400'][0]] = {}
             self._journals[record['935'][0]] = {} # Se for igual ao 400 ira sobrescrever
 
             if record.has_key('541'):
@@ -180,8 +184,8 @@ class IssueImport:
 
                 f540 = subfield.CompositeField(subfield.expand(record['540'][0]))
 
-                self._journals[record['400'][0]]['use_license'] = {} 
-                self._journals[record['935'][0]]['use_license'] = {} 
+                self._journals[record['400'][0]]['use_license'] = {}
+                self._journals[record['935'][0]]['use_license'] = {}
                 self._journals[record['400'][0]]['use_license']['license_code'] = record['541'][0]
                 self._journals[record['935'][0]]['use_license']['license_code'] = record['541'][0]
                 self._journals[record['400'][0]]['use_license']['reference_url'] = reference_url
@@ -192,14 +196,14 @@ class IssueImport:
                 self._journals[record['400'][0]]['use_license'] = False
                 self._journals[record['935'][0]]['use_license'] = False
 
-        
+
     def run_import(self, json_file):
         """
         Function: run_import
         Dispara processo de importacao de dados
         """
 
-        json_parsed={} 
+        json_parsed={}
 
         issue_json_file = open(json_file,'r')
         issue_json_parsed = json.loads(issue_json_file.read())

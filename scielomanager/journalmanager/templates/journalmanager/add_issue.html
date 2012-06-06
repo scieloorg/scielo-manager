@@ -85,17 +85,47 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.publication_date.errors %}error{% endif %}">
-      <label for="{{ add_form.publication_date.auto_id }}">
-        <span {% if add_form.publication_date.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publication_date.label %}
+    <div class="control-group {% if add_form.publication_start_month.errors %}error{% endif %}">
+      <label for="{{ add_form.publication_start_month.auto_id }}">
+        <span {% if add_form.publication_start_month.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publication_start_month.label %}
         </span>
       </label>
       <div class="controls">
-        {{ add_form.publication_date }}
-        {% field_help add_form.publication_date.label add_form.publication_date.help_text term-issue-publication-date %}
-        {% if add_form.publication_date.errors %}
-        <span class="help-inline">{{ add_form.publication_date.errors }}</span>
+        {{ add_form.publication_start_month }}
+        {% field_help add_form.publication_start_month.label add_form.publication_start_month.help_text term-issue-publication-date %}
+        {% if add_form.publication_start_month.errors %}
+        <span class="help-inline">{{ add_form.publication_start_month.errors }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publication_end_month.errors %}error{% endif %}">
+      <label for="{{ add_form.publication_end_month.auto_id }}">
+        <span {% if add_form.publication_end_month.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publication_end_month.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publication_end_month }}
+        {% field_help add_form.publication_end_month.label add_form.publication_end_month.help_text term-issue-publication-date %}
+        {% if add_form.publication_end_month.errors %}
+        <span class="help-inline">{{ add_form.publication_end_month.errors }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publication_year.errors %}error{% endif %}">
+      <label for="{{ add_form.publication_year.auto_id }}">
+        <span {% if add_form.publication_year.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publication_year.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publication_year }}
+        {% field_help add_form.publication_year.label add_form.publication_year.help_text term-issue-publication-date %}
+        {% if add_form.publication_year.errors %}
+        <span class="help-inline">{{ add_form.publication_year.errors }}</span>
         {% endif %}
       </div>
     </div>
