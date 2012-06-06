@@ -373,7 +373,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    publication_date = models.DateField(help_text=helptexts.ISSUE__PUBLICATION_DATE)
+    publication_start_month = models.IntegerField(_('Start Month'), choices=choices.MONTHS)
+    publication_end_month = models.IntegerField(_('End Month'), choices=choices.MONTHS)
+    publication_year = models.IntegerField(_('Year'))
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
     publisher_fullname = models.CharField(_('Publisher Full Name'), max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
@@ -400,6 +402,11 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     def __unicode__(self):
         return self.identification()
+
+    @property
+    def publication_date(self):
+        return '{0} / {1} - {2}'.format(self.publication_start_month,
+            self.publication_end_month, self.publication_year)
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
