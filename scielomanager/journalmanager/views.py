@@ -69,11 +69,12 @@ def index(request):
 def issue_index(request, journal_id):
     user_collections = get_user_collections(request.user.id)
     journal = models.Journal.objects.get(pk=journal_id)
-    objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(journal=journal_id).order_by('-publication_date')
+    objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(
+        journal=journal_id).order_by('-publication_year')
 
     by_years = OrderedDict()
     for issue in objects_all:
-        year_node = by_years.setdefault(issue.publication_date.year, {})
+        year_node = by_years.setdefault(issue.publication_year, {})
         volume_node = year_node.setdefault(issue.volume, [])
 
         volume_node.append(issue)

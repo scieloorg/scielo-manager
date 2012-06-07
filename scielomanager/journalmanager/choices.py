@@ -1,4 +1,5 @@
 # coding: utf-8
+import calendar
 
 SCIELO_ISSN = [
     ('print','print'),
@@ -78,3 +79,6 @@ JOURNAL_PUBLICATION_STATUS = [
     ('suspended', 'Suspended'),
     ('inprogress', 'In Progress'),
 ]
+
+# the index 0 has an empty value
+MONTHS = [(i, month) for i, month in enumerate(calendar.month_name) if i > 0]

@@ -205,7 +205,9 @@ def get_sample_issue_dataform(dict_params=None):
         'editorial_standard': '',
         'is_trashed': False,
         'is_press_release': False,
-        'publication_date': '1998-09-01',
+        'publication_start_month': 9,
+        'publication_end_month': 11,
+        'publication_year': 2012,
         'is_marked_up': False,
         'publisher_fullname': 'Publisher Fullname',
         'editorial_standard': 'other',
@@ -444,7 +446,9 @@ def get_sample_issue():
         'editorial_standard': '',
         'is_trashed': False,
         'is_press_release': False,
-        'publication_date': '1998-09-01',
+        'publication_start_month': 9,
+        'publication_end_month': 11,
+        'publication_year': 2012,
         'is_marked_up': False,
     }
 
