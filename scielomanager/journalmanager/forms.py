@@ -37,12 +37,12 @@ class UserCollectionContext(ModelForm):
                 pk__in = (collection.collection.pk for collection in collections_qset))
 
 class JournalForm(UserCollectionContext):
-
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
         required=True)
+    regex = re.compile(r'^(1|2)\d{3}$')
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
@@ -74,10 +74,8 @@ class JournalForm(UserCollectionContext):
 
     def clean_init_year(self):
 
-        regex = r'^(19|20)\d\d$'
-  
-        if self.cleaned_data["init_year"] is not u'' and self.cleaned_data["init_year"] is not None:
-            result = re.match(regex, self.cleaned_data["init_year"])
+        if self.cleaned_data["init_year"]:
+            result = self.regex.match(self.cleaned_data["init_year"])
 
             if result is None:
                 raise forms.ValidationError(u'Invalid Date')
@@ -86,10 +84,8 @@ class JournalForm(UserCollectionContext):
 
     def clean_final_year(self):
 
-        regex = r'^(19|20)\d\d$'
-  
-        if self.cleaned_data["final_year"] is not u'' and self.cleaned_data["final_year"] is not None:
-            result = re.match(regex, self.cleaned_data["final_year"])
+        if self.cleaned_data["final_year"]:
+            result = self.regex.match(self.cleaned_data["final_year"])
 
             if result is None:
                 raise forms.ValidationError(u'Invalid Date')
