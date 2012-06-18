@@ -97,6 +97,7 @@ class JournalForm(UserCollectionContext):
            'editorial_standard': forms.Select(attrs={'class':'span3'}),
            'copyrighter': forms.TextInput(attrs={'class':'span8'}),
            'index_coverage': forms.Textarea(attrs={'class':'span9'}),
+           'other_previous_title': forms.TextInput(attrs={'class':'span9'}),
         }
 
 class CollectionForm(ModelForm):
@@ -119,6 +120,7 @@ class PublisherForm(UserCollectionContext):
 
         widgets = {
             'name': forms.TextInput(attrs={'class':'span6'}),
+            'complement': forms.Textarea(attrs={'class':'span6'}),
             'acronym': forms.TextInput(attrs={'class':'span6'}),
             'country': forms.TextInput(attrs={'class':'span6'}),
             'state': forms.TextInput(attrs={'class':'span6'}),
@@ -143,6 +145,7 @@ class SponsorForm(UserCollectionContext):
 
         widgets = {
             'name': forms.TextInput(attrs={'class':'span6'}),
+            'address': forms.Textarea(attrs={'class':'span6'}),
             'acronym': forms.TextInput(attrs={'class':'span6'}),
             'country': forms.TextInput(attrs={'class':'span6'}),
             'state': forms.TextInput(attrs={'class':'span6'}),
