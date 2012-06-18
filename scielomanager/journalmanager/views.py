@@ -646,8 +646,14 @@ def add_section(request, journal_id, section_id=None):
         section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
 
         if add_form.is_valid() and section_title_formset.is_valid():
-            add_form.save_all(journal)
+            add_form = add_form.save_all(journal)
             section_title_formset.save()
+
+            if request.POST.get('popup', 0):
+                return HttpResponse('<script type="text/javascript">\
+                    opener.updateSelect(window, "%s", "%s", "id_section");</script>' % \
+                    (escape(add_form.id), escape(add_form)))
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
         else:
