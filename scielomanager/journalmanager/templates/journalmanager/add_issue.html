@@ -126,18 +126,6 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.publisher_fullname.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_fullname.auto_id }}">
-        <span {% if add_form.publisher_fullname.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_fullname.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_fullname }}
-        {% field_help add_form.publisher_fullname.label add_form.publisher_fullname.help_text term-issue-publisher-fullname %}
-      </div>
-    </div>
-
     <div class="control-group {% if add_form.total_documents.errors %}error{% endif %}">
       <label for="{{ add_form.total_documents.auto_id }}">
         <span {% if add_form.total_documents.field.required %}class="req-field"{% endif %}>

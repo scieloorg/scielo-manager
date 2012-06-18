@@ -333,7 +333,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     publication_date = models.DateField(help_text=helptexts.ISSUE__PUBLICATION_DATE)
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
-    publisher_fullname = models.CharField(_('Publisher Full Name'), max_length=128, help_text=helptexts.ISSUE__PUBLISHER_FULLNAME)
     total_documents = models.IntegerField(_('Total of Documents'), default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=choices.CTRL_VOCABULARY, null=False, blank=True, help_text=helptexts.ISSUE__CTRL_VOCABULARY)
