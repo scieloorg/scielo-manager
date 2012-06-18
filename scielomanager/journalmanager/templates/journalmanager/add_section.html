@@ -21,6 +21,10 @@
 <form method="post" action="#">
   {% csrf_token %}
 
+  {% if request.GET.popup %}
+    <input type="hidden" value="1" name="popup" />
+  {% endif %}
+
   {% for field in form %}
   <div class="fieldWrapper">
     {{ field.errors }}
