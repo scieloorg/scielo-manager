@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" action="{% url journal.add %}" enctype="multipart/form-data">
+<form method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>
   <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
@@ -624,11 +624,7 @@
     });
     $('#studyareaformset tbody tr').formset({
       formCssClass: 'dynamic-studyareaformset-form',
-      prefix: '{{ textstudyareaformset.prefix }}'
-    });
-    $('#textlanguageformset tbody tr').formset({
-      formCssClass: 'dynamic-textlanguageformset-form',
-      prefix: '{{ textlanguageformset.prefix }}'
+      prefix: '{{ studyareaformset.prefix }}'
     });
     $('.popup').popupWindow({
       scrollbars:1,
