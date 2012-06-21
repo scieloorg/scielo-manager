@@ -8,7 +8,7 @@ class Journal(AnonymousBaseHandler):
     allow_methods = ('GET',)
     fields = (
         'title',
-        ('collections', ('name',)),
+        ('collections', ()),
         ('publisher', ('name',)),
         ('sponsor', ('name',)),
         'previous_title',
@@ -41,10 +41,13 @@ class Journal(AnonymousBaseHandler):
         'other_previous_title',
     )
 
-    def read(self, request, collection, issn):
+    def read(self, request, collection, issn=None):
         try:
-            return models.Journal.objects.get(Q(print_issn=issn) | Q(eletronic_issn=issn),
-                collections__name_slug=collection)
+            if issn:
+                return models.Journal.objects.get(Q(print_issn=issn) | Q(eletronic_issn=issn),
+                    collections__name_slug=collection)
+            else:
+                return models.Journal.objects.filter(collections__name_slug=collection)
         except models.Journal.DoesNotExist:
             return []
 
@@ -53,6 +56,7 @@ class Collection(AnonymousBaseHandler):
     allow_methods = ('GET',)
     fields = (
         'name',
+        'name_slug',
         'acronym',
         'address',
         'address_number',
