@@ -53,7 +53,7 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-created': '2012-01-19 15:44:21',
       'journal-final_vol': '',
       'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'journal-pub_status': 'C',
+      'journal-pub_status': 'current',
       'journal-pub_status_changed_by': 'O motivo da mudança é...',
       'journal-print_issn': '0102-6720',
       'journal-copyrighter': 'Texto do copyrighter',
@@ -131,6 +131,7 @@ def get_sample_collection_dataform(dict_params=None):
       'collection-country': u'Brasil',
       'collection-address': u'Rua Machado Bittencourt',
       'collection-mail': u'fapesp@scielo.org',
+      'collection-name_slug': 'scl',
     }
 
     sponsor_attrs.update(dict_params)
@@ -298,7 +299,7 @@ def get_sample_journal():
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
-      'pub_status': 'C',
+      'pub_status': 'current',
       'pub_status_reason': 'Motivo da mudança é...',
       'print_issn': '0102-6720',
     }
