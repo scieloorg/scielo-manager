@@ -26,6 +26,11 @@ class JournalImport:
         self._publishers_pool = []
         self._sponsors_pool = []
         self._summary = {}
+        self.trans_pub_status = {'c':'current',
+            'd':'deceased',
+            's':'suspended',
+            '?':'inprogress',
+            }
 
     def iso_format(self, dates, string='-'):
         day = dates[6:8]
@@ -199,11 +204,6 @@ class JournalImport:
     def load_historic(self, journal, historicals):
         import operator
 
-        trans_pub_status = {'c':'current',
-                            'd':'deceased',
-                            's':'duspended',
-                            '?':'inprogress',
-                            }
         lifecycles = {}
 
         for i in historicals:
@@ -224,7 +224,7 @@ class JournalImport:
             try:
                 journalhist = JournalPublicationEvents()
                 journalhist.created_at = cyclekey
-                journalhist.status = trans_pub_status.get(cyclevalue.lower(),'inprogress')
+                journalhist.status = self.trans_pub_status.get(cyclevalue.lower(),'inprogress')
                 journalhist.journal = journal
                 journalhist.changed_by_id = 1
                 journalhist.save()
@@ -236,6 +236,26 @@ class JournalImport:
                 return False
 
         return True
+
+    def get_last_status(self, historicals):
+        import operator
+
+        lifecycles = {}
+
+        for i in historicals:
+            expanded = subfield.expand(i)
+            parsed_subfields = dict(expanded)
+            try:
+                lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
+            except KeyError:
+                self.charge_summary("history_error_field")
+
+            try:
+                lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
+            except KeyError:
+                self.charge_summary("history_error_field")
+
+        return sorted(lifecycles.iteritems())[-1][1]
 
     def load_title(self, journal, titles, category):
 
@@ -306,8 +326,8 @@ class JournalImport:
         if record.has_key('380'):
             journal.frequency = record['380'][0]
 
-        if record.has_key('50'):
-            journal.pub_status = record['50'][0]
+        if record.has_key('51'):
+            journal.pub_status = self.trans_pub_status.get(self.get_last_status(record['51']).lower(),'inprogress')
 
         if record.has_key('340'):
             journal.alphabet = record['340'][0]
