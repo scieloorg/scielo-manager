@@ -130,7 +130,7 @@ class Collection(caching.base.CachingMixin, models.Model):
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', null=True, blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
-    name_slug = models.SlugField(unique=True, db_index=True, null=True)
+    name_slug = models.SlugField(unique=True, db_index=True, blank=True, null=True)
     url = models.URLField(_('Instance URL'), )
     logo = models.ImageField(_('Logo'), upload_to='img/collections_logos', null=True, blank=True, )
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, )
@@ -391,6 +391,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         choices=choices.STANDARD, help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
     cover = models.ImageField(_('Issue Cover'), upload_to='img/issue_cover/', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
+    label = models.CharField(db_index=True, blank=True, null=True, max_length=16)
 
     def identification(self):
 
@@ -412,6 +413,11 @@ class Issue(caching.base.CachingMixin, models.Model):
     def publication_date(self):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
             self.publication_end_month, self.publication_year)
+
+    
+    def save(self, *args, **kwargs):
+        self.label = 'v{0}n{1}'.format(self.volume, self.number)
+        super(Issue, self).save(*args, **kwargs)
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()

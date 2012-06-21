@@ -79,3 +79,34 @@ class Collection(AnonymousBaseHandler):
                 return models.Collection.objects.all()
         except models.Collection.DoesNotExist:
             return []
+
+class Issue(AnonymousBaseHandler):
+    model = models.Issue
+    allowed_methods = ('GET',)
+
+    fields = (
+        'is_marked_up',
+        'section',
+        'volume',
+        'number',
+        'is_press_release',
+        'publication_start_month',
+        'publication_end_month',
+        'publication_year',
+        'use_license',
+        'total_documents',
+        'ctrl_vocabulary',
+        'editorial_standard',
+        'label',
+    )
+
+    def read(self, request, issn, collection, issue_label=None):
+        try:
+            if issue_label:
+                return models.Issue.objects.get(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+                    journal__collections__name_slug=collection, label = issue_label)
+            else:
+                return models.Issue.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+                    journal__collections__name_slug=collection)
+        except models.Issue.DoesNotExist:
+                return []

@@ -288,11 +288,16 @@ Get a Journal Metadata
 
 Request::
 
-  GET /api/v1/journal/:<journal_issn>
+  GET /api/v1/journal/:<collection_name_slug>/:<journal_issn>
 
 Parameters:
 
-  **issn**
+  **collection_name_slug**
+
+    *String* of the name of a collection, for example: brasil, chile, cuba. If you doesn't know the 
+    available collections you can fetch it with the "Get Collections List"
+
+  **journal_issn**
 
     *String* of the ISSN. The ISSN could be the print or electronic ISSN.
 
@@ -300,8 +305,7 @@ Optional Parameters:
 
   **callback**
 
-    *String* of the callback identifier to be returned when
-    using JSONP.
+    *String* of the callback identifier to be returned when using JSONP.
 
   **format**
 
@@ -309,9 +313,9 @@ Optional Parameters:
 
 Request Example::
 
-  $ curl -X GET journalmanager.scielo.org/api/v1/journals/0102-6720?callback=test
+  $ curl -X GET journalmanager.scielo.org/api/v1/journals/brasil/0102-6720?callback=test
 
-  $ curl -X GET journalmanager.scielo.org/api/v1/journals/0102-6720?format=xml
+  $ curl -X GET journalmanager.scielo.org/api/v1/journals/brasil/0102-6720?format=xml
 
 Response Example::
 
@@ -375,25 +379,146 @@ Response Example::
 Get Journal Issues List
 =========================
 
-Request:
+Request::
 
+  GET /api/v1/issues/:<collection_name_slug>/:<journal_issn>
+  
 Parameters:
+
+  **collection_name_slug**
+
+    *String* of the name of a collection, for example: brasil, chile, cuba. If you doesn't know the 
+    available collections you can fetch it with the "Get Collections List"
+
+  **journal_issn**
+
+    *String* of the ISSN. The ISSN could be the print or electronic ISSN.
 
 Optional Parameters:
 
-Request Example:
+  **callback**
 
-Response Example:
+    *String* of the callback identifier to be returned when using JSONP.
+
+  **format**
+
+    *String* of the desired output format. The options are **xml, json, yml**. The default format is JSON.
+
+Request Example::
+
+  $ curl -X GET journalmanager.scielo.org/api/v1/issues/brasil/0102-6720?callback=test
+
+  $ curl -X GET journalmanager.scielo.org/api/v1/issues/brasil/0102-6720?format=xml
+
+Response Example::
+
+  [
+    {
+      "is_marked_up": true, 
+      "total_documents": 17, 
+      "ctrl_vocabulary": "decs", 
+      "section": [], 
+      "number": "3", 
+      "publication_end_month": 0, 
+      "editorial_standard": "vancouv", 
+      "volume": "24", 
+      "publication_year": 2011, 
+      "is_press_release": false, 
+      "label": "v24n3", 
+      "use_license": {
+          "license_code": "BY-NC", 
+          "_state": "<django.db.models.base.ModelState object at 0x10a9bf750>", 
+          "reference_url": "http://creativecommons.org/licenses/by-nc/3.0/", 
+          "from_cache": false, 
+          "id": 2, 
+          "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/3.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"http://i.creativecommons.org/l/by-nc/3.0/80x15.png\" /></a> Todo el contenido de esta revista, excepto dónde está identificado, est&#225; bajo una <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/3.0/\">Licencia Creative Commons</a>"
+      }, 
+      "publication_start_month": 9
+    }, 
+    {
+      "is_marked_up": false, 
+      "total_documents": 20, 
+      "ctrl_vocabulary": "decs", 
+      "section": [], 
+      "number": "2", 
+      "publication_end_month": 0, 
+      "editorial_standard": "vancouv", 
+      "volume": "24", 
+      "publication_year": 2011, 
+      "is_press_release": false, 
+      "label": "v24n2", 
+      "use_license": {
+          "license_code": "BY-NC", 
+          "_state": "<django.db.models.base.ModelState object at 0x109fe9950>", 
+          "reference_url": "http://creativecommons.org/licenses/by-nc/3.0/", 
+          "from_cache": false, 
+          "id": 2, 
+          "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/3.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"http://i.creativecommons.org/l/by-nc/3.0/80x15.png\" /></a> Todo el contenido de esta revista, excepto dónde está identificado, est&#225; bajo una <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/3.0/\">Licencia Creative Commons</a>"
+      }, 
+      "publication_start_month": 6
+    }, 
+  ...
+  ]
 
 Get a Journal Issue
 ====================
 
-Request:
+Request::
+
+  GET /api/v1/issues/:<collection_name_slug>/:<journal_issn>/:<issue_label>
 
 Parameters:
 
+  **collection_name_slug**
+
+    *String* of the name of a collection, for example: brasil, chile, cuba. If you doesn't know the 
+    available collections you can fetch it with the "Get Collections List"
+
+  **journal_issn**
+
+    *String* of the ISSN. The ISSN could be the print or electronic ISSN.
+
+  **issue_label**
+
+    *String* of the issue label, ex: v1n1, v20n2, vnahead
+
 Optional Parameters:
 
-Request Example:
+  **callback**
 
-Response Example:
+    *String* of the callback identifier to be returned when using JSONP.
+
+  **format**
+
+    *String* of the desired output format. The options are **xml, json, yml**. The default format is JSON.
+
+Request Example::
+
+  $ curl -X GET journalmanager.scielo.org/api/v1/issues/brasil/0102-6720/v22n1?callback=test
+
+  $ curl -X GET journalmanager.scielo.org/api/v1/issues/brasil/0102-6720/v22n1?format=xml
+
+Response Example::
+  
+  {
+    "is_marked_up": true, 
+    "total_documents": 15, 
+    "ctrl_vocabulary": "decs", 
+    "section": [], 
+    "number": "1", 
+    "publication_end_month": 0, 
+    "editorial_standard": "vancouv", 
+    "volume": "22", 
+    "publication_year": 2009, 
+    "is_press_release": false, 
+    "label": "v22n1", 
+    "use_license": {
+        "license_code": "BY-NC", 
+        "_state": "<django.db.models.base.ModelState object at 0x109fed3d0>", 
+        "reference_url": "http://creativecommons.org/licenses/by-nc/3.0/", 
+        "from_cache": false, 
+        "id": 2, 
+        "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/3.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"http://i.creativecommons.org/l/by-nc/3.0/80x15.png\" /></a> Todo el contenido de esta revista, excepto dónde está identificado, est&#225; bajo una <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-nc/3.0/\">Licencia Creative Commons</a>"
+      }, 
+    "publication_start_month": 3
+  }
