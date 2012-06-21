@@ -8,7 +8,7 @@ class Journal(AnonymousBaseHandler):
     allow_methods = ('GET',)
     fields = (
         'title',
-        ('collections', ('name',)),
+        ('collections', ()),
         ('publisher', ('name',)),
         ('sponsor', ('name',)),
         'previous_title',
@@ -53,6 +53,7 @@ class Collection(AnonymousBaseHandler):
     allow_methods = ('GET',)
     fields = (
         'name',
+        'name_slug',
         'acronym',
         'address',
         'address_number',
