@@ -29,6 +29,7 @@ and design decisions.
    dev/mockups
    dev/notes
    dev/exporttoisis
+   dev/api
 
 Indices and tables
 ==================
