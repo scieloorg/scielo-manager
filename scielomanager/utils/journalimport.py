@@ -3,8 +3,8 @@
 import json
 import os
 import difflib
-
 import subfield
+from datetime import date
 
 from django.core.management import setup_environ
 from django.core import exceptions
@@ -24,8 +24,13 @@ class JournalImport:
 
     def __init__(self):
         self._publishers_pool = []
-        self._centers_pool = []
+        self._sponsors_pool = []
         self._summary = {}
+        self.trans_pub_status = {'c':'current',
+            'd':'deceased',
+            's':'suspended',
+            '?':'inprogress',
+            }
 
     def iso_format(self, dates, string='-'):
         day = dates[6:8]
@@ -50,28 +55,6 @@ class JournalImport:
 
         self._summary[attribute] += 1
 
-    def have_similar_centers(self, match_string):
-        """
-        Function: have_similar_centers
-        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
-        instituticoes duplicadas.
-        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
-        False.
-        """
-        center_id=""
-
-        if len(self._centers_pool) > 0:
-            for inst in self._centers_pool:
-                if inst["match_string"] == match_string:
-                    center_id = inst["id"]
-                    break
-                else:
-                    center_id = False
-        else:
-            center_id = False
-
-        return center_id
-
     def have_similar_publishers(self, match_string):
         """
         Function: have_similar_publishers
@@ -94,37 +77,27 @@ class JournalImport:
 
         return publisher_id
 
-    def load_center(self, collection, record):
+    def have_similar_sponsors(self, match_string):
         """
-        Function: load_center
-        Retorna um objeto Center() caso a gravação do mesmo em banco de dados for concluida
+        Function: have_similar_sponsors
+        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
+        instituticoes duplicadas.
+        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
+        False.
         """
+        sponsor_id=""
 
-        center = Center()
-
-        # Centers Import
-        center.name = record['10'][0]
-        center.collection = collection
-
-        match_string=center.name
-
-        similar_key =  self.have_similar_centers(match_string)
-
-        loaded_center=""
-
-        if similar_key != False:
-            similar_center=Center.objects.get(id=similar_key)
-            similar_center.save()
-            self.charge_summary("centers_duplication_fix")
-            loaded_center = similar_center
+        if len(self._sponsors_pool) > 0:
+            for inst in self._sponsors_pool:
+                if inst["match_string"] == match_string:
+                    sponsor_id = inst["id"]
+                    break
+                else:
+                    sponsor_id = False
         else:
-            center.save(force_insert=True)
-            self.charge_summary("centers")
-            loaded_center = center
-            self._centers_pool.append(dict({"id":center.id,"match_string":match_string}))
+            sponsor_id = False
 
-        return loaded_center
-
+        return sponsor_id
 
     def load_publisher(self, collection, record):
         """
@@ -135,8 +108,10 @@ class JournalImport:
         publisher = Publisher()
 
         # Publishers Import
+        if not record.has_key('480'):
+            return []
+
         publisher.name = record['480'][0]
-        publisher.collection = collection
         publisher.address = " ".join(record['63'])
 
         match_string=publisher.name
@@ -153,11 +128,46 @@ class JournalImport:
             loaded_publisher = similar_publisher
         else:
             publisher.save(force_insert=True)
+            publisher.collections.add(collection)
             self.charge_summary("publishers")
             loaded_publisher = publisher
             self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
 
-        return loaded_publisher
+
+        return [loaded_publisher,]
+
+    def load_sponsor(self, collection, record):
+        """
+        Function: load_sponsor
+        Retorna um objeto Sponsor() caso a gravação do mesmo em banco de dados for concluida
+        """
+
+        sponsor = Sponsor()
+
+        # Sponsors Import
+        if not record.has_key('140'):
+            return []
+
+        sponsor.name = record['140'][0]
+
+        match_string=sponsor.name.strip()
+
+        similar_key =  self.have_similar_sponsors(match_string)
+
+        loaded_sponsor=""
+
+        if similar_key != False:
+            similar_sponsor=Sponsor.objects.get(id=similar_key)
+            self.charge_summary("sponsors_duplication_fix")
+            loaded_sponsor = similar_sponsor
+        else:
+            sponsor.save(force_insert=True)
+            sponsor.collections.add(collection)
+            self.charge_summary("sponsors")
+            loaded_sponsor = sponsor
+            self._sponsors_pool.append(dict({"id":sponsor.id,"match_string":match_string.strip()}))
+
+        return [loaded_sponsor,]
 
     def load_studyarea(self, journal, areas):
 
@@ -169,20 +179,24 @@ class JournalImport:
 
     def load_textlanguage(self, journal, langs):
 
+        from sectionimport import LANG_DICT as lang_dict
         for i in langs:
-            from sectionimport import LANG_DICT as lang_dict
-            language = Language(i, lang_dict.get(i, '###NOT FOUND###'))
-            journal.languages.add()
+            language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
+
+            journal.languages.add(language)
             self.charge_summary("language_%s" % i)
 
     def load_mission(self, journal, missions):
+        from sectionimport import LANG_DICT as lang_dict
 
         for i in missions:
-
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
-
             mission = JournalMission()
-            mission.language = parsed_subfields['l']
+            try:
+                language = Language.objects.get_or_create(iso_code = parsed_subfields['l'], name = lang_dict.get(parsed_subfields['l'], '###NOT FOUND###'))[0]
+                mission.language = language
+            except:
+                pass
             mission.description = parsed_subfields['_']
             journal.journalmission_set.add(mission)
             self.charge_summary("mission")
@@ -193,33 +207,55 @@ class JournalImport:
         lifecycles = {}
 
         for i in historicals:
-            parsed_subfields = subfield.CompositeField(subfield.expand(i))
+            expanded = subfield.expand(i)
+            parsed_subfields = dict(expanded)
             try:
                 lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
             except KeyError:
                 self.charge_summary("history_error_field")
-                return False
 
             try:
                 lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
             except KeyError:
                 self.charge_summary("history_error_field")
-                return False
 
-        print lifecycles
 
         for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
             try:
-                journalhist = JournalHist()
-                journalhist.date = cyclekey
-                journalhist.status = cyclevalue
-                journal.journalhist_set.add(journalhist)
-                self.charge_summary("life_cycle")
+                journalhist = JournalPublicationEvents()
+                journalhist.created_at = cyclekey
+                journalhist.status = self.trans_pub_status.get(cyclevalue.lower(),'inprogress')
+                journalhist.journal = journal
+                journalhist.changed_by_id = 1
+                journalhist.save()
+                journalhist.created_at = cyclekey
+                journalhist.save() #Updating to real date, once when saving the model is given a automatica value
+                self.charge_summary("publication_events")
             except exceptions.ValidationError:
-                self.charge_summary("history_error_data")
+                self.charge_summary("publications_events_error_data")
                 return False
 
         return True
+
+    def get_last_status(self, historicals):
+        import operator
+
+        lifecycles = {}
+
+        for i in historicals:
+            expanded = subfield.expand(i)
+            parsed_subfields = dict(expanded)
+            try:
+                lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
+            except KeyError:
+                self.charge_summary("history_error_field")
+
+            try:
+                lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
+            except KeyError:
+                self.charge_summary("history_error_field")
+
+        return sorted(lifecycles.iteritems())[-1][1]
 
     def load_title(self, journal, titles, category):
 
@@ -230,7 +266,10 @@ class JournalImport:
             journal.journaltitle_set.add(title)
             self.charge_summary("title")
 
-    def load_journal(self, collection, loaded_publisher, loaded_center, record):
+    def load_use_license(self):
+        return UseLicense.objects.get_or_create(license_code='###PLACEBO###')[0]
+
+    def load_journal(self, collection, loaded_publisher, loaded_sponsor, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -239,6 +278,7 @@ class JournalImport:
         issn_type=""
         print_issn=""
         electronic_issn=""
+        use_license = self.load_use_license()
         journal = Journal()
 
         if record['35'][0] == "PRINT":
@@ -258,10 +298,13 @@ class JournalImport:
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
-        journal.subject_descriptors = ', '.join(record['440'])
+        journal.use_license = use_license
+        journal.subject_descriptors = '\n'.join(record['440']).lower()
+
+        if record.has_key('450'):
+            journal.index_coverage = '\n'.join(record['450']).lower()
 
         # Text Language
-
         if record.has_key('301'):
             journal.init_year = record['301'][0]
 
@@ -283,8 +326,8 @@ class JournalImport:
         if record.has_key('380'):
             journal.frequency = record['380'][0]
 
-        if record.has_key('50'):
-            journal.pub_status = record['50'][0]
+        if record.has_key('51'):
+            journal.pub_status = self.trans_pub_status.get(self.get_last_status(record['51']).lower(),'inprogress')
 
         if record.has_key('340'):
             journal.alphabet = record['340'][0]
@@ -312,13 +355,17 @@ class JournalImport:
 
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
-
-        journal.publisher = loaded_publisher
-        journal.center = loaded_center
-
+        journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
+
+        journal.collections.add(collection)
+
         self.charge_summary("journals")
+
+        journal.publisher = loaded_publisher
+
+        journal.sponsor = loaded_sponsor
 
         # text language
         if record.has_key('350'):
@@ -332,23 +379,22 @@ class JournalImport:
         if record.has_key('901'):
             self.load_mission(journal,record['901'])
 
-        # historic
+        # historic - JournalPublicationEvents
         if record.has_key('51'):
             self.load_historic(journal,record['51'])
 
         # titles
         if record.has_key('421'):
-            self.load_title(journal,record['421'],'medline')
+            self.load_title(journal,record['421'],'other')
 
         if record.has_key('150'):
-            self.load_title(journal,record['150'],'shorttitle')
+            self.load_title(journal,record['150'],'other')
 
         if record.has_key('151'):
-            self.load_title(journal,record['151'],'lilacs')
+            self.load_title(journal,record['151'],'other')
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')
-
 
         return journal
 
@@ -365,8 +411,11 @@ class JournalImport:
 
         for record in json_parsed:
             loaded_publisher = self.load_publisher(collection, record)
-            loaded_center = self.load_center(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_center, record)
+            loaded_sponsor = self.load_sponsor(collection, record)
+            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_sponsor, record)
+
+        # Cleaning data
+        JournalPublicationEvents.objects.filter(created_at__month=date.today().month, created_at__year=date.today().year).delete()
 
     def get_summary(self):
         """

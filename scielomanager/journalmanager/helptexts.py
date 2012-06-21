@@ -3,9 +3,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from scielomanager import settings
 
+COLLECTION__ACRONYM = _("""Enter in this field the acronym of the journal, max 3 characters length.""")
+
 INSTITUTION__NAME = _("""Enter institution name.""")
 
-INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the journal, max 8 characters length, in capital letter or not.""")
+INSTITUTION__COMPLEMENT = _("""Enter institution complements as session, department, nucleo, etc """)
+
+INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the collection, max 8 characters length.""")
 
 INSTITUTION__COUNTRY = _("""Country of the Publication.""")
 
@@ -113,8 +117,6 @@ JOURNAL__SUBJECT_DESCRIPTORS = _("""Standard terms used for the subject represen
 JOURNAL__TITLE = _("""Main title or title proper of the serial, in the language and form in which it appears.""")
 
 JOURNAL__TREATMENT_LEVEL = _("""Treatment Type""")
-
-JOURNAL__URL_MAIN_COLLECTION = _("""Enter the URL of the main collection site. If the journal is published in SciELO Brazil, then www.scielo.br """)
 
 JOURNAL__URL_ONLINE_SUBMISSION= _("""Enter the URL of the submission site.""")
 

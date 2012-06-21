@@ -1,4 +1,5 @@
 # coding: utf-8
+import calendar
 
 SCIELO_ISSN = [
     ('print','print'),
@@ -17,7 +18,8 @@ SUBJECTS = [
     ('Humanities','Humanities'),
     ('Linguistics, Letters and Arts','Linguistics, Letters and Arts'),
     ('Mathematics','Mathematics'),
-    ('Social Sciences','Social Sciences'),    
+    ('Social Sciences','Social Sciences'),
+    ('Human Sciences', 'Human Sciences'),
 ]
 
 PUBLICATION_STATUS = [
@@ -25,17 +27,7 @@ PUBLICATION_STATUS = [
     ('D','Ceased'),
     ('R','Reports Only'),
     ('S','Suspended'),
-    ('?','Unknow'),   
-]
-
-ALPHABET = [
-    ('B','Extensive Roman'),
-    ('O','Another Alphabet'),
-    ('A','Basic Roman'),
-    ('E','Chinese'),
-    ('C','Cirilic'),
-    ('D','japanese'),
-    ('K','Korean'),    
+    ('?','Unknow'),
 ]
 
 LANGUAGE = [
@@ -45,24 +37,13 @@ LANGUAGE = [
 ]
 
 FREQUENCY = [
-    ('A','Annual'),
-    ('G','Biennial (every two years)'),
-    ('B','Bimonthly (every two months)'),
-    ('E','Biweekly (every two weeks)'),
-    ('D','Daily'),
-    ('K','Irregular (know to be so)'),
     ('M','Monthly'),
-    ('Z','Other Frequencies'),
+    ('B','Bimonthly (every two months)'),
     ('Q','Quaterly'),
-    ('F','Semiannual (twice a year)'),
-    ('S','Semimonthly (twice a month)'),
-    ('C','Semiweekly (twice a week)'),
-    ('J','Three times a month'),
-    ('I','Three times a week'),
     ('T','Three times a year'),
-    ('H','Triennial (Every three years)'),
-    ('?','Unknow'),
-    ('W','Weekly'),
+    ('F','Semiannual (twice a year)'),
+    ('A','Annual'),
+    ('K','Irregular (know to be so)'),
 ]
 
 STANDARD = [
@@ -78,58 +59,27 @@ CTRL_VOCABULARY = [
     ('decs','Health Sciences Descriptors'),
 ]
 
-LITERATURE_TYPE = [
-    ('C','Conference'),
-    ('SCP','Conference and Project papers as periodical series'),
-    ('MC','Conference papers as Monograph'),
-    ('MSC','Conference papers as Monograph Series'),
-    ('SC','Conference papers as Periodical Series'),
-    ('NC','Conference papers in a non conventional form'),
-    ('N','Document in a non conventional form'),
-    ('M','Monograph'),
-    ('MS','Monograph Series'),
-    ('P','Project'),
-    ('MCP','Project and Conference papers as Monograph'),
-    ('MO','Project papers as Monograph'),
-    ('MSP','Project papers as Monograph Series'),
-    ('SP','Project papers as Periodical Series'),
-    ('NP','Project papers in a non conventional form'),
-    ('S','Serial'),
-    ('T','Thesis and Dissertation'),
-    ('TS','Thesis Series'),
-]
-
-TREATMENT_LEVEL = [
-    ('am','analytical of a monograph'),
-    ('amc','analytical of a monograph in collection'),
-    ('ams','analytical of a monograph in a serial'),
-    ('as','analytical of a serial'),
-    ('c','collective level'),
-    ('mc','monographic in a collection'),
-    ('m','monographic level'),
-    ('ms','monographic series level'),
-]
-
 PUBLICATION_LEVEL = [
     ('CT','Scientific Technical'),
     ('DI','Divulgation')
 ]
 
-JOURNAL_HIST_STATUS = [
-    ('C','CURRENT'),
-    ('D','Deceased'),
-    ('S','Suspended'),
-]
 PDF_DOWNLOAD = [
     ('art','article based - a PDF file for each article'),
     ('iss','issue based - a PDF file for each issue'),
     ('na','Not Available'),
-] 
-TITLE_CATEGORY = [
-    ('medline','Medline'),
-    ('lilacs','LILACS'),
-    ('iso','ISO'),
-    ('paralleltitle','Parallel Title'),
-    ('shorttitle','Short Title'),
-    ('other','Other'), 
 ]
+TITLE_CATEGORY = [
+    ('paralleltitle','Parallel Title'),
+    ('other','Other'),
+]
+
+JOURNAL_PUBLICATION_STATUS = [
+    ('current', 'Current'),
+    ('deceased', 'Deceased'),
+    ('suspended', 'Suspended'),
+    ('inprogress', 'In Progress'),
+]
+
+# the index 0 has an empty value
+MONTHS = [(i, month) for i, month in enumerate(calendar.month_name) if i > 0]

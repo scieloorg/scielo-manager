@@ -27,6 +27,7 @@ DATABASES = {
 }
 
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+GRAVATAR_BASE_URL = 'https://secure.gravatar.com'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -60,7 +61,7 @@ USE_L10N = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-#MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
+MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 #STATIC_ROOT = os.path.join(PROJECT_PATH, 'static/')
 
 # URL prefix for static files.
@@ -141,6 +142,7 @@ INSTALLED_APPS = (
     'journalmanager',
     'south',
     'scielo_extensions',
+    'widget_tweaks',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
@@ -157,8 +159,8 @@ TEMPLATE_CONTEXT_PROCESSORS =(
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 MESSAGE_TAGS = {
     messages.INFO: 'alert-heading',
-    messages.SUCCESS: 'alert-heading',
-    messages.WARNING: 'alert-error',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-error',
 }
 
@@ -200,6 +202,22 @@ TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
 
 PAGINATION__ITEMS_PER_PAGE = 20
 
+CACHE_PREFIX = 'scielomanager:'
+
+CACHES = {
+    'default': {
+        #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'LOCATION': '',
+    }
+}
+
+CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
+
+FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.MemoryFileUploadHandler",
+ "django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440 # 2.5Mb
 ### END App customization settings
 #################################################################
 

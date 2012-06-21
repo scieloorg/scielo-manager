@@ -9,8 +9,10 @@ from scielomanager.journalmanager import tests_assets
 from scielomanager.journalmanager.models import Collection
 from scielomanager.journalmanager.models import Journal
 from scielomanager.journalmanager.models import Publisher
+from scielomanager.journalmanager.models import Sponsor
 from scielomanager.journalmanager.models import Issue
-from scielomanager.journalmanager.models import Center
+from scielomanager.journalmanager.models import UserCollections
+from scielomanager.journalmanager.models import Section
 
 from scielomanager.journalmanager.forms import JournalForm
 
@@ -27,7 +29,7 @@ def with_sample_journal(func):
 
 def with_sample_issue(func):
     """
-    Decorator that creates a sample Journal instance
+    Decorator that creates a sample Issue instance
     and destructs it at the end of the execution.
     """
     def decorated(self=None):
@@ -36,17 +38,27 @@ def with_sample_issue(func):
         self._destroy_issue()
     return decorated
 
-def with_sample_center(func):
+def with_sample_publisher(func):
     """
-    Decorator that creates a sample Journal instance
+    Decorator that creates a sample Publisher instance
     and destructs it at the end of the execution.
     """
     def decorated(self=None):
-        self._create_center()
+        self._create_publisher()
         func(self)
-        self._destroy_center()
+        self._destroy_publisher()
     return decorated
 
+def with_sample_sponsor(func):
+    """
+    Decorator that creates a sample Sponsor instance
+    and destructs it at the end of the execution.
+    """
+    def decorated(self=None):
+        self._create_sponsor()
+        func(self)
+        self._destroy_sponsor()
+    return decorated
 
 class LoggedInViewsTest(TestCase):
     """
@@ -73,22 +85,42 @@ class LoggedInViewsTest(TestCase):
         self.client = Client()
         self.client.login(username='dummyuser', password='123')
 
+    def tearDown(self):
+        """
+        Destroying the data
+        """
+        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+            m.objects.all().delete()
+
     def _create_journal(self):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
         sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.collection = self.collection
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection,]
         sample_publisher.save()
 
-        sample_journal.publisher = sample_publisher
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.save()
+
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
+        sample_journal.save()
+        sample_journal.publisher = [sample_publisher,]
+        sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
 
         sample_journal.save()
 
     def _destroy_journal(self):
-        Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xe3o Paulo)').delete()
+        pass
 
     def _create_issue(self):
         self._create_journal()
@@ -103,16 +135,47 @@ class LoggedInViewsTest(TestCase):
         sample_section.save()
 
     def _destroy_issue(self):
-        self._destroy_journal
+        pass
 
-    def _create_center(self):
+    def _create_publisher(self):
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection]
+        sample_publisher.save()
 
-        sample_center = tests_assets.get_sample_center()
-        sample_center.collection = self.collection
-        sample_center.save()
+    def _destroy_publisher(self):
+        pass
 
-    def _destroy_center(self):
-        Center.objects.get(name = u'Associação Nacional de História - ANPUH').delete()
+    def _create_sponsor(self):
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection]
+        sample_sponsor.save()
+
+    def _destroy_sponsor(self):
+        pass
+
+    @with_sample_journal
+    def test_edit_journal_status(self):
+        """
+        View: test_edit_journal_status
+
+        Test the feature created to change the journal Status.
+        """
+        from models import Journal
+        from models import Section
+        journal = Journal.objects.all()[0]
+
+        # Testing access the status page.
+        response = self.client.get(reverse('journal_status.edit', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse('journal_status.edit', args=[journal.pk]), {
+            'pub_status': 'deceased',
+            'pub_status_reason': 'Motivo 1',
+            })
+        self.assertRedirects(response, reverse('journal_status.edit', args=[journal.pk]))
+
 
     def test_index(self):
         """
@@ -221,34 +284,32 @@ class LoggedInViewsTest(TestCase):
         sample_publisher.collection = self.collection
         sample_publisher.save()
 
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.collection = self.collection
+        sample_sponsor.save()
+
         sample_uselicense = tests_assets.get_sample_uselicense()
         sample_uselicense.save()
-
-        sample_indexdatabase = tests_assets.get_sample_index_database()
-        sample_indexdatabase.save()
-
-        sample_center = tests_assets.get_sample_center()
-        sample_center.collection = self.collection
-        sample_center.save()
 
         sample_language = tests_assets.get_sample_language()
         sample_language.save()
 
         #missing data
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
+            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
+                                                     'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'indexcoverage-0-database': sample_indexdatabase.pk,}))
+                                                     }))
+
         self.assertTrue('some errors or missing data' in response.content)
 
-
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': sample_publisher.pk,
+            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
+                                                     'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-use_license': sample_uselicense.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'indexcoverage-0-database': sample_indexdatabase.pk,
-                                                     'journal-center': sample_center.pk,
-                                                     'journal-languages': [sample_language.pk], }))
+                                                     'journal-languages': [sample_language.pk],
+                                                     'mission-0-language': sample_language.pk,}))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -256,12 +317,12 @@ class LoggedInViewsTest(TestCase):
         testing_journal = Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)')
         response = self.client.post(reverse('journal.edit', args = (testing_journal.pk,)),
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
-                                                     'journal-publisher': sample_publisher.pk,
+                                                     'journal-publisher': [sample_publisher.pk],
+                                                     'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-use_license': sample_uselicense.pk,
-                                                     'indexcoverage-0-database': sample_indexdatabase.pk,
                                                      'journal-collections': [self.usercollections.pk],
-                                                     'journal-center': sample_center.pk,
-                                                     'journal-languages': [sample_language.pk], }))
+                                                     'journal-languages': [sample_language.pk],
+                                                     'mission-0-language': sample_language.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
@@ -287,6 +348,48 @@ class LoggedInViewsTest(TestCase):
         self.assertRedirects(response, reverse('publisher.index'))
         modified_testing_publisher = Publisher.objects.get(name = 'Modified Title')
         self.assertEqual(testing_publisher, modified_testing_publisher)
+
+    def test_add_collection(self):
+        '''
+        Testing edit the collections contents.
+
+        New collections are not being included by the users. Only in Django admin module.
+        '''
+        testing_collection = Collection.objects.get(name = u'SciELO')
+
+        #Calling Collection Form
+        response = self.client.get(reverse('collection.edit', args = (testing_collection.pk,)))
+        self.assertEqual(response.status_code, 200)
+
+        #edit collection - must be changed
+        response = self.client.post(reverse('collection.edit', args = (testing_collection.pk,)),
+            tests_assets.get_sample_collection_dataform({'collection-name': 'Modified Name', }))
+
+        self.assertRedirects(response, reverse('collection.edit', args = (testing_collection.pk,)))
+
+        modified_testing_collection = Collection.objects.get(name = 'Modified Name')
+        self.assertEqual(testing_collection, modified_testing_collection)
+
+    def test_add_sponsor(self):
+        #empty form
+        response = self.client.get(reverse('sponsor.add'))
+        self.assertEqual(response.status_code, 200)
+
+        #add sponsor - must be added
+        response = self.client.post(reverse('sponsor.add'),
+            tests_assets.get_sample_sponsor_dataform({'sponsor-collections': [self.usercollections.pk]}))
+
+        self.assertRedirects(response, reverse('sponsor.index'))
+
+        #edit sponsor - must be changed
+        testing_sponsor = Sponsor.objects.get(name = u'Fundação de Amparo a Pesquisa do Estado de São Paulo')
+        response = self.client.post(reverse('sponsor.edit', args = (testing_sponsor.pk,)),
+            tests_assets.get_sample_sponsor_dataform({'sponsor-name': 'Modified Title',
+                                                        'sponsor-collections': [self.usercollections.pk], }))
+
+        self.assertRedirects(response, reverse('sponsor.index'))
+        modified_testing_sponsor = Sponsor.objects.get(name = 'Modified Title')
+        self.assertEqual(testing_sponsor, modified_testing_sponsor)
 
     @with_sample_journal
     def test_add_section(self):
@@ -340,17 +443,16 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('issue.add', args=[journal.pk]))
         self.assertEqual(response.status_code, 200)
 
-        #add - should work
-        sample_license = tests_assets.get_sample_uselicense()
-        sample_license.save()
-
         sample_section = tests_assets.get_sample_section()
         sample_section.journal = journal
         sample_section.save()
 
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
         response = self.client.post(reverse('issue.add', args=[journal.pk]),
-            tests_assets.get_sample_issue_dataform(section=sample_section.pk,
-                                                   use_license=sample_license.pk))
+            tests_assets.get_sample_issue_dataform({'section':sample_section.pk,
+                                                    'use_license': journal.use_license.pk,
+                                                    'title-0-language':sample_language.pk,}))
 
         self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
 
@@ -359,35 +461,6 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.get(reverse('issue.edit', args=[journal.pk, journal.issue_set.all()[0].pk]))
         self.assertEqual(response.status_code, 200)
-
-    def test_add_center(self):
-
-        #empty form
-        response = self.client.get(reverse('center.add'))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('center.add'),
-            tests_assets.get_sample_center_dataform({
-                'center-collections': [self.usercollections.pk]
-                }))
-
-        self.assertRedirects(response, reverse('center.index'))
-
-        response = self.client.get(reverse('center.edit', args=[Center.objects.all()[0].pk]))
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(reverse('center.edit', args=[Center.objects.all()[0].pk]),
-            tests_assets.get_sample_center_dataform({
-                'center-name': u'Associação Nacional de História - ANPUH - modified',
-                'center-collections': [self.usercollections.pk]
-                }))
-
-        self.assertRedirects(response, reverse('center.index'))
-
-        self.assertQuerysetEqual(Center.objects.all(), [
-                "<Center: Associação Nacional de História - ANPUH - modified>",
-              ]
-          )
 
     @with_sample_journal
     def test_journal_index(self):
@@ -432,17 +505,26 @@ class LoggedInViewsTest(TestCase):
             unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
-    @with_sample_center
-    def test_center_index(self):
+    @with_sample_journal
+    def test_sponsor_index(self):
         """
-        Logged user verify list of centers
+        View: sponsor_index
+
+        Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get(reverse('center.index'))
-        self.assertTrue('objects_center' in response.context)
+        response = self.client.get('/journal/sponsor/')
 
-        self.assertEqual(response.context['objects_center'].object_list[0].name, u'Associação Nacional de História - ANPUH')
-        self.assertEqual(response.context['objects_center'].object_list.count(), 1)
+        #url dispatcher
+        self.assertEqual(response.status_code, 200)
 
+        #values passed to template
+        self.assertTrue('objects_sponsor' in response.context)
+        self.assertTrue('user_collections' in response.context)
+
+        #testing content
+        self.assertEqual(u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
+            unicode(response.context['objects_sponsor'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
 
     @with_sample_journal
     def test_search_journal(self):
@@ -484,36 +566,25 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
-    @with_sample_center
-    def test_search_center(self):
+    @with_sample_journal
+    def test_search_sponsor(self):
         """
-        View: search_center
+        View: search_sponsor
 
         Tests url dispatch and values returned by the view to the template
         """
-        response = self.client.get(reverse('center.index') + '?q=Associação')
+        response = self.client.get(reverse('sponsor.index') + '?q=Amparo')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
 
-        #values passed to template
-        self.assertTrue('objects_center' in response.context)
+        # #values passed to template
+        self.assertTrue('objects_sponsor' in response.context)
+        self.assertTrue('user_collections' in response.context)
 
-        #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_center'].object_list[0].name))
-        self.assertTrue(1, len(response.context['objects_center'].object_list))
-
-    @with_sample_journal
-    def test_toggle_journal_availability(self):
-        pre_journal = Journal.objects.all()[0]
-        response = self.client.get(reverse('journal.toggle_availability', args=[pre_journal.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        pos_journal = Journal.objects.all()[0]
-
-        self.assertEqual(pre_journal, pos_journal)
-        self.assertTrue(pre_journal.is_available is not pos_journal.is_available)
-
-        response = self.client.get(reverse('journal.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 400)
+        # #testing content
+        self.assertEqual(u'Fundação de Amparo a Pesquisa do Estado de São Paulo', unicode(response.context['objects_sponsor'].object_list[0].name))
+        self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
 
     @with_sample_journal
     def test_toggle_publisher_availability(self):
@@ -522,9 +593,21 @@ class LoggedInViewsTest(TestCase):
         pos_publisher = Publisher.objects.all()[0]
 
         self.assertEqual(pre_publisher, pos_publisher)
-        self.assertTrue(pre_publisher.is_available is not pos_publisher.is_available)
+        self.assertTrue(pre_publisher.is_trashed is not pos_publisher.is_trashed)
 
         response = self.client.get(reverse('publisher.toggle_availability', args=[9999999]))
+        self.assertEqual(response.status_code, 400)
+
+    @with_sample_journal
+    def test_toggle_sponsor_availability(self):
+        pre_sponsor = Sponsor.objects.all()[0]
+        response = self.client.get(reverse('sponsor.toggle_availability', args=[pre_sponsor.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        pos_sponsor = Sponsor.objects.all()[0]
+
+        self.assertEqual(pre_sponsor, pos_sponsor)
+        self.assertTrue(pre_sponsor.is_trashed is not pos_sponsor.is_trashed)
+
+        response = self.client.get(reverse('sponsor.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
     @with_sample_issue
@@ -534,21 +617,9 @@ class LoggedInViewsTest(TestCase):
         pos_issue = Issue.objects.all()[0]
 
         self.assertEqual(pre_issue, pos_issue)
-        self.assertTrue(pre_issue.is_available is not pos_issue.is_available)
+        self.assertTrue(pre_issue.is_trashed is not pos_issue.is_trashed)
 
         response = self.client.get(reverse('issue.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 400)
-
-    @with_sample_center
-    def test_toggle_center_availability(self):
-        pre_center = Center.objects.all()[0]
-        response = self.client.get(reverse('center.toggle_availability', args=[pre_center.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        pos_center = Center.objects.all()[0]
-
-        self.assertEqual(pre_center, pos_center)
-        self.assertTrue(pre_center.is_available is not pos_center.is_available)
-
-        response = self.client.get(reverse('center.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
     def test_toggle_user_availability(self):
@@ -562,111 +633,57 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
-    @with_sample_journal
-    def test_journal_availability_list(self):
-
-        pre_journal = Journal.objects.all()[0]
-        response = self.client.get(reverse('journal.index') + '?is_available=1')
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
-
-        #change object atribute is_available
-        pre_journal.is_available = False
-        pre_journal.save()
-
-        response = self.client.get(reverse('journal.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['objects_journal'].object_list), 1)
-
-
-    @with_sample_journal
+    @with_sample_publisher
     def test_publisher_availability_list(self):
-
         publisher = Publisher.objects.all()[0]
+
         response = self.client.get(reverse('publisher.index'))
-        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, True)
+        for pub in response.context['objects_publisher'].object_list:
+            self.assertEqual(pub.is_trashed, False)
 
         #change atribute is_available
-        publisher.is_available = False
+        publisher.is_trashed = True
         publisher.save()
 
         response = self.client.get(reverse('publisher.index') + '?is_available=0')
-        self.assertEqual(response.context['objects_publisher'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['objects_publisher'].object_list), 1)
+        self.assertEqual(len(response.context['objects_publisher'].object_list), 0)
 
-    @with_sample_journal
-    def test_bulk_action_availability(self):
-        journal = Journal.objects.all()[0]
+    @with_sample_sponsor
+    def test_sponsor_availability_list(self):
+        sponsor = Sponsor.objects.all()[0]
+        response = self.client.get(reverse('sponsor.index'))
+        for spr in response.context['objects_sponsor'].object_list:
+            self.assertEqual(spr.is_trashed, False)
 
-        response = self.client.get(reverse('journal.index'))
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, True)
+        #change atribute is_available
+        sponsor.is_trashed = True
+        sponsor.save()
 
-        self.client.post(reverse('journal.bulk_action', args=['is_available', '0']), {'action': journal.id})
+        response = self.client.get(reverse('sponsor.index') + '?is_available=0')
+        self.assertEqual(len(response.context['objects_sponsor'].object_list), 0)
 
-        response = self.client.get(reverse('journal.index'))
-        self.assertEqual(response.context['objects_journal'].object_list[0].is_available, False)
 
     @with_sample_issue
     def test_issue_availability_list(self):
 
-        issue = Issue.objects.all()[0]
-        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]))
-        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, True)
+        first_issue = Issue.objects.all()[0]
+        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]))
+
+        for year, volumes in response.context['issue_grid'].items():
+            for volume, issues in volumes.items():
+                for issue in issues:
+                    self.assertEqual(issue.is_trashed, False)
 
         #change atribute is_available
-        issue.is_available = False
-        issue.save()
+        first_issue.is_trashed = True
+        first_issue.save()
 
-        response = self.client.get(reverse('issue.index', args=[issue.journal.pk]) + '?is_available=0')
-        self.assertEqual(response.context['objects_issue'].object_list[0].is_available, False)
-        self.assertEqual(len(response.context['objects_issue'].object_list), 1)
+        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
 
-
-    def test_add_user(self):
-        """
-        Create user and verify content on database
-        """
-        response = self.client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
-                'usercollections-0-collection': self.usercollections.pk,
-                'usercollections-0-is_manager': True,
-                'usercollections-0-is_default': True,}))
-
-        self.assertRedirects(response, reverse('user.index'))
-
-        self.assertEqual(str(User.objects.all()[1].username), tests_assets.get_sample_user_dataform()['user-username'])
-
-        self.assertQuerysetEqual(User.objects.all(), [
-                "<User: dummyuser>",
-                "<User: dummyuser_add>",
-              ]
-          )
-
-    def test_edit_user(self):
-        """
-        Edit user and verify content on database
-        """
-        user = User.objects.all()[0]
-
-        response = self.client.get(reverse('user.edit', args=[user.pk]))
-        self.assertEqual(response.context['user'], user)
-
-        response = self.client.post(reverse('user.edit', args=(user.pk,)),
-                tests_assets.get_sample_user_dataform({
-                'user-username': 'dummyuser_edit',
-                'usercollections-0-collection': self.collection.pk,
-                'usercollections-0-is_manager': True,
-                'usercollections-0-is_default': True,
-                }))
-
-        self.assertRedirects(response, reverse('user.index'))
-
-        user = User.objects.all()[0]
-
-        self.assertEqual(user.username, u'dummyuser_edit')
-
-        self.assertQuerysetEqual(User.objects.all(), [
-                "<User: dummyuser_edit>",
-              ]
-          )
+        for year, volumes in response.context['issue_grid'].items():
+            for volume, issues in volumes.items():
+                for issue in issues:
+                    self.assertEqual(issue.is_trashed, True)
 
     def test_contextualized_collection_field_on_add_journal(self):
         """
@@ -706,10 +723,11 @@ class LoggedInViewsTest(TestCase):
         for qset_item in response.context['add_form'].fields['collections'].queryset:
             self.assertTrue(qset_item in user_collections)
 
-    def test_contextualized_collection_field_on_add_center(self):
+
+    def test_contextualized_collection_field_on_add_sponsor(self):
         """
         A user has a manytomany relation to Collection entities. So, when a
-        user is registering a new Center, he can only bind it to
+        user is registering a new Sponsor, he can only bind it to
         the Collections he relates to.
 
         Covered cases:
@@ -717,7 +735,7 @@ class LoggedInViewsTest(TestCase):
           user.
         """
         from journalmanager.views import get_user_collections
-        response = self.client.get(reverse('center.add'))
+        response = self.client.get(reverse('sponsor.add'))
         self.assertEqual(response.status_code, 200)
 
         user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
@@ -729,7 +747,7 @@ class LoggedInViewsTest(TestCase):
     def test_contextualized_language_field_on_add_section(self):
         """
         A user has a manytomany relation to Collection entities. So, when a
-        user is registering a new Center, he can only bind it to
+        user is registering a new Section, he can only bind it to
         the Collections he relates to.
 
         Covered cases:
@@ -750,7 +768,33 @@ class LoggedInViewsTest(TestCase):
         for qset_item in response.context['section_title_formset'].forms[0].fields['language'].queryset:
             self.assertTrue(qset_item in journal.languages.all())
 
+    @with_sample_journal
+    def test_journal_trash(self):
+        from journalmanager.views import get_user_collections
+        response = self.client.get(reverse('trash.listing'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['trashed_docs'].object_list), 0)
+
+        journal = Journal.objects.all()[0]
+        journal.is_trashed = True
+        journal.save()
+
+        response = self.client.get(reverse('trash.listing'))
+        self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
+
+
 class LoggedOutViewsTest(TestCase):
+
+    def test_index(self):
+        """
+        Logged out user try access index page
+        """
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTrue('SciELO Manager' in response.content)
+
+class UserViewsTest(TestCase):
 
     def setUp(self):
         """
@@ -860,6 +904,60 @@ class LoggedOutViewsTest(TestCase):
         """
         response = self.client.get(reverse('journalmanager.password_change'))
         self.assertRedirects(response, reverse('journalmanager.user_login') + '?next=/myaccount/password/')
+
+
+    def test_add_user(self):
+        """
+        Login and Create user and verify content on database
+        """
+        client = Client()
+        client.login(username='dummyuser', password='123')
+
+        response = client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
+                'usercollections-0-collection': self.usercollections.pk,
+                'usercollections-0-is_manager': True,
+                'usercollections-0-is_default': True,}))
+
+        self.assertRedirects(response, reverse('user.index'))
+
+        self.assertEqual(str(User.objects.all()[1].username), tests_assets.get_sample_user_dataform()['user-username'])
+
+        self.assertQuerysetEqual(User.objects.all(), [
+                "<User: dummyuser>",
+                "<User: dummyuser_add>",
+              ]
+          )
+
+    def test_edit_user(self):
+        """
+        Login user and Edit user and verify content on database
+        """
+        client = Client()
+        client.login(username='dummyuser', password='123')
+
+        user = User.objects.all()[0]
+
+        response = client.get(reverse('user.edit', args=[user.pk]))
+        self.assertEqual(response.context['user'], user)
+
+        response = client.post(reverse('user.edit', args=(user.pk,)),
+                tests_assets.get_sample_user_dataform({
+                'user-username': 'dummyuser_edit',
+                'usercollections-0-collection': self.collection.pk,
+                'usercollections-0-is_manager': True,
+                'usercollections-0-is_default': True,
+                }))
+
+        self.assertRedirects(response, reverse('user.index'))
+
+        user = User.objects.all()[0]
+
+        self.assertEqual(user.username, u'dummyuser_edit')
+
+        self.assertQuerysetEqual(User.objects.all(), [
+                "<User: dummyuser_edit>",
+              ]
+          )
 
 class ToolsTest(TestCase):
     def test_paginator_factory(self):

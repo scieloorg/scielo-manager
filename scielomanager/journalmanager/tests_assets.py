@@ -34,14 +34,14 @@ def get_sample_journal_dataform(dict_params=None):
     journal_attrs = {
       'journal-sponsor': 'FAPESP',
       'journal-ctrl_vocabulary': 'decs',
-      'journal-national_code': '083653-2',
       'journal-frequency': 'Q',
       'journal-final_num': '',
       'journal-validated': False,
-      'journal-treatment_level': 'c',
-      'journal-eletronic_issn': '',
+      'journal-eletronic_issn': '0102-6720',
       'journal-init_vol': '1',
       'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
+      'journal-title_iso': u'ABCD. Arquivos B. de C. D. (São Paulo)',
+      'journal-short_title': u'ABCD.(São Paulo)',
       'journal-editorial_standard': 'vancouv',
       'journal-scielo_issn': 'print',
       'journal-secs_code': '6633',
@@ -50,13 +50,13 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-acronym': 'ABCD',
       'journal-pub_level': 'CT',
       'journal-init_num': '1',
-      'journal-literature_type': 'S',
       'journal-created': '2012-01-19 15:44:21',
       'journal-final_vol': '',
       'journal-subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'journal-pub_status': 'C',
-      'journal-alphabet': 'B',
+      'journal-pub_status_changed_by': 'O motivo da mudança é...',
       'journal-print_issn': '0102-6720',
+      'journal-copyrighter': 'Texto do copyrighter',
 
       #Title formset data
       'title-TOTAL_FORMS': 1,
@@ -73,7 +73,7 @@ def get_sample_journal_dataform(dict_params=None):
       'mission-TOTAL_FORMS': 1,
       'mission-INITIAL_FORMS': 0,
       'mission-0-description': 'To publish original scientific papers about Amazonia...',
-      'mission-0-language': 'pt',
+
 
       #History Language formset data
       'hist-TOTAL_FORMS': 1,
@@ -81,11 +81,6 @@ def get_sample_journal_dataform(dict_params=None):
       'hist-0-date': '2005-10-10',
       'hist-0-status': 'C',
 
-      #History Language formset data
-      'indexcoverage-TOTAL_FORMS': 1,
-      'indexcoverage-INITIAL_FORMS': 0,
-      'indexcoverage-0-title': 'ABCD. Arquivos Brasileiros de Cirurgia....',
-      'indexcoverage-0-identify': 'ABDC-Medline',
     }
 
     journal_attrs.update(dict_params)
@@ -111,7 +106,7 @@ def get_sample_institution_dataform(dict_params=None):
       'institution-Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'institution-mail': 'teste@scielo.org',
       'institution-Address_complement': '',
-      'institution-is_available': True,
+      'institution-is_trashed': False,
 
       #Collection formset data
       'institutioncollections-TOTAL_FORMS': 1,
@@ -121,7 +116,52 @@ def get_sample_institution_dataform(dict_params=None):
 
     institution_attrs.update(dict_params)
 
-    return publisher_attrs
+    return institution_attrs
+
+def get_sample_collection_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    sponsor_attrs = {
+      'collection-url': u'http://www.scielo.br/',
+      'collection-validated': True,
+      'collection-name': u'SciELO',
+      'collection-address_number': u'430',
+      'collection-country': u'Brasil',
+      'collection-address': u'Rua Machado Bittencourt',
+      'collection-mail': u'fapesp@scielo.org',
+    }
+
+    sponsor_attrs.update(dict_params)
+
+    return sponsor_attrs
+
+def get_sample_sponsor_dataform(dict_params=None):
+
+    if dict_params is None:
+        dict_params = {}
+
+    sponsor_attrs = {
+      'sponsor-city': '',
+      'sponsor-fax': '',
+      'sponsor-validated': True,
+      'sponsor-name': u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
+      'sponsor-address_number': '222',
+      'sponsor-acronym': 'FAPESP',
+      'sponsor-country': 'BR',
+      'sponsor-cel': '',
+      'sponsor-phone': '',
+      'sponsor-state': '',
+      'sponsor-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'sponsor-mail': 'fapesp@scielo.org',
+      'sponsor-address_complement': '',
+      'sponsor-is_trashed': False,
+    }
+
+    sponsor_attrs.update(dict_params)
+
+    return sponsor_attrs
 
 def get_sample_publisher_dataform(dict_params=None):
 
@@ -142,31 +182,44 @@ def get_sample_publisher_dataform(dict_params=None):
       'publisher-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'publisher-mail': 'teste@scielo.org',
       'publisher-address_complement': '',
-      'publisher-is_available': True,
+      'publisher-is_trashed': False,
     }
 
     publisher_attrs.update(dict_params)
 
     return publisher_attrs
 
-def get_sample_issue_dataform(**kwargs):
+def get_sample_issue_dataform(dict_params=None):
     """
     Missing attributes: ['update_date', 'title', 'publisher_fullname', 'creation_date',
-        'bibliographic_strip', 'section', 'use_license']
+        'section', 'use_license']
     """
+    if dict_params is None:
+        dict_params = {}
+
     issue_attrs = {
         'total_documents': 16,
         'ctrl_vocabulary': '',
         'number': '3',
         'volume': '29',
         'editorial_standard': '',
-        'is_available': True,
+        'is_trashed': False,
         'is_press_release': False,
-        'publication_date': '1998-09-01',
+        'publication_start_month': 9,
+        'publication_end_month': 11,
+        'publication_year': 2012,
         'is_marked_up': False,
+        'publisher_fullname': 'Publisher Fullname',
+        'editorial_standard': 'other',
+
+        #Title formset data
+        'title-TOTAL_FORMS': 1,
+        'title-INITIAL_FORMS': 0,
+        'title-0-title': 'TITLE FORMSET TEST',
+
     }
 
-    issue_attrs.update(kwargs)
+    issue_attrs.update(dict_params)
 
     return issue_attrs
 
@@ -220,21 +273,20 @@ def get_sample_journal():
     to another model object):
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
-       'indexing_coverage', 'use_license', 'previous_title_id', 'url_main_collection',
-       'publisher', 'center', 'notes',]
+       'use_license', 'previous_title_id', 'url_main_collection',
+       'publisher', 'center', 'notes','pub_status_changed_by']
     """
 
     journal_attrs = {
-      'sponsor': 'FAPESP',
       'ctrl_vocabulary': 'decs',
-      'national_code': '083653-2',
       'frequency': 'Q',
       'final_num': '',
       'validated': False,
-      'treatment_level': 'c',
       'eletronic_issn': '',
       'init_vol': '1',
       'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
+      'title_iso': u'ABCD. Arquivos B. de C. D. (São Paulo)',
+      'short_title': u'ABCD.(São Paulo)',
       'editorial_standard': 'vancouv',
       'scielo_issn': 'print',
       'secs_code': '6633',
@@ -243,14 +295,12 @@ def get_sample_journal():
       'acronym': 'ABCD',
       'pub_level': 'CT',
       'init_num': '1',
-      'literature_type': 'S',
       'created': '2012-01-19 15:44:21',
       'final_vol': '',
       'subject_descriptors': 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA',
       'pub_status': 'C',
-      'alphabet': 'B',
+      'pub_status_reason': 'Motivo da mudança é...',
       'print_issn': '0102-6720',
-      'is_available': True,
     }
 
     return models.Journal(**journal_attrs)
@@ -288,9 +338,44 @@ def get_sample_collection(validated = True):
       'url': 'http://www.scielo.br/',
       'validated': validated,
       'name': 'SciELO',
+      'fax': '11 5555-4444',
+      'address_number': '430',
+      'country': 'Brasil',
+      'state': 'São Paulo',
+      'city': 'São Paulo',
+      'address': u'Rua Machado Bittencourt',
+      'mail': 'fapesp@scielo.org',
     }
 
     return models.Collection(**collection_attrs)
+
+def get_sample_sponsor(validated = True):
+    """
+    Returns a sponsor object, without the following attributes (non mandatory or need to be bound
+    to another model object):
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+       'address_complement']
+    """
+
+    sponsor_attrs = {
+      'city': '',
+      'fax': '',
+      'validated': validated,
+      'name': u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
+      'address_number': '',
+      'acronym': 'FAPESP',
+      'country': '',
+      'cel': '',
+      'phone': '',
+      'state': '',
+      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
+      'mail': '',
+      'address_complement': '',
+      'is_trashed': False,
+
+    }
+
+    return models.Sponsor(**sponsor_attrs)
 
 def get_sample_publisher(validated = True):
     """
@@ -314,7 +399,7 @@ def get_sample_publisher(validated = True):
       'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
       'mail': '',
       'address_complement': '',
-      'is_available': True,
+      'is_trashed': False,
 
     }
 
@@ -329,75 +414,6 @@ def get_sample_uselicense():
     }
 
     return models.UseLicense(**uselicense_attrs)
-
-def get_sample_center(validated = True):
-    """
-    Returns a center object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'address_complement']
-    """
-
-    center_attrs = {
-      'city': '',
-      'fax': '',
-      'validated': validated,
-      'name': u'Associação Nacional de História - ANPUH',
-      'address_number': '',
-      'acronym': 'rbh',
-      'country': '',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': '',
-      'address_complement': '',
-      'is_available': True,
-    }
-
-    return models.Center(**center_attrs)
-
-def get_sample_center_dataform(dict_params=None):
-
-    if dict_params is None:
-        dict_params = {}
-
-    """
-    Returns a center object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
-       'address_complement']
-    """
-
-    center_attrs = {
-      'center-city': '',
-      'center-fax': '',
-      'center-validated': True,
-      'center-name': u'Associação Nacional de História - ANPUH',
-      'center-address_number': '123456',
-      'center-acronym': 'rbh',
-      'center-country': 'São Paulo',
-      'center-cel': '',
-      'center-phone': '',
-      'center-state': '',
-      'center-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'center-mail': 'scielo@scielo.org',
-      'center-address_complement': '',
-      'center-is_available': True,
-    }
-
-    center_attrs.update(dict_params)
-
-    return center_attrs
-
-def get_sample_index_coverage():
-
-    indexing_coverage_attrs = {
-        'title': u'Literatura Latino-americana e do Caribe em Ciências da Saúde',
-        'identify': 'lil-llccs',
-    }
-
-    return models.JournalIndexCoverage(**indexing_coverage_attrs)
 
 def get_sample_index_database():
 
@@ -428,9 +444,11 @@ def get_sample_issue():
         'number': '3',
         'volume': '29',
         'editorial_standard': '',
-        'is_available': True,
+        'is_trashed': False,
         'is_press_release': False,
-        'publication_date': '1998-09-01',
+        'publication_start_month': 9,
+        'publication_end_month': 11,
+        'publication_year': 2012,
         'is_marked_up': False,
     }
 

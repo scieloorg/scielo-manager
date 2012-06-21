@@ -1,8 +1,8 @@
+{% load i18n %}
+{% load static %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ LANGUAGE_CODE }}" lang="{{ LANGUAGE_CODE }}">
-  {% load i18n %}
   <head>
-  {% load static %}
     <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
     <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
     <link rel="shortcut icon" href="/static/favicon.ico"/>
@@ -11,9 +11,12 @@
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
   </head>
-  <body>
+  <body data-offset="50" data-target=".subnav" data-spy="scroll" data-twttr-rendered="true">
+
+  {% if user.is_authenticated %}
+    {% if not request.GET.popup %}
     <div class="container-fluid">
-      <div class="navbar">
+      <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container">
           <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
@@ -21,68 +24,120 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-            <a class="brand" href="#">SciELO Manager</a>
+            <a class="brand" href="/">SciELO Manager</a>
+            <div class="nav-collapse collapse" style="height: 0px;">
               <ul class="nav">
-                <li><a href="/">Home</a></li>
-
-                {% if user.is_authenticated %}
                 <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
                 <li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>
-                <li><a href="{% url center.index %}">{% trans 'Markup Centers' %}</a></li>
+                <li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>
                   {% if perms.auth %}
                   <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
                   {% endif %}
-                {% endif %}
                 <li class="divider-vertical"></li>
                 <li>
-                  {% if user.is_authenticated %}
                     <form id="form_search" class="navbar-search" action="" method="get">
                       <input class="search-query span2" placeholder="Search" name="q" value="{{request.GET.q}}"/>
                       <select id="list_model" class="navbar-search span2">
-                        <option "{% if 'journal' in request.path %} selected {% endif %}" value="{% url journal.index %}">Journal</option>
-                        <option "{% if 'publisher' in request.path %} selected {% endif %}" value="{% url publisher.index %}">Publisher</option>
-                        <option "{% if 'center' in request.path %} selected {% endif %}" value="{% url center.index %}">Center</option>
+                        <option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>
+                        <option {% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>
+                        <option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>
                       </select>
                       <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
                     </form>
-                  {% endif %}
                 </li>
               </ul>
               {% if user.is_authenticated %}
-              <ul class="nav pull-right span2">
+	            <ul class="nav pull-right">
                 <li class="divider-vertical"></li>
-                <li class="user_identity">{% trans 'User:' %} {{ user.username }}</li>
                 <li>
-                  <div class="btn-group">
-                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-user icon-white"></i></a></button>
-                    <button class="btn-inverse"><a class="user_menu"  rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off icon-white"></i></a></button>
+                  <a href="http://gravatar.com"
+                     class="tip-bottom"
+                     rel="tooltip"
+                     data-original-title="{% trans 'Go to Gravatar.com' %}"
+                     target="_blank"
+                     style="margin:0; padding:0;">
+                    <img class="user_avatar" src="{{ user.get_profile.avatar_url }}"/>
+                  </a>
+                </li>
+                <li class="user_identity"> {{ user.email }} </li>
+                <li>
+                  <div class="btn-group" style="padding-top: 5px;">
+                    <a class="btn btn-mini tip-bottom" rel="tooltip" data-original-title="{% trans 'user settings' %}" href="{% url journalmanager.my_account %}"><i class="icon-cog"></i></a>
+                    <a class="btn btn-mini tip-bottom" rel="tooltip" data-original-title="{% trans 'logout' %}" href="{% url journalmanager.user_logout %}"><i class="icon-off"></i></a>
                   </div>
                 </li>
               </ul>
               {% endif %}
+            </div>
           </div>
         </div>
       </div>
-      <div class="row-fluid">
-        {% if user.is_authenticated %}
-        <div class="span3">
-          {% block shortaccess %}{% endblock %}
-          {% block formindex %}{% endblock %}
-        </div><!--span3 left menu-->
+    {% endif %}
+  {% endif %}
+  <div class="subnav" style="margin-top: 50px;">
+    <ul class="nav nav-pills">
+      {% for collection in user_collections %}
+          <li {% if collection.is_default %} class="dropdown active" {% else %} class="dropdown" {% endif %}>
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                {{ collection.collection.name }}
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url collection.edit collection.collection.pk %}"><i class="icon-edit"></i> {% trans 'Edit' %}</a></li>
+                <li>
+                  {% if not collection.is_default %}
+                    <a href="{% url usercollection.toggle_active user.pk collection.collection.pk %}"><i class="icon-ok-circle"></i> {% trans 'Activate' %}</a>
+                  {% endif %}
+                </li>
+              </ul>
+            </li>
+      {% endfor %}
+      {% if user.is_authenticated %}
+      <li>
+        <a href="{% url trash.listing %}"
+         class="btn tip-bottom"
+         rel="tooltip"
+         data-original-title="{% trans 'Trashed items' %}">
+        <i class="icon-trash"></i>
+        {% trans 'Trash' %}
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="row-fluid" style="min-height: 380px;">
+    {% block body_login %}
+        {% if not user.is_authenticated %}
+        <div class="banner-container">
+          <div class="banner"><h1>{% trans 'Manager' %}</h1></div>
+        </div>
+       {% endif %}
+    {% endblock %}
+    {% if user.is_authenticated %}
+      <div class="span12">
+        {% if not request.GET.popup  %}
+            {% block breadcrumb %}{% endblock %}
         {% endif %}
-        <div class="span9">
-          <div class="mainContent">
-            {% if messages %}
-              {% for message in messages %}
-              <div class="alert {{ message.tags }}">{{ message }}</div>
-              {% endfor %}
-            {% endif %}
-            {% block stepmenu_top %}{% endblock %}
-            {% block body %}{% endblock %}
-          </div><!--mainContent-->
-        </div><!--span9 content-->
       </div>
+      {% if not request.GET.popup  %}
+          <div class="span1">
+            {% block shortaccess %}{% endblock %}
+          </div>
+      {% endif %}
+    {% endif %}
+    <div class="span11">
+      <div class="mainContent">
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+  </div>
 
+    {% if not request.GET.popup %}
       <div class="footer row-fluid">
         <div class="span3">
           <p><strong>SciELO - Scientific Electronic Library Online <br/>
@@ -112,33 +167,42 @@
             <li><a href="http://docs.scielo.org/en/latest/index.html">{% trans 'About' %}</a></li>
           </ul>
         </div>
-        <div class="pull-right span3">
+        <div class="span2">
           <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
             <input type="hidden" id="language" name="language">
             {% csrf_token %}
-            <select id="lang_options">
+            <select id="lang_options" class="span2">
               <option value="pt-br" {% if LANGUAGE_CODE == 'pt-br' %}selected{% endif %}>Português</option>
               <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
               <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
             </select>
           </form>
-        </div><!--span2-->
-
+        </div>
+        <div class="span1">
+          <p>
+            <a href="#">{% trans 'Back to top' %}</a>
+          </p>
+        </div>
       </div><!--row-fluid footer-->
     </div><!--container-fluid-->
+  {% endif %}
 
 <script type="text/javascript" src="{{ jquery_url }}"></script>
 <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
-<script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('#list_model').change(function(){
+      $('#form_search').attr('action', $('#list_model :selected').val());
+    });
 
-  $('#form_search').attr('action', $('#list_model :selected').val())
+    $('#form_search').attr('action', $('#list_model :selected').val());
 
-  $('#list_model').click(function(){
-    $('#form_search').attr('action', $('#list_model :selected').val())
+    options = {placement:'bottom'}
+    $(".tip-bottom").tooltip(options);
   });
 
-  </script>
+</script>
 {% block extrafooter %}{% endblock %}
 </body>
 </html>

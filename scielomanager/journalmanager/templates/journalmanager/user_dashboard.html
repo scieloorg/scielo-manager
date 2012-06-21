@@ -1,25 +1,18 @@
-{% extends "base.html" %}
+{% extends "base_list.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
 
-{% block body_title %}{% trans "Users" %}{% endblock %}
+{% block page_title %}{% trans "Users" %}{% endblock %}
 
-{% block stepmenu_top %}
-{{ block.super }}
+{% block breadcrumb %}
 <ul class="breadcrumb">
     <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
     <li class="active">{% trans 'Users DashBoard' %}</li>
-</ul><!--breadcrumb-->
+</ul>
 {% endblock %}
 
 {% block shortaccess %}
-<div class="well sidebar-nav">
-  <ul class="nav nav-list">
-    <li class="nav-header">{% trans 'Short Access' %}</a></li>
-    <li><a href="{% url user.add %}">{% trans 'Add User' %}</a></li>
-  </ul>
-</div><!--well sidebar-nav-->
 {% endblock %}
 
 {% block body %}
@@ -31,7 +24,7 @@
     <div class="span2">
         {% simple_pagination users %}
     </div>
-</div><!--row-fluid botões-->
+</div>
 {% endif %}
 <table class="table table-condensed">
     <thead>
@@ -80,8 +73,3 @@
 {% pagination users %}
 {% endblock %}
 
-{% block extrafooter %}
-
-<script type="text/javascript" src="{% get_static_prefix %}js/ajax_enable_disable.js"></script>
-
-{% endblock %}

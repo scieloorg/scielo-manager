@@ -32,6 +32,10 @@ ul._actions li:last-child {
     min-width: 130px;
 }
 
+.span12, .container {
+    width: 100%;
+}
+
 /*Customize jquery-ui.css components*/
 .ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl {
     width: 800px;
@@ -59,6 +63,16 @@ button.ui-button-icon-only {
         padding-left:8px;
 
     }
+
+/*Customize the nav bar*/
+.navbar .brand {
+    margin-left: 1%;
+}
+
+.navbar .nav.pull-right {
+    margin-left: 10px;
+    margin-right: 2%;
+}
 
 /*Strikethrough disable list*/
 .strikethrough{
@@ -89,8 +103,65 @@ button.ui-button-icon-only {
     color: #FFFFFF;
 }
 
-.footer {
-    background: #CCCCCC;
-    padding-left: 10px;
-    padding-top:  10px;
+.user_avatar {
+    margin-top: 6px;
+    margin-right: 10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-box-shadow: 0px 0px 5px #888;
+    -webkit-box-shadow: 0px 0px 5px #888;
+    box-shadow: 0px 0px 5px #888;
 }
+
+/*Login area*/
+.banner-container{
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 290px;
+}
+
+.banner{
+    text-align: right;
+    padding: 82px 29px 11px 0;
+    background-image: url('/static/images/logo.png');
+    background-repeat: no-repeat;
+    width: 260px;
+}
+
+.login{
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 400px;
+    border: 1px solid #CCC;
+    padding: 30px;
+    margin-top: 10px;
+}
+
+.login_reset{
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 600px;
+}
+
+.footer{
+    border-top: 1px solid #E5E5E5;
+    margin-top: 10px;
+    padding: 15px 0 15px;
+}
+
+.req-field{
+    font-weight: bold;
+}
+
+/* Tab Slide Out */
+.slide-out-div {
+    padding: 10px;
+    width: 150px;
+    border: 1px solid #E5E5E5;
+    background-image: -moz-linear-gradient(center top ,#CCCCCC, #E5E5E5 );
+    background-repeat: repeat-x;
+}  
