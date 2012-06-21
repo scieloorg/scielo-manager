@@ -130,7 +130,7 @@ class Collection(caching.base.CachingMixin, models.Model):
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', null=True, blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
-    name_slug = models.SlugField(unique=True, db_index=True)
+    name_slug = models.SlugField(unique=True, db_index=True, null=True)
     url = models.URLField(_('Instance URL'), )
     logo = models.ImageField(_('Logo'), upload_to='img/collections_logos', null=True, blank=True, )
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, )
