@@ -1,5 +1,5 @@
 from piston.handler import AnonymousBaseHandler
-from piston import doc
+from django.db.models import Q
 
 from scielomanager.journalmanager import models
 
@@ -43,6 +43,35 @@ class Journal(AnonymousBaseHandler):
 
     def read(self, request, collection, issn):
         try:
-            return models.Journal.objects.get(collections__name=collection, print_issn=issn)
+            return models.Journal.objects.get(Q(print_issn=issn) | Q(eletronic_issn=issn),
+                collections__name=collection)
         except models.Journal.DoesNotExist:
+            return []
+
+class Collection(AnonymousBaseHandler):
+    model = models.Collection
+    allow_methods = ('GET',)
+    fields = (
+        'name',
+        'acronym',
+        'address',
+        'address_number',
+        'address_complement',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'fax',
+        'phone',
+        'url',
+        'mail',
+    )
+
+    def read(self, request, name=None):
+        try:
+            if name:
+                return models.Collection.objects.get(name=name)
+            else:
+                return models.Collection.objects.all()
+        except models.Collection.DoesNotExist:
             return []
