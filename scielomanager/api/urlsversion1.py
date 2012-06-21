@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^collections/(?P<name_slug>\w+)/$', collection_handler),
 
     #Issues
-    url(r'^issues/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/(?P<issue>(\d))/$', issue_handler),
+    url(r'^issues/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/$', issue_handler),
+    url(r'^issues/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/(?P<issue_label>\w+)/$', issue_handler),
 
 )
