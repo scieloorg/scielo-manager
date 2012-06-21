@@ -55,7 +55,8 @@ urlpatterns = patterns('',
     url(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
         views.generic_bulk_action, name='trash.bulk_action' ),
 
-    (r'^api/', include('scielomanager.api.urls')),
+    #API version 1
+    (r'^api/v1/', include('scielomanager.api.urlsversion1')),
 )
 
 
