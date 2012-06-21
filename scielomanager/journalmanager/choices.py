@@ -19,6 +19,7 @@ SUBJECTS = [
     ('Linguistics, Letters and Arts','Linguistics, Letters and Arts'),
     ('Mathematics','Mathematics'),
     ('Social Sciences','Social Sciences'),
+    ('Human Sciences', 'Human Sciences'),
 ]
 
 PUBLICATION_STATUS = [

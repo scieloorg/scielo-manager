@@ -1,4 +1,5 @@
 # coding: utf-8
+import re
 from django import forms
 from django.forms import ModelForm, DateField
 from django.forms.models import inlineformset_factory
@@ -36,18 +37,12 @@ class UserCollectionContext(ModelForm):
                 pk__in = (collection.collection.pk for collection in collections_qset))
 
 class JournalForm(UserCollectionContext):
-
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
         required=True)
-    sponsor = forms.ModelMultipleChoiceField(models.Sponsor.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsor')}),
-        required=True)
-    publisher = forms.ModelMultipleChoiceField(models.Publisher.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more publisher')}),
-        required=True)
+    regex = re.compile(r'^(1|2)\d{3}$')
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
@@ -76,6 +71,26 @@ class JournalForm(UserCollectionContext):
 
     def clean_acronym(self):
         return self.cleaned_data["acronym"].lower()
+
+    def clean_init_year(self):
+
+        if self.cleaned_data["init_year"]:
+            result = self.regex.match(self.cleaned_data["init_year"])
+
+            if result is None:
+                raise forms.ValidationError(u'Invalid Date')
+
+        return self.cleaned_data["init_year"]
+
+    def clean_final_year(self):
+
+        if self.cleaned_data["final_year"]:
+            result = self.regex.match(self.cleaned_data["final_year"])
+
+            if result is None:
+                raise forms.ValidationError(u'Invalid Date')
+
+        return self.cleaned_data["final_year"]
 
     class Meta:
 

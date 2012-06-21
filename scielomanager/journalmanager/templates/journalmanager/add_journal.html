@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" action="{% url journal.add %}" enctype="multipart/form-data">
+<form method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>
   <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
@@ -465,7 +465,7 @@
       <tr>
         <td>
           <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
-            {{ add_form.init_year }}
+            {{ add_form.init_year|attr:"placeholder:YYYY" }}
             {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
           </div>
         </td>
@@ -513,8 +513,10 @@
       <tbody>
       <tr>
         <td>
-         {{ add_form.final_year }}
-         {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
+          <div class="control-group {% if add_form.final_year.errors %}error{% endif %}">
+            {{ add_form.final_year|attr:"placeholder:YYYY" }}
+            {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
+          </div>
         </td>
         <td>
          {{ add_form.final_vol }}
@@ -624,11 +626,7 @@
     });
     $('#studyareaformset tbody tr').formset({
       formCssClass: 'dynamic-studyareaformset-form',
-      prefix: '{{ textstudyareaformset.prefix }}'
-    });
-    $('#textlanguageformset tbody tr').formset({
-      formCssClass: 'dynamic-textlanguageformset-form',
-      prefix: '{{ textlanguageformset.prefix }}'
+      prefix: '{{ studyareaformset.prefix }}'
     });
     $('.popup').popupWindow({
       scrollbars:1,
