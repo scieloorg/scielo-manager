@@ -42,6 +42,12 @@ class JournalForm(UserCollectionContext):
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
         required=True)
+    sponsor = forms.ModelMultipleChoiceField(models.Sponsor.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsor')}),
+        required=True)
+    publisher = forms.ModelMultipleChoiceField(models.Publisher.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more publisher')}),
+        required=True)
 
     def __init__(self, *args, **kwargs):
         super(JournalForm, self).__init__(*args, **kwargs)
@@ -183,7 +189,9 @@ class PasswordChangeForm(forms.Form):
     new_password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
 
 class IssueForm(ModelForm):
-    section = forms.ModelMultipleChoiceField(models.Section.objects.none(), required=True)
+    section = forms.ModelMultipleChoiceField(models.Section.objects.none(),
+         widget=forms.SelectMultiple(attrs={'title': _('Select one or more section')}),
+         required=True)
 
     widgets = {
         'section': forms.Select(attrs={'class':'span3'}),
