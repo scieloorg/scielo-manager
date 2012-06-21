@@ -8,3 +8,4 @@ django-cache-machine==0.6
 ordereddict==1.1
 pil==1.1.7
 django-widget-tweaks==1.1.1
+django-piston==0.2.3
