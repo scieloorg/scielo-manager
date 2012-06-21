@@ -10,5 +10,5 @@ urlpatterns = patterns('',
 
     url(r'^journals/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/$', journal_handler),
     url(r'^collections/$', collection_handler),
-    url(r'^collections/(?P<name>\w+)/$', collection_handler),
+    url(r'^collections/(?P<name_slug>\w+)/$', collection_handler),
 )

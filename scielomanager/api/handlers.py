@@ -44,7 +44,7 @@ class Journal(AnonymousBaseHandler):
     def read(self, request, collection, issn):
         try:
             return models.Journal.objects.get(Q(print_issn=issn) | Q(eletronic_issn=issn),
-                collections__name=collection)
+                collections__name_slug=collection)
         except models.Journal.DoesNotExist:
             return []
 
@@ -67,10 +67,10 @@ class Collection(AnonymousBaseHandler):
         'mail',
     )
 
-    def read(self, request, name=None):
+    def read(self, request, name_slug=None):
         try:
-            if name:
-                return models.Collection.objects.get(name=name)
+            if name_slug:
+                return models.Collection.objects.get(name_slug=name_slug)
             else:
                 return models.Collection.objects.all()
         except models.Collection.DoesNotExist:
