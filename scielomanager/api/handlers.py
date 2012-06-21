@@ -79,3 +79,18 @@ class Collection(AnonymousBaseHandler):
                 return models.Collection.objects.all()
         except models.Collection.DoesNotExist:
             return []
+
+class Issue(AnonymousBaseHandler):
+    model = models.Issue
+    allowed_methods = ('GET',)
+
+    def read(self, request, journal, collection, issue_id=None):
+        try:
+            if issue_id:
+                return models.Issue.object.get(Q(print_issn=journal) | Q(eletronic_issn=journal), 
+                    collection__name_slug=collection, id = issue_id)
+            else:
+                return models.Issue.object.filter(Q(print_issn=journal) | Q(eletronic_issn=journal), 
+                    collection__name_slug=collection)
+        except models.Issue.DoesNotExist:
+                return []
