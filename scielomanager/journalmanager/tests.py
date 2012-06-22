@@ -782,6 +782,56 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('trash.listing'))
         self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
 
+    @with_sample_journal
+    def test_restapi_journal_index(self):
+        import json
+        response = self.client.get(reverse('api_v1_journal.index',
+            args=[self.collection.name_slug]))
+        self.assertEqual(response.status_code, 200)
+
+        response_as_py = json.loads(response.content)
+        self.assertEqual(len(response_as_py), 1)
+
+        expected_fields = ('title', 'collections','publisher', 'sponsor', 'previous_title',
+        'use_license', 'languages', 'title_iso', 'short_title', 'acronym', 'scielo_issn',
+        'print_issn', 'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
+        'init_num', 'final_year', 'final_vol', 'final_num', 'frequency', 'pub_status',
+        'editorial_standard', 'ctrl_vocabulary', 'pub_level', 'secs_code', 'copyrighter',
+        'url_online_submission', 'url_journal', 'index_coverage', 'cover', 'other_previous_title',
+    )
+        for field in response_as_py[0]:
+            self.assertTrue(field in expected_fields)
+            if field in ('collections', 'publisher', 'sponsor', 'languages'):
+                self.assertTrue(isinstance(response_as_py[0][field], list))
+            elif field in ('use_license',):
+                self.assertTrue(isinstance(response_as_py[0][field], dict))
+
+    @with_sample_journal
+    def test_restapi_journal_getone(self):
+        import json
+        journal = Journal.objects.all()[0]
+        response = self.client.get(reverse('api_v1_journal.getone',
+            args=[self.collection.name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 200)
+
+        response_as_py = json.loads(response.content)
+
+        expected_fields = ('title', 'collections','publisher', 'sponsor', 'previous_title',
+        'use_license', 'languages', 'title_iso', 'short_title', 'acronym', 'scielo_issn',
+        'print_issn', 'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
+        'init_num', 'final_year', 'final_vol', 'final_num', 'frequency', 'pub_status',
+        'editorial_standard', 'ctrl_vocabulary', 'pub_level', 'secs_code', 'copyrighter',
+        'url_online_submission', 'url_journal', 'index_coverage', 'cover', 'other_previous_title',
+    )
+        for field in response_as_py:
+            self.assertTrue(field in expected_fields)
+            if field in ('collections', 'publisher', 'sponsor', 'languages'):
+                self.assertTrue(isinstance(response_as_py[field], list))
+            elif field in ('use_license',):
+                self.assertTrue(isinstance(response_as_py[field], dict))
+            else:
+                #check values for plain attributes
+                self.assertEqual(getattr(journal, field, None), response_as_py.get(field, None))
 
 class LoggedOutViewsTest(TestCase):
 

@@ -10,8 +10,9 @@ issue_handler = Resource(handlers.Issue)
 urlpatterns = patterns('',
 
     # Journals
-    url(r'^journals/(?P<collection>\w+)/$', journal_handler),
-    url(r'^journals/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/$', journal_handler),
+    url(r'^journals/(?P<collection>\w+)/$', journal_handler, name='api_v1_journal.index'),
+    url(r'^journals/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/$', journal_handler,
+        name='api_v1_journal.getone'),
 
     #Collections
     url(r'^collections/$', collection_handler),
