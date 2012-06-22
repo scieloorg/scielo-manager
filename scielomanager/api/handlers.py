@@ -110,3 +110,19 @@ class Issue(AnonymousBaseHandler):
                     journal__collections__name_slug=collection)
         except models.Issue.DoesNotExist:
                 return []
+
+class Section(AnonymousBaseHandler):
+    model = models.Section
+    allowed_methods = ('GET',)
+
+    fields = (
+        ('sectiontitle_set',('title',)),
+        'code',
+        )
+
+    def read(self, request, issn, collection):
+        try:
+            return models.Section.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+                journal__collections__name_slug=collection)
+        except models.Issue.DoesNotExist:
+                return []

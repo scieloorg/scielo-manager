@@ -522,3 +522,62 @@ Response Example::
       }, 
     "publication_start_month": 3
   }
+
+Get Journal Sections List
+=========================
+
+Request::
+
+  GET /api/v1/sections/:<collection_name_slug>/:<journal_issn>
+
+Parameters:
+
+  **collection_name_slug**
+
+    *String* of the name of a collection, for example: brasil, chile, cuba. If you doesn't know the 
+    available collections you can fetch it with the "Get Collections List"
+
+  **journal_issn**
+
+    *String* of the ISSN. The ISSN could be the print or electronic ISSN.
+
+Optional Parameters:
+
+  **callback**
+
+    *String* of the callback identifier to be returned when using JSONP.
+
+  **format**
+
+    *String* of the desired output format. The options are **xml, json, yml**. The default format is JSON.
+
+Request Example::
+
+  $ curl -X GET journalmanager.scielo.org/api/v1/sections/brasil/0102-6720?callback=test
+
+  $ curl -X GET journalmanager.scielo.org/api/v1/sections/brasil/0102-6720?format=xml
+
+Response Example::
+
+  [
+    {
+      "sectiontitle_set": [
+        {
+          "title": "Artigo de Revisão"
+        }, 
+        {
+          "title": "Review Article"
+        }
+      ], 
+      "code": "ABCD070"
+    }, 
+    {
+      "sectiontitle_set": [
+        {
+          "title": "Editorial"
+        }
+      ], 
+      "code": "ABCD010"
+    }, 
+  ...
+  ]
