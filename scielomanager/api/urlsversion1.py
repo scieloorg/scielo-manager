@@ -6,6 +6,7 @@ from scielomanager.api import handlers
 journal_handler = Resource(handlers.Journal)
 collection_handler = Resource(handlers.Collection)
 issue_handler = Resource(handlers.Issue)
+sections_handler = Resource(handlers.Section)
 
 urlpatterns = patterns('',
 
@@ -20,5 +21,8 @@ urlpatterns = patterns('',
     #Issues
     url(r'^issues/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/$', issue_handler),
     url(r'^issues/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/(?P<issue_label>\w+)/$', issue_handler),
+
+    #Sections
+    url(r'^sections/(?P<collection>\w+)/(?P<issn>(\d{4})-(\d{3}[0-9X]))/$', sections_handler),
 
 )
