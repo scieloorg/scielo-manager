@@ -225,7 +225,7 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
-    title_iso = models.CharField(_('Title ISO'), max_length=256, db_index=True)
+    title_iso = models.CharField(_('ISO abbreviated title'), max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'), max_length=256, db_index=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
