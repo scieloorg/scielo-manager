@@ -893,6 +893,39 @@ class JournalRestAPITest(TestCase):
                 #check values for plain attributes
                 self.assertEqual(getattr(journal, field, None), response_as_py.get(field, None))
 
+    def test_post_data_index(self):
+        response = self.client.post(reverse('api_v1_journal.index',
+            args=[self.collection.name_slug]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data_index(self):
+        response = self.client.put(reverse('api_v1_journal.index',
+            args=[self.collection.name_slug]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data_index(self):
+        response = self.client.delete(reverse('api_v1_journal.index',
+            args=[self.collection.name_slug]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_post_data_getone(self):
+        journal = self._makeOne()
+        response = self.client.post(reverse('api_v1_journal.getone',
+            args=[self.collection.name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data_getone(self):
+        journal = self._makeOne()
+        response = self.client.put(reverse('api_v1_journal.getone',
+            args=[self.collection.name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data_getone(self):
+        journal = self._makeOne()
+        response = self.client.delete(reverse('api_v1_journal.getone',
+            args=[self.collection.name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
 class CollectionRestAPITest(TestCase):
     def setUp(self):
         """
@@ -927,6 +960,346 @@ class CollectionRestAPITest(TestCase):
         self.assertEqual(len(response_as_py), 1)
         self.assertEqual(response_as_py[0]['name'], collection.name)
 
+        expected_fields = ('name', 'name_slug', 'acronym',
+            'address', 'address_number', 'address_complement',
+            'city', 'state', 'country', 'zip_code', 'fax',
+            'phone', 'url', 'mail',
+        )
+
+        for field in response_as_py[0]:
+            self.assertTrue(field in expected_fields)
+            # compare as unicode strings
+            field_value = getattr(collection, field, None)
+            if field_value:
+                self.assertEqual(field_value.decode('utf-8'),
+                    response_as_py[0].get(field, None))
+
+    def test_post_data(self):
+        response = self.client.post(reverse('api_v1_collection.index'))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        response = self.client.put(reverse('api_v1_collection.index'))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        response = self.client.delete(reverse('api_v1_collection.index'))
+        self.assertEqual(response.status_code, 405)
+
+    def test_getone(self):
+        import json
+        collection = self._makeOne()
+
+        response = self.client.get(reverse('api_v1_collection.getone',
+            args=[collection.name_slug]))
+        self.assertEqual(response.status_code, 200)
+        response_as_py = json.loads(response.content)
+        self.assertEqual(response_as_py['name'], collection.name)
+
+        expected_fields = ('name', 'name_slug', 'acronym',
+            'address', 'address_number', 'address_complement',
+            'city', 'state', 'country', 'zip_code', 'fax',
+            'phone', 'url', 'mail',
+        )
+
+        for field in response_as_py:
+            self.assertTrue(field in expected_fields)
+            # compare as unicode strings
+            field_value = getattr(collection, field, None)
+            if field_value:
+                self.assertEqual(field_value.decode('utf-8'),
+                    response_as_py.get(field, None))
+
+    def test_post_data_getone(self):
+        collection = self._makeOne()
+
+        response = self.client.post(reverse('api_v1_collection.getone',
+            args=[collection.name_slug]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data_getone(self):
+        collection = self._makeOne()
+
+        response = self.client.put(reverse('api_v1_collection.getone',
+            args=[collection.name_slug]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data_getone(self):
+        collection = self._makeOne()
+
+        response = self.client.delete(reverse('api_v1_collection.getone',
+            args=[collection.name_slug]))
+        self.assertEqual(response.status_code, 405)
+
+class IssuesRestAPITest(TestCase):
+    def setUp(self):
+        """
+        Creates an authenticated session using a dummy user.
+        """
+
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
+
+    def tearDown(self):
+        """
+        Destroying the data
+        """
+        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+            m.objects.all().delete()
+
+    def _makeOne(self):
+        sample_journal = tests_assets.get_sample_journal()
+        sample_journal.creator = self.user
+
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection,]
+        sample_publisher.save()
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.save()
+
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
+        sample_journal.save()
+        sample_journal.publisher = [sample_publisher,]
+        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.save()
+        sample_journal.collections = [self.collection,]
+
+        sample_journal.save()
+
+        sample_issue = tests_assets.get_sample_issue()
+
+        sample_issue.journal = sample_journal
+        sample_issue.save()
+
+        sample_section = tests_assets.get_sample_section()
+        sample_section.journal = sample_journal
+        sample_section.save()
+
+        return sample_issue
+
+    def test_issue_index(self):
+        import json
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.get(reverse('api_v1_issue.index', args=[
+            name_slug, issue.journal.print_issn]))
+        self.assertEqual(response.status_code, 200)
+
+        response_as_py = json.loads(response.content)
+        expected_fields = ('is_marked_up', 'section', 'volume',
+            'number', 'is_press_release', 'publication_start_month',
+            'publication_end_month', 'publication_year', 'use_license',
+            'total_documents', 'ctrl_vocabulary', 'editorial_standard',
+            'label',
+        )
+
+        for field in response_as_py[0]:
+            self.assertTrue(field in expected_fields)
+
+            field_value = getattr(issue, field, None)
+            if field_value:
+                if field in ['is_marked_up', 'is_press_release']:
+                    # boolean
+                    self.assertTrue(isinstance(response_as_py[0].get(field, None),
+                        bool))
+                elif field in ['section',]:
+                    # list
+                    self.assertTrue(isinstance(response_as_py[0].get(field, None),
+                        list))
+                elif field in ['total_documents', 'publication_year',
+                    'publication_end_month', 'publication_start_month']:
+                    self.assertTrue(isinstance(response_as_py[0].get(field, None),
+                        int))
+                else:
+                    # plain text
+                    self.assertEqual(field_value.decode('utf-8'),
+                        response_as_py[0].get(field, None))
+
+    def test_post_data(self):
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.post(reverse('api_v1_issue.index', args=[
+            name_slug, issue.journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.put(reverse('api_v1_issue.index', args=[
+            name_slug, issue.journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.delete(reverse('api_v1_issue.index', args=[
+            name_slug, issue.journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_issue_getone(self):
+        import json
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.get(reverse('api_v1_issue.getone', args=[
+            name_slug, issue.journal.print_issn, issue.label]))
+        self.assertEqual(response.status_code, 200)
+
+        response_as_py = json.loads(response.content)
+        expected_fields = ('is_marked_up', 'section', 'volume',
+            'number', 'is_press_release', 'publication_start_month',
+            'publication_end_month', 'publication_year', 'use_license',
+            'total_documents', 'ctrl_vocabulary', 'editorial_standard',
+            'label',
+        )
+
+        for field in response_as_py:
+            self.assertTrue(field in expected_fields)
+
+            field_value = getattr(issue, field, None)
+            if field_value:
+                if field in ['is_marked_up', 'is_press_release']:
+                    # boolean
+                    self.assertTrue(isinstance(response_as_py.get(field, None),
+                        bool))
+                elif field in ['section',]:
+                    # list
+                    self.assertTrue(isinstance(response_as_py.get(field, None),
+                        list))
+                elif field in ['total_documents', 'publication_year',
+                    'publication_end_month', 'publication_start_month']:
+                    self.assertTrue(isinstance(response_as_py.get(field, None),
+                        int))
+                else:
+                    # plain text
+                    self.assertEqual(field_value.decode('utf-8'),
+                        response_as_py.get(field, None))
+
+    def test_post_data_getone(self):
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.post(reverse('api_v1_issue.getone',
+            args=[name_slug, issue.journal.print_issn, issue.label]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data_getone(self):
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.put(reverse('api_v1_issue.getone',
+            args=[name_slug, issue.journal.print_issn, issue.label]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data_getone(self):
+        issue = self._makeOne()
+        name_slug = issue.journal.collections.all()[0].name_slug
+        response = self.client.delete(reverse('api_v1_issue.getone',
+            args=[name_slug, issue.journal.print_issn, issue.label]))
+        self.assertEqual(response.status_code, 405)
+
+class SectionsRestAPITest(TestCase):
+    def setUp(self):
+        """
+        Creates an authenticated session using a dummy user.
+        """
+
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
+
+    def tearDown(self):
+        """
+        Destroying the data
+        """
+        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+            m.objects.all().delete()
+
+    def _makeOne(self):
+        sample_journal = tests_assets.get_sample_journal()
+        sample_journal.creator = self.user
+
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection,]
+        sample_publisher.save()
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.save()
+
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
+        sample_journal.save()
+        sample_journal.publisher = [sample_publisher,]
+        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.save()
+        sample_journal.collections = [self.collection,]
+
+        sample_journal.save()
+
+        sample_section = tests_assets.get_sample_section()
+        sample_section.journal = sample_journal
+        sample_section.save()
+
+        return sample_journal
+
+    def test_section_index(self):
+        import json
+        journal = self._makeOne()
+        name_slug = journal.collections.all()[0].name_slug
+        response = self.client.get(reverse('api_v1_section.index', args=[
+            name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 200)
+
+        response_as_py = json.loads(response.content)
+        self.assertEqual(len(response_as_py), 1)
+
+        expected_fields = ('sectiontitle_set', 'code',)
+        for field in response_as_py[0]:
+            if field in ['sectiontitle_set',]:
+                self.assertTrue(isinstance(response_as_py[0][field], list))
+            else:
+                self.assertTrue(field in expected_fields)
+
+    def test_post_data(self):
+        journal = self._makeOne()
+        name_slug = journal.collections.all()[0].name_slug
+        response = self.client.post(reverse('api_v1_section.index', args=[
+            name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        journal = self._makeOne()
+        name_slug = journal.collections.all()[0].name_slug
+        response = self.client.put(reverse('api_v1_section.index', args=[
+            name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        journal = self._makeOne()
+        name_slug = journal.collections.all()[0].name_slug
+        response = self.client.delete(reverse('api_v1_section.index', args=[
+            name_slug, journal.print_issn]))
+        self.assertEqual(response.status_code, 405)
 
 class LoggedOutViewsTest(TestCase):
 
