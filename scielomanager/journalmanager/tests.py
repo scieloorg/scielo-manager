@@ -5,16 +5,16 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 
-from scielomanager.journalmanager import tests_assets
-from scielomanager.journalmanager.models import Collection
-from scielomanager.journalmanager.models import Journal
-from scielomanager.journalmanager.models import Publisher
-from scielomanager.journalmanager.models import Sponsor
-from scielomanager.journalmanager.models import Issue
-from scielomanager.journalmanager.models import UserCollections
-from scielomanager.journalmanager.models import Section
+from journalmanager import tests_assets
+from journalmanager.models import Collection
+from journalmanager.models import Journal
+from journalmanager.models import Publisher
+from journalmanager.models import Sponsor
+from journalmanager.models import Issue
+from journalmanager.models import UserCollections
+from journalmanager.models import Section
 
-from scielomanager.journalmanager.forms import JournalForm
+from journalmanager.forms import JournalForm
 
 def with_sample_journal(func):
     """
@@ -782,9 +782,61 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('trash.listing'))
         self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
 
-    @with_sample_journal
-    def test_restapi_journal_index(self):
+
+class JournalRestAPITest(TestCase):
+    def setUp(self):
+        """
+        Creates an authenticated session using a dummy user.
+        """
+
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
+
+    def tearDown(self):
+        """
+        Destroying the data
+        """
+        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+            m.objects.all().delete()
+
+    def _makeOne(self):
+        sample_journal = tests_assets.get_sample_journal()
+        sample_journal.creator = self.user
+
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection,]
+        sample_publisher.save()
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.save()
+
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
+        sample_journal.save()
+        sample_journal.publisher = [sample_publisher,]
+        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.save()
+        sample_journal.collections = [self.collection,]
+
+        sample_journal.save()
+        return sample_journal
+
+    def test_journal_index(self):
         import json
+
+        journal = self._makeOne()
+
         response = self.client.get(reverse('api_v1_journal.index',
             args=[self.collection.name_slug]))
         self.assertEqual(response.status_code, 200)
@@ -806,10 +858,12 @@ class LoggedInViewsTest(TestCase):
             elif field in ('use_license',):
                 self.assertTrue(isinstance(response_as_py[0][field], dict))
 
-    @with_sample_journal
-    def test_restapi_journal_getone(self):
+
+    def test_journal_getone(self):
         import json
-        journal = Journal.objects.all()[0]
+
+        journal = self._makeOne()
+
         response = self.client.get(reverse('api_v1_journal.getone',
             args=[self.collection.name_slug, journal.print_issn]))
         self.assertEqual(response.status_code, 200)
@@ -829,9 +883,50 @@ class LoggedInViewsTest(TestCase):
                 self.assertTrue(isinstance(response_as_py[field], list))
             elif field in ('use_license',):
                 self.assertTrue(isinstance(response_as_py[field], dict))
+            elif field in ('cover',):
+                # instances of FileField
+                if not response_as_py.get(field, None):
+                    self.assertRaises(ValueError, lambda: getattr(getattr(journal, field), 'url'))
+                else:
+                    self.assertEqual(getattr(getattr(journal, field), 'url'), response_as_py.get(field, None))
             else:
                 #check values for plain attributes
                 self.assertEqual(getattr(journal, field, None), response_as_py.get(field, None))
+
+class CollectionRestAPITest(TestCase):
+    def setUp(self):
+        """
+        Creates an authenticated session using a dummy user.
+        """
+
+        #add a dummy user
+        self.user = tests_assets.get_sample_creator()
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
+
+    def tearDown(self):
+        """
+        Destroying the data
+        """
+        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+            m.objects.all().delete()
+
+    def _makeOne(self):
+        return self.collection
+
+    def test_index(self):
+        import json
+        collection = self._makeOne()
+
+        response = self.client.get(reverse('api_v1_collection.index'))
+        self.assertEqual(response.status_code, 200)
+        response_as_py = json.loads(response.content)
+        self.assertEqual(len(response_as_py), 1)
+        self.assertEqual(response_as_py[0]['name'], collection.name)
+
 
 class LoggedOutViewsTest(TestCase):
 

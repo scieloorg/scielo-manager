@@ -16,7 +16,7 @@ urlpatterns = patterns('',
         name='api_v1_journal.getone'),
 
     #Collections
-    url(r'^collections/$', collection_handler),
+    url(r'^collections/$', collection_handler, name='api_v1_collection.index'),
     url(r'^collections/(?P<name_slug>\w+)/$', collection_handler),
 
     #Issues
