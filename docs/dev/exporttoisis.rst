@@ -89,6 +89,14 @@ A exportação de dados da ferramenta SciELO Manager deve gerar as bases de dado
 
 Em resumo, significa que o processo de exportação de bases do SciELO Manager para ISIS deve gerar essa estrutura de arquivos como entrada para o processo de marcação. Mais a frente será tratada a estrutura de dados dessas bases de dados.
 
+* Arquivos textos para ferramenta de Markup
+
+Alguns arquivos texto também são gerados como entrada de dados para ferramenta de marcação, são eles:
+
+ * Arquivo x
+ * Arquivo y
+ * Arquivo z
+
 ------------------------
 Requisitos da Exportação
 ------------------------
