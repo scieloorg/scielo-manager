@@ -1,4 +1,5 @@
 from piston.handler import AnonymousBaseHandler
+from piston.utils import throttle
 from django.db.models import Q
 
 from scielomanager.journalmanager import models
@@ -41,6 +42,7 @@ class Journal(AnonymousBaseHandler):
         'other_previous_title',
     )
 
+    @throttle(5, 1)
     def read(self, request, collection, issn=None):
         try:
             if issn:
@@ -100,13 +102,30 @@ class Issue(AnonymousBaseHandler):
         'label',
     )
 
+    @throttle(5, 1)
     def read(self, request, issn, collection, issue_label=None):
         try:
             if issue_label:
-                return models.Issue.objects.get(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+                return models.Issue.objects.get(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn),
                     journal__collections__name_slug=collection, label = issue_label)
             else:
-                return models.Issue.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+                return models.Issue.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn),
                     journal__collections__name_slug=collection)
+        except models.Issue.DoesNotExist:
+                return []
+
+class Section(AnonymousBaseHandler):
+    model = models.Section
+    allowed_methods = ('GET',)
+
+    fields = (
+        ('sectiontitle_set',('title',)),
+        'code',
+        )
+
+    def read(self, request, issn, collection):
+        try:
+            return models.Section.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+                journal__collections__name_slug=collection)
         except models.Issue.DoesNotExist:
                 return []
