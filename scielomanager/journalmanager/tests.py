@@ -587,6 +587,54 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
 
     @with_sample_journal
+    def test_letter_filter_journal(self):
+        """
+        View: generic_index_search
+
+        Tests the list using letters filter
+        """
+        response = self.client.get(reverse('journal.index') +'?letter=A') 
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200) 
+        self.assertTrue('objects_journal' in response.context)
+
+        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['objects_journal'].object_list[0].title))     
+        self.assertTrue(1, len(response.context['objects_journal'].object_list))
+
+    @with_sample_publisher
+    def test_letter_filter_publisher(self):
+        """
+        View: generic_index_search
+
+        Tests the list using letters filter
+        """
+        response = self.client.get(reverse('publisher.index') +'?letter=A') 
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200) 
+        self.assertTrue('objects_publisher' in response.context)
+
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))     
+        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
+
+    @with_sample_sponsor
+    def test_letter_filter_sponsor(self):
+        """
+        View: generic_index_search
+
+        Tests the list using letters filter
+        """
+        response = self.client.get(reverse('sponsor.index') +'?letter=F') 
+
+        #url dispatcher
+        self.assertEqual(response.status_code, 200) 
+        self.assertTrue('objects_sponsor' in response.context)
+
+        self.assertEqual(u'Fundação de Amparo a Pesquisa do Estado de São Paulo', unicode(response.context['objects_sponsor'].object_list[0].name))     
+        self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
+
+    @with_sample_journal
     def test_toggle_publisher_availability(self):
         pre_publisher = Publisher.objects.all()[0]
         response = self.client.get(reverse('publisher.toggle_availability', args=[pre_publisher.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
