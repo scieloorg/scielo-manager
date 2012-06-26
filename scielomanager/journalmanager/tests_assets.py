@@ -325,7 +325,7 @@ def get_sample_usercollections(user, collection):
 
     usercollections_attrs = {
       'is_manager': True,
-      'is_default': False,
+      'is_default': True,
       'user': user,
       'collection': collection,
     }
