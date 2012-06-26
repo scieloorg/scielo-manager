@@ -355,6 +355,10 @@ class JournalImport:
 
         if record.has_key('37'):
             journal.secs_code = record['37'][0]
+
+        if record.has_key('151'):
+            journal.title_iso = record['151'][0]
+
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -389,9 +393,6 @@ class JournalImport:
 
         if record.has_key('150'):
             self.load_title(journal,record['150'],'other')
-
-        if record.has_key('151'):
-            self.load_title(journal,record['151'],'other')
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')
