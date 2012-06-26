@@ -80,7 +80,7 @@ class JournalCustomManager(AppCustomManager):
 class SectionCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True):
-        user_collections = get_defautl_user_collections(user.pk)
+        user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
             journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
         return objects_all
