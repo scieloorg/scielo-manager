@@ -204,6 +204,9 @@ Remoção de Campos desnecessários
 
 De acordo com reunião realizada em 27 de março alguns campos no contexto da SciELO não serão mais cosiderados pelo SciELO Manager, entretanto para manter a compatibilidade com a atual estrutura de dados os valores deste campo serão inseridos nas bases de dados de forma automática pois seus valores sempre foram os mesmos durante os 15 anos de operação do SciELO.
 
+Title
+`````
+
 1. Later Title
   
   Será controlado automaticamente pelo campo "título anterior". Deve ser mantido na exportação para compatibilidade.
