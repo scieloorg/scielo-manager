@@ -204,7 +204,9 @@ class PasswordChangeForm(forms.Form):
     new_password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
 
 class IssueForm(ModelForm):
-    section = forms.ModelMultipleChoiceField(models.Section.objects.none(), required=True)
+    section = forms.ModelMultipleChoiceField(models.Section.objects.none(),
+         widget=forms.SelectMultiple(attrs={'title': _('Select one or more section')}),
+         required=True)
 
     widgets = {
         'section': forms.Select(attrs={'class':'span3'}),

@@ -236,7 +236,7 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
-    title_iso = models.CharField(_('Title ISO'), max_length=256, db_index=True)
+    title_iso = models.CharField(_('ISO abbreviated title'), max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'), max_length=256, db_index=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -434,8 +434,8 @@ class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     issue = models.ForeignKey(Issue)
-    language = models.ForeignKey('Language', blank=False, null=True)
-    title = models.CharField(_('Title'), null=False, max_length=128)
+    language = models.ForeignKey('Language', blank=True, null=True)
+    title = models.CharField(_('Title'), max_length=128, null=True, blank=True)
 
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
