@@ -56,19 +56,10 @@ def section_has_relation(section_id):
 def get_first_letter(objects_all):
     """
     Return a set contain first letter from a collection
-    fixme: use list comprehension
     """
-    letters_list = list()
-    letters_set = set()
+    letters_set = set(unicode(letter)[0].upper().strip() for letter in objects_all)
 
-    for letter in objects_all:
-        if unicode(letter)[0]:
-            letters_list.append(unicode(letter)[0].upper()) 
-
-    for letter in letters_list:
-            letters_set.add(letter.strip())
-
-    return letters_set
+    return sorted(list(letters_set))
 
 def index(request):
     template = loader.get_template('journalmanager/home_journal.html')
