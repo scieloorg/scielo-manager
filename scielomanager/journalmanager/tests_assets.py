@@ -36,7 +36,6 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-ctrl_vocabulary': 'decs',
       'journal-frequency': 'Q',
       'journal-final_num': '',
-      'journal-validated': False,
       'journal-eletronic_issn': '0102-6720',
       'journal-init_vol': '1',
       'journal-title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
@@ -95,7 +94,6 @@ def get_sample_institution_dataform(dict_params=None):
     institution_attrs = {
       'institution-city': '',
       'institution-fax': '',
-      'institution-validated': True,
       'institution-name': u'Associação Nacional de História - ANPUH',
       'institution-Address_number': '222',
       'institution-acronym': 'rbh',
@@ -125,7 +123,6 @@ def get_sample_collection_dataform(dict_params=None):
 
     sponsor_attrs = {
       'collection-url': u'http://www.scielo.br/',
-      'collection-validated': True,
       'collection-name': u'SciELO',
       'collection-address_number': u'430',
       'collection-country': u'Brasil',
@@ -146,7 +143,6 @@ def get_sample_sponsor_dataform(dict_params=None):
     sponsor_attrs = {
       'sponsor-city': '',
       'sponsor-fax': '',
-      'sponsor-validated': True,
       'sponsor-name': u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
       'sponsor-address_number': '222',
       'sponsor-acronym': 'FAPESP',
@@ -172,7 +168,6 @@ def get_sample_publisher_dataform(dict_params=None):
     publisher_attrs = {
       'publisher-city': '',
       'publisher-fax': '',
-      'publisher-validated': True,
       'publisher-name': u'Associação Nacional de História - ANPUH',
       'publisher-address_number': '222',
       'publisher-acronym': 'rbh',
@@ -282,7 +277,6 @@ def get_sample_journal():
       'ctrl_vocabulary': 'decs',
       'frequency': 'Q',
       'final_num': '',
-      'validated': False,
       'eletronic_issn': '',
       'init_vol': '1',
       'title': u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)',
@@ -333,11 +327,10 @@ def get_sample_usercollections(user, collection):
     return models.UserCollections(**usercollections_attrs)
 
 
-def get_sample_collection(validated = True):
+def get_sample_collection():
 
     collection_attrs = {
       'url': 'http://www.scielo.br/',
-      'validated': validated,
       'name': 'SciELO',
       'fax': '11 5555-4444',
       'address_number': '430',
@@ -350,7 +343,7 @@ def get_sample_collection(validated = True):
 
     return models.Collection(**collection_attrs)
 
-def get_sample_sponsor(validated = True):
+def get_sample_sponsor():
     """
     Returns a sponsor object, without the following attributes (non mandatory or need to be bound
     to another model object):
@@ -361,7 +354,6 @@ def get_sample_sponsor(validated = True):
     sponsor_attrs = {
       'city': '',
       'fax': '',
-      'validated': validated,
       'name': u'Fundação de Amparo a Pesquisa do Estado de São Paulo',
       'address_number': '',
       'acronym': 'FAPESP',
@@ -378,7 +370,7 @@ def get_sample_sponsor(validated = True):
 
     return models.Sponsor(**sponsor_attrs)
 
-def get_sample_publisher(validated = True):
+def get_sample_publisher():
     """
     Returns a publisher object, without the following attributes (non mandatory or need to be bound
     to another model object):
@@ -389,7 +381,6 @@ def get_sample_publisher(validated = True):
     publisher_attrs = {
       'city': '',
       'fax': '',
-      'validated': validated,
       'name': u'Associação Nacional de História - ANPUH',
       'address_number': '',
       'acronym': 'rbh',
