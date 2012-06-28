@@ -42,6 +42,9 @@ class JournalForm(UserCollectionContext):
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
         required=True)
+    abstract_keyword_languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
+        required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
 
     def __init__(self, *args, **kwargs):
