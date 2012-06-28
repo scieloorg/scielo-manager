@@ -372,7 +372,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     objects = AppCustomManager()
     nocacheobjects = models.Manager()
 
-    section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION)
+    section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION, blank=True)
     journal = models.ForeignKey(Journal)
     volume = models.CharField(_('Volume'), max_length=16, help_text=helptexts.ISSUE__VOLUME)
     number = models.CharField(_('Number'), max_length=16, help_text=helptexts.ISSUE__NUMBER)
