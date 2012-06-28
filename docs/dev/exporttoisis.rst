@@ -93,9 +93,79 @@ Em resumo, significa que o processo de exportação de bases do SciELO Manager p
 
 Alguns arquivos texto também são gerados como entrada de dados para ferramenta de marcação, são eles:
 
- * Arquivo x
- * Arquivo y
- * Arquivo z
+ * automata.mds
+
+  Formato::
+
+    ISSN;<tag_citat>;<acron>.amd;tg<norma>.amd
+
+  Onde:
+
+    <tag_citat> é tag da citação, podendo ser:
+
+      * ocitat para other 
+      * vcitat para vancouver
+      * acitat para abnt
+      * icitat para iso
+      * pcitat para apa
+
+    <norma> é um dos valores, podendo ser: 
+
+      * other 
+      * vanc 
+      * apa
+      * abnt
+      * iso
+
+  Exemplo::
+
+    0044-5967;ocitat;aa.amd;tgother.amd
+    0102-3306;ocitat;abb.amd;tgother.a,d
+    0102-8650;ocitat;acb.amd;tgother.amd
+    1413-7852;ocitat;aob.amd;tgother.amd
+    0103-2100;vcitat;ape.amd;tgvanc.amd
+
+ * en_issue.mds, pt_issue.mds e es_issue.mds
+
+  Formato::
+
+    linha 1: "legenda do número". Ex.: Braz. J. Microbiol. v.41 n.4
+    linha 2: título abrev;vol;suplvol;num;suplno;dateiso;issn;status
+    linha 3: seções separadas por ponto-e-virgula
+    linha 4: código das seções separadas por ponto-e-virgula
+    linha 5: vocabulario controlado
+    linha 6: norma
+    linha 7: em branco
+
+  Exemplo::
+
+    Rev. Saúde Pública  n.ahead pr 2010
+    Rev. Saúde Pública;;;ahead;;20100000;0034-8910;1
+    No section title
+    nd
+    Health Science Descriptors
+    the vancouver group - uniform requirements for manuscripts submitted to biomedical journals
+
+    Rev. Bras. Psiquiatr.  n.ahead 2010
+    Rev. Bras. Psiquiatr.;;;ahead;;20100000;1516-4446;1
+    No section title
+    nd
+    Health Science Descriptors
+    the vancouver group - uniform requirements for manuscripts submitted to biomedical journals
+
+    Braz. J. Microbiol. v.41 n.4
+    Braz. J. Microbiol.;41;;4;;20101200;1517-8382;1
+    No section title
+    nd
+    No Descriptor
+    other standard
+
+    Rev. Inst. Med. trop. S. Paulo v.52 n.4
+    Rev. Inst. Med. trop. S. Paulo;52;;4;;20100800;0036-4665;1
+    Case Report;Animal Envenomation;Malaria;Parasitology;Review;Editorial;Microbiology;Leishmaniasis;Bacteriology;Book Review;No section title
+    RIMTSP014;RIMTSP021;RIMTSP070;RIMTSP090;RIMTSP110;RIMTSP200;RIMTSP280;RIMTSP350;RIMTSP580;RIMTSP780;nd
+    No Descriptor
+    other standard
 
 ------------------------
 Requisitos da Exportação
@@ -133,6 +203,9 @@ Remoção de Campos desnecessários
 ================================
 
 De acordo com reunião realizada em 27 de março alguns campos no contexto da SciELO não serão mais cosiderados pelo SciELO Manager, entretanto para manter a compatibilidade com a atual estrutura de dados os valores deste campo serão inseridos nas bases de dados de forma automática pois seus valores sempre foram os mesmos durante os 15 anos de operação do SciELO.
+
+Title
+`````
 
 1. Later Title
   
