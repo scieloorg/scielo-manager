@@ -221,7 +221,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
-    languages = models.ManyToManyField('Language')
+    languages = models.ManyToManyField('Language', related_name="text_languages")
+    abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages")
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True, help_text=helptexts.JOURNAL__TITLE)
