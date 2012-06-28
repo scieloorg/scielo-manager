@@ -580,7 +580,7 @@
     </div>
   </div>
 
-  <span class="label">{% trans "Journal Cover" %}</span>
+  <span class="label">{% trans "Journal Images" %}</span>
   <div class="well">
     <div class="control-group {% if add_form.cover.errors %}error{% endif %}">
       <div class="controls">
@@ -591,6 +591,18 @@
             <img src="{{ has_cover_url }}" />
           {% else %}
             {% trans "This journal does not have a cover" %}
+          {% endif %}
+      </div>
+    </div>
+    <div class="control-group {% if add_form.logo.errors %}error{% endif %}">
+      <div class="controls">
+        {{ add_form.logo }}
+      </div>
+      <div align="center">
+          {% if has_logo_url %}
+            <img src="{{ has_logo_url }}" />
+          {% else %}
+            {% trans "This journal does not have a logomarca" %}
           {% endif %}
       </div>
     </div>

@@ -144,6 +144,7 @@ class Migration(SchemaMigration):
             ('cover', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
             ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
             ('other_previous_title', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('logo', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
         ))
         db.send_create_signal('journalmanager', ['Journal'])
 
@@ -550,6 +551,7 @@ class Migration(SchemaMigration):
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'languages': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Language']", 'symmetrical': 'False'}),
+            'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
             'other_previous_title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'previous_title': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
