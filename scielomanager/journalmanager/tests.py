@@ -305,11 +305,12 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
-                                                     'journal-sponsor': [sample_sponsor.pk],
-                                                     'journal-use_license': sample_uselicense.pk,
-                                                     'journal-collections': [self.usercollections.pk],
-                                                     'journal-languages': [sample_language.pk],
-                                                     'mission-0-language': sample_language.pk,}))
+                                         'journal-sponsor': [sample_sponsor.pk],
+                                         'journal-use_license': sample_uselicense.pk,
+                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-languages': [sample_language.pk],
+                                         'journal-abstract_keyword_languages': [sample_language.pk],
+                                         'mission-0-language': sample_language.pk,}))
 
         self.assertRedirects(response, reverse('journal.index'))
 
@@ -317,12 +318,13 @@ class LoggedInViewsTest(TestCase):
         testing_journal = Journal.objects.get(title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)')
         response = self.client.post(reverse('journal.edit', args = (testing_journal.pk,)),
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
-                                                     'journal-publisher': [sample_publisher.pk],
-                                                     'journal-sponsor': [sample_sponsor.pk],
-                                                     'journal-use_license': sample_uselicense.pk,
-                                                     'journal-collections': [self.usercollections.pk],
-                                                     'journal-languages': [sample_language.pk],
-                                                     'mission-0-language': sample_language.pk, }))
+                                         'journal-publisher': [sample_publisher.pk],
+                                         'journal-sponsor': [sample_sponsor.pk],
+                                         'journal-use_license': sample_uselicense.pk,
+                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-languages': [sample_language.pk],
+                                         'journal-abstract_keyword_languages': [sample_language.pk],
+                                         'mission-0-language': sample_language.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title = 'Modified Title')
