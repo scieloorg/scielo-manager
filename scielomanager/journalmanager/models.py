@@ -155,7 +155,6 @@ class Collection(caching.base.CachingMixin, models.Model):
     phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True, )
     fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, )
     mail = models.EmailField(_('Email'), )
-    validated = models.BooleanField(_('Validated'), default=False, )
 
     def __unicode__(self):
         return unicode(self.name)
@@ -198,7 +197,6 @@ class Institution(caching.base.CachingMixin, models.Model):
     fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__FAX)
     cel = models.CharField(_('Cel Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__CEL)
     mail = models.EmailField(_('Email'), help_text=helptexts.INSTITUTION__MAIL)
-    validated = models.BooleanField(_('Validated'), default=False, help_text=helptexts.INSTITUTION__VALIDATED)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
@@ -272,8 +270,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True, blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
-    validated = models.BooleanField(_('Validated'), default=False, null=False, blank=True)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
+    logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True, )
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
 

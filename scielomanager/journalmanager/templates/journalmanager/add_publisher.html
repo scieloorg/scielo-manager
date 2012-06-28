@@ -193,18 +193,6 @@
         {% field_help add_form.mail.label add_form.mail.help_text term-mail %}
       </div>
     </div>
-
-    <div class="control-group {% if add_form.validated.errors %}error{% endif %}">
-      <label for="{{ add_form.validated.auto_id }}">
-        <span {% if add_form.validated.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.validated.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.validated }}
-        {% field_help add_form.validated.label add_form.validated.help_text term-validated %}
-      </div>
-    </div>
   </div>
 
   <span class="label">{% trans "Publisher Collections" %}</span>
