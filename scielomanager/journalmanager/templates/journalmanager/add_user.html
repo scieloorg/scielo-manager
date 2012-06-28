@@ -112,7 +112,6 @@
           	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
           </th>
           <th>{% trans "is_manager" %}</th>
-          <th>{% trans "is_default" %}</th>
           <th>{% trans "options" %}</th>
         </tr>
       </thead>
@@ -129,11 +128,6 @@
           <td>
             <div class="control-group {% if add_form.is_manager.errors %}error{% endif %}">
               {{ form.is_manager }}
-            </div>
-          </td>
-          <td>
-            <div class="control-group {% if add_form.is_default.errors %}error{% endif %}">
-              {{ form.is_default }}
             </div>
           </td>
           <td></td>
