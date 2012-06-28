@@ -54,21 +54,17 @@
         <td>
           <div class="control-group {% if form.errors %}error{% endif %}">
             {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-            {% if has_relation %}
-              {{ form.title|attr:"disabled:disabled"}}
-            {% else %}
-              {{ form.title}}
+              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+              {% if has_relation and form.title.value %}
+                {{ form.title|attr:"readonly:readonly"}}
+              {% else %}
+                {{ form.title}}
             {% endif %}
           </div>
         </td>
         <td>
           <div class="control-group {% if form.errors %}error{% endif %}">
-            {% if has_relation %}
-              {{ form.language|attr:"disabled:disabled"}}
-            {% else %}
               {{ form.language }}
-            {% endif %}
           </div>
         </td>
       </tr>
