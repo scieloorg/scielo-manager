@@ -17,7 +17,7 @@ class CollectionAdmin(admin.ModelAdmin):
     def queryset(self, request):
         return Collection.nocacheobjects
 
-    list_display = ('name', 'validated')
+    list_display = ('name',)
     search_fields = ('name',)
 
 admin.site.register(Collection, CollectionAdmin)
@@ -34,7 +34,7 @@ class JournalAdmin(admin.ModelAdmin):
     def queryset(self, request):
         return Journal.nocacheobjects
 
-    list_display = ('title', 'validated')
+    list_display = ('title',)
     search_fields = ('title',)
     filter_horizontal = ('collections','languages')
     inlines = [JournalMissionInline,
@@ -47,7 +47,7 @@ class InstitutionAdmin(admin.ModelAdmin):
     def queryset(self, request):
         return Institution.nocacheobjects
 
-    list_display = ('name','validated')
+    list_display = ('name',)
     search_fields = ('name',)
 
 admin.site.register(Institution, InstitutionAdmin)
