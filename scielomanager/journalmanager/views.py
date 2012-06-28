@@ -433,6 +433,12 @@ def add_journal(request, journal_id = None):
     except ValueError:
         has_cover_url = False
 
+    # Recovering Journal Logo url.
+    try:
+        has_logo_url = journal.logo.url
+    except ValueError:
+        has_logo_url = False
+
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
                               'studyareaformset': studyareaformset,
@@ -440,6 +446,7 @@ def add_journal(request, journal_id = None):
                               'missionformset': missionformset,
                               'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
+                              'has_logo_url': has_logo_url,
                               'form_hash': form_hash if form_hash else request.GET.get('resume', None),
                               'is_new': False if journal_id else True,
                               }, context_instance = RequestContext(request))
