@@ -23,10 +23,17 @@
 
 {% block body %}
 <div class="row-fluid show-grid">
-  <div class="span6" style="padding:0 0 10px 0">
+  <div class="span2" style="padding:0 0 10px 0">
     <a class="btn btn-primary" href="{% url journal.add %}">{% trans 'New' %}</a>
   </div>
-  <div class="span6" style="text-align:right">
+  <div class="span8">
+      {% if request.GET.letter %}
+        {% named_pagination letters request.GET.letter %}
+      {% else %}
+        {% named_pagination letters 'All' %}
+      {% endif %}
+  </div>
+  <div class="span2" style="text-align:right">
       {% simple_pagination objects_journal %}
   </div>
 </div>
@@ -117,5 +124,4 @@
   <tbody>
   </table>
 </form>
-{% pagination objects_journal %}
 {% endblock %}

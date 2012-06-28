@@ -286,6 +286,7 @@ class SectionForm(ModelForm):
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
+      exclude = ('is_default', )
       widgets = {
         'collection':forms.Select(attrs={'class':'span8'}),
       }

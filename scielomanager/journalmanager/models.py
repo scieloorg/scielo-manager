@@ -21,12 +21,23 @@ import helptexts
 
 def get_user_collections(user_id):
     """
-    Return all the collections of a given user
+    Return all the collections of a given user, The returned collections are the collections where the
+    user could have access by the collections bar.
     """
     user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by(
         'collection__name')
 
     return user_collections
+
+def get_default_user_collections(user_id):
+    """
+    Return the collection that the user choose as default/active collection. 
+    """
+    user_collections = User.objects.get(pk=user_id).usercollections_set.filter(is_default=True).order_by(
+        'collection__name')
+
+    return user_collections
+
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -56,7 +67,7 @@ class AppCustomManager(caching.base.CachingManager):
 class JournalCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True, pub_status=None):
-        user_collections = get_user_collections(user.pk)
+        user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
             collections__in=[ uc.collection for uc in user_collections ]).distinct()
 
@@ -69,7 +80,7 @@ class JournalCustomManager(AppCustomManager):
 class SectionCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True):
-        user_collections = get_user_collections(user.pk)
+        user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
             journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
         return objects_all
@@ -80,7 +91,7 @@ class InstitutionCustomManager(AppCustomManager):
     based on user's collections.
     """
     def all_by_user(self, user, is_available=True):
-        user_collections = get_user_collections(user.pk)
+        user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
             collections__in=[ uc.collection for uc in user_collections ]).distinct()
         return objects_all
@@ -230,7 +241,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     short_title = models.CharField(_('Short Title'), max_length=256, db_index=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    acronym = models.CharField(_('Acronym'), max_length=8, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
+    acronym = models.CharField(_('Acronym'), max_length=16, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
     scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'), max_length=16,
         choices=choices.SCIELO_ISSN, help_text=helptexts.JOURNAL__SCIELO_ISSN)
     print_issn = models.CharField(_('Print ISSN'), max_length=9, help_text=helptexts.JOURNAL__PRINT_ISSN)
@@ -238,11 +249,11 @@ class Journal(caching.base.CachingMixin, models.Model):
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512,
         help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
     init_year = models.CharField(_('Initial Date'), max_length=10, help_text=helptexts.JOURNAL__INIT_YEAR)
-    init_vol = models.CharField(_('Initial Volume'), max_length=4, help_text=helptexts.JOURNAL__INIT_VOL)
-    init_num = models.CharField(_('Initial Number'), max_length=4, help_text=helptexts.JOURNAL__INIT_NUM)
+    init_vol = models.CharField(_('Initial Volume'), max_length=8, help_text=helptexts.JOURNAL__INIT_VOL)
+    init_num = models.CharField(_('Initial Number'), max_length=8, help_text=helptexts.JOURNAL__INIT_NUM)
     final_year = models.CharField(_('Final Date'), max_length=10, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
-    final_vol = models.CharField(_('Final Volume'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
-    final_num = models.CharField(_('Final Number'),max_length=4,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
+    final_vol = models.CharField(_('Final Volume'),max_length=8,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
+    final_num = models.CharField(_('Final Number'),max_length=8,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
         choices=choices.FREQUENCY, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",

@@ -53,6 +53,14 @@ def section_has_relation(section_id):
     else:
         return True
 
+def get_first_letter(objects_all):
+    """
+    Return a set contain first letter from a collection
+    """
+    letters_set = set(unicode(letter)[0].upper().strip() for letter in objects_all)
+
+    return sorted(list(letters_set))
+
 def index(request):
     template = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
@@ -111,6 +119,11 @@ def generic_index_search(request, model, journal_id = None):
         if model is models.Journal and request.GET.get('jstatus'):
             objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
 
+        if request.GET.get('letter'):
+            if issubclass(model, models.Institution):
+                objects_all = objects_all.filter(name__startswith = request.GET.get('letter'))
+            else:
+                objects_all = objects_all.filter(title__startswith = request.GET.get('letter'))
 
     if request.GET.get('q'):
         objects_all = model.objects.all_by_user(request.user)
@@ -122,12 +135,12 @@ def generic_index_search(request, model, journal_id = None):
             objects_all = objects_all.filter(
                 title__icontains = request.REQUEST['q']).order_by('title')
 
-
     objects = get_paginated(objects_all, request.GET.get('page', 1))
     template = loader.get_template('journalmanager/%s_dashboard.html' % model.__name__.lower())
     context = RequestContext(request, {
                        'objects_%s' %  model.__name__.lower(): objects,
                        'journal': journal,
+                       'letters': get_first_letter(objects_all),
                        'user_collections': user_collections,
                        })
     return HttpResponse(template.render(context))
