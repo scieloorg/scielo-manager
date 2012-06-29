@@ -658,7 +658,7 @@ def add_section(request, journal_id, section_id=None):
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
     SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
-        form=SectionTitleForm, extra=2, can_delete=False, formset=FirstFieldRequiredFormSet)
+        form=SectionTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
 
