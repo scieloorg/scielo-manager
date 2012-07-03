@@ -1,4 +1,4 @@
-{% extends "base_form.html" %}
+{% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -14,7 +14,7 @@
 {% block shortaccess %}
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <span class="label">{% trans "User Information" %}</span>
 <form method="post" action="#">
   {% csrf_token %}

@@ -1,0 +1,16 @@
+{% extends "base_lv1.html" %}
+{% load static %}
+
+{% block extrahead %}
+  <link rel="stylesheet" href="{{ jquery_ui_css_url }}" type="text/css" media="all" />
+{% endblock %}
+
+{% block extrafooter %}
+  <script type="text/javascript" src="{{ jquery_ui_url }}"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/combobox/combobox.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/datepicker/datepicker.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/datepicker/jquery.ui.datepicker-pt-BR.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/jquery-formset/jquery.formset.min.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/jquery.popupWindow.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/tabslideout/jquery.tabSlideOut.v1.3.js"></script>
+{% endblock %}

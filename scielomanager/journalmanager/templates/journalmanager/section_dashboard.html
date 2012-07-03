@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_lv1.html" %}
 {% load i18n %}
 {% load scielo_common %}
 
@@ -12,11 +12,7 @@
 </ul>
 {% endblock %}
 
-{% block shortaccess %}
-
-{% endblock %}
-
-{% block body %}
+{% block content %}
 <div class="row-fluid show-grid">
   <div class="span10">
    <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
