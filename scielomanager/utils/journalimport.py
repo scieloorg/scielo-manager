@@ -186,6 +186,15 @@ class JournalImport:
             journal.languages.add(language)
             self.charge_summary("language_%s" % i)
 
+    def load_abstractlanguage(self, journal, langs):
+
+        from sectionimport import LANG_DICT as lang_dict
+        for i in langs:
+            language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
+
+            journal.abstract_keywords_languages.add(language)
+            self.charge_summary("language_%s" % i)
+
     def load_mission(self, journal, missions):
         from sectionimport import LANG_DICT as lang_dict
 
@@ -285,11 +294,13 @@ class JournalImport:
             issn_type="print"
             print_issn = record['935'][0]
             if record['935'][0] != record['400'][0]:
+                issn_type="eletronic"
                 electronic_issn = record['400'][0]
         else:
             issn_type="electronic"
             electronic_issn = record['935'][0]
             if record['935'][0] != record['400'][0]:
+                issn_type="print"
                 print_issn = record['400'][0]
 
         journal.title =  record['100'][0]
@@ -326,14 +337,17 @@ class JournalImport:
         if record.has_key('380'):
             journal.frequency = record['380'][0]
 
+        if record.has_key('692'):
+            journal.url_online_submission = record['692'][0]
+
+        if record.has_key('69'):
+            journal.url_journal = record['69'][0]
+
         if record.has_key('51'):
             journal.pub_status = self.trans_pub_status.get(self.get_last_status(record['51']).lower(),'inprogress')
 
         if record.has_key('340'):
             journal.alphabet = record['340'][0]
-
-        if record.has_key('430'):
-            journal.classification = record['430'][0]
 
         if record.has_key('20'):
             journal.national_code = record['20'][0]
@@ -374,6 +388,10 @@ class JournalImport:
         # text language
         if record.has_key('350'):
             self.load_textlanguage(journal,record['350'])
+
+        # abstract language
+        if record.has_key('360'):
+            self.load_abstractlanguage(journal,record['360'])
 
         # study area
         if record.has_key('441'):
