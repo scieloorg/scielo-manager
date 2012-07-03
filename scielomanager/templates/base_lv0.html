@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
+    <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
+    <link rel="shortcut icon" href="/static/favicon.ico"/>
+    {% block extrahead %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}bootstrap/css/bootstrap-responsive.css">
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery.asmselect.css"/>
+    <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
+  </head>
+  <body data-offset="50" data-target=".subnav" data-spy="scroll" data-twttr-rendered="true">
+    {% block base_struture %} 
+      {% block content %} 
+      {% endblock %}
+    {% endblock %}
+  <script type="text/javascript" src="{{ jquery_url }}"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
+  <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#list_model').change(function(){
+        $('#form_search').attr('action', $('#list_model :selected').val());
+      });
+
+      $('#form_search').attr('action', $('#list_model :selected').val());
+
+      options = {placement:'bottom'}
+      $(".tip-bottom").tooltip(options);
+    });
+  </script>
+  {% block extrafooter %}{% endblock %}
+  </body>
+</html>

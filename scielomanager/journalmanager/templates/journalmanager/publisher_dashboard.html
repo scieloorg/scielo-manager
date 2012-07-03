@@ -1,4 +1,4 @@
-{% extends "base_list.html" %}
+{% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -13,10 +13,7 @@
 </ul><!--breadcrumb-->
 {% endblock %}
 
-{% block shortaccess %}
-{% endblock %}
-
-{% block body %}
+{% block content %}
 <div class="row-fluid show-grid">
   <div class="span2" style="padding:0 0 10px 0">
     <a class="btn btn-primary" href="{% url publisher.add %}">{% trans 'New' %}</a>
