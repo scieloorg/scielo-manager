@@ -1,4 +1,4 @@
-{% extends "base_list.html" %}
+{% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -12,10 +12,7 @@
 </ul>
 {% endblock %}
 
-{% block shortaccess %}
-{% endblock %}
-
-{% block body %}
+{% block content %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
     <div class="span10">
