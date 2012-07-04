@@ -1,4 +1,4 @@
-{% extends "base_form.html" %}
+{% extends dynamic_tpl %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -11,11 +11,7 @@
 </ul>
 {% endblock %}
 
-{% block shortaccess %}
-
-{% endblock %}
-
-{% block body %}
+{% block content %}
 <form method="post" action="#">
   {% csrf_token %}
 
