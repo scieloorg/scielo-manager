@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ #!/usr/bin/env python
 #coding: utf-8
 import json
 import os
@@ -192,7 +192,7 @@ class JournalImport:
         for i in langs:
             language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
 
-            journal.abstract_keywords_languages.add(language)
+            journal.abstract_keyword_languages.add(language)
             self.charge_summary("language_%s" % i)
 
     def load_mission(self, journal, missions):
