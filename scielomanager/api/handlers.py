@@ -43,7 +43,7 @@ class Journal(AnonymousBaseHandler):
         'other_previous_title',
         'notes',
         'created',
-        'creator',
+        ('creator', ('username',)),
         'updated',
         ('other_titles', ('category', 'title')),
     )
