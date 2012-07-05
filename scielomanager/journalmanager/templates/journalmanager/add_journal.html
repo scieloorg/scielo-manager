@@ -1,4 +1,4 @@
-{% extends "base_form.html" %}
+{% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -34,7 +34,7 @@
 </div>
 {% endblock %}
 
-{% block body %}
+{% block content %}
 <form method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>

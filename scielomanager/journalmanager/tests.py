@@ -820,7 +820,6 @@ class LoggedInViewsTest(TestCase):
 
     @with_sample_journal
     def test_journal_trash(self):
-        from journalmanager.views import get_user_collections
         response = self.client.get(reverse('trash.listing'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['trashed_docs'].object_list), 0)
@@ -831,7 +830,6 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.get(reverse('trash.listing'))
         self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
-
 
 class JournalRestAPITest(TestCase):
     def setUp(self):

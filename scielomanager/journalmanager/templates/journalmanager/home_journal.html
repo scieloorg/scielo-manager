@@ -1,12 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_lv1.html" %}
 {% load i18n %}
 {% load static %}
 {% load get_title_for_pended %}
 
 {% block page_title %}{{block.super}}{% endblock %}
-
-{% block shortaccess %}
-{% endblock %}
 
 {% block body_login %}
 {% if not user.is_authenticated %}
