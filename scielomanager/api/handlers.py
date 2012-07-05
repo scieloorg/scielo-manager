@@ -15,6 +15,7 @@ class Journal(AnonymousBaseHandler):
         'previous_title',
         ('use_license', ('license_code', 'disclaimer')),
         ('languages', ('iso_code',)),
+        ('abstract_keyword_languages', ('iso_code',)),
         'title_iso',
         'short_title',
         'acronym',
@@ -40,6 +41,11 @@ class Journal(AnonymousBaseHandler):
         'index_coverage',
         'cover',
         'other_previous_title',
+        'notes',
+        'created',
+        'creator',
+        'updated',
+        ('other_titles', ('category', 'title')),
     )
 
     @throttle(5, 1)
@@ -125,7 +131,7 @@ class Section(AnonymousBaseHandler):
 
     def read(self, request, issn, collection):
         try:
-            return models.Section.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn), 
+            return models.Section.objects.filter(Q(journal__print_issn=issn) | Q(journal__eletronic_issn=issn),
                 journal__collections__name_slug=collection)
         except models.Issue.DoesNotExist:
                 return []

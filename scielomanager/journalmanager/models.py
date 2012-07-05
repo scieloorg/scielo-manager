@@ -31,7 +31,7 @@ def get_user_collections(user_id):
 
 def get_default_user_collections(user_id):
     """
-    Return the collection that the user choose as default/active collection. 
+    Return the collection that the user choose as default/active collection.
     """
     user_collections = User.objects.get(pk=user_id).usercollections_set.filter(is_default=True).order_by(
         'collection__name')
@@ -317,7 +317,7 @@ class JournalStudyArea(caching.base.CachingMixin, models.Model):
 class JournalTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    journal = models.ForeignKey(Journal)
+    journal = models.ForeignKey(Journal, related_name='other_titles')
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=choices.TITLE_CATEGORY)
 
@@ -424,7 +424,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
             self.publication_end_month, self.publication_year)
 
-    
+
     def save(self, *args, **kwargs):
         self.label = 'v{0}n{1}'.format(self.volume, self.number)
         super(Issue, self).save(*args, **kwargs)
