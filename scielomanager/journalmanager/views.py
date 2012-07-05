@@ -29,7 +29,7 @@ from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
 
-from django.core.cache import cache
+import caching.base
 
 from scielomanager.journalmanager.models import get_user_collections
 from scielomanager.journalmanager import models
@@ -168,11 +168,16 @@ def generic_toggle_availability(request, object_id, model):
 @login_required
 def toggle_active_collection(request, user_id, collection_id):
     '''
-        Redifine the active collection, changing the administrative context to another collection.
+    Redifine the active collection, changing the administrative context to another collection.
     '''
 
     # Setting up all user collections.is_default to False
     user_collections = get_user_collections(request.user.id)
+    
+    # Clear cache when changes in UserCollections
+    invalid = [collection for collection in user_collections]
+    models.UserCollections.objects.invalidate(*invalid)
+
     user_collections.all().update(is_default = False)
 
     # Setting up the new default collection
@@ -310,6 +315,11 @@ def add_user(request, user_id=None):
         if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
             userform.save()
             userprofileformset.save()
+
+            # Clear cache when changes in UserCollections
+            invalid = [collection for collection in user_collections]
+            models.UserCollections.objects.invalidate(*invalid)
+
             usercollectionsformset.save()
 
             messages.info(request, MSG_FORM_SAVED)
@@ -785,7 +795,6 @@ def trash_listing(request):
         trashed_docs = doc_entity.objects.all_by_user(request.user, is_available=False)
     except AttributeError:
         trashed_docs = models.Journal.objects.all_by_user(request.user, is_available=False)
-        #log the event
 
     trashed_docs_paginated = get_paginated(trashed_docs, request.GET.get('page', 1))
 
