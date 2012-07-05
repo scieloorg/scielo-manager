@@ -46,6 +46,7 @@ class Journal(AnonymousBaseHandler):
         ('creator', ('username',)),
         'updated',
         ('other_titles', ('category', 'title')),
+        ('missions', ('description', 'language')),
     )
 
     @throttle(5, 1)

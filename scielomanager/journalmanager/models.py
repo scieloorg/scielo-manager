@@ -324,7 +324,7 @@ class JournalTitle(caching.base.CachingMixin, models.Model):
 class JournalMission(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    journal = models.ForeignKey(Journal, null=False)
+    journal = models.ForeignKey(Journal, related_name='missions')
     description = models.TextField(_('Mission'), help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.ForeignKey('Language', blank=False, null=True)
 

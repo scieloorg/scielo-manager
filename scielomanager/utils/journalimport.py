@@ -198,7 +198,7 @@ class JournalImport:
             except:
                 pass
             mission.description = parsed_subfields['_']
-            journal.journalmission_set.add(mission)
+            journal.missions.add(mission)
             self.charge_summary("mission")
 
     def load_historic(self, journal, historicals):
