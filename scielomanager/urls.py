@@ -13,12 +13,18 @@ admin.autodiscover()
 
 # RESTful API config
 v1_api = Api(api_name='v1')
-v1_api.register(resources.JournalResource())
-v1_api.register(resources.UserResource())
-v1_api.register(resources.UseLicenseResource())
-v1_api.register(resources.SponsorResource())
-v1_api.register(resources.PublisherResource())
-v1_api.register(resources.CollectionResource())
+v1_api_resources = [
+    resources.JournalResource(),
+    resources.UserResource(),
+    resources.UseLicenseResource(),
+    resources.SponsorResource(),
+    resources.PublisherResource(),
+    resources.CollectionResource(),
+    resources.IssueResource(),
+    resources.SectionResource(),
+]
+for res in v1_api_resources:
+    v1_api.register(res)
 
 
 urlpatterns = patterns('',

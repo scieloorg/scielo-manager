@@ -9,7 +9,38 @@ from journalmanager.models import (
     Sponsor,
     Publisher,
     Collection,
+    Issue,
+    Section,
 )
+
+
+class SectionResource(ModelResource):
+    journal = fields.ForeignKey('api.resources.JournalResource',
+        'journal')
+    issues = fields.OneToManyField('api.resources.IssueResource',
+        'issue_set')
+    titles = fields.CharField(readonly=True)
+
+    class Meta:
+        queryset = Section.objects.all()
+        resource_name = 'sections'
+        allowed_methods = ['get',]
+
+    def dehydrate_titles(self, bundle):
+        return [(title.language.iso_code, title.title)
+            for title in bundle.obj.sectiontitle_set.all()]
+
+
+class IssueResource(ModelResource):
+    journal = fields.ForeignKey('api.resources.JournalResource',
+        'journal')
+    sections = fields.ManyToManyField(SectionResource, 'section')
+
+    class Meta:
+        queryset = Issue.objects.all()
+        resource_name = 'issues'
+        allowed_methods = ['get',]
+
 
 class CollectionResource(ModelResource):
     class Meta:
@@ -17,17 +48,20 @@ class CollectionResource(ModelResource):
         resource_name = 'collections'
         allowed_methods = ['get',]
 
+
 class PublisherResource(ModelResource):
     class Meta:
         queryset = Publisher.objects.all()
         resource_name = 'publishers'
         allowed_methods = ['get',]
 
+
 class SponsorResource(ModelResource):
     class Meta:
         queryset = Sponsor.objects.all()
         resource_name = 'sponsors'
         allowed_methods = ['get',]
+
 
 class UseLicenseResource(ModelResource):
     class Meta:
@@ -49,6 +83,7 @@ class UserResource(ModelResource):
             'is_superuser',
         ]
 
+
 class JournalResource(ModelResource):
     missions = fields.CharField(readonly=True)
     other_titles = fields.CharField(readonly=True)
@@ -59,6 +94,7 @@ class JournalResource(ModelResource):
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
     publishers = fields.ManyToManyField(PublisherResource, 'publisher')
     collections = fields.ManyToManyField(CollectionResource, 'collections')
+    issues = fields.OneToManyField(IssueResource, 'issue_set')
 
     class Meta:
         queryset = Journal.objects.all().filter()
