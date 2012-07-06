@@ -3,13 +3,44 @@ from django.contrib.auth.models import User
 from tastypie.resources import ModelResource
 from tastypie import fields
 
-from journalmanager.models import Journal
+from journalmanager.models import (
+    Journal,
+    UseLicense,
+    Sponsor,
+    Publisher,
+    Collection,
+)
+
+class CollectionResource(ModelResource):
+    class Meta:
+        queryset = Collection.objects.all()
+        resource_name = 'collections'
+        allowed_methods = ['get',]
+
+class PublisherResource(ModelResource):
+    class Meta:
+        queryset = Publisher.objects.all()
+        resource_name = 'publishers'
+        allowed_methods = ['get',]
+
+class SponsorResource(ModelResource):
+    class Meta:
+        queryset = Sponsor.objects.all()
+        resource_name = 'sponsors'
+        allowed_methods = ['get',]
+
+class UseLicenseResource(ModelResource):
+    class Meta:
+        queryset = UseLicense.objects.all()
+        resource_name = 'uselicenses'
+        allowed_methods = ['get',]
 
 
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'users'
+        allowed_methods = ['get',]
         excludes = [
             'email',
             'password',
@@ -20,12 +51,31 @@ class UserResource(ModelResource):
 
 class JournalResource(ModelResource):
     missions = fields.CharField(readonly=True)
+    other_titles = fields.CharField(readonly=True)
+    creator = fields.ForeignKey(UserResource, 'creator')
+    abstract_keyword_languages = fields.CharField(readonly=True)
+    languages = fields.CharField(readonly=True)
+    use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
+    sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
+    publishers = fields.ManyToManyField(PublisherResource, 'publisher')
+    collections = fields.ManyToManyField(CollectionResource, 'collections')
 
     class Meta:
-        queryset = Journal.objects.all()
+        queryset = Journal.objects.all().filter()
         resource_name = 'journals'
+        allowed_methods = ['get',]
+        filtering = {
+            'is_trashed': ('exact',),
+        }
 
     def dehydrate_missions(self, bundle):
         return [(mission.language.iso_code, mission.description)
             for mission in bundle.obj.missions.all()]
 
+    def dehydrate_other_titles(self, bundle):
+        return [(title.category, title.title)
+            for title in bundle.obj.other_titles.all()]
+
+    def dehydrate_languages(self, bundle):
+        return [language.iso_code
+            for language in bundle.obj.languages.all()]

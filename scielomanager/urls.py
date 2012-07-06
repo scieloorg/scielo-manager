@@ -15,6 +15,10 @@ admin.autodiscover()
 v1_api = Api(api_name='v1')
 v1_api.register(resources.JournalResource())
 v1_api.register(resources.UserResource())
+v1_api.register(resources.UseLicenseResource())
+v1_api.register(resources.SponsorResource())
+v1_api.register(resources.PublisherResource())
+v1_api.register(resources.CollectionResource())
 
 
 urlpatterns = patterns('',
