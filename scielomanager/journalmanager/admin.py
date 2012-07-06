@@ -53,11 +53,19 @@ class InstitutionAdmin(admin.ModelAdmin):
 admin.site.register(Institution, InstitutionAdmin)
 
 class UserCollectionsInline(admin.TabularInline):
+
+    def queryset(self, request):
+        return UserCollections.nocacheobjects
+
     model = UserCollections
     extra = 1
     can_delete = True
 
 class UserProfileInline(admin.StackedInline):
+
+    def queryset(self, request):
+        return UserProfile.nocacheobjects
+
     model = UserProfile
     max_num = 1
     can_delete = True
@@ -124,12 +132,13 @@ class SupplementAdmin(admin.ModelAdmin):
 admin.site.register(Supplement, SupplementAdmin)
 
 class JournalPublicationEventsAdmin(admin.ModelAdmin):
-    list_display = ['journal', 'status', 'created_at',]
-    list_filter = ['status',]
-    search_fields = ['journal',]
 
     def queryset(self, request):
         return JournalPublicationEvents.nocacheobjects
+
+    list_display = ['journal', 'status', 'created_at',]
+    list_filter = ['status',]
+    search_fields = ['journal',]
 
 admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
 
