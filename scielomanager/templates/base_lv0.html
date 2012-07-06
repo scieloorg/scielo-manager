@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static %}
+{% load assets %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -13,15 +14,13 @@
     <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/style.css">
   </head>
   <body data-offset="50" data-target=".subnav" data-spy="scroll" data-twttr-rendered="true">
-    {% block base_struture %} 
-      {% block content %} 
-      {% endblock %}
+  {% block base_struture %} 
+    {% block content %} 
     {% endblock %}
-  <script type="text/javascript" src="{{ jquery_url }}"></script>
-  <script type="text/javascript" src="{% get_static_prefix %}bootstrap/js/bootstrap.js"></script>
-  <script type="text/javascript" src="{% get_static_prefix %}js/languages.js"></script>
-  <script type="text/javascript" src="{% get_static_prefix %}js/asmselect/jquery.asmselect.js"></script>
-  <script type="text/javascript" src="{% get_static_prefix %}js/multiselect.js"></script>
+  {% endblock %}
+  {% assets "js" %}
+      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
   <script type="text/javascript">
     $(document).ready(function(){
       $('#list_model').change(function(){
