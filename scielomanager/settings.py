@@ -69,14 +69,15 @@ MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 STATIC_URL = '/static/'
 MEDIA_URL  = '/static/media/'
 
+ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
+ASSETS_URL = '/static/'
+ASSETS_DEBUG = True
+
 #Third-party URLS
-DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest'
 
 AVAILABLE_IN_TEMPLATES = {
     'docs_url': DOCUMENTATION_BASE_URL,
-    'jquery_url': r'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
-    'jquery_ui_url': r'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js',
-    'jquery_ui_css_url': r'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/base/jquery-ui.css',
 }
 
 # URL prefix for admin static files -- CSS, JavaScript and images.

@@ -10,7 +10,7 @@ from scielomanager.journalmanager import models
 admin.autodiscover()
 
 urlpatterns = patterns('',
-
+    
     url(r'^$', views.index, name='index'),
 
     # Journal Manager APP

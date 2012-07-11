@@ -14,7 +14,6 @@ from django.core.paginator import Paginator
 from scielomanager import settings
 from scielomanager.journalmanager import models as journalmanager_models
 
-
 def handle_uploaded_file(f):
     upload_suffix = join('img/collections_logos', f.name)
     upload_path = join(settings.MEDIA_ROOT, upload_suffix)
