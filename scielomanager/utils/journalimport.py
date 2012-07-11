@@ -186,6 +186,15 @@ class JournalImport:
             journal.languages.add(language)
             self.charge_summary("language_%s" % i)
 
+    def load_abstractlanguage(self, journal, langs):
+
+        from sectionimport import LANG_DICT as lang_dict
+        for i in langs:
+            language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
+
+            journal.abstract_keyword_languages.add(language)
+            self.charge_summary("language_%s" % i)
+
     def load_mission(self, journal, missions):
         from sectionimport import LANG_DICT as lang_dict
 
@@ -198,7 +207,7 @@ class JournalImport:
             except:
                 pass
             mission.description = parsed_subfields['_']
-            journal.journalmission_set.add(mission)
+            journal.missions.add(mission)
             self.charge_summary("mission")
 
     def load_historic(self, journal, historicals):
@@ -263,11 +272,22 @@ class JournalImport:
             title = JournalTitle()
             title.title = i
             title.category = category
-            journal.journaltitle_set.add(title)
+            journal.other_titles.add(title)
             self.charge_summary("title")
 
-    def load_use_license(self):
-        return UseLicense.objects.get_or_create(license_code='###PLACEBO###')[0]
+    def load_use_license(self,code, disclaimer):
+
+        expanded_disclaimer = subfield.expand(disclaimer)
+        parsed_subfields_disclaimer = dict(expanded_disclaimer)
+
+        use_license = UseLicense.objects.get_or_create(license_code=code)[0]
+
+        if parsed_subfields_disclaimer.has_key('t'):
+            use_license.disclaimer = parsed_subfields_disclaimer['t']
+
+        use_license.save()
+        
+        return use_license
 
     def load_journal(self, collection, loaded_publisher, loaded_sponsor, record):
         """
@@ -278,62 +298,98 @@ class JournalImport:
         issn_type=""
         print_issn=""
         electronic_issn=""
-        use_license = self.load_use_license()
+
+        # Creating use license codes.
+        license_code = ""
+        license_disclaimer = ""
+        if record.has_key('541'):
+            license_code = record['541'][0]
+        if record.has_key('540'):
+            license_disclaimer = record['540'][0]
+        use_license = self.load_use_license(license_code,license_disclaimer)
+
         journal = Journal()
 
+        # ISSN and Other Complex Stuffs from the old version
         if record['35'][0] == "PRINT":
             issn_type="print"
             print_issn = record['935'][0]
             if record['935'][0] != record['400'][0]:
+                issn_type="eletronic"
                 electronic_issn = record['400'][0]
         else:
             issn_type="electronic"
             electronic_issn = record['935'][0]
             if record['935'][0] != record['400'][0]:
+                issn_type="print"
                 print_issn = record['400'][0]
 
-        journal.title =  record['100'][0]
-        journal.short_title =  record['150'][0]
-        journal.acronym = record['930'][0]
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
+
+        # Journal Original Title
+        journal.title =  record['100'][0]
+
+        # Short Title
+        journal.short_title =  record['150'][0]
+
+        # Acronym
+        journal.acronym = record['930'][0]
+
+        # Use License
         journal.use_license = use_license
+
+        # Subject Descriptors
         journal.subject_descriptors = '\n'.join(record['440']).lower()
 
+        # Indexing Coverage
         if record.has_key('450'):
             journal.index_coverage = '\n'.join(record['450']).lower()
+
+        # Copyright
+        if record.has_key('62'):
+            journal.copyrighter = record['62'][0]
 
         # Text Language
         if record.has_key('301'):
             journal.init_year = record['301'][0]
 
+        # Initial Volume
         if record.has_key('302'):
             journal.init_vol = record['302'][0]
 
+        # Initial Number
         if record.has_key('303'):
             journal.init_num = record['303'][0]
 
+        # Final Year
         if record.has_key('304'):
             journal.final_year = record['304'][0]
 
+        # Final Volumen
         if record.has_key('305'):
             journal.final_vol = record['305'][0]
 
+        # Final Number
         if record.has_key('306'):
             journal.final_num = record['306'][0]
 
+        # Publication Frequency
         if record.has_key('380'):
             journal.frequency = record['380'][0]
+
+        if record.has_key('692'):
+            journal.url_online_submission = record['692'][0]
+
+        if record.has_key('69'):
+            journal.url_journal = record['69'][0]
 
         if record.has_key('51'):
             journal.pub_status = self.trans_pub_status.get(self.get_last_status(record['51']).lower(),'inprogress')
 
         if record.has_key('340'):
             journal.alphabet = record['340'][0]
-
-        if record.has_key('430'):
-            journal.classification = record['430'][0]
 
         if record.has_key('20'):
             journal.national_code = record['20'][0]
@@ -359,6 +415,7 @@ class JournalImport:
         if record.has_key('151'):
             journal.title_iso = record['151'][0]
 
+
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -371,9 +428,21 @@ class JournalImport:
 
         journal.sponsor = loaded_sponsor
 
+        # created date
+        if record.has_key('940'):
+            journal.created = self.iso_format(record['940'][0])
+
+        # updated date
+        if record.has_key('941'):
+            journal.updated = self.iso_format(record['941'][0])
+
         # text language
         if record.has_key('350'):
             self.load_textlanguage(journal,record['350'])
+
+        # abstract language
+        if record.has_key('360'):
+            self.load_abstractlanguage(journal,record['360'])
 
         # study area
         if record.has_key('441'):
@@ -396,6 +465,8 @@ class JournalImport:
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')
+
+        journal.save()
 
         return journal
 

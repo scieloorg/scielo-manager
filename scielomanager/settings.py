@@ -144,7 +144,7 @@ INSTALLED_APPS = (
     'south',
     'scielo_extensions',
     'widget_tweaks',
-    'django_assets',
+    'tastypie',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(
