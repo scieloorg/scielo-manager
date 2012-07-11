@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'south',
     'scielo_extensions',
     'widget_tweaks',
+    'tastypie',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS =(

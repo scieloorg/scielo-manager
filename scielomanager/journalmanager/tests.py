@@ -595,13 +595,13 @@ class LoggedInViewsTest(TestCase):
 
         Tests the list using letters filter
         """
-        response = self.client.get(reverse('journal.index') +'?letter=A') 
+        response = self.client.get(reverse('journal.index') +'?letter=A')
 
         #url dispatcher
-        self.assertEqual(response.status_code, 200) 
+        self.assertEqual(response.status_code, 200)
         self.assertTrue('objects_journal' in response.context)
 
-        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['objects_journal'].object_list[0].title))     
+        self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['objects_journal'].object_list[0].title))
         self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_publisher
@@ -611,13 +611,13 @@ class LoggedInViewsTest(TestCase):
 
         Tests the list using letters filter
         """
-        response = self.client.get(reverse('publisher.index') +'?letter=A') 
+        response = self.client.get(reverse('publisher.index') +'?letter=A')
 
         #url dispatcher
-        self.assertEqual(response.status_code, 200) 
+        self.assertEqual(response.status_code, 200)
         self.assertTrue('objects_publisher' in response.context)
 
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))     
+        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_publisher'].object_list))
 
     @with_sample_sponsor
@@ -627,13 +627,13 @@ class LoggedInViewsTest(TestCase):
 
         Tests the list using letters filter
         """
-        response = self.client.get(reverse('sponsor.index') +'?letter=F') 
+        response = self.client.get(reverse('sponsor.index') +'?letter=F')
 
         #url dispatcher
-        self.assertEqual(response.status_code, 200) 
+        self.assertEqual(response.status_code, 200)
         self.assertTrue('objects_sponsor' in response.context)
 
-        self.assertEqual(u'Fundação de Amparo a Pesquisa do Estado de São Paulo', unicode(response.context['objects_sponsor'].object_list[0].name))     
+        self.assertEqual(u'Fundação de Amparo a Pesquisa do Estado de São Paulo', unicode(response.context['objects_sponsor'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
 
     @with_sample_journal
@@ -885,26 +885,31 @@ class JournalRestAPITest(TestCase):
 
         journal = self._makeOne()
 
-        response = self.client.get(reverse('api_v1_journal.index',
-            args=[self.collection.name_slug]))
+        response = self.client.get('/api/v1/journals/')
         self.assertEqual(response.status_code, 200)
 
         response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 1)
+        self.assertEqual(len(response_as_py), 2) #objects and meta
 
-        expected_fields = ('title', 'collections','publisher', 'sponsor', 'previous_title',
-        'use_license', 'languages', 'title_iso', 'short_title', 'acronym', 'scielo_issn',
-        'print_issn', 'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
+        expected_fields = ('title', 'collections','publisher', 'sponsor',
+        'previous_title', 'use_license', 'languages', 'title_iso',
+        'short_title', 'acronym', 'scielo_issn', 'print_issn',
+        'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
         'init_num', 'final_year', 'final_vol', 'final_num', 'frequency', 'pub_status',
         'editorial_standard', 'ctrl_vocabulary', 'pub_level', 'secs_code', 'copyrighter',
-        'url_online_submission', 'url_journal', 'index_coverage', 'cover', 'other_previous_title',
+        'url_online_submission', 'url_journal', 'index_coverage', 'cover',
+        'other_previous_title', 'creator', 'logo', 'id', 'issues', 'is_trashed',
+        'other_titles', 'publishers', 'updated', 'sponsors',
+        'abstract_keyword_languages', 'missions', 'created', 'notes',
+        'pub_status_reason', 'resource_uri',
     )
-        for field in response_as_py[0]:
+        for field in response_as_py['objects'][0]:
             self.assertTrue(field in expected_fields)
+
             if field in ('collections', 'publisher', 'sponsor', 'languages'):
-                self.assertTrue(isinstance(response_as_py[0][field], list))
+                self.assertTrue(isinstance(response_as_py['objects'][0][field], list))
             elif field in ('use_license',):
-                self.assertTrue(isinstance(response_as_py[0][field], dict))
+                self.assertTrue(isinstance(response_as_py['objects'][0][field], dict))
 
 
     def test_journal_getone(self):
@@ -912,66 +917,51 @@ class JournalRestAPITest(TestCase):
 
         journal = self._makeOne()
 
-        response = self.client.get(reverse('api_v1_journal.getone',
-            args=[self.collection.name_slug, journal.print_issn]))
+        response = self.client.get('/api/v1/journals/%s/' % journal.pk)
         self.assertEqual(response.status_code, 200)
 
         response_as_py = json.loads(response.content)
 
-        expected_fields = ('title', 'collections','publisher', 'sponsor', 'previous_title',
-        'use_license', 'languages', 'title_iso', 'short_title', 'acronym', 'scielo_issn',
-        'print_issn', 'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
-        'init_num', 'final_year', 'final_vol', 'final_num', 'frequency', 'pub_status',
-        'editorial_standard', 'ctrl_vocabulary', 'pub_level', 'secs_code', 'copyrighter',
-        'url_online_submission', 'url_journal', 'index_coverage', 'cover', 'other_previous_title',
-    )
+        expected_fields = ('title', 'collections','publisher', 'sponsor',
+        'previous_title', 'use_license', 'languages', 'title_iso',
+        'short_title', 'acronym', 'scielo_issn', 'print_issn',
+        'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
+        'init_num', 'final_year', 'final_vol', 'final_num', 'frequency',
+        'pub_status', 'editorial_standard', 'ctrl_vocabulary', 'pub_level',
+        'secs_code', 'copyrighter', 'url_online_submission', 'url_journal',
+        'index_coverage', 'cover', 'other_previous_title', 'creator',
+        'logo', 'id', 'issues', 'is_trashed', 'other_titles', 'publishers',
+        'updated', 'sponsors', 'abstract_keyword_languages', 'missions',
+        'created', 'notes', 'pub_status_reason', 'resource_uri',)
+
         for field in response_as_py:
             self.assertTrue(field in expected_fields)
-            if field in ('collections', 'publisher', 'sponsor', 'languages'):
-                self.assertTrue(isinstance(response_as_py[field], list))
-            elif field in ('use_license',):
-                self.assertTrue(isinstance(response_as_py[field], dict))
-            elif field in ('cover',):
-                # instances of FileField
-                if not response_as_py.get(field, None):
-                    self.assertRaises(ValueError, lambda: getattr(getattr(journal, field), 'url'))
-                else:
-                    self.assertEqual(getattr(getattr(journal, field), 'url'), response_as_py.get(field, None))
-            else:
-                #check values for plain attributes
-                self.assertEqual(getattr(journal, field, None), response_as_py.get(field, None))
 
     def test_post_data_index(self):
-        response = self.client.post(reverse('api_v1_journal.index',
-            args=[self.collection.name_slug]))
+        response = self.client.post('/api/v1/journals/')
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_index(self):
-        response = self.client.put(reverse('api_v1_journal.index',
-            args=[self.collection.name_slug]))
+        response = self.client.put('/api/v1/journals/')
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_index(self):
-        response = self.client.delete(reverse('api_v1_journal.index',
-            args=[self.collection.name_slug]))
+        response = self.client.delete('/api/v1/journals/')
         self.assertEqual(response.status_code, 405)
 
     def test_post_data_getone(self):
         journal = self._makeOne()
-        response = self.client.post(reverse('api_v1_journal.getone',
-            args=[self.collection.name_slug, journal.print_issn]))
+        response = self.client.post('/api/v1/journals/%s/' % journal.pk)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         journal = self._makeOne()
-        response = self.client.put(reverse('api_v1_journal.getone',
-            args=[self.collection.name_slug, journal.print_issn]))
+        response = self.client.put('/api/v1/journals/%s/' % journal.pk)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         journal = self._makeOne()
-        response = self.client.delete(reverse('api_v1_journal.getone',
-            args=[self.collection.name_slug, journal.print_issn]))
+        response = self.client.delete('/api/v1/journals/%s/' % journal.pk)
         self.assertEqual(response.status_code, 405)
 
 class CollectionRestAPITest(TestCase):
@@ -1002,44 +992,47 @@ class CollectionRestAPITest(TestCase):
         import json
         collection = self._makeOne()
 
-        response = self.client.get(reverse('api_v1_collection.index'))
+        response = self.client.get('/api/v1/collections/')
         self.assertEqual(response.status_code, 200)
         response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 1)
-        self.assertEqual(response_as_py[0]['name'], collection.name)
+        self.assertEqual(len(response_as_py), 2) #objects and meta
+        self.assertEqual(response_as_py['objects'][0]['name'], collection.name)
 
         expected_fields = ('name', 'name_slug', 'acronym',
             'address', 'address_number', 'address_complement',
             'city', 'state', 'country', 'zip_code', 'fax',
-            'phone', 'url', 'mail',
+            'phone', 'url', 'mail', 'logo', 'resource_uri', 'id',
         )
 
-        for field in response_as_py[0]:
+        for field in response_as_py['objects'][0]:
             self.assertTrue(field in expected_fields)
             # compare as unicode strings
             field_value = getattr(collection, field, None)
             if field_value:
-                self.assertEqual(field_value.decode('utf-8'),
-                    response_as_py[0].get(field, None))
+                try:
+                    self.assertEqual(unicode(field_value, 'utf-8'),
+                        response_as_py['objects'][0].get(field, None))
+                except:
+                    self.assertEqual(unicode(field_value),
+                        response_as_py['objects'][0].get(field, None))
 
     def test_post_data(self):
-        response = self.client.post(reverse('api_v1_collection.index'))
+        response = self.client.post('/api/v1/collections/')
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
-        response = self.client.put(reverse('api_v1_collection.index'))
+        response = self.client.put('/api/v1/collections/')
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
-        response = self.client.delete(reverse('api_v1_collection.index'))
+        response = self.client.delete('/api/v1/collections/')
         self.assertEqual(response.status_code, 405)
 
     def test_getone(self):
         import json
         collection = self._makeOne()
 
-        response = self.client.get(reverse('api_v1_collection.getone',
-            args=[collection.name_slug]))
+        response = self.client.get('/api/v1/collections/%s/' % collection.pk)
         self.assertEqual(response.status_code, 200)
         response_as_py = json.loads(response.content)
         self.assertEqual(response_as_py['name'], collection.name)
@@ -1047,7 +1040,7 @@ class CollectionRestAPITest(TestCase):
         expected_fields = ('name', 'name_slug', 'acronym',
             'address', 'address_number', 'address_complement',
             'city', 'state', 'country', 'zip_code', 'fax',
-            'phone', 'url', 'mail',
+            'phone', 'url', 'mail', 'logo', 'id', 'resource_uri',
         )
 
         for field in response_as_py:
@@ -1055,28 +1048,27 @@ class CollectionRestAPITest(TestCase):
             # compare as unicode strings
             field_value = getattr(collection, field, None)
             if field_value:
-                self.assertEqual(field_value.decode('utf-8'),
-                    response_as_py.get(field, None))
+                try:
+                    self.assertEqual(unicode(field_value, 'utf-8'), response_as_py.get(field, None))
+                except TypeError:
+                    self.assertEqual(unicode(field_value), response_as_py.get(field, None))
 
     def test_post_data_getone(self):
         collection = self._makeOne()
 
-        response = self.client.post(reverse('api_v1_collection.getone',
-            args=[collection.name_slug]))
+        response = self.client.post('/api/v1/collections/%s/' % collection.pk)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         collection = self._makeOne()
 
-        response = self.client.put(reverse('api_v1_collection.getone',
-            args=[collection.name_slug]))
+        response = self.client.put('/api/v1/collections/%s/' % collection.pk)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         collection = self._makeOne()
 
-        response = self.client.delete(reverse('api_v1_collection.getone',
-            args=[collection.name_slug]))
+        response = self.client.delete('/api/v1/collections/%s/' % collection.pk)
         self.assertEqual(response.status_code, 405)
 
 class IssuesRestAPITest(TestCase):
@@ -1142,8 +1134,7 @@ class IssuesRestAPITest(TestCase):
         import json
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.get(reverse('api_v1_issue.index', args=[
-            name_slug, issue.journal.print_issn]))
+        response = self.client.get('/api/v1/issues/')
         self.assertEqual(response.status_code, 200)
 
         response_as_py = json.loads(response.content)
@@ -1151,58 +1142,36 @@ class IssuesRestAPITest(TestCase):
             'number', 'is_press_release', 'publication_start_month',
             'publication_end_month', 'publication_year', 'use_license',
             'total_documents', 'ctrl_vocabulary', 'editorial_standard',
-            'label',
+            'label', 'updated', 'resource_uri', 'created', 'journal',
+            'cover', 'sections', 'id', 'is_trashed',
         )
 
-        for field in response_as_py[0]:
+        for field in response_as_py['objects'][0]:
             self.assertTrue(field in expected_fields)
-
-            field_value = getattr(issue, field, None)
-            if field_value:
-                if field in ['is_marked_up', 'is_press_release']:
-                    # boolean
-                    self.assertTrue(isinstance(response_as_py[0].get(field, None),
-                        bool))
-                elif field in ['section',]:
-                    # list
-                    self.assertTrue(isinstance(response_as_py[0].get(field, None),
-                        list))
-                elif field in ['total_documents', 'publication_year',
-                    'publication_end_month', 'publication_start_month']:
-                    self.assertTrue(isinstance(response_as_py[0].get(field, None),
-                        int))
-                else:
-                    # plain text
-                    self.assertEqual(field_value.decode('utf-8'),
-                        response_as_py[0].get(field, None))
 
     def test_post_data(self):
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.post(reverse('api_v1_issue.index', args=[
-            name_slug, issue.journal.print_issn]))
+        response = self.client.post('/api/v1/issues/')
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.put(reverse('api_v1_issue.index', args=[
-            name_slug, issue.journal.print_issn]))
+        response = self.client.put('/api/v1/issues/')
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.delete(reverse('api_v1_issue.index', args=[
-            name_slug, issue.journal.print_issn]))
+        response = self.client.delete('/api/v1/issues/')
         self.assertEqual(response.status_code, 405)
 
     def test_issue_getone(self):
         import json
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.get(reverse('api_v1_issue.getone', args=[
-            name_slug, issue.journal.print_issn, issue.label]))
+        response = self.client.get('/api/v1/issues/%s/' % issue.pk)
         self.assertEqual(response.status_code, 200)
 
         response_as_py = json.loads(response.content)
@@ -1210,7 +1179,8 @@ class IssuesRestAPITest(TestCase):
             'number', 'is_press_release', 'publication_start_month',
             'publication_end_month', 'publication_year', 'use_license',
             'total_documents', 'ctrl_vocabulary', 'editorial_standard',
-            'label',
+            'label', 'updated', 'resource_uri', 'created', 'journal',
+            'cover', 'sections', 'id', 'is_trashed',
         )
 
         for field in response_as_py:
@@ -1230,30 +1200,36 @@ class IssuesRestAPITest(TestCase):
                     'publication_end_month', 'publication_start_month']:
                     self.assertTrue(isinstance(response_as_py.get(field, None),
                         int))
+                elif field in ['created', 'updated',]:
+                    self.assertEqual(unicode(field_value)[:10],
+                            response_as_py.get(field)[:10])
+                elif field in ['journal',]:
+                    self.assertTrue(response_as_py.get(field).startswith('/api/'))
                 else:
                     # plain text
-                    self.assertEqual(field_value.decode('utf-8'),
-                        response_as_py.get(field, None))
+                    try:
+                        self.assertEqual(unicode(field_value, 'utf-8'),
+                            response_as_py.get(field, None))
+                    except:
+                        self.assertEqual(unicode(field_value),
+                            response_as_py.get(field, None))
 
     def test_post_data_getone(self):
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.post(reverse('api_v1_issue.getone',
-            args=[name_slug, issue.journal.print_issn, issue.label]))
+        response = self.client.post('/api/v1/issues/%s/' % issue.pk)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.put(reverse('api_v1_issue.getone',
-            args=[name_slug, issue.journal.print_issn, issue.label]))
+        response = self.client.put('/api/v1/issues/%s/' % issue.pk)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         issue = self._makeOne()
         name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.delete(reverse('api_v1_issue.getone',
-            args=[name_slug, issue.journal.print_issn, issue.label]))
+        response = self.client.delete('/api/v1/issues/%s/' % issue.pk)
         self.assertEqual(response.status_code, 405)
 
 class SectionsRestAPITest(TestCase):
@@ -1314,39 +1290,36 @@ class SectionsRestAPITest(TestCase):
         import json
         journal = self._makeOne()
         name_slug = journal.collections.all()[0].name_slug
-        response = self.client.get(reverse('api_v1_section.index', args=[
-            name_slug, journal.print_issn]))
+        response = self.client.get('/api/v1/sections/')
         self.assertEqual(response.status_code, 200)
 
         response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 1)
+        self.assertEqual(len(response_as_py), 2)
 
-        expected_fields = ('sectiontitle_set', 'code',)
-        for field in response_as_py[0]:
-            if field in ['sectiontitle_set',]:
-                self.assertTrue(isinstance(response_as_py[0][field], list))
-            else:
-                self.assertTrue(field in expected_fields)
+        expected_fields = ('sectiontitle_set', 'code', 'updated', 'created',
+            'journal', 'titles', 'is_trashed', 'id', 'issues', 'resource_uri',
+            )
+
+        for field in response_as_py['objects'][0]:
+            self.assertTrue(field in expected_fields)
+
 
     def test_post_data(self):
         journal = self._makeOne()
         name_slug = journal.collections.all()[0].name_slug
-        response = self.client.post(reverse('api_v1_section.index', args=[
-            name_slug, journal.print_issn]))
+        response = self.client.post('/api/v1/sections/')
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         journal = self._makeOne()
         name_slug = journal.collections.all()[0].name_slug
-        response = self.client.put(reverse('api_v1_section.index', args=[
-            name_slug, journal.print_issn]))
+        response = self.client.put('/api/v1/sections/')
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         journal = self._makeOne()
         name_slug = journal.collections.all()[0].name_slug
-        response = self.client.delete(reverse('api_v1_section.index', args=[
-            name_slug, journal.print_issn]))
+        response = self.client.delete('/api/v1/sections/')
         self.assertEqual(response.status_code, 405)
 
 class LoggedOutViewsTest(TestCase):

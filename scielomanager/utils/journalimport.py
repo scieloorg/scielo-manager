@@ -207,7 +207,7 @@ class JournalImport:
             except:
                 pass
             mission.description = parsed_subfields['_']
-            journal.journalmission_set.add(mission)
+            journal.missions.add(mission)
             self.charge_summary("mission")
 
     def load_historic(self, journal, historicals):
@@ -272,7 +272,7 @@ class JournalImport:
             title = JournalTitle()
             title.title = i
             title.category = category
-            journal.journaltitle_set.add(title)
+            journal.other_titles.add(title)
             self.charge_summary("title")
 
     def load_use_license(self,code, disclaimer):
