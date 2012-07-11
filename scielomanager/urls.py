@@ -28,7 +28,7 @@ for res in v1_api_resources:
 
 
 urlpatterns = patterns('',
-
+    
     url(r'^$', views.index, name='index'),
 
     # Journal Manager APP

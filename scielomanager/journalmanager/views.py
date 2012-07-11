@@ -44,8 +44,6 @@ MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this 
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
-
-
 def section_has_relation(section_id):
 
     if len(models.Issue.objects.filter(section=section_id)) == 0 :
@@ -62,6 +60,7 @@ def get_first_letter(objects_all):
     return sorted(list(letters_set))
 
 def index(request):
+
     template = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
         user_collections = get_user_collections(request.user.id)

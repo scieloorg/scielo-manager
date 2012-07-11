@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
   $.each($('table button#action_disable_disable'), function(){
     
     $(this).click(function() {
@@ -16,28 +15,26 @@ $(document).ready(function() {
               $('#' + data.object_id + ' button').removeClass("btn-success").addClass("btn-danger");
               $('#' + data.object_id + ' button').html('disable')
             }
-          }});//ajax
-      });//click
-  });//each
+          }});
+      });
+  });
 
   $('#check_all').click(function(){ 
     if ($('#check_all').attr('checked')){
-      $('input[name="action"]').attr('checked', true)
+      $('input[name="action"]').attr('checked', true);
     }else{
-      $('input[name="action"]').attr('checked', false)
+      $('input[name="action"]').attr('checked', false);
     }
   });
 
   $('a#bulk_action_enable').click(function(){ 
-    $("#bulk_action").attr('action', $("a#bulk_action_enable").attr('rel'))
-    $("#bulk_action").submit()
+    $("#bulk_action").attr('action', $("a#bulk_action_enable").attr('rel'));
+    $("#bulk_action").submit();
   });
 
   $('a#bulk_action_disable').click(function(){ 
-    $("#bulk_action").attr('action', $("a#bulk_action_disable").attr('rel'))
-    $("#bulk_action").submit()
+    $("#bulk_action").attr('action', $("a#bulk_action_disable").attr('rel'));
+    $("#bulk_action").submit();
   });
 
-});//load
-
-
+});
