@@ -12,3 +12,4 @@ django-tastypie==0.9.11
 lxml
 pyyaml
 webassets==0.7.1
+yuicompressor
