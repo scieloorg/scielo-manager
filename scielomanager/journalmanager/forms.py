@@ -187,10 +187,10 @@ class UserForm(ModelForm):
     class Meta:
         model = models.User
         exclude = ('is_staff','is_superuser','last_login','date_joined',
-                   'user_permissions', 'email')
+                   'user_permissions', 'email', 'password')
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
-        user.set_password(self.cleaned_data["password"])
+        #user.set_password(self.cleaned_data["password"])
 
         if commit:
             user.save()
