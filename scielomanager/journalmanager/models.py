@@ -33,8 +33,18 @@ def get_default_user_collections(user_id):
     """
     Return the collection that the user choose as default/active collection.
     """
-    user_collections = User.objects.get(pk=user_id).usercollections_set.filter(is_default=True).order_by(
-        'collection__name')
+    user_collections = User.objects.get(pk=user_id).usercollections_set.filter(
+        is_default=True).order_by('collection__name')
+
+    if len(user_collections) == 0:
+        try:
+            user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by(
+                'collection__name')[0]
+            user_collections.is_default=True
+            user_collections.save()
+            return [user_collections]
+        except IndexError:
+            return None
 
     return user_collections
 
