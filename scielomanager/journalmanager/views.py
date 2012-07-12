@@ -232,7 +232,7 @@ def user_index(request):
     user_collections_managed = user_collections.filter(is_manager=True)
 
     # Filtering users manager by the administrator
-    all_users = models.User.objects.filter(usercollections__collection__in = ( collection.collection.pk for collection in user_collections_managed )).distinct('username')
+    all_users = models.User.cached_objects.filter(usercollections__collection__in = ( collection.collection.pk for collection in user_collections_managed )).distinct('username')
     users = get_paginated(all_users, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/user_dashboard.html')

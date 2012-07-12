@@ -4,7 +4,7 @@ import urllib
 import hashlib
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
 from django.contrib.contenttypes import generic
@@ -19,12 +19,15 @@ import caching.base
 import choices
 import helptexts
 
+User.__bases__ = (caching.base.CachingMixin, models.Model)
+User.add_to_class('cached_objects', caching.base.CachingManager())
+
 def get_user_collections(user_id):
     """
     Return all the collections of a given user, The returned collections are the collections where the
     user could have access by the collections bar.
     """
-    user_collections = User.objects.get(pk=user_id).usercollections_set.all().order_by(
+    user_collections = User.cached_objects.get(pk=user_id).usercollections_set.all().order_by(
         'collection__name')
 
     return user_collections
@@ -33,7 +36,7 @@ def get_default_user_collections(user_id):
     """
     Return the collection that the user choose as default/active collection.
     """
-    user_collections = User.objects.get(pk=user_id).usercollections_set.filter(is_default=True).order_by(
+    user_collections = User.cached_objects.get(pk=user_id).usercollections_set.filter(is_default=True).order_by(
         'collection__name')
 
     return user_collections
