@@ -3,14 +3,32 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.contrib.auth.views import *
 from django.conf import settings
+from tastypie.api import Api
 
 from scielomanager.journalmanager import views
 from scielomanager.journalmanager import models
+from scielomanager.api import resources
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+# RESTful API config
+v1_api = Api(api_name='v1')
+v1_api_resources = [
+    resources.JournalResource(),
+    resources.UserResource(),
+    resources.UseLicenseResource(),
+    resources.SponsorResource(),
+    resources.PublisherResource(),
+    resources.CollectionResource(),
+    resources.IssueResource(),
+    resources.SectionResource(),
+]
+for res in v1_api_resources:
+    v1_api.register(res)
 
+
+urlpatterns = patterns('',
+    
     url(r'^$', views.index, name='index'),
 
     # Journal Manager APP
@@ -56,7 +74,7 @@ urlpatterns = patterns('',
         views.generic_bulk_action, name='trash.bulk_action' ),
 
     #API version 1
-    (r'^api/v1/', include('scielomanager.api.urlsversion1')),
+    (r'^api/', include(v1_api.urls)),
 )
 
 
