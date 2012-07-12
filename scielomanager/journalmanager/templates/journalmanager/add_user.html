@@ -79,18 +79,6 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.password.errors %}error{% endif %}">
-      <label for="{{ add_form.password.auto_id }}">
-        <span {% if add_form.password.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.password.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.password }}
-        {{ add_form.password.help_text|safe }}
-      </div>
-    </div>
-
     <div class="control-group {% if add_form.is_active.errors %}error{% endif %}">
       <label for="{{ add_form.is_active.auto_id }}">
         <span {% if add_form.is_active.field.required %}class="req-field"{% endif %}>
