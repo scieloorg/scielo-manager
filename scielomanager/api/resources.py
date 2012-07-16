@@ -95,6 +95,7 @@ class JournalResource(ModelResource):
     publishers = fields.ManyToManyField(PublisherResource, 'publisher')
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
+    pub_status_history = fields.ListField(readonly=True)
 
     class Meta:
         queryset = Journal.objects.all().filter()
@@ -115,3 +116,8 @@ class JournalResource(ModelResource):
     def dehydrate_languages(self, bundle):
         return [language.iso_code
             for language in bundle.obj.languages.all()]
+
+    def dehydrate_pub_status_history(self, bundle):
+        return [{'date': event.created_at,
+                'status': event.status}
+            for event in bundle.obj.status_history.order_by('-created_at').all()]

@@ -305,7 +305,7 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
-    journal = models.ForeignKey(Journal, editable=False)
+    journal = models.ForeignKey(Journal, editable=False, related_name='status_history')
     status = models.CharField(_('Journal Status'), max_length=16,)
     reason = models.TextField(_('Reason'), blank=True, default="",)
     created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
@@ -317,6 +317,7 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     class Meta:
         verbose_name = 'journal publication event'
         verbose_name_plural = 'Journal Publication Events'
+        ordering = ['created_at',]
 
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
