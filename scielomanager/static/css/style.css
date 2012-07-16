@@ -162,6 +162,5 @@ button.ui-button-icon-only {
     padding: 10px;
     width: 150px;
     border: 1px solid #E5E5E5;
-    background-image: -moz-linear-gradient(center top ,#CCCCCC, #E5E5E5 );
-    background-repeat: repeat-x;
+    background: #CCCCCC;
 }  
