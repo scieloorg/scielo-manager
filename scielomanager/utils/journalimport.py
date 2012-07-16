@@ -375,6 +375,10 @@ class JournalImport:
         if record.has_key('306'):
             journal.final_num = record['306'][0]
 
+        # National Code
+        if record.has_key('20'):
+            journal.national_code = record['20'][0]
+
         # Publication Frequency
         if record.has_key('380'):
             journal.frequency = record['380'][0]
