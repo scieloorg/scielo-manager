@@ -178,15 +178,15 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.mail.errors %}error{% endif %}">
-      <label for="{{ add_form.mail.auto_id }}">
-        <span {% if add_form.mail.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.mail.label %}
+    <div class="control-group {% if add_form.email.errors %}error{% endif %}">
+      <label for="{{ add_form.email.auto_id }}">
+        <span {% if add_form.email.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.email.label %}
         </span>
       </label>
       <div class="controls">
-        {{ add_form.mail }}
-        {% field_help add_form.mail.label add_form.mail.help_text term-mail %}
+        {{ add_form.email }}
+        {% field_help add_form.email.label add_form.email.help_text term-email %}
       </div>
     </div>
   </div>
