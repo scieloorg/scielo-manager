@@ -114,6 +114,9 @@ class JournalImport:
         publisher.name = record['480'][0]
         publisher.address = " ".join(record['63'])
 
+        if record.has_key('64'):
+            publisher.mail = record['64']
+
         match_string=publisher.name
 
         similar_key =  self.have_similar_publishers(match_string)
