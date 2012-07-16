@@ -241,7 +241,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     languages = models.ManyToManyField('Language',)
-    national_code = models.CharField(_('National Code'), max_length=16, help_text=helptexts.JOURNAL__NATIONAL_CODE)
+    national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True, help_text=helptexts.JOURNAL__NATIONAL_CODE)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
 
     #Fields
@@ -258,11 +258,11 @@ class Journal(caching.base.CachingMixin, models.Model):
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512,
         help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
     init_year = models.CharField(_('Initial Date'), max_length=10, help_text=helptexts.JOURNAL__INIT_YEAR)
-    init_vol = models.CharField(_('Initial Volume'), max_length=8, help_text=helptexts.JOURNAL__INIT_VOL)
-    init_num = models.CharField(_('Initial Number'), max_length=8, help_text=helptexts.JOURNAL__INIT_NUM)
+    init_vol = models.CharField(_('Initial Volume'), max_length=16, help_text=helptexts.JOURNAL__INIT_VOL)
+    init_num = models.CharField(_('Initial Number'), max_length=16, help_text=helptexts.JOURNAL__INIT_NUM)
     final_year = models.CharField(_('Final Date'), max_length=10, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
-    final_vol = models.CharField(_('Final Volume'),max_length=8,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
-    final_num = models.CharField(_('Final Number'),max_length=8,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
+    final_vol = models.CharField(_('Final Volume'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
+    final_num = models.CharField(_('Final Number'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
         choices=choices.FREQUENCY, help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
