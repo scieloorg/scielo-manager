@@ -61,11 +61,12 @@ def get_first_letter(objects_all):
 
 def index(request):
 
-    template = loader.get_template('journalmanager/home_journal.html')
     if request.user.is_authenticated():
+        template = loader.get_template('journalmanager/home_journal.html')
         user_collections = get_user_collections(request.user.id)
         pending_journals = models.PendedForm.objects.filter(user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
     else:
+        template = loader.get_template('registration/login.html')
         user_collections = ''
         pending_journals = ''
 
@@ -265,26 +266,29 @@ def user_login(request):
                                              'user_collections': user_collections,})
                 return HttpResponse(t.render(c))
             else: #Login Success User inactive
-                t = loader.get_template('journalmanager/home_journal.html')
+                t = loader.get_template('registration/login.html')
                 c = RequestContext(request, {'active': True,})
                 return HttpResponse(t.render(c))
         else: #Login Failed
-            t = loader.get_template('journalmanager/home_journal.html')
+            t = loader.get_template('registration/login.html')
             c = RequestContext(request, {
                                'invalid': True, 'next': next,})
             return HttpResponse(t.render(c))
     else:
-        t = loader.get_template('journalmanager/home_journal.html')
-        if next:
-            c = RequestContext(request, {'required': True, 'next': next,})
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(reverse('index'))
         else:
-            c = RequestContext(request, {'required': True})
-        return HttpResponse(t.render(c))
+            t = loader.get_template('registration/login.html')
+            if next:
+                c = RequestContext(request, {'required': True, 'next': next,})
+            else:
+                c = RequestContext(request, {'required': True})
+            return HttpResponse(t.render(c))
 
 @login_required
 def user_logout(request):
     logout(request)
-    t = loader.get_template('journalmanager/home_journal.html')
+    t = loader.get_template('registration/login.html')
     c = RequestContext(request)
     return HttpResponse(t.render(c))
 
