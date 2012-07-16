@@ -231,6 +231,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     languages = models.ManyToManyField('Language',)
+    national_code = models.CharField(_('National Code'), max_length=16, help_text=helptexts.JOURNAL__NATIONAL_CODE)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
 
     #Fields
