@@ -41,7 +41,7 @@ def get_default_user_collections(user_id):
 
     if len(user_collections) == 0:
         try:
-            user_collections = User.cache_object.get(pk=user_id).usercollections_set.all().order_by(
+            user_collections = User.cached_objects.get(pk=user_id).usercollections_set.all().order_by(
                 'collection__name')[0]
             user_collections.is_default=True
             user_collections.save()
