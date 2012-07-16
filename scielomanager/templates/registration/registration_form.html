@@ -1,9 +1,9 @@
-{% extends "base_lv1.html" %}
+{% extends "registration/base.html" %}
 {% load i18n %}
 
 {% block content %}
 
-/ <a href="{% url evaluation.evaluations.index %}">{% trans 'Home' %}</a> / {% trans "Register" %}
+/ <a href="">{% trans 'Home' %}</a> / {% trans "Register" %}
 
 {% if form.errors %}
     <p>{% trans "Please correct the errors below." %}</p>
@@ -11,7 +11,7 @@
 
 <h3>{% trans "You will receive an email with a link to activate your account." %}</h3>
 
-<form method="post" action="{% url registration_register %}">{% csrf_token %}
+<form method="post" action="">{% csrf_token %}
     <table>
         {{ form.as_table }}
     </table>
