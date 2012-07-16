@@ -1357,6 +1357,38 @@ class UserViewsTest(TestCase):
 
         self.assertTrue('SciELO Manager' in response.content)
 
+    def test_get_default_user_collections(self):
+        """
+        Testing the retrieve of the user default collections list.
+        It must return at least one collection even if it does not exists the method must force to
+        asign one
+        """
+        from journalmanager import models
+
+        user = User.objects.all()[0]
+
+        user_defaultcollections = models.get_default_user_collections(user.pk)
+        self.assertTrue(isinstance(user_defaultcollections[0],UserCollections))
+
+        for collection in user_defaultcollections:
+            self.assertTrue(collection.is_default,True)
+
+        # Testing when the user doesn't have a default collection defined.
+
+        # Changing all is_default to False 
+        for collection in user_defaultcollections:
+            collection.is_default = False
+            collection.save()
+
+        user_defaultcollections = models.get_default_user_collections(user.pk)
+        for collection in user_defaultcollections:
+            self.assertTrue(collection.is_default,True)
+
+        # Testing when a user doesn't hava a collection asigned
+        models.UserCollections.objects.all().delete()
+        user_defaultcollections = models.get_default_user_collections(user.pk)
+        self.assertEquals(user_defaultcollections, None)
+
     def test_user_login(self):
         """
         Logged out user try login and verify session
