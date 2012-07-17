@@ -177,7 +177,7 @@ class JournalImport:
         for i in areas:
             studyarea = JournalStudyArea()
             studyarea.study_area = i
-            journal.journalstudyarea_set.add(studyarea)
+            journal.study_areas.add(studyarea)
             self.charge_summary("studyarea")
 
     def load_textlanguage(self, journal, langs):
@@ -289,7 +289,7 @@ class JournalImport:
             use_license.disclaimer = parsed_subfields_disclaimer['t']
 
         use_license.save()
-        
+
         return use_license
 
     def load_journal(self, collection, loaded_publisher, loaded_sponsor, record):
@@ -431,7 +431,7 @@ class JournalImport:
 
         self.charge_summary("journals")
 
-        
+
 
         journal.sponsor = loaded_sponsor
 
@@ -467,8 +467,8 @@ class JournalImport:
         if record.has_key('421'):
             self.load_title(journal,record['421'],'other')
 
-        if record.has_key('150'):
-            self.load_title(journal,record['150'],'other')
+        if record.has_key('240'):
+            self.load_title(journal,record['240'],'other')
 
         if record.has_key('230'):
             self.load_title(journal,record['230'],'paralleltitle')

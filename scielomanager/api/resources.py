@@ -96,6 +96,8 @@ class JournalResource(ModelResource):
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     pub_status_history = fields.ListField(readonly=True)
+    contact = fields.DictField(readonly=True)
+    study_areas = fields.ListField(readonly=True)
 
     class Meta:
         queryset = Journal.objects.all().filter()
@@ -121,3 +123,13 @@ class JournalResource(ModelResource):
         return [{'date': event.created_at,
                 'status': event.status}
             for event in bundle.obj.status_history.order_by('-created_at').all()]
+
+    def dehydrate_contact(self, bundle):
+        return {
+            'name': bundle.obj.publisher.name,
+            'email': bundle.obj.publisher.email,
+        }
+
+    def dehydrate_study_areas(self, bundle):
+        return [area.study_area
+            for area in bundle.obj.study_areas.all()]
