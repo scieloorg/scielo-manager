@@ -102,7 +102,7 @@ def get_sample_institution_dataform(dict_params=None):
       'institution-phone': '',
       'institution-state': '',
       'institution-Address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'institution-mail': 'teste@scielo.org',
+      'institution-email': 'teste@scielo.org',
       'institution-Address_complement': '',
       'institution-is_trashed': False,
 
@@ -127,7 +127,7 @@ def get_sample_collection_dataform(dict_params=None):
       'collection-address_number': u'430',
       'collection-country': u'Brasil',
       'collection-address': u'Rua Machado Bittencourt',
-      'collection-mail': u'fapesp@scielo.org',
+      'collection-email': u'fapesp@scielo.org',
       'collection-name_slug': 'scl',
     }
 
@@ -151,7 +151,7 @@ def get_sample_sponsor_dataform(dict_params=None):
       'sponsor-phone': '',
       'sponsor-state': '',
       'sponsor-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'sponsor-mail': 'fapesp@scielo.org',
+      'sponsor-email': 'fapesp@scielo.org',
       'sponsor-address_complement': '',
       'sponsor-is_trashed': False,
     }
@@ -176,7 +176,7 @@ def get_sample_publisher_dataform(dict_params=None):
       'publisher-phone': '',
       'publisher-state': '',
       'publisher-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'publisher-mail': 'teste@scielo.org',
+      'publisher-email': 'teste@scielo.org',
       'publisher-address_complement': '',
       'publisher-is_trashed': False,
     }
@@ -338,7 +338,7 @@ def get_sample_collection():
       'state': 'São Paulo',
       'city': 'São Paulo',
       'address': u'Rua Machado Bittencourt',
-      'mail': 'fapesp@scielo.org',
+      'email': 'fapesp@scielo.org',
     }
 
     return models.Collection(**collection_attrs)
@@ -347,7 +347,7 @@ def get_sample_sponsor():
     """
     Returns a sponsor object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'email',
        'address_complement']
     """
 
@@ -362,7 +362,7 @@ def get_sample_sponsor():
       'phone': '',
       'state': '',
       'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': '',
+      'email': '',
       'address_complement': '',
       'is_trashed': False,
 
@@ -374,7 +374,7 @@ def get_sample_publisher():
     """
     Returns a publisher object, without the following attributes (non mandatory or need to be bound
     to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'mail',
+    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'email',
        'address_complement']
     """
 
@@ -389,7 +389,7 @@ def get_sample_publisher():
       'phone': '',
       'state': '',
       'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'mail': '',
+      'email': '',
       'address_complement': '',
       'is_trashed': False,
 

@@ -131,7 +131,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     user = models.OneToOneField(User)
-    email = models.EmailField(_('Email'), blank=False, unique=True, null=False)
+    email = models.EmailField(_('E-mail'), blank=False, unique=True, null=False)
 
     @property
     def gravatar_id(self):
@@ -167,7 +167,7 @@ class Collection(caching.base.CachingMixin, models.Model):
     zip_code = models.CharField(_('Zip Code'), max_length=16, null=True, blank=True, )
     phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True, )
     fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, )
-    mail = models.EmailField(_('Email'), )
+    email = models.EmailField(_('Email'), )
 
     def __unicode__(self):
         return unicode(self.name)
@@ -209,7 +209,7 @@ class Institution(caching.base.CachingMixin, models.Model):
     phone = models.CharField(_('Phone Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__PHONE)
     fax = models.CharField(_('Fax Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__FAX)
     cel = models.CharField(_('Cel Number'), max_length=16, null=False, blank=True, help_text=helptexts.INSTITUTION__CEL)
-    mail = models.EmailField(_('Email'), help_text=helptexts.INSTITUTION__MAIL)
+    email = models.EmailField(_('E-mail'), help_text=helptexts.INSTITUTION__MAIL)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
@@ -238,8 +238,8 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    publisher = models.ManyToManyField('Publisher', related_name='journal_institution',null=False, help_text=helptexts.JOURNAL__PUBLISHER)
-    sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor',null=True, blank=True, help_text=helptexts.JOURNAL__SPONSOR)
+    publisher = models.ForeignKey(Publisher, related_name='publishers', null=False, help_text=helptexts.JOURNAL__PUBLISHER)
+    sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor', null=True, blank=True, help_text=helptexts.JOURNAL__SPONSOR)
     previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
@@ -260,10 +260,10 @@ class Journal(caching.base.CachingMixin, models.Model):
     eletronic_issn = models.CharField(_('Eletronic ISSN'), max_length=9, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512,
         help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
-    init_year = models.CharField(_('Initial Date'), max_length=10, help_text=helptexts.JOURNAL__INIT_YEAR)
+    init_year = models.CharField(_('Initial Date'), max_length=16, help_text=helptexts.JOURNAL__INIT_YEAR)
     init_vol = models.CharField(_('Initial Volume'), max_length=16, help_text=helptexts.JOURNAL__INIT_VOL)
     init_num = models.CharField(_('Initial Number'), max_length=16, help_text=helptexts.JOURNAL__INIT_NUM)
-    final_year = models.CharField(_('Final Date'), max_length=10, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
+    final_year = models.CharField(_('Final Date'), max_length=16, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
     final_vol = models.CharField(_('Final Volume'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
     final_num = models.CharField(_('Final Number'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,

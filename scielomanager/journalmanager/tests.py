@@ -111,8 +111,8 @@ class LoggedInViewsTest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
+        sample_journal.publisher = sample_publisher
         sample_journal.save()
-        sample_journal.publisher = [sample_publisher,]
         sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
@@ -871,8 +871,9 @@ class JournalRestAPITest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
+        sample_journal.publisher = sample_publisher
         sample_journal.save()
-        sample_journal.publisher = [sample_publisher,]
+
         sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
@@ -1002,7 +1003,7 @@ class CollectionRestAPITest(TestCase):
         expected_fields = ('name', 'name_slug', 'acronym',
             'address', 'address_number', 'address_complement',
             'city', 'state', 'country', 'zip_code', 'fax',
-            'phone', 'url', 'mail', 'logo', 'resource_uri', 'id',
+            'phone', 'url', 'email', 'logo', 'resource_uri', 'id',
         )
 
         for field in response_as_py['objects'][0]:
@@ -1041,7 +1042,7 @@ class CollectionRestAPITest(TestCase):
         expected_fields = ('name', 'name_slug', 'acronym',
             'address', 'address_number', 'address_complement',
             'city', 'state', 'country', 'zip_code', 'fax',
-            'phone', 'url', 'mail', 'logo', 'id', 'resource_uri',
+            'phone', 'url', 'email', 'logo', 'id', 'resource_uri',
         )
 
         for field in response_as_py:
@@ -1112,8 +1113,8 @@ class IssuesRestAPITest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
+        sample_journal.publisher = sample_publisher
         sample_journal.save()
-        sample_journal.publisher = [sample_publisher,]
         sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
@@ -1273,8 +1274,9 @@ class SectionsRestAPITest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
+        sample_journal.publisher = sample_publisher
         sample_journal.save()
-        sample_journal.publisher = [sample_publisher,]
+        
         sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
