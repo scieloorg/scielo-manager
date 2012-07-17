@@ -1,9 +1,35 @@
-{% extends "base_lv0.html" %}
+{% extends "registration/base.html" %}
 {% load i18n %}
-{% block body_title %}Autentication{% endblock %}
 
 {% block content %}
-
-{% trans "Por favor informar usuário e senha" %}
-
+<div class="login">
+  {% if invalid %}
+    <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your username and password did not match. Please try again.' %}</div>
+  {% endif %}
+  {% if active %}
+    <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
+  {% endif %}
+  <form action="{% url journalmanager.user_login %}" method="post">
+    <fieldset>
+      <input type="hidden" value="{{ next|default:'' }}" name="next" />
+      {% csrf_token %}
+      <div class="control-group">
+        <label class="control-label" for="focusedInput">{% trans 'Username or email' %}</label>
+          <div class="controls">
+            <input class="input-xlarge focused span4" placeholder="{% trans 'Username or email' %}" type="text" name="username" id="id_username"/>
+          </div>
+      </div>
+     <div class="control-group">
+     <label class="control-label" for="focusedInput">{% trans 'User password:' %}</label>
+        <div class="controls">
+          <input class="input-xlarge span4" placeholder="{% trans 'Password' %}" type="password" id="id_password" name="password"/>
+        </div>
+      </div>
+      <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />
+    </fieldset>
+  </form>
+  <div style="text-align: right;">
+    <a href="{% url registration.password_reset %}" title="{% trans 'Forgot your password?' %}">{% trans 'Forgot your password?' %}</a>
+  </div>
+</div>
 {% endblock %}
