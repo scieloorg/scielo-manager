@@ -97,6 +97,7 @@ class JournalResource(ModelResource):
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     pub_status_history = fields.ListField(readonly=True)
     contact = fields.DictField(readonly=True)
+    study_areas = fields.ListField(readonly=True)
 
     class Meta:
         queryset = Journal.objects.all().filter()
@@ -128,3 +129,7 @@ class JournalResource(ModelResource):
             'name': bundle.obj.publisher.name,
             'email': bundle.obj.publisher.email,
         }
+
+    def dehydrate_study_areas(self, bundle):
+        return [area.study_area
+            for area in bundle.obj.study_areas.all()]
