@@ -177,7 +177,7 @@ class JournalImport:
         for i in areas:
             studyarea = JournalStudyArea()
             studyarea.study_area = i
-            journal.journalstudyarea_set.add(studyarea)
+            journal.study_areas.add(studyarea)
             self.charge_summary("studyarea")
 
     def load_textlanguage(self, journal, langs):
