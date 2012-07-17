@@ -46,54 +46,6 @@
       </div>
     </div>
 
-    <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
-      <label for="{{ add_form.acronym.auto_id }}">
-        <span {% if add_form.acronym.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.acronym.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.acronym }}
-        {% field_help add_form.acronym.label add_form.acronym.help_text term-acronym %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.country.errors %}error{% endif %}">
-      <label for="{{ add_form.country.auto_id }}">
-        <span {% if add_form.country.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.country.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.country }}
-        {% field_help add_form.country.label add_form.country.help_text term-publisher-s-country %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.state.errors %}error{% endif %}">
-      <label for="{{ add_form.state.auto_id }}">
-        <span {% if add_form.state.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.state.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.state }}
-        {% field_help add_form.state.label add_form.state.help_text term-publisher-s-state %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.city.errors %}error{% endif %}">
-      <label for="{{ add_form.city.auto_id }}">
-        <span {% if add_form.city.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.city.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.city }}
-        {% field_help add_form.city.label add_form.city.help_text term-publisher-s-city %}
-      </div>
-    </div>
-
     <div class="control-group {% if add_form.address.errors %}error{% endif %}">
       <label for="{{ add_form.address.auto_id }}">
         <span {% if add_form.address.field.required %}class="req-field"{% endif %}>
@@ -103,78 +55,6 @@
       <div class="controls">
         {{ add_form.address }}
         {% field_help add_form.address.label add_form.address.help_text term-publisher-s-address %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.address_number.errors %}error{% endif %}">
-      <label for="{{ add_form.address_number.auto_id }}">
-        <span {% if add_form.address_number.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.address_number.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.address_number }}
-        {% field_help add_form.address_number.label add_form.address_number.help_text term-address-number %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.address_complement.errors %}error{% endif %}">
-      <label for="{{ add_form.address_complement.auto_id }}">
-        <span {% if add_form.address_complement.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.address_complement.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.address_complement }}
-        {% field_help add_form.address_complement.label add_form.address_complement.help_text term-address-complement %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.zip_code.errors %}error{% endif %}">
-      <label for="{{ add_form.zip_code.auto_id }}">
-        <span {% if add_form.zip_code.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.zip_code.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.zip_code }}
-        {% field_help add_form.zip_code.label add_form.zip_code.help_text term-zip_code %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.phone.errors %}error{% endif %}">
-      <label for="{{ add_form.phone.auto_id }}">
-        <span {% if add_form.phone.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.phone.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.phone }}
-        {% field_help add_form.phone.label add_form.phone.help_text term-phone %}
-      </div>
-    </div>
-
-     <div class="control-group {% if add_form.fax.errors %}error{% endif %}">
-      <label for="{{ add_form.fax.auto_id }}">
-        <span {% if add_form.fax.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.fax.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.fax }}
-        {% field_help add_form.fax.label add_form.fax.help_text term-fax %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.cel.errors %}error{% endif %}">
-      <label for="{{ add_form.cel.auto_id }}">
-        <span {% if add_form.cel.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.cel.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.cel }}
-        {% field_help add_form.cel.label add_form.cel.help_text term-cel %}
       </div>
     </div>
 
