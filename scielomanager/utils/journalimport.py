@@ -114,6 +114,9 @@ class JournalImport:
         publisher.name = record['480'][0]
         publisher.address = " ".join(record['63'])
 
+        if record.has_key('64'):
+            publisher.email = record['64'][0]
+
         match_string=publisher.name
 
         similar_key =  self.have_similar_publishers(match_string)
@@ -134,7 +137,7 @@ class JournalImport:
             self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
 
 
-        return [loaded_publisher,]
+        return loaded_publisher
 
     def load_sponsor(self, collection, record):
         """
@@ -419,7 +422,7 @@ class JournalImport:
         if record.has_key('151'):
             journal.title_iso = record['151'][0]
 
-
+        journal.publisher = loaded_publisher
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -428,7 +431,7 @@ class JournalImport:
 
         self.charge_summary("journals")
 
-        journal.publisher = loaded_publisher
+        
 
         journal.sponsor = loaded_sponsor
 
