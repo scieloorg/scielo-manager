@@ -34,7 +34,11 @@
 {% endblock %}
 
 {% block content %}
-<form method="post" action="" enctype="multipart/form-data">
+  {% if request.GET.resume %}
+    <form method="post" action="{% url journal.add %}" enctype="multipart/form-data">
+  {% else %}
+    <form method="post" action="" enctype="multipart/form-data">
+  {% endif %}
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>
   <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
