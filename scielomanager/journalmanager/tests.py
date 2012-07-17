@@ -901,7 +901,7 @@ class JournalRestAPITest(TestCase):
         'other_previous_title', 'creator', 'logo', 'id', 'issues', 'is_trashed',
         'other_titles', 'publishers', 'updated', 'sponsors',
         'abstract_keyword_languages', 'missions', 'created', 'notes',
-        'pub_status_reason', 'resource_uri', 'national_code'
+        'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history'
     )
         for field in response_as_py['objects'][0]:
             self.assertTrue(field in expected_fields)
@@ -932,7 +932,8 @@ class JournalRestAPITest(TestCase):
         'index_coverage', 'cover', 'other_previous_title', 'creator',
         'logo', 'id', 'issues', 'is_trashed', 'other_titles', 'publishers',
         'updated', 'sponsors', 'abstract_keyword_languages', 'missions',
-        'created', 'notes', 'pub_status_reason', 'resource_uri','national_code')
+        'created', 'notes', 'pub_status_reason', 'resource_uri','national_code',
+        'pub_status_history')
 
         for field in response_as_py:
             self.assertTrue(field in expected_fields)
@@ -1375,7 +1376,7 @@ class UserViewsTest(TestCase):
 
         # Testing when the user doesn't have a default collection defined.
 
-        # Changing all is_default to False 
+        # Changing all is_default to False
         for collection in user_defaultcollections:
             collection.is_default = False
             collection.save()
