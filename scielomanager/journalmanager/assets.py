@@ -1,5 +1,5 @@
 #
-#   Deve ser matida a ordem dos arquivos JS e CSS
+#   Deve ser mantida a ordem dos arquivos JS e CSS
 #
 from django_assets import Bundle, register
 
