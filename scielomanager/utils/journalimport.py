@@ -112,7 +112,7 @@ class JournalImport:
             return []
 
         publisher.name = record['480'][0]
-        publisher.address = " ".join(record['63'])
+        publisher.address = ", ".join(record['63']).replace('<br>','')
 
         if record.has_key('64'):
             publisher.email = record['64'][0]
