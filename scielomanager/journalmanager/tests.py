@@ -902,7 +902,8 @@ class JournalRestAPITest(TestCase):
         'other_previous_title', 'creator', 'logo', 'id', 'issues', 'is_trashed',
         'other_titles', 'publishers', 'updated', 'sponsors',
         'abstract_keyword_languages', 'missions', 'created', 'notes',
-        'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history'
+        'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history',
+        'contact', 'study_areas'
     )
         for field in response_as_py['objects'][0]:
             self.assertTrue(field in expected_fields)
@@ -934,7 +935,7 @@ class JournalRestAPITest(TestCase):
         'logo', 'id', 'issues', 'is_trashed', 'other_titles', 'publishers',
         'updated', 'sponsors', 'abstract_keyword_languages', 'missions',
         'created', 'notes', 'pub_status_reason', 'resource_uri','national_code',
-        'pub_status_history')
+        'pub_status_history', 'contact', 'study_areas')
 
         for field in response_as_py:
             self.assertTrue(field in expected_fields)
@@ -1276,7 +1277,7 @@ class SectionsRestAPITest(TestCase):
         sample_journal.pub_status_changed_by = self.user
         sample_journal.publisher = sample_publisher
         sample_journal.save()
-        
+
         sample_journal.sponsor = [sample_sponsor,]
         sample_journal.save()
         sample_journal.collections = [self.collection,]
