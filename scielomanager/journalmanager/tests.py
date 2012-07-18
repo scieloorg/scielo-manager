@@ -904,11 +904,12 @@ class JournalRestAPITest(TestCase):
         'abstract_keyword_languages', 'missions', 'created', 'notes',
         'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history',
         'contact', 'study_areas'
-    )
+        )
+
         for field in response_as_py['objects'][0]:
             self.assertTrue(field in expected_fields)
 
-            if field in ('collections', 'publisher', 'sponsor', 'languages'):
+            if field in ('collections', 'sponsor', 'languages'):
                 self.assertTrue(isinstance(response_as_py['objects'][0][field], list))
             elif field in ('use_license',):
                 self.assertTrue(isinstance(response_as_py['objects'][0][field], dict))
