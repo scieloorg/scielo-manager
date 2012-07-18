@@ -124,8 +124,8 @@ class Language(caching.base.CachingMixin, models.Model):
     def __unicode__(self):
         return __(self.name)
 
-    # class Meta:
-    #     ordering = ['name']
+    class Meta:
+        ordering = ['name']
 
 class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -255,7 +255,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     updated = models.DateTimeField(auto_now=True)
     acronym = models.CharField(_('Acronym'), max_length=16, blank=False, help_text=helptexts.JOURNAL__ACRONYM)
     scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'), max_length=16,
-        choices=sorted(choices.SCIELO_ISSN), help_text=helptexts.JOURNAL__SCIELO_ISSN)
+        choices=sorted(choices.SCIELO_ISSN, key=lambda SCIELO_ISSN: SCIELO_ISSN[1]), help_text=helptexts.JOURNAL__SCIELO_ISSN)
     print_issn = models.CharField(_('Print ISSN'), max_length=9, help_text=helptexts.JOURNAL__PRINT_ISSN)
     eletronic_issn = models.CharField(_('Eletronic ISSN'), max_length=9, help_text=helptexts.JOURNAL__ELETRONIC_ISSN)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512,
@@ -267,17 +267,17 @@ class Journal(caching.base.CachingMixin, models.Model):
     final_vol = models.CharField(_('Final Volume'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
     final_num = models.CharField(_('Final Number'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
     frequency = models.CharField(_('Frequency'),max_length=16,
-        choices=sorted(choices.FREQUENCY), help_text=helptexts.JOURNAL__FREQUENCY)
+        choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]), help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
         choices=choices.PUBLICATION_STATUS, help_text=helptexts.JOURNAL__PUB_STATUS)
     pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
     pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
-        choices=sorted(choices.STANDARD), help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
+        choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]), help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=choices.CTRL_VOCABULARY, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
     pub_level = models.CharField(_('Publication Level'),max_length=64,
-        choices=choices.PUBLICATION_LEVEL, help_text=helptexts.JOURNAL__PUB_LEVEL)
+        choices=sorted(choices.PUBLICATION_LEVEL, key=lambda PUBLICATION_LEVEL: PUBLICATION_LEVEL[1]), help_text=helptexts.JOURNAL__PUB_LEVEL)
     secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254, help_text=helptexts.JOURNAL__COPYRIGHTER)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
@@ -327,14 +327,14 @@ class JournalStudyArea(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, related_name='study_areas')
     study_area = models.CharField(_('Study Area'), max_length=256,
-        choices=sorted(choices.SUBJECTS), help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
+        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]), help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, related_name='other_titles')
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
-    category = models.CharField(_('Title Category'), null=False, max_length=128, choices=sorted(choices.TITLE_CATEGORY))
+    category = models.CharField(_('Title Category'), null=False, max_length=128, choices=sorted(choices.TITLE_CATEGORY, key=lambda TITLE_CATEGORY: TITLE_CATEGORY[1]))
 
 class JournalMission(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -361,7 +361,7 @@ class TranslatedData(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     translation = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
-    language = models.CharField(_('Language'), choices=sorted(choices.LANGUAGE), null=False, blank=False, max_length=32)
+    language = models.CharField(_('Language'), choices=sorted(choices.LANGUAGE, key=lambda LANGUAGE: LANGUAGE[1]), null=False, blank=False, max_length=32)
     model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
     field = models.CharField(_('Field'), null=False, blank=False, max_length=32)
 
@@ -375,6 +375,9 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
     section = models.ForeignKey('Section')
     title = models.CharField(_('Title'), max_length=256, null=False)
     language = models.ForeignKey('Language')
+
+    class Meta:
+        ordering = ['title']
 
 class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
@@ -393,9 +396,6 @@ class Section(caching.base.CachingMixin, models.Model):
             return self.sectiontitle_set.all()[0].title
         except IndexError:
             return '##TITLE MISSING##' if not self.code else self.code
-
-    class Meta:
-         ordering = ['sectiontitle__title']       
 
 class Issue(caching.base.CachingMixin, models.Model):
 
@@ -417,9 +417,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
     total_documents = models.IntegerField(_('Total of Documents'), default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
-        choices=choices.CTRL_VOCABULARY, null=False, blank=True, help_text=helptexts.ISSUE__CTRL_VOCABULARY)
+        choices=sorted(choices.CTRL_VOCABULARY, key=lambda CTRL_VOCABULARY: CTRL_VOCABULARY[1]), null=False, blank=True, help_text=helptexts.ISSUE__CTRL_VOCABULARY)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
-        choices=sorted(choices.STANDARD), help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
+        choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]), help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
     cover = models.ImageField(_('Issue Cover'), upload_to='img/issue_cover/', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     label = models.CharField(db_index=True, blank=True, null=True, max_length=16)
@@ -444,7 +444,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     def publication_date(self):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
             self.publication_end_month, self.publication_year)
-
 
     def save(self, *args, **kwargs):
         self.label = 'v{0}n{1}'.format(self.volume, self.number)
