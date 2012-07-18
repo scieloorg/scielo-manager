@@ -207,35 +207,146 @@ De acordo com reunião realizada em 27 de março alguns campos no contexto da Sc
 Title
 `````
 
-1. Later Title
+1. Later Title 
   
   Será controlado automaticamente pelo campo "título anterior". Deve ser mantido na exportação para compatibilidade.
 
-2. Center
+2. Center (v10)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade. Tem relação com o centro reponsável pela marcação de um documento.
 
-3. Final Volume
+3. Final Volume (v305)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade.
 
-4. Final Number
+4. Final Number (v304)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade.
 
-5. Alphabet
+5. Alphabet (v340)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade.
 
-6. National Code
-
-  Excluído da aplicação. Deve ser mantido na exportação para compatibilidade. Exemplo: BR1.1
-  Deve ser parametrizado na exportação.
-
-7. Literature Type
+6. Literature Type (v5)
 
   Excluído da aplicação. Deve ser cravado o valor "S" para manter compatibilidade.
 
-8. Treatment Level
+7. Treatment Level (v6)
 
   Excluído da aplicação. Deve ser cravado o valor "Collective Level" para manter compatibilidade.
+
+8. País de Publicação (v310)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade, esses dados são repetidos no campo address
+
+9. Estado de Publicação (v320)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade, esses dados são repetidos no campo address
+
+10. Cidade de Publicação (v490)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade, esses dados são repetidos no campo address
+
+11. Classificação (v430)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+12. Número de identificação (v30)
+  
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+13. URL Site SciELO (v690)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+14. Rede SciELO (v691)
+
+  Excluído da aplicação. Era utilizado como flag de coleções para processamento de geração de bases, 
+  quando mais de uma coleção compartilha mesma base title no site local. Resolver este problema
+  criando instalações independentes para cada coleção SciELO, ex: Brasil e Saúde Pública.
+
+  Foram encontradas ocorrencias do campo v691 no arquivo sci_serial.xis entretanto parece não estar
+  em uso uma vez que faz referência a arquivos template (ScieloXML/collections.xis) que não estão 
+  atualizados.
+
+
+15. É suplemento de (v560)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+16. É suplemento de (v550)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+16. Código Medline (v420)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. 
+
+  Apenas 17 periódicos possuem este código hoje. Segue lista de referência para implementação futura
+  deste campo::
+
+    Anais da Academia Brasileira de Ciências - 45A
+    Arquivos Brasileiros de Endocrinologia & Metabologia - 0403437
+    Arquivos Brasileiros de Oftalmologia - 0400645
+    Arquivos de Gastroenterologia - 8TR
+    Brazilian Dental Journal  - 9214652
+    Brazilian Journal of Medical and Biological Research - BOF
+    Memórias do Instituto Oswaldo Cruz - MRY
+    Physis: Revista de Saúde Coletiva - 9440484
+    Revista Brasileira de Biologia - RGH 
+    Revista Brasileira de Parasitologia Veterinária - 9440482
+    Revista Gaúcha de Enfermagem - 15712799
+    Revista Latino-Americana de Enfermagem - 9420934
+    Revista da Associação M?dica Brasileira - BR5
+    Revista da Sociedade Brasileira de Medicina Tropical - RET
+    Revista do Hospital das Clínicas - S3L
+    Revista do Instituto de Medicina Tropical de São Paulo - S9D
+    São Paulo Medical Journal - SZ5
+
+17. Título Abreviado Medline (v421)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. Importado como other titles 
+  para compor bibliometria e afins.
+
+  Apenas 29 periódicos possuem este dado na base de dado. Segue lista de renferência para implementação
+  futura deste campo::
+
+    Anais da Academia Brasileira de Ciências - An Acad Bras Cienc
+    Arquivos Brasileiros de Cardiologia - Arq Bras Cardiol
+    Arquivos Brasileiros de Endocrinologia & Metabologia - Arq Bras Endocrinol Metabol. 
+    Arquivos Brasileiros de Oftalmologia - Arq Bras Oftalmol.
+    Arquivos de Gastroenterologia - Arq Gastroenterol
+    Arquivos de Neuro-Psiquiatria - Arq Neuropsiquiatr
+    Brazilian Dental Journal  - Braz Dent J
+    Brazilian Journal of Biology - Braz J Biol.
+    Brazilian Journal of Infectious Diseases - Braz J Infect Dis
+    Brazilian Journal of Medical and Biological Research - Braz J Med Biol Res
+    Brazilian Oral Research - Braz. oral res
+    Cadernos de Saúde Pública - Cad Saude Publica
+    Clinics - Clinics
+    International braz j urol - int j urol
+    Memórias do Instituto Oswaldo Cruz - Mem Inst Oswaldo Cruz
+    Pesquisa Odontológica Brasileira - Pesqui Odontol Bras.
+    Physis: Revista de Saúde Coletiva - Physis
+    Revista Brasileira de Biologia - Rev Bras Biol
+    Revista Brasileira de Parasitologia Veterinária - Rev Bras Parasitol Vet
+    Revista Gaúcha de Enfermagem - Rev Gaucha Enferm.
+    Revista Latino-Americana de Enfermagem - Rev Lat Am Enfermagem
+    Revista da Associação Médica Brasileira - Rev Assoc Med Bras
+    Revista da Sociedade Brasileira de Medicina Tropical - Rev Soc Bras Med Trop
+    Revista de Saúde Pública - Rev Saude Publica
+    Revista do Hospital das Clínicas - Rev. Hosp. Clin. Fac. Med. Univ. São Paulo
+    Revista do Instituto de Medicina Tropical de São Paulo - Rev Inst Med Trop São Paulo
+    São Paulo Medical Journal - São Paulo Med J
+
+18. FTP (v66)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+19. Assinatura do usuário (v67)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+20. Seção (130)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. Nunca foi usado

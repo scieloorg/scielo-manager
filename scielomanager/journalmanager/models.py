@@ -325,7 +325,7 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    journal = models.ForeignKey(Journal)
+    journal = models.ForeignKey(Journal, related_name='study_areas')
     study_area = models.CharField(_('Study Area'), max_length=256,
         choices=sorted(choices.SUBJECTS), help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
 
