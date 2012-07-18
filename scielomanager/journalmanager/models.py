@@ -183,10 +183,13 @@ class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     user = models.ForeignKey(User)
-    collection = models.ForeignKey(Collection, help_text=helptexts.USERCOLLECTIONS_COLLECTION)
+    collection = models.ForeignKey(Collection, help_text=helptexts.USERCOLLECTIONS_COLLECTION,)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
     is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False,
         blank=False)
+
+    class Meta:
+        unique_together = ("user", "collection", )
 
 class Institution(caching.base.CachingMixin, models.Model):
 
