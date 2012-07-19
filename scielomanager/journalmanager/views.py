@@ -44,6 +44,11 @@ MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this 
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
+def test(request):
+    template = loader.get_template('journalmanager/test.html')
+    context = RequestContext(request, {'test':'test'})
+    return HttpResponse(template.render(context)) 
+
 def section_has_relation(section_id):
 
     if len(models.Issue.objects.filter(section=section_id)) == 0 :

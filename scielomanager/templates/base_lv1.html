@@ -13,7 +13,7 @@
           <span class="icon-bar"></span>
         </a>
         <a class="brand" href="/">SciELO Manager</a>
-        <div class="nav-collapse collapse" style="height: 0px;">
+        <div class="nav-collapse collapse">
           <ul class="nav">
             <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
             <li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>
@@ -21,18 +21,6 @@
               {% if perms.auth %}
               <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
               {% endif %}
-            <li class="divider-vertical"></li>
-            <li>
-              <form id="form_search" class="navbar-search" action="" method="get">
-                <input class="search-query span2" placeholder="Search" name="q" value="{{request.GET.q}}"/>
-                <select id="list_model" class="navbar-search span2">
-                  <option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>
-                  <option {% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>
-                  <option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>
-                </select>
-                <button class="btn-inverse" type="submit"><i class="icon-search icon-white"></i> {% trans 'Search' %}</button>
-              </form>
-            </li>
           </ul>
           <ul class="nav pull-right">
             <li class="divider-vertical"></li>
@@ -59,7 +47,7 @@
     </div>
   </div>
   <div class="subnav" style="margin-top: 50px;">
-    <ul class="nav nav-pills">
+    <ul class="nav nav-pills" style="margin-bottom: -4px;">
       {% for collection in user_collections %}
         <li {% if collection.is_default %} class="dropdown active" {% else %} class="dropdown" {% endif %}>
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -84,7 +72,20 @@
         <i class="icon-trash"></i>
         {% trans 'Trash' %}
         </a>
-      </li>
+      </li> 
+      <ul class="nav pull-right">
+        <li>
+          <form id="form_search" action="" method="get">
+            <select id="list_model" style="width: 90px;">
+              <option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>
+              <option {% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>
+              <option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>
+            </select>
+            <input style="width: 160px;" placeholder="Search" name="q" value="{{request.GET.q}}"/>
+            <button class="btn" style="vertical-align: 4px;" type="submit"><i class="icon-search icon-black"></i> {% trans 'Search' %}</button>
+          </form>
+        </li>
+      </ul>    
     </ul>
   </div>
   <div class="row-fluid" style="min-height: 380px;">
