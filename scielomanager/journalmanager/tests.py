@@ -185,7 +185,7 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTrue('user_collections' in response.context)
-        self.assertEqual(response.context['user_collections'][0].collection.name, u'SciELO')
+        self.assertEqual(response.context['user_collections'][0].collection.name, u'Brasil')
 
     def test_user_index(self):
         """
@@ -357,7 +357,7 @@ class LoggedInViewsTest(TestCase):
 
         New collections are not being included by the users. Only in Django admin module.
         '''
-        testing_collection = Collection.objects.get(name = u'SciELO')
+        testing_collection = Collection.objects.get(name = u'Brasil')
 
         #Calling Collection Form
         response = self.client.get(reverse('collection.edit', args = (testing_collection.pk,)))
@@ -1508,6 +1508,8 @@ class UserViewsTest(TestCase):
         """
         Login user and Edit user and verify content on database
         """
+        from journalmanager.models import Collection
+
         client = Client()
         client.login(username='dummyuser', password='123')
 
@@ -1516,6 +1518,21 @@ class UserViewsTest(TestCase):
         response = client.get(reverse('user.edit', args=[user.pk]))
         self.assertEqual(response.context['user'], user)
 
+        # Testing with a collection that was not previously selected for the user
+        new_collection  = tests_assets.get_sample_collection('Chile')
+        new_collection.save()
+
+        response = client.post(reverse('user.edit', args=(user.pk,)),
+                tests_assets.get_sample_user_dataform({
+                'user-username': 'dummyuser_edit',
+                'usercollections-0-collection': new_collection.pk,
+                'usercollections-0-is_manager': True,
+                'usercollections-0-is_default': True,
+                }))
+
+        self.assertRedirects(response, reverse('user.index'))
+
+        # Testing with a collection already defined for the user
         response = client.post(reverse('user.edit', args=(user.pk,)),
                 tests_assets.get_sample_user_dataform({
                 'user-username': 'dummyuser_edit',
@@ -1524,7 +1541,7 @@ class UserViewsTest(TestCase):
                 'usercollections-0-is_default': True,
                 }))
 
-        self.assertRedirects(response, reverse('user.index'))
+        self.assertTrue(u'There are some errors or missing data' in response.content.decode('utf-8'))
 
         user = User.objects.all()[0]
 

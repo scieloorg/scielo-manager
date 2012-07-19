@@ -327,11 +327,11 @@ def get_sample_usercollections(user, collection):
     return models.UserCollections(**usercollections_attrs)
 
 
-def get_sample_collection():
+def get_sample_collection(name='Brasil'):
 
     collection_attrs = {
       'url': 'http://www.scielo.br/',
-      'name': 'SciELO',
+      'name': name,
       'fax': '11 5555-4444',
       'address_number': '430',
       'country': 'Brasil',
