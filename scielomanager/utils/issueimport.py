@@ -74,6 +74,25 @@ class IssueImport:
         transaction.commit()
         return use_license
 
+    def load_sections(self, issue, record):
+        import subfield
+
+        issue_sections = []
+        if record.has_key('49'):
+            for code in record['49']:
+                expanded = subfield.expand(code)
+                parsed_subfields = dict(expanded)
+                try:
+                    section = Section.objects.get(code=parsed_subfields['c'])
+                    issue.section.add(section)
+                except ObjectDoesNotExist:
+                    print "Inconsistência nos dados"
+                
+                
+
+        return issue_sections
+
+
     def load_issue(self, record):
         """
         Function: load_issue
@@ -151,6 +170,9 @@ class IssueImport:
             issue.use_license = license
 
         issue.save(force_insert=True)
+
+        self.load_sections(issue, record)
+
         self.charge_summary('issues')
 
 
