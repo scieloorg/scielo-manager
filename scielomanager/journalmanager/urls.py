@@ -7,7 +7,6 @@ from scielomanager.journalmanager import models
 urlpatterns = patterns('',
 
     # Journal Tools
-    url(r'^test/$', views.test, name="journal.test",),
     url(r'^$', views.generic_index_search, {'model': models.Journal},  name="journal.index", ),
     url(r'^new/$', views.add_journal, name='journal.add' ),
     url(r'^(?P<journal_id>\d+)/edit/$', views.add_journal, name='journal.edit'),
