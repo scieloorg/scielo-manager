@@ -55,13 +55,13 @@ STANDARD = [
 ]
 
 CTRL_VOCABULARY = [
-    ('nd','No Descriptor'),
     ('decs','Health Sciences Descriptors'),
+    ('nd','No Descriptor'),
 ]
 
 PUBLICATION_LEVEL = [
+    ('DI','Divulgation'),
     ('CT','Scientific Technical'),
-    ('DI','Divulgation')
 ]
 
 PDF_DOWNLOAD = [
