@@ -98,10 +98,6 @@ class SectionCustomManager(AppCustomManager):
             journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
         return objects_all
 
-    def filter(self, *args, **kwargs):
-        sections = super(SectionCustomManager, self).filter(*args, **kwargs)
-        return sorted(sections, key=lambda x: unicode(x))
-
 class InstitutionCustomManager(AppCustomManager):
     """
     Add capabilities to Institution subclasses to retrieve querysets
@@ -394,7 +390,6 @@ class Section(caching.base.CachingMixin, models.Model):
 
     def __unicode__(self):
         return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
-
 
 class Issue(caching.base.CachingMixin, models.Model):
 
