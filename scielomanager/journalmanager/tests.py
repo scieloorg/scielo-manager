@@ -1301,7 +1301,7 @@ class SectionsRestAPITest(TestCase):
         response_as_py = json.loads(response.content)
         self.assertEqual(len(response_as_py), 2)
 
-        expected_fields = ('sectiontitle_set', 'code', 'updated', 'created',
+        expected_fields = ('titles', 'code', 'updated', 'created',
             'journal', 'titles', 'is_trashed', 'id', 'issues', 'resource_uri',
             )
 
