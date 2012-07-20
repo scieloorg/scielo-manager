@@ -375,7 +375,7 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
-    section = models.ForeignKey('Section')
+    section = models.ForeignKey('Section', related_name='titles')
     title = models.CharField(_('Title'), max_length=256, null=False)
     language = models.ForeignKey('Language')
 
@@ -395,10 +395,7 @@ class Section(caching.base.CachingMixin, models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
-        try:
-            return self.sectiontitle_set.all()[0].title
-        except IndexError:
-            return '##TITLE MISSING##' if not self.code else self.code
+        return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
 class Issue(caching.base.CachingMixin, models.Model):
 
