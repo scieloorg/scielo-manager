@@ -420,7 +420,7 @@ class LoggedInViewsTest(TestCase):
         self.assertRedirects(response, reverse('section.index', args=[journal.pk]))
 
         #edit section
-        testing_section = Section.objects.get(sectiontitle__title='TITLES FORMSET TEST')
+        testing_section = Section.objects.get(titles__title='TITLES FORMSET TEST')
         previous_code = testing_section.code
 
         response = self.client.post(reverse('section.edit', args=[journal.pk, testing_section.pk]),
@@ -430,7 +430,7 @@ class LoggedInViewsTest(TestCase):
                 'code': 'qwerty'}))
 
         self.assertRedirects(response, reverse('section.index', args=[journal.pk]))
-        modified_section = Section.objects.get(sectiontitle__title='Modified Original Article')
+        modified_section = Section.objects.get(titles__title='Modified Original Article')
 
         self.assertEqual(testing_section, modified_section)
         self.assertEqual(modified_section.code, previous_code) #code must be read-only
@@ -1301,7 +1301,7 @@ class SectionsRestAPITest(TestCase):
         response_as_py = json.loads(response.content)
         self.assertEqual(len(response_as_py), 2)
 
-        expected_fields = ('sectiontitle_set', 'code', 'updated', 'created',
+        expected_fields = ('titles', 'code', 'updated', 'created',
             'journal', 'titles', 'is_trashed', 'id', 'issues', 'resource_uri',
             )
 
