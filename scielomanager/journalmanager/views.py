@@ -100,11 +100,13 @@ def issue_index(request, journal_id):
                        })
     return HttpResponse(template.render(context))
 
-@login_required
+@permission_required('journalmanager.list_journal', login_url='/accounts/login/')
+# @permission_required('journalmanager.list_section', login_url='/accounts/login/')
 def generic_index_search(request, model, journal_id = None):
     """
     Generic list and search
     """
+
     user_collections = get_user_collections(request.user.id)
     default_collections = user_collections.filter(is_default=True)
 
@@ -293,7 +295,6 @@ def user_logout(request):
     return HttpResponse(t.render(c))
 
 @login_required
-@permission_required('auth.add_user')
 def add_user(request, user_id=None):
     """
     Handles new and existing users

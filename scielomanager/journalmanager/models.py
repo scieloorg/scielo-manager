@@ -221,17 +221,24 @@ class Institution(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ['name']
 
+
 class Publisher(Institution):
     objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
 
     collections = models.ManyToManyField(Collection)
 
+    class Meta:
+        permissions = (("list_publisher", "Can list Publishers"),)
+
 class Sponsor(Institution):
     objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
 
     collections = models.ManyToManyField(Collection)
+
+    class Meta:
+        permissions = (("list_sponsor", "Can list Sponsors"),)
 
 class Journal(caching.base.CachingMixin, models.Model):
 
@@ -297,6 +304,7 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['title']
+        permissions = (("list_journal", "Can list Journals"),)
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """
@@ -400,6 +408,9 @@ class Section(caching.base.CachingMixin, models.Model):
         except IndexError:
             return '##TITLE MISSING##' if not self.code else self.code
 
+    class Meta:
+        permissions = (("list_section", "Can list Sections"),)
+
 class Issue(caching.base.CachingMixin, models.Model):
 
     #Custom manager
@@ -451,6 +462,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     def save(self, *args, **kwargs):
         self.label = 'v{0}n{1}'.format(self.volume, self.number)
         super(Issue, self).save(*args, **kwargs)
+
+    class Meta:
+        permissions = (("list_issue", "Can list Issues"),)
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
