@@ -22,7 +22,6 @@ from django.db.utils import IntegrityError
 
 '''
     CSV format
-    0 = ID
     1 = Nome
     2 = Login
     3 = Email
@@ -41,12 +40,13 @@ try:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
             try:
-                user = User.objects.create_user(username=row[0], email=row[1], password=row[2])
-                user_collection = models.UserCollections(user=user, 
-                                    collection=models.Collection.objects.get(name=row[3]))
-                user_collection.save()
-                user.save()
-                print "Create User ID: " + str(user.id) + ", Name: " + row[0]
+                if not User.objects.filter(username=row[0]):
+                    user = User.objects.create_user(username=row[0], email=row[1], password=row[2])
+                    user_collection = models.UserCollections(user=user,
+                                        collection=models.Collection.objects.get(name=row[3]))
+                    user_collection.save()
+                    user.save()
+                    print "Create User ID: " + str(user.id) + ", Name: " + row[0]
             except (IndexError, IntegrityError) as e:
                 sys.exit('Error in the file format %s, line %d: %s' % (filename, reader.line_num, e))
 except IOError:
