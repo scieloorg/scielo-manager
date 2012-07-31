@@ -1,14 +1,11 @@
 # -*- encoding: utf-8 -*-
-from datetime import datetime
 import urllib
 import hashlib
 
 from django.db import models
-from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
-from django.contrib.contenttypes import generic
-from django.conf.global_settings import LANGUAGES
 from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
@@ -43,7 +40,7 @@ def get_default_user_collections(user_id):
         try:
             user_collections = User.cached_objects.get(pk=user_id).usercollections_set.all().order_by(
                 'collection__name')[0]
-            user_collections.is_default=True
+            user_collections.is_default = True
             user_collections.save()
             return [user_collections]
         except IndexError:
@@ -82,7 +79,7 @@ class JournalCustomManager(AppCustomManager):
     def all_by_user(self, user, is_available=True, pub_status=None):
         user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
-            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+            collections__in = [ uc.collection for uc in user_collections]).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -174,6 +171,7 @@ class Collection(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = (("list_collection", "Can list Collections"),)
 
     def save(self, *args, **kwargs):
         self.name_slug = slugify(self.name)
@@ -200,7 +198,7 @@ class Institution(caching.base.CachingMixin, models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=256, db_index=True, help_text=helptexts.INSTITUTION__NAME)
-    complement =models.TextField(_('Institution Complements'), blank=True, default="", help_text=helptexts.INSTITUTION__COMPLEMENT)
+    complement = models.TextField(_('Institution Complements'), blank=True, default="", help_text=helptexts.INSTITUTION__COMPLEMENT)
     acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, help_text=helptexts.INSTITUTION__ACRONYM)
     country = models.CharField(_('Country'), max_length=32, help_text=helptexts.INSTITUTION__COUNTRY)
     state = models.CharField(_('State'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__STATE)
@@ -220,7 +218,6 @@ class Institution(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['name']
-
 
 class Publisher(Institution):
     objects = InstitutionCustomManager()
@@ -250,7 +247,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     publisher = models.ForeignKey(Publisher, related_name='publishers', null=False, help_text=helptexts.JOURNAL__PUBLISHER)
     sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor', null=True, blank=True, help_text=helptexts.JOURNAL__SPONSOR)
-    previous_title = models.ForeignKey('Journal',related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
+    previous_title = models.ForeignKey('Journal', related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
     collections = models.ManyToManyField('Collection', help_text=helptexts.JOURNAL__COLLECTIONS)
     languages = models.ManyToManyField('Language',)
@@ -274,9 +271,9 @@ class Journal(caching.base.CachingMixin, models.Model):
     init_vol = models.CharField(_('Initial Volume'), max_length=16, help_text=helptexts.JOURNAL__INIT_VOL)
     init_num = models.CharField(_('Initial Number'), max_length=16, help_text=helptexts.JOURNAL__INIT_NUM)
     final_year = models.CharField(_('Final Date'), max_length=16, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
-    final_vol = models.CharField(_('Final Volume'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
-    final_num = models.CharField(_('Final Number'),max_length=16,null=False,blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
-    frequency = models.CharField(_('Frequency'),max_length=16,
+    final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
+    final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
+    frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]), help_text=helptexts.JOURNAL__FREQUENCY)
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
         choices=choices.PUBLICATION_STATUS, help_text=helptexts.JOURNAL__PUB_STATUS)
@@ -286,12 +283,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]), help_text=helptexts.JOURNAL__EDITORIAL_STANDARD)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=choices.CTRL_VOCABULARY, help_text=helptexts.JOURNAL__CTRL_VOCABULARY)
-    pub_level = models.CharField(_('Publication Level'),max_length=64,
+    pub_level = models.CharField(_('Publication Level'), max_length=64,
         choices=sorted(choices.PUBLICATION_LEVEL, key=lambda PUBLICATION_LEVEL: PUBLICATION_LEVEL[1]), help_text=helptexts.JOURNAL__PUB_LEVEL)
-    secs_code = models.CharField(_('SECS Code'), max_length=64,null=False,blank=True)
+    secs_code = models.CharField(_('SECS Code'), max_length=64, null=False, blank=True)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254, help_text=helptexts.JOURNAL__COPYRIGHTER)
-    url_online_submission = models.CharField(_('URL of online submission'), max_length=64,null=True,blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
-    url_journal = models.CharField(_('URL of the journal'), max_length=64,null=True, blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
+    url_online_submission = models.CharField(_('URL of online submission'), max_length=64, null=True, blank=True, help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
+    url_journal = models.CharField(_('URL of the journal'), max_length=64, null=True, blank=True, help_text=helptexts.JOURNAL__URL_JOURNAL)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
@@ -331,7 +328,8 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     class Meta:
         verbose_name = 'journal publication event'
         verbose_name_plural = 'Journal Publication Events'
-        ordering = ['created_at',]
+        ordering = ['created_at']
+        permissions = (("list_publication_events", "Can list Publication Events"),)
 
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -424,7 +422,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     publication_start_month = models.IntegerField(_('Start Month'), choices=choices.MONTHS)
     publication_end_month = models.IntegerField(_('End Month'), choices=choices.MONTHS)
     publication_year = models.IntegerField(_('Year'))
-    is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True) #v200
+    is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True)
     use_license = models.ForeignKey(UseLicense, null=True, help_text=helptexts.ISSUE__USE_LICENSE)
     total_documents = models.IntegerField(_('Total of Documents'), default=0, help_text=helptexts.ISSUE__TOTAL_DOCUMENTS)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -440,7 +438,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         if self.number is not None:
             n = self.number
             if n != 'ahead' and n != 'review':
-                n ='(' + self.number + ')'
+                n = '(' + self.number + ')'
             else:
                 n = self.number
 

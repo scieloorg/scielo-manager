@@ -16,9 +16,9 @@
         <div class="nav-collapse collapse">
           <ul class="nav">
             <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
-            {% if perms.sponsor.can_change %}<li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>{% endif %}
-            {% if perms.sponsor.can_change %}<li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>{% endif %}
-            {% if perms.user.can_change %}<li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>{% endif %}
+            {% if perms.sponsor.list_publisher %}<li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>{% endif %}
+            {% if perms.sponsor.list_sponsor %}<li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>{% endif %}
+            {% if perms.user.change_user %}<li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>{% endif %}
           </ul>
           <ul class="nav pull-right">
             <li class="divider-vertical"></li>
