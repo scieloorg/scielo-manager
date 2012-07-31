@@ -18,10 +18,10 @@ setup_environ(settings)
 
 from django.contrib.auth.models import User
 from scielomanager.journalmanager import models
+from django.db.utils import IntegrityError
 
 '''
     CSV format
-    0 = ID
     1 = Nome
     2 = Login
     3 = Email
@@ -30,26 +30,24 @@ from scielomanager.journalmanager import models
     IMPORT: CAN NOT EXIST SPACES BETWEEN COMMA ON CSV FILE.
 '''
 
-filename = sys.argv[1]
+try:
+    filename = sys.argv[1]
+except IndexError:
+    sys.exit("Please, informe the CSV file!!!")
 
 try:
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter=',', quotechar='"')
         for row in reader:
             try:
-                user = User.objects.get(username=row[0])
-                user.username = row[0]
-                user.email = row[1]
-                user.set_password(row[2])
-                models.UserCollections.objects.filter(user=user).delete()
-                user_collection = models.UserCollections(user=user, collection=models.Collection.objects.get(name=row[3]))
-                user_collection.save()
-                print "Update User ID: " + str(user.id) + ", name: " + row[0]
-            except:
-                user = User.objects.create_user(username=row[0], email=row[1], password=row[2])
-                user_collection = models.UserCollections(user=user, collection=models.Collection.objects.get(name=row[3]))
-                user_collection.save()
-                user.save()
-                print "Create User ID: " + str(user.id) + ", name: " + row[0]
-except csv.Error, e:
-    sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
+                if not User.objects.filter(username=row[0]):
+                    user = User.objects.create_user(username=row[0], email=row[1], password=row[2])
+                    user_collection = models.UserCollections(user=user,
+                                        collection=models.Collection.objects.get(name=row[3]))
+                    user_collection.save()
+                    user.save()
+                    print "Create User ID: " + str(user.id) + ", Name: " + row[0]
+            except (IndexError, IntegrityError) as e:
+                sys.exit('Error in the file format %s, line %d: %s' % (filename, reader.line_num, e))
+except IOError:
+    print "CSV file not found."
