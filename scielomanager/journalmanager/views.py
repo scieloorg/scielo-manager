@@ -113,6 +113,10 @@ def generic_index_search(request, model, journal_id = None):
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
         objects_all = model.objects.filter(journal=journal_id)
+
+        if model is models.Section:
+            # order by a non persistent property
+            objects_all = sorted(objects_all, key=lambda x: unicode(x))
     else:
         journal = None
         objects_all = model.objects.all_by_user(request.user)
@@ -175,7 +179,7 @@ def toggle_active_collection(request, user_id, collection_id):
 
     # Setting up all user collections.is_default to False
     user_collections = get_user_collections(request.user.id)
-    
+
     # Clear cache when changes in UserCollections
     invalid = [collection for collection in user_collections]
     models.UserCollections.objects.invalidate(*invalid)
@@ -600,8 +604,8 @@ def add_issue(request, journal_id, issue_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if issue_id is None:
-        data_dict={'use_license': journal.use_license.id, 
-        'editorial_standard': journal.editorial_standard, 
+        data_dict={'use_license': journal.use_license.id,
+        'editorial_standard': journal.editorial_standard,
         'ctrl_vocabulary': journal.ctrl_vocabulary }
         issue = models.Issue()
     else:
