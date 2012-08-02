@@ -9,8 +9,6 @@ INSTITUTION__NAME = _("""Enter institution name.""")
 
 INSTITUTION__COMPLEMENT = _("""Enter institution complements as session, department, nucleo, etc """)
 
-INSTITUTION__ACRONYM = _("""Enter in this field the acronym of the collection, max 8 characters length.""")
-
 INSTITUTION__COUNTRY = _("""Country of the Publication.""")
 
 INSTITUTION__STATE = _("""Enter in this field the location in the country of the publication, but not the city or town""")
