@@ -26,9 +26,7 @@ v1_api_resources = [
 for res in v1_api_resources:
     v1_api.register(res)
 
-
 urlpatterns = patterns('',
-    
     url(r'^$', views.index, name='index'),
 
     # Journal Manager APP
@@ -37,9 +35,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # Collection Tools
-    url(r'^collection/$', views.generic_index_search, {'model': models.Collection}, name='collection.index' ),
-    url(r'^collection/new/$', views.add_collection, name='collection.add' ),
-    url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit' ),
+    url(r'^collection/$', views.collection_index, {'model': models.Collection}, name='collection.index'),
+    url(r'^collection/new/$', views.add_collection, name='collection.add'),
+    url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
 
     url(r'^accounts/logout/$', views.user_logout, name='journalmanager.user_logout'),
     url(r'^accounts/login/$', views.user_login, name='journalmanager.user_login'),
@@ -77,12 +75,9 @@ urlpatterns = patterns('',
     (r'^api/', include(v1_api.urls)),
 )
 
-
 if settings.DEBUG:
-    # serve static files from develpment server
-    from django.views import static
 
     urlpatterns += patterns('',
         url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
-    )
+        )

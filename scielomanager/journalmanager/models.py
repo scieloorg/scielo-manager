@@ -178,6 +178,7 @@ class Collection(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = (("list_collection", "Can list Collections"),)
 
     def save(self, *args, **kwargs):
         self.name_slug = slugify(self.name)
@@ -234,6 +235,8 @@ class Publisher(Institution):
 
     collections = models.ManyToManyField(Collection)
 
+    class Meta:
+        permissions = (("list_publisher", "Can list Publishers"),)
 
 class Sponsor(Institution):
     objects = InstitutionCustomManager()
@@ -241,6 +244,8 @@ class Sponsor(Institution):
 
     collections = models.ManyToManyField(Collection)
 
+    class Meta:
+        permissions = (("list_sponsor", "Can list Sponsors"),)
 
 class Journal(caching.base.CachingMixin, models.Model):
 
@@ -306,6 +311,7 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['title']
+        permissions = (("list_journal", "Can list Journals"),)
 
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
@@ -333,7 +339,8 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     class Meta:
         verbose_name = 'journal publication event'
         verbose_name_plural = 'Journal Publication Events'
-        ordering = ['created_at', ]
+        ordering = ['created_at']
+        permissions = (("list_publication_events", "Can list Publication Events"),)
 
 
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
@@ -414,6 +421,8 @@ class Section(caching.base.CachingMixin, models.Model):
     def __unicode__(self):
         return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
+    class Meta:
+        permissions = (("list_section", "Can list Sections"),)
 
 class Issue(caching.base.CachingMixin, models.Model):
 
@@ -470,6 +479,8 @@ class Issue(caching.base.CachingMixin, models.Model):
         self.label = 'v{0}n{1}'.format(self.volume, self.number)
         super(Issue, self).save(*args, **kwargs)
 
+    class Meta:
+        permissions = (("list_issue", "Can list Issues"),)
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
