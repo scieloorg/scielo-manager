@@ -191,7 +191,14 @@ A regra de negócio para esses dados será a seguinte:
 
 1. Informação de número especial "es/esp", único "unico", composição de números "10-14", números compostos de letras "1a, 1b", etc, deverão ser inseridas no próprio campo **Number** que será de preenchimento livre. Cabe ao documentalista garantir a integridade entre a sequencia de números no SciELO e a sequencia de números da revista.
 
-2. Ahead, Review, Press Release, não mais serão criados pelo SciELO Manager, será considerado que todos periódicos possuem um único Ahead, Review, Press Release. Cabe ao processo de exportação gerar esses fascículos especiais para cada periódico e tratar a apresentação do mesmo no site público caso algum artigo seja marcado como pertencente a um desses fascículos especiais. 
+2. Ahead, Review, Press Release, não mais serão criados pelo SciELO Manager, será considerado que todos periódicos possuem um único Ahead, Review, Press Release. Cabe ao processo de exportação gerar esses fascículos especiais para cada periódico e tratar a apresentação do mesmo no site público caso algum artigo seja marcado como pertencente a um desses fascículos especiais.
+
+3. Campo v6 representa numeração sequencial de fascículos de um periódico, esse campo não deve ser considerado na exportação pois é gerado pelo processamento SciELO.
+
+4. Campos 65 e 64 devem ser construidos utilizando o ano de publicação YYYY concatenado com o mês final de publicação "publication_end_month". MM e precedido de 00 para o caracteres que representam o dia 
+
+  Ex: 20100300
+
 
 Artigo
 ``````
@@ -203,6 +210,9 @@ Remoção de Campos desnecessários
 ================================
 
 De acordo com reunião realizada em 27 de março alguns campos no contexto da SciELO não serão mais cosiderados pelo SciELO Manager, entretanto para manter a compatibilidade com a atual estrutura de dados os valores deste campo serão inseridos nas bases de dados de forma automática pois seus valores sempre foram os mesmos durante os 15 anos de operação do SciELO.
+
+Issue
+`````
 
 Title
 `````
