@@ -18,6 +18,7 @@ import caching.base
 
 import choices
 import helptexts
+import mongomodels
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -201,7 +202,7 @@ class Institution(caching.base.CachingMixin, models.Model):
     updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('Institution Name'), max_length=256, db_index=True, help_text=helptexts.INSTITUTION__NAME)
     complement =models.TextField(_('Institution Complements'), blank=True, default="", help_text=helptexts.INSTITUTION__COMPLEMENT)
-    acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True, help_text=helptexts.INSTITUTION__ACRONYM)
+    acronym = models.CharField(_('Sigla'), max_length=16, db_index=True, blank=True)
     country = models.CharField(_('Country'), max_length=32, help_text=helptexts.INSTITUTION__COUNTRY)
     state = models.CharField(_('State'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__STATE)
     city = models.CharField(_('City'), max_length=32, null=False, blank=True, help_text=helptexts.INSTITUTION__CITY)
@@ -475,6 +476,16 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     form = models.ForeignKey(PendedForm, related_name='data')
     name = models.CharField(max_length=255)
     value = models.TextField()
+
+
+class Article(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    mongoobjects = mongomodels.MongoManager()
+
+    object_id = models.CharField(max_length=32)
+    issue = models.ForeignKey(Issue)
+
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
