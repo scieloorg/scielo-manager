@@ -16,9 +16,10 @@ except ImportError:
 
 setup_environ(settings)
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from scielomanager.journalmanager import models
 from django.db.utils import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 
 '''
     CSV format
@@ -26,6 +27,7 @@ from django.db.utils import IntegrityError
     2 = Login
     3 = Email
     4 = collection
+    5 = group
     Format example: "antonietayanez","myanez@conicyt.cl","yanez","Chile"
     IMPORT: CAN NOT EXIST SPACES BETWEEN COMMA ON CSV FILE.
 '''
@@ -33,7 +35,7 @@ from django.db.utils import IntegrityError
 try:
     filename = sys.argv[1]
 except IndexError:
-    sys.exit("Please, informe the CSV file!!!")
+    sys.exit("Please, informe the CSV file path.")
 
 try:
     with open(filename, 'rb') as f:
@@ -45,9 +47,16 @@ try:
                     user_collection = models.UserCollections(user=user,
                                         collection=models.Collection.objects.get(name=row[3]))
                     user_collection.save()
-                    user.save()
+                    try:
+                        group_id = Group.objects.get(name=row[4]).id
+                        user.groups.add(Group.objects.get(name=row[4]).id)
+                    except (ObjectDoesNotExist) as e:
+                        print "Group not set to user: %s, line %d: %s" % (row[0], reader.line_num, e)
+
                     print "Create User ID: " + str(user.id) + ", Name: " + row[0]
+                else:
+                    print "User " + row[0] + " already exist."
             except (IndexError, IntegrityError) as e:
-                sys.exit('Error in the file format %s, line %d: %s' % (filename, reader.line_num, e))
+                sys.exit("Error in the file format %s, line %d: %s" % (filename, reader.line_num, e))
 except IOError:
     print "CSV file not found."
