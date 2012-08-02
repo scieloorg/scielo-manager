@@ -28,6 +28,11 @@ class IssueImport:
     def __init__(self):
         self._summary = {}
         self._journals = {}
+        self._monthtoindex = {
+            '': 0, 'mar': 3, 'sep': 9, 'may': 5, 'jun': 6, 'jul': 7, 'set': 9,
+            'mai': 5, 'nov': 11, 'out': 10, 'ago': 8, 'fev': 2, 'dez': 12, 'feb': 2, 'ene': 1,
+            'aug': 8, 'dic': 12, 'jan': 1, 'apr': 4, 'abr': 4, 'dec': 12, 'oct': 10
+            }
 
         journal_json_parsed = json.loads(open('journal.json', 'r').read())
 
@@ -53,7 +58,7 @@ class IssueImport:
     @transaction.commit_manually
     def load_use_license(self, journal_issn):
         use_license = UseLicense()
-        exists = False
+
         if self._journals.has_key(journal_issn):
             license = self._journals[journal_issn]['use_license']
             if license:
@@ -86,7 +91,7 @@ class IssueImport:
                     section = Section.objects.get(code=parsed_subfields['c'])
                     issue.section.add(section)
                 except ObjectDoesNotExist:
-                    print "Inconsistência nos dados"
+                    print "Inconsistência nos dados carregando seção"
 
         return issue_sections
 
@@ -129,14 +134,26 @@ class IssueImport:
                 issue.is_press_release = True
         if '33' in record:
             issue.title = record['33'][0]
+
+        if '43' in record:
+            expanded = subfield.expand(record['43'][0])
+            month_start = dict(expanded)
+            if 'm' in month_start:
+                month_start = month_start['m'][:3].lower()
+                if month_start in self._monthtoindex:
+                    month_start = self._monthtoindex[month_start]
+                else:
+                    month_start = 0
+            else:
+                month_start = 0
+
         if '65' in record:
             year = record['65'][0][0:4]
-            month = record['65'][0][4:6]
-            if month == '00':
-                month = '01'
-
-            issue.publication_start_month = month
-            issue.publication_end_month = 0
+            month_end = record['65'][0][4:6]
+            if month_end == '00':
+                month_end = '01'
+            issue.publication_start_month = month_start
+            issue.publication_end_month = month_end
             issue.publication_year = year
         else:
             print u'Fasciculo %s %s %s não possui data de publicação' % (record['35'][0], record['31'][0], record['32'][0])
@@ -144,9 +161,6 @@ class IssueImport:
             issue.publication_end_month = 0
             issue.publication_year = 0000
 
-        if '91' in record:
-            update = u'%s-%s-01T01:01:01' % (record['91'][0][0:4], record['91'][0][4:6])
-            issue.update_date = datetime.strptime(update, "%Y-%m-%dT%H:%M:%S")
         if '42' in record:
             if int(record['42'][0]) == 1:
                 issue.is_trashed = False
@@ -171,6 +185,12 @@ class IssueImport:
             issue.use_license = license
 
         issue.save(force_insert=True)
+
+        if '91' in record:
+            created = u'%s-%s-01T01:01:01' % (record['91'][0][0:4], record['91'][0][4:6])
+            issue.created = datetime.strptime(created, "%Y-%m-%dT%H:%M:%S")
+
+        issue.save()
 
         self.load_sections(issue, record)
 

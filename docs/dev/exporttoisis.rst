@@ -195,6 +195,11 @@ A regra de negócio para esses dados será a seguinte:
 
 3. Campo v6 representa numeração sequencial de fascículos de um periódico, esse campo não deve ser considerado na exportação pois é gerado pelo processamento SciELO.
 
+4. Campos 65 e 64 devem ser construidos utilizando o ano de publicação YYYY concatenado com o mês final de publicação "publication_end_month". MM e precedido de 00 para o caracteres que representam o dia 
+
+  Ex: 20100300
+
+
 Artigo
 ``````
 
