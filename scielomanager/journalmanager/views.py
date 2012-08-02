@@ -24,14 +24,13 @@ from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
 
-import caching.base
-
-from scielomanager.journalmanager.models import get_user_collections
+from scielomanager import settings
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
 from scielomanager.tools import get_paginated
 from scielomanager.tools import get_referer_view
 from scielomanager.tools import PendingPostData
+from scielomanager.journalmanager.models import get_user_collections
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -67,7 +66,54 @@ def index(request):
     context = RequestContext(request,{'user_collections':user_collections,'pending_journals': pending_journals})
     return HttpResponse(template.render(context))
 
-@permission_required('journalmanager.list_issue', login_url='/accounts/login/')
+def list_search(request, model, journal_id):
+    """
+    Generic list and search
+    """
+    user_collections = get_user_collections(request.user.id)
+
+    if journal_id:
+        journal = models.Journal.objects.get(pk=journal_id)
+        objects_all = model.objects.filter(journal=journal_id)
+
+        if model is models.Section:
+            # order by a non persistent property
+            objects_all = sorted(objects_all, key=lambda x: unicode(x))
+    else:
+        journal = None
+        objects_all = model.objects.all_by_user(request.user)
+
+        #filtering by pub_status is only available to Journal instances.
+        if model is models.Journal and request.GET.get('jstatus'):
+            objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
+
+        if request.GET.get('letter'):
+            if issubclass(model, models.Institution):
+                objects_all = objects_all.filter(name__startswith=request.GET.get('letter'))
+            else:
+                objects_all = objects_all.filter(title__startswith=request.GET.get('letter'))
+
+    if request.GET.get('q'):
+        objects_all = model.objects.all_by_user(request.user)
+
+        if issubclass(model, models.Institution):
+            objects_all = objects_all.filter(
+                name__icontains=request.REQUEST['q']).order_by('name')
+        else:
+            objects_all = objects_all.filter(
+                title__icontains=request.REQUEST['q']).order_by('title')
+
+    objects = get_paginated(objects_all, request.GET.get('page', 1))
+    template = loader.get_template('journalmanager/%s_dashboard.html' % model.__name__.lower())
+    context = RequestContext(request, {
+                       'objects_%s' % model.__name__.lower(): objects,
+                       'journal': journal,
+                       'letters': get_first_letter(objects_all),
+                       'user_collections': user_collections,
+                       })
+    return HttpResponse(template.render(context))
+
+@permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
 def issue_index(request, journal_id):
     user_collections = get_user_collections(request.user.id)
     journal = models.Journal.objects.get(pk=journal_id)
@@ -90,59 +136,43 @@ def issue_index(request, journal_id):
                        'journal': journal,
                        'user_collections': user_collections,
                        'issue_grid': by_years,
-
                        })
     return HttpResponse(template.render(context))
 
-@permission_required('journalmanager.list_journal', login_url='/accounts/login/')
-def generic_index_search(request, model, journal_id = None):
+@permission_required('journalmanager.list_journal', login_url=settings.LOGIN_URL)
+def journal_index(request, model, journal_id=None):
     """
-    Generic list and search
+    Journal list and search
     """
+    return list_search(request, model, journal_id)
 
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default=True)
+@permission_required('journalmanager.list_publisher', login_url=settings.LOGIN_URL)
+def publisher_index(request, model, journal_id=None):
+    """
+    Publisher list and search
+    """
+    return list_search(request, model, journal_id)
 
-    if journal_id:
-        journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.filter(journal=journal_id)
+@permission_required('journalmanager.list_sponsor', login_url=settings.LOGIN_URL)
+def sponsor_index(request, model, journal_id=None):
+    """
+    Sponsor list and search
+    """
+    return list_search(request, model, journal_id)
 
-        if model is models.Section:
-            # order by a non persistent property
-            objects_all = sorted(objects_all, key=lambda x: unicode(x))
-    else:
-        journal = None
-        objects_all = model.objects.all_by_user(request.user)
+@permission_required('journalmanager.list_section', login_url=settings.LOGIN_URL)
+def section_index(request, model, journal_id=None):
+    """
+    Section list and search
+    """
+    return list_search(request, model, journal_id)
 
-        #filtering by pub_status is only available to Journal instances.
-        if model is models.Journal and request.GET.get('jstatus'):
-            objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
-
-        if request.GET.get('letter'):
-            if issubclass(model, models.Institution):
-                objects_all = objects_all.filter(name__startswith = request.GET.get('letter'))
-            else:
-                objects_all = objects_all.filter(title__startswith = request.GET.get('letter'))
-
-    if request.GET.get('q'):
-        objects_all = model.objects.all_by_user(request.user)
-
-        if issubclass(model, models.Institution):
-            objects_all = objects_all.filter(
-                name__icontains=request.REQUEST['q']).order_by('name')
-        else:
-            objects_all = objects_all.filter(
-                title__icontains = request.REQUEST['q']).order_by('title')
-
-    objects = get_paginated(objects_all, request.GET.get('page', 1))
-    template = loader.get_template('journalmanager/%s_dashboard.html' % model.__name__.lower())
-    context = RequestContext(request, {
-                       'objects_%s' %  model.__name__.lower(): objects,
-                       'journal': journal,
-                       'letters': get_first_letter(objects_all),
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(template.render(context))
+@permission_required('journalmanager.list_collection', login_url=settings.LOGIN_URL)
+def collection_index(request, model, journal_id=None):
+    """
+    Collection list and search
+    """
+    return list_search(request, model, journal_id)
 
 @login_required
 def generic_toggle_availability(request, object_id, model):
@@ -225,7 +255,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
         messages.info(request, info_msg)
     return HttpResponseRedirect(get_referer_view(request))
 
-@permission_required('journalmanager.list_user', login_url='/accounts/login/')
+@permission_required('journalmanager.list_user', login_url=settings.LOGIN_URL)
 def user_index(request):
 
     user_collections = get_user_collections(request.user.id)
@@ -291,7 +321,7 @@ def user_logout(request):
     c = RequestContext(request)
     return HttpResponse(t.render(c))
 
-@permission_required('journalmanager.change_user', login_url='/accounts/login/')
+@permission_required('journalmanager.change_user', login_url=settings.LOGIN_URL)
 def add_user(request, user_id=None):
     """
     Handles new and existing users
@@ -342,7 +372,7 @@ def add_user(request, user_id=None):
                               },
                               context_instance=RequestContext(request))
 
-@permission_required('journalmanager.list_publication_events', login_url='/accounts/login/')
+@permission_required('journalmanager.list_publication_events', login_url=settings.LOGIN_URL)
 def edit_journal_status(request, journal_id = None):
     """
     Handles Journal Status.
@@ -378,7 +408,7 @@ def edit_journal_status(request, journal_id = None):
                               'journal': journal,
                               }, context_instance = RequestContext(request))
 
-@permission_required('journalmanager.change_journal', login_url='/accounts/login/')
+@permission_required('journalmanager.change_journal', login_url=settings.LOGIN_URL)
 def add_journal(request, journal_id = None):
     """
     Handles new and existing journals
@@ -468,7 +498,7 @@ def del_pended(request, form_hash):
     messages.info(request, MSG_DELETE_PENDED)
     return HttpResponseRedirect(reverse('index'))
 
-@permission_required('journalmanager.add_sponsor', login_url='/accounts/login/')
+@permission_required('journalmanager.add_sponsor', login_url=settings.LOGIN_URL)
 def add_sponsor(request, sponsor_id=None):
     """
     Handles new and existing sponsors
@@ -508,7 +538,7 @@ def add_sponsor(request, sponsor_id=None):
                               },
                               context_instance = RequestContext(request))
 
-@permission_required('journalmanager.add_collection', login_url='/accounts/login/')
+@permission_required('journalmanager.add_collection', login_url=settings.LOGIN_URL)
 def add_collection(request, collection_id=None):
     """
     Handles existing collections
@@ -546,7 +576,7 @@ def add_collection(request, collection_id=None):
                               },
                               context_instance = RequestContext(request))
 
-@permission_required('journalmanager.add_publisher', login_url='/accounts/login/')
+@permission_required('journalmanager.add_publisher', login_url=settings.LOGIN_URL)
 def add_publisher(request, publisher_id=None):
     """
     Handles new and existing publishers
@@ -587,7 +617,7 @@ def add_publisher(request, publisher_id=None):
                               context_instance = RequestContext(request))
 
 
-@permission_required('journalmanager.add_issue', login_url='/accounts/login/')
+@permission_required('journalmanager.add_issue', login_url=settings.LOGIN_URL)
 def add_issue(request, journal_id, issue_id=None):
     """
     Handles new and existing issues
@@ -639,22 +669,22 @@ def add_issue(request, journal_id, issue_id=None):
                               },
                               context_instance = RequestContext(request))
 
-@permission_required('journalmanager.list_publisher', login_url='/accounts/login/')
-def publisher_index(request):
-    user_collections = get_user_collections(request.user.id)
-    default_collections = user_collections.filter(is_default = True)
+# @permission_required('journalmanager.list_publisher', login_url=settings.LOGIN_URL)
+# def publisher_index(request):
+#     user_collections = get_user_collections(request.user.id)
+#     default_collections = user_collections.filter(is_default = True)
 
-    all_publishers = models.Publisher.objects.available(request.GET.get('is_available', 1))
-    publishers = get_paginated(all_publishers, request.GET.get('page', 1))
+#     all_publishers = models.Publisher.objects.available(request.GET.get('is_available', 1))
+#     publishers = get_paginated(all_publishers, request.GET.get('page', 1))
 
-    t = loader.get_template('journalmanager/publisher_dashboard.html')
-    c = RequestContext(request, {
-                       'objects_publisher': publishers,
-                       'user_collections': user_collections,
-                       })
-    return HttpResponse(t.render(c))
+#     t = loader.get_template('journalmanager/publisher_dashboard.html')
+#     c = RequestContext(request, {
+#                        'objects_publisher': publishers,
+#                        'user_collections': user_collections,
+#                        })
+#     return HttpResponse(t.render(c))
 
-@permission_required('journalmanager.change_section', login_url='/accounts/login/')
+@permission_required('journalmanager.change_section', login_url=settings.LOGIN_URL)
 def add_section(request, journal_id, section_id=None):
     """
     Handles new and existing sections
@@ -704,7 +734,7 @@ def add_section(request, journal_id, section_id=None):
                               'has_relation': has_relation,
                               }, context_instance=RequestContext(request))
 
-@permission_required('journalmanager.delete_section', login_url='/accounts/login/')
+@permission_required('journalmanager.delete_section', login_url=settings.LOGIN_URL)
 def del_section(request, journal_id, section_id):
 
     journal = get_object_or_404(models.Journal, pk=journal_id)

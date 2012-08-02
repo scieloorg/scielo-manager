@@ -15,10 +15,10 @@
         <a class="brand" href="/">SciELO Manager</a>
         <div class="nav-collapse collapse">
           <ul class="nav">
-            <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
-            {% if perms.sponsor.list_publisher %}<li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>{% endif %}
-            {% if perms.sponsor.list_sponsor %}<li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>{% endif %}
-            {% if perms.user.change_user %}<li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>{% endif %}
+            {% if perms.journalmanager.list_journal %}<li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>{% endif %}
+            {% if perms.journalmanager.list_publisher %}<li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>{% endif %}
+            {% if perms.journalmanager.list_sponsor %}<li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>{% endif %}
+            {% if perms.journalmanager.change_user %}<li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>{% endif %}
           </ul>
           <ul class="nav pull-right">
             <li class="divider-vertical"></li>
@@ -77,9 +77,9 @@
         <li>
           <form id="form_search" action="" method="get">
             <select id="list_model" style="width: 90px;">
-              <option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>
-              <option {% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>
-              <option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>
+              {% if perms.journalmanager.list_journal %}<option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>{% endif %}
+              {% if perms.journalmanager.list_publisher %}<option {% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>{% endif %}
+              {% if perms.journalmanager.list_sponsor %}<option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>{% endif %}
             </select>
             <input style="width: 160px;" placeholder="Search" name="q" value="{{request.GET.q}}"/>
             <button class="btn" style="vertical-align: 4px;" type="submit"><i class="icon-search icon-black"></i> {% trans 'Search' %}</button>
@@ -115,8 +115,8 @@
           <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a>
         </strong>
       </p>
-      <p>Rua Dr. Diogo de   Farias, 1087 conj. 810&nbsp; - Vila Clementino  04037-003 São Paulo SP -   Brazil</p>
-      <p>Tel.: (55 11) 3369-4080 - Email: <a href="mailto:scielo@scielo.org">scielo@scielo.org</a>
+      <p>Rua Machado Bittencourt, 430 - Vila Clementino 04044-001 São Paulo</p>
+      <p>Tel.: +55 11 5083-3639/59 - Email: <a href="mailto:scielo@scielo.org">scielo@scielo.org</a>
     </div>
     <div class="span2">
       <h4>{% trans 'Help' %}</h4>

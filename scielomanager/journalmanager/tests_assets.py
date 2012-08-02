@@ -2,7 +2,7 @@
 """
 Collection of domain object factories to make testing easier.
 """
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from scielomanager.journalmanager import models
 
@@ -453,3 +453,11 @@ def get_sample_language():
     }
 
     return models.Language(**language_attrs)
+
+def get_sample_group():
+
+    group_attrs = {
+      'name': 'testgroup',
+    }
+
+    return Group(**group_attrs)
