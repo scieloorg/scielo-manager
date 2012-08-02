@@ -1,5 +1,6 @@
-delete from journalmanager_issue;
 delete from journalmanager_issue_section;
+delete from journalmanager_issuetitle;
+delete from journalmanager_issue;
 delete from journalmanager_sectiontitle;
 delete from journalmanager_section;
 delete from journalmanager_journalstudyarea;
