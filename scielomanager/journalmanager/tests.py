@@ -1147,7 +1147,7 @@ class IssuesRestAPITest(TestCase):
             'publication_end_month', 'publication_year', 'use_license',
             'total_documents', 'ctrl_vocabulary', 'editorial_standard',
             'label', 'updated', 'resource_uri', 'created', 'journal',
-            'cover', 'sections', 'id', 'is_trashed',
+            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number'
         )
 
         for field in response_as_py['objects'][0]:
@@ -1184,7 +1184,7 @@ class IssuesRestAPITest(TestCase):
             'publication_end_month', 'publication_year', 'use_license',
             'total_documents', 'ctrl_vocabulary', 'editorial_standard',
             'label', 'updated', 'resource_uri', 'created', 'journal',
-            'cover', 'sections', 'id', 'is_trashed',
+            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number'
         )
 
         for field in response_as_py:

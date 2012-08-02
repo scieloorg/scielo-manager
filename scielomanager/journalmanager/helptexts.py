@@ -45,6 +45,10 @@ ISSUE__VOLUME = _(""" """)
 
 ISSUE__NUMBER = _(""" """)
 
+ISSUE__VOLUME__SUPPL = _(""" """)
+
+ISSUE__NUMBER__SUPPL = _(""" """)
+
 ISSUE__PUBLICATION_DATE = _(""" """)
 
 ISSUE__BIBLIOGRAPHIC_STRIP = _(""" """)

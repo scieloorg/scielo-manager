@@ -19,6 +19,7 @@ import helptexts
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
 
+
 def get_user_collections(user_id):
     """
     Return all the collections of a given user, The returned collections are the collections where the
@@ -28,6 +29,7 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
+
 
 def get_default_user_collections(user_id):
     """
@@ -69,7 +71,7 @@ class AppCustomManager(caching.base.CachingManager):
             except (ValueError, TypeError):
                 is_available = True
 
-        data_queryset = data_queryset.filter(is_trashed = not is_available)
+        data_queryset = data_queryset.filter(is_trashed=not is_available)
 
         return data_queryset
 
@@ -79,21 +81,23 @@ class JournalCustomManager(AppCustomManager):
     def all_by_user(self, user, is_available=True, pub_status=None):
         user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
-            collections__in = [ uc.collection for uc in user_collections]).distinct()
+            collections__in=[uc.collection for uc in user_collections]).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
-                objects_all = objects_all.filter(pub_status = pub_status)
+                objects_all = objects_all.filter(pub_status=pub_status)
 
         return objects_all
+
 
 class SectionCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True):
         user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
-            journal__collections__in=[ uc.collection for uc in user_collections ]).distinct()
+            journal__collections__in=[uc.collection for uc in user_collections]).distinct()
         return objects_all
+
 
 class InstitutionCustomManager(AppCustomManager):
     """
@@ -103,8 +107,9 @@ class InstitutionCustomManager(AppCustomManager):
     def all_by_user(self, user, is_available=True):
         user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
-            collections__in=[ uc.collection for uc in user_collections ]).distinct()
+            collections__in=[uc.collection for uc in user_collections]).distinct()
         return objects_all
+
 
 class Language(caching.base.CachingMixin, models.Model):
     """
@@ -123,6 +128,7 @@ class Language(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['name']
+
 
 class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -143,7 +149,8 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     def save(self, force_insert=False, force_update=False):
         self.user.email = self.email
         self.user.save()
-        return super(UserProfile,self).save(force_insert,force_update)
+        return super(UserProfile, self).save(force_insert, force_update)
+
 
 class Collection(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -177,6 +184,7 @@ class Collection(caching.base.CachingMixin, models.Model):
         self.name_slug = slugify(self.name)
         super(Collection, self).save(*args, **kwargs)
 
+
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
@@ -188,6 +196,7 @@ class UserCollections(caching.base.CachingMixin, models.Model):
 
     class Meta:
         unique_together = ("user", "collection", )
+
 
 class Institution(caching.base.CachingMixin, models.Model):
 
@@ -218,6 +227,7 @@ class Institution(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['name']
+
 
 class Publisher(Institution):
     objects = InstitutionCustomManager()
@@ -303,6 +313,7 @@ class Journal(caching.base.CachingMixin, models.Model):
         ordering = ['title']
         permissions = (("list_journal", "Can list Journals"),)
 
+
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """
     Records the status changes for a given Journal.
@@ -331,12 +342,14 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
         ordering = ['created_at']
         permissions = (("list_publication_events", "Can list Publication Events"),)
 
+
 class JournalStudyArea(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, related_name='study_areas')
     study_area = models.CharField(_('Study Area'), max_length=256,
         choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]), help_text=helptexts.JOURNALSTUDYAREA__STUDYAREA)
+
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -345,12 +358,14 @@ class JournalTitle(caching.base.CachingMixin, models.Model):
     title = models.CharField(_('Title'), null=False, max_length=128, help_text=helptexts.JOURNALTITLE__TITLE)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=sorted(choices.TITLE_CATEGORY, key=lambda TITLE_CATEGORY: TITLE_CATEGORY[1]))
 
+
 class JournalMission(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     journal = models.ForeignKey(Journal, related_name='missions')
     description = models.TextField(_('Mission'), help_text=helptexts.JOURNALMISSION_DESCRIPTION)
     language = models.ForeignKey('Language', blank=False, null=True)
+
 
 class UseLicense(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -366,6 +381,7 @@ class UseLicense(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ['license_code']
 
+
 class TranslatedData(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
@@ -377,6 +393,7 @@ class TranslatedData(caching.base.CachingMixin, models.Model):
     def __unicode__(self):
         return self.translation if self.translation is not None else 'Missing trans: {0}.{1}'.format(self.model, self.field)
 
+
 class SectionTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
@@ -387,6 +404,7 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['title']
+
 
 class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
@@ -416,6 +434,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     journal = models.ForeignKey(Journal)
     volume = models.CharField(_('Volume'), max_length=16, help_text=helptexts.ISSUE__VOLUME)
     number = models.CharField(_('Number'), max_length=16, help_text=helptexts.ISSUE__NUMBER)
+    suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME__SUPPL)
+    suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME__SUPPL)
+    volume = models.CharField(_('Volume'), max_length=16, help_text=helptexts.ISSUE__VOLUME)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -468,8 +489,10 @@ class IssueTitle(caching.base.CachingMixin, models.Model):
     language = models.ForeignKey('Language', blank=True, null=True)
     title = models.CharField(_('Title'), max_length=128, null=True, blank=True)
 
+
 class Supplement(Issue):
     suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
+
 
 class PendedForm(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -479,6 +502,7 @@ class PendedForm(caching.base.CachingMixin, models.Model):
     form_hash = models.CharField(max_length=32)
     user = models.ForeignKey(User, related_name='pending_forms')
     created_at = models.DateTimeField(auto_now=True)
+
 
 class PendedValue(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -491,6 +515,8 @@ class PendedValue(caching.base.CachingMixin, models.Model):
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
+
+
 @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """
@@ -500,6 +526,7 @@ def journal_pub_status_pre_save(sender, **kwargs):
         kwargs['instance']._pub_status = Journal.nocacheobjects.get(pk=kwargs['instance'].pk).pub_status
     except Journal.DoesNotExist:
         return None
+
 
 @receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
 def journal_pub_status_post_save(sender, instance, created, **kwargs):

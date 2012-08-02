@@ -46,31 +46,55 @@
     <p>
       {{ titleformset.management_form }}
     </p>
-
-    <div class="control-group {% if add_form.volume.errors %}error{% endif %}">
-      <label for="{{ add_form.volume.auto_id }}">
-        <span {% if add_form.volume.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.volume.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.volume }}
-        {% field_help add_form.volume.label add_form.volume.help_text term-issue-volume %}
+    <div class="span12" style="margin: 0px">
+      <div class="control-group {% if add_form.volume.errors %}error{% endif %}" style="float: left;">
+        <label for="{{ add_form.volume.auto_id }}">
+          <span {% if add_form.volume.field.required %}class="req-field"{% endif %}>
+            {% trans add_form.volume.label %}
+          </span>
+        </label>
+        <div class="controls">
+          {{ add_form.volume }}
+          {% field_help add_form.volume.label add_form.volume.help_text term-issue-volume %}
+        </div>
+      </div>
+      <div class="control-group {% if add_form.suppl_volume.errors %}error{% endif %}" style="float: left; margin-left: 10px;">
+        <label for="{{ add_form.suppl_volume.auto_id }}">
+          <span {% if add_form.suppl_volume.field.required %}class="req-field"{% endif %}>
+            {% trans add_form.suppl_volume.label %}
+          </span>
+        </label>
+        <div class="controls">
+          {{ add_form.suppl_volume }}
+          {% field_help add_form.suppl_volume.label add_form.suppl_volume.help_text term-issue-suppl_volume %}
+        </div>
       </div>
     </div>
+    <div class="span12" style="margin: 0px">
+      <div class="control-group {% if add_form.number.errors %}error{% endif %}" style="float: left;">
+        <label for="{{ add_form.number.auto_id }}">
+          <span {% if add_form.number.field.required %}class="req-field"{% endif %}>
+            {% trans add_form.number.label %}
+          </span>
+        </label>
+        <div class="controls">
+          {{ add_form.number }}
+          {% field_help add_form.number.label add_form.number.help_text term-issue-number %}
+        </div>
+      </div>
 
-    <div class="control-group {% if add_form.number.errors %}error{% endif %}">
-      <label for="{{ add_form.number.auto_id }}">
-        <span {% if add_form.number.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.number.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.number }}
-        {% field_help add_form.number.label add_form.number.help_text term-issue-number %}
+      <div class="control-group {% if add_form.suppl_number.errors %}error{% endif %}" style="float: left;  margin-left: 10px;">
+        <label for="{{ add_form.suppl_number.auto_id }}">
+          <span {% if add_form.suppl_number.field.required %}class="req-field"{% endif %}>
+            {% trans add_form.suppl_number.label %}
+          </span>
+        </label>
+        <div class="controls">
+          {{ add_form.suppl_number }}
+          {% field_help add_form.suppl_number.label add_form.suppl_number.help_text term-issue-suppl_number %}
+        </div>
       </div>
     </div>
-
     <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
       <label for="{{ add_form.is_press_release.auto_id }}">
         <span {% if add_form.is_press_release.field.required %}class="req-field"{% endif %}>
