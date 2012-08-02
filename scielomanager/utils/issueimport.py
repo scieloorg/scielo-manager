@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 try:
     from scielomanager import settings
 except ImportError:
-    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     from sys import path
     path.append(BASE_PATH)
     import settings
@@ -22,15 +22,21 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from journalmanager.models import *
 
+
 class IssueImport:
 
     def __init__(self):
         self._summary = {}
         self._journals = {}
+        self._monthtoindex = {
+            '': 0, 'mar': 3, 'sep': 9, 'may': 5, 'jun': 6, 'jul': 7, 'set': 9,
+            'mai': 5, 'nov': 11, 'out': 10, 'ago': 8, 'fev': 2, 'dez': 12, 'feb': 2, 'ene': 1,
+            'aug': 8, 'dic': 12, 'jan': 1, 'apr': 4, 'abr': 4, 'dec': 12, 'oct': 10
+            }
 
-        journal_json_parsed = json.loads(open('journal.json','r').read())
+        journal_json_parsed = json.loads(open('journal.json', 'r').read())
 
-        self.load_journals(journal_json_parsed) # carregando dicionário de periódicos self._journals
+        self.load_journals(journal_json_parsed)  # carregando dicionário de periódicos self._journals
 
     def charge_summary(self, attribute):
         """
@@ -52,7 +58,7 @@ class IssueImport:
     @transaction.commit_manually
     def load_use_license(self, journal_issn):
         use_license = UseLicense()
-        exists = False
+
         if self._journals.has_key(journal_issn):
             license = self._journals[journal_issn]['use_license']
             if license:
@@ -75,10 +81,9 @@ class IssueImport:
         return use_license
 
     def load_sections(self, issue, record):
-        import subfield
 
         issue_sections = []
-        if record.has_key('49'):
+        if '49' in record:
             for code in record['49']:
                 expanded = subfield.expand(code)
                 parsed_subfields = dict(expanded)
@@ -86,12 +91,9 @@ class IssueImport:
                     section = Section.objects.get(code=parsed_subfields['c'])
                     issue.section.add(section)
                 except ObjectDoesNotExist:
-                    print "Inconsistência nos dados"
-                
-                
+                    print "Inconsistência nos dados carregando seção"
 
         return issue_sections
-
 
     def load_issue(self, record):
         """
@@ -117,52 +119,65 @@ class IssueImport:
         issue.journal = journal
         issue.creation_date = datetime.now()
 
-        if record.has_key('31'):
+        if '31' in record:
             issue.volume = record['31'][0]
-        if record.has_key('32'):
+        if '32' in record:
             issue.number = record['32'][0]
-        if record.has_key('33'):
+        if '131' in record:
+            issue.suppl_volume = record['131'][0]
+        if '132' in record:
+            issue.suppl_number = record['132'][0]
+        if '33' in record:
             issue.title = record['33'][0]
-        if record.has_key('41'):
+        if '41' in record:
             if record['41'][0] == 'pr':
                 issue.is_press_release = True
-        if record.has_key('33'):
+        if '33' in record:
             issue.title = record['33'][0]
-        if record.has_key('65'):
-            year = record['65'][0][0:4]
-            month = record['65'][0][4:6]
-            if month == '00':
-                month = '01'
 
-            issue.publication_start_month = month
-            issue.publication_end_month = 0
+        if '43' in record:
+            expanded = subfield.expand(record['43'][0])
+            month_start = dict(expanded)
+            if 'm' in month_start:
+                month_start = month_start['m'][:3].lower()
+                if month_start in self._monthtoindex:
+                    month_start = self._monthtoindex[month_start]
+                else:
+                    month_start = 0
+            else:
+                month_start = 0
+
+        if '65' in record:
+            year = record['65'][0][0:4]
+            month_end = record['65'][0][4:6]
+            if month_end == '00':
+                month_end = '01'
+            issue.publication_start_month = month_start
+            issue.publication_end_month = month_end
             issue.publication_year = year
         else:
-            print u'Fasciculo %s %s %s não possui data de publicação' % (record['35'][0],record['31'][0],record['32'][0])
+            print u'Fasciculo %s %s %s não possui data de publicação' % (record['35'][0], record['31'][0], record['32'][0])
             issue.publication_start_month = 0
             issue.publication_end_month = 0
             issue.publication_year = 0000
 
-        if record.has_key('91'):
-            update = u'%s-%s-01T01:01:01' % (record['91'][0][0:4],record['91'][0][4:6])
-            issue.update_date = datetime.strptime(update, "%Y-%m-%dT%H:%M:%S")
-        if record.has_key('42'):
+        if '42' in record:
             if int(record['42'][0]) == 1:
-                issue.is_available = True
+                issue.is_trashed = False
             else:
-                issue.is_available = False
-        if record.has_key('200'):
+                issue.is_trashed = True
+        if '200' in record:
             if int(record['200'][0]) == 1:
                 issue.is_marked_up = True
             else:
                 issue.is_marked_up = False
-        if record.has_key('62'):
+        if '62' in record:
             issue.publisher_fullname = record['62'][0]
-        if record.has_key('122'):
+        if '122' in record:
             issue.total_documents = record['122'][0]
-        if record.has_key('85'):
+        if '85' in record:
             issue.ctrl_vocabulary = record['85'][0]
-        if record.has_key('117'):
+        if '117' in record:
             issue.editorial_standard = record['117'][0]
 
         license = self.load_use_license(record['35'][0])
@@ -171,11 +186,15 @@ class IssueImport:
 
         issue.save(force_insert=True)
 
+        if '91' in record:
+            created = u'%s-%s-01T01:01:01' % (record['91'][0][0:4], record['91'][0][4:6])
+            issue.created = datetime.strptime(created, "%Y-%m-%dT%H:%M:%S")
+
+        issue.save()
+
         self.load_sections(issue, record)
 
         self.charge_summary('issues')
-
-
 
         return issue
 
@@ -192,11 +211,11 @@ class IssueImport:
         """
         for record in json_file:
             self._journals[record['400'][0]] = {}
-            self._journals[record['935'][0]] = {} # Se for igual ao 400 ira sobrescrever
+            self._journals[record['935'][0]] = {}  # Se for igual ao 400 ira sobrescrever
 
-            if record.has_key('541'):
+            if '541' in record:
                 f540 = subfield.CompositeField(subfield.expand(record['540'][0]))
-                href_pattern = re.compile('href=\\"[^ \t\n\r\f\v]*\\"') #regex para encontrar url no texto de disclaimer
+                href_pattern = re.compile('href=\\"[^ \t\n\r\f\v]*\\"')  # regex para encontrar url no texto de disclaimer
 
                 url_match = href_pattern.search(f540['t'])
                 if url_match:
@@ -218,17 +237,14 @@ class IssueImport:
                 self._journals[record['400'][0]]['use_license'] = False
                 self._journals[record['935'][0]]['use_license'] = False
 
-
     def run_import(self, json_file):
         """
         Function: run_import
         Dispara processo de importacao de dados
         """
 
-        json_parsed={}
-
-        issue_json_file = open(json_file,'r')
+        issue_json_file = open(json_file, 'r')
         issue_json_parsed = json.loads(issue_json_file.read())
 
         for record in issue_json_parsed:
-            loaded_issue = self.load_issue(record)
+            self.load_issue(record)
