@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
 from django.core.urlresolvers import reverse
 
-from journalmanager import tests_assets
+from journalmanager.tests import tests_assets
 from journalmanager.models import Collection
 from journalmanager.models import Journal
 from journalmanager.models import Publisher
@@ -162,8 +162,8 @@ class LoggedInViewsTest(TestCase):
 
         Test the feature created to change the journal Status.
         """
-        from models import Journal
-        from models import Section
+        from journalmanager.models import Journal
+        from journalmanager.models import Section
         journal = Journal.objects.all()[0]
 
         # Testing access the status page.
@@ -398,8 +398,8 @@ class LoggedInViewsTest(TestCase):
         """
         View: add_section
         """
-        from models import Journal
-        from models import Section
+        from journalmanager.models import Journal
+        from journalmanager.models import Section
         journal = Journal.objects.all()[0]
 
         sample_language = tests_assets.get_sample_language()
@@ -437,8 +437,8 @@ class LoggedInViewsTest(TestCase):
 
     @with_sample_journal
     def test_add_issue(self):
-        from models import Journal
-        from models import Issue
+        from journalmanager.models import Journal
+        from journalmanager.models import Issue
         journal = Journal.objects.all()[0]
 
         #empty form
@@ -804,7 +804,7 @@ class LoggedInViewsTest(TestCase):
         * Check if all collections presented on the form are related to the
           user.
         """
-        from models import Journal
+        from journalmanager.models import Journal
         journal = Journal.objects.all()[0]
 
         sample_language = tests_assets.get_sample_language()

@@ -26,6 +26,8 @@ DATABASES = {
     }
 }
 
+MONGO_URI = r'mongodb://localhost:27017/journalmanager'
+
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
 GRAVATAR_BASE_URL = 'https://secure.gravatar.com'
 
