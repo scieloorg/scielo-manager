@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User, get_hexdigest
 from django.core.exceptions import ObjectDoesNotExist
 
 from journalmanager import models
 
-class ModelBackend(object):
+class ModelBackend(ModelBackend):
     """
     Authenticate against the DJANGO login or user e-mail
-
+    
     Use the login name, and password or userprofile.email and password
     """
 
