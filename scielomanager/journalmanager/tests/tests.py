@@ -1604,7 +1604,6 @@ class ModelBackendTest(TestCase):
         self.profile = tests_assets.get_sample_userprofile(user=self.user)
         self.profile.save()
 
-
     def test_authenticate(self):
         """
         test_authentication
@@ -1620,20 +1619,21 @@ class ModelBackendTest(TestCase):
 
         mbkend = ModelBackend()
 
-        auth_response = mbkend.authenticate('dummyuser','123')
+        auth_response = mbkend.authenticate('dummyuser', '123')
         self.assertEqual(auth_response, self.user)
 
-        auth_response = mbkend.authenticate('dummyuser','fakepasswd')
-        self.assertEqual(auth_response,None)
+        auth_response = mbkend.authenticate('dummyuser', 'fakepasswd')
+        self.assertEqual(auth_response, None)
 
-        auth_response = mbkend.authenticate('dev@scielo.org','123')
-        self.assertEqual(auth_response,self.user)
+        auth_response = mbkend.authenticate('dev@scielo.org', '123')
+        self.assertEqual(auth_response, self.user)
 
-        auth_response = mbkend.authenticate('dev@scielo.org','fakepasswd')
-        self.assertEqual(auth_response,None)
+        auth_response = mbkend.authenticate('dev@scielo.org', 'fakepasswd')
+        self.assertEqual(auth_response, None)
 
-        auth_response = mbkend.authenticate('fakeuser','fakepasswd')
-        self.assertEqual(auth_response,None)
+        auth_response = mbkend.authenticate('fakeuser', 'fakepasswd')
+        self.assertEqual(auth_response, None)
+
 
 class UserViewPermission(TestCase):
     """
