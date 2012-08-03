@@ -4,7 +4,6 @@ import pymongo
 from mocker import (
     MockerTestCase,
     ANY,
-    KWARGS,
 )
 
 
