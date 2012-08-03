@@ -1,8 +1,8 @@
-# coding: utf-8
+# -*- encoding:utf8 -*-
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from django.core.urlresolvers import reverse
 
 from journalmanager.tests import tests_assets
@@ -98,12 +98,12 @@ class LoggedInViewsTest(TestCase):
 
         sample_publisher = tests_assets.get_sample_publisher()
         sample_publisher.save()
-        sample_publisher.collections = [self.collection,]
+        sample_publisher.collections = [self.collection, ]
         sample_publisher.save()
 
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
-        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.collections = [self.collection, ]
         sample_sponsor.save()
 
         sample_use_license = tests_assets.get_sample_uselicense()
@@ -1467,21 +1467,6 @@ class UserViewsTest(TestCase):
         #Verify the value of user session
         self.assertFalse('_auth_user_id' in self.client.session)
 
-    def test_my_account(self):
-        """
-        Logged out user trying to access a user management dashboard
-        """
-        response = self.client.get(reverse('journalmanager.my_account'))
-        self.assertRedirects(response, reverse('journalmanager.user_login') + '?next=/myaccount/')
-
-    def test_password_change(self):
-        """
-        Logged out user trying to change its password
-        """
-        response = self.client.get(reverse('journalmanager.password_change'))
-        self.assertRedirects(response, reverse('journalmanager.user_login') + '?next=/myaccount/password/')
-
-
     def test_add_user(self):
         """
         Login and Create user and verify content on database
@@ -1636,7 +1621,7 @@ class ModelBackendTest(TestCase):
         mbkend = ModelBackend()
 
         auth_response = mbkend.authenticate('dummyuser','123')
-        self.assertEqual(auth_response,self.user)
+        self.assertEqual(auth_response, self.user)
 
         auth_response = mbkend.authenticate('dummyuser','fakepasswd')
         self.assertEqual(auth_response,None)
@@ -1649,3 +1634,132 @@ class ModelBackendTest(TestCase):
 
         auth_response = mbkend.authenticate('fakeuser','fakepasswd')
         self.assertEqual(auth_response,None)
+
+class UserViewPermission(TestCase):
+    """
+    Test permission of user with specific group
+    """
+
+    def setUp(self):
+        """
+        Create a user relation to a specific group 'testgroup'
+        """
+        self.user = tests_assets.get_sample_creator(is_superuser=False, is_staff=False)
+        self.group = tests_assets.get_sample_group()
+        self.group.save()
+        self.user.save()
+        self.group.permissions.add(Permission.objects.get(codename='list_journal'),
+                                   Permission.objects.get(codename='add_issue'),
+                                   Permission.objects.get(codename='change_issue'),
+                                   Permission.objects.get(codename='delete_issue'),
+                                   Permission.objects.get(codename='list_issue'),
+                                   Permission.objects.get(codename='add_section'),
+                                   Permission.objects.get(codename='change_section'),
+                                   Permission.objects.get(codename='delete_section'),
+                                   Permission.objects.get(codename='list_section'),)
+        self.group.save()
+        self.user.groups.add(self.group)
+
+        self.client = Client()
+
+        self.collection = tests_assets.get_sample_collection()
+        self.user.save()
+        self.collection.save()
+        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
+        self.usercollections.save()
+
+        self.client = Client()
+        self.client.login(username='dummyuser', password='123')
+
+    def tearDown(self):
+        """
+        Delete a user after test
+        """
+        self.user.delete()
+
+    def _create_journal(self):
+        sample_journal = tests_assets.get_sample_journal()
+        sample_journal.creator = self.user
+
+        sample_publisher = tests_assets.get_sample_publisher()
+        sample_publisher.save()
+        sample_publisher.collections = [self.collection, ]
+        sample_publisher.save()
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.save()
+        sample_sponsor.collections = [self.collection, ]
+        sample_sponsor.save()
+
+        sample_use_license = tests_assets.get_sample_uselicense()
+        sample_use_license.save()
+
+        sample_journal.use_license = sample_use_license
+        sample_journal.pub_status_changed_by = self.user
+        sample_journal.publisher = sample_publisher
+        sample_journal.save()
+        sample_journal.sponsor = [sample_sponsor, ]
+        sample_journal.save()
+        sample_journal.collections = [self.collection, ]
+
+        sample_journal.save()
+
+    def test_list_journals(self):
+        """
+        Test access to Journal list
+        """
+        response = self.client.get(reverse('journal.index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_publisher(self):
+        """
+        Test access to Publisher list
+        """
+        response = self.client.get(reverse('publisher.index'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_list_sponsor(self):
+        """
+        Test access to Sponsor list
+        """
+        response = self.client.get(reverse('sponsor.index'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_list_issue(self):
+        """
+        Test access to issue list
+        """
+        self._create_journal()
+        journal = Journal.objects.all()[0]
+        response = self.client.get(reverse('issue.index', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_section(self):
+        """
+        Test access to section list
+        """
+        self._create_journal()
+        journal = Journal.objects.all()[0]
+        response = self.client.get(reverse('section.index', args=[journal.pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_user(self):
+        """
+        Test access to user list
+        """
+        response = self.client.get(reverse('user.index'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_add_journal(self):
+        """
+        Test add journal
+        """
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_add_user(self):
+        """
+        Test add journal
+        """
+        response = self.client.get(reverse('user.add'))
+        self.assertEqual(response.status_code, 302)

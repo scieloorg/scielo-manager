@@ -71,6 +71,7 @@ MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 STATIC_URL = '/static/'
 MEDIA_URL  = '/static/media/'
 
+# Webassets 
 ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
 ASSETS_URL = '/static/'
 ASSETS_DEBUG = False
@@ -150,7 +151,7 @@ INSTALLED_APPS = (
     'django_assets',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS =(
+TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.i18n',
     'django.core.context_processors.csrf',
@@ -196,6 +197,8 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
+
+LOGIN_URL = '/accounts/login'
 
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 
