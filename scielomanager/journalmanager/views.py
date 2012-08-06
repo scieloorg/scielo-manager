@@ -431,7 +431,7 @@ def add_journal(request, journal_id=None):
     if  journal_id is None:
         journal = models.Journal()
     else:
-        journal = get_object_or_404(models.Journal.objects.all_by_collection(request.user), id=journal_id)
+        journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), id=journal_id)
 
     form_hash = None
 
@@ -521,7 +521,7 @@ def add_sponsor(request, sponsor_id=None):
     if  sponsor_id is None:
         sponsor = models.Sponsor()
     else:
-        sponsor = get_object_or_404(models.Sponsor.objects.all_by_collection(request.user), id=sponsor_id)
+        sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
 
     user_collections = get_user_collections(request.user.id)
 
@@ -601,7 +601,7 @@ def add_publisher(request, publisher_id=None):
     if  publisher_id is None:
         publisher = models.Publisher()
     else:
-        publisher = get_object_or_404(models.Publisher.objects.all_by_collection(request.user), id=publisher_id)
+        publisher = get_object_or_404(models.Publisher.objects.all_by_user(request.user), id=publisher_id)
 
     user_collections = get_user_collections(request.user.id)
 
@@ -640,7 +640,7 @@ def add_issue(request, journal_id, issue_id=None):
     """
 
     user_collections = get_user_collections(request.user.id)
-    journal = get_object_or_404(models.Journal.objects.all_by_collection(request.user), pk=journal_id)
+    journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
 
     if issue_id is None:
         data_dict = {'use_license': journal.use_license.id,
@@ -691,6 +691,7 @@ def add_section(request, journal_id, section_id=None):
     """
     Handles new and existing sections
     """
+    journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
 
     if section_id is None:
         section = models.Section()
@@ -699,7 +700,6 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
         has_relation = section_has_relation(section.id)
 
-    journal = get_object_or_404(models.Journal, pk=journal_id)
     SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
         form=SectionTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
