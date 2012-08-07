@@ -102,12 +102,11 @@ class SectionCustomManager(AppCustomManager):
 
 class IssueCustomManager(AppCustomManager):
 
-    def all_by_collection(self, user):
+    def all_by_user(self, user, is_available=True):
         user_collections = get_default_user_collections(user.pk)
-        objects_all = self.filter(
+        objects_all = self.available(is_available).filter(
             collections__in=[uc.collection for uc in user_collections]).distinct()
         return objects_all
-
 
 class InstitutionCustomManager(AppCustomManager):
     """
