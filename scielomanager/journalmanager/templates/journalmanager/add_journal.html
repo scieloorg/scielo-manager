@@ -201,7 +201,7 @@
       </div>
     </div>
     {% else %}
-      <input type="hidden" name="journal-collections" value="{{user_collections.0.id}}"/>
+      <input type="hidden" name="journal-collections" value="{{user_collections.0.collection.id}}"/>
   {% endif %}
 
   <span class="label"><a name="subject"></a>{% trans "Subject" %}</span>
@@ -611,6 +611,7 @@
       <div class="controls">
         {{ add_form.cover }}
       </div>
+      <b>{% trans 'Image Size' %}:</b> ({{ SETTINGS.IMAGE_DIMENSIONS.height_cover }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_cover }}px) <span class="muted">{% trans 'height' %} X {% trans 'width' %}</span>
       <div align="center">
           {% if has_cover_url %}
             <img src="{{ has_cover_url }}" />
@@ -628,6 +629,7 @@
       <div class="controls">
         {{ add_form.logo }}
       </div>
+      <b>{% trans 'Image Size' %}:</b> ({{ SETTINGS.IMAGE_DIMENSIONS.height_logo }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_logo }}px) <span class="muted">{% trans 'height' %} X {% trans 'width' %}</span>
       <div align="center">
           {% if has_logo_url %}
             <img src="{{ has_logo_url }}" />
