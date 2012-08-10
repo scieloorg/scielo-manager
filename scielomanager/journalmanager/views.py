@@ -146,13 +146,6 @@ def journal_index(request, model, journal_id=None):
     """
     return list_search(request, model, journal_id)
 
-@permission_required('journalmanager.list_publisher', login_url=settings.LOGIN_URL)
-def publisher_index(request, model, journal_id=None):
-    """
-    Publisher list and search
-    """
-    return list_search(request, model, journal_id)
-
 @permission_required('journalmanager.list_sponsor', login_url=settings.LOGIN_URL)
 def sponsor_index(request, model, journal_id=None):
     """
@@ -225,7 +218,6 @@ def generic_bulk_action(request, model_name, action_name, value=None):
     model_refs = {
         'journal': models.Journal,
         'section': models.Section,
-        'publisher': models.Publisher,
         'sponsor': models.Sponsor,
     }
     model = model_refs.get(model_name)
@@ -576,46 +568,6 @@ def add_collection(request, collection_id=None):
                               },
                               context_instance = RequestContext(request))
 
-@permission_required('journalmanager.add_publisher', login_url=settings.LOGIN_URL)
-def add_publisher(request, publisher_id=None):
-    """
-    Handles new and existing publishers
-    """
-
-    if  publisher_id is None:
-        publisher = models.Publisher()
-    else:
-        publisher = get_object_or_404(models.Publisher, id = publisher_id)
-
-    user_collections = get_user_collections(request.user.id)
-
-    if request.method == "POST":
-        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher',
-            collections_qset=user_collections)
-
-        if publisherform.is_valid():
-            newpublisherform = publisherform.save()
-
-            if request.POST.get('popup', 0):
-                return HttpResponse('<script type="text/javascript">\
-                    opener.updateSelect(window, "%s", "%s", "id_journal-publisher");</script>' % \
-                    (escape(newpublisherform.id), escape(newpublisherform)))
-
-            messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('publisher.index'))
-        else:
-            messages.error(request, MSG_FORM_MISSING)
-    else:
-        publisherform  = PublisherForm(instance=publisher, prefix='publisher',
-            collections_qset=user_collections)
-
-    return render_to_response('journalmanager/add_publisher.html', {
-                              'add_form': publisherform,
-                              'user_name': request.user.pk,
-                              'user_collections': user_collections,
-                              },
-                              context_instance = RequestContext(request))
-
 
 @permission_required('journalmanager.add_issue', login_url=settings.LOGIN_URL)
 def add_issue(request, journal_id, issue_id=None):
@@ -669,20 +621,6 @@ def add_issue(request, journal_id, issue_id=None):
                               },
                               context_instance = RequestContext(request))
 
-# @permission_required('journalmanager.list_publisher', login_url=settings.LOGIN_URL)
-# def publisher_index(request):
-#     user_collections = get_user_collections(request.user.id)
-#     default_collections = user_collections.filter(is_default = True)
-
-#     all_publishers = models.Publisher.objects.available(request.GET.get('is_available', 1))
-#     publishers = get_paginated(all_publishers, request.GET.get('page', 1))
-
-#     t = loader.get_template('journalmanager/publisher_dashboard.html')
-#     c = RequestContext(request, {
-#                        'objects_publisher': publishers,
-#                        'user_collections': user_collections,
-#                        })
-#     return HttpResponse(t.render(c))
 
 @permission_required('journalmanager.change_section', login_url=settings.LOGIN_URL)
 def add_section(request, journal_id, section_id=None):
@@ -812,7 +750,6 @@ def trash_listing(request):
         'journal': models.Journal,
         'section': models.Section,
         'sponsor': models.Sponsor,
-        'publisher': models.Publisher,
     }
 
     if request.GET.get('show', None) in listing_ref:
