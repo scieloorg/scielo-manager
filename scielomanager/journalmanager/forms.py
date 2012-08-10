@@ -2,7 +2,6 @@
 import re
 from django import forms
 from django.forms import ModelForm, DateField
-from django.forms.models import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
 
@@ -125,7 +124,7 @@ class JournalForm(UserCollectionContext):
         }
 
 class CollectionForm(ModelForm):
-  
+
     def __init__(self, *args, **kwargs):
         super(CollectionForm, self).__init__(*args, **kwargs)
 
