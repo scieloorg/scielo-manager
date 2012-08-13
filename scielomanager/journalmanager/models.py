@@ -230,15 +230,6 @@ class Institution(caching.base.CachingMixin, models.Model):
         ordering = ['name']
 
 
-class Publisher(Institution):
-    objects = InstitutionCustomManager()
-    nocacheobjects = models.Manager()
-
-    collections = models.ManyToManyField(Collection)
-
-    class Meta:
-        permissions = (("list_publisher", "Can list Publishers"),)
-
 class Sponsor(Institution):
     objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
@@ -256,7 +247,6 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    publisher = models.ForeignKey(Publisher, related_name='publishers', null=False, help_text=helptexts.JOURNAL__PUBLISHER)
     sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor', null=True, blank=True, help_text=helptexts.JOURNAL__SPONSOR)
     previous_title = models.ForeignKey('Journal', related_name='prev_title', null=True, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     use_license = models.ForeignKey('UseLicense', help_text=helptexts.JOURNAL__USE_LICENSE)
@@ -306,6 +296,12 @@ class Journal(caching.base.CachingMixin, models.Model):
     logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True, )
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
+    editor_address = models.TextField(_('Address'), blank=False,)
+    editor_email = models.EmailField(_('E-mail'), blank=False,)
+    publisher_name = models.CharField(_('Publisher Name'), max_length=256, blank=False,)
+    publisher_country = models.CharField(_('Publisher Country'), max_length=64, blank=False,)
+    publisher_state = models.CharField(_('Publisher State'), max_length=64, blank=False,)
+    publication_city = models.CharField(_('Publication City'), max_length=64, blank=False,)
 
     def __unicode__(self):
         return self.title

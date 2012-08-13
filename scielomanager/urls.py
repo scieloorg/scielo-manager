@@ -18,7 +18,6 @@ v1_api_resources = [
     resources.UserResource(),
     resources.UseLicenseResource(),
     resources.SponsorResource(),
-    resources.PublisherResource(),
     resources.CollectionResource(),
     resources.IssueResource(),
     resources.SectionResource(),
