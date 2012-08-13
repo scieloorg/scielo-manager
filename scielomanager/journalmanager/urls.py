@@ -14,13 +14,6 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/edit/status/$', views.edit_journal_status, name='journal_status.edit'),
     url(r'^del_pended/(?P<form_hash>\w+)/$', views.del_pended, name='journal.del_pended'),
 
-    # Publisher Tools
-    url(r'^publisher/$', views.publisher_index, {'model': models.Publisher}, name='publisher.index'),
-    url(r'^publisher/new/$', views.add_publisher, name='publisher.add'),
-    url(r'^publisher/(?P<publisher_id>\d+)/edit/$', views.add_publisher, name='publisher.edit'),
-    url(r'^publisher/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
-        {'model': models.Publisher}, name='publisher.toggle_availability'),
-
     # Sponsor Tools
     url(r'^sponsor/$', views.sponsor_index, {'model': models.Sponsor}, name='sponsor.index'),
     url(r'^sponsor/new/$', views.add_sponsor, name='sponsor.add'),
