@@ -24,7 +24,10 @@ class SectionResource(ModelResource):
     class Meta:
         queryset = Section.objects.all()
         resource_name = 'sections'
-        allowed_methods = ['get',]
+        allowed_methods = ['get']
+        filtering = {
+            "journal": ('exact'),
+        }
 
     def dehydrate_titles(self, bundle):
         return [(title.language.iso_code, title.title)
