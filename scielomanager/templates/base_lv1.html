@@ -97,7 +97,15 @@
       <div class="mainContent">
         {% if messages %}
           {% for message in messages %}
-          <div class="alert {{ message.tags }}">{{ message }}</div>
+          <div class="alert {{ message.tags }}">{{ message }}
+            <ul id="errors_list">
+            {% for field in add_form %}
+              {% if field.errors %}
+              <li>{{ field.label }} {{ field.errors.text }}</li>
+              {% endif %}
+            {% endfor %}
+            </ul>
+          </div>
           {% endfor %}
         {% endif %}
         {% block content %}{% endblock %}
