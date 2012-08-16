@@ -152,15 +152,6 @@ def journal_index(request, model, journal_id=None):
     """
     return list_search(request, model, journal_id)
 
-
-@permission_required('journalmanager.list_publisher', login_url=settings.LOGIN_URL)
-def publisher_index(request, model, journal_id=None):
-    """
-    Publisher list and search
-    """
-    return list_search(request, model, journal_id)
-
-
 @permission_required('journalmanager.list_sponsor', login_url=settings.LOGIN_URL)
 def sponsor_index(request, model, journal_id=None):
     """
@@ -231,7 +222,6 @@ def generic_bulk_action(request, model_name, action_name, value=None):
     model_refs = {
         'journal': models.Journal,
         'section': models.Section,
-        'publisher': models.Publisher,
         'sponsor': models.Sponsor,
     }
     model = model_refs.get(model_name)
@@ -592,47 +582,6 @@ def add_collection(request, collection_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_publisher', login_url=settings.LOGIN_URL)
-def add_publisher(request, publisher_id=None):
-    """
-    Handles new and existing publishers
-    """
-
-    if  publisher_id is None:
-        publisher = models.Publisher()
-    else:
-        publisher = get_object_or_404(models.Publisher.objects.all_by_user(request.user), id=publisher_id)
-
-    user_collections = get_user_collections(request.user.id)
-
-    if request.method == "POST":
-        publisherform = PublisherForm(request.POST, instance=publisher, prefix='publisher',
-            collections_qset=user_collections)
-
-        if publisherform.is_valid():
-            newpublisherform = publisherform.save()
-
-            if request.POST.get('popup', 0):
-                return HttpResponse('<script type="text/javascript">\
-                    opener.updateSelect(window, "%s", "%s", "id_journal-publisher");</script>' % \
-                    (escape(newpublisherform.id), escape(newpublisherform)))
-
-            messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('publisher.index'))
-        else:
-            messages.error(request, MSG_FORM_MISSING)
-    else:
-        publisherform = PublisherForm(instance=publisher, prefix='publisher',
-            collections_qset=user_collections)
-
-    return render_to_response('journalmanager/add_publisher.html', {
-                              'add_form': publisherform,
-                              'user_name': request.user.pk,
-                              'user_collections': user_collections,
-                              },
-                              context_instance=RequestContext(request))
-
-
 @permission_required('journalmanager.add_issue', login_url=settings.LOGIN_URL)
 def add_issue(request, journal_id, issue_id=None):
     """
@@ -817,7 +766,6 @@ def trash_listing(request):
         'journal': models.Journal,
         'section': models.Section,
         'sponsor': models.Sponsor,
-        'publisher': models.Publisher,
     }
 
     if request.GET.get('show', None) in listing_ref:

@@ -9,13 +9,13 @@ from django.core.urlresolvers import reverse
 from journalmanager.tests import tests_assets
 from journalmanager.models import Collection
 from journalmanager.models import Journal
-from journalmanager.models import Publisher
 from journalmanager.models import Sponsor
 from journalmanager.models import Issue
 from journalmanager.models import UserCollections
 from journalmanager.models import Section
 
 from journalmanager.forms import JournalForm
+
 
 def with_sample_journal(func):
     """
@@ -28,6 +28,7 @@ def with_sample_journal(func):
         self._destroy_journal()
     return decorated
 
+
 def with_sample_issue(func):
     """
     Decorator that creates a sample Issue instance
@@ -39,16 +40,6 @@ def with_sample_issue(func):
         self._destroy_issue()
     return decorated
 
-def with_sample_publisher(func):
-    """
-    Decorator that creates a sample Publisher instance
-    and destructs it at the end of the execution.
-    """
-    def decorated(self=None):
-        self._create_publisher()
-        func(self)
-        self._destroy_publisher()
-    return decorated
 
 def with_sample_sponsor(func):
     """
@@ -60,6 +51,7 @@ def with_sample_sponsor(func):
         func(self)
         self._destroy_sponsor()
     return decorated
+
 
 class LoggedInViewsTest(TestCase):
     """
@@ -90,17 +82,12 @@ class LoggedInViewsTest(TestCase):
         """
         Destroying the data
         """
-        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
             m.objects.all().delete()
 
     def _create_journal(self):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
-
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.save()
-        sample_publisher.collections = [self.collection, ]
-        sample_publisher.save()
 
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
@@ -112,11 +99,10 @@ class LoggedInViewsTest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
-        sample_journal.publisher = sample_publisher
         sample_journal.save()
-        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
-        sample_journal.collections = [self.collection,]
+        sample_journal.collections = [self.collection, ]
 
         sample_journal.save()
 
@@ -138,15 +124,6 @@ class LoggedInViewsTest(TestCase):
     def _destroy_issue(self):
         pass
 
-    def _create_publisher(self):
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.save()
-        sample_publisher.collections = [self.collection]
-        sample_publisher.save()
-
-    def _destroy_publisher(self):
-        pass
-
     def _create_sponsor(self):
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
@@ -164,7 +141,7 @@ class LoggedInViewsTest(TestCase):
         Test the feature created to change the journal Status.
         """
         from journalmanager.models import Journal
-        from journalmanager.models import Section
+
         journal = Journal.objects.all()[0]
 
         # Testing access the status page.
@@ -176,7 +153,6 @@ class LoggedInViewsTest(TestCase):
             'pub_status_reason': 'Motivo 1',
             })
         self.assertRedirects(response, reverse('journal_status.edit', args=[journal.pk]))
-
 
     def test_index(self):
         """
@@ -268,7 +244,6 @@ class LoggedInViewsTest(TestCase):
             })
         self.assertRedirects(response, reverse('journalmanager.password_change'))
 
-
     def test_add_journal(self):
         """
         Covered cases:
@@ -280,10 +255,6 @@ class LoggedInViewsTest(TestCase):
         #empty form
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
-
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.collection = self.collection
-        sample_publisher.save()
 
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.collection = self.collection
@@ -297,29 +268,27 @@ class LoggedInViewsTest(TestCase):
 
         #missing data
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
-                                                     'journal-sponsor': [sample_sponsor.pk],
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                                      'journal-collections': [self.usercollections.pk],
                                                      }))
 
         self.assertTrue('some errors or missing data' in response.content)
 
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
-                                         'journal-sponsor': [sample_sponsor.pk],
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
                                          'journal-collections': [self.usercollections.pk],
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
-                                         'mission-0-language': sample_language.pk}))
+                                         'mission-0-language': sample_language.pk, }))
 
         self.assertRedirects(response, reverse('journal.index'))
 
         #edit journal - must be changed
         testing_journal = Journal.objects.get(title=u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)')
+
         response = self.client.post(reverse('journal.edit', args=(testing_journal.pk,)),
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
-                                         'journal-publisher': [sample_publisher.pk],
                                          'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
                                          'journal-collections': [self.usercollections.pk],
@@ -463,19 +432,19 @@ class LoggedInViewsTest(TestCase):
 
         New collections are not being included by the users. Only in Django admin module.
         '''
-        testing_collection = Collection.objects.get(name = u'Brasil')
+        testing_collection = Collection.objects.get(name=u'Brasil')
 
         #Calling Collection Form
-        response = self.client.get(reverse('collection.edit', args = (testing_collection.pk,)))
+        response = self.client.get(reverse('collection.edit', args=(testing_collection.pk,)))
         self.assertEqual(response.status_code, 200)
 
         #edit collection - must be changed
-        response = self.client.post(reverse('collection.edit', args = (testing_collection.pk,)),
+        response = self.client.post(reverse('collection.edit', args=(testing_collection.pk,)),
             tests_assets.get_sample_collection_dataform({'collection-name': 'Modified Name', }))
 
-        self.assertRedirects(response, reverse('collection.edit', args = (testing_collection.pk,)))
+        self.assertRedirects(response, reverse('collection.edit', args=(testing_collection.pk,)))
 
-        modified_testing_collection = Collection.objects.get(name = 'Modified Name')
+        modified_testing_collection = Collection.objects.get(name='Modified Name')
         self.assertEqual(testing_collection, modified_testing_collection)
 
     def test_add_sponsor(self):
@@ -489,16 +458,7 @@ class LoggedInViewsTest(TestCase):
 
         self.assertRedirects(response, reverse('sponsor.index'))
 
-        another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
-                                                        fax='11 2365-4400', address_number='230', state='Santiago',
-                                                        city='Santiago', address=u'Rua XXX', email='scielo@conicyt.cl')
-        another_collection.save()
-
-        self.user.usercollections_set.all()[0].delete()
-
-        usercollections = tests_assets.get_sample_usercollections(self.user, another_collection)
-        usercollections.save()
-
+        #edit sponsor - must be changed
         testing_sponsor = Sponsor.objects.get(name=u'Fundação de Amparo a Pesquisa do Estado de São Paulo')
         response = self.client.post(reverse('sponsor.edit', args=(testing_sponsor.pk,)),
             tests_assets.get_sample_sponsor_dataform({'sponsor-name': 'Modified Title',
@@ -510,6 +470,8 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_sponsor_dataform({'sponsor-collections': [self.usercollections.pk]}))
 
         self.assertRedirects(response, reverse('sponsor.index'))
+        modified_testing_sponsor = Sponsor.objects.get(name='Modified Title')
+        self.assertEqual(testing_sponsor, modified_testing_sponsor)
 
         another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
                                                         fax='11 2365-4400', address_number='230', state='Santiago',
@@ -657,27 +619,6 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_journal
-    def test_publisher_index(self):
-        """
-        View: publisher_index
-
-        Tests url dispatch and values returned by the view to the template
-        """
-        response = self.client.get('/journal/publisher/')
-
-        #url dispatcher
-        self.assertEqual(response.status_code, 200)
-
-        #values passed to template
-        self.assertTrue('objects_publisher' in response.context)
-        self.assertTrue('user_collections' in response.context)
-
-        #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH',
-            unicode(response.context['objects_publisher'].object_list[0].name))
-        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
-
-    @with_sample_journal
     def test_sponsor_index(self):
         """
         View: sponsor_index
@@ -719,26 +660,6 @@ class LoggedInViewsTest(TestCase):
         self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
     @with_sample_journal
-    def test_search_publisher(self):
-        """
-        View: search_publisher
-
-        Tests url dispatch and values returned by the view to the template
-        """
-        response = self.client.get(reverse('publisher.index') + '?q=Nacional')
-
-        #url dispatcher
-        self.assertEqual(response.status_code, 200)
-
-        # #values passed to template
-        self.assertTrue('objects_publisher' in response.context)
-        self.assertTrue('user_collections' in response.context)
-
-        # #testing content
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
-        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
-
-    @with_sample_journal
     def test_search_sponsor(self):
         """
         View: search_sponsor
@@ -765,7 +686,7 @@ class LoggedInViewsTest(TestCase):
 
         Tests the list using letters filter
         """
-        response = self.client.get(reverse('journal.index') +'?letter=A')
+        response = self.client.get(reverse('journal.index') + '?letter=A')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
@@ -774,22 +695,6 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)', unicode(response.context['objects_journal'].object_list[0].title))
         self.assertTrue(1, len(response.context['objects_journal'].object_list))
 
-    @with_sample_publisher
-    def test_letter_filter_publisher(self):
-        """
-        View: generic_index_search
-
-        Tests the list using letters filter
-        """
-        response = self.client.get(reverse('publisher.index') +'?letter=A')
-
-        #url dispatcher
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('objects_publisher' in response.context)
-
-        self.assertEqual(u'Associação Nacional de História - ANPUH', unicode(response.context['objects_publisher'].object_list[0].name))
-        self.assertTrue(1, len(response.context['objects_publisher'].object_list))
-
     @with_sample_sponsor
     def test_letter_filter_sponsor(self):
         """
@@ -797,7 +702,7 @@ class LoggedInViewsTest(TestCase):
 
         Tests the list using letters filter
         """
-        response = self.client.get(reverse('sponsor.index') +'?letter=F')
+        response = self.client.get(reverse('sponsor.index') + '?letter=F')
 
         #url dispatcher
         self.assertEqual(response.status_code, 200)
@@ -805,18 +710,6 @@ class LoggedInViewsTest(TestCase):
 
         self.assertEqual(u'Fundação de Amparo a Pesquisa do Estado de São Paulo', unicode(response.context['objects_sponsor'].object_list[0].name))
         self.assertTrue(1, len(response.context['objects_sponsor'].object_list))
-
-    @with_sample_journal
-    def test_toggle_publisher_availability(self):
-        pre_publisher = Publisher.objects.all()[0]
-        response = self.client.get(reverse('publisher.toggle_availability', args=[pre_publisher.pk]), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        pos_publisher = Publisher.objects.all()[0]
-
-        self.assertEqual(pre_publisher, pos_publisher)
-        self.assertTrue(pre_publisher.is_trashed is not pos_publisher.is_trashed)
-
-        response = self.client.get(reverse('publisher.toggle_availability', args=[9999999]))
-        self.assertEqual(response.status_code, 400)
 
     @with_sample_journal
     def test_toggle_sponsor_availability(self):
@@ -853,21 +746,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('user.toggle_availability', args=[9999999]))
         self.assertEqual(response.status_code, 400)
 
-    @with_sample_publisher
-    def test_publisher_availability_list(self):
-        publisher = Publisher.objects.all()[0]
-
-        response = self.client.get(reverse('publisher.index'))
-        for pub in response.context['objects_publisher'].object_list:
-            self.assertEqual(pub.is_trashed, False)
-
-        #change atribute is_available
-        publisher.is_trashed = True
-        publisher.save()
-
-        response = self.client.get(reverse('publisher.index') + '?is_available=0')
-        self.assertEqual(len(response.context['objects_publisher'].object_list), 0)
-
     @with_sample_sponsor
     def test_sponsor_availability_list(self):
         sponsor = Sponsor.objects.all()[0]
@@ -881,7 +759,6 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.get(reverse('sponsor.index') + '?is_available=0')
         self.assertEqual(len(response.context['objects_sponsor'].object_list), 0)
-
 
     @with_sample_issue
     def test_issue_availability_list(self):
@@ -923,26 +800,6 @@ class LoggedInViewsTest(TestCase):
 
         for qset_item in response.context['add_form'].fields['collections'].queryset:
             self.assertTrue(qset_item in user_collections)
-
-    def test_contextualized_collection_field_on_add_publisher(self):
-        """
-        A user has a manytomany relation to Collection entities. So, when a
-        user is registering a new Publisher, he can only bind it to
-        the Collections he relates to.
-
-        Covered cases:
-        * Check if all collections presented on the form are related to the
-          user.
-        """
-        from journalmanager.views import get_user_collections
-        response = self.client.get(reverse('publisher.add'))
-        self.assertEqual(response.status_code, 200)
-
-        user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
-
-        for qset_item in response.context['add_form'].fields['collections'].queryset:
-            self.assertTrue(qset_item in user_collections)
-
 
     def test_contextualized_collection_field_on_add_sponsor(self):
         """
@@ -1001,6 +858,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('trash.listing'))
         self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
 
+
 class JournalRestAPITest(TestCase):
     def setUp(self):
         """
@@ -1019,21 +877,16 @@ class JournalRestAPITest(TestCase):
         """
         Destroying the data
         """
-        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
             m.objects.all().delete()
 
     def _makeOne(self):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.save()
-        sample_publisher.collections = [self.collection,]
-        sample_publisher.save()
-
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
-        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.collections = [self.collection, ]
         sample_sponsor.save()
 
         sample_use_license = tests_assets.get_sample_uselicense()
@@ -1041,12 +894,11 @@ class JournalRestAPITest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
-        sample_journal.publisher = sample_publisher
         sample_journal.save()
 
-        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
-        sample_journal.collections = [self.collection,]
+        sample_journal.collections = [self.collection, ]
 
         sample_journal.save()
         return sample_journal
@@ -1060,9 +912,9 @@ class JournalRestAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 2) #objects and meta
+        self.assertEqual(len(response_as_py), 2)  # objects and meta
 
-        expected_fields = ('title', 'collections','publisher', 'sponsor',
+        expected_fields = ('title', 'collections', 'sponsor',
         'previous_title', 'use_license', 'languages', 'title_iso',
         'short_title', 'acronym', 'scielo_issn', 'print_issn',
         'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
@@ -1070,10 +922,11 @@ class JournalRestAPITest(TestCase):
         'editorial_standard', 'ctrl_vocabulary', 'pub_level', 'secs_code', 'copyrighter',
         'url_online_submission', 'url_journal', 'index_coverage', 'cover',
         'other_previous_title', 'creator', 'logo', 'id', 'issues', 'is_trashed',
-        'other_titles', 'publishers', 'updated', 'sponsors',
+        'other_titles', 'updated', 'sponsors',
         'abstract_keyword_languages', 'missions', 'created', 'notes',
         'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history',
-        'contact', 'study_areas'
+        'contact', 'study_areas', 'publisher_name', 'publisher_country', 'publisher_state',
+        'publication_city', 'editor_address', 'editor_email',
         )
 
         for field in response_as_py['objects'][0]:
@@ -1083,7 +936,6 @@ class JournalRestAPITest(TestCase):
                 self.assertTrue(isinstance(response_as_py['objects'][0][field], list))
             elif field in ('use_license',):
                 self.assertTrue(isinstance(response_as_py['objects'][0][field], dict))
-
 
     def test_journal_getone(self):
         import json
@@ -1095,7 +947,7 @@ class JournalRestAPITest(TestCase):
 
         response_as_py = json.loads(response.content)
 
-        expected_fields = ('title', 'collections','publisher', 'sponsor',
+        expected_fields = ('title', 'collections', 'sponsor',
         'previous_title', 'use_license', 'languages', 'title_iso',
         'short_title', 'acronym', 'scielo_issn', 'print_issn',
         'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
@@ -1103,10 +955,12 @@ class JournalRestAPITest(TestCase):
         'pub_status', 'editorial_standard', 'ctrl_vocabulary', 'pub_level',
         'secs_code', 'copyrighter', 'url_online_submission', 'url_journal',
         'index_coverage', 'cover', 'other_previous_title', 'creator',
-        'logo', 'id', 'issues', 'is_trashed', 'other_titles', 'publishers',
+        'logo', 'id', 'issues', 'is_trashed', 'other_titles',
         'updated', 'sponsors', 'abstract_keyword_languages', 'missions',
-        'created', 'notes', 'pub_status_reason', 'resource_uri','national_code',
-        'pub_status_history', 'contact', 'study_areas')
+        'created', 'notes', 'pub_status_reason', 'resource_uri', 'national_code',
+        'pub_status_history', 'contact', 'study_areas', 'publisher_name', 'publisher_country',
+        'publisher_state', 'publication_city', 'editor_address', 'editor_email',
+        )
 
         for field in response_as_py:
             self.assertTrue(field in expected_fields)
@@ -1138,6 +992,7 @@ class JournalRestAPITest(TestCase):
         response = self.client.delete('/api/v1/journals/%s/' % journal.pk)
         self.assertEqual(response.status_code, 405)
 
+
 class CollectionRestAPITest(TestCase):
     def setUp(self):
         """
@@ -1156,7 +1011,7 @@ class CollectionRestAPITest(TestCase):
         """
         Destroying the data
         """
-        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
             m.objects.all().delete()
 
     def _makeOne(self):
@@ -1169,7 +1024,7 @@ class CollectionRestAPITest(TestCase):
         response = self.client.get('/api/v1/collections/')
         self.assertEqual(response.status_code, 200)
         response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 2) #objects and meta
+        self.assertEqual(len(response_as_py), 2)  # objects and meta
         self.assertEqual(response_as_py['objects'][0]['name'], collection.name)
 
         expected_fields = ('name', 'name_slug', 'acronym',
@@ -1263,21 +1118,16 @@ class IssuesRestAPITest(TestCase):
         """
         Destroying the data
         """
-        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
             m.objects.all().delete()
 
     def _makeOne(self):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.save()
-        sample_publisher.collections = [self.collection,]
-        sample_publisher.save()
-
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
-        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.collections = [self.collection, ]
         sample_sponsor.save()
 
         sample_use_license = tests_assets.get_sample_uselicense()
@@ -1285,11 +1135,10 @@ class IssuesRestAPITest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
-        sample_journal.publisher = sample_publisher
         sample_journal.save()
-        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
-        sample_journal.collections = [self.collection,]
+        sample_journal.collections = [self.collection, ]
 
         sample_journal.save()
 
@@ -1366,7 +1215,7 @@ class IssuesRestAPITest(TestCase):
                     # boolean
                     self.assertTrue(isinstance(response_as_py.get(field, None),
                         bool))
-                elif field in ['section',]:
+                elif field in ['section', ]:
                     # list
                     self.assertTrue(isinstance(response_as_py.get(field, None),
                         list))
@@ -1374,10 +1223,10 @@ class IssuesRestAPITest(TestCase):
                     'publication_end_month', 'publication_start_month']:
                     self.assertTrue(isinstance(response_as_py.get(field, None),
                         int))
-                elif field in ['created', 'updated',]:
+                elif field in ['created', 'updated', ]:
                     self.assertEqual(unicode(field_value)[:10],
                             response_as_py.get(field)[:10])
-                elif field in ['journal',]:
+                elif field in ['journal', ]:
                     self.assertTrue(response_as_py.get(field).startswith('/api/'))
                 else:
                     # plain text
@@ -1424,21 +1273,16 @@ class SectionsRestAPITest(TestCase):
         """
         Destroying the data
         """
-        for m in [Journal, Publisher, Sponsor, Issue, UserCollections, User, Section, Collection]:
+        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
             m.objects.all().delete()
 
     def _makeOne(self):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.save()
-        sample_publisher.collections = [self.collection,]
-        sample_publisher.save()
-
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
-        sample_sponsor.collections = [self.collection,]
+        sample_sponsor.collections = [self.collection, ]
         sample_sponsor.save()
 
         sample_use_license = tests_assets.get_sample_uselicense()
@@ -1446,12 +1290,11 @@ class SectionsRestAPITest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
-        sample_journal.publisher = sample_publisher
         sample_journal.save()
 
-        sample_journal.sponsor = [sample_sponsor,]
+        sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
-        sample_journal.collections = [self.collection,]
+        sample_journal.collections = [self.collection, ]
 
         sample_journal.save()
 
@@ -1851,11 +1694,6 @@ class UserViewPermission(TestCase):
         sample_journal = tests_assets.get_sample_journal()
         sample_journal.creator = self.user
 
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.save()
-        sample_publisher.collections = [self.collection, ]
-        sample_publisher.save()
-
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.save()
         sample_sponsor.collections = [self.collection, ]
@@ -1866,7 +1704,6 @@ class UserViewPermission(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
-        sample_journal.publisher = sample_publisher
         sample_journal.save()
         sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
@@ -1880,13 +1717,6 @@ class UserViewPermission(TestCase):
         """
         response = self.client.get(reverse('journal.index'))
         self.assertEqual(response.status_code, 200)
-
-    def test_list_publisher(self):
-        """
-        Test access to Publisher list
-        """
-        response = self.client.get(reverse('publisher.index'))
-        self.assertEqual(response.status_code, 302)
 
     def test_list_sponsor(self):
         """

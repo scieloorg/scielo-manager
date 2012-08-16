@@ -16,7 +16,6 @@
         <div class="nav-collapse collapse">
           <ul class="nav">
             {% if perms.journalmanager.list_journal %}<li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>{% endif %}
-            {% if perms.journalmanager.list_publisher %}<li><a href="{% url publisher.index %}">{% trans 'Publishers' %}</a></li>{% endif %}
             {% if perms.journalmanager.list_sponsor %}<li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>{% endif %}
             {% if perms.journalmanager.change_user %}<li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>{% endif %}
           </ul>
@@ -78,7 +77,6 @@
           <form id="form_search" action="" method="get">
             <select id="list_model" style="width: 90px;">
               {% if perms.journalmanager.list_journal %}<option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>{% endif %}
-              {% if perms.journalmanager.list_publisher %}<option {% if 'publisher' in request.path %} selected {% endif %} value="{% url publisher.index %}">{% trans 'Publishers' %}</option>{% endif %}
               {% if perms.journalmanager.list_sponsor %}<option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>{% endif %}
             </select>
             <input style="width: 160px;" placeholder="Search" name="q" value="{{request.GET.q}}"/>
@@ -99,7 +97,15 @@
       <div class="mainContent">
         {% if messages %}
           {% for message in messages %}
-          <div class="alert {{ message.tags }}">{{ message }}</div>
+          <div class="alert {{ message.tags }}">{{ message }}
+            <ul id="errors_list">
+            {% for field in add_form %}
+              {% if field.errors %}
+              <li>{{ field.label }} {{ field.errors.text }}</li>
+              {% endif %}
+            {% endfor %}
+            </ul>
+          </div>
           {% endfor %}
         {% endif %}
         {% block content %}{% endblock %}
