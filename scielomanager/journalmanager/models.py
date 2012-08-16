@@ -100,6 +100,15 @@ class SectionCustomManager(AppCustomManager):
         return objects_all
 
 
+class IssueCustomManager(AppCustomManager):
+
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_default_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            collections__in=[uc.collection for uc in user_collections]).distinct()
+        return objects_all
+
+
 class InstitutionCustomManager(AppCustomManager):
     """
     Add capabilities to Institution subclasses to retrieve querysets
@@ -293,7 +302,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
-    logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True, )
+    logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     editor_address = models.TextField(_('Address'), blank=False,)
@@ -421,10 +430,11 @@ class Section(caching.base.CachingMixin, models.Model):
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
 
+
 class Issue(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = AppCustomManager()
+    objects = IssueCustomManager()
     nocacheobjects = models.Manager()
 
     section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION, blank=True)
@@ -478,6 +488,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),)
+
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()

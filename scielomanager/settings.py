@@ -159,6 +159,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'journalmanager.context_processors.dynamic_template_inheritance',
+    'journalmanager.context_processors.access_to_settings',
     'scielo_extensions.context_processors.from_settings',
 )
 
@@ -203,11 +204,11 @@ LOGIN_URL = '/accounts/login'
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 
 MANAGED_LANGUAGES_CHOICES = (
-    (u'en',u'English'),
-    (u'es',u'Español'),
-    (u'pt-BR',u'Português'),
+    (u'en', u'English'),
+    (u'es', u'Español'),
+    (u'pt-BR', u'Português'),
 )
-TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
+TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:]
 
 PAGINATION__ITEMS_PER_PAGE = 20
 
@@ -220,6 +221,10 @@ CACHES = {
         'LOCATION': '',
     }
 }
+
+IMAGE_CONTENT_TYPE = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
+IMAGE_DIMENSIONS = {'height_logo': 100, 'width_logo': 200, 'height_cover': 100, 'width_cover': 150}
+IMAGE_SIZE = 300 * 1014
 
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 

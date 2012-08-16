@@ -327,18 +327,21 @@ def get_sample_usercollections(user, collection):
     return models.UserCollections(**usercollections_attrs)
 
 
-def get_sample_collection(name='Brasil'):
+def get_sample_collection(name='Brasil', url='http://www.scielo.br/', country='Brasil',
+                          fax='11 5555-4444', address_number='430', state='São Paulo',
+                          city='São Paulo', address=u'Rua Machado Bittencourt',
+                          email='fapesp@scielo.org'):
 
     collection_attrs = {
-      'url': 'http://www.scielo.br/',
+      'url': url,
       'name': name,
-      'fax': '11 5555-4444',
-      'address_number': '430',
-      'country': 'Brasil',
-      'state': 'São Paulo',
-      'city': 'São Paulo',
-      'address': u'Rua Machado Bittencourt',
-      'email': 'fapesp@scielo.org',
+      'fax': fax,
+      'address_number': address_number,
+      'country': country,
+      'state': state,
+      'city': city,
+      'address': address,
+      'email': email,
     }
 
     return models.Collection(**collection_attrs)

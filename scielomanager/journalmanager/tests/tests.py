@@ -1,4 +1,5 @@
 # -*- encoding:utf8 -*-
+import os
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
@@ -293,11 +294,83 @@ class LoggedInViewsTest(TestCase):
                                          'journal-collections': [self.usercollections.pk],
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
-                                         'mission-0-language': sample_language.pk, }))
+                                         'mission-0-language': sample_language.pk}))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title='Modified Title')
         self.assertEqual(testing_journal, modified_testing_journal)
+
+    def test_add_journal_with_cover(self):
+        """
+        Covered cases:
+        * Accessing the form
+        * Submission with missing data
+        * Submission with all required data
+        * Send with image cover
+        """
+        #empty form
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 200)
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.collection = self.collection
+        sample_sponsor.save()
+
+        sample_uselicense = tests_assets.get_sample_uselicense()
+        sample_uselicense.save()
+
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
+        #get the image test
+        image_test_cover = open(os.path.dirname(__file__) + '/image_test/image_test_cover.jpg')
+
+        response = self.client.post(reverse('journal.add'),
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
+                                         'journal-use_license': sample_uselicense.pk,
+                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-languages': [sample_language.pk],
+                                         'journal-abstract_keyword_languages': [sample_language.pk],
+                                         'mission-0-language': sample_language.pk,
+                                         'journal-cover': image_test_cover}))
+
+        self.assertRedirects(response, reverse('journal.index'))
+
+    def test_add_journal_with_logo(self):
+        """
+        Covered cases:
+        * Accessing the form
+        * Submission with missing data
+        * Submission with all required data
+        * Send with image logo
+        """
+        #empty form
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 200)
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.collection = self.collection
+        sample_sponsor.save()
+
+        sample_uselicense = tests_assets.get_sample_uselicense()
+        sample_uselicense.save()
+
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
+        #get the image test
+        image_test_logo = open(os.path.dirname(__file__) + '/image_test/image_test_logo.jpg')
+
+        response = self.client.post(reverse('journal.add'),
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
+                                         'journal-use_license': sample_uselicense.pk,
+                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-languages': [sample_language.pk],
+                                         'journal-abstract_keyword_languages': [sample_language.pk],
+                                         'mission-0-language': sample_language.pk,
+                                         'journal-logo': image_test_logo}))
+
+        self.assertRedirects(response, reverse('journal.index'))
 
     def test_add_collection(self):
         '''
@@ -337,9 +410,26 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_sponsor_dataform({'sponsor-name': 'Modified Title',
                                                         'sponsor-collections': [self.usercollections.pk], }))
 
+    def test_access_edit_sponsor(self):
+
+        response = self.client.post(reverse('sponsor.add'),
+            tests_assets.get_sample_sponsor_dataform({'sponsor-collections': [self.usercollections.pk]}))
+
         self.assertRedirects(response, reverse('sponsor.index'))
-        modified_testing_sponsor = Sponsor.objects.get(name='Modified Title')
-        self.assertEqual(testing_sponsor, modified_testing_sponsor)
+
+        another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
+                                                        fax='11 2365-4400', address_number='230', state='Santiago',
+                                                        city='Santiago', address=u'Rua XXX', email='scielo@conicyt.cl')
+        another_collection.save()
+
+        self.user.usercollections_set.all()[0].delete()
+
+        usercollections = tests_assets.get_sample_usercollections(self.user, another_collection)
+        usercollections.save()
+
+        testing_sponsor = Sponsor.objects.get(name=u'Fundação de Amparo a Pesquisa do Estado de São Paulo')
+        response = self.client.get(reverse('sponsor.edit', args=(testing_sponsor.pk,)))
+        self.assertEqual(response.status_code, 404)
 
     @with_sample_journal
     def test_add_section(self):
@@ -381,12 +471,30 @@ class LoggedInViewsTest(TestCase):
         modified_section = Section.objects.get(titles__title='Modified Original Article')
 
         self.assertEqual(testing_section, modified_section)
-        self.assertEqual(modified_section.code, previous_code) #code must be read-only
+        self.assertEqual(modified_section.code, previous_code)
 
-    @with_sample_journal
+
+    @with_sample_journal  
+    def test_access_add_section(self):
+        from journalmanager.models import Journal
+        journal = Journal.objects.all()[0]
+
+        another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
+                                                        fax='11 2365-4400', address_number='230', state='Santiago',
+                                                        city='Santiago', address=u'Rua XXX', email='scielo@conicyt.cl')
+        another_collection.save()
+
+        self.user.usercollections_set.all()[0].delete()
+
+        usercollections = tests_assets.get_sample_usercollections(self.user, another_collection)
+        usercollections.save()
+
+        response = self.client.get(reverse('section.add', args=[journal.pk]))
+        self.assertEqual(response.status_code, 404)
+
+    @with_sample_journal  
     def test_add_issue(self):
         from journalmanager.models import Journal
-        from journalmanager.models import Issue
         journal = Journal.objects.all()[0]
 
         #empty form
@@ -400,9 +508,9 @@ class LoggedInViewsTest(TestCase):
         sample_language = tests_assets.get_sample_language()
         sample_language.save()
         response = self.client.post(reverse('issue.add', args=[journal.pk]),
-            tests_assets.get_sample_issue_dataform({'section':sample_section.pk,
+            tests_assets.get_sample_issue_dataform({'section': sample_section.pk,
                                                     'use_license': journal.use_license.pk,
-                                                    'title-0-language':sample_language.pk,}))
+                                                    'title-0-language': sample_language.pk}))
 
         self.assertRedirects(response, reverse('issue.index', args=[journal.pk]))
 
@@ -411,6 +519,26 @@ class LoggedInViewsTest(TestCase):
 
         response = self.client.get(reverse('issue.edit', args=[journal.pk, journal.issue_set.all()[0].pk]))
         self.assertEqual(response.status_code, 200)
+
+
+    @with_sample_journal
+    def test_access_add_issue(self):
+        from journalmanager.models import Journal
+        journal = Journal.objects.all()[0]
+
+        another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
+                                                        fax='11 2365-4400', address_number='230', state='Santiago',
+                                                        city='Santiago', address=u'Rua XXX', email='scielo@conicyt.cl')
+        another_collection.save()
+
+        self.user.usercollections_set.all()[0].delete()
+
+        usercollections = tests_assets.get_sample_usercollections(self.user, another_collection)
+        usercollections.save()
+
+        response = self.client.get(reverse('issue.add', args=[journal.pk]))
+        self.assertEqual(response.status_code, 404)
+
 
     @with_sample_journal
     def test_journal_index(self):
@@ -1433,7 +1561,6 @@ class ModelBackendTest(TestCase):
         self.profile = tests_assets.get_sample_userprofile(user=self.user)
         self.profile.save()
 
-
     def test_authenticate(self):
         """
         test_authentication
@@ -1449,20 +1576,21 @@ class ModelBackendTest(TestCase):
 
         mbkend = ModelBackend()
 
-        auth_response = mbkend.authenticate('dummyuser','123')
+        auth_response = mbkend.authenticate('dummyuser', '123')
         self.assertEqual(auth_response, self.user)
 
-        auth_response = mbkend.authenticate('dummyuser','fakepasswd')
-        self.assertEqual(auth_response,None)
+        auth_response = mbkend.authenticate('dummyuser', 'fakepasswd')
+        self.assertEqual(auth_response, None)
 
-        auth_response = mbkend.authenticate('dev@scielo.org','123')
-        self.assertEqual(auth_response,self.user)
+        auth_response = mbkend.authenticate('dev@scielo.org', '123')
+        self.assertEqual(auth_response, self.user)
 
-        auth_response = mbkend.authenticate('dev@scielo.org','fakepasswd')
-        self.assertEqual(auth_response,None)
+        auth_response = mbkend.authenticate('dev@scielo.org', 'fakepasswd')
+        self.assertEqual(auth_response, None)
 
-        auth_response = mbkend.authenticate('fakeuser','fakepasswd')
-        self.assertEqual(auth_response,None)
+        auth_response = mbkend.authenticate('fakeuser', 'fakepasswd')
+        self.assertEqual(auth_response, None)
+
 
 class UserViewPermission(TestCase):
     """
