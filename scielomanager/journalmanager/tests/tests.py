@@ -312,10 +312,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
 
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.collection = self.collection
-        sample_publisher.save()
-
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.collection = self.collection
         sample_sponsor.save()
@@ -330,8 +326,7 @@ class LoggedInViewsTest(TestCase):
         image_test_cover = open(os.path.dirname(__file__) + '/image_test/image_test_cover.jpg')
 
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
-                                         'journal-sponsor': [sample_sponsor.pk],
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
                                          'journal-collections': [self.usercollections.pk],
                                          'journal-languages': [sample_language.pk],
@@ -353,10 +348,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
 
-        sample_publisher = tests_assets.get_sample_publisher()
-        sample_publisher.collection = self.collection
-        sample_publisher.save()
-
         sample_sponsor = tests_assets.get_sample_sponsor()
         sample_sponsor.collection = self.collection
         sample_sponsor.save()
@@ -371,8 +362,7 @@ class LoggedInViewsTest(TestCase):
         image_test_logo = open(os.path.dirname(__file__) + '/image_test/image_test_logo.jpg')
 
         response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-publisher': [sample_publisher.pk],
-                                         'journal-sponsor': [sample_sponsor.pk],
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
                                          'journal-collections': [self.usercollections.pk],
                                          'journal-languages': [sample_language.pk],
@@ -381,50 +371,6 @@ class LoggedInViewsTest(TestCase):
                                          'journal-logo': image_test_logo}))
 
         self.assertRedirects(response, reverse('journal.index'))
-
-    def test_add_publisher(self):
-        #empty form
-        response = self.client.get(reverse('publisher.add'))
-        self.assertEqual(response.status_code, 200)
-
-        #add publisher - must be added
-        response = self.client.post(reverse('publisher.add'),
-            tests_assets.get_sample_publisher_dataform({'publisher-collections': [self.usercollections.pk]}))
-
-        self.assertRedirects(response, reverse('publisher.index'))
-
-        #edit publisher - must be changed
-        testing_publisher = Publisher.objects.get(name = u'Associação Nacional de História - ANPUH')
-        response = self.client.post(reverse('publisher.edit', args = (testing_publisher.pk,)),
-            tests_assets.get_sample_publisher_dataform({'publisher-name': 'Modified Title',
-                                                        'publisher-collections': [self.usercollections.pk], }))
-
-        self.assertRedirects(response, reverse('publisher.index'))
-        modified_testing_publisher = Publisher.objects.get(name = 'Modified Title')
-        self.assertEqual(testing_publisher, modified_testing_publisher)
-
-
-    def test_access_edit_publisher(self):
-        #Create a publisher - YYY collection
-        response = self.client.post(reverse('publisher.add'),
-            tests_assets.get_sample_publisher_dataform({'publisher-collections': [self.usercollections.pk]}))
-
-        self.assertRedirects(response, reverse('publisher.index'))
-
-        another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
-                                                        fax='11 2365-4400', address_number='230', state='Santiago',
-                                                        city='Santiago', address=u'Rua XXX', email='scielo@conicyt.cl')
-        another_collection.save()
-
-        self.user.usercollections_set.all()[0].delete()
-
-        usercollections = tests_assets.get_sample_usercollections(self.user, another_collection)
-        usercollections.save()
-
-        testing_publisher = Publisher.objects.get(name=u'Associação Nacional de História - ANPUH')
-        response = self.client.get(reverse('publisher.edit', args=(testing_publisher.pk,)))
-
-        self.assertEqual(response.status_code, 404)
 
     def test_add_collection(self):
         '''
@@ -470,8 +416,6 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_sponsor_dataform({'sponsor-collections': [self.usercollections.pk]}))
 
         self.assertRedirects(response, reverse('sponsor.index'))
-        modified_testing_sponsor = Sponsor.objects.get(name='Modified Title')
-        self.assertEqual(testing_sponsor, modified_testing_sponsor)
 
         another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
                                                         fax='11 2365-4400', address_number='230', state='Santiago',

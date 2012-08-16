@@ -666,7 +666,20 @@
       <div class="controls">
         {{ add_form.cover }}
       </div>
-      <b>{% trans 'Image Size' %}:</b> ({{ SETTINGS.IMAGE_DIMENSIONS.height_cover }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_cover }}px) <span class="muted">{% trans 'height' %} X {% trans 'width' %}</span>
+      <div>
+        <b>{% trans 'Image Size' %}:</b>({{ SETTINGS.IMAGE_DIMENSIONS.height_cover }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_cover }}px) 
+        <span class="muted">
+          {% trans 'height' %} X {% trans 'width' %}
+        </span>
+      </div>
+      <div>
+        <b>{% trans 'Image Extensions' %}:</b>
+        <span>
+          ({% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
+            .{{type|cut:"image/"}}
+          {% endfor %})
+        </span>
+      </div>
       <div align="center">
           {% if has_cover_url %}
             <img src="{{ has_cover_url }}" />
@@ -684,7 +697,20 @@
       <div class="controls">
         {{ add_form.logo }}
       </div>
-      <b>{% trans 'Image Size' %}:</b> ({{ SETTINGS.IMAGE_DIMENSIONS.height_logo }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_logo }}px) <span class="muted">{% trans 'height' %} X {% trans 'width' %}</span>
+      <div>
+        <b>{% trans 'Image Size' %}:</b>({{ SETTINGS.IMAGE_DIMENSIONS.height_logo }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_logo }}px) 
+        <span class="muted">
+          {% trans 'height' %} X {% trans 'width' %}
+        </span>
+      </div>
+      <div>
+        <b>{% trans 'Image Extensions' %}:</b>
+        <span>
+          ({% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
+            .{{type|cut:"image/"}}
+          {% endfor %})
+        </span>
+      </div>
       <div align="center">
           {% if has_logo_url %}
             <img src="{{ has_logo_url }}" />
