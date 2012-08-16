@@ -421,6 +421,7 @@ class Section(caching.base.CachingMixin, models.Model):
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
 
+
 class Issue(caching.base.CachingMixin, models.Model):
 
     #Custom manager
@@ -451,21 +452,15 @@ class Issue(caching.base.CachingMixin, models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     label = models.CharField(db_index=True, blank=True, null=True, max_length=16)
 
+    @property
     def identification(self):
+        suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
+        suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
 
-        if self.number is not None:
-            n = self.number
-            if n != 'ahead' and n != 'review':
-                n = '(' + self.number + ')'
-            else:
-                n = self.number
-
-            return self.volume + ' ' + n
-        else:
-            return ''
+        return "{0} {1} {2}".format(self.number, suppl_volume, suppl_number).strip().replace('spe', 'special').replace('ahead', 'ahead of print')
 
     def __unicode__(self):
-        return self.identification()
+        return "{0} ({1})".format(self.volume, self.identification).replace('()', '')
 
     @property
     def publication_date(self):
@@ -473,11 +468,12 @@ class Issue(caching.base.CachingMixin, models.Model):
             self.publication_end_month, self.publication_year)
 
     def save(self, *args, **kwargs):
-        self.label = 'v{0}n{1}'.format(self.volume, self.number)
+        self.label = unicode(self)
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),)
+
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()

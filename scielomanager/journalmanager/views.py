@@ -113,6 +113,7 @@ def list_search(request, model, journal_id):
                        })
     return HttpResponse(template.render(context))
 
+
 @permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
 def issue_index(request, journal_id):
     user_collections = get_user_collections(request.user.id)
@@ -129,7 +130,7 @@ def issue_index(request, journal_id):
 
     for year, volume in by_years.items():
         for vol, issues in volume.items():
-            issues.sort(key=lambda x: x.number)
+            issues.sort(key=lambda x: x.identification)
 
     template = loader.get_template('journalmanager/issue_dashboard.html')
     context = RequestContext(request, {
@@ -139,12 +140,14 @@ def issue_index(request, journal_id):
                        })
     return HttpResponse(template.render(context))
 
+
 @permission_required('journalmanager.list_journal', login_url=settings.LOGIN_URL)
 def journal_index(request, model, journal_id=None):
     """
     Journal list and search
     """
     return list_search(request, model, journal_id)
+
 
 @permission_required('journalmanager.list_sponsor', login_url=settings.LOGIN_URL)
 def sponsor_index(request, model, journal_id=None):
