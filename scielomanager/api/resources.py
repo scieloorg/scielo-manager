@@ -89,6 +89,7 @@ class JournalResource(ModelResource):
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
+    sections = fields.OneToManyField(SectionResource, 'section_set')
     pub_status_history = fields.ListField(readonly=True)
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
