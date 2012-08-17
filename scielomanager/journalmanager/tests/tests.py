@@ -1,4 +1,6 @@
 # -*- encoding:utf-8 -*-
+import os
+
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
@@ -293,11 +295,83 @@ class LoggedInViewsTest(TestCase):
                                          'journal-collections': [self.usercollections.pk],
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
-                                         'mission-0-language': sample_language.pk, }))
+                                         'mission-0-language': sample_language.pk}))
 
         self.assertRedirects(response, reverse('journal.index'))
         modified_testing_journal = Journal.objects.get(title='Modified Title')
         self.assertEqual(testing_journal, modified_testing_journal)
+
+    def test_add_journal_with_cover(self):
+        """
+        Covered cases:
+        * Accessing the form
+        * Submission with missing data
+        * Submission with all required data
+        * Send with image cover
+        """
+        #empty form
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 200)
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.collection = self.collection
+        sample_sponsor.save()
+
+        sample_uselicense = tests_assets.get_sample_uselicense()
+        sample_uselicense.save()
+
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
+        #get the image test
+        image_test_cover = open(os.path.dirname(__file__) + '/image_test/image_test_cover.jpg')
+
+        response = self.client.post(reverse('journal.add'),
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
+                                         'journal-use_license': sample_uselicense.pk,
+                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-languages': [sample_language.pk],
+                                         'journal-abstract_keyword_languages': [sample_language.pk],
+                                         'mission-0-language': sample_language.pk,
+                                         'journal-cover': image_test_cover}))
+
+        self.assertRedirects(response, reverse('journal.index'))
+
+    def test_add_journal_with_logo(self):
+        """
+        Covered cases:
+        * Accessing the form
+        * Submission with missing data
+        * Submission with all required data
+        * Send with image logo
+        """
+        #empty form
+        response = self.client.get(reverse('journal.add'))
+        self.assertEqual(response.status_code, 200)
+
+        sample_sponsor = tests_assets.get_sample_sponsor()
+        sample_sponsor.collection = self.collection
+        sample_sponsor.save()
+
+        sample_uselicense = tests_assets.get_sample_uselicense()
+        sample_uselicense.save()
+
+        sample_language = tests_assets.get_sample_language()
+        sample_language.save()
+
+        #get the image test
+        image_test_logo = open(os.path.dirname(__file__) + '/image_test/image_test_logo.jpg')
+
+        response = self.client.post(reverse('journal.add'),
+            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
+                                         'journal-use_license': sample_uselicense.pk,
+                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-languages': [sample_language.pk],
+                                         'journal-abstract_keyword_languages': [sample_language.pk],
+                                         'mission-0-language': sample_language.pk,
+                                         'journal-logo': image_test_logo}))
+
+        self.assertRedirects(response, reverse('journal.index'))
 
     def test_add_collection(self):
         '''
@@ -331,16 +405,7 @@ class LoggedInViewsTest(TestCase):
 
         self.assertRedirects(response, reverse('sponsor.index'))
 
-        another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
-                                                        fax='11 2365-4400', address_number='230', state='Santiago',
-                                                        city='Santiago', address=u'Rua XXX', email='scielo@conicyt.cl')
-        another_collection.save()
-
-        self.user.usercollections_set.all()[0].delete()
-
-        usercollections = tests_assets.get_sample_usercollections(self.user, another_collection)
-        usercollections.save()
-
+        #edit sponsor - must be changed
         testing_sponsor = Sponsor.objects.get(name=u'Fundação de Amparo a Pesquisa do Estado de São Paulo')
         response = self.client.post(reverse('sponsor.edit', args=(testing_sponsor.pk,)),
             tests_assets.get_sample_sponsor_dataform({'sponsor-name': 'Modified Title',
