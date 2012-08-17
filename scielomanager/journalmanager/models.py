@@ -15,7 +15,6 @@ import caching.base
 
 import choices
 import helptexts
-import mongomodels
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -508,16 +507,6 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     form = models.ForeignKey(PendedForm, related_name='data')
     name = models.CharField(max_length=255)
     value = models.TextField()
-
-
-class Article(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    mongoobjects = mongomodels.MongoManager()
-
-    object_id = models.CharField(max_length=32)
-    issue = models.ForeignKey(Issue)
-
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
