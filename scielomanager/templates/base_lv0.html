@@ -5,7 +5,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8"/>
-    <title>{% block page_title %}{% trans "SciELO Manager" %}{% endblock %}</title>
+    <title>{% block page_title %}SciELO Manager{% endblock %}</title>
     <link rel="shortcut icon" href="/static/favicon.ico"/>
     {% block extrahead %}{% endblock %}
     {% assets "css" %}
@@ -13,7 +13,7 @@
     {% endassets %}
   </head>
   <body data-offset="50" data-target=".subnav" data-spy="scroll" data-twttr-rendered="true">
-  {% block base_struture %} 
+  {% block base_struture %}
     {% block content %}{% endblock %}
   {% endblock %}
   {% assets "js" %}
