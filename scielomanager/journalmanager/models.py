@@ -99,6 +99,14 @@ class SectionCustomManager(AppCustomManager):
         return objects_all
 
 
+class IssueCustomManager(AppCustomManager):
+
+    def all_by_user(self, user, is_available=True):
+        user_collections = get_default_user_collections(user.pk)
+        objects_all = self.available(is_available).filter(
+            collections__in=[uc.collection for uc in user_collections]).distinct()
+        return objects_all
+
 class InstitutionCustomManager(AppCustomManager):
     """
     Add capabilities to Institution subclasses to retrieve querysets
@@ -424,7 +432,7 @@ class Section(caching.base.CachingMixin, models.Model):
 class Issue(caching.base.CachingMixin, models.Model):
 
     #Custom manager
-    objects = AppCustomManager()
+    objects = IssueCustomManager()
     nocacheobjects = models.Manager()
 
     section = models.ManyToManyField(Section, help_text=helptexts.ISSUE__SECTION, blank=True)
