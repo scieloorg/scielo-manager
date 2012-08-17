@@ -123,6 +123,7 @@ class JournalForm(UserCollectionContext):
            'other_previous_title': forms.TextInput(attrs={'class':'span9'}),
         }
 
+
 class CollectionForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -132,22 +133,6 @@ class CollectionForm(ModelForm):
         model = models.Collection
         exclude = ('collection', )
 
-class PublisherForm(UserCollectionContext):
-
-    def __init__(self, *args, **kwargs):
-        super(PublisherForm, self).__init__(*args, **kwargs)
-
-
-    class Meta:
-        model = models.Publisher
-        exclude = ('acronym', 'country', 'state', 'city', 'address_number', 'address_complement',
-            'zip_code', 'phone', 'fax', 'cel')
-        widgets = {
-            'name': forms.TextInput(attrs={'class':'span6'}),
-            'complement': forms.Textarea(attrs={'class':'span6'}),
-            'address': forms.Textarea(attrs={'class':'span6'}),
-            'email': forms.TextInput(attrs={'class':'span6'}),
-        }
 
 class SponsorForm(UserCollectionContext):
 
@@ -160,16 +145,19 @@ class SponsorForm(UserCollectionContext):
             'zip_code', 'phone', 'fax', 'cel')
 
         widgets = {
-            'name': forms.TextInput(attrs={'class':'span6'}),
-            'complement': forms.Textarea(attrs={'class':'span6'}),
-            'address': forms.Textarea(attrs={'class':'span6'}),
-            'email': forms.TextInput(attrs={'class':'span6'}),
+            'name': forms.TextInput(attrs={'class': 'span6'}),
+            'complement': forms.Textarea(attrs={'class': 'span6'}),
+            'address': forms.Textarea(attrs={'class': 'span6'}),
+            'email': forms.TextInput(attrs={'class': 'span6'}),
         }
+
+
 class UserForm(ModelForm):
     class Meta:
         model = models.User
-        exclude = ('is_staff','is_superuser','last_login','date_joined',
+        exclude = ('is_staff', 'is_superuser', 'last_login', 'date_joined',
                    'user_permissions', 'email', 'password')
+
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
         #user.set_password(self.cleaned_data["password"])
@@ -178,6 +166,7 @@ class UserForm(ModelForm):
             user.save()
             self.save_m2m()
         return user
+
 
 class EventJournalForm(forms.Form):
     pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)

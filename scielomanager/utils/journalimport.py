@@ -2,7 +2,6 @@
 #coding: utf-8
 import json
 import os
-import difflib
 import subfield
 from datetime import date
 
@@ -15,10 +14,12 @@ except ImportError:
     BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
     from sys import path
     path.append(BASE_PATH)
-    import settings
+
+import settings
 
 setup_environ(settings)
 from journalmanager.models import *
+
 
 class JournalImport:
 
@@ -26,10 +27,10 @@ class JournalImport:
         self._publishers_pool = []
         self._sponsors_pool = []
         self._summary = {}
-        self.trans_pub_status = {'c':'current',
-            'd':'deceased',
-            's':'suspended',
-            '?':'inprogress',
+        self.trans_pub_status = {'c': 'current',
+            'd': 'deceased',
+            's': 'suspended',
+            '?': 'inprogress',
             }
 
     def iso_format(self, dates, string='-'):
@@ -41,7 +42,7 @@ class JournalImport:
         if month == "00":
             month = "01"
 
-        dateformated = "%s-%s-%s" % (dates[0:4],month,day)
+        dateformated = "%s-%s-%s" % (dates[0:4], month,day)
 
         return dateformated
 
@@ -55,28 +56,6 @@ class JournalImport:
 
         self._summary[attribute] += 1
 
-    def have_similar_publishers(self, match_string):
-        """
-        Function: have_similar_publishers
-        Identifica se existe instituicao ja registrada com o mesmo nome, com o objetivo de filtrar
-        instituticoes duplicadas.
-        Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
-        False.
-        """
-        publisher_id=""
-
-        if len(self._publishers_pool) > 0:
-            for inst in self._publishers_pool:
-                if inst["match_string"] == match_string:
-                    publisher_id = inst["id"]
-                    break
-                else:
-                    publisher_id = False
-        else:
-            publisher_id = False
-
-        return publisher_id
-
     def have_similar_sponsors(self, match_string):
         """
         Function: have_similar_sponsors
@@ -85,7 +64,7 @@ class JournalImport:
         Retorna o id da instituicao se houver uma cadastrada com o mesmo nome, caso contrario Retorna
         False.
         """
-        sponsor_id=""
+        sponsor_id = ""
 
         if len(self._sponsors_pool) > 0:
             for inst in self._sponsors_pool:
@@ -98,46 +77,6 @@ class JournalImport:
             sponsor_id = False
 
         return sponsor_id
-
-    def load_publisher(self, collection, record):
-        """
-        Function: load_publisher
-        Retorna um objeto Publisher() caso a gravação do mesmo em banco de dados for concluida
-        """
-
-        publisher = Publisher()
-
-        # Publishers Import
-        if not record.has_key('480'):
-            return []
-
-        publisher.name = record['480'][0]
-        publisher.address = ", ".join(record['63']).replace('<br>','')
-
-        if record.has_key('64'):
-            publisher.email = record['64'][0]
-
-        match_string=publisher.name
-
-        similar_key =  self.have_similar_publishers(match_string)
-
-        loaded_publisher=""
-
-        if similar_key != False:
-            similar_publisher=Publisher.objects.get(id=similar_key)
-            similar_publisher.address += "\n"+publisher.address
-            similar_publisher.save()
-            self.charge_summary("publishers_duplication_fix")
-            loaded_publisher = similar_publisher
-        else:
-            publisher.save(force_insert=True)
-            publisher.collections.add(collection)
-            self.charge_summary("publishers")
-            loaded_publisher = publisher
-            self._publishers_pool.append(dict({"id":publisher.id,"match_string":match_string}))
-
-
-        return loaded_publisher
 
     def load_sponsor(self, collection, record):
         """
@@ -214,7 +153,6 @@ class JournalImport:
             self.charge_summary("mission")
 
     def load_historic(self, journal, historicals):
-        import operator
 
         lifecycles = {}
 
@@ -231,17 +169,16 @@ class JournalImport:
             except KeyError:
                 self.charge_summary("history_error_field")
 
-
-        for cyclekey,cyclevalue in iter(sorted(lifecycles.iteritems())):
+        for cyclekey, cyclevalue in iter(sorted(lifecycles.iteritems())):
             try:
                 journalhist = JournalPublicationEvents()
                 journalhist.created_at = cyclekey
-                journalhist.status = self.trans_pub_status.get(cyclevalue.lower(),'inprogress')
+                journalhist.status = self.trans_pub_status.get(cyclevalue.lower(), 'inprogress')
                 journalhist.journal = journal
                 journalhist.changed_by_id = 1
                 journalhist.save()
                 journalhist.created_at = cyclekey
-                journalhist.save() #Updating to real date, once when saving the model is given a automatica value
+                journalhist.save()  # Updating to real date, once when saving the model is given a automatica value
                 self.charge_summary("publication_events")
             except exceptions.ValidationError:
                 self.charge_summary("publications_events_error_data")
@@ -250,7 +187,6 @@ class JournalImport:
         return True
 
     def get_last_status(self, historicals):
-        import operator
 
         lifecycles = {}
 
@@ -278,7 +214,7 @@ class JournalImport:
             journal.other_titles.add(title)
             self.charge_summary("title")
 
-    def load_use_license(self,code, disclaimer):
+    def load_use_license(self, code, disclaimer):
 
         expanded_disclaimer = subfield.expand(disclaimer)
         parsed_subfields_disclaimer = dict(expanded_disclaimer)
@@ -292,39 +228,42 @@ class JournalImport:
 
         return use_license
 
-    def load_journal(self, collection, loaded_publisher, loaded_sponsor, record):
+    def load_journal(self, collection, loaded_sponsor, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
         """
 
-        issn_type=""
-        print_issn=""
-        electronic_issn=""
+        issn_type = ""
+        print_issn = ""
+        electronic_issn = ""
 
         # Creating use license codes.
         license_code = ""
         license_disclaimer = ""
-        if record.has_key('541'):
+
+        if '541' in record:
             license_code = record['541'][0]
-        if record.has_key('540'):
+
+        if '540' in record:
             license_disclaimer = record['540'][0]
-        use_license = self.load_use_license(license_code,license_disclaimer)
+
+        use_license = self.load_use_license(license_code, license_disclaimer)
 
         journal = Journal()
 
         # ISSN and Other Complex Stuffs from the old version
         if record['35'][0] == "PRINT":
-            issn_type="print"
+            issn_type = "print"
             print_issn = record['935'][0]
             if record['935'][0] != record['400'][0]:
-                issn_type="eletronic"
+                issn_type = "eletronic"
                 electronic_issn = record['400'][0]
         else:
-            issn_type="electronic"
+            issn_type = "electronic"
             electronic_issn = record['935'][0]
             if record['935'][0] != record['400'][0]:
-                issn_type="print"
+                issn_type = "print"
                 print_issn = record['400'][0]
 
         journal.scielo_issn = issn_type
@@ -332,10 +271,10 @@ class JournalImport:
         journal.eletronic_issn = electronic_issn
 
         # Journal Original Title
-        journal.title =  record['100'][0]
+        journal.title = record['100'][0]
 
         # Short Title
-        journal.short_title =  record['150'][0]
+        journal.short_title = record['150'][0]
 
         # Acronym
         journal.acronym = record['930'][0]
@@ -347,82 +286,99 @@ class JournalImport:
         journal.subject_descriptors = '\n'.join(record['440']).lower()
 
         # Indexing Coverage
-        if record.has_key('450'):
+        if '450' in record:
             journal.index_coverage = '\n'.join(record['450']).lower()
 
         # Copyright
-        if record.has_key('62'):
+        if '62' in record:
             journal.copyrighter = record['62'][0]
 
         # Text Language
-        if record.has_key('301'):
+        if '301' in record:
             journal.init_year = record['301'][0]
 
         # Initial Volume
-        if record.has_key('302'):
+        if '302' in record:
             journal.init_vol = record['302'][0]
 
         # Initial Number
-        if record.has_key('303'):
+        if '303' in record:
             journal.init_num = record['303'][0]
 
         # Final Year
-        if record.has_key('304'):
+        if '304' in record:
             journal.final_year = record['304'][0]
 
         # Final Volumen
-        if record.has_key('305'):
+        if '305' in record:
             journal.final_vol = record['305'][0]
 
         # Final Number
-        if record.has_key('306'):
+        if '306' in record:
             journal.final_num = record['306'][0]
 
         # National Code
-        if record.has_key('20'):
+        if '20' in record:
             journal.national_code = record['20'][0]
 
         # Publication Frequency
-        if record.has_key('380'):
+        if '380' in record:
             journal.frequency = record['380'][0]
 
-        if record.has_key('692'):
+        if '692' in record:
             journal.url_online_submission = record['692'][0]
 
-        if record.has_key('69'):
+        if '69' in record:
             journal.url_journal = record['69'][0]
 
-        if record.has_key('51'):
-            journal.pub_status = self.trans_pub_status.get(self.get_last_status(record['51']).lower(),'inprogress')
+        if '51' in record:
+            journal.pub_status = self.trans_pub_status.get(self.get_last_status(record['51']).lower(), 'inprogress')
 
-        if record.has_key('340'):
+        if '340' in record:
             journal.alphabet = record['340'][0]
 
-        if record.has_key('20'):
+        if '20' in record:
             journal.national_code = record['20'][0]
 
-        if record.has_key('117'):
+        if '117' in record:
             journal.editorial_standard = record['117'][0]
 
-        if record.has_key('85'):
+        if '85' in record:
             journal.ctrl_vocabulary = record['85'][0]
 
-        if record.has_key('5'):
+        if '5' in record:
             journal.literature_type = record['5'][0]
 
-        if record.has_key('6'):
+        if '6' in record:
             journal.treatment_level = record['6'][0]
 
-        if record.has_key('330'):
+        if '330' in record:
             journal.pub_level = record['330'][0]
 
-        if record.has_key('37'):
+        if '37' in record:
             journal.secs_code = record['37'][0]
 
-        if record.has_key('151'):
+        if '151' in record:
             journal.title_iso = record['151'][0]
 
-        journal.publisher = loaded_publisher
+        if '310' in record:
+            journal.publisher_country = record['310'][0]
+
+        if '320' in record:
+            journal.publisher_state = record['320'][0]
+
+        if '480' in record:
+            journal.publisher_name = record['480'][0]
+
+        if '490' in record:
+            journal.publication_city = record['490'][0]
+
+        if '63' in record:
+            journal.editor_address = ", ".join(record['63']).replace('<br>', '')
+
+        if '64' in record:
+            journal.editor_email = record['64'][0]
+
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -431,47 +387,45 @@ class JournalImport:
 
         self.charge_summary("journals")
 
-
-
         journal.sponsor = loaded_sponsor
 
         # created date
-        if record.has_key('940'):
+        if '940' in record:
             journal.created = self.iso_format(record['940'][0])
 
         # updated date
-        if record.has_key('941'):
+        if '941' in record:
             journal.updated = self.iso_format(record['941'][0])
 
         # text language
-        if record.has_key('350'):
-            self.load_textlanguage(journal,record['350'])
+        if '350' in record:
+            self.load_textlanguage(journal, record['350'])
 
         # abstract language
-        if record.has_key('360'):
-            self.load_abstractlanguage(journal,record['360'])
+        if '360' in record:
+            self.load_abstractlanguage(journal, record['360'])
 
         # study area
-        if record.has_key('441'):
-            self.load_studyarea(journal,record['441'])
+        if '441' in record:
+            self.load_studyarea(journal, record['441'])
 
         # mission
-        if record.has_key('901'):
-            self.load_mission(journal,record['901'])
+        if '901' in record:
+            self.load_mission(journal, record['901'])
 
         # historic - JournalPublicationEvents
-        if record.has_key('51'):
-            self.load_historic(journal,record['51'])
+        if '51' in record:
+            self.load_historic(journal, record['51'])
 
         # titles
-        if record.has_key('421'):
-            self.load_title(journal,record['421'],'other')
+        if '421' in record:
+            self.load_title(journal, record['421'], 'other')
 
-        if record.has_key('240'):
-            self.load_title(journal,record['240'],'other')
+        if '240' in record:
+            self.load_title(journal, record['240'], 'other')
 
-        if record.has_key('230'):
-            self.load_title(journal,record['230'],'paralleltitle')
+        if '230' in record:
+            self.load_title(journal, record['230'], 'paralleltitle')
 
         journal.save()
 
@@ -482,16 +436,14 @@ class JournalImport:
         Function: run_import
         Dispara processo de importacao de dados
         """
+        json_parsed = {}
 
-        json_parsed={}
-
-        json_file = open(json_file,'r')
+        json_file = open(json_file, 'r')
         json_parsed = json.loads(json_file.read())
 
         for record in json_parsed:
-            loaded_publisher = self.load_publisher(collection, record)
             loaded_sponsor = self.load_sponsor(collection, record)
-            loaded_journal = self.load_journal(collection, loaded_publisher, loaded_sponsor, record)
+            self.load_journal(collection, loaded_sponsor, record)
 
         # Cleaning data
         JournalPublicationEvents.objects.filter(created_at__month=date.today().month, created_at__year=date.today().year).delete()

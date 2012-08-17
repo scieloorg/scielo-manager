@@ -3,14 +3,18 @@ from django.contrib import admin
 from scielomanager.journalmanager.models import *
 from django.contrib.auth.admin import UserAdmin
 
+
 class JournalMissionInline(admin.StackedInline):
     model = JournalMission
+
 
 class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
+
 class JournalStudyAreaInline(admin.StackedInline):
     model = JournalStudyArea
+
 
 class CollectionAdmin(admin.ModelAdmin):
 
@@ -22,12 +26,14 @@ class CollectionAdmin(admin.ModelAdmin):
 
 admin.site.register(Collection, CollectionAdmin)
 
+
 class SectionAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         return Section.nocacheobjects
 
 admin.site.register(Section, SectionAdmin)
+
 
 class JournalAdmin(admin.ModelAdmin):
 
@@ -36,11 +42,12 @@ class JournalAdmin(admin.ModelAdmin):
 
     list_display = ('title',)
     search_fields = ('title',)
-    filter_horizontal = ('collections','languages')
+    filter_horizontal = ('collections', 'languages')
     inlines = [JournalMissionInline,
         JournalStudyAreaInline]
 
 admin.site.register(Journal, JournalAdmin)
+
 
 class InstitutionAdmin(admin.ModelAdmin):
 
@@ -52,6 +59,7 @@ class InstitutionAdmin(admin.ModelAdmin):
 
 admin.site.register(Institution, InstitutionAdmin)
 
+
 class UserCollectionsInline(admin.TabularInline):
 
     def queryset(self, request):
@@ -60,6 +68,7 @@ class UserCollectionsInline(admin.TabularInline):
     model = UserCollections
     extra = 1
     can_delete = True
+
 
 class UserProfileInline(admin.StackedInline):
 
@@ -70,11 +79,13 @@ class UserProfileInline(admin.StackedInline):
     max_num = 1
     can_delete = True
 
+
 class UserAdmin(UserAdmin):
     inlines = (UserProfileInline, UserCollectionsInline)
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
 
 class IssueAdmin(admin.ModelAdmin):
 
@@ -85,6 +96,7 @@ class IssueAdmin(admin.ModelAdmin):
 
 admin.site.register(Issue, IssueAdmin)
 
+
 class SponsorAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
@@ -94,14 +106,6 @@ class SponsorAdmin(admin.ModelAdmin):
 
 admin.site.register(Sponsor, SponsorAdmin)
 
-class PublisherAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Publisher.nocacheobjects
-
-    filter_horizontal = ('collections',)
-
-admin.site.register(Publisher, PublisherAdmin)
 
 class UseLicenseAdmin(admin.ModelAdmin):
 
@@ -110,12 +114,14 @@ class UseLicenseAdmin(admin.ModelAdmin):
 
 admin.site.register(UseLicense, UseLicenseAdmin)
 
+
 class LanguageAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         return Language.nocacheobjects
 
 admin.site.register(Language, LanguageAdmin)
+
 
 class TranslatedDataAdmin(admin.ModelAdmin):
 
@@ -124,12 +130,14 @@ class TranslatedDataAdmin(admin.ModelAdmin):
 
 admin.site.register(TranslatedData)
 
+
 class SupplementAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         return Supplement.nocacheobjects
 
 admin.site.register(Supplement, SupplementAdmin)
+
 
 class JournalPublicationEventsAdmin(admin.ModelAdmin):
 
@@ -141,5 +149,3 @@ class JournalPublicationEventsAdmin(admin.ModelAdmin):
     search_fields = ['journal',]
 
 admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
-
-

@@ -7,7 +7,6 @@ from journalmanager.models import (
     Journal,
     UseLicense,
     Sponsor,
-    Publisher,
     Collection,
     Issue,
     Section,
@@ -24,7 +23,7 @@ class SectionResource(ModelResource):
     class Meta:
         queryset = Section.objects.all()
         resource_name = 'sections'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
 
     def dehydrate_titles(self, bundle):
         return [(title.language.iso_code, title.title)
@@ -39,42 +38,35 @@ class IssueResource(ModelResource):
     class Meta:
         queryset = Issue.objects.all()
         resource_name = 'issues'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
 
 
 class CollectionResource(ModelResource):
     class Meta:
         queryset = Collection.objects.all()
         resource_name = 'collections'
-        allowed_methods = ['get',]
-
-
-class PublisherResource(ModelResource):
-    class Meta:
-        queryset = Publisher.objects.all()
-        resource_name = 'publishers'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
 
 
 class SponsorResource(ModelResource):
     class Meta:
         queryset = Sponsor.objects.all()
         resource_name = 'sponsors'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
 
 
 class UseLicenseResource(ModelResource):
     class Meta:
         queryset = UseLicense.objects.all()
         resource_name = 'uselicenses'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
 
 
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'users'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
         excludes = [
             'email',
             'password',
@@ -92,7 +84,6 @@ class JournalResource(ModelResource):
     languages = fields.CharField(readonly=True)
     use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
-    publisher = fields.ForeignKey(PublisherResource, 'publisher')
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     pub_status_history = fields.ListField(readonly=True)
@@ -102,7 +93,7 @@ class JournalResource(ModelResource):
     class Meta:
         queryset = Journal.objects.all().filter()
         resource_name = 'journals'
-        allowed_methods = ['get',]
+        allowed_methods = ['get', ]
         filtering = {
             'is_trashed': ('exact',),
         }
@@ -123,12 +114,6 @@ class JournalResource(ModelResource):
         return [{'date': event.created_at,
                 'status': event.status}
             for event in bundle.obj.status_history.order_by('-created_at').all()]
-
-    def dehydrate_contact(self, bundle):
-        return {
-            'name': bundle.obj.publisher.name,
-            'email': bundle.obj.publisher.email,
-        }
 
     def dehydrate_study_areas(self, bundle):
         return [area.study_area
