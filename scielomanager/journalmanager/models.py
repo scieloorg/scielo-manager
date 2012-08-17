@@ -15,7 +15,6 @@ import caching.base
 
 import choices
 import helptexts
-import mongomodels
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -90,12 +89,6 @@ class JournalCustomManager(AppCustomManager):
 
         return objects_all
 
-    def all_by_collection(self, user):
-        user_collections = get_default_user_collections(user.pk)
-        objects_all = self.filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
-        return objects_all
-
 
 class SectionCustomManager(AppCustomManager):
 
@@ -105,18 +98,12 @@ class SectionCustomManager(AppCustomManager):
             journal__collections__in=[uc.collection for uc in user_collections]).distinct()
         return objects_all
 
-    def all_by_collection(self, user):
-        user_collections = get_default_user_collections(user.pk)
-        objects_all = self.filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
-        return objects_all
-
 
 class IssueCustomManager(AppCustomManager):
 
-    def all_by_collection(self, user):
+    def all_by_user(self, user, is_available=True):
         user_collections = get_default_user_collections(user.pk)
-        objects_all = self.filter(
+        objects_all = self.available(is_available).filter(
             collections__in=[uc.collection for uc in user_collections]).distinct()
         return objects_all
 
@@ -129,12 +116,6 @@ class InstitutionCustomManager(AppCustomManager):
     def all_by_user(self, user, is_available=True):
         user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
-        return objects_all
-
-    def all_by_collection(self, user):
-        user_collections = get_default_user_collections(user.pk)
-        objects_all = self.filter(
             collections__in=[uc.collection for uc in user_collections]).distinct()
         return objects_all
 
@@ -320,7 +301,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True, help_text=helptexts.JOURNAL__NOTES)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True, help_text=helptexts.JOURNALINDEXCOVERAGE__DATABASE)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
-    logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True, )
+    logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True, help_text=helptexts.JOURNAL__PREVIOUS_TITLE)
     editor_address = models.TextField(_('Address'), blank=False,)
@@ -479,21 +460,15 @@ class Issue(caching.base.CachingMixin, models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     label = models.CharField(db_index=True, blank=True, null=True, max_length=16)
 
+    @property
     def identification(self):
+        suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
+        suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
 
-        if self.number is not None:
-            n = self.number
-            if n != 'ahead' and n != 'review':
-                n = '(' + self.number + ')'
-            else:
-                n = self.number
-
-            return self.volume + ' ' + n
-        else:
-            return ''
+        return "{0} {1} {2}".format(self.number, suppl_volume, suppl_number).strip().replace('spe', 'special').replace('ahead', 'ahead of print')
 
     def __unicode__(self):
-        return self.identification()
+        return "{0} ({1})".format(self.volume, self.identification).replace('()', '')
 
     @property
     def publication_date(self):
@@ -501,7 +476,7 @@ class Issue(caching.base.CachingMixin, models.Model):
             self.publication_end_month, self.publication_year)
 
     def save(self, *args, **kwargs):
-        self.label = 'v{0}n{1}'.format(self.volume, self.number)
+        self.label = unicode(self)
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
@@ -537,16 +512,6 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     form = models.ForeignKey(PendedForm, related_name='data')
     name = models.CharField(max_length=255)
     value = models.TextField()
-
-
-class Article(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    mongoobjects = mongomodels.MongoManager()
-
-    object_id = models.CharField(max_length=32)
-    issue = models.ForeignKey(Issue)
-
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

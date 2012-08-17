@@ -1,6 +1,27 @@
 
 /*Toggle action list visibility on mouse over a table row*/
 
+.table-issue td {
+    background-color: #F0F0F0;
+    text-align: center;
+    border: solid 5px #FFFFFF;
+    padding: 2px;
+    width: 80px;
+    height: 30px;
+
+}
+
+.table-issue th {
+    background-color: #E0E0E0;
+    text-align: center;
+    font-weight: bold;
+    border: solid 5px #FFFFFF;
+    padding: 2px;
+    width: 80px;
+    height: 30px;
+
+}
+
 ul._actions {
     margin: 5px;
     padding: 0;
