@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#coding: utf-8
+# -*- encoding:utf8 -*-
 
 import sys
 import os

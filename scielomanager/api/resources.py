@@ -23,7 +23,10 @@ class SectionResource(ModelResource):
     class Meta:
         queryset = Section.objects.all()
         resource_name = 'sections'
-        allowed_methods = ['get', ]
+        allowed_methods = ['get']
+        filtering = {
+            "journal": ('exact'),
+        }
 
     def dehydrate_titles(self, bundle):
         return [(title.language.iso_code, title.title)
@@ -86,6 +89,7 @@ class JournalResource(ModelResource):
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
+    sections = fields.OneToManyField(SectionResource, 'section_set')
     pub_status_history = fields.ListField(readonly=True)
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
