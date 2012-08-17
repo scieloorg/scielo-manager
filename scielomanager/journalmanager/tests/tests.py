@@ -871,7 +871,7 @@ class JournalRestAPITest(TestCase):
         'abstract_keyword_languages', 'missions', 'created', 'notes',
         'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history',
         'contact', 'study_areas', 'publisher_name', 'publisher_country', 'publisher_state',
-        'publication_city', 'editor_address', 'editor_email',
+        'publication_city', 'editor_address', 'editor_email', 'sections'
         )
 
         for field in response_as_py['objects'][0]:
@@ -904,7 +904,7 @@ class JournalRestAPITest(TestCase):
         'updated', 'sponsors', 'abstract_keyword_languages', 'missions',
         'created', 'notes', 'pub_status_reason', 'resource_uri', 'national_code',
         'pub_status_history', 'contact', 'study_areas', 'publisher_name', 'publisher_country',
-        'publisher_state', 'publication_city', 'editor_address', 'editor_email',
+        'publisher_state', 'publication_city', 'editor_address', 'editor_email', 'sections',
         )
 
         for field in response_as_py:
