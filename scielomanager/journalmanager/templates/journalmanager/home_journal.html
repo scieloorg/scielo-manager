@@ -35,5 +35,43 @@
         </table>
     </div>
   {% endif %}
+
+  <div class="span6 well">
+    <table class="table table-condensed">
+      <thead>
+          <th colspan="3">{% trans 'Recent activities' %}<th>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>{% trans 'Collection' %}</strong></td>
+          <td><strong>{% trans 'User' %}</strong></td>
+          <td><strong>{% trans 'Journal' %}</strong></td>
+          <td><strong>{% trans 'Updated at' %}</strong></td>
+        </tr>
+        {% for activity in recent_activities %}
+        <tr>
+          <td>
+            {% for collection in activity.collections.all %}
+              {% if forloop.first %}
+                {{ collection.name }}
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td>
+            {{activity.creator.username}}
+          </td>
+          <td>
+            <a href="{% url journal.edit activity.pk %}">{{activity.short_title}}</a>
+          </td>
+          <td>
+            {{activity.updated|date:"D, d \de F \de Y - H:i"}}
+          </td>
+        <tr>
+        {% empty %}
+        <tr><td>{% trans 'There are no items.' %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}
 

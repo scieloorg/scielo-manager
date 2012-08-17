@@ -89,6 +89,16 @@ class JournalCustomManager(AppCustomManager):
 
         return objects_all
 
+    def recents_by_user(self, user):
+        """
+        Retrieve the recently modified objects related to the given user.
+        """
+        user_collections = get_default_user_collections(user.pk)
+        recents = self.filter(
+            collections__in=[uc.collection for uc in user_collections]).distinct().order_by('-updated')[:5]
+
+        return recents
+
 
 class SectionCustomManager(AppCustomManager):
 
