@@ -62,12 +62,19 @@ def index(request):
         template = loader.get_template('journalmanager/home_journal.html')
         user_collections = get_user_collections(request.user.id)
         pending_journals = models.PendedForm.objects.filter(user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+
+        # recent activities in a collection
+        recent_journals = models.Journal.objects.recents_by_user(request.user)
     else:
         template = loader.get_template('registration/login.html')
-        user_collections = ''
-        pending_journals = ''
+        user_collections = pending_journals = recent_journals = ''
 
-    context = RequestContext(request, {'user_collections': user_collections, 'pending_journals': pending_journals})
+    context = RequestContext(request, {
+        'user_collections': user_collections,
+        'pending_journals': pending_journals,
+        'recent_activities': recent_journals,
+        }
+    )
     return HttpResponse(template.render(context))
 
 
