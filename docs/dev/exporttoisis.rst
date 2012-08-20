@@ -93,7 +93,7 @@ Em resumo, significa que o processo de exportação de bases do SciELO Manager p
 
 Alguns arquivos texto também são gerados como entrada de dados para ferramenta de marcação, são eles:
 
- * automata.mds
+ * **automata.mds**
 
   Formato::
 
@@ -125,11 +125,34 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
     1413-7852;ocitat;aob.amd;tgother.amd
     0103-2100;vcitat;ape.amd;tgvanc.amd
 
- * en_issue.mds, pt_issue.mds e es_issue.mds
+ * **issue.mds**
 
   Formato::
 
-    linha 1: "legenda do número". Ex.: Braz. J. Microbiol. v.41 n.4
+    linha 1: Braz. J. Microbiol. v.41 n.4  # Legenda do número
+    linha 2: mes inicial/mes final
+    linha 3: issue order (v36)
+    linha 4: em branco
+    linha 5: em branco
+
+  Exemplo::
+
+    Braz. J. Microbiol. v.41 n.4
+    01/03  
+    1
+
+
+    Rev. Saúde Pública  n.ahead pr 2010
+    10/12  
+    2
+
+
+
+ * **en_issue.mds, pt_issue.mds e es_issue.mds**
+
+  Formato::
+
+    linha 1: Braz. J. Microbiol. v.41 n.4  # Legenda do número
     linha 2: título abrev;vol;suplvol;num;suplno;dateiso;issn;status
     linha 3: seções separadas por ponto-e-virgula
     linha 4: código das seções separadas por ponto-e-virgula
@@ -166,6 +189,18 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
     RIMTSP014;RIMTSP021;RIMTSP070;RIMTSP090;RIMTSP110;RIMTSP200;RIMTSP280;RIMTSP350;RIMTSP580;RIMTSP780;nd
     No Descriptor
     other standard
+
+  * **journal_standard.txt**
+
+  Arquivo CSV com atributos separado por #
+
+  Onde esta "print|online" deve ser indicado apenas um dos valores de acordo com o tipo de ISSN usado na SciELO.
+
+  Formato::
+
+    issn_id#título abreviado#norma#print|online#issn_atual#area temática#título Medline#codigo medline#título completo#acron#print_issn#online_issn
+
+  Exemplo::
 
 ------------------------
 Requisitos da Exportação
