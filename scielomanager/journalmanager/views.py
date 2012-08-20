@@ -5,6 +5,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
@@ -353,7 +354,7 @@ def add_user(request, user_id=None):
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
 
         if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
-            userform.save()
+            new_user = userform.save()
             userprofileformset.save()
 
             # Clear cache when changes in UserCollections
@@ -361,6 +362,15 @@ def add_user(request, user_id=None):
             models.UserCollections.objects.invalidate(*invalid)
 
             usercollectionsformset.save()
+
+            # mail the user, requesting for password change
+            password_form = auth_forms.PasswordResetForm({'email': new_user.email})
+            if password_form.is_valid():
+                opts = {
+                    'use_https': request.is_secure(),
+                    'request': request,
+                }
+                password_form.save(**opts)
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('user.index'))
