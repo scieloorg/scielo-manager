@@ -78,17 +78,6 @@
         {{ add_form.groups }}
       </div>
     </div>
-
-    <div class="control-group {% if add_form.is_active.errors %}error{% endif %}">
-      <label for="{{ add_form.is_active.auto_id }}">
-        <span {% if add_form.is_active.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.is_active.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.is_active }}
-      </div>
-    </div>
   </div>
 
   <span class="label">{% trans "User Collections" %}</span>

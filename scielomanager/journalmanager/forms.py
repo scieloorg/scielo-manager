@@ -197,7 +197,7 @@ class UserForm(ModelForm):
     class Meta:
         model = models.User
         exclude = ('is_staff', 'is_superuser', 'last_login', 'date_joined',
-                   'user_permissions', 'email', 'password')
+                   'user_permissions', 'email', 'password', 'is_active')
 
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
