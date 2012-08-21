@@ -11,7 +11,7 @@ clean:
 	@find . -name "*.pyc" -delete
 
 test: clean
-	@python $(MANAGE) test_coverage journalmanager --settings=$(SETTINGS)
+	@python $(MANAGE) test journalmanager --settings=$(SETTINGS)
 
 dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)

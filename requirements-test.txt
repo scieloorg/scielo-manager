@@ -1,3 +1,1 @@
 mocker
-coverage
-django-coverage
