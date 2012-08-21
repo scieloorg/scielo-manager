@@ -23,6 +23,6 @@ dbmigrate:
 compilemessages:
 	@cd $(APP_PATH) && python manage.py compilemessages --settings=$(SETTINGS)
 
-setup: deps dbsetup dbmigrate test compilemessages
+setup: deps dbsetup dbmigrate compilemessages test
 
-upgrade: deps dbmigrate test compilemessages
+upgrade: deps dbmigrate compilemessages test
