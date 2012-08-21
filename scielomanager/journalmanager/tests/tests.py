@@ -6,6 +6,7 @@ from django.test.client import Client
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Permission
 from django.core.urlresolvers import reverse
+from django.core import mail
 
 from journalmanager.tests import tests_assets
 from journalmanager.models import Collection
@@ -475,7 +476,7 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(modified_section.code, previous_code)
 
 
-    @with_sample_journal  
+    @with_sample_journal
     def test_access_add_section(self):
         from journalmanager.models import Journal
         journal = Journal.objects.all()[0]
@@ -493,7 +494,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('section.add', args=[journal.pk]))
         self.assertEqual(response.status_code, 404)
 
-    @with_sample_journal  
+    @with_sample_journal
     def test_add_issue(self):
         from journalmanager.models import Journal
         journal = Journal.objects.all()[0]
@@ -1435,7 +1436,7 @@ class UserViewsTest(TestCase):
         response = client.post(reverse('user.add'), tests_assets.get_sample_user_dataform({
                 'usercollections-0-collection': self.usercollections.pk,
                 'usercollections-0-is_manager': True,
-                'usercollections-0-is_default': True,}))
+                'usercollections-0-is_default': True, }))
 
         self.assertRedirects(response, reverse('user.index'))
 
@@ -1446,6 +1447,8 @@ class UserViewsTest(TestCase):
                 "<User: dummyuser_add>",
               ]
           )
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertTrue('Password reset' in mail.outbox[0].subject)
 
     def test_edit_user(self):
         """
