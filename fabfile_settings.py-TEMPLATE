@@ -2,3 +2,4 @@
 
 INSTALLATION_PATH = '/Users/gustavofonseca/prj/github/scielomanager'
 VENV_PATH = '/Users/gustavofonseca/prj/envs/scielomanager'
+WEBSERVICE_RESTART_CMD = '/usr/local/apache-2.2.16-php5.2.10/bin/apachectl graceful'
