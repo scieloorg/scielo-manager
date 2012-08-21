@@ -8,15 +8,18 @@ from fabric.api import (
 )
 from fabric.context_managers import settings
 
-import fabfile_settings as app_settings
+from fabfile_settings import deploy_envs as app_settings
 
 
 @task
-def restart_ws():
+def restart_ws(env):
     """
     Restart the remote Web Server.
     """
-    cmd = '%s' % app_settings.WEBSERVICE_RESTART_CMD
+    if env not in app_settings:
+        exit('unknown deploy environment. is it configured in fabfile_settings.py?')
+
+    cmd = '%s' % app_settings[env]['webservice_restart_cmd']
     with settings(warn_only=True):
         response_buff = run(cmd, combine_stderr=False)
         if response_buff.stderr:
@@ -24,13 +27,16 @@ def restart_ws():
 
 
 @task
-def update():
+def update(env):
     """
     Update an instance running on a remote server.
     """
-    with cd(app_settings.INSTALLATION_PATH):
-        with prefix('source %s/bin/activate' % app_settings.VENV_PATH):
+    if env not in app_settings:
+        exit('unknown deploy environment. is it configured in fabfile_settings.py?')
+
+    with cd(app_settings[env]['installation_path']):
+        with prefix('source %s/bin/activate' % app_settings[env]['venv_path']):
             run('git pull origin master')
             run('make upgrade')
 
-    restart_ws()
+    restart_ws(env)
