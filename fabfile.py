@@ -22,7 +22,7 @@ def restart_ws(env):
     cmd = '%s' % app_settings[env]['webservice_restart_cmd']
     with settings(warn_only=True):
         response_buff = run(cmd, combine_stderr=False)
-        if response_buff.stderr:
+        if response_buff.stderr or 'permission denied' in response_buff.stdout.lower():
             sudo(cmd)
 
 
