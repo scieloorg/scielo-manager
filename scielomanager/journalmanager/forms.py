@@ -6,6 +6,7 @@ from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.images import get_image_dimensions
+from django.contrib.auth.models import Group
 
 from journalmanager import models
 from journalmanager import choices
@@ -46,6 +47,9 @@ class JournalForm(UserCollectionContext):
         required=True)
     abstract_keyword_languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
+        required=True)
+    sponsor = forms.ModelMultipleChoiceField(models.Sponsor.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsors')}),
         required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
 
@@ -194,6 +198,10 @@ class SponsorForm(UserCollectionContext):
 
 
 class UserForm(ModelForm):
+    groups = forms.ModelMultipleChoiceField(Group.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more groups')}),
+        required=False)
+
     class Meta:
         model = models.User
         exclude = ('is_staff', 'is_superuser', 'last_login', 'date_joined',
@@ -295,6 +303,7 @@ class SectionForm(ModelForm):
         model = models.Section
         exclude = ('journal',)
 
+
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
@@ -303,12 +312,14 @@ class UserCollectionsForm(ModelForm):
         'collection':forms.Select(attrs={'class':'span8'}),
       }
 
+
 class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
       widgets = {
         'studyarea':forms.TextInput(attrs={'class':'span10'}),
       }
+
 
 class JournalMissionForm(ModelForm):
     class Meta:
@@ -317,12 +328,14 @@ class JournalMissionForm(ModelForm):
         'description':forms.Textarea(attrs={'class':'span6', 'rows':'3'}),
       }
 
+
 class JournalTitleForm(ModelForm):
     class Meta:
       model = models.JournalTitle
       widgets = {
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
+
 
 class IssueTitleForm(ModelForm):
     class Meta:
