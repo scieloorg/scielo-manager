@@ -473,10 +473,12 @@ class Issue(caching.base.CachingMixin, models.Model):
     def identification(self):
         suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
         suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
+        is_press_release = _('pr') + '' if self.is_press_release else ''
 
-        return "{0} {1} {2}".format(self.number, suppl_volume, suppl_number).strip().replace('spe', 'special').replace('ahead', 'ahead of print')
+        return "{0} {1} {2} {3}".format(self.number, suppl_volume, suppl_number, is_press_release).strip().replace('spe', 'special').replace('ahead', 'ahead of print')
 
     def __unicode__(self):
+
         return "{0} ({1})".format(self.volume, self.identification).replace('()', '')
 
     @property
