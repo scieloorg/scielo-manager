@@ -288,14 +288,13 @@ class Journal(caching.base.CachingMixin, models.Model):
         choices=sorted(choices.SCIELO_ISSN, key=lambda SCIELO_ISSN: SCIELO_ISSN[1]))
     print_issn = models.CharField(_('Print ISSN'), max_length=9)
     eletronic_issn = models.CharField(_('Eletronic ISSN'), max_length=9)
-    subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512,
-        help_text=helptexts.JOURNAL__SUBJECT_DESCRIPTORS)
-    init_year = models.CharField(_('Initial Year'), max_length=4, help_text=helptexts.JOURNAL__INIT_YEAR)
-    init_vol = models.CharField(_('Initial Volume'), max_length=16, help_text=helptexts.JOURNAL__INIT_VOL)
-    init_num = models.CharField(_('Initial Number'), max_length=16, help_text=helptexts.JOURNAL__INIT_NUM)
-    final_year = models.CharField(_('Final Year'), max_length=4, null=True, blank=True, help_text=helptexts.JOURNAL__FINAL_YEAR)
-    final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True, help_text=helptexts.JOURNAL__FINAL_VOL)
-    final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True, help_text=helptexts.JOURNAL__FINAL_NUM)
+    subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512)
+    init_year = models.CharField(_('Initial Year'), max_length=4)
+    init_vol = models.CharField(_('Initial Volume'), max_length=16)
+    init_num = models.CharField(_('Initial Number'), max_length=16)
+    final_year = models.CharField(_('Final Year'), max_length=4, null=True, blank=True)
+    final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True)
+    final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
