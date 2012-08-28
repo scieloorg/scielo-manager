@@ -452,7 +452,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     number = models.CharField(_('Number'), max_length=16, help_text=helptexts.ISSUE__NUMBER)
     suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME__SUPPL)
     suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16, help_text=helptexts.ISSUE__VOLUME__SUPPL)
-    volume = models.CharField(_('Volume'), max_length=16, help_text=helptexts.ISSUE__VOLUME)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -468,7 +467,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]), help_text=helptexts.ISSUE__EDITORIAL_STANDARD)
     cover = models.ImageField(_('Issue Cover'), upload_to='img/issue_cover/', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
-    label = models.CharField(db_index=True, blank=True, null=True, max_length=16)
+    label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
     @property
     def identification(self):

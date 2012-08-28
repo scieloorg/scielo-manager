@@ -18,7 +18,7 @@ except ImportError:
     import settings
 
 setup_environ(settings)
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, DatabaseError
 from django.db import transaction
 from journalmanager.models import *
 
@@ -184,7 +184,10 @@ class IssueImport:
         if license:
             issue.use_license = license
 
-        issue.save(force_insert=True)
+        try:
+            issue.save(force_insert=True)
+        except DatabaseError as e:
+            print "error({0}), input data: {1}".format(e.message, issue.__dict__)
 
         if '91' in record:
             created = u'%s-%s-01T01:01:01' % (record['91'][0][0:4], record['91'][0][4:6])
