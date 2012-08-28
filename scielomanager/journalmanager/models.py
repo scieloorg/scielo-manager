@@ -99,6 +99,11 @@ class JournalCustomManager(AppCustomManager):
 
         return recents
 
+    def all_by_collection(self, collection, is_available=True):
+        objects_all = self.available(is_available).filter(
+            collections=collection)
+        return objects_all
+
 
 class SectionCustomManager(AppCustomManager):
 
@@ -111,10 +116,9 @@ class SectionCustomManager(AppCustomManager):
 
 class IssueCustomManager(AppCustomManager):
 
-    def all_by_user(self, user, is_available=True):
-        user_collections = get_default_user_collections(user.pk)
+    def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
+            journal__collections=collection)
         return objects_all
 
 

@@ -938,6 +938,15 @@ class JournalRestAPITest(TestCase):
         response = self.client.delete('/api/v1/journals/%s/' % journal.pk)
         self.assertEqual(response.status_code, 405)
 
+    def test_list_all_by_collection(self):
+        import json
+        journal = self._makeOne()
+        response = self.client.get('/api/v1/journals/?collection=brasil')
+        self.assertEqual(response.status_code, 200)
+
+        response_as_py = json.loads(response.content)
+        self.assertEqual(len(response_as_py), 2)
+
 
 class CollectionRestAPITest(TestCase):
     def setUp(self):

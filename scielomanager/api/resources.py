@@ -43,6 +43,22 @@ class IssueResource(ModelResource):
         resource_name = 'issues'
         allowed_methods = ['get', ]
 
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by the collection's name_slug.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(IssueResource, self).build_filters(filters)
+
+        if 'collection' in filters:
+            issues = Issue.objects.filter(
+                journal__collections__name_slug=filters['collection'])
+            orm_filters['pk__in'] = issues
+
+        return orm_filters
+
 
 class CollectionResource(ModelResource):
     class Meta:
@@ -101,6 +117,22 @@ class JournalResource(ModelResource):
         filtering = {
             'is_trashed': ('exact',),
         }
+
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by the collection's name_slug.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(JournalResource, self).build_filters(filters)
+
+        if 'collection' in filters:
+            journals = Journal.objects.filter(
+                collections__name_slug=filters['collection'])
+            orm_filters['pk__in'] = journals
+
+        return orm_filters
 
     def dehydrate_missions(self, bundle):
         return [(mission.language.iso_code, mission.description)
