@@ -293,9 +293,9 @@ class JournalImport:
         if '62' in record:
             journal.copyrighter = record['62'][0]
 
-        # Text Language
+        # Initial Year
         if '301' in record:
-            journal.init_year = record['301'][0]
+            journal.init_year = record['301'][0][0:4]
 
         # Initial Volume
         if '302' in record:
@@ -307,7 +307,7 @@ class JournalImport:
 
         # Final Year
         if '304' in record:
-            journal.final_year = record['304'][0]
+            journal.final_year = record['304'][0][0:4]
 
         # Final Volumen
         if '305' in record:
