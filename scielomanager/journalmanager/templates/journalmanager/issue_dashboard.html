@@ -20,7 +20,7 @@
   </div>
 </div>
 
-<table class="table table table-striped table-bordered table-condensed">
+<table class="table-issue">
   <thead>
     <tr>
       <th>{% trans 'Year' %}</th>
@@ -32,10 +32,14 @@
   {% for year, vols in issue_grid.items %}
     {% for vol, nums in vols.items %}
     <tr>
-      <td>{{ year }}</td>
-      <td>{{ vol|default:'-' }}</td>
+      <th>{{ year }}</th>
+      <th>{{ vol|default:'-' }}</th>
       {% for num in nums %}
-        <td><a href="{% url issue.edit num.journal.pk num.id %}">{{ num.number }}</a></td>
+        {% if not num.number and not num.suppl_number and not num.suppl_volume %}
+        <td><a href="{% url issue.edit num.journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
+        {% else %}
+        <td><a href="{% url issue.edit num.journal.pk num.id %}">{{ num.identification }}</a></td>
+        {% endif %}
       {% endfor %}
     </tr>
     {% endfor %}

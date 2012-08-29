@@ -93,7 +93,7 @@ Em resumo, significa que o processo de exportação de bases do SciELO Manager p
 
 Alguns arquivos texto também são gerados como entrada de dados para ferramenta de marcação, são eles:
 
- * automata.mds
+ * **automata.mds**
 
   Formato::
 
@@ -125,11 +125,34 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
     1413-7852;ocitat;aob.amd;tgother.amd
     0103-2100;vcitat;ape.amd;tgvanc.amd
 
- * en_issue.mds, pt_issue.mds e es_issue.mds
+ * **issue.mds**
 
   Formato::
 
-    linha 1: "legenda do número". Ex.: Braz. J. Microbiol. v.41 n.4
+    linha 1: Braz. J. Microbiol. v.41 n.4  # Legenda do número
+    linha 2: mes inicial/mes final
+    linha 3: issue order (v36)
+    linha 4: em branco
+    linha 5: em branco
+
+  Exemplo::
+
+    Braz. J. Microbiol. v.41 n.4
+    01/03  
+    1
+
+
+    Rev. Saúde Pública  n.ahead pr 2010
+    10/12  
+    2
+
+
+
+ * **en_issue.mds, pt_issue.mds e es_issue.mds**
+
+  Formato::
+
+    linha 1: Braz. J. Microbiol. v.41 n.4  # Legenda do número
     linha 2: título abrev;vol;suplvol;num;suplno;dateiso;issn;status
     linha 3: seções separadas por ponto-e-virgula
     linha 4: código das seções separadas por ponto-e-virgula
@@ -167,6 +190,18 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
     No Descriptor
     other standard
 
+  * **journal_standard.txt**
+
+  Arquivo CSV com atributos separado por #
+
+  Onde esta "print|online" deve ser indicado apenas um dos valores de acordo com o tipo de ISSN usado na SciELO.
+
+  Formato::
+
+    issn_id#título abreviado#norma#print|online#issn_atual#area temática#título Medline#codigo medline#título completo#acron#print_issn#online_issn
+
+  Exemplo::
+
 ------------------------
 Requisitos da Exportação
 ------------------------
@@ -191,7 +226,14 @@ A regra de negócio para esses dados será a seguinte:
 
 1. Informação de número especial "es/esp", único "unico", composição de números "10-14", números compostos de letras "1a, 1b", etc, deverão ser inseridas no próprio campo **Number** que será de preenchimento livre. Cabe ao documentalista garantir a integridade entre a sequencia de números no SciELO e a sequencia de números da revista.
 
-2. Ahead, Review, Press Release, não mais serão criados pelo SciELO Manager, será considerado que todos periódicos possuem um único Ahead, Review, Press Release. Cabe ao processo de exportação gerar esses fascículos especiais para cada periódico e tratar a apresentação do mesmo no site público caso algum artigo seja marcado como pertencente a um desses fascículos especiais. 
+2. Ahead, Review, Press Release, não mais serão criados pelo SciELO Manager, será considerado que todos periódicos possuem um único Ahead, Review, Press Release. Cabe ao processo de exportação gerar esses fascículos especiais para cada periódico e tratar a apresentação do mesmo no site público caso algum artigo seja marcado como pertencente a um desses fascículos especiais.
+
+3. Campo v6 representa numeração sequencial de fascículos de um periódico, esse campo não deve ser considerado na exportação pois é gerado pelo processamento SciELO.
+
+4. Campos 65 e 64 devem ser construidos utilizando o ano de publicação YYYY concatenado com o mês final de publicação "publication_end_month". MM e precedido de 00 para o caracteres que representam o dia 
+
+  Ex: 20100300
+
 
 Artigo
 ``````
@@ -204,38 +246,152 @@ Remoção de Campos desnecessários
 
 De acordo com reunião realizada em 27 de março alguns campos no contexto da SciELO não serão mais cosiderados pelo SciELO Manager, entretanto para manter a compatibilidade com a atual estrutura de dados os valores deste campo serão inseridos nas bases de dados de forma automática pois seus valores sempre foram os mesmos durante os 15 anos de operação do SciELO.
 
+Issue
+`````
+
 Title
 `````
 
-1. Later Title
+1. Later Title 
   
   Será controlado automaticamente pelo campo "título anterior". Deve ser mantido na exportação para compatibilidade.
 
-2. Center
+2. Center (v10)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade. Tem relação com o centro reponsável pela marcação de um documento.
 
-3. Final Volume
+3. Final Volume (v305)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade.
 
-4. Final Number
+4. Final Number (v304)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade.
 
-5. Alphabet
+5. Alphabet (v340)
 
   Excluído da aplicação. Não precisa ser mantido para compatibilidade.
 
-6. National Code
-
-  Excluído da aplicação. Deve ser mantido na exportação para compatibilidade. Exemplo: BR1.1
-  Deve ser parametrizado na exportação.
-
-7. Literature Type
+6. Literature Type (v5)
 
   Excluído da aplicação. Deve ser cravado o valor "S" para manter compatibilidade.
 
-8. Treatment Level
+7. Treatment Level (v6)
 
   Excluído da aplicação. Deve ser cravado o valor "Collective Level" para manter compatibilidade.
+
+8. País de Publicação (v310)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade, esses dados são repetidos no campo address
+
+9. Estado de Publicação (v320)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade, esses dados são repetidos no campo address
+
+10. Cidade de Publicação (v490)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade, esses dados são repetidos no campo address
+
+11. Classificação (v430)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+12. Número de identificação (v30)
+  
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+13. URL Site SciELO (v690)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+14. Rede SciELO (v691)
+
+  Excluído da aplicação. Era utilizado como flag de coleções para processamento de geração de bases, 
+  quando mais de uma coleção compartilha mesma base title no site local. Resolver este problema
+  criando instalações independentes para cada coleção SciELO, ex: Brasil e Saúde Pública.
+
+  Foram encontradas ocorrencias do campo v691 no arquivo sci_serial.xis entretanto parece não estar
+  em uso uma vez que faz referência a arquivos template (ScieloXML/collections.xis) que não estão 
+  atualizados.
+
+
+15. É suplemento de (v560)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+16. É suplemento de (v550)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+16. Código Medline (v420)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. 
+
+  Apenas 17 periódicos possuem este código hoje. Segue lista de referência para implementação futura
+  deste campo::
+
+    Anais da Academia Brasileira de Ciências - 45A
+    Arquivos Brasileiros de Endocrinologia & Metabologia - 0403437
+    Arquivos Brasileiros de Oftalmologia - 0400645
+    Arquivos de Gastroenterologia - 8TR
+    Brazilian Dental Journal  - 9214652
+    Brazilian Journal of Medical and Biological Research - BOF
+    Memórias do Instituto Oswaldo Cruz - MRY
+    Physis: Revista de Saúde Coletiva - 9440484
+    Revista Brasileira de Biologia - RGH 
+    Revista Brasileira de Parasitologia Veterinária - 9440482
+    Revista Gaúcha de Enfermagem - 15712799
+    Revista Latino-Americana de Enfermagem - 9420934
+    Revista da Associação M?dica Brasileira - BR5
+    Revista da Sociedade Brasileira de Medicina Tropical - RET
+    Revista do Hospital das Clínicas - S3L
+    Revista do Instituto de Medicina Tropical de São Paulo - S9D
+    São Paulo Medical Journal - SZ5
+
+17. Título Abreviado Medline (v421)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. Importado como other titles 
+  para compor bibliometria e afins.
+
+  Apenas 29 periódicos possuem este dado na base de dado. Segue lista de renferência para implementação
+  futura deste campo::
+
+    Anais da Academia Brasileira de Ciências - An Acad Bras Cienc
+    Arquivos Brasileiros de Cardiologia - Arq Bras Cardiol
+    Arquivos Brasileiros de Endocrinologia & Metabologia - Arq Bras Endocrinol Metabol. 
+    Arquivos Brasileiros de Oftalmologia - Arq Bras Oftalmol.
+    Arquivos de Gastroenterologia - Arq Gastroenterol
+    Arquivos de Neuro-Psiquiatria - Arq Neuropsiquiatr
+    Brazilian Dental Journal  - Braz Dent J
+    Brazilian Journal of Biology - Braz J Biol.
+    Brazilian Journal of Infectious Diseases - Braz J Infect Dis
+    Brazilian Journal of Medical and Biological Research - Braz J Med Biol Res
+    Brazilian Oral Research - Braz. oral res
+    Cadernos de Saúde Pública - Cad Saude Publica
+    Clinics - Clinics
+    International braz j urol - int j urol
+    Memórias do Instituto Oswaldo Cruz - Mem Inst Oswaldo Cruz
+    Pesquisa Odontológica Brasileira - Pesqui Odontol Bras.
+    Physis: Revista de Saúde Coletiva - Physis
+    Revista Brasileira de Biologia - Rev Bras Biol
+    Revista Brasileira de Parasitologia Veterinária - Rev Bras Parasitol Vet
+    Revista Gaúcha de Enfermagem - Rev Gaucha Enferm.
+    Revista Latino-Americana de Enfermagem - Rev Lat Am Enfermagem
+    Revista da Associação Médica Brasileira - Rev Assoc Med Bras
+    Revista da Sociedade Brasileira de Medicina Tropical - Rev Soc Bras Med Trop
+    Revista de Saúde Pública - Rev Saude Publica
+    Revista do Hospital das Clínicas - Rev. Hosp. Clin. Fac. Med. Univ. São Paulo
+    Revista do Instituto de Medicina Tropical de São Paulo - Rev Inst Med Trop São Paulo
+    São Paulo Medical Journal - São Paulo Med J
+
+18. FTP (v66)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+19. Assinatura do usuário (v67)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade.
+
+20. Seção (130)
+
+  Excluído da aplicação. Não precisa ser mantido para compatibilidade. Nunca foi usado

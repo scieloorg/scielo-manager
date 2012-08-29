@@ -1,6 +1,7 @@
 #
-#   Deve ser matida a ordem dos arquivos JS e CSS
+#   DEVE SER MANTIDA A ORDEM DOS ARQUIVOS JS e CSS
 #
+
 from django_assets import Bundle, register
 
 base_bundle = Bundle('../static/js/jquery/jquery-1.7.1.js',
@@ -23,8 +24,8 @@ js = Bundle(base_bundle, plugins_bundle, app_bundle, filters='yui_js', output='b
 
 register('js', js)
 
-css = Bundle('../static/css/bootstrap-responsive.css',
-            '../static/css/bootstrap.css',
+css = Bundle('../static/css/bootstrap.css',
+            '../static/css/bootstrap-responsive.css',
             '../static/css/jquery.asmselect.css',
             '../static/css/jquery-ui.css',
             '../static/css/jquery.asmselect.css',

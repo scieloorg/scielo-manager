@@ -26,6 +26,8 @@ DATABASES = {
     }
 }
 
+MONGO_URI = r'mongodb://localhost:27017/journalmanager'
+
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
 GRAVATAR_BASE_URL = 'https://secure.gravatar.com'
 
@@ -69,6 +71,7 @@ MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 STATIC_URL = '/static/'
 MEDIA_URL  = '/static/media/'
 
+# Webassets 
 ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
 ASSETS_URL = '/static/'
 ASSETS_DEBUG = False
@@ -148,7 +151,7 @@ INSTALLED_APPS = (
     'django_assets',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS =(
+TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.i18n',
     'django.core.context_processors.csrf',
@@ -156,6 +159,7 @@ TEMPLATE_CONTEXT_PROCESSORS =(
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
     'journalmanager.context_processors.dynamic_template_inheritance',
+    'journalmanager.context_processors.access_to_settings',
     'scielo_extensions.context_processors.from_settings',
 )
 
@@ -195,14 +199,16 @@ LOGGING = {
 
 AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
 
+LOGIN_URL = '/accounts/login'
+
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 
 MANAGED_LANGUAGES_CHOICES = (
-    (u'en',u'English'),
-    (u'es',u'Español'),
-    (u'pt-BR',u'Português'),
+    (u'en', u'English'),
+    (u'es', u'Español'),
+    (u'pt-BR', u'Português'),
 )
-TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:] # exlude source language
+TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:]
 
 PAGINATION__ITEMS_PER_PAGE = 20
 
@@ -215,6 +221,10 @@ CACHES = {
         'LOCATION': '',
     }
 }
+
+IMAGE_CONTENT_TYPE = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
+IMAGE_DIMENSIONS = {'height_logo': 100, 'width_logo': 200, 'height_cover': 100, 'width_cover': 150}
+IMAGE_SIZE = 300 * 1014
 
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 

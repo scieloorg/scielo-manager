@@ -1,4 +1,6 @@
-import os, sys
+import os
+import sys
+
 
 for pwd in ['..', '.']:
     here = os.path.join(os.path.abspath(os.path.dirname(__file__)), pwd)
@@ -8,3 +10,11 @@ for pwd in ['..', '.']:
 os.environ['DJANGO_SETTINGS_MODULE'] = 'scielomanager.settings'
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
+
+try:
+    import newrelic.agent
+    newrelic.agent.initialize(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'newrelic.ini'), 'production')
+except (IOError, ImportError):
+    pass
+else:
+    application = newrelic.agent.wsgi_application()(application)

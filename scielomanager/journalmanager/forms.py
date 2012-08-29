@@ -1,15 +1,18 @@
 # coding: utf-8
 import re
 from django import forms
-from django.forms import ModelForm, DateField
-from django.forms.models import inlineformset_factory
+from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
+from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
+from django.core.files.images import get_image_dimensions
+from django.contrib.auth.models import Group
 
 from journalmanager import models
 from journalmanager import choices
 from scielo_extensions import formfields as fields
-from django.forms.util import ErrorList
+from django.conf import settings
+
 
 class UserCollectionContext(ModelForm):
     """
@@ -44,6 +47,9 @@ class JournalForm(UserCollectionContext):
         required=True)
     abstract_keyword_languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
+        required=True)
+    sponsor = forms.ModelMultipleChoiceField(models.Sponsor.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsors')}),
         required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
 
@@ -95,37 +101,76 @@ class JournalForm(UserCollectionContext):
 
         return self.cleaned_data["final_year"]
 
+    def clean_cover(self):
+
+        if self.cleaned_data['cover']:
+
+            if not self.cleaned_data['cover'].content_type in settings.IMAGE_CONTENT_TYPE:
+                raise forms.ValidationError(u'File type is not supported')
+
+            if self.cleaned_data['cover'].size > settings.IMAGE_SIZE:
+                raise forms.ValidationError(u'File size not allowed')
+
+            w, h = get_image_dimensions(self.cleaned_data['cover'])
+
+            if w != settings.IMAGE_DIMENSIONS['width_cover']:
+                raise forms.ValidationError("The image is %ipx pixel wide. It's supposed to be %spx" % (w, settings.IMAGE_DIMENSIONS['width_cover']))
+            if h != settings.IMAGE_DIMENSIONS['height_cover']:
+                raise forms.ValidationError("The image is %ipx pixel high. It's supposed to be %spx" % (h, settings.IMAGE_DIMENSIONS['height_cover']))
+
+        return self.cleaned_data['cover']
+
+    def clean_logo(self):
+
+        if self.cleaned_data['logo']:
+
+            if not self.cleaned_data['logo'].content_type in settings.IMAGE_CONTENT_TYPE:
+                raise forms.ValidationError(u'File type is not supported')
+
+            if self.cleaned_data['logo'].size > settings.IMAGE_SIZE:
+                raise forms.ValidationError(u'File size not allowed')
+
+            w, h = get_image_dimensions(self.cleaned_data['logo'])
+
+            if w != settings.IMAGE_DIMENSIONS['width_logo']:
+                raise forms.ValidationError("The image is %ipx pixel wide. It's supposed to be %spx" % (w, settings.IMAGE_DIMENSIONS['width_logo']))
+            if h != settings.IMAGE_DIMENSIONS['height_logo']:
+                raise forms.ValidationError("The image is %ipx pixel high. It's supposed to be %spx" % (h, settings.IMAGE_DIMENSIONS['height_logo']))
+
+        return self.cleaned_data['logo']
+
     class Meta:
 
         model = models.Journal
         exclude = ('pub_status', 'pub_status_changed_by')
         #Overriding the default field types or widgets
         widgets = {
-           'title': forms.TextInput(attrs={'class':'span9'}),
-           'title_iso': forms.TextInput(attrs={'class':'span9'}),
-           'short_title': forms.TextInput(attrs={'class':'span9'}),
-           'previous_title': forms.Select(attrs={'class':'span9'}),
-           'acronym': forms.TextInput(attrs={'class':'span2'}),
-           'scielo_issn': forms.Select(attrs={'class':'span3'}),
-           'subject_descriptors': forms.Textarea(attrs={'class':'span9'}),
-           'init_year': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker0'}),
-           'init_vol': forms.TextInput(attrs={'class':'span1'}),
-           'init_num': forms.TextInput(attrs={'class':'span1'}),
-           'final_year': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker1'}),
-           'final_vol': forms.TextInput(attrs={'class':'span1'}),
-           'final_num': forms.TextInput(attrs={'class':'span1'}),
-           'url_main_collection': forms.TextInput(attrs={'class':'span9'}),
-           'url_online_submission': forms.TextInput(attrs={'class':'span9'}),
-           'url_journal': forms.TextInput(attrs={'class':'span9'}),
-           'notes': forms.Textarea(attrs={'class':'span9'}),
-           'editorial_standard': forms.Select(attrs={'class':'span3'}),
-           'copyrighter': forms.TextInput(attrs={'class':'span8'}),
-           'index_coverage': forms.Textarea(attrs={'class':'span9'}),
-           'other_previous_title': forms.TextInput(attrs={'class':'span9'}),
+           'title': forms.TextInput(attrs={'class': 'span9'}),
+           'title_iso': forms.TextInput(attrs={'class': 'span9'}),
+           'short_title': forms.TextInput(attrs={'class': 'span9'}),
+           'previous_title': forms.Select(attrs={'class': 'span9'}),
+           'acronym': forms.TextInput(attrs={'class': 'span2'}),
+           'scielo_issn': forms.Select(attrs={'class': 'span3'}),
+           'subject_descriptors': forms.Textarea(attrs={'class': 'span9'}),
+           'init_year': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker0'}),
+           'init_vol': forms.TextInput(attrs={'class': 'span1'}),
+           'init_num': forms.TextInput(attrs={'class': 'span1'}),
+           'final_year': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker1'}),
+           'final_vol': forms.TextInput(attrs={'class': 'span1'}),
+           'final_num': forms.TextInput(attrs={'class': 'span1'}),
+           'url_main_collection': forms.TextInput(attrs={'class': 'span9'}),
+           'url_online_submission': forms.TextInput(attrs={'class': 'span9'}),
+           'url_journal': forms.TextInput(attrs={'class': 'span9'}),
+           'notes': forms.Textarea(attrs={'class': 'span9'}),
+           'editorial_standard': forms.Select(attrs={'class': 'span3'}),
+           'copyrighter': forms.TextInput(attrs={'class': 'span8'}),
+           'index_coverage': forms.Textarea(attrs={'class': 'span9'}),
+           'other_previous_title': forms.TextInput(attrs={'class': 'span9'}),
         }
 
+
 class CollectionForm(ModelForm):
-  
+
     def __init__(self, *args, **kwargs):
         super(CollectionForm, self).__init__(*args, **kwargs)
 
@@ -133,31 +178,6 @@ class CollectionForm(ModelForm):
         model = models.Collection
         exclude = ('collection', )
 
-class PublisherForm(UserCollectionContext):
-
-    def __init__(self, *args, **kwargs):
-        super(PublisherForm, self).__init__(*args, **kwargs)
-
-
-    class Meta:
-        model = models.Publisher
-
-        widgets = {
-            'name': forms.TextInput(attrs={'class':'span6'}),
-            'complement': forms.Textarea(attrs={'class':'span6'}),
-            'acronym': forms.TextInput(attrs={'class':'span6'}),
-            'country': forms.TextInput(attrs={'class':'span6'}),
-            'state': forms.TextInput(attrs={'class':'span6'}),
-            'city': forms.TextInput(attrs={'class':'span6'}),
-            'address': forms.Textarea(attrs={'class':'span6'}),
-            'address_number': forms.TextInput(attrs={'class':'span6'}),
-            'address_complement': forms.TextInput(attrs={'class':'span6'}),
-            'zip_code': forms.TextInput(attrs={'class':'span6'}),
-            'phone': forms.TextInput(attrs={'class':'span6'}),
-            'fax': forms.TextInput(attrs={'class':'span6'}),
-            'cel': forms.TextInput(attrs={'class':'span6'}),
-            'mail': forms.TextInput(attrs={'class':'span6'}),
-        }
 
 class SponsorForm(UserCollectionContext):
 
@@ -166,28 +186,27 @@ class SponsorForm(UserCollectionContext):
 
     class Meta:
         model = models.Sponsor
+        exclude = ('acronym', 'country', 'state', 'city', 'address_number', 'address_complement',
+            'zip_code', 'phone', 'fax', 'cel')
 
         widgets = {
-            'name': forms.TextInput(attrs={'class':'span6'}),
-            'address': forms.Textarea(attrs={'class':'span6'}),
-            'acronym': forms.TextInput(attrs={'class':'span6'}),
-            'country': forms.TextInput(attrs={'class':'span6'}),
-            'state': forms.TextInput(attrs={'class':'span6'}),
-            'city': forms.TextInput(attrs={'class':'span6'}),
-            'address': forms.Textarea(attrs={'class':'span6'}),
-            'address_number': forms.TextInput(attrs={'class':'span6'}),
-            'address_complement': forms.TextInput(attrs={'class':'span6'}),
-            'zip_code': forms.TextInput(attrs={'class':'span6'}),
-            'phone': forms.TextInput(attrs={'class':'span6'}),
-            'fax': forms.TextInput(attrs={'class':'span6'}),
-            'cel': forms.TextInput(attrs={'class':'span6'}),
-            'mail': forms.TextInput(attrs={'class':'span6'}),
+            'name': forms.TextInput(attrs={'class': 'span6'}),
+            'complement': forms.Textarea(attrs={'class': 'span6'}),
+            'address': forms.Textarea(attrs={'class': 'span6'}),
+            'email': forms.TextInput(attrs={'class': 'span6'}),
         }
+
+
 class UserForm(ModelForm):
+    groups = forms.ModelMultipleChoiceField(Group.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more groups')}),
+        required=False)
+
     class Meta:
         model = models.User
-        exclude = ('is_staff','is_superuser','last_login','date_joined',
-                   'user_permissions', 'email', 'password')
+        exclude = ('is_staff', 'is_superuser', 'last_login', 'date_joined',
+                   'user_permissions', 'email', 'password', 'is_active')
+
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
         #user.set_password(self.cleaned_data["password"])
@@ -196,6 +215,7 @@ class UserForm(ModelForm):
             user.save()
             self.save_m2m()
         return user
+
 
 class EventJournalForm(forms.Form):
     pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
@@ -283,6 +303,7 @@ class SectionForm(ModelForm):
         model = models.Section
         exclude = ('journal',)
 
+
 class UserCollectionsForm(ModelForm):
     class Meta:
       model = models.UserCollections
@@ -291,12 +312,14 @@ class UserCollectionsForm(ModelForm):
         'collection':forms.Select(attrs={'class':'span8'}),
       }
 
+
 class JournalStudyAreaForm(ModelForm):
     class Meta:
       model = models.JournalStudyArea
       widgets = {
         'studyarea':forms.TextInput(attrs={'class':'span10'}),
       }
+
 
 class JournalMissionForm(ModelForm):
     class Meta:
@@ -305,12 +328,14 @@ class JournalMissionForm(ModelForm):
         'description':forms.Textarea(attrs={'class':'span6', 'rows':'3'}),
       }
 
+
 class JournalTitleForm(ModelForm):
     class Meta:
       model = models.JournalTitle
       widgets = {
         'title': forms.TextInput(attrs={'class':'span6'}),
       }
+
 
 class IssueTitleForm(ModelForm):
     class Meta:

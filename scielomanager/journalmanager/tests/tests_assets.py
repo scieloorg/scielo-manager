@@ -2,9 +2,10 @@
 """
 Collection of domain object factories to make testing easier.
 """
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from scielomanager.journalmanager import models
+
 
 def get_sample_section_dataform(**kwargs):
     section_attrs = {
@@ -18,6 +19,7 @@ def get_sample_section_dataform(**kwargs):
 
     return section_attrs
 
+
 def get_sample_userprofile(**kwargs):
     userprofile_attrs = {
         'email': 'dev@scielo.org',
@@ -25,6 +27,7 @@ def get_sample_userprofile(**kwargs):
     userprofile_attrs.update(kwargs)
 
     return models.UserProfile(**userprofile_attrs)
+
 
 def get_sample_journal_dataform(dict_params=None):
 
@@ -56,6 +59,12 @@ def get_sample_journal_dataform(dict_params=None):
       'journal-pub_status_changed_by': 'O motivo da mudança é...',
       'journal-print_issn': '0102-6720',
       'journal-copyrighter': 'Texto do copyrighter',
+      'journal-publisher_name': 'Colégio Brasileiro de Cirurgia Digestiva',
+      'journal-publisher_country': 'BR',
+      'journal-publisher_state': 'SP',
+      'journal-publication_city': 'São Paulo',
+      'journal-editor_address': 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741',
+      'journal-editor_email': 'cbcd@cbcd.org.br',
 
       #Title formset data
       'title-TOTAL_FORMS': 1,
@@ -85,6 +94,7 @@ def get_sample_journal_dataform(dict_params=None):
     journal_attrs.update(dict_params)
 
     return journal_attrs
+
 
 def get_sample_institution_dataform(dict_params=None):
 
@@ -116,6 +126,7 @@ def get_sample_institution_dataform(dict_params=None):
 
     return institution_attrs
 
+
 def get_sample_collection_dataform(dict_params=None):
 
     if dict_params is None:
@@ -134,6 +145,7 @@ def get_sample_collection_dataform(dict_params=None):
     sponsor_attrs.update(dict_params)
 
     return sponsor_attrs
+
 
 def get_sample_sponsor_dataform(dict_params=None):
 
@@ -160,30 +172,6 @@ def get_sample_sponsor_dataform(dict_params=None):
 
     return sponsor_attrs
 
-def get_sample_publisher_dataform(dict_params=None):
-
-    if dict_params is None:
-        dict_params = {}
-
-    publisher_attrs = {
-      'publisher-city': '',
-      'publisher-fax': '',
-      'publisher-name': u'Associação Nacional de História - ANPUH',
-      'publisher-address_number': '222',
-      'publisher-acronym': 'rbh',
-      'publisher-country': 'BR',
-      'publisher-cel': '',
-      'publisher-phone': '',
-      'publisher-state': '',
-      'publisher-address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'publisher-email': 'teste@scielo.org',
-      'publisher-address_complement': '',
-      'publisher-is_trashed': False,
-    }
-
-    publisher_attrs.update(dict_params)
-
-    return publisher_attrs
 
 def get_sample_issue_dataform(dict_params=None):
     """
@@ -219,6 +207,7 @@ def get_sample_issue_dataform(dict_params=None):
 
     return issue_attrs
 
+
 def get_sample_uselicense_dataform(**kwargs):
 
     uselicense_attrs = {
@@ -230,6 +219,7 @@ def get_sample_uselicense_dataform(**kwargs):
     uselicense_attrs.update(kwargs)
 
     return uselicense_attrs
+
 
 def get_sample_user_dataform(dict_params=None):
 
@@ -261,6 +251,7 @@ def get_sample_user_dataform(dict_params=None):
 
     return user_attrs
 
+
 def get_sample_journal():
     """
     Journal object factory
@@ -269,8 +260,9 @@ def get_sample_journal():
     to another model object):
     - ['sponsor', 'final_num', 'eletronic_issn', 'final_vol', 'copyrighter', 'creator',
        'url_journal', 'url_online_submission', 'next_title_id', 'final_year', 'collections',
-       'use_license', 'previous_title_id', 'url_main_collection',
-       'publisher', 'center', 'notes','pub_status_changed_by']
+       'use_license', 'previous_title_id', 'url_main_collection', 'center', 'notes','pub_status_changed_by',
+       publisher_name, publisher_country, publisher_state, publication_city, editor_address,
+       editor_email]
     """
 
     journal_attrs = {
@@ -296,11 +288,18 @@ def get_sample_journal():
       'pub_status': 'current',
       'pub_status_reason': 'Motivo da mudança é...',
       'print_issn': '0102-6720',
+      'publisher_name': 'Colégio Brasileiro de Cirurgia Digestiva',
+      'publisher_country': 'BR',
+      'publisher_state': 'SP',
+      'publication_city': 'São Paulo',
+      'editor_address': 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741',
+      'editor_email': 'cbcd@cbcd.org.br'
     }
 
     return models.Journal(**journal_attrs)
 
-def get_sample_creator(is_active = True, is_superuser = True, is_staff = True):
+
+def get_sample_creator(is_active=True, is_superuser=True, is_staff=True):
 
     user_attrs = {
       'username': 'dummyuser',
@@ -315,6 +314,7 @@ def get_sample_creator(is_active = True, is_superuser = True, is_staff = True):
 
     return User(**user_attrs)
 
+
 def get_sample_usercollections(user, collection):
 
     usercollections_attrs = {
@@ -327,21 +327,25 @@ def get_sample_usercollections(user, collection):
     return models.UserCollections(**usercollections_attrs)
 
 
-def get_sample_collection():
+def get_sample_collection(name='Brasil', url='http://www.scielo.br/', country='Brasil',
+                          fax='11 5555-4444', address_number='430', state='São Paulo',
+                          city='São Paulo', address=u'Rua Machado Bittencourt',
+                          email='fapesp@scielo.org'):
 
     collection_attrs = {
-      'url': 'http://www.scielo.br/',
-      'name': 'SciELO',
-      'fax': '11 5555-4444',
-      'address_number': '430',
-      'country': 'Brasil',
-      'state': 'São Paulo',
-      'city': 'São Paulo',
-      'address': u'Rua Machado Bittencourt',
-      'email': 'fapesp@scielo.org',
+      'url': url,
+      'name': name,
+      'fax': fax,
+      'address_number': address_number,
+      'country': country,
+      'state': state,
+      'city': city,
+      'address': address,
+      'email': email,
     }
 
     return models.Collection(**collection_attrs)
+
 
 def get_sample_sponsor():
     """
@@ -370,32 +374,6 @@ def get_sample_sponsor():
 
     return models.Sponsor(**sponsor_attrs)
 
-def get_sample_publisher():
-    """
-    Returns a publisher object, without the following attributes (non mandatory or need to be bound
-    to another model object):
-    - ['city', 'fax', 'address_number', 'cel', 'collection', 'phone', 'state', 'email',
-       'address_complement']
-    """
-
-    publisher_attrs = {
-      'city': '',
-      'fax': '',
-      'name': u'Associação Nacional de História - ANPUH',
-      'address_number': '',
-      'acronym': 'rbh',
-      'country': '',
-      'cel': '',
-      'phone': '',
-      'state': '',
-      'address': u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047',
-      'email': '',
-      'address_complement': '',
-      'is_trashed': False,
-
-    }
-
-    return models.Publisher(**publisher_attrs)
 
 def get_sample_uselicense():
 
@@ -407,6 +385,7 @@ def get_sample_uselicense():
 
     return models.UseLicense(**uselicense_attrs)
 
+
 def get_sample_index_database():
 
     indexing_index_database_attrs = {
@@ -414,6 +393,7 @@ def get_sample_index_database():
     }
 
     return models.IndexDatabase(**indexing_index_database_attrs)
+
 
 def get_sample_section():
     """
@@ -424,6 +404,7 @@ def get_sample_section():
     }
 
     return models.Section(**section_attrs)
+
 
 def get_sample_issue():
     """
@@ -446,6 +427,7 @@ def get_sample_issue():
 
     return models.Issue(**issue_attrs)
 
+
 def get_sample_language():
     language_attrs = {
         'iso_code': 'pt',
@@ -453,3 +435,12 @@ def get_sample_language():
     }
 
     return models.Language(**language_attrs)
+
+
+def get_sample_group():
+
+    group_attrs = {
+      'name': 'testgroup',
+    }
+
+    return Group(**group_attrs)

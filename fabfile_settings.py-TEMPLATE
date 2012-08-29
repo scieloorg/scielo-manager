@@ -1,0 +1,9 @@
+# coding:utf-8
+
+deploy_envs = {
+    'homolog': {
+        'installation_path': '/var/www/jmanager_scielo_org',
+        'venv_path': '/var/www/jmanager_scielo_org/jmanager-env',
+        'webservice_restart_cmd': '/usr/local/apache-2.2.16-php5.2.10/bin/apachectl graceful',
+    },
+}

@@ -13,3 +13,4 @@ lxml
 pyyaml
 webassets==0.7.1
 yuicompressor
+pymongo
