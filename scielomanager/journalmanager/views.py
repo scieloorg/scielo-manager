@@ -139,13 +139,17 @@ def issue_index(request, journal_id):
     for issue in objects_all:
         year_node = by_years.setdefault(issue.publication_year, {})
         volume_node = year_node.setdefault(issue.volume, {})
+
         try:
+            # numbers must be separated from string ids.
             int(issue.identification)
-            volume_node.setdefault('numbers', [])
-            volume_node['numbers'].append(issue)
         except ValueError:
-            volume_node.setdefault('others', [])
-            volume_node['others'].append(issue)
+            node_name = 'others'
+        else:
+            node_name = 'numbers'
+
+        node = volume_node.setdefault(node_name, [])
+        node.append(issue)
 
     for year, volume in by_years.items():
         for vol, issues in volume.items():
