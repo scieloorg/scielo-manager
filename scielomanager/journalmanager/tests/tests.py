@@ -714,7 +714,7 @@ class LoggedInViewsTest(TestCase):
 
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
-                for issue in issues:
+                for issue in issues['numbers']:
                     self.assertEqual(issue.is_trashed, False)
 
         #change atribute is_available
@@ -725,7 +725,7 @@ class LoggedInViewsTest(TestCase):
 
         for year, volumes in response.context['issue_grid'].items():
             for volume, issues in volumes.items():
-                for issue in issues:
+                for issue in issues['numbers']:
                     self.assertEqual(issue.is_trashed, True)
 
     def test_contextualized_collection_field_on_add_journal(self):

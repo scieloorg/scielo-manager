@@ -161,11 +161,12 @@ class IssueImport:
             issue.publication_end_month = 0
             issue.publication_year = 0000
 
-        if '42' in record:
-            if int(record['42'][0]) == 1:
-                issue.is_trashed = False
-            else:
-                issue.is_trashed = True
+        #if '42' in record:
+            #if int(record['42'][0]) == 1:
+                #issue.is_trashed = False
+            #else:
+                #issue.is_trashed = True
+
         if '200' in record:
             if int(record['200'][0]) == 1:
                 issue.is_marked_up = True
