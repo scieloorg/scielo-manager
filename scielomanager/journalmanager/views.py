@@ -135,15 +135,28 @@ def issue_index(request, journal_id):
         journal=journal_id).order_by('-publication_year')
 
     by_years = OrderedDict()
+
     for issue in objects_all:
         year_node = by_years.setdefault(issue.publication_year, {})
-        volume_node = year_node.setdefault(issue.volume, [])
+        volume_node = year_node.setdefault(issue.volume, {})
 
-        volume_node.append(issue)
+        try:
+            # numbers must be separated from string ids.
+            int(issue.identification)
+        except ValueError:
+            node_name = 'others'
+        else:
+            node_name = 'numbers'
+
+        node = volume_node.setdefault(node_name, [])
+        node.append(issue)
 
     for year, volume in by_years.items():
         for vol, issues in volume.items():
-            issues.sort(key=lambda x: x.identification)
+            if 'numbers' in issues:
+                issues['numbers'].sort(key=lambda x: int(x.identification))
+            if 'others' in issues:
+                issues['others'].sort(key=lambda x: x.identification)
 
     template = loader.get_template('journalmanager/issue_dashboard.html')
     context = RequestContext(request, {
