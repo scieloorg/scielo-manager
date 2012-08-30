@@ -5,4 +5,4 @@ settings_local.include
 *.mo
 *.coverage
 _build/
-bundle*
+bundle.min*
