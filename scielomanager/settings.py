@@ -71,7 +71,7 @@ MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
 STATIC_URL = '/static/'
 MEDIA_URL  = '/static/media/'
 
-# Webassets 
+# Webassets
 ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
 ASSETS_URL = '/static/'
 ASSETS_DEBUG = False
@@ -144,6 +144,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.flatpages',
     'journalmanager',
+    'export',
     'south',
     'scielo_extensions',
     'widget_tweaks',
