@@ -96,17 +96,17 @@
       </div>
     </div>
 
-      <div class="control-group {% if add_form.order.errors %}error{% endif %}" style="float: left;  margin-left: 10px;">
-        <label for="{{ add_form.order.auto_id }}">
-          <span {% if add_form.order.field.required %}class="req-field"{% endif %}>
-            {% trans add_form.order.label %}
-          </span>
-        </label>
-        <div class="controls">
-          {{ add_form.order }}
-          {% field_help add_form.order.label add_form.order.help_text term-issue-order %}
-        </div>
+    <div class="control-group {% if add_form.order.errors %}error{% endif %}">
+      <label for="{{ add_form.order.auto_id }}">
+        <span {% if add_form.order.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.order.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.order }}
+        {% field_help add_form.order.label add_form.order.help_text term-issue-order %}
       </div>
+    </div>
 
     <div class="control-group {% if add_form.publication_start_month.errors %}error{% endif %}">
       <label for="{{ add_form.publication_start_month.auto_id }}">
