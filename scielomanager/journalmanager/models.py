@@ -472,6 +472,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
+    # this field will be removed ASAP
+    order = models.IntegerField(_('Issue Order'))
+
     @property
     def identification(self):
         suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
