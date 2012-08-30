@@ -1,0 +1,47 @@
+{% extends "base_form_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li class="active">{% trans 'Download markup files' %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<form action="#" method="POST">
+  {% csrf_token %}
+  {{form.as_p}}
+  <div class="row-fluid">
+    <input class="btn btn-primary" name="submit" type="submit" value="{% trans "download" %}"/>
+  </div>
+</form>
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#{{form.journal.auto_id}}").change(function() {
+      var selected = $('option:selected', this).val();
+      $.ajax({
+        url: '/api/v1/issues/?format=json&journal=' + selected,
+        success: function(data) {
+          $("#{{form.issue.auto_id}} option").remove();
+          for (var issue in data['objects']) {
+            var label = data['objects'][issue]['label'];
+            var year = data['objects'][issue]['publication_year'];
+            var issue_id = data['objects'][issue]['id'];
+            var display = year + ' - ' + label;
+
+            $("#{{form.issue.auto_id}}").append('<option value="'+issue_id+'">'+display+'</option>');
+          }
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
