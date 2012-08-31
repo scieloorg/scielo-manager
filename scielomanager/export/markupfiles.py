@@ -30,7 +30,7 @@ class Automata(object):
     # {dbvalue: journalmethod}
     issns = {
         'print': 'print_issn',
-        'electronic': 'electronic_issn',
+        'electronic': 'eletronic_issn',
     }
 
     def __init__(self, journal):
@@ -40,7 +40,7 @@ class Automata(object):
     def citat(self):
         tags = self.standards.get(self._journal.editorial_standard, None)
         if not tags:
-            raise AttributeError()
+            return ''
 
         return tags[0]
 
@@ -48,7 +48,7 @@ class Automata(object):
     def norma(self):
         tags = self.standards.get(self._journal.editorial_standard, None)
         if not tags:
-            raise AttributeError()
+            return ''
 
         return tags[1]
 
@@ -57,7 +57,7 @@ class Automata(object):
         pid_issn_field = self._journal.scielo_issn
         pid_issn = getattr(self._journal, self.issns[pid_issn_field], None)
         if not pid_issn:
-            raise AttributeError()
+            return ''
 
         return pid_issn
 
@@ -89,7 +89,7 @@ class Issue(object):
         return str(self._issue.order)
 
     def __unicode__(self):
-        rows = '\n'.join([self.legend, self.period, self.order, '', ''])
+        rows = '\r\n'.join([self.legend, self.period, self.order, '', ''])
         return rows
 
 
@@ -104,23 +104,28 @@ class L10nIssue(Automata, Issue):
 
     @property
     def volume(self):
-        return unicode(self._issue.volume)
+        v = self._issue.volume
+        return unicode(v) if v else ''
 
     @property
     def number(self):
-        return unicode(self._issue.number)
+        v = self._issue.number
+        return unicode(v) if v else ''
 
     @property
     def suppl_volume(self):
-        return unicode(self._issue.suppl_volume)
+        v = self._issue.suppl_volume
+        return unicode(v) if v else ''
 
     @property
     def suppl_number(self):
-        return unicode(self._issue.suppl_number)
+        v = self._issue.suppl_number
+        return unicode(v) if v else ''
 
     @property
     def date_iso(self):
-        return unicode(self._issue.publication_year)
+        v = self._issue.publication_year
+        return unicode(v) if v else ''
 
     @property
     def status(self):
@@ -156,7 +161,7 @@ class L10nIssue(Automata, Issue):
         return vocabulary.get(self._issue.journal.ctrl_vocabulary, 'No Descriptor')
 
     def __unicode__(self):
-        rows = '\n'.join([
+        rows = '\r\n'.join([
             self.legend,
             self.issue_meta,
             self.sections,
@@ -168,34 +173,71 @@ class L10nIssue(Automata, Issue):
         return rows
 
 
-class JournalStandards(L10nIssue):
+class JournalStandard(L10nIssue):
 
+    @property
+    def pub_type(self):
+        issns = {
+            'print': 'ppub',
+            'electronic': 'epub',
+        }
+        return issns[self._journal.scielo_issn]
+
+    @property
+    def study_area(self):
+        return '/'.join((area.study_area for area in self._journal.study_areas.all()))
+
+    @property
+    def medline_title(self):
+        return self._journal.title
+
+    @property
+    def medline_code(self):
+        return ''
+
+    @property
+    def pissn(self):
+        return self._journal.print_issn
+
+    @property
+    def eissn(self):
+        return self._journal.eletronic_issn
+
+    @property
+    def publisher(self):
+        return self._journal.publisher_name
+
+    @property
+    def title(self):
+        return self._journal.title
+
+    @property
     def journal_meta(self):
         return '#'.join([
             self.issn,
             self.abbrev_title,
             self.norma,
+            self.pub_type,
             self.issn,
-            self.tematic_area,
+            self.study_area,
             self.medline_title,
-            self.codigo_medline,
+            self.medline_code,
             self.title,
-            self.acron,
-            self.print_issn,
-            self.online_issn,
+            self.acron.lower(),
+            self.pissn,
+            self.eissn,
+            self.publisher,
             ])
 
     def __unicode__(self):
-        rows = '\n'.join([self.journal_meta])
-
-        return rows
+        return self.journal_meta
 
 
 def generate(journal, issue):
     export_automata = Automata(journal)
     export_issue = Issue(issue)
     export_l10n_issue = L10nIssue(journal, issue)
-    # export_journal_standard = JournalStandards(journal, issue)
+    export_journal_standard = JournalStandard(journal, issue)
 
     try:
         l10n_issue = unicode(export_l10n_issue)
@@ -205,7 +247,7 @@ def generate(journal, issue):
             ('en_issue.mds', l10n_issue),
             ('es_issue.mds', l10n_issue),
             ('pt_issue.mds', l10n_issue),
-            # ('journal_standards.txt', unicode(export_journal_standard)),
+            ('journal_standard.txt', unicode(export_journal_standard)),
         ]
     except AttributeError as exc:
         raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))
