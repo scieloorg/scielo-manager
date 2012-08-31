@@ -295,6 +295,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     final_year = models.CharField(_('Final Year'), max_length=4, null=True, blank=True)
     final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True)
     final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True)
+    medline_title = models.CharField(_('Medline Title'), max_length=256, null=True, blank=True)
+    medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
