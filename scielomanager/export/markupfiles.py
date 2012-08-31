@@ -1,6 +1,8 @@
 # coding: utf-8
-from scielomanager.export import bundle
 from django.conf import settings
+
+from scielomanager.export import bundle
+from scielomanager.journalmanager import choices
 
 
 MEDIA_ROOT = settings.MEDIA_ROOT + '/export/'
@@ -140,17 +142,25 @@ class L10nIssue(Automata, Issue):
 
     @property
     def sections(self):
-        return ';'.join([unicode(section) for section in self._issue.section.all()])
+        sections = ';'.join([unicode(section) for section in self._issue.section.all()])
+        return sections if sections else 'No section title'
+
+    @property
+    def sections_ids(self):
+        ids = ';'.join([unicode(section.actual_code) for section in self._issue.section.all()])
+        return ids if ids else 'nd'
 
     @property
     def ctrl_vocabulary(self):
-        return self._issue.journal.ctrl_vocabulary
+        vocabulary = dict(choices.CTRL_VOCABULARY)
+        return vocabulary.get(self._issue.journal.ctrl_vocabulary, 'No Descriptor')
 
     def __unicode__(self):
         rows = '\n'.join([
             self.legend,
             self.issue_meta,
             self.sections,
+            self.sections_ids,
             self.ctrl_vocabulary,
             self.norma,
             '',
@@ -158,16 +168,44 @@ class L10nIssue(Automata, Issue):
         return rows
 
 
+class JournalStandards(L10nIssue):
+
+    def journal_meta(self):
+        return '#'.join([
+            self.issn,
+            self.abbrev_title,
+            self.norma,
+            self.issn,
+            self.tematic_area,
+            self.medline_title,
+            self.codigo_medline,
+            self.title,
+            self.acron,
+            self.print_issn,
+            self.online_issn,
+            ])
+
+    def __unicode__(self):
+        rows = '\n'.join([self.journal_meta])
+
+        return rows
+
+
 def generate(journal, issue):
     export_automata = Automata(journal)
     export_issue = Issue(issue)
     export_l10n_issue = L10nIssue(journal, issue)
+    # export_journal_standard = JournalStandards(journal, issue)
 
     try:
+        l10n_issue = unicode(export_l10n_issue)
         packmeta = [
             ('automata.mds', unicode(export_automata)),
             ('issue.mds', unicode(export_issue)),
-            ('en_issue.mds', unicode(export_l10n_issue)),
+            ('en_issue.mds', l10n_issue),
+            ('es_issue.mds', l10n_issue),
+            ('pt_issue.mds', l10n_issue),
+            # ('journal_standards.txt', unicode(export_journal_standard)),
         ]
     except AttributeError as exc:
         raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))

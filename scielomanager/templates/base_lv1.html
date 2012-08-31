@@ -15,9 +15,24 @@
         <a class="brand" href="/">SciELO Manager</a>
         <div class="nav-collapse collapse">
           <ul class="nav">
-            {% if perms.journalmanager.list_journal %}<li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>{% endif %}
-            {% if perms.journalmanager.list_sponsor %}<li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>{% endif %}
-            {% if perms.journalmanager.change_user %}<li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>{% endif %}
+            {% if perms.journalmanager.list_journal %}
+            <li><a href="{% url journal.index %}">{% trans 'Journals' %}</a></li>
+            {% endif %}
+            {% if perms.journalmanager.list_sponsor %}
+            <li><a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a></li>
+            {% endif %}
+            {% if perms.journalmanager.change_user %}
+            <li><a href="{% url user.index %}">{% trans 'Users' %}</a></li>
+            {% endif %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                Downloads
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url export.markupfiles %}">{% trans 'Markup files' %}</a></li>
+              </ul>
+            </li>
           </ul>
           <ul class="nav pull-right">
             <li class="divider-vertical"></li>
@@ -70,7 +85,7 @@
           <i class="icon-trash"></i>
           {% trans 'Trash' %}
           </a>
-        </li> 
+        </li>
       {% endif %}
       <ul class="nav pull-right">
         <li>
@@ -83,7 +98,7 @@
             <button class="btn" style="vertical-align: 4px;" type="submit"><i class="icon-search icon-black"></i> {% trans 'Search' %}</button>
           </form>
         </li>
-      </ul>    
+      </ul>
     </ul>
   </div>
   <div class="row-fluid" style="min-height: 380px;">
@@ -116,8 +131,8 @@
     <div class="span3">
       <p>
         <strong>SciELO - Scientific Electronic Library Online <br/>
-          <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a> 
-          <a href="http://www.bireme.org">BIREME</a> 
+          <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a>
+          <a href="http://www.bireme.org">BIREME</a>
           <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a>
         </strong>
       </p>

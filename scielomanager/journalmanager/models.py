@@ -439,6 +439,10 @@ class Section(caching.base.CachingMixin, models.Model):
     def __unicode__(self):
         return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
+    @property
+    def actual_code(self):
+        return self.pk
+
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
 
