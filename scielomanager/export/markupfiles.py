@@ -72,25 +72,105 @@ class Issue(object):
     def __init__(self, issue):
         self._issue = issue
 
-    def __unicode__(self):
-        legend = '{0} {1}'.format(self._issue.journal.title_iso, unicode(self._issue))
-        period = '%02d/%02d' % (self._issue.publication_start_month, self._issue.publication_end_month)
+    @property
+    def legend(self):
+        return '{0} {1}'.format(self._issue.journal.title_iso,
+                                unicode(self._issue))
 
-        rows = '\n'.join([legend, period, str(self._issue.order), '', ''])
+    @property
+    def period(self):
+        return '%02d/%02d' % (self._issue.publication_start_month,
+            self._issue.publication_end_month)
+
+    @property
+    def order(self):
+        return str(self._issue.order)
+
+    def __unicode__(self):
+        rows = '\n'.join([self.legend, self.period, self.order, '', ''])
+        return rows
+
+
+class L10nIssue(Automata, Issue):
+    def __init__(self, journal, issue):
+        self._journal = journal
+        self._issue = issue
+
+    @property
+    def abbrev_title(self):
+        return self._issue.journal.title_iso
+
+    @property
+    def volume(self):
+        return unicode(self._issue.volume)
+
+    @property
+    def number(self):
+        return unicode(self._issue.number)
+
+    @property
+    def suppl_volume(self):
+        return unicode(self._issue.suppl_volume)
+
+    @property
+    def suppl_number(self):
+        return unicode(self._issue.suppl_number)
+
+    @property
+    def date_iso(self):
+        return unicode(self._issue.publication_year)
+
+    @property
+    def status(self):
+        # placebo
+        return '1'
+
+    @property
+    def issue_meta(self):
+        return ';'.join([
+            self.abbrev_title,
+            self.volume,
+            self.suppl_volume,
+            self.number,
+            self.suppl_number,
+            self.date_iso,
+            self.issn,
+            self.status,
+        ])
+
+    @property
+    def sections(self):
+        return ';'.join([unicode(section) for section in self._issue.section.all()])
+
+    @property
+    def ctrl_vocabulary(self):
+        return self._issue.journal.ctrl_vocabulary
+
+    def __unicode__(self):
+        rows = '\n'.join([
+            self.legend,
+            self.issue_meta,
+            self.sections,
+            self.ctrl_vocabulary,
+            self.norma,
+            '',
+        ])
         return rows
 
 
 def generate(journal, issue):
-    automata = Automata(journal)
-    issue = Issue(issue)
+    export_automata = Automata(journal)
+    export_issue = Issue(issue)
+    export_l10n_issue = L10nIssue(journal, issue)
 
     try:
         packmeta = [
-            ('automata.mds', unicode(automata)),
-            ('issue.mds', unicode(issue)),
+            ('automata.mds', unicode(export_automata)),
+            ('issue.mds', unicode(export_issue)),
+            ('en_issue.mds', unicode(export_l10n_issue)),
         ]
     except AttributeError as exc:
-        raise GenerationError('it was impossible to generate automata.mds for %s. %s' % (journal.pk, exc))
+        raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))
     else:
         pkg = bundle.Bundle(*packmeta)
 
