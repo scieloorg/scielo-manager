@@ -10,10 +10,7 @@ import urllib2
 import tempfile
 import argparse
 
-DELOREAN_URL = 'http://DOMAIN:PORT/generate/'
-ISIS_PATH = ""
-DATABASES = ['title']
-DATABASE_FST = {'title': 'tit_issn', 'issue': 'issue'}
+import config
 
 
 def save_bundle_tar(file_name, data, path=""):
@@ -66,11 +63,11 @@ def main():
     except OSError, e:
         print "OSError:", e
 
-    for database in DATABASES:
+    for database in config.DATABASES:
         print "Get metadata from database: " + database.upper() + " on collection " \
             + args.collection.upper() + "..."
         params = urllib.urlencode({'collection': args.collection})
-        resource_response = fetch_url(DELOREAN_URL + database, params)
+        resource_response = fetch_url(config.DELOREAN_URL + database, params)
         bundle_dict = json.loads(resource_response.read())
         bundle = fetch_url(bundle_dict['expected_bundle_url'])
 
@@ -81,12 +78,13 @@ def main():
         database_id = extract_tar(database, tmp_dir)
 
         print "Generate isis database: " + database
-        isis_exec(ISIS_PATH + 'id2i ' + database_id + ' create/app=' \
+        isis_exec(config.ISIS_PATH + 'id2i ' + database_id + ' create/app=' \
             + os.path.join(args.output, database, database))
 
-        print "Generate isis index using fst: " + DATABASE_FST[database]
-        isis_exec(ISIS_PATH + 'mx ' + os.path.join(args.output, database, database) + ' fst=@' + DATABASE_FST[database] \
-            + '.fst fullinv/ansi=' + os.path.join(args.output, database, DATABASE_FST[database]) + ' -all now')
+        print "Generate isis index using fst: " + config.DATABASE_FST[database]
+        isis_exec(config.ISIS_PATH + 'mx ' + os.path.join(args.output, database, database) \
+            + ' fst=@' + config.DATABASE_FST[database] + '.fst fullinv/ansi=' \
+            + os.path.join(args.output, database, config.DATABASE_FST[database]) + ' -all now')
 
     print "Deleting temp directory: " + tmp_dir
     shutil.rmtree(tmp_dir)
