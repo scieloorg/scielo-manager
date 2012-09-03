@@ -241,3 +241,102 @@ class AutomataTests(MockerTestCase):
 
         automata = self._makeOne(dummy_journal)
         self.assertEqual(automata.acron, 'foo')
+
+    def test_perfect_unicode_representation(self):
+        dummy_journal = self.mocker.mock()
+
+        dummy_journal.scielo_issn
+        self.mocker.result('print')
+
+        dummy_journal.print_issn
+        self.mocker.result('1234-1234')
+
+        dummy_journal.editorial_standard
+        self.mocker.result('nbr6023')
+        self.mocker.count(2)
+
+        dummy_journal.acronym
+        self.mocker.result('foo')
+
+        self.mocker.replay()
+
+        automata = self._makeOne(dummy_journal)
+        self.assertEqual(unicode(automata), '1234-1234;acitat;foo.amd;tgabnt.amd')
+
+
+class IssueTests(MockerTestCase):
+    def _makeOne(self, *args, **kwargs):
+        from scielomanager.export import markupfiles
+        return markupfiles.Issue(*args, **kwargs)
+
+    def test_legend(self):
+        dummy_issue = self.mocker.mock()
+        dummy_journal = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.title_iso
+        self.mocker.result('Star Wars')
+
+        unicode(dummy_issue)
+        self.mocker.result('(ep 1)')
+
+        self.mocker.replay()
+
+        issue = self._makeOne(dummy_issue)
+        self.assertTrue(issue.legend, 'Star Wars (ep 1)')
+
+    def test_period(self):
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.publication_start_month
+        self.mocker.result(3)
+
+        dummy_issue.publication_end_month
+        self.mocker.result(5)
+
+        self.mocker.replay()
+
+        issue = self._makeOne(dummy_issue)
+        self.assertTrue(issue.period, '03/05')
+
+    def test_order(self):
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.order
+        self.mocker.result(7)
+
+        self.mocker.replay()
+
+        issue = self._makeOne(dummy_issue)
+        self.assertTrue(issue.order, '7')
+
+    def test_perfect_unicode_representation(self):
+        dummy_issue = self.mocker.mock()
+        dummy_journal = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.title_iso
+        self.mocker.result('Star Wars')
+
+        unicode(dummy_issue)
+        self.mocker.result('(ep 1)')
+
+        dummy_issue.publication_start_month
+        self.mocker.result(3)
+
+        dummy_issue.publication_end_month
+        self.mocker.result(5)
+
+        dummy_issue.order
+        self.mocker.result(7)
+
+        self.mocker.replay()
+
+        expected_result = 'Star Wars (ep 1)\r\n03/05\r\n7\r\n\r\n'
+
+        issue = self._makeOne(dummy_issue)
+        self.assertTrue(unicode(issue), expected_result)
