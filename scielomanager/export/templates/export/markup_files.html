@@ -14,7 +14,26 @@
 {% block content %}
 <form action="#" method="POST">
   {% csrf_token %}
-  {{form.as_p}}
+  <div class="control-group {% if form.journal.errors %}error{% endif %}">
+    <label for="{{ form.journal.auto_id }}">
+      <span {% if form.journal.field.required %}class="req-field"{% endif %}>
+        {% trans form.journal.label %}
+      </span>
+    </label>
+    <div class="controls">
+      {{ form.journal }}
+    </div>
+  </div>
+  <div class="control-group {% if form.issue.errors %}error{% endif %}">
+    <label for="{{ form.issue.auto_id }}">
+      <span {% if form.issue.field.required %}class="req-field"{% endif %}>
+        {% trans form.issue.label %}
+      </span>
+    </label>
+    <div class="controls">
+      {{ form.issue }}<img id="loading" style="display: none; margin: 5px;" src="/static/images/loading.gif" width="20px" heigth="20px" />
+    </div>
+  </div>
   <div class="row-fluid">
     <input class="btn btn-primary" name="submit" type="submit" value="{% trans "download" %}"/>
   </div>
@@ -27,6 +46,7 @@
   $(document).ready(function() {
     $("#{{form.journal.auto_id}}").change(function() {
       var selected = $('option:selected', this).val();
+      $('#loading').show();
       $.ajax({
         url: '/api/v1/issues/?format=json&limit=0&journal=' + selected,
         success: function(data) {
@@ -39,6 +59,7 @@
 
             $("#{{form.issue.auto_id}}").append('<option value="'+issue_id+'">'+display+'</option>');
           }
+          $('#loading').hide();
         }
       });
     });
