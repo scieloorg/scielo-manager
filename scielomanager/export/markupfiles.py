@@ -63,7 +63,7 @@ class Automata(object):
 
     @property
     def acron(self):
-        return self._journal.acronym
+        return self._journal.acronym.lower()
 
     def __unicode__(self):
         return '{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
@@ -105,27 +105,27 @@ class L10nIssue(Automata, Issue):
     @property
     def volume(self):
         v = self._issue.volume
-        return unicode(v) if v else ''
+        return unicode(v) if v else u''
 
     @property
     def number(self):
         v = self._issue.number
-        return unicode(v) if v else ''
+        return unicode(v) if v else u''
 
     @property
     def suppl_volume(self):
         v = self._issue.suppl_volume
-        return unicode(v) if v else ''
+        return unicode(v) if v else u''
 
     @property
     def suppl_number(self):
         v = self._issue.suppl_number
-        return unicode(v) if v else ''
+        return unicode(v) if v else u''
 
     @property
     def date_iso(self):
         v = self._issue.publication_year
-        return unicode(v) if v else ''
+        return unicode(v) if v else u''
 
     @property
     def status(self):

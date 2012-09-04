@@ -25,12 +25,12 @@ class AutomataTests(MockerTestCase):
         dummy_journal = self.mocker.mock()
 
         dummy_journal.editorial_standard
-        self.mocker.result('iso690')
+        self.mocker.result(u'iso690')
 
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.citat, 'icitat')
+        self.assertEqual(automata.citat, u'icitat')
 
     def test_citat_nbr6023(self):
         dummy_journal = self.mocker.mock()
@@ -242,6 +242,17 @@ class AutomataTests(MockerTestCase):
         automata = self._makeOne(dummy_journal)
         self.assertEqual(automata.acron, 'foo')
 
+    def test_acron_must_be_lowercase(self):
+        dummy_journal = self.mocker.mock()
+
+        dummy_journal.acronym
+        self.mocker.result('FOO')
+
+        self.mocker.replay()
+
+        automata = self._makeOne(dummy_journal)
+        self.assertEqual(automata.acron, 'foo')
+
     def test_perfect_unicode_representation(self):
         dummy_journal = self.mocker.mock()
 
@@ -347,3 +358,188 @@ class L10nIssueTests(MockerTestCase):
         from scielomanager.export import markupfiles
         return markupfiles.L10nIssue(*args, **kwargs)
 
+    def test_instantiation(self):
+        from scielomanager.export.markupfiles import L10nIssue
+
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        self.assertIsInstance(l10nissue, L10nIssue)
+
+    def test_abbrev_title(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.title_iso
+        self.mocker.result(u'blitz')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        self.assertEqual(l10nissue.abbrev_title, u'blitz')
+
+    def test_abbrev_title_must_return_unicode(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.title_iso
+        self.mocker.result(u'blitz')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        self.assertIsInstance(l10nissue.abbrev_title, unicode)
+
+    def test_volume(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.volume
+        self.mocker.result('7')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        volume = l10nissue.volume
+        self.assertEqual(volume, u'7')
+        self.assertIsInstance(volume, unicode)
+
+    def test_volume_must_return_unicode_even_when_empty(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.volume
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        volume = l10nissue.volume
+        self.assertIsInstance(volume, unicode)
+
+    def test_number(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.number
+        self.mocker.result('7')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        number = l10nissue.number
+        self.assertEqual(number, u'7')
+        self.assertIsInstance(number, unicode)
+
+    def test_number_must_return_unicode_even_when_empty(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.number
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        number = l10nissue.number
+        self.assertIsInstance(number, unicode)
+
+    def test_suppl_volume(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.suppl_volume
+        self.mocker.result('foo')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        suppl_volume = l10nissue.suppl_volume
+        self.assertEqual(suppl_volume, u'foo')
+        self.assertIsInstance(suppl_volume, unicode)
+
+    def test_suppl_volume_must_return_unicode_even_when_empty(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.suppl_volume
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        suppl_volume = l10nissue.suppl_volume
+        self.assertIsInstance(suppl_volume, unicode)
+
+    def test_suppl_number(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.suppl_number
+        self.mocker.result('foo')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        suppl_number = l10nissue.suppl_number
+        self.assertEqual(suppl_number, u'foo')
+        self.assertIsInstance(suppl_number, unicode)
+
+    def test_suppl_number_must_return_unicode_even_when_empty(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.suppl_number
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        suppl_number = l10nissue.suppl_number
+        self.assertIsInstance(suppl_number, unicode)
+
+    def test_date_iso(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.publication_year
+        self.mocker.result('foo')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        date_iso = l10nissue.date_iso
+        self.assertEqual(date_iso, u'foo')
+        self.assertIsInstance(date_iso, unicode)
+
+    def test_date_iso_must_return_unicode_even_when_empty(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.publication_year
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+
+        date_iso = l10nissue.date_iso
+        self.assertIsInstance(date_iso, unicode)

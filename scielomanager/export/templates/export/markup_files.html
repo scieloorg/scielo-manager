@@ -31,11 +31,18 @@
       </span>
     </label>
     <div class="controls">
-      {{ form.issue }}<img id="loading" style="display: none; margin: 5px;" src="/static/images/loading.gif" width="20px" heigth="20px" />
+      {{ form.issue }}
+      <span id="loading" style="display: none; margin: 5px;">
+        <img src="/static/images/loading.gif" width="20px" heigth="20px" />
+        {% trans 'Looking for the issues of this journal.' %}
+      </span>
     </div>
   </div>
   <div class="row-fluid">
-    <input class="btn btn-primary" name="submit" type="submit" value="{% trans "download" %}"/>
+    <input class="btn btn-primary"
+           name="submit"
+           type="submit"
+           value="{% trans "download" %}" />
   </div>
 </form>
 {% endblock %}
