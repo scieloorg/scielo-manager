@@ -253,18 +253,19 @@ class JournalImport:
         journal = Journal()
 
         # ISSN and Other Complex Stuffs from the old version
-        if record['35'][0] == "PRINT":
-            issn_type = "print"
-            print_issn = record['935'][0]
-            if record['935'][0] != record['400'][0]:
-                issn_type = "eletronic"
-                electronic_issn = record['400'][0]
-        else:
-            issn_type = "electronic"
-            electronic_issn = record['935'][0]
-            if record['935'][0] != record['400'][0]:
+        if '35' in record:
+            if record['35'][0] == "PRINT":
                 issn_type = "print"
-                print_issn = record['400'][0]
+                print_issn = record['935'][0]
+                if record['935'][0] != record['400'][0]:
+                    issn_type = "eletronic"
+                    electronic_issn = record['400'][0]
+            else:
+                issn_type = "electronic"
+                electronic_issn = record['935'][0]
+                if record['935'][0] != record['400'][0]:
+                    issn_type = "print"
+                    print_issn = record['400'][0]
 
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
@@ -283,7 +284,8 @@ class JournalImport:
         journal.use_license = use_license
 
         # Subject Descriptors
-        journal.subject_descriptors = '\n'.join(record['440']).lower()
+        if '440' in record:
+            journal.subject_descriptors = '\n'.join(record['440']).lower()
 
         # Indexing Coverage
         if '450' in record:
