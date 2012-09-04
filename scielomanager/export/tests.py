@@ -340,3 +340,10 @@ class IssueTests(MockerTestCase):
 
         issue = self._makeOne(dummy_issue)
         self.assertTrue(unicode(issue), expected_result)
+
+
+class L10nIssueTests(MockerTestCase):
+    def _makeOne(self, *args, **kwargs):
+        from scielomanager.export import markupfiles
+        return markupfiles.L10nIssue(*args, **kwargs)
+

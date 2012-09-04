@@ -247,7 +247,7 @@ def generate(journal, issue):
             ('en_issue.mds', l10n_issue),
             ('es_issue.mds', l10n_issue),
             ('pt_issue.mds', l10n_issue),
-            ('journal_standard.txt', unicode(export_journal_standard)),
+            ('journal-standard.txt', unicode(export_journal_standard)),
         ]
     except AttributeError as exc:
         raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))
