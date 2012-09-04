@@ -10,7 +10,7 @@ before_script:
   - psql -c 'create database journalmanager;' -U postgres
   - cp scielomanager/settings_local.include-TEMPLATE scielomanager/settings_local.include
 script:
-  - python scielomanager/manage.py test journalmanager
+  - make test
 postgres:
   adapter: postgresql
   database: journalmanager

@@ -12,6 +12,7 @@ clean:
 
 test: clean
 	@python $(MANAGE) test journalmanager --settings=$(SETTINGS)
+	@python $(MANAGE) test export --settings=$(SETTINGS)
 
 dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)
