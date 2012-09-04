@@ -254,7 +254,7 @@ def generate(journal, issue):
     else:
         pkg = bundle.Bundle(*packmeta)
 
-    pkg_filename = bundle.generate_filename('markupfiles')
+    pkg_filename = bundle.generate_filename('markupfiles', filetype='zip')
 
     pkg.deploy(MEDIA_ROOT + pkg_filename)
     return MEDIA_URL + pkg_filename

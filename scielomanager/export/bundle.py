@@ -1,6 +1,7 @@
 # coding: utf-8
 import os
 import tarfile
+import zipfile
 import StringIO
 import tempfile
 from datetime import datetime
@@ -35,8 +36,29 @@ class Bundle(object):
         tmp.seek(0)
         return tmp
 
+    def _zip(self):
+        tmp = tempfile.NamedTemporaryFile()
+        out = zipfile.ZipFile(tmp.name, mode='w')
+
+        try:
+            for name, data in self._data.items():
+                info = zipfile.ZipInfo(name)
+                info.file_size = len(data)
+                info.compress_type = zipfile.ZIP_DEFLATED
+                info.create_system = 0  # 0 = windows, 3 = unix
+                out.writestr(info, data.encode('cp1252'))
+        finally:
+            out.close()
+
+        tmp.seek(0)
+        return tmp
+
     def deploy(self, target):
-        data = self._tar()
+
+        if target.endswith('tar'):
+            data = self._tar()
+        else:
+            data = self._zip()
 
         base_path = os.path.split(os.path.splitext(target)[-2])[0]
         if not os.path.exists(base_path):

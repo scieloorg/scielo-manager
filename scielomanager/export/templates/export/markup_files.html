@@ -28,7 +28,7 @@
     $("#{{form.journal.auto_id}}").change(function() {
       var selected = $('option:selected', this).val();
       $.ajax({
-        url: '/api/v1/issues/?format=json&journal=' + selected,
+        url: '/api/v1/issues/?format=json&limit=0&journal=' + selected,
         success: function(data) {
           $("#{{form.issue.auto_id}} option").remove();
           for (var issue in data['objects']) {
