@@ -206,11 +206,11 @@ class JournalStandard(L10nIssue):
 
     @property
     def publisher(self):
-        return self._journal.publisher_name
+        return unicode(self._journal.publisher_name)
 
     @property
     def title(self):
-        return self._journal.title
+        return unicode(self._journal.title)
 
     @property
     def journal_meta(self):

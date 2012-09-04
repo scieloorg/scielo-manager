@@ -556,7 +556,6 @@ class L10nIssueTests(MockerTestCase):
         self.assertEqual(status, u'1')
         self.assertIsInstance(status, unicode)
 
-
     def test_issue_meta(self):
         dummy_journal = self.mocker.mock()
         dummy_issue = self.mocker.mock()
@@ -849,3 +848,86 @@ class JournalStandardTests(MockerTestCase):
         eissn = journalstd.eissn
         self.assertEqual(eissn, u'1234-1234')
         self.assertIsInstance(eissn, unicode)
+
+    def test_publisher_is_the_journal_publisher(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_journal.publisher_name
+        self.mocker.result('foo')
+
+        self.mocker.replay()
+
+        journalstd = self._makeOne(dummy_journal, dummy_issue)
+        publisher = journalstd.publisher
+        self.assertEqual(publisher, u'foo')
+        self.assertIsInstance(publisher, unicode)
+
+    def test_title_is_the_journal_title(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_journal.title
+        self.mocker.result('foo')
+
+        self.mocker.replay()
+
+        journalstd = self._makeOne(dummy_journal, dummy_issue)
+        title = journalstd.title
+        self.assertEqual(title, u'foo')
+        self.assertIsInstance(title, unicode)
+
+    def test_journal_meta(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+        dummy_study_area = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.title_iso
+        self.mocker.result(u'blitz')
+
+        dummy_journal.editorial_standard
+        self.mocker.result('apa')
+
+        dummy_journal.scielo_issn
+        self.mocker.result('electronic')
+        self.mocker.count(3)
+
+        dummy_journal.eletronic_issn
+        self.mocker.result('1234-1234')
+        self.mocker.count(3)
+
+        dummy_journal.study_areas
+        self.mocker.result(dummy_study_area)
+
+        dummy_study_area.all()
+        self.mocker.result([dummy_study_area for i in range(5)])
+
+        dummy_study_area.study_area
+        self.mocker.result('bar')
+        self.mocker.count(5)
+
+        dummy_journal.title
+        self.mocker.result('spam')
+        self.mocker.count(2)
+
+        dummy_journal.acronym
+        self.mocker.result('foo')
+
+        dummy_journal.print_issn
+        self.mocker.result('1234-123X')
+
+        dummy_journal.publisher_name
+        self.mocker.result('fizz')
+
+        self.mocker.replay()
+
+        journalstd = self._makeOne(dummy_journal, dummy_issue)
+        journal_meta = journalstd.journal_meta
+        expected_journal_meta = u"""
+        1234-1234#blitz#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam##spam#foo#1234-123X#1234-1234#fizz
+        """.strip()
+        self.assertEqual(journal_meta, expected_journal_meta)
+        self.assertIsInstance(journal_meta, unicode)
