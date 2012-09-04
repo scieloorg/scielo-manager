@@ -130,11 +130,11 @@ class L10nIssue(Automata, Issue):
     @property
     def status(self):
         # placebo
-        return '1'
+        return u'1'
 
     @property
     def issue_meta(self):
-        return ';'.join([
+        return u';'.join([
             self.abbrev_title,
             self.volume,
             self.suppl_volume,
@@ -148,17 +148,18 @@ class L10nIssue(Automata, Issue):
     @property
     def sections(self):
         sections = ';'.join([unicode(section) for section in self._issue.section.all()])
-        return sections if sections else 'No section title'
+        return sections if sections else u'No section title'
 
     @property
     def sections_ids(self):
         ids = ';'.join([unicode(section.actual_code) for section in self._issue.section.all()])
-        return ids if ids else 'nd'
+        return ids if ids else u'nd'
 
     @property
     def ctrl_vocabulary(self):
         vocabulary = dict(choices.CTRL_VOCABULARY)
-        return vocabulary.get(self._issue.journal.ctrl_vocabulary, 'No Descriptor')
+        return unicode(vocabulary.get(self._issue.journal.ctrl_vocabulary,
+            'No Descriptor'))
 
     def __unicode__(self):
         rows = '\r\n'.join([
@@ -178,8 +179,8 @@ class JournalStandard(L10nIssue):
     @property
     def pub_type(self):
         issns = {
-            'print': 'ppub',
-            'electronic': 'epub',
+            'print': u'ppub',
+            'electronic': u'epub',
         }
         return issns[self._journal.scielo_issn]
 
@@ -189,19 +190,19 @@ class JournalStandard(L10nIssue):
 
     @property
     def medline_title(self):
-        return self._journal.title
+        return unicode(self._journal.title)
 
     @property
     def medline_code(self):
-        return ''
+        return u''
 
     @property
     def pissn(self):
-        return self._journal.print_issn
+        return unicode(self._journal.print_issn)
 
     @property
     def eissn(self):
-        return self._journal.eletronic_issn
+        return unicode(self._journal.eletronic_issn)
 
     @property
     def publisher(self):
