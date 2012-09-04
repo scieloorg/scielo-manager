@@ -76,7 +76,7 @@ class Issue(object):
 
     @property
     def legend(self):
-        return '{0} {1}'.format(self._issue.journal.title_iso,
+        return u'{0} {1}'.format(self._issue.journal.title_iso,
                                 unicode(self._issue))
 
     @property

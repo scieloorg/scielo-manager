@@ -29,7 +29,7 @@ class Bundle(object):
             for name, data in self._data.items():
                 info = tarfile.TarInfo(name)
                 info.size = len(data)
-                out.addfile(info, StringIO.StringIO(data.encode('cp1252')))
+                out.addfile(info, StringIO.StringIO(data.encode('cp1252', 'replace')))
         finally:
             out.close()
 
@@ -46,7 +46,7 @@ class Bundle(object):
                 info.file_size = len(data)
                 info.compress_type = zipfile.ZIP_DEFLATED
                 info.create_system = 0  # 0 = windows, 3 = unix
-                out.writestr(info, data.encode('cp1252'))
+                out.writestr(info, data.encode('cp1252', 'replace'))
         finally:
             out.close()
 
