@@ -165,7 +165,7 @@
       <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
         <input type="hidden" id="language" name="language">
         {% csrf_token %}
-        <select id="lang_options" class="span2">
+        <select id="lang_options" class="span12">
           <option value="pt-br" {% if LANGUAGE_CODE == 'pt-br' %}selected{% endif %}>Português</option>
           <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
           <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
