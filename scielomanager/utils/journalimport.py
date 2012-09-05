@@ -379,6 +379,12 @@ class JournalImport:
         if '64' in record:
             journal.editor_email = record['64'][0]
 
+        if '420' in record:
+            journal.medline_code = record['420'][0]
+
+        if '421' in record:
+            journal.medline_title = record['421'][0]
+
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -418,9 +424,6 @@ class JournalImport:
             self.load_historic(journal, record['51'])
 
         # titles
-        if '421' in record:
-            self.load_title(journal, record['421'], 'other')
-
         if '240' in record:
             self.load_title(journal, record['240'], 'other')
 

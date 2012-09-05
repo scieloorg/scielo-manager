@@ -295,6 +295,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     final_year = models.CharField(_('Final Year'), max_length=4, null=True, blank=True)
     final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True)
     final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True)
+    medline_title = models.CharField(_('Medline Title'), max_length=256, null=True, blank=True)
+    medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
@@ -439,6 +441,10 @@ class Section(caching.base.CachingMixin, models.Model):
     def __unicode__(self):
         return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
+    @property
+    def actual_code(self):
+        return self.pk
+
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
 
@@ -471,6 +477,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     cover = models.ImageField(_('Issue Cover'), upload_to='img/issue_cover/', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
+
+    # this field will be removed ASAP
+    order = models.IntegerField(_('Issue Order'))
 
     @property
     def identification(self):

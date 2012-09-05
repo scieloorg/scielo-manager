@@ -72,6 +72,8 @@ urlpatterns = patterns('',
 
     #API version 1
     (r'^api/', include(v1_api.urls)),
+
+    (r'^export/', include('scielomanager.export.urls')),
 )
 
 if settings.DEBUG:

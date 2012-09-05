@@ -129,6 +129,8 @@ class IssueImport:
             issue.suppl_number = record['132'][0]
         if '33' in record:
             issue.title = record['33'][0]
+        if '36' in record:
+            issue.order = record['36'][0]
         if '41' in record:
             if record['41'][0] == 'pr':
                 issue.is_press_release = True

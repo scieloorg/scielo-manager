@@ -1,0 +1,104 @@
+{% extends "base_form_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li class="active">{% trans 'Downloads' %}</li>
+  <li><span class="divider">/</span></li>
+  <li class="active">{% trans 'Metadata for Markup' %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="span5">
+  <form action="#" method="POST">
+    {% csrf_token %}
+    <div class="control-group {% if form.journal.errors %}error{% endif %}">
+      <label for="{{ form.journal.auto_id }}">
+        <span {% if form.journal.field.required %}class="req-field"{% endif %}>
+          {% trans 'Journal' %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ form.journal }}
+      </div>
+    </div>
+    <div class="control-group {% if form.issue.errors %}error{% endif %}">
+      <label for="{{ form.issue.auto_id }}">
+        <span {% if form.issue.field.required %}class="req-field"{% endif %}>
+          {% trans 'Issue' %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ form.issue }}
+        <span id="loading" style="display: none; margin: 5px;">
+          <img src="/static/images/loading.gif" width="20px" heigth="20px" />
+          {% trans 'Retrieving its issues' %}
+        </span>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <input class="btn btn-primary"
+             name="submit"
+             type="submit"
+             value="{% trans "download" %}" />
+    </div>
+  </form>
+</div>
+<div class="span7 alert alert-info">
+  {% blocktrans %}
+  <h4>Metadata for the Markup software</h4>
+  <p>
+    <ul>
+      <li>Select a journal</li>
+      <li>Select an issue</li>
+      <li>Click the <strong>download</strong> button</li>
+    </ul>
+  </p>
+  <p>
+    A <strong>.zip</strong> package will be downloaded, containing the
+    metadata files required by the <a href="http://docs.scielo.org/projects/scielo-pc-programs/en/latest/markup.html#before-using-the-markup">Markup</a> software.
+  </p>
+  <p>
+    <ul>
+      <li>Close the Markup software</li>
+      <li>Expand the .zip package</li>
+      <li>* Move all files to <strong>c:\SciELO\bin\markup\</strong></li>
+      <li>Reopen the Markup software et voilà!</li>
+    </ul>
+  </p>
+  <i>* The default installation path.</i>
+  {% endblocktrans %}
+</div>
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#{{form.journal.auto_id}}").change(function() {
+      var selected = $('option:selected', this).val();
+      $('#loading').show();
+      $.ajax({
+        url: '/api/v1/issues/?format=json&limit=0&journal=' + selected,
+        success: function(data) {
+          $("#{{form.issue.auto_id}} option").remove();
+          for (var issue in data['objects']) {
+            var label = data['objects'][issue]['label'];
+            var year = data['objects'][issue]['publication_year'];
+            var issue_id = data['objects'][issue]['id'];
+            var display = year + ' - ' + label;
+
+            $("#{{form.issue.auto_id}}").append('<option value="'+issue_id+'">'+display+'</option>');
+          }
+          $('#loading').hide();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

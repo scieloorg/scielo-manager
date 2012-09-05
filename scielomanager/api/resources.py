@@ -42,6 +42,9 @@ class IssueResource(ModelResource):
         queryset = Issue.objects.all()
         resource_name = 'issues'
         allowed_methods = ['get', ]
+        filtering = {
+            "journal": ('exact'),
+        }
 
     def build_filters(self, filters=None):
         """

@@ -872,7 +872,8 @@ class JournalRestAPITest(TestCase):
         'abstract_keyword_languages', 'missions', 'created', 'notes',
         'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history',
         'contact', 'study_areas', 'publisher_name', 'publisher_country', 'publisher_state',
-        'publication_city', 'editor_address', 'editor_email', 'sections'
+        'publication_city', 'editor_address', 'editor_email', 'sections', 'medline_title',
+        'medline_code'
         )
 
         for field in response_as_py['objects'][0]:
@@ -906,6 +907,7 @@ class JournalRestAPITest(TestCase):
         'created', 'notes', 'pub_status_reason', 'resource_uri', 'national_code',
         'pub_status_history', 'contact', 'study_areas', 'publisher_name', 'publisher_country',
         'publisher_state', 'publication_city', 'editor_address', 'editor_email', 'sections',
+        'medline_title', 'medline_code'
         )
 
         for field in response_as_py:
@@ -1121,7 +1123,7 @@ class IssuesRestAPITest(TestCase):
             'publication_end_month', 'publication_year', 'use_license',
             'total_documents', 'ctrl_vocabulary', 'editorial_standard',
             'label', 'updated', 'resource_uri', 'created', 'journal',
-            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number'
+            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number', 'order'
         )
 
         for field in response_as_py['objects'][0]:
@@ -1158,7 +1160,7 @@ class IssuesRestAPITest(TestCase):
             'publication_end_month', 'publication_year', 'use_license',
             'total_documents', 'ctrl_vocabulary', 'editorial_standard',
             'label', 'updated', 'resource_uri', 'created', 'journal',
-            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number'
+            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number', 'order'
         )
 
         for field in response_as_py:
@@ -1175,7 +1177,7 @@ class IssuesRestAPITest(TestCase):
                     self.assertTrue(isinstance(response_as_py.get(field, None),
                         list))
                 elif field in ['total_documents', 'publication_year',
-                    'publication_end_month', 'publication_start_month']:
+                    'publication_end_month', 'publication_start_month', 'order']:
                     self.assertTrue(isinstance(response_as_py.get(field, None),
                         int))
                 elif field in ['created', 'updated', ]:
