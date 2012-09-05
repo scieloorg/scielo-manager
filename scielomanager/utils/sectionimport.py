@@ -43,45 +43,45 @@ class SectionImport:
         """
         return self._summary
 
-    def load_journal(self, issn):
+    def load_journal(self, issn, collection):
         try:
-            journal = Journal.objects.get(eletronic_issn=issn)
+            journal = Journal.objects.get(eletronic_issn=issn, collections__id=collection.id)
         except ObjectDoesNotExist:
             try:
-                journal = Journal.objects.get(print_issn=issn)
+                journal = Journal.objects.get(print_issn=issn, collections__id=collection.id)
             except ObjectDoesNotExist:
                 return None
 
         return journal
 
-    def load_section(self, record):
+    def load_section(self, record, collection):
         section = ""
         section_by_language = {}
 
-        journal = self.load_journal(record['35'][0])
+        journal = self.load_journal(record['35'][0], collection=collection)
 
-        if record.has_key('49'):
-            for sec in record['49']: # Criando dicionário organizado de secoes
+        if '49' in record:
+            for sec in record['49']:  # Criando dicionário organizado de secoes
                 parsed_subfields = subfield.CompositeField(subfield.expand(sec))
-                if not section_by_language.has_key(parsed_subfields['c']):
-                    section_by_language[parsed_subfields['c']] = {} # Criando Secao
-                if not section_by_language[parsed_subfields['c']].has_key(parsed_subfields['l']):
+                if not parsed_subfields['c'] in section_by_language:
+                    section_by_language[parsed_subfields['c']] = {}  # Criando Secao
+                if not parsed_subfields['l'] in section_by_language[parsed_subfields['c']]:
                     section_by_language[parsed_subfields['c']][parsed_subfields['l']] = parsed_subfields['t']
         else:
-            print u"Periódico "+record['35'][0]+u" não tem seções definidas"
+            print u"Periódico %s não tem seções definidas" % record['35'][0]
             self.charge_summary('journals_without_sections')
 
-        for sec_key,sec in section_by_language.items():
+        for sec_key, sec in section_by_language.items():
             if journal is None:
                 print('Invalid Journal: {}'.format(record['35'][0]))
                 continue
 
             section = Section()
-            if sec.has_key('pt'):
+            if 'pt' in sec:
                 section.title = sec['pt']
-            elif sec.has_key('en'):
+            elif 'en' in sec:
                 section.title = sec['en']
-            elif sec.has_key('es'):
+            elif 'es' in sec:
                 section.title = sec['es']
             else:
                 section.title = ''
@@ -107,7 +107,7 @@ class SectionImport:
 
         return section
 
-    def run_import(self, json_file):
+    def run_import(self, json_file, collection):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -119,4 +119,4 @@ class SectionImport:
         section_json_parsed = json.loads(section_json_file.read())
 
         for record in section_json_parsed:
-            loaded_section = self.load_section(record)
+            loaded_section = self.load_section(record, collection)

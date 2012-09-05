@@ -25,9 +25,12 @@ from journalmanager.models import *
 
 class IssueImport:
 
-    def __init__(self):
+    def __init__(self, collection):
         self._summary = {}
         self._journals = {}
+        self._sections = {}
+        self._collection = collection
+
         self._monthtoindex = {
             '': 0, 'mar': 3, 'sep': 9, 'may': 5, 'jun': 6, 'jul': 7, 'set': 9,
             'mai': 5, 'nov': 11, 'out': 10, 'ago': 8, 'fev': 2, 'dez': 12, 'feb': 2, 'ene': 1,
@@ -35,15 +38,28 @@ class IssueImport:
             }
 
         journal_json_parsed = json.loads(open('journal.json', 'r').read())
-
+        self.load_journal_sections()
         self.load_journals(journal_json_parsed)  # carregando dicionário de periódicos self._journals
+
+    def load_journal_sections(self):
+        """
+        Load all the journals sections into a dictionary, that will be used during the issue import to
+        asign the correct section id to an issue. This must be done to avoid mistakes because Journal
+        Manager handle same journals for different collections.
+        """
+        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collections__id=self._collection.id)]
+        self._sections = {}
+        for journal in journals_sections:
+            for section in journal:
+                self._sections[section.code] = section.id
+
 
     def charge_summary(self, attribute):
         """
         Function: charge_summary
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
-        if not self._summary.has_key(attribute):
+        if not attribute in self._summary:
             self._summary[attribute] = 0
 
         self._summary[attribute] += 1
@@ -59,7 +75,7 @@ class IssueImport:
     def load_use_license(self, journal_issn):
         use_license = UseLicense()
 
-        if self._journals.has_key(journal_issn):
+        if journal_issn in self._journals:
             license = self._journals[journal_issn]['use_license']
             if license:
                 use_license.license_code = license['license_code']
@@ -87,11 +103,13 @@ class IssueImport:
             for code in record['49']:
                 expanded = subfield.expand(code)
                 parsed_subfields = dict(expanded)
-                try:
-                    section = Section.objects.get(code=parsed_subfields['c'])
-                    issue.section.add(section)
-                except ObjectDoesNotExist:
-                    print "Inconsistência nos dados carregando seção"
+                if parsed_subfields['c'] in self._sections:
+                    section_id = self._sections[parsed_subfields['c']]
+                    section = Section.objects.get(id=section_id)
+                    try:
+                        issue.section.add(section)
+                    except ObjectDoesNotExist:
+                        print "Inconsistência nos dados carregando seção"
 
         return issue_sections
 
@@ -105,10 +123,10 @@ class IssueImport:
         error = False
 
         try:
-            journal = Journal.objects.get(print_issn=record['35'][0])
+            journal = Journal.objects.get(print_issn=record['35'][0], collections__id=self._collection.id)
         except ObjectDoesNotExist:
             try:
-                journal = Journal.objects.get(eletronic_issn=record['35'][0])
+                journal = Journal.objects.get(eletronic_issn=record['35'][0], collections__id=self._collection.id)
             except ObjectDoesNotExist:
                 print u"Inconsistência de dados tentando encontrar periódico com ISSN: %s" % record['35'][0]
                 error = True
