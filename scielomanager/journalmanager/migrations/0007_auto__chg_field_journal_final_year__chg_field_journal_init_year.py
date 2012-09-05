@@ -7,17 +7,12 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-
         # Changing field 'Journal.final_year'
         db.alter_column('journalmanager_journal', 'final_year', self.gf('django.db.models.fields.CharField')(max_length=4, null=True))
 
         # Changing field 'Journal.init_year'
         db.alter_column('journalmanager_journal', 'init_year', self.gf('django.db.models.fields.CharField')(max_length=4))
 
-        for journal in orm.Journal.objects.all():
-            journal.final_year = journal.final_year[:4]
-            journal.init_year = journal.init_year[:4]
-            journal.save()
 
     def backwards(self, orm):
 
