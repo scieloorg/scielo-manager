@@ -124,11 +124,10 @@ class L10nIssue(Automata, Issue):
 
     @property
     def date_iso(self):
-        month = '%02d' % self._issue.publication_end_month
-        year = self._issue.publication_year
+        month = u'%02d' % self._issue.publication_end_month
+        year = unicode(self._issue.publication_year)
         if year:
-            date = year + month + '00'
-            return unicode(date)
+            return year + month + u'00'
         else:
             return u''
 
