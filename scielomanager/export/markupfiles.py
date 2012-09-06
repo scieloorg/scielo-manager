@@ -103,6 +103,10 @@ class L10nIssue(Automata, Issue):
         return self._issue.journal.title_iso
 
     @property
+    def short_title(self):
+        return self._issue.journal.short_title
+
+    @property
     def volume(self):
         v = self._issue.volume
         return unicode(v) if v else u''
@@ -139,7 +143,7 @@ class L10nIssue(Automata, Issue):
     @property
     def issue_meta(self):
         return u';'.join([
-            self.abbrev_title,
+            self.short_title,
             self.volume,
             self.suppl_volume,
             self.number,

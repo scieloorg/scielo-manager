@@ -399,6 +399,36 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue)
         self.assertIsInstance(l10nissue.abbrev_title, unicode)
 
+    def test_short_title(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.short_title
+        self.mocker.result(u'blitz')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        self.assertEqual(l10nissue.short_title, u'blitz')
+
+    def test_short_title_must_return_unicode(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.journal
+        self.mocker.result(dummy_journal)
+
+        dummy_journal.short_title
+        self.mocker.result(u'blitz')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        self.assertIsInstance(l10nissue.short_title, unicode)
+
     def test_volume(self):
         dummy_journal = self.mocker.mock()
         dummy_issue = self.mocker.mock()
@@ -569,7 +599,7 @@ class L10nIssueTests(MockerTestCase):
         dummy_issue.journal
         self.mocker.result(dummy_journal)
 
-        dummy_journal.title_iso
+        dummy_journal.short_title
         self.mocker.result(u'blitz')
 
         dummy_issue.volume
@@ -609,7 +639,7 @@ class L10nIssueTests(MockerTestCase):
         dummy_issue.journal
         self.mocker.result(dummy_journal)
 
-        dummy_journal.title_iso
+        dummy_journal.short_title
         self.mocker.result('blitz')
 
         dummy_issue.volume
