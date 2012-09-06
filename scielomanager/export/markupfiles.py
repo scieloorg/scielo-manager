@@ -124,8 +124,13 @@ class L10nIssue(Automata, Issue):
 
     @property
     def date_iso(self):
-        v = self._issue.publication_year
-        return unicode(v) if v else u''
+        month = '%02d' % self._issue.publication_end_month
+        year = self._issue.publication_year
+        if year:
+            date = year + month + '00'
+            return unicode(date)
+        else:
+            return u''
 
     @property
     def status(self):
