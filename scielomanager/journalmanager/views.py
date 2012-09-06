@@ -61,17 +61,16 @@ def index(request):
 
     if request.user.is_authenticated():
         template = loader.get_template('journalmanager/home_journal.html')
-        user_collections = get_user_collections(request.user.id)
-        pending_journals = models.PendedForm.objects.filter(user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+        pending_journals = models.PendedForm.objects.filter(
+            user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 
-        # recent activities in a collection
+        # recent activities
         recent_journals = models.Journal.objects.recents_by_user(request.user)
     else:
         template = loader.get_template('registration/login.html')
-        user_collections = pending_journals = recent_journals = ''
+        pending_journals = recent_journals = ''
 
     context = RequestContext(request, {
-        'user_collections': user_collections,
         'pending_journals': pending_journals,
         'recent_activities': recent_journals,
         }
@@ -83,8 +82,6 @@ def list_search(request, model, journal_id):
     """
     Generic list and search
     """
-    user_collections = get_user_collections(request.user.id)
-
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
         objects_all = model.objects.filter(journal=journal_id)
@@ -122,14 +119,12 @@ def list_search(request, model, journal_id):
                        'objects_%s' % model.__name__.lower(): objects,
                        'journal': journal,
                        'letters': get_first_letter(objects_all),
-                       'user_collections': user_collections,
                        })
     return HttpResponse(template.render(context))
 
 
 @permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
 def issue_index(request, journal_id):
-    user_collections = get_user_collections(request.user.id)
     journal = models.Journal.objects.get(pk=journal_id)
     objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(
         journal=journal_id).order_by('-publication_year')
@@ -161,7 +156,6 @@ def issue_index(request, journal_id):
     template = loader.get_template('journalmanager/issue_dashboard.html')
     context = RequestContext(request, {
                        'journal': journal,
-                       'user_collections': user_collections,
                        'issue_grid': by_years,
                        })
     return HttpResponse(template.render(context))
@@ -306,14 +300,12 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                user_collections = get_user_collections(request.user.id)
 
                 if next != '':
                     return HttpResponseRedirect(next)
                 else:
                     t = loader.get_template('journalmanager/home_journal.html')
-                c = RequestContext(request, {'active': True,
-                                             'user_collections': user_collections})
+                c = RequestContext(request, {'active': True})
                 return HttpResponse(t.render(c))
             else:
                 t = loader.get_template('registration/login.html')
@@ -398,7 +390,6 @@ def add_user(request, user_id=None):
                               'add_form': userform,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               'usercollectionsformset': usercollectionsformset,
                               'userprofileformset': userprofileformset
                               },
