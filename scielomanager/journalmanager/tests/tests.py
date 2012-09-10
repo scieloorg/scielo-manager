@@ -738,7 +738,7 @@ class LoggedInViewsTest(TestCase):
         * Check if all collections presented on the form are related to the
           user.
         """
-        from journalmanager.views import get_user_collections
+        from journalmanager.models import get_user_collections
         response = self.client.get(reverse('journal.add'))
         self.assertEqual(response.status_code, 200)
 
@@ -757,7 +757,7 @@ class LoggedInViewsTest(TestCase):
         * Check if all collections presented on the form are related to the
           user.
         """
-        from journalmanager.views import get_user_collections
+        from journalmanager.models import get_user_collections
         response = self.client.get(reverse('sponsor.add'))
         self.assertEqual(response.status_code, 200)
 

@@ -32,7 +32,7 @@ from django.forms.models import inlineformset_factory
 from scielomanager.tools import get_paginated
 from scielomanager.tools import get_referer_view
 from scielomanager.tools import PendingPostData
-from scielomanager.journalmanager.models import get_user_collections
+
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -214,7 +214,7 @@ def toggle_active_collection(request, user_id, collection_id):
     '''
 
     # Setting up all user collections.is_default to False
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     # Clear cache when changes in UserCollections
     invalid = [collection for collection in user_collections]
@@ -272,7 +272,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
 @permission_required('journalmanager.list_user', login_url=settings.LOGIN_URL)
 def user_index(request):
 
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
     user_collections_managed = user_collections.filter(is_manager=True)
 
     # Filtering users manager by the administrator
@@ -347,7 +347,7 @@ def add_user(request, user_id=None):
         user = get_object_or_404(User, id=user_id)
 
     # Getting Collections from the logged user.
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
@@ -435,7 +435,7 @@ def add_journal(request, journal_id=None):
     Handles new and existing journals
     """
 
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     if  journal_id is None:
         journal = models.Journal()
@@ -531,7 +531,7 @@ def add_sponsor(request, sponsor_id=None):
     else:
         sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
 
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     if request.method == "POST":
         sponsorform = SponsorForm(request.POST, instance=sponsor, prefix='sponsor',
