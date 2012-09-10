@@ -1,6 +1,8 @@
 # coding: utf-8
 from django.conf import settings
 
+from journalmanager import models
+
 
 def dynamic_template_inheritance(request):
     """
@@ -14,3 +16,15 @@ def dynamic_template_inheritance(request):
 
 def access_to_settings(request):
     return {'SETTINGS': settings}
+
+
+def show_user_collections(request):
+    """
+    Adds `user_collections` item to the context, which is a
+    queryset of collections the user relates to.
+    """
+    if request.user.is_authenticated():
+        collections = models.get_user_collections(request.user.id)
+        return {'user_collections': collections}
+    else:
+        return {}

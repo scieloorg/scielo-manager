@@ -32,7 +32,7 @@ from django.forms.models import inlineformset_factory
 from scielomanager.tools import get_paginated
 from scielomanager.tools import get_referer_view
 from scielomanager.tools import PendingPostData
-from scielomanager.journalmanager.models import get_user_collections
+
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -61,17 +61,16 @@ def index(request):
 
     if request.user.is_authenticated():
         template = loader.get_template('journalmanager/home_journal.html')
-        user_collections = get_user_collections(request.user.id)
-        pending_journals = models.PendedForm.objects.filter(user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+        pending_journals = models.PendedForm.objects.filter(
+            user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 
-        # recent activities in a collection
+        # recent activities
         recent_journals = models.Journal.objects.recents_by_user(request.user)
     else:
         template = loader.get_template('registration/login.html')
-        user_collections = pending_journals = recent_journals = ''
+        pending_journals = recent_journals = ''
 
     context = RequestContext(request, {
-        'user_collections': user_collections,
         'pending_journals': pending_journals,
         'recent_activities': recent_journals,
         }
@@ -83,8 +82,6 @@ def list_search(request, model, journal_id):
     """
     Generic list and search
     """
-    user_collections = get_user_collections(request.user.id)
-
     if journal_id:
         journal = models.Journal.objects.get(pk=journal_id)
         objects_all = model.objects.filter(journal=journal_id)
@@ -122,14 +119,12 @@ def list_search(request, model, journal_id):
                        'objects_%s' % model.__name__.lower(): objects,
                        'journal': journal,
                        'letters': get_first_letter(objects_all),
-                       'user_collections': user_collections,
                        })
     return HttpResponse(template.render(context))
 
 
 @permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
 def issue_index(request, journal_id):
-    user_collections = get_user_collections(request.user.id)
     journal = models.Journal.objects.get(pk=journal_id)
     objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(
         journal=journal_id).order_by('-publication_year')
@@ -161,7 +156,6 @@ def issue_index(request, journal_id):
     template = loader.get_template('journalmanager/issue_dashboard.html')
     context = RequestContext(request, {
                        'journal': journal,
-                       'user_collections': user_collections,
                        'issue_grid': by_years,
                        })
     return HttpResponse(template.render(context))
@@ -220,7 +214,7 @@ def toggle_active_collection(request, user_id, collection_id):
     '''
 
     # Setting up all user collections.is_default to False
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     # Clear cache when changes in UserCollections
     invalid = [collection for collection in user_collections]
@@ -278,7 +272,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
 @permission_required('journalmanager.list_user', login_url=settings.LOGIN_URL)
 def user_index(request):
 
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
     user_collections_managed = user_collections.filter(is_manager=True)
 
     # Filtering users manager by the administrator
@@ -306,14 +300,12 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                user_collections = get_user_collections(request.user.id)
 
                 if next != '':
                     return HttpResponseRedirect(next)
                 else:
                     t = loader.get_template('journalmanager/home_journal.html')
-                c = RequestContext(request, {'active': True,
-                                             'user_collections': user_collections})
+                c = RequestContext(request, {'active': True})
                 return HttpResponse(t.render(c))
             else:
                 t = loader.get_template('registration/login.html')
@@ -355,7 +347,7 @@ def add_user(request, user_id=None):
         user = get_object_or_404(User, id=user_id)
 
     # Getting Collections from the logged user.
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
@@ -398,7 +390,6 @@ def add_user(request, user_id=None):
                               'add_form': userform,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               'usercollectionsformset': usercollectionsformset,
                               'userprofileformset': userprofileformset
                               },
@@ -412,9 +403,6 @@ def edit_journal_status(request, journal_id=None):
 
     Allow user just to update the status history of a specific journal.
     """
-
-    user_collections = get_user_collections(request.user.id)
-
     # Always a new event. Considering that events must not be deleted or changed.
     journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
     journal = get_object_or_404(models.Journal, id=journal_id)
@@ -436,7 +424,6 @@ def edit_journal_status(request, journal_id=None):
 
     return render_to_response('journalmanager/edit_journal_status.html', {
                               'add_form': journaleventform,
-                              'user_collections': user_collections,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))
@@ -448,7 +435,7 @@ def add_journal(request, journal_id=None):
     Handles new and existing journals
     """
 
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     if  journal_id is None:
         journal = models.Journal()
@@ -518,7 +505,6 @@ def add_journal(request, journal_id=None):
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
-                              'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
                               'has_logo_url': has_logo_url,
                               'form_hash': form_hash if form_hash else request.GET.get('resume', None),
@@ -545,7 +531,7 @@ def add_sponsor(request, sponsor_id=None):
     else:
         sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
 
-    user_collections = get_user_collections(request.user.id)
+    user_collections = models.get_user_collections(request.user.id)
 
     if request.method == "POST":
         sponsorform = SponsorForm(request.POST, instance=sponsor, prefix='sponsor',
@@ -570,7 +556,6 @@ def add_sponsor(request, sponsor_id=None):
     return render_to_response('journalmanager/add_sponsor.html', {
                               'add_form': sponsorform,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               },
                               context_instance=RequestContext(request))
 
@@ -580,9 +565,6 @@ def add_collection(request, collection_id=None):
     """
     Handles existing collections
     """
-
-    user_collections = get_user_collections(request.user.id)
-
     if  collection_id is None:
         collection = models.Collection()
     else:
@@ -609,7 +591,6 @@ def add_collection(request, collection_id=None):
                               'add_form': collectionform,
                               'collection_logo': collection_logo,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               },
                               context_instance=RequestContext(request))
 
@@ -619,8 +600,6 @@ def add_issue(request, journal_id, issue_id=None):
     """
     Handles new and existing issues
     """
-
-    user_collections = get_user_collections(request.user.id)
     journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
 
     if issue_id is None:
@@ -661,7 +640,6 @@ def add_issue(request, journal_id, issue_id=None):
                               'journal': journal,
                               'titleformset': titleformset,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
                               },
                               context_instance=RequestContext(request))
@@ -792,8 +770,6 @@ def password_change(request):
 
 @login_required
 def trash_listing(request):
-    user_collections = get_user_collections(request.user.id)
-
     listing_ref = {
         'journal': models.Journal,
         'section': models.Section,
@@ -814,5 +790,5 @@ def trash_listing(request):
 
     return render_to_response(
         'journalmanager/trash_listing.html',
-        {'trashed_docs': trashed_docs_paginated, 'user_collections': user_collections},
+        {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
