@@ -22,7 +22,7 @@ class Bundle(object):
 
         Returns a file handler.
         """
-        tmp = tempfile.NamedTemporaryFile()
+        tmp = tempfile.NamedTemporaryFile(delete=True)
         out = tarfile.open(tmp.name, 'w')
 
         try:
@@ -37,7 +37,7 @@ class Bundle(object):
         return tmp
 
     def _zip(self):
-        tmp = tempfile.NamedTemporaryFile()
+        tmp = tempfile.NamedTemporaryFile(delete=True)
         out = zipfile.ZipFile(tmp.name, mode='w')
 
         try:
@@ -66,6 +66,8 @@ class Bundle(object):
 
         with open(target, 'w') as f:
             f.write(data.read())
+
+        data.close()
 
 
 def generate_filename(prefix,
