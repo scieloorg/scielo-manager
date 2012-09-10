@@ -6,6 +6,7 @@ import re
 
 from django.http import QueryDict
 from django.db import models
+from django.db.models.sql.datastructures import EmptyResultSet
 from django import forms
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
@@ -77,6 +78,16 @@ class MultiSelectField(models.Field):
             func = lambda self, fieldname = name, choicedict = dict(self.choices):",".join([choicedict.get(value,value) for value in getattr(self,fieldname)])
             setattr(cls, 'get_%s_display' % self.name, func)
 
+
+class NullPaginator(object):
+    """
+    A null object implementation for a Paginator.
+    http://en.wikipedia.org/wiki/Null_Object_pattern
+    """
+    def __getattr__(self, name):
+        return None
+
+
 def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER_PAGE):
     """
     Wraps django core pagination object
@@ -89,9 +100,11 @@ def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER
         raise TypeError('page_num must be integer')
 
     try:
-      paginated = paginator.page(page_num)
+        paginated = paginator.page(page_num)
     except EmptyPage:
-      paginated = paginator.page(paginator.num_pages)
+        paginated = paginator.page(paginator.num_pages)
+    except EmptyResultSet:
+        paginated = NullPaginator()
 
     return paginated
 
