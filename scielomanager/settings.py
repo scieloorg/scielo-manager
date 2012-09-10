@@ -161,6 +161,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'journalmanager.context_processors.dynamic_template_inheritance',
     'journalmanager.context_processors.access_to_settings',
+    'journalmanager.context_processors.show_user_collections',
     'scielo_extensions.context_processors.from_settings',
 )
 
