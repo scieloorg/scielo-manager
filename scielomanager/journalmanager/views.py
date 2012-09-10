@@ -403,9 +403,6 @@ def edit_journal_status(request, journal_id=None):
 
     Allow user just to update the status history of a specific journal.
     """
-
-    user_collections = get_user_collections(request.user.id)
-
     # Always a new event. Considering that events must not be deleted or changed.
     journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
     journal = get_object_or_404(models.Journal, id=journal_id)
@@ -427,7 +424,6 @@ def edit_journal_status(request, journal_id=None):
 
     return render_to_response('journalmanager/edit_journal_status.html', {
                               'add_form': journaleventform,
-                              'user_collections': user_collections,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))
@@ -509,7 +505,6 @@ def add_journal(request, journal_id=None):
                               'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
-                              'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
                               'has_logo_url': has_logo_url,
                               'form_hash': form_hash if form_hash else request.GET.get('resume', None),
@@ -561,7 +556,6 @@ def add_sponsor(request, sponsor_id=None):
     return render_to_response('journalmanager/add_sponsor.html', {
                               'add_form': sponsorform,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               },
                               context_instance=RequestContext(request))
 
@@ -571,9 +565,6 @@ def add_collection(request, collection_id=None):
     """
     Handles existing collections
     """
-
-    user_collections = get_user_collections(request.user.id)
-
     if  collection_id is None:
         collection = models.Collection()
     else:
@@ -600,7 +591,6 @@ def add_collection(request, collection_id=None):
                               'add_form': collectionform,
                               'collection_logo': collection_logo,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               },
                               context_instance=RequestContext(request))
 
@@ -610,8 +600,6 @@ def add_issue(request, journal_id, issue_id=None):
     """
     Handles new and existing issues
     """
-
-    user_collections = get_user_collections(request.user.id)
     journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
 
     if issue_id is None:
@@ -652,7 +640,6 @@ def add_issue(request, journal_id, issue_id=None):
                               'journal': journal,
                               'titleformset': titleformset,
                               'user_name': request.user.pk,
-                              'user_collections': user_collections,
                               'has_cover_url': has_cover_url,
                               },
                               context_instance=RequestContext(request))
@@ -783,8 +770,6 @@ def password_change(request):
 
 @login_required
 def trash_listing(request):
-    user_collections = get_user_collections(request.user.id)
-
     listing_ref = {
         'journal': models.Journal,
         'section': models.Section,
@@ -805,5 +790,5 @@ def trash_listing(request):
 
     return render_to_response(
         'journalmanager/trash_listing.html',
-        {'trashed_docs': trashed_docs_paginated, 'user_collections': user_collections},
+        {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
