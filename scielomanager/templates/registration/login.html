@@ -7,7 +7,7 @@
     <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your username and password did not match. Please try again.' %}</div>
   {% endif %}
   {% if active %}
-    <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your account is not active. Please contact the SciELO or verify your e-mail' %}</div>
+    <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your account is not active. Please contact SciELO or verify your e-mail' %}</div>
   {% endif %}
   <form action="{% url journalmanager.user_login %}" method="post">
     <fieldset>

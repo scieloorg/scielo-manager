@@ -290,43 +290,34 @@ def user_index(request):
 
 def user_login(request):
 
-    next = request.GET.get('next', None)
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('index'))
 
     if request.method == 'POST':
-        next = request.POST['next']
+
+        next = request.POST.get('next', '')
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
-        if user is not None:
+
+        if user:
             if user.is_active:
                 login(request, user)
-
-                if next != '':
-                    return HttpResponseRedirect(next)
-                else:
-                    t = loader.get_template('journalmanager/home_journal.html')
-                c = RequestContext(request, {'active': True})
-                return HttpResponse(t.render(c))
+                return HttpResponseRedirect(next)
             else:
-                t = loader.get_template('registration/login.html')
-                c = RequestContext(request, {'active': True})
-                return HttpResponse(t.render(c))
+                context_data = {'active': True}
         else:
-            t = loader.get_template('registration/login.html')
-            c = RequestContext(request, {
-                               'invalid': True, 'next': next})
-            return HttpResponse(t.render(c))
+            context_data = {'invalid': True, 'next': next}
+
     else:
-        if request.user.is_authenticated():
-            return HttpResponseRedirect(reverse('index'))
-        else:
-            t = loader.get_template('registration/login.html')
-            if next:
-                c = RequestContext(request, {'required': True, 'next': next})
-            else:
-                c = RequestContext(request, {'required': True})
-            return HttpResponse(t.render(c))
+        context_data = {'required': True,
+                        'next': request.GET.get('next', None)}
 
+    return render_to_response(
+            'registration/login.html',
+            context_data,
+            context_instance=RequestContext(request)
+            )
 
 @login_required
 def user_logout(request):
