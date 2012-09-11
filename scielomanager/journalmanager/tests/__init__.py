@@ -1,2 +1,2 @@
-from tests import *
-from tests_tools import *
+from journalmanager.tests.tests import *
+from journalmanager.tests.tests_tools import *
