@@ -414,9 +414,12 @@ class LoggedInViewsTest(TestCase):
 
     def test_access_edit_sponsor(self):
 
-        response = self.client.post(reverse('sponsor.add'),
-            tests_assets.get_sample_sponsor_dataform({'sponsor-collections': [self.usercollections.pk]}))
-
+        response = self.client.post(
+            reverse('sponsor.add'),
+            tests_assets.get_sample_sponsor_dataform(
+                {'sponsor-collections': [self.usercollections.pk]}
+            )
+        )
         self.assertRedirects(response, reverse('sponsor.index'))
 
         another_collection = tests_assets.get_sample_collection(name='Chile', url='http://www.scielo.cl/', country='Chile',
@@ -1369,8 +1372,11 @@ class UserViewsTest(TestCase):
         Logged out user try login and verify session
         """
         #Login
-        response = self.client.post(reverse('journalmanager.user_login'), {'username': 'dummyuser', 'password': '123', 'next':''})
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(
+            reverse('journalmanager.user_login'),
+            {'username': 'dummyuser', 'password': '123', 'next': ''}
+        )
+        self.assertEqual(response.status_code, 302)
 
         response = self.client.get(reverse('journal.index'))
         self.assertEqual(response.status_code, 200)

@@ -1,6 +1,6 @@
 APP_PATH = scielomanager
 MANAGE = $(APP_PATH)/manage.py
-SETTINGS = scielomanager.settings
+SETTINGS = scielomanager.settings_tests
 FIXTURES_DIR = $(APP_PATH)/fixtures
 
 deps:

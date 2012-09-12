@@ -225,15 +225,25 @@ CACHES = {
 }
 
 IMAGE_CONTENT_TYPE = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
-IMAGE_DIMENSIONS = {'height_logo': 100, 'width_logo': 200, 'height_cover': 100, 'width_cover': 150}
+IMAGE_DIMENSIONS = {
+    'height_logo': 100,
+    'width_logo': 200,
+    'height_cover': 100,
+    'width_cover': 150,
+}
+
 IMAGE_SIZE = 300 * 1014
 
 CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
 
-FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.MemoryFileUploadHandler",
- "django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+FILE_UPLOAD_HANDLERS = (
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+)
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440 # 2.5Mb
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5Mb
+
+
 ### END App customization settings
 #################################################################
 
