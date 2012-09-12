@@ -40,17 +40,9 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
-def section_has_relation(section_id):
-
-    if len(models.Issue.objects.filter(section=section_id)) == 0:
-        return False
-    else:
-        return True
-
-
 def get_first_letter(objects_all):
     """
-    Return a set contain first letter from a collection
+    Returns a set of first letters from names in `objects_all`
     """
     letters_set = set(unicode(letter)[0].upper().strip() for letter in objects_all)
 
@@ -114,13 +106,15 @@ def list_search(request, model, journal_id):
                 title__icontains=request.REQUEST['q']).order_by('title')
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
-    template = loader.get_template('journalmanager/%s_dashboard.html' % model.__name__.lower())
-    context = RequestContext(request, {
-                       'objects_%s' % model.__name__.lower(): objects,
-                       'journal': journal,
-                       'letters': get_first_letter(objects_all),
-                       })
-    return HttpResponse(template.render(context))
+    template_name = 'journalmanager/%s_dashboard.html' % model.__name__.lower()
+
+    return render_to_response(
+        template_name, {
+           'objects_%s' % model.__name__.lower(): objects,
+           'journal': journal,
+           'letters': get_first_letter(objects_all),
+        },
+        context_instance=RequestContext(request))
 
 
 @permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
@@ -255,7 +249,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
                     doc.save()
                     info_msg = MSG_MOVED if doc.is_trashed else MSG_RESTORED
                 elif isinstance(doc, models.Section):
-                    if not section_has_relation(doc_id):
+                    if not doc.is_used():
                         doc.is_trashed = True if int(value) == 0 else False
                         doc.save()
                         info_msg = MSG_MOVED if doc.is_trashed else MSG_RESTORED
@@ -648,7 +642,7 @@ def add_section(request, journal_id, section_id=None):
         has_relation = False
     else:
         section = get_object_or_404(models.Section, pk=section_id)
-        has_relation = section_has_relation(section.id)
+        has_relation = section.is_used()
 
     SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
         form=SectionTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
@@ -689,18 +683,21 @@ def add_section(request, journal_id, section_id=None):
 
 @permission_required('journalmanager.delete_section', login_url=settings.LOGIN_URL)
 def del_section(request, journal_id, section_id):
+    section = get_object_or_404(models.Section, pk=section_id)
 
-    journal = get_object_or_404(models.Journal, pk=journal_id)
-
-    if not section_has_relation(section_id):
-        sec = models.Section.objects.get(pk=section_id)
-        sec.is_trashed = True
-        sec.save()
+    if not section.is_used():
+        section.is_trashed = True
+        section.save()
         messages.success(request, MSG_FORM_SAVED)
-        return HttpResponseRedirect(reverse('section.index', args=[journal.id]))
     else:
-        messages.info(request, _('Cant\'t delete, some issues are using this Section'))
-        return HttpResponseRedirect(reverse('section.index', args=[journal.id]))
+        messages.info(
+            request,
+            _('Cant\'t delete, some issues are using this Section')
+        )
+
+    return HttpResponseRedirect(
+        reverse('section.index', args=[section.journal.id])
+    )
 
 
 @login_required

@@ -445,6 +445,12 @@ class Section(caching.base.CachingMixin, models.Model):
     def actual_code(self):
         return self.pk
 
+    def is_used(self):
+        try:
+            return True if self.issue_set.all().count() else False
+        except ValueError:  # raised when the object is not yet saved
+            return False
+
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
 
