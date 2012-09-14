@@ -1457,7 +1457,7 @@ class UserViewsTest(TestCase):
 
         self.assertRedirects(response, reverse('user.index'))
 
-        self.assertEqual(str(User.objects.all()[1].username), tests_assets.get_sample_user_dataform()['user-username'])
+        self.assertEqual(str(User.objects.get(username='dummyuser_add')), tests_assets.get_sample_user_dataform()['user-username'])
 
         self.assertQuerysetEqual(User.objects.all(), [
                 "<User: dummyuser>",
