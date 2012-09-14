@@ -3,17 +3,15 @@ from django.test import TestCase
 
 from .modelfactories import (
     IssueFactory,
+    UserProfileFactory,
+    SectionFactory,
 )
 
 
 class SectionTests(TestCase):
 
-    def _makeOne(self):
-        from .tests_assets import get_sample_section
-        return get_sample_section()
-
     def test_section_not_being_used(self):
-        section = self._makeOne()
+        section = SectionFactory.build()
         self.assertFalse(section.is_used())
 
     def test_section_bound_to_a_journal(self):
@@ -21,3 +19,83 @@ class SectionTests(TestCase):
         section = issue.section.all()[0]
 
         self.assertTrue(section.is_used())
+
+    def test_actual_code_is_the_instance_pk(self):
+        section = SectionFactory.create()
+        self.assertEqual(section.pk, section.actual_code)
+
+    def test_actual_code_must_raise_attributeerror_for_unsaved_instances(self):
+        section = SectionFactory.build()
+        self.assertRaises(AttributeError, section.actual_code)
+
+
+class UserProfileTests(TestCase):
+
+    def test_gravatar_id_generation(self):
+        profile = UserProfileFactory.build(email='foo@bar.org')
+        expected_gravatar_id = '24191827e60cdb49a3d17fb1befe951b'
+
+        self.assertEqual(profile.gravatar_id, expected_gravatar_id)
+
+    def test_gravatar_url(self):
+        expected_url = 'https://secure.gravatar.com/avatar/24191827e60cdb49a3d17fb1befe951b?s=25&d=mm'
+        profile = UserProfileFactory.build(email='foo@bar.org')
+
+        self.assertEqual(profile.avatar_url, expected_url)
+
+
+class IssueTests(TestCase):
+
+    def test_identification_for_suppl_volume(self):
+        issue = IssueFactory.create(number='1', suppl_volume='2')
+        expected = u'1 suppl.2'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_identification_for_number(self):
+        issue = IssueFactory.create(number='1')
+        expected = u'1'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_identification_for_number_with_sublevels(self):
+        issue = IssueFactory.create(number='1a')
+        expected = u'1a'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_identification_for_suppl_number(self):
+        issue = IssueFactory.create(number='1', suppl_number='2')
+        expected = u'1 suppl.2'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_identification_for_press_release(self):
+        issue = IssueFactory.create(number='1', is_press_release=True)
+        expected = u'1 pr'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_identification_for_ahead(self):
+        issue = IssueFactory.create(number='ahead')
+        expected = u'ahead of print'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_identification_for_special(self):
+        issue = IssueFactory.create(number='spe')
+        expected = u'special'
+
+        self.assertEqual(issue.identification, expected)
+
+    def test_unicode_representation(self):
+        issue = IssueFactory.create(volume='2', number='1', suppl_number='2')
+        expected = u'2 (1 suppl.2)'
+
+        self.assertEqual(unicode(issue), expected)
+
+    def test_publication_date(self):
+        issue = IssueFactory.create()
+        expected = '9 / 11 - 2012'
+
+        self.assertEqual(issue.publication_date, expected)

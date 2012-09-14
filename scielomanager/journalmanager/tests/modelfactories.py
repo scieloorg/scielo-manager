@@ -79,3 +79,10 @@ class IssueFactory(factory.Factory):
         issue = super(IssueFactory, cls)._prepare(create, **kwargs)
         issue.section.add(section)
         return issue
+
+
+class UserProfileFactory(factory.Factory):
+    FACTORY_FOR = models.UserProfile
+
+    user = factory.SubFactory(auth.UserF)
+    email = factory.Sequence(lambda n: 'email%s@example.com' % n)

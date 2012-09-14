@@ -493,7 +493,12 @@ class Issue(caching.base.CachingMixin, models.Model):
         suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
         is_press_release = _('pr') + '' if self.is_press_release else ''
 
-        return "{0} {1} {2} {3}".format(self.number, suppl_volume, suppl_number, is_press_release).strip().replace('spe', 'special').replace('ahead', 'ahead of print')
+        return "{0} {1} {2} {3}".format(
+            self.number,
+            suppl_volume,
+            suppl_number,
+            is_press_release).strip().replace(
+                'spe', 'special').replace('ahead', 'ahead of print')
 
     def __unicode__(self):
 
