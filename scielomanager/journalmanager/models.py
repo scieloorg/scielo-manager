@@ -332,6 +332,15 @@ class Journal(caching.base.CachingMixin, models.Model):
         ordering = ['title']
         permissions = (("list_journal", "Can list Journals"),)
 
+    def change_publication_status(self, status, reason, changed_by):
+        """
+        Syntatic suggar for changing publication status.
+        """
+        self.pub_status = status
+        self.pub_status_reason = reason
+        self.pub_status_changed_by = changed_by
+        self.save()
+
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """

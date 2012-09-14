@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.test import TestCase
+from django_factory_boy import auth
 
 from .modelfactories import (
     IssueFactory,
@@ -7,6 +8,7 @@ from .modelfactories import (
     SectionFactory,
     LanguageFactory,
     SectionTitleFactory,
+    JournalFactory,
 )
 
 
@@ -130,3 +132,16 @@ class LanguageTests(TestCase):
         # in order to check the unicode value translated.
         language = LanguageFactory.build(name='portuguese')
         self.assertEqual(unicode(language), u'portuguese')
+
+
+class JournalTests(TestCase):
+
+    def test_changing_publication_status(self):
+        user = auth.UserF()
+        journal = JournalFactory.create()
+        journal.change_publication_status(status=u'deceased',
+            reason=u'baz', changed_by=user)
+
+        self.assertEqual(journal.pub_status, u'deceased')
+        self.assertEqual(journal.pub_status_reason, u'baz')
+        self.assertEqual(journal.pub_status_changed_by, user)
