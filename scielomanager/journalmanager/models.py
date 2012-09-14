@@ -14,7 +14,6 @@ from django.template.defaultfilters import slugify
 import caching.base
 
 import choices
-import helptexts
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())

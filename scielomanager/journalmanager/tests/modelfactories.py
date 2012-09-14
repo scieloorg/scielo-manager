@@ -86,3 +86,19 @@ class UserProfileFactory(factory.Factory):
 
     user = factory.SubFactory(auth.UserF)
     email = factory.Sequence(lambda n: 'email%s@example.com' % n)
+
+
+class LanguageFactory(factory.Factory):
+    FACTORY_FOR = models.Language
+
+    iso_code = 'pt'
+    name = 'portuguese'
+
+
+class SectionTitleFactory(factory.Factory):
+    FACTORY_FOR = models.SectionTitle
+
+    title = u'Artigos Originais'
+
+    language = factory.SubFactory(LanguageFactory)
+    section = factory.SubFactory(SectionFactory)

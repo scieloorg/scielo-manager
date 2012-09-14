@@ -5,6 +5,8 @@ from .modelfactories import (
     IssueFactory,
     UserProfileFactory,
     SectionFactory,
+    LanguageFactory,
+    SectionTitleFactory,
 )
 
 
@@ -27,6 +29,26 @@ class SectionTests(TestCase):
     def test_actual_code_must_raise_attributeerror_for_unsaved_instances(self):
         section = SectionFactory.build()
         self.assertRaises(AttributeError, section.actual_code)
+
+    def test_unicode_repr_with_only_one_language(self):
+        section_title = SectionTitleFactory.create()
+        expected = 'Artigos Originais'
+
+        self.assertEqual(unicode(section_title.section), expected)
+
+    def test_unicode_repr_with_two_languages(self):
+        language = LanguageFactory.create(iso_code='en', name='english')
+        section_title = SectionTitleFactory.create()
+        section_title_en = SectionTitleFactory.build(
+            title='Original Articles',
+            language=language
+        )
+        section_title_en.section = section_title.section
+        section_title_en.save()
+
+        expected = 'Original Articles / Artigos Originais'
+
+        self.assertEqual(unicode(section_title.section), expected)
 
 
 class UserProfileTests(TestCase):
@@ -99,3 +121,12 @@ class IssueTests(TestCase):
         expected = '9 / 11 - 2012'
 
         self.assertEqual(issue.publication_date, expected)
+
+
+class LanguageTests(TestCase):
+
+    def test_the_unicode_repr_must_be_in_current_language(self):
+        # todo: learn a good way to change the current language of the app
+        # in order to check the unicode value translated.
+        language = LanguageFactory.build(name='portuguese')
+        self.assertEqual(unicode(language), u'portuguese')
