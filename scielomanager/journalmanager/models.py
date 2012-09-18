@@ -349,10 +349,10 @@ class Journal(caching.base.CachingMixin, models.Model):
         objects_all = self.issue_set.available(is_available).order_by(
             '-publication_year')
 
-        by_years = OrderedDict()
+        grid = OrderedDict()
 
         for issue in objects_all:
-            year_node = by_years.setdefault(issue.publication_year, {})
+            year_node = grid.setdefault(issue.publication_year, {})
             volume_node = year_node.setdefault(issue.volume, {})
 
             try:
@@ -366,14 +366,14 @@ class Journal(caching.base.CachingMixin, models.Model):
             node = volume_node.setdefault(node_name, [])
             node.append(issue)
 
-        for year, volume in by_years.items():
+        for year, volume in grid.items():
             for vol, issues in volume.items():
                 if 'numbers' in issues:
                     issues['numbers'].sort(key=lambda x: int(x.identification))
                 if 'others' in issues:
                     issues['others'].sort(key=lambda x: x.identification)
 
-        return by_years
+        return grid
 
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
