@@ -1,6 +1,10 @@
 # -*- encoding: utf-8 -*-
 import urllib
 import hashlib
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -340,6 +344,36 @@ class Journal(caching.base.CachingMixin, models.Model):
         self.pub_status_reason = reason
         self.pub_status_changed_by = changed_by
         self.save()
+
+    def issues_as_grid(self, is_available=True):
+        objects_all = self.issue_set.available(is_available).order_by(
+            '-publication_year')
+
+        by_years = OrderedDict()
+
+        for issue in objects_all:
+            year_node = by_years.setdefault(issue.publication_year, {})
+            volume_node = year_node.setdefault(issue.volume, {})
+
+            try:
+                # numbers must be separated from string ids.
+                int(issue.identification)
+            except ValueError:
+                node_name = 'others'
+            else:
+                node_name = 'numbers'
+
+            node = volume_node.setdefault(node_name, [])
+            node.append(issue)
+
+        for year, volume in by_years.items():
+            for vol, issues in volume.items():
+                if 'numbers' in issues:
+                    issues['numbers'].sort(key=lambda x: int(x.identification))
+                if 'others' in issues:
+                    issues['others'].sort(key=lambda x: x.identification)
+
+        return by_years
 
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
