@@ -119,9 +119,9 @@ def list_search(request, model, journal_id):
 
 @permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
 def issue_index(request, journal_id):
-    journal = models.Journal.objects.get(pk=journal_id)
-    objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(
-        journal=journal_id).order_by('-publication_year')
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+    objects_all = journal.issue_set.available(request.GET.get('is_available')).order_by(
+        '-publication_year')
 
     by_years = OrderedDict()
 
