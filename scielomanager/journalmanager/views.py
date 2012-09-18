@@ -121,14 +121,16 @@ def list_search(request, model, journal_id):
 def issue_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
-    template = loader.get_template('journalmanager/issue_dashboard.html')
-    context = RequestContext(request, {
-                       'journal': journal,
-                       'issue_grid': journal.issues_as_grid(
-                            request.GET.get('is_available')
-                        ),
-                       })
-    return HttpResponse(template.render(context))
+    return render_to_response(
+        'journalmanager/issue_dashboard.html',
+        {
+            'journal': journal,
+            'issue_grid': journal.issues_as_grid(
+                request.GET.get('is_available')
+            ),
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 @permission_required('journalmanager.list_journal', login_url=settings.LOGIN_URL)
