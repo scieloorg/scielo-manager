@@ -211,6 +211,12 @@ class CollectionTests(TestCase):
         collection_ = models.UserCollections.objects.get(is_default=True).collection
         self.assertEqual(collection_, collection)
 
+    def test_collection_is_not_default_to_user(self):
+        collection = CollectionFactory.create()
+        user = auth.UserF()
+
+        self.assertFalse(collection.is_default_to_user(user))
+
 
 class CollectionManagerTests(TestCase):
 

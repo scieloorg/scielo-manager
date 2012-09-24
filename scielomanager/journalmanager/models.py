@@ -238,9 +238,11 @@ class Collection(caching.base.CachingMixin, models.Model):
         user_.save()
 
     def is_default_to_user(self, user):
-        user_col = UserCollections.objects.get(collection=self, user=user)
-        return user_col.is_default
-
+        try:
+            user_col = UserCollections.objects.get(collection=self, user=user)
+            return user_col.is_default
+        except UserCollections.DoesNotExist:
+            return False
 
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
