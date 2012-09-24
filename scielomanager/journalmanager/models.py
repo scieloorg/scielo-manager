@@ -237,6 +237,10 @@ class Collection(caching.base.CachingMixin, models.Model):
         user_.is_default = True
         user_.save()
 
+    def is_default_to_user(self, user):
+        user_col = UserCollections.objects.get(collection=self, user=user)
+        return user_col.is_default
+
 
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()

@@ -192,7 +192,7 @@ def toggle_active_collection(request, user_id, collection_id):
     invalid = [collection for collection in user_collections]
     models.UserCollections.objects.invalidate(*invalid)
 
-    collection = get_object_or_404(pk=collection_id)
+    collection = get_object_or_404(models.Collection, pk=collection_id)
     collection.make_default_to_user(request.user)
 
     referer = get_referer_view(request)
