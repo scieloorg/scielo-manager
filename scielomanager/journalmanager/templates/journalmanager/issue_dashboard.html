@@ -36,16 +36,16 @@
       <th>{{ vol|default:'-' }}</th>
       {% for num in nums.numbers %}
         {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-        <td><a href="{% url issue.edit num.journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
+        <td><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
         {% else %}
-        <td><a href="{% url issue.edit num.journal.pk num.id %}">{{ num.identification }}</a></td>
+        <td><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></td>
         {% endif %}
       {% endfor %}
       {% for num in nums.others %}
         {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-        <td><a href="{% url issue.edit num.journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
+        <td><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
         {% else %}
-        <td><a href="{% url issue.edit num.journal.pk num.id %}">{{ num.identification }}</a></td>
+        <td><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></td>
         {% endif %}
       {% endfor %}
     </tr>

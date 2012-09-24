@@ -119,40 +119,18 @@ def list_search(request, model, journal_id):
 
 @permission_required('journalmanager.list_issue', login_url=settings.LOGIN_URL)
 def issue_index(request, journal_id):
-    journal = models.Journal.objects.get(pk=journal_id)
-    objects_all = models.Issue.objects.available(request.GET.get('is_available')).filter(
-        journal=journal_id).order_by('-publication_year')
+    journal = get_object_or_404(models.Journal, pk=journal_id)
 
-    by_years = OrderedDict()
-
-    for issue in objects_all:
-        year_node = by_years.setdefault(issue.publication_year, {})
-        volume_node = year_node.setdefault(issue.volume, {})
-
-        try:
-            # numbers must be separated from string ids.
-            int(issue.identification)
-        except ValueError:
-            node_name = 'others'
-        else:
-            node_name = 'numbers'
-
-        node = volume_node.setdefault(node_name, [])
-        node.append(issue)
-
-    for year, volume in by_years.items():
-        for vol, issues in volume.items():
-            if 'numbers' in issues:
-                issues['numbers'].sort(key=lambda x: int(x.identification))
-            if 'others' in issues:
-                issues['others'].sort(key=lambda x: x.identification)
-
-    template = loader.get_template('journalmanager/issue_dashboard.html')
-    context = RequestContext(request, {
-                       'journal': journal,
-                       'issue_grid': by_years,
-                       })
-    return HttpResponse(template.render(context))
+    return render_to_response(
+        'journalmanager/issue_dashboard.html',
+        {
+            'journal': journal,
+            'issue_grid': journal.issues_as_grid(
+                request.GET.get('is_available')
+            ),
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 @permission_required('journalmanager.list_journal', login_url=settings.LOGIN_URL)
@@ -394,14 +372,15 @@ def edit_journal_status(request, journal_id=None):
 
     if request.method == "POST":
         journaleventform = EventJournalForm(request.POST)
+
         if journaleventform.is_valid():
             cleaned_data = journaleventform.cleaned_data
-            journal.pub_status = cleaned_data["pub_status"]
-            journal.pub_status_reason = cleaned_data["pub_status_reason"]
-            journal.pub_status_changed_by = request.user
-            journal.save()
+            journal.change_publication_status(cleaned_data["pub_status"],
+                cleaned_data["pub_status_reason"], request.user)
+
             messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('journal_status.edit', kwargs={'journal_id': journal_id}))
+            return HttpResponseRedirect(reverse(
+                'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
