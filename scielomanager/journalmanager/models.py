@@ -210,6 +210,23 @@ class Collection(caching.base.CachingMixin, models.Model):
         self.name_slug = slugify(self.name)
         super(Collection, self).save(*args, **kwargs)
 
+    def add_user(self, user, is_default=False, is_manager=False):
+        UserCollections.objects.create(collection=self,
+                                       user=user,
+                                       is_default=is_default,
+                                       is_manager=is_manager)
+
+    def remove_user(self, user):
+        user_ = UserCollections.objects.get(collection=self, user=user)
+        user_.delete()
+
+    def make_default_to_user(self, user):
+        UserCollections.objects.filter(user=user).update(is_default=False)
+        user_, created = UserCollections.objects.get_or_create(
+            collection=self, user=user)
+        user_.is_default = True
+        user_.save()
+
 
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
