@@ -61,9 +61,9 @@ class IssueFactory(factory.Factory):
     FACTORY_FOR = models.Issue
 
     total_documents = 16
-    number = '3'
-    volume = '29'
-    order = 201203
+    number = factory.Sequence(lambda n: '%s' % n)
+    volume = factory.Sequence(lambda n: '%s' % n)
+    order = factory.Sequence(lambda n: int('%s' % n))
     is_trashed = False
     is_press_release = False
     publication_start_month = 9

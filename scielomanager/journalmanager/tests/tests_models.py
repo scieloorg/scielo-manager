@@ -145,3 +145,44 @@ class JournalTests(TestCase):
         self.assertEqual(journal.pub_status, u'deceased')
         self.assertEqual(journal.pub_status_reason, u'baz')
         self.assertEqual(journal.pub_status_changed_by, user)
+
+    def test_issues_grid_with_numerical_issue_numbers(self):
+        journal = JournalFactory.create()
+        for i in range(5):
+            journal.issue_set.add(IssueFactory.create(volume=9,
+                publication_year=2012))
+
+        grid = journal.issues_as_grid()
+
+        self.assertTrue(2012 in grid)
+        self.assertTrue('9' in grid[2012])
+        self.assertEqual(len(grid[2012]['9']['numbers']), 5)
+
+    def test_issues_grid_with_alphabetical_issue_numbers(self):
+        journal = JournalFactory.create()
+        for i in range(5):
+            if i % 2:
+                kwargs = {'volume': 9, 'publication_year': 2012}
+            else:
+                kwargs = {'volume': 9, 'publication_year': 2012, 'number': 'ahead'}
+
+            journal.issue_set.add(IssueFactory.create(**kwargs))
+
+        grid = journal.issues_as_grid()
+
+        self.assertTrue(2012 in grid)
+        self.assertTrue('9' in grid[2012])
+        self.assertTrue('numbers' in grid[2012]['9'])
+        self.assertTrue('others' in grid[2012]['9'])
+        self.assertEqual(len(grid[2012]['9']['numbers']), 2)
+        self.assertEqual(len(grid[2012]['9']['others']), 3)
+
+    def test_issues_grid_with_unavailable_issues(self):
+        journal = JournalFactory.create()
+        for i in range(5):
+            journal.issue_set.add(IssueFactory.create(volume=9,
+                publication_year=2012))
+
+        grid = journal.issues_as_grid(is_available=False)
+
+        self.assertFalse(grid)
