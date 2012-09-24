@@ -108,12 +108,12 @@ class CollectionFactory(factory.Factory):
     FACTORY_FOR = models.Collection
 
     url = u'http://www.scielo.br/'
-    name = u'SciELO'
+    name = factory.Sequence(lambda n: 'scielo%s' % n)
     address_number = u'430'
     country = u'Brasil'
     address = u'Rua Machado Bittencourt'
     email = u'fapesp@scielo.org'
-    name_slug = u'scl'
+    name_slug = factory.Sequence(lambda n: 'scl%s' % n)
 
     @classmethod
     def _prepare(cls, create, **kwargs):

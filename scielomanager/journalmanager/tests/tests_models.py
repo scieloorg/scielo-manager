@@ -210,3 +210,21 @@ class CollectionTests(TestCase):
         from journalmanager import models
         collection_ = models.UserCollections.objects.get(is_default=True).collection
         self.assertEqual(collection_, collection)
+
+
+class CollectionManagerTests(TestCase):
+
+    def test_get_all_by_user(self):
+        user = auth.UserF()
+
+        for i in range(5):
+            if i % 2:
+                CollectionFactory.create()
+            else:
+                col = CollectionFactory.create()
+                col.add_user(user)
+
+        from journalmanager import models
+        collections = models.Collection.objects.all_by_user(user)
+
+        self.assertEqual(collections.count(), 3)

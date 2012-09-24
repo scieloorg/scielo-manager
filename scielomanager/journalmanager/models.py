@@ -23,6 +23,7 @@ User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
 
 
+#  DEPRECATED (http://ref.scielo.org/5k8wjt)
 def get_user_collections(user_id):
     """
     Return all the collections of a given user, The returned collections are the collections where the
@@ -137,6 +138,15 @@ class InstitutionCustomManager(AppCustomManager):
         return objects_all
 
 
+class CollectionCustomManager(AppCustomManager):
+
+    def all_by_user(self, user):
+        collections = self.filter(usercollections__user=user).order_by(
+            'name')
+
+        return collections
+
+
 class Language(caching.base.CachingMixin, models.Model):
     """
     Represents ISO 639-1 Language Code and its language name in English. Django
@@ -179,7 +189,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
 
 class Collection(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
+    objects = CollectionCustomManager()
     nocacheobjects = models.Manager()
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', null=True, blank=True, )
