@@ -12,17 +12,17 @@ clean:
 	@find . -name "*.pyc" -delete
 
 test: clean
-	@python $(MANAGE) test journalmanager export --SETTINGS_TEST=$(SETTINGS_TEST)
+	@python $(MANAGE) test journalmanager export --settings=$(SETTINGS_TEST)
 
 dbsetup:
-	@python $(MANAGE) syncdb --SETTINGS_TEST=$(SETTINGS)
-	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --SETTINGS_TEST=$(SETTINGS)
+	@python $(MANAGE) syncdb --settings=$(SETTINGS)
+	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
 
 dbmigrate:
-	@python $(MANAGE) migrate --SETTINGS_TEST=$(SETTINGS)
+	@python $(MANAGE) migrate --settings=$(SETTINGS)
 
 compilemessages:
-	@cd $(APP_PATH) && python manage.py compilemessages --SETTINGS_TEST=$(SETTINGS)
+	@cd $(APP_PATH) && python manage.py compilemessages --settings=$(SETTINGS)
 
 setup: deps dbsetup dbmigrate compilemessages test
 
