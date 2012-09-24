@@ -1,6 +1,10 @@
 # -*- encoding: utf-8 -*-
 import urllib
 import hashlib
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -14,7 +18,6 @@ from django.template.defaultfilters import slugify
 import caching.base
 
 import choices
-import helptexts
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -333,6 +336,45 @@ class Journal(caching.base.CachingMixin, models.Model):
         ordering = ['title']
         permissions = (("list_journal", "Can list Journals"),)
 
+    def change_publication_status(self, status, reason, changed_by):
+        """
+        Syntatic suggar for changing publication status.
+        """
+        self.pub_status = status
+        self.pub_status_reason = reason
+        self.pub_status_changed_by = changed_by
+        self.save()
+
+    def issues_as_grid(self, is_available=True):
+        objects_all = self.issue_set.available(is_available).order_by(
+            '-publication_year')
+
+        grid = OrderedDict()
+
+        for issue in objects_all:
+            year_node = grid.setdefault(issue.publication_year, {})
+            volume_node = year_node.setdefault(issue.volume, {})
+
+            try:
+                # numbers must be separated from string ids.
+                int(issue.identification)
+            except ValueError:
+                node_name = 'others'
+            else:
+                node_name = 'numbers'
+
+            node = volume_node.setdefault(node_name, [])
+            node.append(issue)
+
+        for year, volume in grid.items():
+            for vol, issues in volume.items():
+                if 'numbers' in issues:
+                    issues['numbers'].sort(key=lambda x: int(x.identification))
+                if 'others' in issues:
+                    issues['others'].sort(key=lambda x: x.identification)
+
+        return grid
+
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """
@@ -493,7 +535,10 @@ class Issue(caching.base.CachingMixin, models.Model):
         suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
         is_press_release = _('pr') + '' if self.is_press_release else ''
 
-        return "{0} {1} {2} {3}".format(self.number, suppl_volume, suppl_number, is_press_release).strip().replace('spe', 'special').replace('ahead', 'ahead of print')
+        values = [self.number, suppl_volume, suppl_number, is_press_release]
+
+        return ' '.join([val for val in values if val]).strip().replace(
+                'spe', 'special').replace('ahead', 'ahead of print')
 
     def __unicode__(self):
 
