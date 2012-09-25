@@ -28,11 +28,11 @@ ul._actions {
 }
 
 ul._actions li {
-    border-right: 1px solid #919191;
+    /*border-right: 1px solid #919191;*/
     font-weight: bold;
-    margin-right: 5px;
-    padding: 0 5px;
-    visibility: hidden;
+    /*margin-right: 5px;*/
+    /*padding: 0 5px;*/
+    /*visibility: hidden;*/
     display: inline;
 }
 
@@ -176,4 +176,16 @@ button.ui-button-icon-only {
     width: 150px;
     border: 1px solid #E5E5E5;
     background: #CCCCCC;
+}
+
+._icon-current {
+    display: inline-block;
+    width: 37px;
+    height: 37px;
+    background-image: url("img/current.png");
+    background-repeat: no-repeat;
+}
+
+table._journals h4 a {
+    vertical-align: super;
 }
