@@ -23,6 +23,7 @@ User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
 
 
+#  DEPRECATED (http://ref.scielo.org/5k8wjt)
 def get_user_collections(user_id):
     """
     Return all the collections of a given user, The returned collections are the collections where the
@@ -34,6 +35,7 @@ def get_user_collections(user_id):
     return user_collections
 
 
+#  DEPRECATED (http://ref.scielo.org/359zf3)
 def get_default_user_collections(user_id):
     """
     Return the collection that the user choose as default/active collection.
@@ -82,9 +84,14 @@ class AppCustomManager(caching.base.CachingManager):
 class JournalCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True, pub_status=None):
-        user_collections = get_default_user_collections(user.pk)
+        """
+        Retrieves all the user's journals, contextualized by
+        their default collection.
+        """
+        default_collection = Collection.objects.get_default_by_user(user)
+
         objects_all = self.available(is_available).filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
+            collections__in=[default_collection]).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -94,11 +101,12 @@ class JournalCustomManager(AppCustomManager):
 
     def recents_by_user(self, user):
         """
-        Retrieve the recently modified objects related to the given user.
+        Retrieves the recently modified objects related to the given user.
         """
-        user_collections = get_default_user_collections(user.pk)
+        default_collection = Collection.objects.get_default_by_user(user)
+
         recents = self.filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct().order_by('-updated')[:5]
+            collections__in=[default_collection]).distinct().order_by('-updated')[:5]
 
         return recents
 
@@ -111,9 +119,11 @@ class JournalCustomManager(AppCustomManager):
 class SectionCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True):
-        user_collections = get_default_user_collections(user.pk)
+        default_collection = Collection.objects.get_default_by_user(user)
+
         objects_all = self.available(is_available).filter(
-            journal__collections__in=[uc.collection for uc in user_collections]).distinct()
+            journal__collections__in=[default_collection]).distinct()
+
         return objects_all
 
 
@@ -122,6 +132,7 @@ class IssueCustomManager(AppCustomManager):
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
             journal__collections=collection)
+
         return objects_all
 
 
@@ -131,10 +142,49 @@ class InstitutionCustomManager(AppCustomManager):
     based on user's collections.
     """
     def all_by_user(self, user, is_available=True):
-        user_collections = get_default_user_collections(user.pk)
+        default_collection = Collection.objects.get_default_by_user(user)
+
         objects_all = self.available(is_available).filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
+            collections__in=[default_collection]).distinct()
+
         return objects_all
+
+
+class CollectionCustomManager(AppCustomManager):
+
+    def all_by_user(self, user):
+        """
+        Returns all the Collections related to the given
+        user.
+        """
+        collections = self.filter(usercollections__user=user).order_by(
+            'name')
+
+        return collections
+
+    def get_default_by_user(self, user):
+        """
+        Returns the Collection marked as default by the given user.
+        If none satisfies this condition, the first
+        instance is then returned.
+
+        Like any manager method that does not return Querysets,
+        `get_default_by_user` raises DoesNotExist if there is no
+        result for the given parameter.
+        """
+        collections = self.filter(usercollections__user=user,
+            usercollections__is_default=True).order_by('name')
+
+        if not collections.count():
+            try:
+                collection = self.all_by_user(user)[0]
+            except IndexError:
+                raise Collection.DoesNotExist()
+            else:
+                collection.make_default_to_user(user)
+                return collection
+
+        return collections[0]
 
 
 class Language(caching.base.CachingMixin, models.Model):
@@ -179,7 +229,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
 
 class Collection(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
+    objects = CollectionCustomManager()
     nocacheobjects = models.Manager()
     collection = models.ManyToManyField(User, related_name='user_collection',
         through='UserCollections', null=True, blank=True, )
@@ -209,6 +259,49 @@ class Collection(caching.base.CachingMixin, models.Model):
     def save(self, *args, **kwargs):
         self.name_slug = slugify(self.name)
         super(Collection, self).save(*args, **kwargs)
+
+    def add_user(self, user, is_default=False, is_manager=False):
+        """
+        Add the user to the current collection.
+        """
+        UserCollections.objects.create(collection=self,
+                                       user=user,
+                                       is_default=is_default,
+                                       is_manager=is_manager)
+
+    def remove_user(self, user):
+        """
+        Removes the user from the current collection.
+        If the user isn't already related to the given collection,
+        it will do nothing, silently.
+        """
+        try:
+            uc = UserCollections.objects.get(collection=self, user=user)
+        except UserCollections.DoesNotExist:
+            return None
+        else:
+            uc.delete()
+
+    def make_default_to_user(self, user):
+        """
+        Makes the current collection, the user's default.
+        """
+        UserCollections.objects.filter(user=user).update(is_default=False)
+        uc, created = UserCollections.objects.get_or_create(
+            collection=self, user=user)
+        uc.is_default = True
+        uc.save()
+
+    def is_default_to_user(self, user):
+        """
+        Returns a boolean value depending if the current collection
+        is set as default to the given user.
+        """
+        try:
+            uc = UserCollections.objects.get(collection=self, user=user)
+            return uc.is_default
+        except UserCollections.DoesNotExist:
+            return False
 
 
 class UserCollections(caching.base.CachingMixin, models.Model):

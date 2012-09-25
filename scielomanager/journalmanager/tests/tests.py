@@ -164,7 +164,7 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTrue('user_collections' in response.context)
-        self.assertEqual(response.context['user_collections'][0].collection.name, u'Brasil')
+        self.assertEqual(response.context['user_collections'][0].name, u'Brasil')
 
     def test_user_index(self):
         """

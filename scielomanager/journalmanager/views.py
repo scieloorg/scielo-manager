@@ -24,11 +24,11 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
+from django.forms.models import inlineformset_factory
+from django.conf import settings
 
-from scielomanager import settings
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
-from django.forms.models import inlineformset_factory
 from scielomanager.tools import get_paginated
 from scielomanager.tools import get_referer_view
 from scielomanager.tools import PendingPostData
@@ -192,10 +192,8 @@ def toggle_active_collection(request, user_id, collection_id):
     invalid = [collection for collection in user_collections]
     models.UserCollections.objects.invalidate(*invalid)
 
-    user_collections.all().update(is_default=False)
-
-    # Setting up the new default collection
-    user_collections.filter(collection__pk=collection_id).update(is_default=True)
+    collection = get_object_or_404(models.Collection, pk=collection_id)
+    collection.make_default_to_user(request.user)
 
     referer = get_referer_view(request)
 

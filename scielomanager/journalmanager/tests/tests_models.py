@@ -9,6 +9,7 @@ from .modelfactories import (
     LanguageFactory,
     SectionTitleFactory,
     JournalFactory,
+    CollectionFactory,
 )
 
 
@@ -186,3 +187,153 @@ class JournalTests(TestCase):
         grid = journal.issues_as_grid(is_available=False)
 
         self.assertFalse(grid)
+
+    def test_issues_grid_must_be_ordered_by_publication_year_desc(self):
+        journal = JournalFactory.create()
+        for i in range(5):
+            year = 2012 - i
+            journal.issue_set.add(IssueFactory.create(volume=9,
+                publication_year=year))
+
+        grid = journal.issues_as_grid()
+        expected = [2012, 2011, 2010, 2009, 2008]
+
+        self.assertEqual(grid.keys(), expected)
+
+
+class CollectionTests(TestCase):
+
+    def test_collection_as_default_to_user(self):
+        collection = CollectionFactory.create()
+        collection.make_default_to_user(auth.UserF())
+
+        from journalmanager import models
+        collection_ = models.UserCollections.objects.get(is_default=True).collection
+        self.assertEqual(collection_, collection)
+
+    def test_collection_is_not_default_to_user(self):
+        collection = CollectionFactory.create()
+        user = auth.UserF()
+
+        self.assertFalse(collection.is_default_to_user(user))
+
+    def test_collection_is_default_to_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.make_default_to_user(user)
+
+        self.assertTrue(collection.is_default_to_user(user))
+
+    def test_add_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.add_user(user)
+
+        from journalmanager import models
+        self.assertTrue(models.UserCollections.objects.get(user=user,
+            collection=collection))
+
+    def test_remove_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.add_user(user)
+
+        collection.remove_user(user)
+
+        from journalmanager import models
+        self.assertRaises(models.UserCollections.DoesNotExist,
+            lambda: models.UserCollections.objects.get(user=user,
+                                                       collection=collection)
+            )
+
+    def test_remove_user_that_is_not_related_to_the_collection(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+
+        collection.remove_user(user)
+
+        from journalmanager import models
+        self.assertRaises(models.UserCollections.DoesNotExist,
+            lambda: models.UserCollections.objects.get(user=user,
+                                                       collection=collection)
+            )
+
+
+class CollectionManagerTests(TestCase):
+
+    def test_get_all_by_user(self):
+        user = auth.UserF()
+
+        for i in range(5):
+            if i % 2:
+                CollectionFactory.create()
+            else:
+                col = CollectionFactory.create()
+                col.add_user(user)
+
+        from journalmanager import models
+        collections = models.Collection.objects.all_by_user(user)
+
+        self.assertEqual(collections.count(), 3)
+
+    def test_get_default_by_user(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.make_default_to_user(user)
+        col2 = CollectionFactory.create()
+        col2.add_user(user)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+            col1)
+
+    def test_get_default_by_user_second_collection(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.make_default_to_user(user)
+        col2 = CollectionFactory.create()
+        col2.make_default_to_user(user)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+            col2)
+
+    def test_get_default_by_user_with_two_users(self):
+        user1 = auth.UserF()
+        user2 = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.make_default_to_user(user1)
+
+        col2 = CollectionFactory.create()
+        col2.add_user(user1)
+        col2.make_default_to_user(user2)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user1),
+            col1)
+        self.assertEqual(models.Collection.objects.get_default_by_user(user2),
+            col2)
+
+    def test_get_first_alphabeticaly_when_default_is_not_set(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.add_user(user)
+        col2 = CollectionFactory.create()
+        col2.add_user(user)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+            col1)
+
+    def test_get_default_by_user_must_raise_doesnotexist_if_the_user_has_no_collections(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+
+        from journalmanager import models
+        self.assertRaises(models.Collection.DoesNotExist,
+            lambda: models.Collection.objects.get_default_by_user(user))
