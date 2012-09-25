@@ -102,3 +102,22 @@ class SectionTitleFactory(factory.Factory):
 
     language = factory.SubFactory(LanguageFactory)
     section = factory.SubFactory(SectionFactory)
+
+
+class CollectionFactory(factory.Factory):
+    FACTORY_FOR = models.Collection
+
+    url = u'http://www.scielo.br/'
+    name = factory.Sequence(lambda n: 'scielo%s' % n)
+    address_number = u'430'
+    country = u'Brasil'
+    address = u'Rua Machado Bittencourt'
+    email = u'fapesp@scielo.org'
+    name_slug = factory.Sequence(lambda n: 'scl%s' % n)
+
+    @classmethod
+    def _prepare(cls, create, **kwargs):
+        user = auth.UserF()
+        collection = super(CollectionFactory, cls)._prepare(create, **kwargs)
+        collection.add_user(user)
+        return collection

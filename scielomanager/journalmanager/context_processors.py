@@ -24,7 +24,7 @@ def show_user_collections(request):
     queryset of collections the user relates to.
     """
     if request.user.is_authenticated():
-        collections = models.get_user_collections(request.user.id)
+        collections = models.Collection.objects.all_by_user(request.user)
         return {'user_collections': collections}
     else:
         return {}
