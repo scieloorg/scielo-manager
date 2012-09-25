@@ -217,6 +217,13 @@ class CollectionTests(TestCase):
 
         self.assertFalse(collection.is_default_to_user(user))
 
+    def test_collection_is_default_to_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.make_default_to_user(user)
+
+        self.assertTrue(collection.is_default_to_user(user))
+
 
 class CollectionManagerTests(TestCase):
 

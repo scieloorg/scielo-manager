@@ -227,22 +227,23 @@ class Collection(caching.base.CachingMixin, models.Model):
                                        is_manager=is_manager)
 
     def remove_user(self, user):
-        user_ = UserCollections.objects.get(collection=self, user=user)
-        user_.delete()
+        uc = UserCollections.objects.get(collection=self, user=user)
+        uc.delete()
 
     def make_default_to_user(self, user):
         UserCollections.objects.filter(user=user).update(is_default=False)
-        user_, created = UserCollections.objects.get_or_create(
+        uc, created = UserCollections.objects.get_or_create(
             collection=self, user=user)
-        user_.is_default = True
-        user_.save()
+        uc.is_default = True
+        uc.save()
 
     def is_default_to_user(self, user):
         try:
-            user_col = UserCollections.objects.get(collection=self, user=user)
-            return user_col.is_default
+            uc = UserCollections.objects.get(collection=self, user=user)
+            return uc.is_default
         except UserCollections.DoesNotExist:
             return False
+
 
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
