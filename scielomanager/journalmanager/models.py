@@ -85,8 +85,8 @@ class JournalCustomManager(AppCustomManager):
     def all_by_user(self, user, is_available=True, pub_status=None):
 
         # user_collections = get_default_user_collections(user.pk)
-        user_collections = Collection.objects.get_default_by_user(user)
 
+        user_collections = Collection.objects.get_default_by_user(user)
         objects_all = self.available(is_available).filter(
             collections__in=[user_collections]).distinct()
 
@@ -163,8 +163,8 @@ class CollectionCustomManager(AppCustomManager):
         `get_default_by_user` raises DoesNotExist if there is no
         result for the given parameter.
         """
-        collections = self.all_by_user(user).filter(
-            usercollections__is_default=True)
+        collections = self.filter(usercollections__user=user,
+            usercollections__is_default=True).order_by('name')
 
         if not collections.count():
             try:

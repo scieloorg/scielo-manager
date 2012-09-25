@@ -288,6 +288,35 @@ class CollectionManagerTests(TestCase):
         self.assertEqual(models.Collection.objects.get_default_by_user(user),
             col1)
 
+    def test_get_default_by_user_second_collection(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.make_default_to_user(user)
+        col2 = CollectionFactory.create()
+        col2.make_default_to_user(user)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+            col2)
+
+    def test_get_default_by_user_with_two_users(self):
+        user1 = auth.UserF()
+        user2 = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.make_default_to_user(user1)
+
+        col2 = CollectionFactory.create()
+        col2.add_user(user1)
+        col2.make_default_to_user(user2)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user1),
+            col1)
+        self.assertEqual(models.Collection.objects.get_default_by_user(user2),
+            col2)
+
     def test_get_first_alphabeticaly_when_default_is_not_set(self):
         user = auth.UserF()
 
