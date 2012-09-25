@@ -35,6 +35,7 @@ def get_user_collections(user_id):
     return user_collections
 
 
+#  DEPRECATED (http://ref.scielo.org/359zf3)
 def get_default_user_collections(user_id):
     """
     Return the collection that the user choose as default/active collection.
@@ -83,12 +84,14 @@ class AppCustomManager(caching.base.CachingManager):
 class JournalCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True, pub_status=None):
+        """
+        Retrieves all the user's journals, contextualized by
+        their default collection.
+        """
+        default_collection = Collection.objects.get_default_by_user(user)
 
-        # user_collections = get_default_user_collections(user.pk)
-
-        user_collections = Collection.objects.get_default_by_user(user)
         objects_all = self.available(is_available).filter(
-            collections__in=[user_collections]).distinct()
+            collections__in=[default_collection]).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -98,11 +101,12 @@ class JournalCustomManager(AppCustomManager):
 
     def recents_by_user(self, user):
         """
-        Retrieve the recently modified objects related to the given user.
+        Retrieves the recently modified objects related to the given user.
         """
-        user_collections = get_default_user_collections(user.pk)
+        default_collection = Collection.objects.get_default_by_user(user)
+
         recents = self.filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct().order_by('-updated')[:5]
+            collections__in=[default_collection]).distinct().order_by('-updated')[:5]
 
         return recents
 
@@ -115,9 +119,11 @@ class JournalCustomManager(AppCustomManager):
 class SectionCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True):
-        user_collections = get_default_user_collections(user.pk)
+        default_collection = Collection.objects.get_default_by_user(user)
+
         objects_all = self.available(is_available).filter(
-            journal__collections__in=[uc.collection for uc in user_collections]).distinct()
+            journal__collections__in=[default_collection]).distinct()
+
         return objects_all
 
 
@@ -126,6 +132,7 @@ class IssueCustomManager(AppCustomManager):
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
             journal__collections=collection)
+
         return objects_all
 
 
@@ -135,9 +142,11 @@ class InstitutionCustomManager(AppCustomManager):
     based on user's collections.
     """
     def all_by_user(self, user, is_available=True):
-        user_collections = get_default_user_collections(user.pk)
+        default_collection = Collection.objects.get_default_by_user(user)
+
         objects_all = self.available(is_available).filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
+            collections__in=[default_collection]).distinct()
+
         return objects_all
 
 
