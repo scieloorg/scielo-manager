@@ -24,11 +24,11 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
+from django.forms.models import inlineformset_factory
+from django.conf import settings
 
-from scielomanager import settings
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
-from django.forms.models import inlineformset_factory
 from scielomanager.tools import get_paginated
 from scielomanager.tools import get_referer_view
 from scielomanager.tools import PendingPostData
