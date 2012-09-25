@@ -299,3 +299,12 @@ class CollectionManagerTests(TestCase):
         from journalmanager import models
         self.assertEqual(models.Collection.objects.get_default_by_user(user),
             col1)
+
+    def test_get_default_by_user_must_raise_doesnotexist_if_the_user_has_no_collections(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+
+        from journalmanager import models
+        self.assertRaises(models.Collection.DoesNotExist,
+            lambda: models.Collection.objects.get_default_by_user(user))

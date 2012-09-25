@@ -84,9 +84,11 @@ class JournalCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True, pub_status=None):
 
-        user_collections = get_default_user_collections(user.pk)
+        # user_collections = get_default_user_collections(user.pk)
+        user_collections = Collection.objects.get_default_by_user(user)
+
         objects_all = self.available(is_available).filter(
-            collections__in=[uc.collection for uc in user_collections]).distinct()
+            collections__in=[user_collections]).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -156,6 +158,10 @@ class CollectionCustomManager(AppCustomManager):
         Returns the Collection marked as default by the given user.
         If none satisfies this condition, the first
         instance is then returned.
+
+        Like any manager method that does not return Querysets,
+        `get_default_by_user` raises DoesNotExist if there is no
+        result for the given parameter.
         """
         collections = self.all_by_user(user).filter(
             usercollections__is_default=True)
@@ -163,10 +169,11 @@ class CollectionCustomManager(AppCustomManager):
         if not collections.count():
             try:
                 collection = self.all_by_user(user)[0]
+            except IndexError:
+                raise Collection.DoesNotExist()
+            else:
                 collection.make_default_to_user(user)
                 return collection
-            except IndexError:
-                return None
 
         return collections[0]
 
