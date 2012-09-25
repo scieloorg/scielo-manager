@@ -224,6 +224,40 @@ class CollectionTests(TestCase):
 
         self.assertTrue(collection.is_default_to_user(user))
 
+    def test_add_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.add_user(user)
+
+        from journalmanager import models
+        self.assertTrue(models.UserCollections.objects.get(user=user,
+            collection=collection))
+
+    def test_remove_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.add_user(user)
+
+        collection.remove_user(user)
+
+        from journalmanager import models
+        self.assertRaises(models.UserCollections.DoesNotExist,
+            lambda: models.UserCollections.objects.get(user=user,
+                                                       collection=collection)
+            )
+
+    def test_remove_user_that_is_not_related_to_the_collection(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+
+        collection.remove_user(user)
+
+        from journalmanager import models
+        self.assertRaises(models.UserCollections.DoesNotExist,
+            lambda: models.UserCollections.objects.get(user=user,
+                                                       collection=collection)
+            )
+
 
 class CollectionManagerTests(TestCase):
 
@@ -241,3 +275,27 @@ class CollectionManagerTests(TestCase):
         collections = models.Collection.objects.all_by_user(user)
 
         self.assertEqual(collections.count(), 3)
+
+    def test_get_default_by_user(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.make_default_to_user(user)
+        col2 = CollectionFactory.create()
+        col2.add_user(user)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+            col1)
+
+    def test_get_first_alphabeticaly_when_default_is_not_set(self):
+        user = auth.UserF()
+
+        col1 = CollectionFactory.create()
+        col1.add_user(user)
+        col2 = CollectionFactory.create()
+        col2.add_user(user)
+
+        from journalmanager import models
+        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+            col1)

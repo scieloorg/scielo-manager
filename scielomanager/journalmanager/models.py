@@ -83,6 +83,7 @@ class AppCustomManager(caching.base.CachingManager):
 class JournalCustomManager(AppCustomManager):
 
     def all_by_user(self, user, is_available=True, pub_status=None):
+
         user_collections = get_default_user_collections(user.pk)
         objects_all = self.available(is_available).filter(
             collections__in=[uc.collection for uc in user_collections]).distinct()
@@ -141,10 +142,33 @@ class InstitutionCustomManager(AppCustomManager):
 class CollectionCustomManager(AppCustomManager):
 
     def all_by_user(self, user):
+        """
+        Returns all the Collections related to the given
+        user.
+        """
         collections = self.filter(usercollections__user=user).order_by(
             'name')
 
         return collections
+
+    def get_default_by_user(self, user):
+        """
+        Returns the Collection marked as default by the given user.
+        If none satisfies this condition, the first
+        instance is then returned.
+        """
+        collections = self.all_by_user(user).filter(
+            usercollections__is_default=True)
+
+        if not collections.count():
+            try:
+                collection = self.all_by_user(user)[0]
+                collection.make_default_to_user(user)
+                return collection
+            except IndexError:
+                return None
+
+        return collections[0]
 
 
 class Language(caching.base.CachingMixin, models.Model):
@@ -221,16 +245,31 @@ class Collection(caching.base.CachingMixin, models.Model):
         super(Collection, self).save(*args, **kwargs)
 
     def add_user(self, user, is_default=False, is_manager=False):
+        """
+        Add the user to the current collection.
+        """
         UserCollections.objects.create(collection=self,
                                        user=user,
                                        is_default=is_default,
                                        is_manager=is_manager)
 
     def remove_user(self, user):
-        uc = UserCollections.objects.get(collection=self, user=user)
-        uc.delete()
+        """
+        Removes the user from the current collection.
+        If the user isn't already related to the given collection,
+        it will do nothing, silently.
+        """
+        try:
+            uc = UserCollections.objects.get(collection=self, user=user)
+        except UserCollections.DoesNotExist:
+            return None
+        else:
+            uc.delete()
 
     def make_default_to_user(self, user):
+        """
+        Makes the current collection, the user's default.
+        """
         UserCollections.objects.filter(user=user).update(is_default=False)
         uc, created = UserCollections.objects.get_or_create(
             collection=self, user=user)
@@ -238,6 +277,10 @@ class Collection(caching.base.CachingMixin, models.Model):
         uc.save()
 
     def is_default_to_user(self, user):
+        """
+        Returns a boolean value depending if the current collection
+        is set as default to the given user.
+        """
         try:
             uc = UserCollections.objects.get(collection=self, user=user)
             return uc.is_default
