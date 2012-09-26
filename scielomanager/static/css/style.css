@@ -28,11 +28,7 @@ ul._actions {
 }
 
 ul._actions li {
-    /*border-right: 1px solid #919191;*/
     font-weight: bold;
-    /*margin-right: 5px;*/
-    /*padding: 0 5px;*/
-    /*visibility: hidden;*/
     display: inline;
 }
 
@@ -178,14 +174,38 @@ button.ui-button-icon-only {
     background: #CCCCCC;
 }
 
-._icon-current {
+._icon {
     display: inline-block;
-    width: 37px;
-    height: 37px;
-    background-image: url("img/current.png");
+    width: 30px;
+    height: 30px;
     background-repeat: no-repeat;
+    vertical-align: bottom;
+}
+
+._icon-current {
+    background-image: url("img/current.png");
+}
+
+._icon-deceased {
+    background-image: url("img/deceased.png");
+}
+
+._icon-suspended {
+    background-image: url("img/suspended.png");
+}
+
+._icon-inprogress {
+    background-image: url("img/inprogress.png");
+}
+
+table._journals td {
+    vertical-align: middle;
 }
 
 table._journals h4 a {
     vertical-align: super;
+}
+
+table._journals h4 {
+    margin: 5px 0;
 }

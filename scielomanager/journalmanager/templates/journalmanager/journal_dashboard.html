@@ -80,8 +80,7 @@
       <th>{% trans "Journal Title" %}</th>
       <th>{% trans "Print ISSN" %}</th>
       <th>{% trans "Electronic ISSN" %}</th>
-      <th>{% trans "Actions" %}</th>
-      <th>{% trans "Status" %}</th>
+      <th>{% trans "Browse" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -92,7 +91,9 @@
       </td>
       <td>
         <h4>
-          <span class="_icon _icon-current"></span>
+          <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
+                data-original-title="{{ journal.pub_status|capfirst }}"
+                rel="tooltip"></span>
           {% if perms.journalmanager.change_journal %}
             <a href="{% url journal.edit journal.pk %}">
               {{ journal.title }}
@@ -132,7 +133,6 @@
           {% endif %}
         </ul>
       </td>
-      <td>{{ journal.pub_status }}</td>
     </tr>
     {% empty %}
     <tr>
