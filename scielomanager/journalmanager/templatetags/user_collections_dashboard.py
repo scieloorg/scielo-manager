@@ -12,7 +12,7 @@ def user_collections_dashboard(collections, user):
     for collection in collections:
         is_default = collection.is_default_to_user(user)
 
-        classname = 'dropdown active' if is_default else 'dropdown'
+        classname = u'dropdown active' if is_default else u'dropdown'
         name = collection.name
         edit_url = reverse('collection.edit', args=[collection.pk])
         edit_label = _('Edit')
@@ -22,7 +22,7 @@ def user_collections_dashboard(collections, user):
                 args=[user.pk, collection.pk])
             activation_label = _('Activate')
 
-            activation_snippet = """
+            activation_snippet = u"""
             <li>
                 <a href="{activation_url}">
                   <i class="icon-ok-circle"></i> {activation_label}
@@ -31,9 +31,9 @@ def user_collections_dashboard(collections, user):
             """.format(activation_url=activation_url,
                        activation_label=activation_label).strip()
         else:
-            activation_snippet = ''
+            activation_snippet = u''
 
-        html_snippet = """
+        html_snippet = u"""
         <li class="{classname}">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             {name}
