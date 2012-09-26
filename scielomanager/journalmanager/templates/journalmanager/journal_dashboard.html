@@ -95,8 +95,11 @@
                 data-original-title="{{ journal.pub_status|capfirst }}"
                 rel="tooltip"></span>
           {% if perms.journalmanager.change_journal %}
-            <a href="{% url journal.edit journal.pk %}">
-              {{ journal.title }}
+            <a href="{% url journal.edit journal.pk %}"
+               class="tip-bottom"
+               data-original-title="{{ journal.title }}"
+               rel="tooltip">
+              {{ journal.title_iso }}
             </a>
           {% else %}
             {{ journal.title }}
