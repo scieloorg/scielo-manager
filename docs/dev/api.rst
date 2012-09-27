@@ -35,3 +35,8 @@ Available endpoints
 
   If you try these requests in your browser, you will need to use the
   parameter ``format`` with one of the valid format types (xml, json or yaml).
+
+
+We strongly recommend you to read `this page
+<http://django-tastypie.readthedocs.org/en/v0.9.11/interacting.html>`_ to
+know more about interacting with the API.
