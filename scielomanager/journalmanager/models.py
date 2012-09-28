@@ -303,6 +303,17 @@ class Collection(caching.base.CachingMixin, models.Model):
         except UserCollections.DoesNotExist:
             return False
 
+    def is_managed_by_user(self, user):
+        """
+        Returns a boolean value depending if the current collection
+        is managed by the given user.
+        """
+        try:
+            uc = UserCollections.objects.get(collection=self, user=user)
+            return uc.is_manager
+        except UserCollections.DoesNotExist:
+            return False
+
 
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()

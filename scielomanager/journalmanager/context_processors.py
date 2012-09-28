@@ -28,3 +28,17 @@ def show_user_collections(request):
         return {'user_collections': collections}
     else:
         return {}
+
+
+def add_default_collection(request):
+    if request.user.is_authenticated():
+        try:
+            collection = models.Collection.objects.get_default_by_user(request.user)
+            return {
+                'default_collection': collection,
+                'is_manager_of_default_collection': collection.is_managed_by_user(request.user)
+                }
+        except models.Collection.DoesNotExist:
+            return {}
+    else:
+        return {}
