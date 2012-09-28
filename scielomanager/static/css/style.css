@@ -198,14 +198,14 @@ button.ui-button-icon-only {
     background-image: url("img/inprogress.png");
 }
 
-table._journals td {
+table._listings td {
     vertical-align: middle;
 }
 
-table._journals h4 a {
+table._listings h4 a {
     vertical-align: super;
 }
 
-table._journals h4 {
+table._listings h4 {
     margin: 5px 0;
 }
