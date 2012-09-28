@@ -162,6 +162,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'journalmanager.context_processors.dynamic_template_inheritance',
     'journalmanager.context_processors.access_to_settings',
     'journalmanager.context_processors.show_user_collections',
+    'journalmanager.context_processors.add_default_collection',
     'scielo_extensions.context_processors.from_settings',
 )
 
