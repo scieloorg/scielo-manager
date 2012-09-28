@@ -258,6 +258,13 @@ class CollectionTests(TestCase):
                                                        collection=collection)
             )
 
+    def test_collection_is_managed_by_user(self):
+        user = auth.UserF()
+        collection = CollectionFactory.create()
+        collection.add_user(user, is_manager=True)
+
+        self.assertTrue(collection.is_managed_by_user(user))
+
 
 class CollectionManagerTests(TestCase):
 

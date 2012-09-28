@@ -7,66 +7,74 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'Users DashBoard' %}</li>
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li class="active">{% trans 'Users DashBoard' %}</li>
 </ul>
 {% endblock %}
 
 {% block content %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
-    <div class="span10">
-        <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
-    </div>
-    <div class="span2">
-        {% simple_pagination users %}
-    </div>
+  <div class="span10">
+    <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
+  </div>
+  <div class="span2">
+    {% simple_pagination users %}
+  </div>
 </div>
 {% endif %}
-<table class="table table-condensed">
-    <thead>
-        <tr>
-            <th>{% trans "Login" %}</th>
-            <th>{% trans "E-mail" %}</th>
-            <th>{% trans "Full name" %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users.object_list %}
-        <tr id="{{ user.pk }}">
-            <td>
-                <h4>
-                  {% if user.is_active %}
-                    <a href="{% url user.edit user.pk %}">{{ user.username }}</a></h4>
-                  {% else %}
-                    <a class="strikethrough" href="{% url user.edit user.pk %}">{{ user.username }}</a></h4>
-                  {% endif %}
-                </h4>
-                <ul class="_actions">
-                    {% if perms.auth.change_user %}
-                    <li>
-                        <a href="{% url user.edit user.pk %}">
-                            {% trans 'Edit' %}
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% if perms.auth.delete_user %}
-                    <li>
-                      {% if user.is_active %}
-                        <button id="action_disable_disable" class="btn btn-mini btn-danger" value="{% url user.toggle_availability user.pk %}">{% trans 'disable' %}</button>
-                      {% else %}
-                        <button id="action_disable_disable" class="btn btn-mini btn-success" value="{% url user.toggle_availability user.pk %}">{% trans 'enable' %}</button>
-                      {% endif %}
-                    </li>
-                    {% endif %}
-                </ul>
-            </td>
-            <td>{{ user.get_profile.email }}</td>
-            <td>{{ user.first_name }} {{ user.last_name }}</td>
-        </tr>
-        {% endfor %}
-    <tbody>
+<table class="table table-condensed _listings">
+  <thead>
+    <tr>
+      <th>{% trans "Login" %}</th>
+      <th>{% trans "E-mail" %}</th>
+      <th>{% trans "Full name" %}</th>
+      <th>{% trans "Groups" %}</th>
+      <th>{% trans "Actions" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users.object_list %}
+    <tr id="{{ user.pk }}">
+      <td>
+        <h4>
+          <a {% if not user.is_active %}class="strikethrough"{% endif %}
+             href="{% url user.edit user.pk %}">
+             {{ user.username }}
+          </a>
+        </h4>
+      </td>
+      <td>
+        <a href="mailto:{{ user.get_profile.email }}">
+          {{ user.get_profile.email }}
+        </a>
+      </td>
+      <td>{{ user.first_name }} {{ user.last_name }}</td>
+      <td>{{ user.groups.all|join:", " }}</td>
+      <td>
+        <ul class="_actions">
+          {% if perms.auth.delete_user %}
+          <li>
+            {% if user.is_active %}
+            <button id="action_disable_disable"
+                    class="btn btn-mini btn-danger"
+                    value="{% url user.toggle_availability user.pk %}">
+              {% trans 'Disable' %}
+            </button>
+            {% else %}
+            <button id="action_disable_disable"
+                    class="btn btn-mini"
+                    value="{% url user.toggle_availability user.pk %}">
+              {% trans 'Enable' %}
+            </button>
+            {% endif %}
+          </li>
+          {% endif %}
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+  <tbody>
 </table>
 {% pagination users %}
 {% endblock %}
-

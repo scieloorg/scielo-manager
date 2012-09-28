@@ -242,18 +242,19 @@ def generic_bulk_action(request, model_name, action_name, value=None):
 @permission_required('journalmanager.list_user', login_url=settings.LOGIN_URL)
 def user_index(request):
 
-    user_collections = models.get_user_collections(request.user.id)
-    user_collections_managed = user_collections.filter(is_manager=True)
+    collection = models.Collection.objects.get_default_by_user(request.user)
 
-    # Filtering users manager by the administrator
-    all_users = models.User.cached_objects.filter(usercollections__collection__in=(collection.collection.pk for collection in user_collections_managed)).distinct('username')
-    users = get_paginated(all_users, request.GET.get('page', 1))
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(settings.LOGIN_URL)
+
+    col_users = models.User.cached_objects.filter(
+        usercollections__collection__in=[collection]).distinct('username')
+
+    users = get_paginated(col_users, request.GET.get('page', 1))
 
     t = loader.get_template('journalmanager/user_dashboard.html')
-
     c = RequestContext(request, {
                        'users': users,
-                       'user_collections': user_collections,
                        })
     return HttpResponse(t.render(c))
 
