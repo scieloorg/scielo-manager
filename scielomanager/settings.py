@@ -5,7 +5,7 @@ import os
 from django.contrib.messages import constants as messages
 
 DEBUG = True
-HTML_MINIFY = not DEBUG
+
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -260,3 +260,6 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5Mb
 # not only overwrite them, and (2) we do not want the app to launch if the
 # 'settings_local.include' file is not provided
 execfile(os.path.join(PROJECT_PATH,'settings_local.include'))
+
+# Always minify the HTML when the DEBUG mode is False
+HTML_MINIFY = not DEBUG
