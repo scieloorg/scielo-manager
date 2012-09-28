@@ -49,12 +49,16 @@
       </td>
       <td>
         <ul class="_actions">
-          {% if not item.is_used %}
           <li>
+          {% if not item.is_used %}
             <a href="{% url section.del item.journal.pk item.pk %}"
-               class="btn btn-mini btn-danger">{% trans 'Delete' %}</a>
-          </li>
+               class="btn btn-mini btn-danger">
+          {% else %}
+            <a href="#"
+               class="btn btn-mini btn-danger disabled">
           {% endif %}
+               {% trans 'Delete' %}</a>
+          </li>
       </td>
     </tr>
    {% empty %}
