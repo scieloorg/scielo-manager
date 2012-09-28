@@ -5,6 +5,7 @@ import os
 from django.contrib.messages import constants as messages
 
 DEBUG = True
+HTML_MINIFY = not DEBUG
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -122,6 +123,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
 )
 
 ROOT_URLCONF = 'scielomanager.urls'
