@@ -101,10 +101,10 @@ class LoggedInViewsTest(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
+        sample_journal.collection = self.collection
         sample_journal.save()
         sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
-        sample_journal.collections = [self.collection, ]
 
         sample_journal.save()
 
@@ -271,7 +271,7 @@ class LoggedInViewsTest(TestCase):
         #missing data
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
-                                                     'journal-collections': [self.usercollections.pk],
+                                                     'journal-collection': self.collection.pk,
                                                      }))
 
         self.assertTrue('some errors or missing data' in response.content)
@@ -279,7 +279,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
-                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-collection': self.collection.pk,
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
                                          'mission-0-language': sample_language.pk, }))
@@ -293,7 +293,7 @@ class LoggedInViewsTest(TestCase):
             tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
                                          'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
-                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-collection': self.collection.pk,
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
                                          'mission-0-language': sample_language.pk}))
@@ -330,7 +330,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
-                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-collection': self.usercollections.pk,
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
                                          'mission-0-language': sample_language.pk,
@@ -366,7 +366,7 @@ class LoggedInViewsTest(TestCase):
         response = self.client.post(reverse('journal.add'),
             tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
                                          'journal-use_license': sample_uselicense.pk,
-                                         'journal-collections': [self.usercollections.pk],
+                                         'journal-collection': self.usercollections.pk,
                                          'journal-languages': [sample_language.pk],
                                          'journal-abstract_keyword_languages': [sample_language.pk],
                                          'mission-0-language': sample_language.pk,
@@ -747,7 +747,7 @@ class LoggedInViewsTest(TestCase):
 
         user_collections = [collection.collection for collection in get_user_collections(self.user.pk)]
 
-        for qset_item in response.context['add_form'].fields['collections'].queryset:
+        for qset_item in response.context['add_form'].fields['collection'].queryset:
             self.assertTrue(qset_item in user_collections)
 
     def test_contextualized_collection_field_on_add_sponsor(self):
@@ -807,498 +807,6 @@ class LoggedInViewsTest(TestCase):
         response = self.client.get(reverse('trash.listing'))
         self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
 
-
-class JournalRestAPITest(TestCase):
-    def setUp(self):
-        """
-        Creates an authenticated session using a dummy user.
-        """
-
-        #add a dummy user
-        self.user = tests_assets.get_sample_creator()
-        self.collection = tests_assets.get_sample_collection()
-        self.user.save()
-        self.collection.save()
-        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
-        self.usercollections.save()
-
-    def tearDown(self):
-        """
-        Destroying the data
-        """
-        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
-            m.objects.all().delete()
-
-    def _makeOne(self):
-        sample_journal = tests_assets.get_sample_journal()
-        sample_journal.creator = self.user
-
-        sample_sponsor = tests_assets.get_sample_sponsor()
-        sample_sponsor.save()
-        sample_sponsor.collections = [self.collection, ]
-        sample_sponsor.save()
-
-        sample_use_license = tests_assets.get_sample_uselicense()
-        sample_use_license.save()
-
-        sample_journal.use_license = sample_use_license
-        sample_journal.pub_status_changed_by = self.user
-        sample_journal.save()
-
-        sample_journal.sponsor = [sample_sponsor, ]
-        sample_journal.save()
-        sample_journal.collections = [self.collection, ]
-
-        sample_journal.save()
-        return sample_journal
-
-    def test_journal_index(self):
-        import json
-
-        journal = self._makeOne()
-
-        response = self.client.get('/api/v1/journals/')
-        self.assertEqual(response.status_code, 200)
-
-        response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 2)  # objects and meta
-
-        expected_fields = ('title', 'collections', 'sponsor',
-        'previous_title', 'use_license', 'languages', 'title_iso',
-        'short_title', 'acronym', 'scielo_issn', 'print_issn',
-        'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
-        'init_num', 'final_year', 'final_vol', 'final_num', 'frequency', 'pub_status',
-        'editorial_standard', 'ctrl_vocabulary', 'pub_level', 'secs_code', 'copyrighter',
-        'url_online_submission', 'url_journal', 'index_coverage', 'cover',
-        'other_previous_title', 'creator', 'logo', 'id', 'issues', 'is_trashed',
-        'other_titles', 'updated', 'sponsors',
-        'abstract_keyword_languages', 'missions', 'created', 'notes',
-        'pub_status_reason', 'resource_uri', 'national_code', 'pub_status_history',
-        'contact', 'study_areas', 'publisher_name', 'publisher_country', 'publisher_state',
-        'publication_city', 'editor_address', 'editor_email', 'sections', 'medline_title',
-        'medline_code'
-        )
-
-        for field in response_as_py['objects'][0]:
-            self.assertTrue(field in expected_fields)
-
-            if field in ('collections', 'sponsor', 'languages'):
-                self.assertTrue(isinstance(response_as_py['objects'][0][field], list))
-            elif field in ('use_license',):
-                self.assertTrue(isinstance(response_as_py['objects'][0][field], dict))
-
-    def test_journal_getone(self):
-        import json
-
-        journal = self._makeOne()
-
-        response = self.client.get('/api/v1/journals/%s/' % journal.pk)
-        self.assertEqual(response.status_code, 200)
-
-        response_as_py = json.loads(response.content)
-
-        expected_fields = ('title', 'collections', 'sponsor',
-        'previous_title', 'use_license', 'languages', 'title_iso',
-        'short_title', 'acronym', 'scielo_issn', 'print_issn',
-        'eletronic_issn', 'subject_descriptors', 'init_year', 'init_vol',
-        'init_num', 'final_year', 'final_vol', 'final_num', 'frequency',
-        'pub_status', 'editorial_standard', 'ctrl_vocabulary', 'pub_level',
-        'secs_code', 'copyrighter', 'url_online_submission', 'url_journal',
-        'index_coverage', 'cover', 'other_previous_title', 'creator',
-        'logo', 'id', 'issues', 'is_trashed', 'other_titles',
-        'updated', 'sponsors', 'abstract_keyword_languages', 'missions',
-        'created', 'notes', 'pub_status_reason', 'resource_uri', 'national_code',
-        'pub_status_history', 'contact', 'study_areas', 'publisher_name', 'publisher_country',
-        'publisher_state', 'publication_city', 'editor_address', 'editor_email', 'sections',
-        'medline_title', 'medline_code'
-        )
-
-        for field in response_as_py:
-            self.assertTrue(field in expected_fields)
-
-    def test_post_data_index(self):
-        response = self.client.post('/api/v1/journals/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data_index(self):
-        response = self.client.put('/api/v1/journals/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data_index(self):
-        response = self.client.delete('/api/v1/journals/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_post_data_getone(self):
-        journal = self._makeOne()
-        response = self.client.post('/api/v1/journals/%s/' % journal.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data_getone(self):
-        journal = self._makeOne()
-        response = self.client.put('/api/v1/journals/%s/' % journal.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data_getone(self):
-        journal = self._makeOne()
-        response = self.client.delete('/api/v1/journals/%s/' % journal.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_list_all_by_collection(self):
-        import json
-        journal = self._makeOne()
-        response = self.client.get('/api/v1/journals/?collection=brasil')
-        self.assertEqual(response.status_code, 200)
-
-        response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 2)
-
-
-class CollectionRestAPITest(TestCase):
-    def setUp(self):
-        """
-        Creates an authenticated session using a dummy user.
-        """
-
-        #add a dummy user
-        self.user = tests_assets.get_sample_creator()
-        self.collection = tests_assets.get_sample_collection()
-        self.user.save()
-        self.collection.save()
-        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
-        self.usercollections.save()
-
-    def tearDown(self):
-        """
-        Destroying the data
-        """
-        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
-            m.objects.all().delete()
-
-    def _makeOne(self):
-        return self.collection
-
-    def test_index(self):
-        import json
-        collection = self._makeOne()
-
-        response = self.client.get('/api/v1/collections/')
-        self.assertEqual(response.status_code, 200)
-        response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 2)  # objects and meta
-        self.assertEqual(response_as_py['objects'][0]['name'], collection.name)
-
-        expected_fields = ('name', 'name_slug', 'acronym',
-            'address', 'address_number', 'address_complement',
-            'city', 'state', 'country', 'zip_code', 'fax',
-            'phone', 'url', 'email', 'logo', 'resource_uri', 'id',
-        )
-
-        for field in response_as_py['objects'][0]:
-            self.assertTrue(field in expected_fields)
-            # compare as unicode strings
-            field_value = getattr(collection, field, None)
-            if field_value:
-                try:
-                    self.assertEqual(unicode(field_value, 'utf-8'),
-                        response_as_py['objects'][0].get(field, None))
-                except:
-                    self.assertEqual(unicode(field_value),
-                        response_as_py['objects'][0].get(field, None))
-
-    def test_post_data(self):
-        response = self.client.post('/api/v1/collections/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data(self):
-        response = self.client.put('/api/v1/collections/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data(self):
-        response = self.client.delete('/api/v1/collections/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_getone(self):
-        import json
-        collection = self._makeOne()
-
-        response = self.client.get('/api/v1/collections/%s/' % collection.pk)
-        self.assertEqual(response.status_code, 200)
-        response_as_py = json.loads(response.content)
-        self.assertEqual(response_as_py['name'], collection.name)
-
-        expected_fields = ('name', 'name_slug', 'acronym',
-            'address', 'address_number', 'address_complement',
-            'city', 'state', 'country', 'zip_code', 'fax',
-            'phone', 'url', 'email', 'logo', 'id', 'resource_uri',
-        )
-
-        for field in response_as_py:
-            self.assertTrue(field in expected_fields)
-            # compare as unicode strings
-            field_value = getattr(collection, field, None)
-            if field_value:
-                try:
-                    self.assertEqual(unicode(field_value, 'utf-8'), response_as_py.get(field, None))
-                except TypeError:
-                    self.assertEqual(unicode(field_value), response_as_py.get(field, None))
-
-    def test_post_data_getone(self):
-        collection = self._makeOne()
-
-        response = self.client.post('/api/v1/collections/%s/' % collection.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data_getone(self):
-        collection = self._makeOne()
-
-        response = self.client.put('/api/v1/collections/%s/' % collection.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data_getone(self):
-        collection = self._makeOne()
-
-        response = self.client.delete('/api/v1/collections/%s/' % collection.pk)
-        self.assertEqual(response.status_code, 405)
-
-class IssuesRestAPITest(TestCase):
-    def setUp(self):
-        """
-        Creates an authenticated session using a dummy user.
-        """
-
-        #add a dummy user
-        self.user = tests_assets.get_sample_creator()
-        self.collection = tests_assets.get_sample_collection()
-        self.user.save()
-        self.collection.save()
-        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
-        self.usercollections.save()
-
-    def tearDown(self):
-        """
-        Destroying the data
-        """
-        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
-            m.objects.all().delete()
-
-    def _makeOne(self):
-        sample_journal = tests_assets.get_sample_journal()
-        sample_journal.creator = self.user
-
-        sample_sponsor = tests_assets.get_sample_sponsor()
-        sample_sponsor.save()
-        sample_sponsor.collections = [self.collection, ]
-        sample_sponsor.save()
-
-        sample_use_license = tests_assets.get_sample_uselicense()
-        sample_use_license.save()
-
-        sample_journal.use_license = sample_use_license
-        sample_journal.pub_status_changed_by = self.user
-        sample_journal.save()
-        sample_journal.sponsor = [sample_sponsor, ]
-        sample_journal.save()
-        sample_journal.collections = [self.collection, ]
-
-        sample_journal.save()
-
-        sample_issue = tests_assets.get_sample_issue()
-
-        sample_issue.journal = sample_journal
-        sample_issue.save()
-
-        sample_section = tests_assets.get_sample_section()
-        sample_section.journal = sample_journal
-        sample_section.save()
-
-        return sample_issue
-
-    def test_issue_index(self):
-        import json
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.get('/api/v1/issues/')
-        self.assertEqual(response.status_code, 200)
-
-        response_as_py = json.loads(response.content)
-        expected_fields = ('is_marked_up', 'section', 'volume',
-            'number', 'is_press_release', 'publication_start_month',
-            'publication_end_month', 'publication_year', 'use_license',
-            'total_documents', 'ctrl_vocabulary', 'editorial_standard',
-            'label', 'updated', 'resource_uri', 'created', 'journal',
-            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number', 'order'
-        )
-
-        for field in response_as_py['objects'][0]:
-            self.assertTrue(field in expected_fields)
-
-    def test_post_data(self):
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.post('/api/v1/issues/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data(self):
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.put('/api/v1/issues/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data(self):
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.delete('/api/v1/issues/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_issue_getone(self):
-        import json
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.get('/api/v1/issues/%s/' % issue.pk)
-        self.assertEqual(response.status_code, 200)
-
-        response_as_py = json.loads(response.content)
-        expected_fields = ('is_marked_up', 'section', 'volume',
-            'number', 'is_press_release', 'publication_start_month',
-            'publication_end_month', 'publication_year', 'use_license',
-            'total_documents', 'ctrl_vocabulary', 'editorial_standard',
-            'label', 'updated', 'resource_uri', 'created', 'journal',
-            'cover', 'sections', 'id', 'is_trashed', 'suppl_volume', 'suppl_number', 'order'
-        )
-
-        for field in response_as_py:
-            self.assertTrue(field in expected_fields)
-
-            field_value = getattr(issue, field, None)
-            if field_value:
-                if field in ['is_marked_up', 'is_press_release']:
-                    # boolean
-                    self.assertTrue(isinstance(response_as_py.get(field, None),
-                        bool))
-                elif field in ['section', ]:
-                    # list
-                    self.assertTrue(isinstance(response_as_py.get(field, None),
-                        list))
-                elif field in ['total_documents', 'publication_year',
-                    'publication_end_month', 'publication_start_month', 'order']:
-                    self.assertTrue(isinstance(response_as_py.get(field, None),
-                        int))
-                elif field in ['created', 'updated', ]:
-                    self.assertEqual(unicode(field_value)[:10],
-                            response_as_py.get(field)[:10])
-                elif field in ['journal', ]:
-                    self.assertTrue(response_as_py.get(field).startswith('/api/'))
-                else:
-                    # plain text
-                    try:
-                        self.assertEqual(unicode(field_value, 'utf-8'),
-                            response_as_py.get(field, None))
-                    except:
-                        self.assertEqual(unicode(field_value),
-                            response_as_py.get(field, None))
-
-    def test_post_data_getone(self):
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.post('/api/v1/issues/%s/' % issue.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data_getone(self):
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.put('/api/v1/issues/%s/' % issue.pk)
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data_getone(self):
-        issue = self._makeOne()
-        name_slug = issue.journal.collections.all()[0].name_slug
-        response = self.client.delete('/api/v1/issues/%s/' % issue.pk)
-        self.assertEqual(response.status_code, 405)
-
-class SectionsRestAPITest(TestCase):
-    def setUp(self):
-        """
-        Creates an authenticated session using a dummy user.
-        """
-
-        #add a dummy user
-        self.user = tests_assets.get_sample_creator()
-        self.collection = tests_assets.get_sample_collection()
-        self.user.save()
-        self.collection.save()
-        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
-        self.usercollections.save()
-
-    def tearDown(self):
-        """
-        Destroying the data
-        """
-        for m in [Journal, Sponsor, Issue, UserCollections, User, Section, Collection]:
-            m.objects.all().delete()
-
-    def _makeOne(self):
-        sample_journal = tests_assets.get_sample_journal()
-        sample_journal.creator = self.user
-
-        sample_sponsor = tests_assets.get_sample_sponsor()
-        sample_sponsor.save()
-        sample_sponsor.collections = [self.collection, ]
-        sample_sponsor.save()
-
-        sample_use_license = tests_assets.get_sample_uselicense()
-        sample_use_license.save()
-
-        sample_journal.use_license = sample_use_license
-        sample_journal.pub_status_changed_by = self.user
-        sample_journal.save()
-
-        sample_journal.sponsor = [sample_sponsor, ]
-        sample_journal.save()
-        sample_journal.collections = [self.collection, ]
-
-        sample_journal.save()
-
-        sample_section = tests_assets.get_sample_section()
-        sample_section.journal = sample_journal
-        sample_section.save()
-
-        return sample_journal
-
-    def test_section_index(self):
-        import json
-        journal = self._makeOne()
-        name_slug = journal.collections.all()[0].name_slug
-        response = self.client.get('/api/v1/sections/')
-        self.assertEqual(response.status_code, 200)
-
-        response_as_py = json.loads(response.content)
-        self.assertEqual(len(response_as_py), 2)
-
-        expected_fields = ('titles', 'code', 'updated', 'created',
-            'journal', 'titles', 'is_trashed', 'id', 'issues', 'resource_uri',
-            )
-
-        for field in response_as_py['objects'][0]:
-            self.assertTrue(field in expected_fields)
-
-
-    def test_post_data(self):
-        journal = self._makeOne()
-        name_slug = journal.collections.all()[0].name_slug
-        response = self.client.post('/api/v1/sections/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data(self):
-        journal = self._makeOne()
-        name_slug = journal.collections.all()[0].name_slug
-        response = self.client.put('/api/v1/sections/')
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data(self):
-        journal = self._makeOne()
-        name_slug = journal.collections.all()[0].name_slug
-        response = self.client.delete('/api/v1/sections/')
-        self.assertEqual(response.status_code, 405)
 
 class LoggedOutViewsTest(TestCase):
 
@@ -1631,10 +1139,10 @@ class UserViewPermission(TestCase):
 
         sample_journal.use_license = sample_use_license
         sample_journal.pub_status_changed_by = self.user
+        sample_journal.collection = self.collection
         sample_journal.save()
         sample_journal.sponsor = [sample_sponsor, ]
         sample_journal.save()
-        sample_journal.collections = [self.collection, ]
 
         sample_journal.save()
 

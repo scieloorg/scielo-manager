@@ -403,7 +403,7 @@ def add_journal(request, journal_id=None):
     if  journal_id is None:
         journal = models.Journal()
     else:
-        journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), id=journal_id)
+        journal = get_object_or_404(models.Journal, id=journal_id)
 
     form_hash = None
 
@@ -422,6 +422,7 @@ def add_journal(request, journal_id=None):
             form_hash = journal_form_hash
             messages.info(request, MSG_FORM_SAVED_PARTIALLY)
         else:
+
             if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
                 and missionformset.is_valid():
                 journalform.save_all(creator=request.user)

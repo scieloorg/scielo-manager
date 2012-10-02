@@ -42,7 +42,7 @@ class JournalAdmin(admin.ModelAdmin):
 
     list_display = ('title',)
     search_fields = ('title',)
-    filter_horizontal = ('collections', 'languages')
+    filter_horizontal = ('languages',)
     inlines = [JournalMissionInline,
         JournalStudyAreaInline]
 

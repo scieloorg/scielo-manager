@@ -91,7 +91,7 @@ class JournalCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         objects_all = self.available(is_available).filter(
-            collections__in=[default_collection]).distinct()
+            collection=default_collection).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -106,13 +106,13 @@ class JournalCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         recents = self.filter(
-            collections__in=[default_collection]).distinct().order_by('-updated')[:5]
+            collection=default_collection).distinct().order_by('-updated')[:5]
 
         return recents
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            collections=collection)
+            collection=collection)
         return objects_all
 
 
@@ -122,7 +122,7 @@ class SectionCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         objects_all = self.available(is_available).filter(
-            journal__collections__in=[default_collection]).distinct()
+            journal__collection=default_collection).distinct()
 
         return objects_all
 
@@ -131,7 +131,7 @@ class IssueCustomManager(AppCustomManager):
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            journal__collections=collection)
+            journal__collection=collection)
 
         return objects_all
 
@@ -379,7 +379,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', related_name='prev_title', null=True, blank=True)
     use_license = models.ForeignKey('UseLicense')
-    collections = models.ManyToManyField('Collection')
+    collection = models.ForeignKey('Collection', related_name='journals')
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )

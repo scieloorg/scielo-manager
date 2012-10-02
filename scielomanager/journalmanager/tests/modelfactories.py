@@ -13,6 +13,25 @@ class UseLicenseFactory(factory.Factory):
     disclaimer = u'<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Licença Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />Este trabalho foi licenciado com uma Licença <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons - Atribuição - NãoComercial - CompartilhaIgual 3.0 Não Adaptada</a>.'
 
 
+class CollectionFactory(factory.Factory):
+    FACTORY_FOR = models.Collection
+
+    url = u'http://www.scielo.br/'
+    name = factory.Sequence(lambda n: 'scielo%s' % n)
+    address_number = u'430'
+    country = u'Brasil'
+    address = u'Rua Machado Bittencourt'
+    email = u'fapesp@scielo.org'
+    name_slug = factory.Sequence(lambda n: 'scl%s' % n)
+
+    # @classmethod
+    # def _prepare(cls, create, **kwargs):
+    #     user = auth.UserF()
+    #     collection = super(CollectionFactory, cls)._prepare(create, **kwargs)
+    #     collection.add_user(user)
+    #     return collection
+
+
 class JournalFactory(factory.Factory):
     FACTORY_FOR = models.Journal
 
@@ -47,6 +66,7 @@ class JournalFactory(factory.Factory):
     creator = factory.SubFactory(auth.UserF)
     pub_status_changed_by = factory.SubFactory(auth.UserF)
     use_license = factory.SubFactory(UseLicenseFactory)
+    collection = factory.SubFactory(CollectionFactory)
 
 
 class SectionFactory(factory.Factory):
@@ -102,22 +122,3 @@ class SectionTitleFactory(factory.Factory):
 
     language = factory.SubFactory(LanguageFactory)
     section = factory.SubFactory(SectionFactory)
-
-
-class CollectionFactory(factory.Factory):
-    FACTORY_FOR = models.Collection
-
-    url = u'http://www.scielo.br/'
-    name = factory.Sequence(lambda n: 'scielo%s' % n)
-    address_number = u'430'
-    country = u'Brasil'
-    address = u'Rua Machado Bittencourt'
-    email = u'fapesp@scielo.org'
-    name_slug = factory.Sequence(lambda n: 'scl%s' % n)
-
-    @classmethod
-    def _prepare(cls, create, **kwargs):
-        user = auth.UserF()
-        collection = super(CollectionFactory, cls)._prepare(create, **kwargs)
-        collection.add_user(user)
-        return collection

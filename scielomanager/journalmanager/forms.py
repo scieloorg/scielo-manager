@@ -39,7 +39,8 @@ class UserCollectionContext(ModelForm):
             self.fields['collections'].queryset = models.Collection.objects.filter(
                 pk__in = (collection.collection.pk for collection in collections_qset))
 
-class JournalForm(UserCollectionContext):
+
+class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
@@ -52,9 +53,16 @@ class JournalForm(UserCollectionContext):
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsors')}),
         required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
+    collection = forms.ModelChoiceField(models.Collection.objects.none(),
+        required=True)
 
     def __init__(self, *args, **kwargs):
+        collections_qset = kwargs.pop('collections_qset', None)
         super(JournalForm, self).__init__(*args, **kwargs)
+
+        if collections_qset is not None:
+            self.fields['collection'].queryset = models.Collection.objects.filter(
+                pk__in = (collection.collection.pk for collection in collections_qset))
 
     def save_all(self, creator):
         journal = self.save(commit=False)
