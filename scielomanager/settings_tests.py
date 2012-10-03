@@ -27,3 +27,8 @@ CACHES = {
         'LOCATION': '',
     }
 }
+
+# Turning off the django-debug-toolbar
+DEBUG_MIDDLEWARE = 'debug_toolbar.middleware.DebugToolbarMiddleware'
+if DEBUG_MIDDLEWARE in MIDDLEWARE_CLASSES:
+    MIDDLEWARE_CLASSES.remove(DEBUG_MIDDLEWARE)
