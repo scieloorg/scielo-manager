@@ -1,3 +1,5 @@
 mocker
 factory_boy
 django_factory_boy
+webtest
+django-webtest

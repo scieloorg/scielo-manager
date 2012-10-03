@@ -57,7 +57,7 @@ class IssueResource(ModelResource):
 
         if 'collection' in filters:
             issues = Issue.objects.filter(
-                journal__collections__name_slug=filters['collection'])
+                journal__collection__name_slug=filters['collection'])
             orm_filters['pk__in'] = issues
 
         return orm_filters
@@ -106,7 +106,7 @@ class JournalResource(ModelResource):
     languages = fields.CharField(readonly=True)
     use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
-    collections = fields.ManyToManyField(CollectionResource, 'collections')
+    collections = fields.ForeignKey(CollectionResource, 'collection')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
     pub_status_history = fields.ListField(readonly=True)
@@ -132,7 +132,7 @@ class JournalResource(ModelResource):
 
         if 'collection' in filters:
             journals = Journal.objects.filter(
-                collections__name_slug=filters['collection'])
+                collection__name_slug=filters['collection'])
             orm_filters['pk__in'] = journals
 
         return orm_filters
