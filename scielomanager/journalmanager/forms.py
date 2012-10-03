@@ -205,6 +205,11 @@ class SponsorForm(UserCollectionContext):
         }
 
 
+class LoginForm(forms.Form):
+        username = forms.CharField(widget=forms.TextInput(attrs={'class': 'input-xlarge focused span4', 'placeholder': _('Username or email')}))
+        password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'input-xlarge focused span4', 'placeholder': _('Password')}))
+
+
 class UserForm(ModelForm):
     groups = forms.ModelMultipleChoiceField(Group.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more groups')}),
