@@ -265,11 +265,12 @@ def user_login(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))
 
+    context_data = {'next': request.GET.get('next', '')}
+
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
 
         if login_form.is_valid():
-            next = request.POST.get('next', '')
             username = login_form.cleaned_data['username']
             password = login_form.cleaned_data['password']
             user = authenticate(username=username, password=password)
@@ -277,25 +278,18 @@ def user_login(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect(next)
+                    return HttpResponseRedirect(context_data['next'])
                 else:
-                    login_form = LoginForm()
-                    context_data = {'active': True,
-                                    'login_form': login_form}
+                    context_data.update({'active': True})
             else:
-                login_form = LoginForm()
-                context_data = {'invalid': True,
-                                'login_form': login_form,
-                                'next': next}
+                context_data.update({'invalid': True})
         else:
             messages.error(request, _('Username and Password are required'))
-            return HttpResponseRedirect(reverse('index'))
 
     else:
         login_form = LoginForm()
-        context_data = {'required': True,
-                        'login_form': login_form,
-                        'next': request.GET.get('next', None)}
+
+    context_data['login_form'] = login_form
 
     return render_to_response(
             'registration/login.html',
