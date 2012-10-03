@@ -27,3 +27,7 @@ CACHES = {
         'LOCATION': '',
     }
 }
+
+INSTALLED_APPS += (
+    'api',
+)

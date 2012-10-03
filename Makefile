@@ -12,7 +12,7 @@ clean:
 	@find . -name "*.pyc" -delete
 
 test: clean
-	@python $(MANAGE) test journalmanager export --settings=$(SETTINGS_TEST)
+	@python $(MANAGE) test journalmanager export api --settings=$(SETTINGS_TEST)
 
 dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)
