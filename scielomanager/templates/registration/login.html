@@ -9,20 +9,33 @@
   {% if active %}
     <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your account is not active. Please contact SciELO or verify your e-mail' %}</div>
   {% endif %}
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert {{ message.tags }}">{{ message }}
+    <ul id="errors_list">
+    {% for field in add_form %}
+      {% if field.errors %}
+      <li>{{ field.label }} {{ field.errors.text }}</li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+  {% endif %}
   <form action="{% url journalmanager.user_login %}" method="post">
     <fieldset>
       <input type="hidden" value="{{ next|default:'' }}" name="next" />
       {% csrf_token %}
       <div class="control-group">
-        <label class="control-label" for="focusedInput">{% trans 'Username or email' %}</label>
+        <label class="control-label" for="focusedInput">{% trans login_form.username.label %}</label>
           <div class="controls">
-            <input class="input-xlarge focused span4" placeholder="{% trans 'Username or email' %}" type="text" name="username" id="id_username"/>
+            {{ login_form.username }}
           </div>
       </div>
      <div class="control-group">
-     <label class="control-label" for="focusedInput">{% trans 'User password:' %}</label>
+     <label class="control-label" for="focusedInput">{% trans login_form.password.label %}</label>
         <div class="controls">
-          <input class="input-xlarge span4" placeholder="{% trans 'Password' %}" type="password" id="id_password" name="password"/>
+          {{ login_form.password }}
         </div>
       </div>
       <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />

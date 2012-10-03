@@ -65,6 +65,7 @@ def index(request):
     context = RequestContext(request, {
         'pending_journals': pending_journals,
         'recent_activities': recent_journals,
+        'login_form': LoginForm(),
         }
     )
     return HttpResponse(template.render(context))
@@ -265,23 +266,35 @@ def user_login(request):
         return HttpResponseRedirect(reverse('index'))
 
     if request.method == 'POST':
+        login_form = LoginForm(request.POST)
 
-        next = request.POST.get('next', '')
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
+        if login_form.is_valid():
+            next = request.POST.get('next', '')
+            username = login_form.cleaned_data['username']
+            password = login_form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
 
-        if user:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect(next)
+            if user:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(next)
+                else:
+                    login_form = LoginForm()
+                    context_data = {'active': True,
+                                    'login_form': login_form}
             else:
-                context_data = {'active': True}
+                login_form = LoginForm()
+                context_data = {'invalid': True,
+                                'login_form': login_form,
+                                'next': next}
         else:
-            context_data = {'invalid': True, 'next': next}
+            messages.error(request, _('Username and Password are required'))
+            return HttpResponseRedirect(reverse('index'))
 
     else:
+        login_form = LoginForm()
         context_data = {'required': True,
+                        'login_form': login_form,
                         'next': request.GET.get('next', None)}
 
     return render_to_response(
@@ -290,12 +303,17 @@ def user_login(request):
             context_instance=RequestContext(request)
             )
 
+
 @login_required
 def user_logout(request):
     logout(request)
-    t = loader.get_template('registration/login.html')
-    c = RequestContext(request)
-    return HttpResponse(t.render(c))
+    login_form = LoginForm()
+
+    return render_to_response(
+            'registration/login.html',
+            {'login_form': login_form},
+            context_instance=RequestContext(request)
+            )
 
 
 @permission_required('journalmanager.change_user', login_url=settings.LOGIN_URL)
