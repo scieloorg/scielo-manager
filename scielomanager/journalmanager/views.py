@@ -265,7 +265,9 @@ def user_login(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('index'))
 
-    context_data = {'next': request.GET.get('next', '')}
+    context_data = {
+        'next': request.GET.get('next', None)  # will be added as a form field
+    }
 
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
@@ -278,7 +280,7 @@ def user_login(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect(context_data['next'])
+                    return HttpResponseRedirect(request.POST.get('next', ''))
                 else:
                     context_data.update({'active': True})
             else:

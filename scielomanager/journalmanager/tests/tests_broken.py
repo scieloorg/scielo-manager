@@ -808,40 +808,8 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
 
 
-class LoggedOutViewsTest(TestCase):
-
-    def test_index(self):
-        """
-        Logged out user try access index page
-        """
-        response = self.client.get(reverse('index'))
-        self.assertEqual(response.status_code, 200)
-
-        self.assertTrue('SciELO Manager' in response.content)
-
 class UserViewsTest(TestCase):
 
-    def setUp(self):
-        """
-        Creates an authenticated session using a dummy user.
-        """
-
-        #add a dummy user
-        self.user = tests_assets.get_sample_creator()
-        self.collection = tests_assets.get_sample_collection()
-        self.user.save()
-        self.collection.save()
-        self.usercollections = tests_assets.get_sample_usercollections(self.user, self.collection)
-        self.usercollections.save()
-
-    def test_index(self):
-        """
-        Logged out user try access index page
-        """
-        response = self.client.get(reverse('index'))
-        self.assertEqual(response.status_code, 200)
-
-        self.assertTrue('SciELO Manager' in response.content)
 
     def test_get_default_user_collections(self):
         """

@@ -81,3 +81,20 @@ class LoginForm(WebTest):
 
         self.assertTrue('alert' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_redirect_after_the_user_login(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=True)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
+
+        url = reverse('journalmanager.user_login') + '?next=/journal/'
+        form = self.app.get(url).forms[0]
+        form['username'] = 'foo'
+        form['password'] = '123'
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
