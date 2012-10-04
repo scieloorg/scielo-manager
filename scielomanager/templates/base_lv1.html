@@ -74,34 +74,47 @@
   <div id="main-nav" class="subnav" style="margin-top: 50px;">
     <ul id="user-collections" class="nav nav-pills" style="margin-bottom: -4px;">
       {% user_collections_dashboard user_collections user %}
-    </ul>
-
-    <ul class="nav nav-pills" style="margin-bottom: -4px;">
       {% if perms.auth %}
-        <li>
-          <a href="{% url trash.listing %}"
-             class="btn tip-bottom"
-             rel="tooltip"
-             data-original-title="{% trans 'Trashed items' %}">
-          <i class="icon-trash"></i>
-          {% trans 'Trash' %}
-          </a>
-        </li>
+      <li>
+        <a href="{% url trash.listing %}"
+           class="btn tip-bottom"
+           rel="tooltip"
+           data-original-title="{% trans 'Trashed items' %}">
+        <i class="icon-trash"></i>
+        {% trans 'Trash' %}
+        </a>
+      </li>
       {% endif %}
     </ul>
+  </div>
 
-    <ul class="nav pull-right">
-      <li>
-        <form id="form_search" action="" method="get">
-          <select id="list_model" style="width: 90px;">
-            {% if perms.journalmanager.list_journal %}<option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>{% endif %}
-            {% if perms.journalmanager.list_sponsor %}<option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>{% endif %}
-          </select>
-          <input style="width: 160px;" placeholder="Search" name="q" value="{{request.GET.q}}"/>
-          <button class="btn" style="vertical-align: 4px;" type="submit"><i class="icon-search icon-black"></i> {% trans 'Search' %}</button>
-        </form>
-      </li>
-    </ul>
+  <div class="nav pull-right">
+    <form id="search-form" action="" method="get">
+      <select id="list_model" style="width: 90px;">
+        {% if perms.journalmanager.list_journal %}
+          <option {% if 'journal' in request.path %}selected{% endif %}
+                  value="{% url journal.index %}">
+            {% trans 'Journals' %}
+          </option>
+        {% endif %}
+        {% if perms.journalmanager.list_sponsor %}
+          <option {% if 'sponsor' in request.path %}selected{% endif %}
+                  value="{% url sponsor.index %}">
+            {% trans 'Sponsors' %}
+          </option>
+        {% endif %}
+      </select>
+      <input style="width: 160px;"
+             placeholder="Search"
+             name="q"
+             value="{{request.GET.q}}"/>
+      <button class="btn"
+              style="vertical-align: 4px;"
+              type="submit">
+        <i class="icon-search icon-black"></i>
+        {% trans 'Search' %}
+      </button>
+    </form>
   </div>
 
   <div class="row-fluid" style="min-height: 380px;">
@@ -130,6 +143,7 @@
       </div>
     </div>
   </div>
+
   <div class="footer row-fluid">
     <div class="span3">
       <p>
