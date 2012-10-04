@@ -27,11 +27,11 @@ class CollectionsSelectorTests(WebTest):
     def test_toggle_active_collection_unavailable_for_users_with_a_single_collection(self):
         user = auth.UserF(is_active=True)
 
-        collection = modelfactories.CollectionFactory.create()
+        collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
 
         page = self.app.get(reverse('index'), user=user)
-        self.assertNotIn('toggle_active_collection', page)
+        self.assertNotIn('activate-brasil', page)
 
     def test_toggle_active_collection_available_for_users_with_many_collections(self):
         user = auth.UserF(is_active=True)
@@ -43,5 +43,4 @@ class CollectionsSelectorTests(WebTest):
 
         page = self.app.get(reverse('index'), user=user)
 
-        self.assertIn('Activate', page)
-        # TODO: Test if the Activate buttom is related to the Chile collection
+        self.assertIn('activate-chile', page)

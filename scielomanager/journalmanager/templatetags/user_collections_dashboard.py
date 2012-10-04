@@ -23,24 +23,25 @@ def user_collections_dashboard(collections, user):
             activation_label = _('Activate')
 
             activation_snippet = u"""
-            <li>
+            <li id="activate-{lowercase_name}">
                 <a href="{activation_url}">
                   <i class="icon-ok-circle"></i> {activation_label}
                 </a>
             </li>
             """.format(activation_url=activation_url,
-                       activation_label=activation_label).strip()
+                       activation_label=activation_label,
+                       lowercase_name=name.lower()).strip()
         else:
             activation_snippet = u''
 
         html_snippet = u"""
-        <li class="{classname}">
+        <li id="{lowercase_name}" class="{classname}">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             {name}
             <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
-            <li>
+            <li id="edit-{lowercase_name}">
               <a href="{edit_url}">
                 <i class="icon-edit"></i> {edit_label}
               </a>
@@ -53,6 +54,7 @@ def user_collections_dashboard(collections, user):
                edit_url=edit_url,
                edit_label=edit_label,
                activation_snippet=activation_snippet,
+               lowercase_name=name.lower(),
         ).strip()
 
         html += html_snippet
