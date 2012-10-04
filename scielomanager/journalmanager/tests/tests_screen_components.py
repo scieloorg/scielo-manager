@@ -44,3 +44,19 @@ class UserCollectionsSelectorTests(WebTest):
         page = self.app.get(reverse('index'), user=user)
 
         self.assertIn('activate-chile', page)
+
+
+class UserAreasSelectorTests(WebTest):
+
+    def test_logout_button(self):
+        user = auth.UserF(is_active=True)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
+
+        page = self.app.get(
+            reverse('journal.index'), user=user).follow().follow().follow()
+        response = page.click(href=u'/accounts/logout/')
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+        self.assertNotIn('_auth_user_id', self.client.session)
