@@ -53,6 +53,15 @@ class SectionTests(TestCase):
 
         self.assertEqual(unicode(section_title.section), expected)
 
+    def test_add_title(self):
+        section = SectionFactory.create()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        section.add_title('Original Article', language)
+
+        self.assertEqual(section.titles.all().count(), 1)
+        self.assertEqual(section.titles.all()[0].title, 'Original Article')
+        self.assertEqual(section.titles.all()[0].language, language)
+
 
 class UserProfileTests(TestCase):
 

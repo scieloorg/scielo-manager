@@ -205,7 +205,7 @@ LOGGING = {
 
 AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
 
-LOGIN_URL = '/accounts/login'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)

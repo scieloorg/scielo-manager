@@ -24,7 +24,7 @@ def _makePermission(perm, model, app_label='journalmanager'):
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
 
-class LoginForm(WebTest):
+class LoginFormTests(WebTest):
 
     def _makePermission(self, perm, model, app_label='journalmanager'):
         """
@@ -116,3 +116,58 @@ class LoginForm(WebTest):
         page = self.app.get(reverse('journal.index'), user=user)
 
         page.mustcontain('no items')
+
+
+class SectionFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user)
+
+    def test_basic_structure(self):
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user)
+
+        self.assertTemplateUsed(form, 'journalmanager/add_section.html')
+        form.mustcontain('section-form',
+                         'csrfmiddlewaretoken',
+                         'titles-TOTAL_FORMS',
+                         'titles-INITIAL_FORMS',
+                         'titles-MAX_NUM_FORMS',
+                        )
+
+    def test_get_for_add(self):
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
+        journal.languages.add(language)
+
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
+
+        import pdb; pdb.set_trace()
+        form['titles-0-title'] = 'Original Article'
+        form['titles-0-language'] = '1'
+        # form.set('titles-0-language', '1')
+
+        response = form.submit().follow()
+
+
+    def test_post_a_valid_form(self):
+        assert True
+
+    def test_post_an_invalid_form(self):
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
+        journal.languages.add(language)
+
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
+
+        response = form.submit()
+
+        response.mustcontain('There are some errors or missing data')

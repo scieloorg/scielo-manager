@@ -597,6 +597,15 @@ class Section(caching.base.CachingMixin, models.Model):
         except ValueError:  # raised when the object is not yet saved
             return False
 
+    def add_title(self, title, language):
+        """
+        Adds a section title in the given language.
+
+        A Language instance must be passed as the language argument.
+        """
+        SectionTitle.objects.create(section=self,
+            title=title, language=language)
+
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
 
