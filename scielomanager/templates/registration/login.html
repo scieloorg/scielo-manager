@@ -3,46 +3,38 @@
 
 {% block content %}
 <div class="login">
-  {% if invalid %}
-    <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your username and password did not match. Please try again.' %}</div>
+
+  {% if form.errors %}
+    <p class="error">
+      {% trans "Sorry, that's not a valid username or password" %}
+    </p>
   {% endif %}
-  {% if active %}
-    <div class="alert alert-error"><a class="close" data-dismiss="alert">×</a>{% trans 'Your account is not active. Please contact SciELO or verify your e-mail' %}</div>
-  {% endif %}
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert {{ message.tags }}">{{ message }}
-    <ul id="errors_list">
-    {% for field in add_form %}
-      {% if field.errors %}
-      <li>{{ field.label }} {{ field.errors.text }}</li>
-      {% endif %}
-    {% endfor %}
-    </ul>
-  </div>
-  {% endfor %}
-  {% endif %}
-  <form action="{% url journalmanager.user_login %}" method="post">
+
+  <form action="" method="post">
     <fieldset>
-      <input type="hidden" value="{{ next|default:'' }}" name="next" />
+      <input type="hidden" value="{{ next|escape }}" name="next" />
       {% csrf_token %}
       <div class="control-group">
-        <label class="control-label" for="focusedInput">{% trans login_form.username.label %}</label>
+        <label class="control-label" for="focusedInput">{% trans form.username.label %}</label>
           <div class="controls">
-            {{ login_form.username }}
+            {{ form.username }}
           </div>
       </div>
      <div class="control-group">
-     <label class="control-label" for="focusedInput">{% trans login_form.password.label %}</label>
+     <label class="control-label" for="focusedInput">{% trans form.password.label %}</label>
         <div class="controls">
-          {{ login_form.password }}
+          {{ form.password }}
         </div>
       </div>
       <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />
     </fieldset>
   </form>
+
   <div style="text-align: right;">
-    <a href="{% url registration.password_reset %}" title="{% trans 'Forgot your password?' %}">{% trans 'Forgot your password?' %}</a>
+    <a href="{% url registration.password_reset %}"
+       title="{% trans 'Forgot your password?' %}">
+      {% trans 'Forgot your password?' %}
+    </a>
   </div>
 </div>
 {% endblock %}
