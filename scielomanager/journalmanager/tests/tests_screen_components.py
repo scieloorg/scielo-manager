@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
+from journalmanager.tests.tests import _makePermission
 
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
@@ -50,13 +51,15 @@ class UserAreasSelectorTests(WebTest):
 
     def test_logout_button(self):
         user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_journal', model='journal')
+        user.user_permissions.add(perm)
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
 
-        page = self.app.get(
-            reverse('journal.index'), user=user).follow().follow().follow()
-        response = page.click(href=u'/accounts/logout/')
+        page = self.app.get(reverse('journal.index'), user=user)
+
+        response = page.click(href=u'/accounts/logout/').follow().follow()
 
         self.assertTemplateUsed(response, 'registration/login.html')
         self.assertNotIn('_auth_user_id', self.client.session)

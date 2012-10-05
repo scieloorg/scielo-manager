@@ -51,24 +51,22 @@ def get_first_letter(objects_all):
 
 def index(request):
 
-    if request.user.is_authenticated():
-        template = loader.get_template('journalmanager/home_journal.html')
-        pending_journals = models.PendedForm.objects.filter(
-            user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('journalmanager.user_login'))
 
-        # recent activities
-        recent_journals = models.Journal.objects.recents_by_user(request.user)
-    else:
-        template = loader.get_template('registration/login.html')
-        pending_journals = recent_journals = ''
+    pending_journals = models.PendedForm.objects.filter(
+        user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 
-    context = RequestContext(request, {
+    # recent activities
+    recent_journals = models.Journal.objects.recents_by_user(request.user)
+
+    context = {
         'pending_journals': pending_journals,
         'recent_activities': recent_journals,
-        'login_form': LoginForm(),
-        }
-    )
-    return HttpResponse(template.render(context))
+    }
+
+    return render_to_response('journalmanager/home_journal.html',
+        context, context_instance=RequestContext(request))
 
 
 def list_search(request, model, journal_id):
@@ -258,58 +256,6 @@ def user_index(request):
                        'users': users,
                        })
     return HttpResponse(t.render(c))
-
-
-def user_login(request):
-
-    if request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('index'))
-
-    context_data = {
-        'next': request.GET.get('next', None)  # will be added as a form field
-    }
-
-    if request.method == 'POST':
-        login_form = LoginForm(request.POST)
-
-        if login_form.is_valid():
-            username = login_form.cleaned_data['username']
-            password = login_form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-
-            if user:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect(request.POST.get('next', ''))
-                else:
-                    context_data.update({'active': True})
-            else:
-                context_data.update({'invalid': True})
-        else:
-            messages.error(request, _('Username and Password are required'))
-
-    else:
-        login_form = LoginForm()
-
-    context_data['login_form'] = login_form
-
-    return render_to_response(
-            'registration/login.html',
-            context_data,
-            context_instance=RequestContext(request)
-            )
-
-
-@login_required
-def user_logout(request):
-    logout(request)
-    login_form = LoginForm()
-
-    return render_to_response(
-            'registration/login.html',
-            {'login_form': login_form},
-            context_instance=RequestContext(request)
-            )
 
 
 @permission_required('journalmanager.change_user', login_url=settings.LOGIN_URL)
