@@ -178,7 +178,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-error',
 }
 
-FIXTURE_DIRS = ('fixtures',)
+FIXTURE_DIRS = (os.path.join(PROJECT_PATH, 'fixtures'),)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -206,6 +206,7 @@ LOGGING = {
 AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
 
 LOGIN_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 
