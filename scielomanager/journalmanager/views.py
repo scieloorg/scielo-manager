@@ -574,7 +574,8 @@ def add_section(request, journal_id, section_id=None):
     """
     Handles new and existing sections
     """
-    journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
+    journal = get_object_or_404(
+        models.Journal.objects.all_by_user(request.user), pk=journal_id)
 
     if section_id is None:
         section = models.Section()

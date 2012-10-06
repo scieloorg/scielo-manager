@@ -56,7 +56,7 @@ class UserAreasSelectorTests(WebTest):
 
         page = self.app.get(reverse('journal.index'), user=user)
 
-        response = page.click(href=u'/accounts/logout/').follow().follow()
+        response = page.click(href=u'/accounts/logout/').follow()
 
         self.assertTemplateUsed(response, 'registration/login.html')
         self.assertNotIn('_auth_user_id', self.client.session)

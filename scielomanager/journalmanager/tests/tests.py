@@ -149,12 +149,14 @@ class SectionFormTests(WebTest):
         form = self.app.get(reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
-        import pdb; pdb.set_trace()
         form['titles-0-title'] = 'Original Article'
-        form['titles-0-language'] = '1'
-        # form.set('titles-0-language', '1')
+        form.set('titles-0-language', '1')
 
         response = form.submit().follow()
+
+        self.assertRedirects(response,
+            reverse('section.index', args=[journal.pk]))
+        response.mustcontain('Original Article')
 
 
     def test_post_a_valid_form(self):

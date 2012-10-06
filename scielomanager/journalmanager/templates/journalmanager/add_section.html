@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-<form id="section-form" method="post" action="#">
+<form id="section-form" method="POST" action="" enctype="text/plain">
   {% csrf_token %}
 
   {% if request.GET.popup %}
@@ -50,11 +50,11 @@
         <td>
           <div class="control-group {% if form.errors %}error{% endif %}">
             {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-              {% if has_relation and form.title.value %}
-                {{ form.title|attr:"readonly:readonly"}}
-              {% else %}
-                {{ form.title}}
+            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+            {% if has_relation and form.title.value %}
+              {{ form.title|attr:"readonly:readonly"}}
+            {% else %}
+              {{ form.title}}
             {% endif %}
           </div>
         </td>
