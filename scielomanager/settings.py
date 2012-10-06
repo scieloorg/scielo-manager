@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'journalmanager',
     'export',
+    'accounts',
     'south',
     'scielo_extensions',
     'widget_tweaks',

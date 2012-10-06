@@ -6,9 +6,6 @@ except ImportError:
     from ordereddict import OrderedDict
 
 from django.contrib.auth import forms as auth_forms
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
@@ -655,44 +652,6 @@ def toggle_user_availability(request, user_id):
         return HttpResponse(response_data, mimetype="application/json")
     else:
         return HttpResponse(status=400)
-
-
-@login_required
-def my_account(request):
-    t = loader.get_template('journalmanager/my_account.html')
-    c = RequestContext(request, {})
-    return HttpResponse(t.render(c))
-
-
-@login_required
-def password_change(request):
-
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.POST)
-        if form.is_valid():
-            cleaned_data = form.cleaned_data
-            if cleaned_data['new_password'] != cleaned_data['new_password_again']:
-                messages.error(request, _('Your new password and new password confirmation must match.'))
-                return HttpResponseRedirect(reverse('journalmanager.password_change'))
-
-            auth_user = authenticate(username=request.user.username,
-                                     password=cleaned_data['password'])
-            if auth_user:
-                auth_user.set_password(cleaned_data['new_password'])
-                auth_user.save()
-            else:
-                messages.error(request, _('Your current password does not match. Please try again.'))
-                return HttpResponseRedirect(reverse('journalmanager.password_change'))
-
-            messages.info(request, _('Your new password has been set.'))
-            return HttpResponseRedirect(reverse('journalmanager.my_account'))
-    else:
-        form = PasswordChangeForm()
-
-    return render_to_response(
-        'journalmanager/password_change.html',
-        {'form': form},
-        context_instance=RequestContext(request))
 
 
 @login_required
