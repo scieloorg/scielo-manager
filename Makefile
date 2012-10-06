@@ -3,6 +3,7 @@ MANAGE = $(APP_PATH)/manage.py
 SETTINGS_TEST = scielomanager.settings_tests
 SETTINGS = scielomanager.settings
 FIXTURES_DIR = $(APP_PATH)/fixtures
+APPS_TO_TEST = journalmanager export api accounts
 
 deps:
 	@pip install -r requirements.txt
@@ -12,7 +13,7 @@ clean:
 	@find . -name "*.pyc" -delete
 
 test: clean
-	@python $(MANAGE) test journalmanager export api --settings=$(SETTINGS_TEST)
+	@python $(MANAGE) test $(APPS_TO_TEST) --settings=$(SETTINGS_TEST)
 
 dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)
