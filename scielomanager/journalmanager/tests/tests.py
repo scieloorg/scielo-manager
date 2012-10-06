@@ -122,13 +122,14 @@ class SectionFormTests(WebTest):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
-        perm = _makePermission(perm='change_section', model='section')
-        self.user.user_permissions.add(perm)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user)
 
     def test_basic_structure(self):
+        perm = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm)
+
         journal = modelfactories.JournalFactory(collection=self.collection)
         form = self.app.get(reverse('section.add', args=[journal.pk]),
             user=self.user)
@@ -141,7 +142,12 @@ class SectionFormTests(WebTest):
                          'titles-MAX_NUM_FORMS',
                         )
 
-    def test_get_for_add(self):
+    def test_POST_workflow_with_valid_formdata(self):
+        perm1 = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm1)
+        perm2 = _makePermission(perm='list_section', model='section')
+        self.user.user_permissions.add(perm2)
+
         journal = modelfactories.JournalFactory(collection=self.collection)
         language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
         journal.languages.add(language)
@@ -154,15 +160,13 @@ class SectionFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertRedirects(response,
-            reverse('section.index', args=[journal.pk]))
+        self.assertTemplateUsed(response, 'journalmanager/section_dashboard.html')
         response.mustcontain('Original Article')
 
+    def test_POST_workflow_with_invalid_formdata(self):
+        perm = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm)
 
-    def test_post_a_valid_form(self):
-        assert True
-
-    def test_post_an_invalid_form(self):
         journal = modelfactories.JournalFactory(collection=self.collection)
         language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
         journal.languages.add(language)
