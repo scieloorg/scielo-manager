@@ -234,10 +234,6 @@ class EventJournalForm(forms.Form):
     pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
     pub_status_reason = forms.CharField(widget=forms.Textarea)
 
-class PasswordChangeForm(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
-    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
-    new_password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class':'span3'}))
 
 class IssueForm(ModelForm):
     section = forms.ModelMultipleChoiceField(models.Section.objects.none(),
