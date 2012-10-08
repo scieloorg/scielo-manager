@@ -16,7 +16,7 @@
 
 {% block content %}
 <span class="label">{% trans "User Information" %}</span>
-<form method="post" action="#">
+<form id="user-form" method="post" action="#">
   {% csrf_token %}
   <div class="well">
     <div class="control-group {% if add_form.username.errors %}error{% endif %}">

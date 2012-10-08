@@ -235,7 +235,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
     return HttpResponseRedirect(get_referer_view(request))
 
 
-@permission_required('journalmanager.list_user', login_url=settings.LOGIN_URL)
+@permission_required('auth.change_user', login_url=settings.LOGIN_URL)
 def user_index(request):
 
     collection = models.Collection.objects.get_default_by_user(request.user)
@@ -255,7 +255,7 @@ def user_index(request):
     return HttpResponse(t.render(c))
 
 
-@permission_required('journalmanager.change_user', login_url=settings.LOGIN_URL)
+@permission_required('auth.change_user', login_url=settings.LOGIN_URL)
 def add_user(request, user_id=None):
     """
     Handles new and existing users
