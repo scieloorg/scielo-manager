@@ -87,6 +87,21 @@ button.ui-button-icon-only {
     margin-right: 2%;
 }
 
+/*Customize the top nav bar size*/
+.container-max-size{
+    width: 100% !important;
+}
+
+.list-model{
+    width:140px;
+    height:27px;
+}
+
+.input-search{
+    width: 160px;
+    margin-top: -9px;
+}
+
 /*Strikethrough disable list*/
 .strikethrough{
     text-decoration: line-through;
