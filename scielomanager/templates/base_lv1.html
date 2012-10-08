@@ -7,7 +7,7 @@
 <div class="container-fluid">
   <div class="navbar navbar-fixed-top navbar-inverse">
     <div class="navbar-inner">
-      <div class="container" style="width: 100%;">
+      <div class="container container-max-size">
         <a class="btn btn-navbar" data-target=".nav-collapse" data-toggle="collapse">
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -39,7 +39,7 @@
               </ul>
             </li>
           </ul>
-          <ul class="nav pull-right"x >
+          <ul class="nav pull-right">
             <li class="divider-vertical"></li>
             <li>
               <a href="http://gravatar.com"
@@ -80,11 +80,11 @@
       <ul class="nav pull-right" style="margin-bottom: 0;">
         <li>
           <form id="form_search" action="" method="get">
-            <select id="list_model" style="width:140px;height:27px;">
+            <select id="list_model" class="list-model">
               {% if perms.journalmanager.list_journal %}<option {% if 'journal' in request.path %} selected {% endif %} value="{% url journal.index %}">{% trans 'Journals' %}</option>{% endif %}
               {% if perms.journalmanager.list_sponsor %}<option {% if 'sponsor' in request.path %} selected {% endif %} value="{% url sponsor.index %}">{% trans 'Sponsors' %}</option>{% endif %}
             </select>
-            <input style="width: 160px; margin-top: -9px;" placeholder="Search" name="q" value="{{request.GET.q}}"/>
+            <input class="input-search" placeholder="Search" name="q" value="{{request.GET.q}}"/>
             <button class="btn" style="vertical-align: 4px;" type="submit"><i class="icon-search icon-black"></i> {% trans 'Search' %}</button>
           </form>
         </li>
