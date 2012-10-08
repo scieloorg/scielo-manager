@@ -18,13 +18,11 @@
   <span class="label">{% trans "Issue Information" %}</span>
   <div class="well">
     <table id="titleformset" class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>{% trans "Thematic Title" %}</th>
-          <th>{% trans "Language" %}</th>
-        </tr>
-      </thead>
       <tbody>
+        <tr>
+          <td>{% trans "Thematic Title" %}</td>
+          <td>{% trans "Language" %}</td>
+        </tr>
         {% for form in titleformset.forms %}
         <tr id="{{ form.prefix }}-row">
           <td>
