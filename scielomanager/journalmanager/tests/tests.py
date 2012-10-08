@@ -4,6 +4,7 @@ Use this module to write functional tests for the view-functions, only!
 """
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
+from django.core import mail
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
@@ -79,6 +80,65 @@ class SectionFormTests(WebTest):
 
         form = self.app.get(reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
+
+        response = form.submit()
+
+        response.mustcontain('There are some errors or missing data')
+
+
+class UserFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_basic_structure(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('user.add'), user=self.user)
+
+        self.assertTemplateUsed(page, 'journalmanager/add_user.html')
+        page.mustcontain('user-form',
+                         'csrfmiddlewaretoken',
+                         'usercollections-TOTAL_FORMS',
+                         'usercollections-INITIAL_FORMS',
+                         'usercollections-MAX_NUM_FORMS',
+                        )
+
+    def test_POST_workflow_with_valid_formdata(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+        # form.set('asmSelect0', '1')  # groups
+        form.set('usercollections-0-collection', '1')  # collections
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+        response.mustcontain('bazz', 'bazz@spam.org')
+
+        # check if an email has been sent to the new user
+        self.assertTrue(len(mail.outbox), 1)
+        self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
+
+        # check if basic state has been set
+        self.assertTrue(response.context['user'].user_collection.get(
+            pk=self.collection.pk))
+
+    def test_POST_workflow_with_invalid_formdata(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
 
         response = form.submit()
 

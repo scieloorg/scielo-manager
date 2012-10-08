@@ -28,7 +28,7 @@
           </li>
           {% endif %}
           {% if is_manager_of_default_collection %}
-            {% if perms.journalmanager.change_user %}
+            {% if perms.auth.change_user %}
             <li id="users-link">
               <a href="{% url user.index %}">{% trans 'Users' %}</a>
             </li>
