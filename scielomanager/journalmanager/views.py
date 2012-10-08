@@ -76,6 +76,7 @@ def list_search(request, model, journal_id):
 
         if model is models.Section:
             # order by a non persistent property
+            objects_all = model.objects.filter(journal=journal_id, is_trashed=False)
             objects_all = sorted(objects_all, key=lambda x: unicode(x))
     else:
         journal = None
@@ -624,7 +625,7 @@ def del_section(request, journal_id, section_id):
     if not section.is_used():
         section.is_trashed = True
         section.save()
-        messages.success(request, MSG_FORM_SAVED)
+        messages.success(request, _('Section removed successfully'))
     else:
         messages.info(
             request,
