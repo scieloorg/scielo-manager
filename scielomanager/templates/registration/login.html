@@ -15,7 +15,7 @@
       <input type="hidden" value="{{ next|escape }}" name="next" />
       {% csrf_token %}
       <div class="control-group">
-        <label class="control-label" for="focusedInput">{% trans form.username.label %}</label>
+        <label class="control-label" for="focusedInput">{% trans 'Username or email' %}</label>
           <div class="controls">
             {{ form.username }}
           </div>
