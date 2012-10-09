@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate
+from django.conf import settings
 
 from scielomanager.accounts import forms
 
@@ -46,3 +47,10 @@ def password_change(request):
         'accounts/password_change.html',
         {'form': form},
         context_instance=RequestContext(request))
+
+
+def unauthorized(request):
+    next = request.GET.get('next', None)
+
+    return render_to_response('accounts/unauthorized.html',
+        {'next': next}, context_instance=RequestContext(request))

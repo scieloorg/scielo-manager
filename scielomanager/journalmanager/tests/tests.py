@@ -33,6 +33,14 @@ class SectionFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user)
 
+    def test_access_without_permission(self):
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        response = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
     def test_basic_structure(self):
         perm = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm)
@@ -190,7 +198,8 @@ class UserIndexPageTests(WebTest):
 
         response = self.app.get(reverse('user.index'), user=user).follow()
 
-        self.assertTemplateUsed(response, 'registration/login.html')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+        response.mustcontain('not authorized to access')
 
 
 class JournalFormTests(WebTest):
