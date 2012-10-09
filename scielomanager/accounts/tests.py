@@ -21,7 +21,7 @@ class LoginForm(WebTest):
         form['password'] = ''
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_right_username_and_wrong_password(self):
@@ -34,7 +34,7 @@ class LoginForm(WebTest):
         form['password'] = 'baz'
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_wrong_username_and_right_password(self):
@@ -47,7 +47,7 @@ class LoginForm(WebTest):
         form['password'] = '123'
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_right_username_and_right_password(self):
@@ -80,7 +80,7 @@ class LoginForm(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_redirect_to_restricted_page_after_successful_login(self):

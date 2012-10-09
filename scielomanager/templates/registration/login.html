@@ -5,9 +5,9 @@
 <div class="login">
 
   {% if form.errors %}
-    <p class="error">
+    <div class="alert alert-danger">
       {% trans "Sorry, that's not a valid username or password" %}
-    </p>
+    </div>
   {% endif %}
 
   <form action="" method="post">
