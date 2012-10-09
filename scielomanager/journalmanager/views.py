@@ -430,6 +430,7 @@ def add_journal(request, journal_id=None):
                               'missionformset': missionformset,
                               'has_cover_url': has_cover_url,
                               'has_logo_url': has_logo_url,
+                              'collections': user_collections,
                               'form_hash': form_hash if form_hash else request.GET.get('resume', None),
                               'is_new': False if journal_id else True,
                               }, context_instance=RequestContext(request))
