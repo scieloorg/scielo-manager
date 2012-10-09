@@ -50,6 +50,9 @@ def password_change(request):
 
 
 def unauthorized(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(settings.LOGIN_URL)
+
     next = request.GET.get('next', None)
 
     return render_to_response('accounts/unauthorized.html',
