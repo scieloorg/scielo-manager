@@ -2,6 +2,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth import views as auth_views
 from django.conf import settings
+from django.views.generic.base import TemplateView
 
 from scielomanager.accounts import views
 
@@ -54,4 +55,8 @@ urlpatterns = patterns('',
     url(r'^myaccount/password/$',
         views.password_change,
         name='journalmanager.password_change'),
+
+    url(r'^unauthorized/$',
+        views.unauthorized,
+        name='accounts.unauthorized'),
 )
