@@ -63,7 +63,7 @@ class SectionFormTests(WebTest):
             user=self.user).forms['section-form']
 
         form['titles-0-title'] = 'Original Article'
-        form.set('titles-0-language', '1')
+        form.set('titles-0-language', language.pk)
 
         response = form.submit().follow()
 
@@ -119,7 +119,7 @@ class UserFormTests(WebTest):
         form['user-last_name'] = 'bar'
         form['userprofile-0-email'] = 'bazz@spam.org'
         # form.set('asmSelect0', '1')  # groups
-        form.set('usercollections-0-collection', '1')  # collections
+        form.set('usercollections-0-collection', self.collection.pk)  # collections
 
         response = form.submit().follow()
 
@@ -143,3 +143,150 @@ class UserFormTests(WebTest):
         response = form.submit()
 
         response.mustcontain('There are some errors or missing data')
+
+
+class UserMyAccount(WebTest):
+
+    def test_logged_user_access_my_account(self):
+        user = auth.UserF(is_active=True)
+
+        response = self.app.get(reverse('journalmanager.my_account'), user=user)
+
+        self.assertTemplateUsed(response, 'accounts/my_account.html')
+
+    def test_not_logged_user_acess_my_account(self):
+
+        response = self.app.get(reverse('journalmanager.my_account')).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_logged_user_access_user_configuration(self):
+        user = auth.UserF(is_active=True)
+
+        response = self.app.get(reverse('journalmanager.password_change'), user=user)
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+    def test_logged_user_change_password_right_password(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 123
+        form['new_password'] = 321
+        form['new_password_again'] = 321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/my_account.html')
+
+    def test_logged_user_change_password_wrong_password(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 1234
+        form['new_password'] = 321
+        form['new_password_again'] = 321
+
+        response = form.submit().follow()
+           
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+    def test_logged_user_change_password_wrong_new_password(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 123
+        form['new_password'] = 321123
+        form['new_password_again'] = 321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+    def test_logged_user_change_password_wrong_new_password_again(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 123
+        form['new_password'] = 321
+        form['new_password_again'] = 321321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+
+class IndexPage(WebTest):
+
+    def test_logged_user_access_to_index(self):
+        user = auth.UserF(is_active=True)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
+
+        response = self.app.get(reverse('index'), user=user)
+
+        self.assertTemplateUsed(response, 'journalmanager/home_journal.html')
+
+    def test_not_logged_user_access_to_index(self):
+        response = self.app.get(reverse('index')).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+
+class UserIndexPage(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_logged_user_access(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user, is_manager=True)
+
+        response = self.app.get(reverse('user.index'), user=self.user)
+
+        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+
+    def test_logged_user_access_users_not_being_manager_of_the_collection(self):
+        user = auth.UserF(is_active=True)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
+
+        response = self.app.get(reverse('user.index'), user=user).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+
+class FormJournal(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_logged_user_access_journal(self):
+        perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user)
+
+        response = self.app.get(reverse('journal.add'), user=self.user)
+
+        self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
