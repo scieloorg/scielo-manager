@@ -197,7 +197,7 @@
     </div>
   </div>
 
-  {% if user_collections.count > 1 %}
+  {% if collections.count > 1 %}
     <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
     <div class="well">
       <div class="control-group {% if add_form.collection.errors %}error{% endif %}">
@@ -213,7 +213,7 @@
       </div>
     </div>
     {% else %}
-      <input type="hidden" name="journal-collection" value="{{user_collections.0.collection.id}}"/>
+      <input type="hidden" name="journal-collection" value="{{collections.0.collection.id}}"/>
   {% endif %}
 
   <span class="label"><a name="subject"></a>{% trans "Subject" %}</span>
