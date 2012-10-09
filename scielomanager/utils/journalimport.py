@@ -253,6 +253,10 @@ class JournalImport:
         journal = Journal()
 
         # ISSN and Other Complex Stuffs from the old version
+        # Por incrível que parece o campo 35 é obrigatório mas a antiga titlemanager não obriga
+        # seu preenchimento. Sendo assim, podem haver titulos onde é impossível definir o tipo do
+        # issn, neste caso a ferramenta considerará como eletronico e tomará o issn do campo 400 como
+        # eletronico.
         if '35' in record:
             if record['35'][0] == "PRINT":
                 issn_type = "print"
@@ -266,19 +270,25 @@ class JournalImport:
                 if record['935'][0] != record['400'][0]:
                     issn_type = "print"
                     print_issn = record['400'][0]
+        else:
+            issn_type = "electronic"
+            electronic_issn = record['400'][0]
 
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
         journal.eletronic_issn = electronic_issn
 
         # Journal Original Title
-        journal.title = record['100'][0]
+        if '100' in record:
+            journal.title = record['100'][0]
 
         # Short Title
-        journal.short_title = record['150'][0]
+        if '150' in record:
+            journal.short_title = record['150'][0]
 
         # Acronym
-        journal.acronym = record['930'][0]
+        if '930' in record:
+            journal.acronym = record['930'][0]
 
         # Use License
         journal.use_license = use_license
@@ -381,6 +391,12 @@ class JournalImport:
         if '64' in record:
             journal.editor_email = record['64'][0]
 
+        if '420' in record:
+            journal.medline_code = record['420'][0]
+
+        if '421' in record:
+            journal.medline_title = record['421'][0]
+
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.save(force_insert=True)
@@ -420,9 +436,6 @@ class JournalImport:
             self.load_historic(journal, record['51'])
 
         # titles
-        if '421' in record:
-            self.load_title(journal, record['421'], 'other')
-
         if '240' in record:
             self.load_title(journal, record['240'], 'other')
 
