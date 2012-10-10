@@ -31,9 +31,6 @@ class SectionFormTests(WebTest):
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
-        self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user)
-
     def test_access_without_permission(self):
         journal = modelfactories.JournalFactory(collection=self.collection)
         response = self.app.get(reverse('section.add', args=[journal.pk]),
@@ -211,34 +208,25 @@ class JournalFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
 
-    def test_logged_user_access_journal(self):
+    def test_user_access_journal(self):
         perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(self.user)
 
         response = self.app.get(reverse('journal.add'), user=self.user)
 
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
-    def test_logged_user_access_list_journals_without_itens(self):
+    def test_user_access_journals_list_without_itens(self):
         perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_list)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(self.user) 
 
         response = self.app.get(reverse('journal.index'), user=self.user)
 
         self.assertTrue('There are no items.' in response.body)       
 
-    def test_logged_user_add_journal_with_invalid_formdata(self):
+    def test_user_add_journal_with_invalid_formdata(self):
         perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(self.user) 
 
         sponsor = modelfactories.SponsorFactory.create()
 
@@ -276,14 +264,11 @@ class JournalFormTests(WebTest):
         
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
-    def test_logged_user_add_journal_with_valid_formdata(self):
+    def test_user_add_journal_with_valid_formdata(self):
         perm_journal_change = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
         perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_journal_list)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(self.user) 
 
         sponsor = modelfactories.SponsorFactory.create()
 
@@ -321,7 +306,7 @@ class JournalFormTests(WebTest):
 
         form['journal-use_license'] = use_license.pk
 
-        form['journal-collection'] = collection.pk
+        form['journal-collection'] = str(self.collection.pk)
 
         form['journal-languages'] = [language.pk]
 
@@ -331,5 +316,6 @@ class JournalFormTests(WebTest):
 
         self.assertTrue('Saved.' in response.body)
 
-        self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
+        self.assertTrue('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)' in response.body)
 
+        self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
