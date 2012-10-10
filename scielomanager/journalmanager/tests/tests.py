@@ -34,6 +34,16 @@ class SectionFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
 
+    def test_user_access_section_list_without_itens(self):
+        perm_sponsor_list = _makePermission(perm='list_section', model='section', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+
+        page = self.app.get(reverse('section.index', args=[journal.pk]), user=self.user)
+
+        self.assertTrue('There are no items.' in page.body)
+
     def test_access_without_permission(self):
         journal = modelfactories.JournalFactory(collection=self.collection)
         response = self.app.get(reverse('section.add', args=[journal.pk]),
@@ -323,7 +333,7 @@ class JournalFormTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
 
-class SponsorFormTest(WebTest):
+class SponsorFormTests(WebTest):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
@@ -339,7 +349,7 @@ class SponsorFormTest(WebTest):
 
         self.assertTrue('There are no items.' in response.body)
 
-    def test_user_access_with_permission(self):
+    def test_basic_structure(self):
         perm = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
@@ -379,6 +389,123 @@ class SponsorFormTest(WebTest):
         self.assertTrue('Saved.' in response.body)  
 
         self.assertTrue('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo' in response.body)       
+
+    def test_user_add_sponsor_with_invalid_formdata(self):
+        perm_sponsor_change = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor', model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_change)
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        
+        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
+        form['sponsor-email'] =  'fapesp@scielo.org'
+        form['sponsor-complement'] =  ''
+
+        form['sponsor-collections'] = [self.collection.pk]
+
+        response = form.submit()
+
+        self.assertTrue('errors_list' in response.body)  
+
+        self.assertTemplateUsed(response, 'journalmanager/add_sponsor.html') 
+
+class IssueFormTests(WebTest):  
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_user_access_issue_list_without_itens(self):
+        perm_issue_list = _makePermission(perm='list_issue', model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_list)
+
+        response = self.app.get(reverse('issue.index', args=[self.journal.pk]), user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)
+
+    def test_basic_struture(self):
+        perm = _makePermission(perm='add_issue', model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user)
+
+        page.mustcontain('number', 'cover',
+                         'title-0-title',
+                         'title-0-language',
+                         'title-TOTAL_FORMS',
+                         'title-INITIAL_FORMS',
+                         'title-MAX_NUM_FORMS')
+
+        self.assertTemplateUsed(page, 'journalmanager/add_issue.html')
+
+    def test_user_access_without_permission(self):
+
+        page = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user).follow()
+
+        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+
+        page.mustcontain('not authorized to access')
+
+    def test_user_add_issue_with_valid_formdata(self):
+        perm_issue_change = _makePermission(perm='add_issue', model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue', model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user).forms[1]
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = '3'
+        form['volume'] = '29'
+        form['editorial_standard'] = ''
+        form['is_press_release'] = False
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = '2012'
+        form['order'] = '201203'
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+        
+        response = form.submit().follow()
+
+        self.assertTrue('Saved.' in response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+
+    def test_user_add_issue_with_invalid_formdata(self):
+        perm_issue_change = _makePermission(perm='add_issue', model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue', model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user).forms[1]
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = '3'
+        form['editorial_standard'] = ''
+        form['is_press_release'] = False
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = '2012'
+        form['order'] = '201203'
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+        
+        response = form.submit()
+
+        self.assertTrue('errors_list' in response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+
+
+
 
 
 
