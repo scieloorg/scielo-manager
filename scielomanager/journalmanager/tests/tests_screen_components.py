@@ -60,3 +60,33 @@ class UserAreasSelectorTests(WebTest):
 
         self.assertTemplateUsed(response, 'registration/login.html')
         self.assertNotIn('_auth_user_id', self.client.session)
+
+
+class RecentActivitiesTests(WebTest):
+
+    def test_mailto_the_user_responsible_for_the_activity(self):
+        user = auth.UserF(is_active=True)
+        collection = modelfactories.CollectionFactory.create(name='Brasil')
+        collection.add_user(user)
+        journal = modelfactories.JournalFactory(collection=collection,
+            creator=user)
+
+        page = self.app.get(reverse('index'), user=user)
+        page.mustcontain('href="mailto:%s"' % user.email)
+
+    def test_expected_table_row(self):
+        user = auth.UserF(is_active=True)
+        collection = modelfactories.CollectionFactory.create(name='Brasil')
+        collection.add_user(user)
+
+        journal = modelfactories.JournalFactory(collection=collection,
+            creator=user)
+
+        page = self.app.get(reverse('index'), user=user)
+
+        elem = page.lxml.xpath('//table[@id="activities"]/tbody/tr[2]/*')
+
+        self.assertIn(collection.name, elem[0].text)
+        self.assertIn(user.username, elem[1].xpath('a')[0].text)
+        self.assertIn(journal.short_title, elem[2].xpath('a')[0].text)
+        self.assertIn(journal.updated.strftime('%X'), elem[3].text)
