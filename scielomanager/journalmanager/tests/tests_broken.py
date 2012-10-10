@@ -156,32 +156,6 @@ class LoggedInViewsTest(TestCase):
             })
         self.assertRedirects(response, reverse('journal_status.edit', args=[journal.pk]))
 
-    def test_index(self):
-        """
-        Logged user verify index page
-        """
-        response = self.client.get(reverse('index'))
-        self.assertEqual(response.status_code, 200)
-
-        self.assertTrue('user_collections' in response.context)
-        self.assertEqual(response.context['user_collections'][0].name, u'Brasil')
-
-    def test_user_index(self):
-        """
-        Logged user verify list of users
-        """
-        response = self.client.get(reverse('user.index'))
-        self.assertTrue('users' in response.context)
-        self.assertEqual(response.context['users'].object_list[0].username, u'dummyuser')
-        self.assertEqual(response.context['users'].object_list.count(), 1)
-
-    def test_my_account(self):
-        """
-        Logged in user accessing his own data management dashboard
-        """
-        response = self.client.get(reverse('journalmanager.my_account'))
-        self.assertEqual(response.status_code, 200)
-
     def test_password_reset(self):
         """
         Users requesting new password by giving e-mail address
@@ -210,97 +184,6 @@ class LoggedInViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(u'That e-mail address doesn' in response.content.decode('utf-8'))
 
-    def test_password_change(self):
-        """
-        Logged in user changing its password
-
-        Covered cases:
-        * Correct credentials and new password
-        * Correct credentials, incorrect new password confirmation
-        * Incorrect credentials and correct new password
-        """
-        response = self.client.get(reverse('journalmanager.password_change'))
-        self.assertEqual(response.status_code, 200)
-
-        # correct credentials
-        response = self.client.post(reverse('journalmanager.password_change'), {
-            'password': '123',
-            'new_password': '654321',
-            'new_password_again': '654321',
-            })
-        self.assertRedirects(response, reverse('journalmanager.my_account'))
-
-        # correct credentials, incorrect new password confirmation
-        response = self.client.post(reverse('journalmanager.password_change'), {
-            'password': '123',
-            'new_password': '65',
-            'new_password_again': '654321',
-            })
-        self.assertRedirects(response, reverse('journalmanager.password_change'))
-
-        # incorrect credentials
-        response = self.client.post(reverse('journalmanager.password_change'), {
-            'password': '123456',
-            'new_password': '654321',
-            'new_password_again': '654321',
-            })
-        self.assertRedirects(response, reverse('journalmanager.password_change'))
-
-    def test_add_journal(self):
-        """
-        Covered cases:
-        * Accessing the form
-        * Submission with missing data
-        * Submission with all required data
-        * Edition of a existing record
-        """
-        #empty form
-        response = self.client.get(reverse('journal.add'))
-        self.assertEqual(response.status_code, 200)
-
-        sample_sponsor = tests_assets.get_sample_sponsor()
-        sample_sponsor.collection = self.collection
-        sample_sponsor.save()
-
-        sample_uselicense = tests_assets.get_sample_uselicense()
-        sample_uselicense.save()
-
-        sample_language = tests_assets.get_sample_language()
-        sample_language.save()
-
-        #missing data
-        response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
-                                                     'journal-collection': self.collection.pk,
-                                                     }))
-
-        self.assertTrue('some errors or missing data' in response.content)
-
-        response = self.client.post(reverse('journal.add'),
-            tests_assets.get_sample_journal_dataform({'journal-sponsor': [sample_sponsor.pk],
-                                         'journal-use_license': sample_uselicense.pk,
-                                         'journal-collection': self.collection.pk,
-                                         'journal-languages': [sample_language.pk],
-                                         'journal-abstract_keyword_languages': [sample_language.pk],
-                                         'mission-0-language': sample_language.pk, }))
-
-        self.assertRedirects(response, reverse('journal.index'))
-
-        #edit journal - must be changed
-        testing_journal = Journal.objects.get(title=u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)')
-
-        response = self.client.post(reverse('journal.edit', args=(testing_journal.pk,)),
-            tests_assets.get_sample_journal_dataform({'journal-title': 'Modified Title',
-                                         'journal-sponsor': [sample_sponsor.pk],
-                                         'journal-use_license': sample_uselicense.pk,
-                                         'journal-collection': self.collection.pk,
-                                         'journal-languages': [sample_language.pk],
-                                         'journal-abstract_keyword_languages': [sample_language.pk],
-                                         'mission-0-language': sample_language.pk}))
-
-        self.assertRedirects(response, reverse('journal.index'))
-        modified_testing_journal = Journal.objects.get(title='Modified Title')
-        self.assertEqual(testing_journal, modified_testing_journal)
 
     def test_add_journal_with_cover(self):
         """
