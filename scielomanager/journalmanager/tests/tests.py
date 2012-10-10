@@ -103,6 +103,12 @@ class UserFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
 
+    def test_access_without_permission(self):
+        response = self.app.get(reverse('user.add'), user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
     def test_basic_structure(self):
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
@@ -211,13 +217,33 @@ class JournalFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
 
-    def test_user_access_journal(self):
-        perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
+    def test_access_without_permission(self):
+        response = self.app.get(reverse('journal.add'), user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
+    def test_basic_structure(self):
+        perm = _makePermission(perm='change_journal',
+                               model='journal',
+                               app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         response = self.app.get(reverse('journal.add'), user=self.user)
 
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
+        response.mustcontain('journal-form',
+                             'csrfmiddlewaretoken',
+                             'title-TOTAL_FORMS',
+                             'title-INITIAL_FORMS',
+                             'title-MAX_NUM_FORMS',
+                             'studyarea-TOTAL_FORMS',
+                             'studyarea-INITIAL_FORMS',
+                             'studyarea-MAX_NUM_FORMS',
+                             'mission-TOTAL_FORMS',
+                             'mission-INITIAL_FORMS',
+                             'mission-MAX_NUM_FORMS',
+                            )
 
     def test_user_access_journals_list_without_itens(self):
         perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
@@ -225,7 +251,7 @@ class JournalFormTests(WebTest):
 
         response = self.app.get(reverse('journal.index'), user=self.user)
 
-        self.assertTrue('There are no items.' in response.body)       
+        self.assertTrue('There are no items.' in response.body)
 
     def test_user_add_journal_with_invalid_formdata(self):
         perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
@@ -262,9 +288,9 @@ class JournalFormTests(WebTest):
         form['journal-editor_email'] = 'cbcd@cbcd.org.br'
 
         response = form.submit()
-        
+
         self.assertTrue('errors_list', response.body)
-        
+
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
     def test_user_add_journal_with_valid_formdata(self):

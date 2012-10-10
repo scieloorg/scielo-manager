@@ -36,9 +36,15 @@
 
 {% block content %}
   {% if request.GET.resume %}
-    <form method="post" action="{% url journal.add %}" enctype="multipart/form-data">
+    <form id="journal-form"
+          method="post"
+          action="{% url journal.add %}"
+          enctype="multipart/form-data">
   {% else %}
-    <form method="post" action="" enctype="multipart/form-data">
+    <form id="journal-form"
+          method="post"
+          action=""
+          enctype="multipart/form-data">
   {% endif %}
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>
