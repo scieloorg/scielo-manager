@@ -4,6 +4,8 @@ from django_factory_boy import auth
 
 from journalmanager import models
 
+class SponsorFactory(factory.Factory):
+    FACTORY_FOR = models.Sponsor
 
 class UseLicenseFactory(factory.Factory):
     FACTORY_FOR = models.UseLicense

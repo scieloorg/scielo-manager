@@ -2,6 +2,7 @@
 """
 Use this module to write functional tests for the view-functions, only!
 """
+import os
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -220,3 +221,115 @@ class JournalFormTests(WebTest):
         response = self.app.get(reverse('journal.add'), user=self.user)
 
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
+
+    def test_logged_user_access_list_journals_without_itens(self):
+        perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user) 
+
+        response = self.app.get(reverse('journal.index'), user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)       
+
+    def test_logged_user_add_journal_with_invalid_formdata(self):
+        perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user) 
+
+        sponsor = modelfactories.SponsorFactory.create()
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        form['journal-sponsor'] = [sponsor.pk]
+        form['journal-ctrl_vocabulary'] = 'decs'
+        form['journal-frequency'] = 'Q'
+        form['journal-final_num'] = ''
+        form['journal-eletronic_issn'] = '0102-6720'
+        form['journal-init_vol'] = '1'
+        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-editorial_standard'] = 'vancouv'
+        form['journal-scielo_issn'] = 'print'
+        form['journal-init_year'] = '1986'
+        form['journal-acronym'] = 'ABCD'
+        form['journal-pub_level'] = 'CT'
+        form['journal-init_num'] = '1'
+        form['journal-final_vol'] = ''
+        form['journal-subject_descriptors'] = 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA'
+        form['journal-print_issn'] = '0102-6720'
+        form['journal-copyrighter'] = 'Texto do copyrighter'
+        form['journal-publisher_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-publisher_country'] = 'BR'
+        form['journal-publisher_state'] = 'SP'
+        form['journal-publication_city'] = 'São Paulo'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
+        form['journal-editor_email'] = 'cbcd@cbcd.org.br'
+
+        response = form.submit()
+        
+        self.assertTrue('errors_list', response.body)
+        
+        self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
+
+    def test_logged_user_add_journal_with_valid_formdata(self):
+        perm_journal_change = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user) 
+
+        sponsor = modelfactories.SponsorFactory.create()
+
+        use_license = modelfactories.UseLicenseFactory.create()
+
+        language = modelfactories.LanguageFactory.create()
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        form['journal-sponsor'] = [sponsor.pk]
+        form['journal-ctrl_vocabulary'] = 'decs'
+        form['journal-frequency'] = 'Q'
+        form['journal-final_num'] = ''
+        form['journal-eletronic_issn'] = '0102-6720'
+        form['journal-init_vol'] = '1'
+        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-editorial_standard'] = 'vancouv'
+        form['journal-scielo_issn'] = 'print'
+        form['journal-init_year'] = '1986'
+        form['journal-acronym'] = 'ABCD'
+        form['journal-pub_level'] = 'CT'
+        form['journal-init_num'] = '1'
+        form['journal-final_vol'] = ''
+        form['journal-subject_descriptors'] = 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA'
+        form['journal-print_issn'] = '0102-6720'
+        form['journal-copyrighter'] = 'Texto do copyrighter'
+        form['journal-publisher_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-publisher_country'] = 'BR'
+        form['journal-publisher_state'] = 'SP'
+        form['journal-publication_city'] = 'São Paulo'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
+        form['journal-editor_email'] = 'cbcd@cbcd.org.br'
+
+        form['journal-use_license'] = use_license.pk
+
+        form['journal-collection'] = collection.pk
+
+        form['journal-languages'] = [language.pk]
+
+        form['journal-abstract_keyword_languages'] = [language.pk]
+
+        response = form.submit().follow()
+
+        self.assertTrue('Saved.' in response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
+
