@@ -507,3 +507,66 @@ class IssueFormTests(WebTest):
         self.assertTrue('errors_list' in response.body)
 
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+
+class StatusFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_basic_struture(self):
+        perm = _makePermission(perm='list_publication_events', model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user)
+
+        page.mustcontain('pub_status', 'pub_status_reason')
+
+        self.assertTemplateUsed(page, 'journalmanager/edit_journal_status.html')
+
+    def test_user_access_without_permission(self):
+
+        page = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user).follow()
+
+        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+
+        page.mustcontain('not authorized to access')
+
+    def test_user_add_status_with_valid_formdata(self):
+        perm = _makePermission(perm='list_publication_events', model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user).forms[1]
+
+        form.set('pub_status', 'deceased')
+        form['pub_status_reason'] = 'Motivo 1'
+
+        response = form.submit().follow()
+
+        self.assertTrue('Saved.' in response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
+
+    def test_user_add_status_with_invalid_formdata(self):
+        perm = _makePermission(perm='list_publication_events', model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user).forms[1]
+
+        form.set('pub_status', 'deceased')
+
+        response = form.submit()
+
+        self.assertTrue('errors_list' in response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
+
+
+
+
+
+
