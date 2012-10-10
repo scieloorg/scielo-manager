@@ -257,27 +257,6 @@ class LoggedInViewsTest(TestCase):
 
         self.assertRedirects(response, reverse('journal.index'))
 
-    def test_add_collection(self):
-        '''
-        Testing edit the collections contents.
-
-        New collections are not being included by the users. Only in Django admin module.
-        '''
-        testing_collection = Collection.objects.get(name=u'Brasil')
-
-        #Calling Collection Form
-        response = self.client.get(reverse('collection.edit', args=(testing_collection.pk,)))
-        self.assertEqual(response.status_code, 200)
-
-        #edit collection - must be changed
-        response = self.client.post(reverse('collection.edit', args=(testing_collection.pk,)),
-            tests_assets.get_sample_collection_dataform({'collection-name': 'Modified Name', }))
-
-        self.assertRedirects(response, reverse('collection.edit', args=(testing_collection.pk,)))
-
-        modified_testing_collection = Collection.objects.get(name='Modified Name')
-        self.assertEqual(testing_collection, modified_testing_collection)
-
     def test_add_sponsor(self):
         #empty form
         response = self.client.get(reverse('sponsor.add'))

@@ -322,3 +322,67 @@ class JournalFormTests(WebTest):
         self.assertTrue('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)' in response.body)
 
         self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
+
+class SponsorFormTest(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_user_access_journals_list_without_itens(self):
+        perm_sponsor_list = _makePermission(perm='list_sponsor', model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        response = self.app.get(reverse('sponsor.index'), user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)
+
+    def test_user_access_with_permission(self):
+        perm = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('sponsor.add'), user=self.user)
+
+        page.mustcontain('sponsor-name', 'sponsor-collections')
+
+        self.assertTemplateUsed(page, 'journalmanager/add_sponsor.html')
+
+    def test_user_access_without_permission(self):
+
+        page = self.app.get(reverse('sponsor.add'), user=self.user).follow()
+
+        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+
+        page.mustcontain('not authorized to access')
+
+    def test_user_add_sponsor_with_valid_formdata(self):
+        perm_sponsor_change = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor', model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_change)
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        
+        form['sponsor-name'] =  u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
+        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
+        form['sponsor-email'] =  'fapesp@scielo.org'
+        form['sponsor-complement'] =  ''
+
+        form['sponsor-collections'] = [self.collection.pk]
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/sponsor_dashboard.html') 
+
+        self.assertTrue('Saved.' in response.body)  
+
+        self.assertTrue('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo' in response.body)       
+
+
+
+
+
+
+
