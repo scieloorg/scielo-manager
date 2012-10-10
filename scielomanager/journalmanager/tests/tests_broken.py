@@ -135,35 +135,6 @@ class LoggedInViewsTest(TestCase):
     def _destroy_sponsor(self):
         pass
 
-    def test_password_reset(self):
-        """
-        Users requesting new password by giving e-mail address
-
-        Covered cases:
-        * Validating the reset password interface
-        * Given email exists
-        * Given email does not exists
-        """
-
-        # Validating the reset password interface
-        response = self.client.get(reverse('registration.password_reset'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(u'Enter your e-mail in the form below' in response.content.decode('utf-8'))
-
-        # Testing password recovery against a registered email
-        response = self.client.post(reverse('registration.password_reset'), {
-            'email': 'dev@scielo.org',
-            })
-        self.assertRedirects(response, reverse('registration.password_reset_done'))
-
-        # Testing password recovery against a UNregistered email
-        response = self.client.post(reverse('registration.password_reset'), {
-            'email': 'juca@bala.com',
-            })
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(u'That e-mail address doesn' in response.content.decode('utf-8'))
-
-
     def test_add_journal_with_cover(self):
         """
         Covered cases:

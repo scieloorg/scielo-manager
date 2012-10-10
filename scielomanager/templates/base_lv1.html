@@ -90,7 +90,7 @@
 
   <div class="nav pull-right">
     <form id="search-form" action="" method="get">
-      <select id="list_model" style="width: 90px;">
+      <select id="list_model" name="list_model" style="width: 90px;">
         {% if perms.journalmanager.list_journal %}
           <option {% if 'journal' in request.path %}selected{% endif %}
                   value="{% url journal.index %}">

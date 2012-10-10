@@ -565,8 +565,19 @@ class StatusFormTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
 
+class SearchFormTests(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
 
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
 
+    def test_basic_struture(self):
+        page = self.app.get(reverse('index'), user=self.user)
+
+        page.mustcontain('list_model', 'q')
+
+        self.assertTemplateUsed(page, 'journalmanager/home_journal.html')
 
 
