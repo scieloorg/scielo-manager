@@ -50,6 +50,10 @@
       {% endfor %}
     </tr>
     {% endfor %}
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
   {% endfor %}
   </tbody>
 </table>
