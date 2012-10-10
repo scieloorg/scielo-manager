@@ -31,6 +31,9 @@ class SectionFormTests(WebTest):
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
     def test_access_without_permission(self):
         journal = modelfactories.JournalFactory(collection=self.collection)
         response = self.app.get(reverse('section.add', args=[journal.pk]),
