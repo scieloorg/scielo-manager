@@ -268,7 +268,8 @@ class JournalFormTests(WebTest):
         form['journal-publisher_country'] = 'BR'
         form['journal-publisher_state'] = 'SP'
         form['journal-publication_city'] = 'São Paulo'
-        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 \
+                                          São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
         form['journal-editor_email'] = 'cbcd@cbcd.org.br'
 
         response = form.submit()
@@ -314,7 +315,8 @@ class JournalFormTests(WebTest):
         form['journal-publisher_country'] = 'BR'
         form['journal-publisher_state'] = 'SP'
         form['journal-publication_city'] = 'São Paulo'
-        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 \
+                                          São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
         form['journal-editor_email'] = 'cbcd@cbcd.org.br'
 
         form['journal-use_license'] = use_license.pk
@@ -376,7 +378,8 @@ class SponsorFormTests(WebTest):
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
         
         form['sponsor-name'] =  u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
-        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
+        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+                                    Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
         form['sponsor-email'] =  'fapesp@scielo.org'
         form['sponsor-complement'] =  ''
 
@@ -398,7 +401,8 @@ class SponsorFormTests(WebTest):
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
         
-        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
+        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+                                    Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
         form['sponsor-email'] =  'fapesp@scielo.org'
         form['sponsor-complement'] =  ''
 
@@ -503,13 +507,3 @@ class IssueFormTests(WebTest):
         self.assertTrue('errors_list' in response.body)
 
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
-
-
-
-
-
-
-
-
-
-
