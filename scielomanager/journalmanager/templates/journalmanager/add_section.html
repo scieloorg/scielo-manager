@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-<form id="section-form" method="POST" action="{% url section.add journal.id %}" enctype="text/plain">
+<form id="section-form" method="POST" action="{% url section.add journal.id %}" enctype="application/x-www-form-urlencoded">
   {% csrf_token %}
 
   {% if request.GET.popup %}
