@@ -21,7 +21,7 @@ class LoginForm(WebTest):
         form['password'] = ''
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_right_username_and_wrong_password(self):
@@ -34,7 +34,7 @@ class LoginForm(WebTest):
         form['password'] = 'baz'
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_wrong_username_and_right_password(self):
@@ -47,7 +47,7 @@ class LoginForm(WebTest):
         form['password'] = '123'
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_right_username_and_right_password(self):
@@ -80,7 +80,7 @@ class LoginForm(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('error' in response.body)
+        self.assertTrue('not a valid username or password' in response.body)
         self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_redirect_to_restricted_page_after_successful_login(self):
@@ -94,3 +94,82 @@ class LoginForm(WebTest):
         page = self.app.get(reverse('journal.index'), user=user)
 
         page.mustcontain('no items')
+
+
+class UserMyAccountTests(WebTest):
+
+    def test_logged_user_access_my_account(self):
+        user = auth.UserF(is_active=True)
+
+        response = self.app.get(reverse('journalmanager.my_account'), user=user)
+
+        self.assertTemplateUsed(response, 'accounts/my_account.html')
+
+    def test_not_logged_user_acess_my_account(self):
+
+        response = self.app.get(reverse('journalmanager.my_account')).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_logged_user_access_user_configuration(self):
+        user = auth.UserF(is_active=True)
+
+        response = self.app.get(reverse('journalmanager.password_change'), user=user)
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+    def test_logged_user_change_password_right_password(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 123
+        form['new_password'] = 321
+        form['new_password_again'] = 321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/my_account.html')
+
+    def test_logged_user_change_password_wrong_password(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 1234
+        form['new_password'] = 321
+        form['new_password_again'] = 321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+    def test_logged_user_change_password_wrong_new_password(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 123
+        form['new_password'] = 321123
+        form['new_password_again'] = 321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')
+
+    def test_logged_user_change_password_wrong_new_password_again(self):
+        user = auth.UserF(username='foo',
+                          password=HASH_FOR_123,
+                          is_active=False)
+
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form['password'] = 123
+        form['new_password'] = 321
+        form['new_password_again'] = 321321
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'accounts/password_change.html')

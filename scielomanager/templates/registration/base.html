@@ -10,6 +10,9 @@
     {% assets "css" %}
       <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}"/>
     {% endassets %}
+    {% assets "js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
   </head>
   <body data-offset="50" data-target=".subnav" data-spy="scroll" data-twttr-rendered="true">
     <div class="banner-container">
@@ -50,21 +53,16 @@
           <li><a href="http://docs.scielo.org/en/latest/index.html">{% trans 'About' %}</a></li>
         </ul>
       </div>
-      <div class="span2">
+      <div class="span3">
         <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
           <input type="hidden" id="language" name="language">
           {% csrf_token %}
-          <select id="lang_options" class="span2">
+          <select id="lang_options">
             <option value="pt-br" {% if LANGUAGE_CODE == 'pt-br' %}selected{% endif %}>Português</option>
             <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
             <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
           </select>
         </form>
-      </div>
-      <div class="span1">
-        <p>
-          <a href="#">{% trans 'Back to top' %}</a>
-        </p>
       </div>
     </div>
   </body>

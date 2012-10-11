@@ -1,0 +1,12 @@
+{% extends "registration/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container-fluid">
+    <p class="span4">
+      You are not authorized to access the requested page. Maybe you wanna
+      <a href="{% url journalmanager.user_login %}{% if next %}?next={{ next }}{% endif %}">
+      login with a more previleged account</a> or contact support.
+    </p>
+</div>
+{% endblock %}

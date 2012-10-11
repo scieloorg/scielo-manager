@@ -22,10 +22,10 @@
   <script type="text/javascript">
     $(document).ready(function(){
       $('#list_model').change(function(){
-        $('#form_search').attr('action', $('#list_model :selected').val());
+        $('#search-form').attr('action', $('#list_model :selected').val());
       });
 
-      $('#form_search').attr('action', $('#list_model :selected').val());
+      $('#search-form').attr('action', $('#list_model :selected').val());
 
       options = {placement:'bottom'}
       $(".tip-bottom").tooltip(options);
