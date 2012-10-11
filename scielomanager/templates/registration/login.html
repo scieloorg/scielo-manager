@@ -1,5 +1,6 @@
 {% extends "registration/base.html" %}
 {% load i18n %}
+{% load widget_tweaks %}
 
 {% block content %}
 <div class="login">
@@ -9,8 +10,8 @@
       {% trans "Sorry, that's not a valid username or password" %}
     </div>
   {% endif %}
-
-  <form action="" method="post">
+  <legend>{% trans 'Sign in' %}</legend>
+  <form action="" method="post" style="margin: 0 0 3px;">
     <fieldset>
       <input type="hidden" value="{{ next|escape }}" name="next" />
       {% csrf_token %}
@@ -18,14 +19,14 @@
         <label class="control-label"
                for="{{ form.username.auto_id }}">{% trans 'Username or email' %}</label>
           <div class="controls">
-            {{ form.username }}
+            {{ form.username|attr:"class:span3" }}
           </div>
       </div>
      <div class="control-group">
      <label class="control-label"
             for="{{ form.password.auto_id }}">{% trans form.password.label %}</label>
         <div class="controls">
-          {{ form.password }}
+          {{ form.password|attr:"class:span3" }}
         </div>
       </div>
       <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />
