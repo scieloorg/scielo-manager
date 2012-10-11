@@ -90,7 +90,7 @@
 
   <div class="nav pull-right">
     <form id="search-form" action="" method="get">
-      <select id="list_model" name="list_model" style="width: 90px;">
+      <select id="list_model" class="list-model" name="list_model">
         {% if perms.journalmanager.list_journal %}
           <option {% if 'journal' in request.path %}selected{% endif %}
                   value="{% url journal.index %}">
@@ -104,7 +104,7 @@
           </option>
         {% endif %}
       </select>
-      <input style="width: 160px;"
+      <input class="input-search"
              placeholder="Search"
              name="q"
              value="{{request.GET.q}}"/>
@@ -188,11 +188,6 @@
           <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
         </select>
       </form>
-    </div>
-    <div class="span1">
-      <p>
-        <a href="#">{% trans 'Back to top' %}</a>
-      </p>
     </div>
   </div>
 </div>

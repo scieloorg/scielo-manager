@@ -94,12 +94,12 @@ button.ui-button-icon-only {
 
 .list-model{
     width:140px;
-    height:27px;
 }
 
 .input-search{
     width: 160px;
-    margin-top: -9px;
+    margin-top: -10px; 
+    height: 21px;
 }
 
 /*Strikethrough disable list*/
