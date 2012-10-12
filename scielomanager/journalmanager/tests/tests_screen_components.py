@@ -90,3 +90,28 @@ class RecentActivitiesTests(WebTest):
         self.assertIn(user.username, elem[1].xpath('a')[0].text)
         self.assertIn(journal.short_title, elem[2].xpath('a')[0].text)
         self.assertIn(journal.updated.strftime('%X'), elem[3].text)
+
+
+class SectionsListTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_sections_list_without_itens(self):
+        """
+        Asserts the message ``'There are no items.`` is shown
+        when the sections list is empty.
+        """
+        perm_sponsor_list = _makePermission(perm='list_section',
+                                            model='section',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+
+        page = self.app.get(reverse('section.index', args=[journal.pk]), user=self.user)
+
+        self.assertTrue('There are no items.' in page.body)

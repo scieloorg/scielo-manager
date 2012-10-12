@@ -34,17 +34,12 @@ class SectionFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
 
-    def test_user_access_section_list_without_itens(self):
-        perm_sponsor_list = _makePermission(perm='list_section', model='section', app_label='journalmanager')
-        self.user.user_permissions.add(perm_sponsor_list)
-
-        journal = modelfactories.JournalFactory(collection=self.collection)
-
-        page = self.app.get(reverse('section.index', args=[journal.pk]), user=self.user)
-
-        self.assertTrue('There are no items.' in page.body)
-
     def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
         journal = modelfactories.JournalFactory(collection=self.collection)
         response = self.app.get(reverse('section.add', args=[journal.pk]),
             user=self.user).follow()
@@ -53,6 +48,13 @@ class SectionFormTests(WebTest):
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
     def test_basic_structure(self):
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
         perm = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm)
 
@@ -69,13 +71,23 @@ class SectionFormTests(WebTest):
                         )
 
     def test_POST_workflow_with_valid_formdata(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the section's dashboard and the new section must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_section`` and
+        ``journalmanager.list_section``.
+        """
         perm1 = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm1)
         perm2 = _makePermission(perm='list_section', model='section')
         self.user.user_permissions.add(perm2)
 
         journal = modelfactories.JournalFactory(collection=self.collection)
-        language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
         journal.languages.add(language)
 
         form = self.app.get(reverse('section.add', args=[journal.pk]),
@@ -86,15 +98,22 @@ class SectionFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response, 'journalmanager/section_dashboard.html')
+        self.assertTemplateUsed(response,
+            'journalmanager/section_dashboard.html')
         response.mustcontain('Original Article')
 
     def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
         perm = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm)
 
         journal = modelfactories.JournalFactory(collection=self.collection)
-        language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
         journal.languages.add(language)
 
         form = self.app.get(reverse('section.add', args=[journal.pk]),
@@ -103,6 +122,35 @@ class SectionFormTests(WebTest):
         response = form.submit()
 
         response.mustcontain('There are some errors or missing data')
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the section form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the section form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
+
+        self.assertEqual(form.action, '')
 
 
 class UserFormTests(WebTest):
@@ -402,7 +450,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_list)
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
-        
+
         form['sponsor-name'] =  u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
         form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
@@ -413,11 +461,11 @@ class SponsorFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response, 'journalmanager/sponsor_dashboard.html') 
+        self.assertTemplateUsed(response, 'journalmanager/sponsor_dashboard.html')
 
-        self.assertTrue('Saved.' in response.body)  
+        self.assertTrue('Saved.' in response.body)
 
-        self.assertTrue('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo' in response.body)       
+        self.assertTrue('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo' in response.body)
 
     def test_user_add_sponsor_with_invalid_formdata(self):
         perm_sponsor_change = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
@@ -426,7 +474,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_list)
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
-        
+
         form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
         form['sponsor-email'] =  'fapesp@scielo.org'
@@ -436,11 +484,11 @@ class SponsorFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)  
+        self.assertTrue('errors_list' in response.body)
 
-        self.assertTemplateUsed(response, 'journalmanager/add_sponsor.html') 
+        self.assertTemplateUsed(response, 'journalmanager/add_sponsor.html')
 
-class IssueFormTests(WebTest):  
+class IssueFormTests(WebTest):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
@@ -501,7 +549,7 @@ class IssueFormTests(WebTest):
         form['order'] = '201203'
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
-        
+
         response = form.submit().follow()
 
         self.assertTrue('Saved.' in response.body)
@@ -527,7 +575,7 @@ class IssueFormTests(WebTest):
         form['order'] = '201203'
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
-        
+
         response = form.submit()
 
         self.assertTrue('errors_list' in response.body)
