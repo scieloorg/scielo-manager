@@ -151,6 +151,20 @@ class SectionFormTests(WebTest):
 
         self.assertEqual(form.action, '')
 
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the section form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
+
+        self.assertEqual(form.method.lower(), 'post')
+
 
 class UserFormTests(WebTest):
 
@@ -277,6 +291,20 @@ class UserFormTests(WebTest):
             user=self.user).forms['user-form']
 
         self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the user form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
+
+        self.assertEqual(form.method.lower(), 'post')
 
 
 class JournalFormTests(WebTest):
@@ -469,6 +497,22 @@ class JournalFormTests(WebTest):
 
         self.assertEqual(form.action, '')
 
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the journal form is
+        ``POST``.
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        self.assertEqual(form.method.lower(), 'post')
+
 
 class SponsorFormTests(WebTest):
 
@@ -599,6 +643,22 @@ class SponsorFormTests(WebTest):
 
         self.assertEqual(form.action, '')
 
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the sponsor form is
+        ``POST``.
+        """
+        perm_sponsor_change = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_change)
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+
+        self.assertEqual(form.method.lower(), 'post')
+
 
 class IssueFormTests(WebTest):
 
@@ -720,7 +780,7 @@ class IssueFormTests(WebTest):
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
-        Asserts that the enctype attribute of the sponsor form is
+        Asserts that the enctype attribute of the issue form is
         ``multipart/form-data``
         """
         perm_issue_change = _makePermission(perm='add_issue',
@@ -737,7 +797,7 @@ class IssueFormTests(WebTest):
 
     def test_form_action_must_be_empty(self):
         """
-        Asserts that the action attribute of the sponsor form is
+        Asserts that the action attribute of the issue form is
         empty. This is needed because the same form is used to add
         a new or edit an existing entry.
         """
@@ -752,6 +812,23 @@ class IssueFormTests(WebTest):
             args=[self.journal.pk]), user=self.user).forms[1]
 
         self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the issue form is
+        ``POST``.
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertEqual(form.method.lower(), 'post')
 
 
 class StatusFormTests(WebTest):
@@ -869,6 +946,20 @@ class StatusFormTests(WebTest):
 
         self.assertEqual(form.action, '')
 
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the status form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertEqual(form.method.lower(), 'post')
+
 
 class SearchFormTests(WebTest):
 
@@ -890,3 +981,33 @@ class SearchFormTests(WebTest):
 
         page.mustcontain('list_model', 'q')
         self.assertTemplateUsed(page, 'journalmanager/home_journal.html')
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the search form is
+        ``application/x-www-form-urlencoded``
+        """
+        form = self.app.get(reverse('index'),
+            user=self.user).forms['search-form']
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the search form is
+        the journal home.
+        """
+        form = self.app.get(reverse('index'),
+            user=self.user).forms['search-form']
+
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_get(self):
+        """
+        Asserts that the method attribute of the search form is
+        ``GET``.
+        """
+        form = self.app.get(reverse('index'),
+            user=self.user).forms['search-form']
+
+        self.assertEqual(form.method.lower(), 'get')
