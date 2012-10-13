@@ -2,7 +2,6 @@
 """
 Use this module to write functional tests for the view-functions, only!
 """
-import os
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -162,13 +161,27 @@ class UserFormTests(WebTest):
         self.collection.add_user(self.user, is_manager=True)
 
     def test_access_without_permission(self):
-        response = self.app.get(reverse('user.add'), user=self.user).follow()
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        response = self.app.get(reverse('user.add'),
+            user=self.user).follow()
 
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
     def test_basic_structure(self):
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
         page = self.app.get(reverse('user.add'), user=self.user)
@@ -182,17 +195,29 @@ class UserFormTests(WebTest):
                         )
 
     def test_POST_workflow_with_valid_formdata(self):
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        """
+        When a valid form is submited, the user is redirected to
+        the user's dashboard and the new user must be part
+        of the list.
+
+        An email must be sent to the new user.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_user``.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
 
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
         form['userprofile-0-email'] = 'bazz@spam.org'
         # form.set('asmSelect0', '1')  # groups
-        form.set('usercollections-0-collection', self.collection.pk)  # collections
+        form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
 
@@ -208,63 +233,50 @@ class UserFormTests(WebTest):
             pk=self.collection.pk))
 
     def test_POST_workflow_with_invalid_formdata(self):
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
 
         response = form.submit()
 
         response.mustcontain('There are some errors or missing data')
 
-
-class IndexPageTests(WebTest):
-
-    def test_logged_user_access_to_index(self):
-        user = auth.UserF(is_active=True)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(user)
-
-        response = self.app.get(reverse('index'), user=user)
-
-        self.assertTemplateUsed(response, 'journalmanager/home_journal.html')
-
-    def test_not_logged_user_access_to_index(self):
-        response = self.app.get(reverse('index')).follow()
-
-        self.assertTemplateUsed(response, 'registration/login.html')
-
-
-class UserIndexPageTests(WebTest):
-
-    def setUp(self):
-        self.user = auth.UserF(is_active=True)
-
-        self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
-
-    def test_logged_user_access(self):
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the user form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(self.user, is_manager=True)
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
 
-        response = self.app.get(reverse('user.index'), user=self.user)
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
 
-        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the user form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
 
-    def test_logged_user_access_users_not_being_manager_of_the_collection(self):
-        user = auth.UserF(is_active=True)
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
 
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(user)
-
-        response = self.app.get(reverse('user.index'), user=user).follow()
-
-        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
-        response.mustcontain('not authorized to access')
+        self.assertEqual(form.action, '')
 
 
 class JournalFormTests(WebTest):
@@ -276,12 +288,25 @@ class JournalFormTests(WebTest):
         self.collection.add_user(self.user, is_manager=True)
 
     def test_access_without_permission(self):
-        response = self.app.get(reverse('journal.add'), user=self.user).follow()
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        response = self.app.get(reverse('journal.add'),
+            user=self.user).follow()
 
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
     def test_basic_structure(self):
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
         perm = _makePermission(perm='change_journal',
                                model='journal',
                                app_label='journalmanager')
@@ -303,16 +328,14 @@ class JournalFormTests(WebTest):
                              'mission-MAX_NUM_FORMS',
                             )
 
-    def test_user_access_journals_list_without_itens(self):
-        perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
-        self.user.user_permissions.add(perm_journal_list)
-
-        response = self.app.get(reverse('journal.index'), user=self.user)
-
-        self.assertTrue('There are no items.' in response.body)
-
-    def test_user_add_journal_with_invalid_formdata(self):
-        perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
+    def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         sponsor = modelfactories.SponsorFactory.create()
@@ -349,19 +372,28 @@ class JournalFormTests(WebTest):
         response = form.submit()
 
         self.assertTrue('errors_list', response.body)
-
+        self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
     def test_user_add_journal_with_valid_formdata(self):
-        perm_journal_change = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
-        perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
+        """
+        When a valid form is submited, the user is redirected to
+        the journal's dashboard and the new user must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_journal`` and
+        ``journalmanager.list_journal``.
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_journal_list)
 
         sponsor = modelfactories.SponsorFactory.create()
-
         use_license = modelfactories.UseLicenseFactory.create()
-
         language = modelfactories.LanguageFactory.create()
 
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
@@ -392,22 +424,51 @@ class JournalFormTests(WebTest):
         form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 \
                                           São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
         form['journal-editor_email'] = 'cbcd@cbcd.org.br'
-
         form['journal-use_license'] = use_license.pk
-
         form['journal-collection'] = str(self.collection.pk)
-
         form['journal-languages'] = [language.pk]
-
         form['journal-abstract_keyword_languages'] = [language.pk]
 
         response = form.submit().follow()
 
-        self.assertTrue('Saved.' in response.body)
-
-        self.assertTrue('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)' in response.body)
-
+        self.assertIn('Saved.', response.body)
+        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+            response.body)
         self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
+
+    def test_form_enctype_must_be_multipart_formdata(self):
+        """
+        Asserts that the enctype attribute of the user form is
+        ``multipart/form-data``
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        self.assertEqual(form.enctype, 'multipart/form-data')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the journal form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        self.assertEqual(form.action, '')
+
 
 class SponsorFormTests(WebTest):
 
@@ -417,76 +478,127 @@ class SponsorFormTests(WebTest):
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
 
-    def test_user_access_journals_list_without_itens(self):
-        perm_sponsor_list = _makePermission(perm='list_sponsor', model='sponsor', app_label='journalmanager')
-        self.user.user_permissions.add(perm_sponsor_list)
-
-        response = self.app.get(reverse('sponsor.index'), user=self.user)
-
-        self.assertTrue('There are no items.' in response.body)
-
     def test_basic_structure(self):
-        perm = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
+        perm = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         page = self.app.get(reverse('sponsor.add'), user=self.user)
 
         page.mustcontain('sponsor-name', 'sponsor-collections')
-
         self.assertTemplateUsed(page, 'journalmanager/add_sponsor.html')
 
-    def test_user_access_without_permission(self):
-
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
         page = self.app.get(reverse('sponsor.add'), user=self.user).follow()
 
         self.assertTemplateUsed(page, 'accounts/unauthorized.html')
-
         page.mustcontain('not authorized to access')
 
-    def test_user_add_sponsor_with_valid_formdata(self):
-        perm_sponsor_change = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
-        perm_sponsor_list = _makePermission(perm='list_sponsor', model='sponsor', app_label='journalmanager')
+    def test_POST_workflow_with_valid_formdata(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the sponsor's dashboard and the new sponsor must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.add_sponsor`` and
+        ``journalmanager.list_sponsor``.
+        """
+        perm_sponsor_change = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
 
-        form['sponsor-name'] =  u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
-        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+        form['sponsor-name'] = u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
+        form['sponsor-address'] = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
-        form['sponsor-email'] =  'fapesp@scielo.org'
-        form['sponsor-complement'] =  ''
-
+        form['sponsor-email'] = 'fapesp@scielo.org'
+        form['sponsor-complement'] = ''
         form['sponsor-collections'] = [self.collection.pk]
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response, 'journalmanager/sponsor_dashboard.html')
+        self.assertTemplateUsed(response,
+            'journalmanager/sponsor_dashboard.html')
+        self.assertIn('Saved.', response.body)
+        self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo', response.body)
 
-        self.assertTrue('Saved.' in response.body)
-
-        self.assertTrue('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo' in response.body)
-
-    def test_user_add_sponsor_with_invalid_formdata(self):
-        perm_sponsor_change = _makePermission(perm='add_sponsor', model='sponsor', app_label='journalmanager')
-        perm_sponsor_list = _makePermission(perm='list_sponsor', model='sponsor', app_label='journalmanager')
+    def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm_sponsor_change = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
 
-        form['sponsor-address'] =  u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+        form['sponsor-address'] = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
-        form['sponsor-email'] =  'fapesp@scielo.org'
-        form['sponsor-complement'] =  ''
-
+        form['sponsor-email'] = 'fapesp@scielo.org'
+        form['sponsor-complement'] = ''
         form['sponsor-collections'] = [self.collection.pk]
 
         response = form.submit()
 
         self.assertTrue('errors_list' in response.body)
-
+        self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_sponsor.html')
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the sponsor form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm_sponsor_change = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_change)
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the sponsor form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm_sponsor_change = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_change)
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+
+        self.assertEqual(form.action, '')
+
 
 class IssueFormTests(WebTest):
 
@@ -498,19 +610,20 @@ class IssueFormTests(WebTest):
 
         self.journal = modelfactories.JournalFactory(collection=self.collection)
 
-    def test_user_access_issue_list_without_itens(self):
-        perm_issue_list = _makePermission(perm='list_issue', model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm_issue_list)
-
-        response = self.app.get(reverse('issue.index', args=[self.journal.pk]), user=self.user)
-
-        self.assertTrue('There are no items.' in response.body)
-
     def test_basic_struture(self):
-        perm = _makePermission(perm='add_issue', model='issue', app_label='journalmanager')
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
+        perm = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
-        page = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user)
+        page = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user)
 
         page.mustcontain('number', 'cover',
                          'title-0-title',
@@ -521,21 +634,37 @@ class IssueFormTests(WebTest):
 
         self.assertTemplateUsed(page, 'journalmanager/add_issue.html')
 
-    def test_user_access_without_permission(self):
-
-        page = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user).follow()
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        page = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).follow()
 
         self.assertTemplateUsed(page, 'accounts/unauthorized.html')
-
         page.mustcontain('not authorized to access')
 
-    def test_user_add_issue_with_valid_formdata(self):
-        perm_issue_change = _makePermission(perm='add_issue', model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue', model='issue', app_label='journalmanager')
+    def test_POST_workflow_with_valid_formdata(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the issue's dashboard and the new user must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.add_issue`` and
+        ``journalmanager.list_issue``.
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user).forms[1]
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -552,17 +681,24 @@ class IssueFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTrue('Saved.' in response.body)
-
+        self.assertIn('Saved.', response.body)
         self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
 
-    def test_user_add_issue_with_invalid_formdata(self):
-        perm_issue_change = _makePermission(perm='add_issue', model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue', model='issue', app_label='journalmanager')
+    def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add', args=[self.journal.pk]), user=self.user).forms[1]
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -579,8 +715,44 @@ class IssueFormTests(WebTest):
         response = form.submit()
 
         self.assertTrue('errors_list' in response.body)
-
+        self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+
+    def test_form_enctype_must_be_multipart_formdata(self):
+        """
+        Asserts that the enctype attribute of the sponsor form is
+        ``multipart/form-data``
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertEqual(form.enctype, 'multipart/form-data')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the sponsor form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertEqual(form.action, '')
+
 
 class StatusFormTests(WebTest):
 
@@ -593,28 +765,50 @@ class StatusFormTests(WebTest):
         self.journal = modelfactories.JournalFactory(collection=self.collection)
 
     def test_basic_struture(self):
-        perm = _makePermission(perm='list_publication_events', model='journalpublicationevents', app_label='journalmanager')
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
-        page = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user)
+        page = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user)
 
         page.mustcontain('pub_status', 'pub_status_reason')
-
         self.assertTemplateUsed(page, 'journalmanager/edit_journal_status.html')
 
-    def test_user_access_without_permission(self):
-
-        page = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user).follow()
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        page = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user).follow()
 
         self.assertTemplateUsed(page, 'accounts/unauthorized.html')
-
         page.mustcontain('not authorized to access')
 
-    def test_user_add_status_with_valid_formdata(self):
-        perm = _makePermission(perm='list_publication_events', model='journalpublicationevents', app_label='journalmanager')
+    def test_POST_workflow_with_valid_formdata(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the status page and the new status must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.list_publication_events``.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user).forms[1]
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user).forms[1]
 
         form.set('pub_status', 'deceased')
         form['pub_status_reason'] = 'Motivo 1'
@@ -622,22 +816,59 @@ class StatusFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTrue('Saved.' in response.body)
+        self.assertTemplateUsed(response,
+            'journalmanager/edit_journal_status.html')
 
-        self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
-
-    def test_user_add_status_with_invalid_formdata(self):
-        perm = _makePermission(perm='list_publication_events', model='journalpublicationevents', app_label='journalmanager')
+    def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('journal_status.edit', args=[self.journal.pk]), user=self.user).forms[1]
-
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user).forms[1]
         form.set('pub_status', 'deceased')
 
         response = form.submit()
 
         self.assertTrue('errors_list' in response.body)
+        self.assertIn('There are some errors or missing data', response.body)
+        self.assertTemplateUsed(response,
+            'journalmanager/edit_journal_status.html')
 
-        self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the status form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the status form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertEqual(form.action, '')
+
 
 class SearchFormTests(WebTest):
 
@@ -648,10 +879,14 @@ class SearchFormTests(WebTest):
         self.collection.add_user(self.user, is_manager=True)
 
     def test_basic_struture(self):
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
         page = self.app.get(reverse('index'), user=self.user)
 
         page.mustcontain('list_model', 'q')
-
         self.assertTemplateUsed(page, 'journalmanager/home_journal.html')
-
-

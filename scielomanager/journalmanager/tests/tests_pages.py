@@ -1,13 +1,14 @@
 # coding:utf-8
 """
-Use this module to write functional tests for the screen components, only!
+Use this module to write functional tests for the pages and
+screen components, only!
 """
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
-from journalmanager.tests.tests import _makePermission
+from journalmanager.tests.tests_forms import _makePermission
 
 
 class UserCollectionsSelectorTests(WebTest):
@@ -115,3 +116,116 @@ class SectionsListTests(WebTest):
         page = self.app.get(reverse('section.index', args=[journal.pk]), user=self.user)
 
         self.assertTrue('There are no items.' in page.body)
+
+
+class JournalsListTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_journals_list_without_itens(self):
+        """
+        Asserts the message ``'There are no items.`` is shown
+        when the journals list is empty.
+        """
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        response = self.app.get(reverse('journal.index'), user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)
+
+
+class IndexPageTests(WebTest):
+
+    def test_logged_user_access_to_index(self):
+        user = auth.UserF(is_active=True)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
+
+        response = self.app.get(reverse('index'), user=user)
+
+        self.assertTemplateUsed(response, 'journalmanager/home_journal.html')
+
+    def test_not_logged_user_access_to_index(self):
+        response = self.app.get(reverse('index')).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+
+class UserIndexPageTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_logged_user_access(self):
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user, is_manager=True)
+
+        response = self.app.get(reverse('user.index'), user=self.user)
+
+        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+
+    def test_logged_user_access_users_not_being_manager_of_the_collection(self):
+        user = auth.UserF(is_active=True)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
+
+        response = self.app.get(reverse('user.index'),
+            user=user).follow()
+
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+        response.mustcontain('not authorized to access')
+
+
+class SponsorsListTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_user_access_journals_list_without_itens(self):
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        response = self.app.get(reverse('sponsor.index'),
+            user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)
+
+
+class IssuesListTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_user_access_issue_list_without_itens(self):
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_list)
+
+        response = self.app.get(reverse('issue.index',
+            args=[self.journal.pk]), user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)

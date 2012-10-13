@@ -22,8 +22,8 @@
         <th>{% trans 'created at' %}</th>
         <th>{% trans 'changed by' %}</th>
         <th>{% trans 'reason' %}</th>
-      </tr> 
-    </theady>   
+      </tr>
+    </theady>
     <tbody>
     {% for history in journal_history %}
       <tr>
@@ -36,7 +36,7 @@
     <tbody>
   </table>
 </div>
-<form method="post" action="#" enctype="multipart/form-data">
+<form method="post" action="">
   {% csrf_token %}
   <span class="label">{% trans "Change Status" %}</span>
   <div class="well">
