@@ -368,6 +368,13 @@ class Sponsor(Institution):
     class Meta:
         permissions = (("list_sponsor", "Can list Sponsors"),)
 
+    def add_collection(self, collection):
+        """
+        Add collection to the sponsor.
+        """
+        self.collections.add(collection)
+
+
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
