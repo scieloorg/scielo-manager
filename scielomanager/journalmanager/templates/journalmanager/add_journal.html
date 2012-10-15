@@ -469,13 +469,16 @@
       <label for="{{ add_form.sponsor.auto_id }}">
         <span {% if add_form.sponsor.field.required %}class="req-field"{% endif %}>
           {% trans add_form.sponsor.label %}
+          <a class="popup" href="{% url sponsor.add %}?popup=1">
+            <img width="10"
+                 height="10"
+                 alt="{% trans 'Add new' %}"
+                 src="/static/images/icon_addlink.gif"/>
+          </a>
         </span>
       </label>
       <div class="controls">
         {{ add_form.sponsor }}
-        <a class="popup" href="{% url sponsor.add %}?popup=1">
-            <img width="10" height="10" alt="Adicionar Outro(a)" src="/static/images/icon_addlink.gif">
-        </a>
         {% field_help add_form.sponsor.label add_form.sponsor.help_text term-sponsor %}
       </div>
     </div>

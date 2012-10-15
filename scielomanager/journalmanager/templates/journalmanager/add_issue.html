@@ -206,16 +206,16 @@
       <label for="{{ add_form.section.auto_id }}">
         <span {% if add_form.section.field.required %}class="req-field"{% endif %}>
           {% trans add_form.section.label %}
+          <a class="popup" href="{% url section.add journal.id %}?popup=1">
+            <img width="10" height="10" alt="{% trans 'Add new' %}" src="/static/images/icon_addlink.gif">
+          </a>
         </span>
       </label>
       <div class="controls">
         {{ add_form.section }}
-        <a class="popup" href="{% url section.add journal.id %}?popup=1">
-          <img width="10" height="10" alt="Adicionar Outro(a)" src="/static/images/icon_addlink.gif">
-        </a>
         {% field_help add_form.section.label add_form.section.help_text term-issue-section %}
         {% if add_form.section.errors %}
-        <span class="help-inline">{{ add_form.section.errors }}</span>
+          <span class="help-inline">{{ add_form.section.errors }}</span>
         {% endif %}
       </div>
     </div>
