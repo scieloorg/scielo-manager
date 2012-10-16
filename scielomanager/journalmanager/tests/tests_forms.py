@@ -2,6 +2,7 @@
 """
 Use this module to write functional tests for the view-functions, only!
 """
+import os
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -456,6 +457,11 @@ class JournalFormTests(WebTest):
         form['journal-collection'] = str(self.collection.pk)
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
+
+        upload_cover_name = os.path.dirname(__file__) + '/image_test/cover.gif'
+        uploaded_cover_contents = open(upload_cover_name, "rb").read()
+
+        form.set('journal-cover', (upload_cover_name, uploaded_cover_contents))
 
         response = form.submit().follow()
 
@@ -1011,3 +1017,69 @@ class SearchFormTests(WebTest):
             user=self.user).forms['search-form']
 
         self.assertEqual(form.method.lower(), 'get')
+
+    def test_GET_search_journal(self):
+        """
+        Asserts that the search return the correct journal list
+        """
+        perm = _makePermission(perm='list_journal', model='journal',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        modelfactories.JournalFactory(collection=self.collection)
+
+        page = self.app.get(reverse('journal.index') + '?q=Arquivos',
+                user=self.user)
+
+        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+            page.body)
+
+    def test_GET_search_sponsor(self):
+        """
+        Asserts that the search return the correct sponsor list
+        """
+        perm = _makePermission(perm='list_sponsor', model='sponsor',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        sponsor = modelfactories.SponsorFactory.create()
+
+        sponsor.collections.add(self.collection)
+
+        page = self.app.get(reverse('sponsor.index') + '?q=Amparo',
+                user=self.user)
+
+        self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
+            page.body)
+
+    def test_GET_journal_filter_by_letter(self):
+        """
+        Asserts that the filter with letter return the correct journal list
+        """
+        perm = _makePermission(perm='list_journal', model='journal',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        modelfactories.JournalFactory(collection=self.collection)
+
+        page = self.app.get(reverse('journal.index') + '?letter=A', user=self.user)
+
+        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+            page.body)
+
+    def test_GET_sponsor_filter_by_letter(self):
+        """
+        Asserts that the filter with letter return the correct journal list
+        """
+        perm = _makePermission(perm='list_sponsor', model='sponsor',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        sponsor = modelfactories.SponsorFactory.create()
+
+        sponsor.collections.add(self.collection)
+
+        page = self.app.get(reverse('sponsor.index') + '?letter=F', user=self.user)
+
+        self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
+            page.body)
