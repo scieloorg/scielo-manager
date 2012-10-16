@@ -1037,7 +1037,8 @@ class SearchFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         sponsor = modelfactories.SponsorFactory.create()
-        sponsor.add_collection(self.collection)
+
+        sponsor.collections.add(self.collection)
 
         page = self.app.get(reverse('sponsor.index') + '?q=Amparo',
                 user=self.user)
@@ -1069,7 +1070,8 @@ class SearchFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         sponsor = modelfactories.SponsorFactory.create()
-        sponsor.add_collection(self.collection)
+
+        sponsor.collections.add(self.collection)
 
         page = self.app.get(reverse('sponsor.index') + '?letter=F', user=self.user)
 
