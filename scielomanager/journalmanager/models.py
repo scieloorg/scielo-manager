@@ -669,6 +669,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),)
+        unique_together = (('volume', 'number', 'publication_year'),)
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
