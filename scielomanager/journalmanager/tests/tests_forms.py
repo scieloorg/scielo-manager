@@ -2,6 +2,7 @@
 """
 Use this module to write functional tests for the view-functions, only!
 """
+import os
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -456,6 +457,11 @@ class JournalFormTests(WebTest):
         form['journal-collection'] = str(self.collection.pk)
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
+
+        upload_cover_name = os.path.dirname(__file__) + '/image_test/cover.gif'
+        uploaded_cover_contents = open(upload_cover_name, "rb").read()
+
+        form.set('journal-cover', (upload_cover_name, uploaded_cover_contents))
 
         response = form.submit().follow()
 
