@@ -784,7 +784,7 @@ class IssueFormTests(WebTest):
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
-    def test_POST_workflow_with_exist_year_number_volume_and_same_journal(self):
+    def test_POST_workflow_with_exist_year_number_volume_on_the_same_journal(self):
         """
         Asserts if any message error display when try to insert a duplicate
         Year, Number and Volume issue object from a specific Journal
