@@ -4,8 +4,16 @@ from django_factory_boy import auth
 
 from journalmanager import models
 
+
 class SponsorFactory(factory.Factory):
     FACTORY_FOR = models.Sponsor
+
+    name = u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
+    address = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+                                Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
+    email = 'fapesp@scielo.org'
+    complement = ''
+
 
 class UseLicenseFactory(factory.Factory):
     FACTORY_FOR = models.UseLicense
@@ -25,13 +33,6 @@ class CollectionFactory(factory.Factory):
     address = u'Rua Machado Bittencourt'
     email = u'fapesp@scielo.org'
     name_slug = factory.Sequence(lambda n: 'scl%s' % n)
-
-    # @classmethod
-    # def _prepare(cls, create, **kwargs):
-    #     user = auth.UserF()
-    #     collection = super(CollectionFactory, cls)._prepare(create, **kwargs)
-    #     collection.add_user(user)
-    #     return collection
 
 
 class JournalFactory(factory.Factory):
