@@ -123,6 +123,34 @@ class SectionFormTests(WebTest):
 
         response.mustcontain('There are some errors or missing data')
 
+    def test_POST_workflow_with_exist_title_on_the_same_journal(self):
+        """
+        """
+        perm1 = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm1)
+        perm2 = _makePermission(perm='list_section', model='section')
+        self.user.user_permissions.add(perm2)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        journal.languages.add(language)
+
+        section = modelfactories.SectionFactory(journal=journal)
+        section.add_title('Original Article', language=language)
+
+        form = self.app.get(reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
+
+        form['titles-0-title'] = 'Original Article'
+        form.set('titles-0-language', language.pk)
+
+        response = form.submit()
+
+        response.mustcontain('This section title already exists for this Journal.')
+        self.assertTemplateUsed(response,
+            'journalmanager/add_section.html')
+
     def test_form_enctype_must_be_urlencoded(self):
         """
         Asserts that the enctype attribute of the section form is
