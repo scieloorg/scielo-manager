@@ -289,6 +289,7 @@ class IssueForm(ModelForm):
 
 
 class SectionTitleForm(ModelForm):
+
     def __init__(self, *args, **kwargs):
         """
         Section field queryset is overridden to display only
@@ -297,10 +298,23 @@ class SectionTitleForm(ModelForm):
         ``journal_id`` should not be passed to the superclass
         ``__init__`` method.
         """
-        journal = kwargs.pop('journal', None)
+        self.journal = kwargs.pop('journal', None)
         super(SectionTitleForm, self).__init__(*args, **kwargs)
-        if journal:
-            self.fields['language'].queryset = models.Language.objects.filter(journal__pk=journal.pk)
+        if self.journal:
+            self.fields['language'].queryset = models.Language.objects.filter(journal__pk=self.journal.pk)
+
+    def clean(self):
+        if 'title' in self.cleaned_data and 'language' in self.cleaned_data:
+            title = self.cleaned_data['title']
+            language = self.cleaned_data['language']
+
+            if models.Section.objects.filter(titles__title__exact=title, \
+                titles__language=language, journal=self.journal).exists():
+
+                raise forms.ValidationError({NON_FIELD_ERRORS:\
+                    _('This section title already exists for this Journal.')})
+
+        return self.cleaned_data
 
     class Meta:
         model = models.SectionTitle
