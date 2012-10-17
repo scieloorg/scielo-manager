@@ -113,8 +113,9 @@ class JournalForm(ModelForm):
 
         if self.cleaned_data['cover']:
 
-            if not self.cleaned_data['cover'].content_type in settings.IMAGE_CONTENT_TYPE:
-                raise forms.ValidationError(u'File type is not supported')
+            if not self.cleaned_data['cover'].name:
+                if not self.cleaned_data['cover'].content_type in settings.IMAGE_CONTENT_TYPE:
+                    raise forms.ValidationError(u'File type is not supported')
 
             if self.cleaned_data['cover'].size > settings.IMAGE_SIZE:
                 raise forms.ValidationError(u'File size not allowed')
@@ -132,8 +133,9 @@ class JournalForm(ModelForm):
 
         if self.cleaned_data['logo']:
 
-            if not self.cleaned_data['logo'].content_type in settings.IMAGE_CONTENT_TYPE:
-                raise forms.ValidationError(u'File type is not supported')
+            if not self.cleaned_data['logo'].name:
+                if not self.cleaned_data['logo'].content_type in settings.IMAGE_CONTENT_TYPE:
+                    raise forms.ValidationError(u'File type is not supported')
 
             if self.cleaned_data['logo'].size > settings.IMAGE_SIZE:
                 raise forms.ValidationError(u'File size not allowed')

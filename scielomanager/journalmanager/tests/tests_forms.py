@@ -2,6 +2,7 @@
 """
 Use this module to write functional tests for the view-functions, only!
 """
+import os
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -457,6 +458,11 @@ class JournalFormTests(WebTest):
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
 
+        upload_cover_name = os.path.dirname(__file__) + '/image_test/cover.gif'
+        uploaded_cover_contents = open(upload_cover_name, "rb").read()
+
+        form.set('journal-cover', (upload_cover_name, uploaded_cover_contents))
+
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
@@ -778,6 +784,44 @@ class IssueFormTests(WebTest):
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
+    def test_POST_workflow_with_exist_year_number_and_volume(self):
+        """
+        Asserts if any message error display when try to insert a duplicate
+        Year, Number and Volume issue object
+        """
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        issue = modelfactories.IssueFactory(journal=self.journal)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = str(issue.number)
+        form['volume'] = str(issue.volume)
+        form['editorial_standard'] = ''
+        form['is_press_release'] = False
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = str(issue.publication_year)
+        form['order'] = '201203'
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+
+        response = form.submit()
+
+        self.assertTrue('Issue with this Volume, Number and Year already exists.' in response.body)
+        self.assertTrue('errors_list' in response.body)
+        self.assertIn('There are some errors or missing data', response.body)
+        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+
     def test_form_enctype_must_be_multipart_formdata(self):
         """
         Asserts that the enctype attribute of the issue form is
@@ -1011,3 +1055,69 @@ class SearchFormTests(WebTest):
             user=self.user).forms['search-form']
 
         self.assertEqual(form.method.lower(), 'get')
+
+    def test_GET_search_journal(self):
+        """
+        Asserts that the search return the correct journal list
+        """
+        perm = _makePermission(perm='list_journal', model='journal',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        modelfactories.JournalFactory(collection=self.collection)
+
+        page = self.app.get(reverse('journal.index') + '?q=Arquivos',
+                user=self.user)
+
+        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+            page.body)
+
+    def test_GET_search_sponsor(self):
+        """
+        Asserts that the search return the correct sponsor list
+        """
+        perm = _makePermission(perm='list_sponsor', model='sponsor',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        sponsor = modelfactories.SponsorFactory.create()
+
+        sponsor.collections.add(self.collection)
+
+        page = self.app.get(reverse('sponsor.index') + '?q=Amparo',
+                user=self.user)
+
+        self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
+            page.body)
+
+    def test_GET_journal_filter_by_letter(self):
+        """
+        Asserts that the filter with letter return the correct journal list
+        """
+        perm = _makePermission(perm='list_journal', model='journal',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        modelfactories.JournalFactory(collection=self.collection)
+
+        page = self.app.get(reverse('journal.index') + '?letter=A', user=self.user)
+
+        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+            page.body)
+
+    def test_GET_sponsor_filter_by_letter(self):
+        """
+        Asserts that the filter with letter return the correct journal list
+        """
+        perm = _makePermission(perm='list_sponsor', model='sponsor',
+                app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        sponsor = modelfactories.SponsorFactory.create()
+
+        sponsor.collections.add(self.collection)
+
+        page = self.app.get(reverse('sponsor.index') + '?letter=F', user=self.user)
+
+        self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
+            page.body)

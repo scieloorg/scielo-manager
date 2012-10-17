@@ -368,6 +368,7 @@ class Sponsor(Institution):
     class Meta:
         permissions = (("list_sponsor", "Can list Sponsors"),)
 
+
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
@@ -668,6 +669,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),)
+        unique_together = (('volume', 'number', 'publication_year'),)
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
