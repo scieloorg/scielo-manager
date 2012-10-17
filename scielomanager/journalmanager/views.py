@@ -538,7 +538,7 @@ def add_issue(request, journal_id, issue_id=None):
         form=IssueTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     if request.method == 'POST':
-        add_form = IssueForm(request.POST,  request.FILES, journal_id=journal.pk, instance=issue)
+        add_form = IssueForm(request.POST, request.FILES, journal_id=journal.pk, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
         if add_form.is_valid() and titleformset.is_valid():

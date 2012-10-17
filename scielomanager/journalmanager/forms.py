@@ -269,14 +269,16 @@ class IssueForm(ModelForm):
         return issue
 
     def clean(self):
-        volume = self.cleaned_data.get('volume')
-        number = self.cleaned_data.get('number')
-        publication_year = self.cleaned_data.get('publication_year')
 
-        if models.Issue.objects.filter(volume=volume, number=number,\
-            publication_year=publication_year, journal=self.journal_id).exists():
-            raise forms.ValidationError({NON_FIELD_ERRORS:\
-                _('Issue with this Volume, Number and Year already exists for this Journal.')})
+        if not self.instance.id:
+            volume = self.cleaned_data.get('volume')
+            number = self.cleaned_data.get('number')
+            publication_year = self.cleaned_data.get('publication_year')
+
+            if models.Issue.objects.filter(volume=volume, number=number,\
+                publication_year=publication_year, journal=self.journal_id).exists():
+                raise forms.ValidationError({NON_FIELD_ERRORS:\
+                    _('Issue with this Volume, Number and Year already exists for this Journal.')})
 
         return self.cleaned_data
 
@@ -304,7 +306,7 @@ class SectionTitleForm(ModelForm):
             self.fields['language'].queryset = models.Language.objects.filter(journal__pk=self.journal.pk)
 
     def clean(self):
-        if 'title' in self.cleaned_data and 'language' in self.cleaned_data:
+        if not self.instance.id and 'title' in self.cleaned_data and 'language' in self.cleaned_data:
             title = self.cleaned_data['title']
             language = self.cleaned_data['language']
 
