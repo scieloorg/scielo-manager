@@ -308,7 +308,7 @@ class SectionTitleForm(ModelForm):
             title = self.cleaned_data['title']
             language = self.cleaned_data['language']
 
-            if models.Section.objects.filter(titles__title__exact=title, \
+            if models.Section.objects.filter(titles__title__iexact=title, \
                 titles__language=language, journal=self.journal).exists():
 
                 raise forms.ValidationError({NON_FIELD_ERRORS:\
