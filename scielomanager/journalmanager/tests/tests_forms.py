@@ -784,6 +784,46 @@ class IssueFormTests(WebTest):
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
+    def test_POST_workflow_with_exist_year_number_volume_on_the_same_journal(self):
+        """
+        Asserts if any message error display when try to insert a duplicate
+        Year, Number and Volume issue object from a specific Journal
+        """
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        issue = modelfactories.IssueFactory(journal=self.journal)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = str(issue.number)
+        form['volume'] = str(issue.volume)
+        form['editorial_standard'] = ''
+        form['is_press_release'] = False
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = str(issue.publication_year)
+        form['order'] = '201203'
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+
+        response = form.submit()
+
+        self.assertTrue('errors_list' in response.body)
+        self.assertIn('There are some errors or missing data', response.body)
+        self.assertTrue('Issue with this Volume, Number and Year already exists for this Journal.' \
+            in response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+
     def test_form_enctype_must_be_multipart_formdata(self):
         """
         Asserts that the enctype attribute of the issue form is

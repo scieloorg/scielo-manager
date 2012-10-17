@@ -1,38 +1,4 @@
-    @with_sample_sponsor
-    def test_sponsor_availability_list(self):
-        sponsor = Sponsor.objects.all()[0]
-        response = self.client.get(reverse('sponsor.index'))
-        for spr in response.context['objects_sponsor'].object_list:
-            self.assertEqual(spr.is_trashed, False)
 
-        #change atribute is_available
-        sponsor.is_trashed = True
-        sponsor.save()
-
-        response = self.client.get(reverse('sponsor.index') + '?is_available=0')
-        self.assertEqual(len(response.context['objects_sponsor'].object_list), 0)
-
-    @with_sample_issue
-    def test_issue_availability_list(self):
-
-        first_issue = Issue.objects.all()[0]
-        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]))
-
-        for year, volumes in response.context['issue_grid'].items():
-            for volume, issues in volumes.items():
-                for issue in issues['numbers']:
-                    self.assertEqual(issue.is_trashed, False)
-
-        #change atribute is_available
-        first_issue.is_trashed = True
-        first_issue.save()
-
-        response = self.client.get(reverse('issue.index', args=[first_issue.journal.pk]) + '?is_available=0')
-
-        for year, volumes in response.context['issue_grid'].items():
-            for volume, issues in volumes.items():
-                for issue in issues['numbers']:
-                    self.assertEqual(issue.is_trashed, True)
 
     def test_contextualized_collection_field_on_add_journal(self):
         """
@@ -96,20 +62,6 @@
 
         for qset_item in response.context['section_title_formset'].forms[0].fields['language'].queryset:
             self.assertTrue(qset_item in journal.languages.all())
-
-    @with_sample_journal
-    def test_journal_trash(self):
-        response = self.client.get(reverse('trash.listing'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['trashed_docs'].object_list), 0)
-
-        journal = Journal.objects.all()[0]
-        journal.is_trashed = True
-        journal.save()
-
-        response = self.client.get(reverse('trash.listing'))
-        self.assertEqual(len(response.context['trashed_docs'].object_list), 1)
-
 
 
 class ComponentsTest(TestCase):
