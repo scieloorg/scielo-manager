@@ -14,6 +14,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 
 import caching.base
 
@@ -669,7 +670,6 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),)
-        unique_together = (('volume', 'number', 'publication_year'),)
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):

@@ -784,10 +784,10 @@ class IssueFormTests(WebTest):
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
-    def test_POST_workflow_with_exist_year_number_and_volume(self):
+    def test_POST_workflow_with_exist_year_number_volume_and_same_journal(self):
         """
         Asserts if any message error display when try to insert a duplicate
-        Year, Number and Volume issue object
+        Year, Number and Volume issue object from a specific Journal
         """
 
         perm_issue_change = _makePermission(perm='add_issue',
@@ -817,9 +817,11 @@ class IssueFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('Issue with this Volume, Number and Year already exists.' in response.body)
         self.assertTrue('errors_list' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
+        self.assertTrue('Issue with this Volume, Number and Year already exists for this Journal.' \
+            in response.body)
+
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):

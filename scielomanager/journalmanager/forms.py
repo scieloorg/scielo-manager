@@ -7,6 +7,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
+from django.core.exceptions import NON_FIELD_ERRORS
 
 from journalmanager import models
 from journalmanager import choices
@@ -243,7 +244,7 @@ class IssueForm(ModelForm):
          required=False)
 
     widgets = {
-        'section': forms.Select(attrs={'class':'span3'}),
+        'section': forms.Select(attrs={'class': 'span3'}),
     }
 
     def __init__(self, *args, **kwargs):
@@ -254,11 +255,10 @@ class IssueForm(ModelForm):
         ``journal_id`` should not be passed to the superclass
         ``__init__`` method.
         """
-        journal_id = kwargs.pop('journal_id', None)
+        self.journal_id = kwargs.pop('journal_id', None)
         super(IssueForm, self).__init__(*args, **kwargs)
-        if journal_id is not None:
-            self.fields['section'].queryset = models.Section.objects.filter(journal=journal_id)
-
+        if self.journal_id is not None:
+            self.fields['section'].queryset = models.Section.objects.filter(journal=self.journal_id)
 
     def save_all(self, journal):
         issue = self.save(commit=False)
@@ -268,12 +268,25 @@ class IssueForm(ModelForm):
 
         return issue
 
+    def clean(self):
+        volume = self.cleaned_data.get('volume')
+        number = self.cleaned_data.get('number')
+        publication_year = self.cleaned_data.get('publication_year')
+
+        if models.Issue.objects.filter(volume=volume, number=number,\
+            publication_year=publication_year, journal=self.journal_id).exists():
+            raise forms.ValidationError({NON_FIELD_ERRORS:\
+                _('Issue with this Volume, Number and Year already exists for this Journal.')})
+
+        return self.cleaned_data
+
     class Meta:
         model = models.Issue
         exclude = ('collection', 'journal', 'created', 'updated')
         widgets = {
-            'publication_date': forms.TextInput(attrs={'class':'datepicker', 'id': 'datepicker'}),
+            'publication_date': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker'}),
         }
+
 
 class SectionTitleForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -292,6 +305,7 @@ class SectionTitleForm(ModelForm):
     class Meta:
         model = models.SectionTitle
         fields = ('title', 'language',)
+
 
 class SectionForm(ModelForm):
 
