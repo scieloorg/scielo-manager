@@ -135,6 +135,7 @@
               <li>{{ field.label }} {{ field.errors.text }}</li>
               {% endif %}
             {% endfor %}
+            {{ add_form.non_field_errors }}
             </ul>
           </div>
           {% endfor %}
