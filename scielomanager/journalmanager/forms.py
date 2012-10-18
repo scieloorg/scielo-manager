@@ -269,14 +269,15 @@ class IssueForm(ModelForm):
         return issue
 
     def clean(self):
+        volume = self.cleaned_data.get('volume')
+        number = self.cleaned_data.get('number')
+        publication_year = self.cleaned_data.get('publication_year')
 
-        if not self.instance.id:
-            volume = self.cleaned_data.get('volume')
-            number = self.cleaned_data.get('number')
-            publication_year = self.cleaned_data.get('publication_year')
+        issue = models.Issue.nocacheobjects.filter(volume=volume, number=number,\
+            publication_year=publication_year, journal=self.journal_id)
 
-            if models.Issue.objects.filter(volume=volume, number=number,\
-                publication_year=publication_year, journal=self.journal_id).exists():
+        if issue:
+            if self.instance.id != issue[0].id:
                 raise forms.ValidationError({NON_FIELD_ERRORS:\
                     _('Issue with this Volume, Number and Year already exists for this Journal.')})
 
