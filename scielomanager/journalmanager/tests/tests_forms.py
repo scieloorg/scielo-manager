@@ -911,6 +911,39 @@ class IssueFormTests(WebTest):
         self.assertIn('Saved.', response.body)
         self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
 
+    def test_POST_workflow_without_volume_and_number_formdata(self):
+        """
+        When a user submit a issue the form must contain unless one of the
+        fields Volume or Number
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = ''
+        form['volume'] = ''
+        form['editorial_standard'] = ''
+        form['is_press_release'] = False
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = '2012'
+        form['order'] = '201203'
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+
+        response = form.submit()
+
+        self.assertIn('You must complete at least one of two fields volume or number.', response.body)
+        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+
     def test_POST_workflow_with_invalid_formdata(self):
         """
         When an invalid form is submited, no action is taken, the
@@ -931,8 +964,8 @@ class IssueFormTests(WebTest):
         form.set('ctrl_vocabulary', 'decs')
         form['number'] = '3'
         form['editorial_standard'] = ''
+        form['volume'] = ''
         form['is_press_release'] = False
-        form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
         form['order'] = '201203'
@@ -980,7 +1013,7 @@ class IssueFormTests(WebTest):
 
         self.assertTrue('errors_list' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
-        self.assertTrue('Issue with this Volume, Number and Year already exists for this Journal.' \
+        self.assertTrue('Issue with this Year and (Volume or Number) already exists for this Journal.' \
             in response.body)
 
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')

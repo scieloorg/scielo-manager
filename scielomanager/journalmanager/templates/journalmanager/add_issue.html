@@ -47,7 +47,7 @@
     <div class="span12" style="margin: 0px">
       <div class="control-group {% if add_form.volume.errors %}error{% endif %}" style="float: left;">
         <label for="{{ add_form.volume.auto_id }}">
-          <span {% if add_form.volume.field.required %}class="req-field"{% endif %}>
+          <span class="req-field">
             {% trans add_form.volume.label %}
           </span>
         </label>
@@ -71,7 +71,7 @@
     <div class="span12" style="margin: 0px">
       <div class="control-group {% if add_form.number.errors %}error{% endif %}" style="float: left;">
         <label for="{{ add_form.number.auto_id }}">
-          <span {% if add_form.number.field.required %}class="req-field"{% endif %}>
+          <span class="req-field">
             {% trans add_form.number.label %}
           </span>
         </label>

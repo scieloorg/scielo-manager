@@ -273,13 +273,16 @@ class IssueForm(ModelForm):
         number = self.cleaned_data.get('number')
         publication_year = self.cleaned_data.get('publication_year')
 
-        issue = models.Issue.nocacheobjects.filter(volume=volume, number=number,\
-            publication_year=publication_year, journal=self.journal_id)
+        if volume or number:
+            issue = models.Issue.objects.filter(number=number, volume=volume,\
+                publication_year=publication_year, journal=self.journal_id)
 
-        if issue:
-            if self.instance.id != issue[0].id:
-                raise forms.ValidationError({NON_FIELD_ERRORS:\
-                    _('Issue with this Volume, Number and Year already exists for this Journal.')})
+            if issue:
+                if self.instance.id != issue[0].id:
+                    raise forms.ValidationError({NON_FIELD_ERRORS:\
+                        _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+        else:
+            raise forms.ValidationError(_('You must complete at least one of two fields volume or number.'))
 
         return self.cleaned_data
 
