@@ -343,7 +343,7 @@ msgstr "Porque o status do periódico será modificado?"
 #: journalmanager/models.py:306
 #: journalmanager/models.py:475
 msgid "Editorial Standard"
-msgstr "Padrão editorial"
+msgstr "Norma"
 
 #: journalmanager/models.py:308
 #: journalmanager/models.py:473
