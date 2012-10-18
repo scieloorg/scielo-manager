@@ -152,9 +152,11 @@ class SectionFormTests(WebTest):
         self.assertTemplateUsed(response,
             'journalmanager/add_section.html')
 
-    def test_POST_workflow_with_exist_title_on_the_same_journal_and_if_case_insensitive(self):
+    def test_section_title_must_be_case_insensitive(self):
         """
-        Asserts that the Section invalid the insert with same title
+        Asserts that is not possible to create a Section if another with
+        the same name already exists for this Journal, even if its
+        font case is different.
         """
         perm1 = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm1)
@@ -180,6 +182,39 @@ class SectionFormTests(WebTest):
         response.mustcontain('This section title already exists for this Journal.')
         self.assertTemplateUsed(response,
             'journalmanager/add_section.html')
+
+    def test_section_must_allow_new_title_translations(self):
+        """
+        Asserts that is possible to create new title translations to
+        existing Sections.
+        """
+        perm1 = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm1)
+        perm2 = _makePermission(perm='list_section', model='section')
+        self.user.user_permissions.add(perm2)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        language2 = modelfactories.LanguageFactory.create(iso_code='pt',
+                                                         name='portuguese')
+        journal.languages.add(language)
+        journal.languages.add(language2)
+
+        section = modelfactories.SectionFactory(journal=journal)
+        section.add_title('Original Article', language=language)
+
+        form = self.app.get(reverse('section.edit',
+            args=[journal.pk, section.pk]), user=self.user).forms['section-form']
+
+        form['titles-1-title'] = 'Artigo Original'
+        form.set('titles-1-language', language2.pk)
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response,
+            'journalmanager/section_dashboard.html')
+        response.mustcontain('Original Article / Artigo Original')
 
     def test_form_enctype_must_be_urlencoded(self):
         """
