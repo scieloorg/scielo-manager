@@ -636,6 +636,31 @@ class JournalFormTests(WebTest):
 
         self.assertEqual(form.method.lower(), 'post')
 
+    def test_collections_field_must_only_display_collections_bound_to_the_user(self):
+        """
+        Asserts that the user cannot add a sponsor to a collection
+        that he is not related to.
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        sponsor = modelfactories.SponsorFactory.create()
+        use_license = modelfactories.UseLicenseFactory.create()
+        language = modelfactories.LanguageFactory.create()
+
+        collection2 = modelfactories.CollectionFactory.create()
+        collection2.add_user(self.user)
+        collection3 = modelfactories.CollectionFactory.create()
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        self.assertRaises(ValueError,
+            lambda: form.set('journal-collection', collection3.pk))
+
 
 class SponsorFormTests(WebTest):
 
@@ -781,6 +806,25 @@ class SponsorFormTests(WebTest):
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
 
         self.assertEqual(form.method.lower(), 'post')
+
+    def test_collections_field_must_only_display_collections_the_user_is_bound(self):
+        """
+        Asserts that the user cannot add a sponsor to a collection
+        that he is not related to.
+        """
+        perm_sponsor_change = _makePermission(perm='add_sponsor',
+            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(perm='list_sponsor',
+            model='sponsor', app_label='journalmanager')
+        self.user.user_permissions.add(perm_sponsor_change)
+        self.user.user_permissions.add(perm_sponsor_list)
+
+        another_collection = modelfactories.CollectionFactory.create()
+
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+
+        self.assertRaises(ValueError,
+            lambda: form.set('sponsor-collections', [another_collection.pk]))
 
 
 class IssueFormTests(WebTest):
