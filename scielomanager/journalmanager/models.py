@@ -620,8 +620,8 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     section = models.ManyToManyField(Section, blank=True)
     journal = models.ForeignKey(Journal)
-    volume = models.CharField(_('Volume'), max_length=16)
-    number = models.CharField(_('Number'), max_length=16)
+    volume = models.CharField(_('Volume'), blank=True, max_length=16)
+    number = models.CharField(_('Number'), blank=True, max_length=16)
     suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16)
     suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16)
     is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
