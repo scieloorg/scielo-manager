@@ -216,6 +216,30 @@ class SectionFormTests(WebTest):
             'journalmanager/section_dashboard.html')
         response.mustcontain('Original Article / Artigo Original')
 
+    def test_section_translations_based_on_the_journal_languages(self):
+        """
+        The language list in a Section form must be contextualized with
+        the languages bound to the Journal who it relates.
+        """
+        perm1 = _makePermission(perm='change_section', model='section')
+        self.user.user_permissions.add(perm1)
+        perm2 = _makePermission(perm='list_section', model='section')
+        self.user.user_permissions.add(perm2)
+
+        journal = modelfactories.JournalFactory(collection=self.collection)
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        language2 = modelfactories.LanguageFactory.create(iso_code='pt',
+                                                         name='portuguese')
+        journal.languages.add(language)
+
+        form = self.app.get(reverse('section.add',
+            args=[journal.pk]), user=self.user).forms['section-form']
+
+        form['titles-0-title'] = 'Artigo Original'
+
+        self.assertRaises(ValueError, lambda: form.set('titles-0-language', language2.pk))
+
     def test_form_enctype_must_be_urlencoded(self):
         """
         Asserts that the enctype attribute of the section form is

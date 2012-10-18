@@ -38,31 +38,6 @@
         for qset_item in response.context['add_form'].fields['collections'].queryset:
             self.assertTrue(qset_item in user_collections)
 
-    @with_sample_journal
-    def test_contextualized_language_field_on_add_section(self):
-        """
-        A user has a manytomany relation to Collection entities. So, when a
-        user is registering a new Section, he can only bind it to
-        the Collections he relates to.
-
-        Covered cases:
-        * Check if all collections presented on the form are related to the
-          user.
-        """
-        from journalmanager.models import Journal
-        journal = Journal.objects.all()[0]
-
-        sample_language = tests_assets.get_sample_language()
-        sample_language.save()
-
-        journal.languages.add(sample_language)
-
-        response = self.client.get(reverse('section.add', args=[journal.pk]))
-        self.assertEqual(response.status_code, 200)
-
-        for qset_item in response.context['section_title_formset'].forms[0].fields['language'].queryset:
-            self.assertTrue(qset_item in journal.languages.all())
-
 
 class ComponentsTest(TestCase):
     def test_ISSNField_validation(self):
