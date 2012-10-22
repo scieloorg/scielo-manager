@@ -262,7 +262,12 @@ def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
-    if  user_id == None:
+    collection = models.Collection.objects.get_default_by_user(request.user)
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+
+    if user_id == None:
         user = User()
     else:
         user = get_object_or_404(User, id=user_id)
@@ -273,6 +278,9 @@ def add_user(request, user_id=None):
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
         form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+
+    # filter the collections the user is manager.
+    UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')

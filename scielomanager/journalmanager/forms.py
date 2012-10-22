@@ -350,44 +350,57 @@ class SectionForm(ModelForm):
 
 
 class UserCollectionsForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        """
+        Collection field queryset is overridden to display only
+        collections managed by the given user.
+
+        ``user`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        self._user = kwargs.pop('user', None)
+        super(UserCollectionsForm, self).__init__(*args, **kwargs)
+        if self._user:
+            self.fields['collection'].queryset = models.Collection.objects.get_managed_by_user(self._user)
+
     class Meta:
-      model = models.UserCollections
-      exclude = ('is_default', )
-      widgets = {
-        'collection':forms.Select(attrs={'class':'span8'}),
-      }
+        model = models.UserCollections
+        exclude = ('is_default', )
+        widgets = {
+            'collection': forms.Select(attrs={'class': 'span8'}),
+        }
 
 
 class JournalStudyAreaForm(ModelForm):
     class Meta:
-      model = models.JournalStudyArea
-      widgets = {
-        'studyarea':forms.TextInput(attrs={'class':'span10'}),
-      }
+        model = models.JournalStudyArea
+        widgets = {
+            'studyarea': forms.TextInput(attrs={'class': 'span10'}),
+        }
 
 
 class JournalMissionForm(ModelForm):
     class Meta:
-      model = models.JournalMission
-      widgets = {
-        'description':forms.Textarea(attrs={'class':'span6', 'rows':'3'}),
-      }
+        model = models.JournalMission
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'span6', 'rows': '3'}),
+        }
 
 
 class JournalTitleForm(ModelForm):
     class Meta:
-      model = models.JournalTitle
-      widgets = {
-        'title': forms.TextInput(attrs={'class':'span6'}),
-      }
+        model = models.JournalTitle
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'span6'}),
+        }
 
 
 class IssueTitleForm(ModelForm):
     class Meta:
-      model = models.IssueTitle
-      widgets = {
-        'title': forms.TextInput(attrs={'class':'span6'}),
-      }
+        model = models.IssueTitle
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'span6'}),
+        }
 
 
 ## Formsets ##
@@ -401,5 +414,3 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(FirstFieldRequiredFormSet, self).__init__(*args, **kwargs)
         self.forms[0].empty_permitted = False
-
-
