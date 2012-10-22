@@ -304,6 +304,27 @@ class UserFormTests(WebTest):
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
+    def test_access_without_being_manager(self):
+        """
+        Asserts that authenticated users that are not managers of the
+        collection are unable to access the form. They must be redirected
+        to a page with informations about their lack of permissions.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        # adding another collection the user lacks manager privileges
+        other_collection = modelfactories.CollectionFactory.create()
+        other_collection.add_user(self.user, is_manager=False)
+        other_collection.make_default_to_user(self.user)
+
+        response = self.app.get(reverse('user.add'),
+            user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
     def test_basic_structure(self):
         """
         Just to make sure that the required hidden fields are all
