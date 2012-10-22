@@ -219,7 +219,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
     @property
     def avatar_url(self):
-        params = urllib.urlencode({'s': 25, 'd': 'mm'})
+        params = urllib.urlencode({'s': 18, 'd': 'mm'})
         return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL',
             'https://secure.gravatar.com'), self.gravatar_id, params)
 

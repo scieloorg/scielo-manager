@@ -11,7 +11,25 @@
 </ul>
 {% endblock %}
 
-{% block shortaccess %}
+{% block messages %}
+  {% if add_form.errors or usercollectionsformset.non_field_errors %}
+    <ul>
+      {% for dict_error in usercollectionsformset.errors %}
+        {% for key, value in dict_error.items %}
+          {% if key != '__all__' %}
+            <li>{{key}}</li>
+          {% else %}
+            {{value}}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      {% for field in add_form %}
+        {% if field.errors %}
+          <li>{{ field.label }}</li>
+        {% endif %}
+      {% endfor %}
+    <ul>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
