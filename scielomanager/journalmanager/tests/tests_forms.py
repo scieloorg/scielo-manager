@@ -424,6 +424,25 @@ class UserFormTests(WebTest):
 
         self.assertEqual(form.method.lower(), 'post')
 
+    def test_add_users_only_to_managed_collections(self):
+        """
+        A user can only add users to collections which he is manager.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_user``.
+        """
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        other_collection = modelfactories.CollectionFactory.create()
+        other_collection.add_user(self.user)
+
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
+
+        self.assertRaises(ValueError, lambda: form.set('usercollections-0-collection', other_collection.pk))
+
 
 class JournalFormTests(WebTest):
 
