@@ -112,6 +112,10 @@ button.ui-button-icon-only {
     padding: 3px;
 }
 
+.navbar .nav > li > a{
+    padding: 6px 13px;
+}
+
 .container {
     margin-left: 0px;
     margin-right: 0px;
