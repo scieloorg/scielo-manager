@@ -754,7 +754,7 @@ class SponsorFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_sponsor.html')
 
