@@ -517,7 +517,7 @@ class JournalFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list', response.body)
+        self.assertTrue('alert alert-error', response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
