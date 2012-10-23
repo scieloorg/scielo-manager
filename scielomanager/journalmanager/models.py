@@ -187,6 +187,15 @@ class CollectionCustomManager(AppCustomManager):
 
         return collections[0]
 
+    def get_managed_by_user(self, user):
+        """
+        Returns all collections managed by a given user.
+        """
+        collections = self.filter(usercollections__user=user,
+            usercollections__is_manager=True).order_by('name')
+
+        return collections
+
 
 class Language(caching.base.CachingMixin, models.Model):
     """
