@@ -82,11 +82,6 @@ button.ui-button-icon-only {
     margin-left: 1%;
 }
 
-.navbar .nav.pull-right {
-    margin-left: 10px;
-    margin-right: 2%;
-}
-
 /*Customize the top nav bar size*/
 .container-max-size{
     width: 100% !important;
@@ -110,10 +105,6 @@ button.ui-button-icon-only {
 /*Customize the td from bootstrap*/
 .table th, .table td {
     padding: 3px;
-}
-
-.navbar .nav > li > a{
-    padding: 6px 13px;
 }
 
 .container {

@@ -557,7 +557,7 @@ class JournalFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list', response.body)
+        self.assertTrue('alert alert-error', response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
@@ -794,7 +794,7 @@ class SponsorFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_sponsor.html')
 
@@ -1014,7 +1014,7 @@ class IssueFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
@@ -1051,7 +1051,7 @@ class IssueFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTrue('Issue with this Year and (Volume or Number) already exists for this Journal.' \
             in response.body)
@@ -1192,7 +1192,7 @@ class StatusFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response,
             'journalmanager/edit_journal_status.html')
