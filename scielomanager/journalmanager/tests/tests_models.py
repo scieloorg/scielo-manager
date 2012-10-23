@@ -72,7 +72,7 @@ class UserProfileTests(TestCase):
         self.assertEqual(profile.gravatar_id, expected_gravatar_id)
 
     def test_gravatar_url(self):
-        expected_url = 'https://secure.gravatar.com/avatar/24191827e60cdb49a3d17fb1befe951b?s=25&d=mm'
+        expected_url = 'https://secure.gravatar.com/avatar/24191827e60cdb49a3d17fb1befe951b?s=18&d=mm'
         profile = UserProfileFactory.build(email='foo@bar.org')
 
         self.assertEqual(profile.avatar_url, expected_url)

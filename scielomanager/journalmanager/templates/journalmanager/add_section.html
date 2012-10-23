@@ -13,6 +13,22 @@
 </ul>
 {% endblock %}
 
+{% block messages %}
+  {% if section_title_formset.errors or section_title_formset.non_field_errors %}
+    <ul>
+      {% for dict_error in section_title_formset.errors %}
+        {% for key, value in dict_error.items %}
+          {% if key != '__all__' %}
+            <li>{{key}}</li>
+          {% else %}
+            {{value}}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    <ul>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
 <form id="section-form" method="POST" action="" enctype="application/x-www-form-urlencoded">
@@ -30,15 +46,6 @@
   {% endfor %}
   <span class="label">{% trans 'Titles' %}</span>
   <div class="well">
-    {% if messages %}
-      <div class="alert {{ message.tags }}">
-          {% for dict in section_title_formset.errors %}
-              {% for error in dict.values %}
-                  {{ error }}
-              {% endfor %}
-          {% endfor %}
-      </div>
-    {% endif %}
     <table id="section_title_formset" class="table table-bordered table-striped">
     <thead>
       <tr>

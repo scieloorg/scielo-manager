@@ -47,24 +47,24 @@
           </li>
         </ul>
         <ul class="nav pull-right">
-          <li class="dropdown">
+          <li id="nav-user" class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-              <img style="vertical-align:top;" src="{{ user.get_profile.avatar_url }}">
-              {{ user.email }} 
-            <b class="caret"></b>
+              <img style="vertical-align:top;" src="{{user.get_profile.avatar_url}}" alt="Gravatar">
+                {{user.email}}
+              <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
               <li>
                 <a href="{% url journalmanager.my_account %}">
                   <i class="icon-edit"></i>
-                  {% trans 'user settings' %}
+                    {% trans 'user settings' %}
                 </a>
               </li>
               <li class="divider"></li>
               <li>
                 <a href="{% url journalmanager.user_logout %}">
                   <i class="icon-off"></i>
-                 {% trans 'logout' %}
+                    {% trans 'logout' %}
                 </a>
               </li>
             </ul>
@@ -131,18 +131,14 @@
       <div class="mainContent">
         {% if messages %}
           {% for message in messages %}
-          <div class="alert {{ message.tags }}">{{ message }}
-            <ul id="errors_list">
-            {% for field in add_form %}
-              {% if field.errors %}
-              <li>{{ field.label }} {{ field.errors.text }}</li>
-              {% endif %}
-            {% endfor %}
-            {{ add_form.non_field_errors }}
-            </ul>
+          <div class="alert {{ message.tags }}">
+            <button class="close" data-dismiss="alert" type="button">×</button>
+              {{ message }}
+              {% block messages %}{% endblock %}
           </div>
           {% endfor %}
         {% endif %}
+
         {% block content %}{% endblock %}
       </div>
     </div>

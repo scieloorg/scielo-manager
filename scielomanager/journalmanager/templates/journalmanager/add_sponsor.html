@@ -11,6 +11,21 @@
 </ul>
 {% endblock %}
 
+{% block messages %}
+  {% if add_form.errors or add_form.non_field_errors %}
+    <ul>
+      {% for field in add_form %}
+        {% if field.errors %}
+          <li>{{ field.label }}</li>
+        {% endif %}
+      {% endfor %}
+      {% for errors in add_form.non_field_errors %}
+        <li>{{ errors }}</li>
+      {% endfor %}
+    <ul>
+  {% endif %}
+{% endblock%}
+
 {% block content %}
 <form method="post" action="">
   {% csrf_token %}
