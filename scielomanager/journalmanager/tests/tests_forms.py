@@ -1011,7 +1011,7 @@ class IssueFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTrue('Issue with this Year and (Volume or Number) already exists for this Journal.' \
             in response.body)
@@ -1152,7 +1152,7 @@ class StatusFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('errors_list' in response.body)
+        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response,
             'journalmanager/edit_journal_status.html')
