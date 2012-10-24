@@ -1,42 +1,47 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding model 'wokcategory'
-        db.create_table('journalmanager_wokcategory', (
+        # Adding model 'SubjectCategory'
+        db.create_table('journalmanager_subjectcategory', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('term', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
         ))
-        db.send_create_signal('journalmanager', ['wokcategory'])
+        db.send_create_signal('journalmanager', ['SubjectCategory'])
 
         # Adding field 'Journal.is_indexed_scie'
-        db.add_column('journalmanager_journal', 'is_indexed_scie', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True), keep_default=False)
+        db.add_column('journalmanager_journal', 'is_indexed_scie',
+                      self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True),
+                      keep_default=False)
 
         # Adding field 'Journal.is_indexed_ssci'
-        db.add_column('journalmanager_journal', 'is_indexed_ssci', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True), keep_default=False)
+        db.add_column('journalmanager_journal', 'is_indexed_ssci',
+                      self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True),
+                      keep_default=False)
 
         # Adding field 'Journal.is_indexed_aehci'
-        db.add_column('journalmanager_journal', 'is_indexed_aehci', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True), keep_default=False)
+        db.add_column('journalmanager_journal', 'is_indexed_aehci',
+                      self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True),
+                      keep_default=False)
 
-        # Adding M2M table for field wok_categories on 'Journal'
-        db.create_table('journalmanager_journal_wok_categories', (
+        # Adding M2M table for field subject_categories on 'Journal'
+        db.create_table('journalmanager_journal_subject_categories', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('wokcategory', models.ForeignKey(orm['journalmanager.wokcategory'], null=False))
+            ('subjectcategory', models.ForeignKey(orm['journalmanager.subjectcategory'], null=False))
         ))
-        db.create_unique('journalmanager_journal_wok_categories', ['journal_id', 'wokcategory_id'])
+        db.create_unique('journalmanager_journal_subject_categories', ['journal_id', 'subjectcategory_id'])
 
 
     def backwards(self, orm):
-        
-        # Deleting model 'wokcategory'
-        db.delete_table('journalmanager_wokcategory')
+        # Deleting model 'SubjectCategory'
+        db.delete_table('journalmanager_subjectcategory')
 
         # Deleting field 'Journal.is_indexed_scie'
         db.delete_column('journalmanager_journal', 'is_indexed_scie')
@@ -47,8 +52,8 @@ class Migration(SchemaMigration):
         # Deleting field 'Journal.is_indexed_aehci'
         db.delete_column('journalmanager_journal', 'is_indexed_aehci')
 
-        # Removing M2M table for field wok_categories on 'Journal'
-        db.delete_table('journalmanager_journal_wok_categories')
+        # Removing M2M table for field subject_categories on 'Journal'
+        db.delete_table('journalmanager_journal_subject_categories')
 
 
     models = {
@@ -102,7 +107,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
-            'name_slug': ('django.db.models.fields.SlugField', [], {'db_index': 'True', 'max_length': '50', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'name_slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
@@ -209,14 +214,14 @@ class Migration(SchemaMigration):
             'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'short_title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'db_index': 'True'}),
             'sponsor': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'journal_sponsor'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['journalmanager.Sponsor']"}),
+            'subject_categories': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'journals'", 'null': 'True', 'to': "orm['journalmanager.SubjectCategory']"}),
             'subject_descriptors': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
             'title_iso': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'url_journal': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
             'url_online_submission': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
-            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']"}),
-            'wok_categories': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'journals'", 'symmetrical': 'False', 'to': "orm['journalmanager.wokcategory']"})
+            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']"})
         },
         'journalmanager.journalmission': {
             'Meta': {'object_name': 'JournalMission'},
@@ -289,6 +294,11 @@ class Migration(SchemaMigration):
             'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
             'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
         },
+        'journalmanager.subjectcategory': {
+            'Meta': {'object_name': 'SubjectCategory'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'term': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
+        },
         'journalmanager.supplement': {
             'Meta': {'object_name': 'Supplement', '_ormbases': ['journalmanager.Issue']},
             'issue_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Issue']", 'unique': 'True', 'primary_key': 'True'}),
@@ -322,11 +332,6 @@ class Migration(SchemaMigration):
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '75'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        },
-        'journalmanager.wokcategory': {
-            'Meta': {'object_name': 'wokcategory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'term': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
         }
     }
 
