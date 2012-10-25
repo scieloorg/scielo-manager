@@ -216,3 +216,61 @@ table._listings h4 a {
 table._listings h4 {
     margin: 5px 0;
 }
+
+.sortable {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 60%;
+    display:inline;
+}
+
+.sortable li {
+    padding: 5px; 
+    display:inline;
+}
+
+html>body .sortable li {
+    height: 1.5em;
+    line-height: 1.2em;
+}
+
+html>body .sortable li a {
+    max-width: 100px;
+    min-width: 100px;
+}
+
+.ui-state-highlight {
+    height: 1.5em;
+    line-height: 1.2em;
+}
+
+#numbers{
+    display: inline;
+}
+
+#numbers li{
+    height: 15px;
+    border: 5px solid #FFFFFF;
+    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #F0F0F0;
+    border: 2px solid #FFFFFF;
+    display: inline;
+}
+
+#issue-grid{
+    list-style-type: none;
+    margin:0;
+}
+
+#issue-grid li{
+    margin: 0 0 2px;
+    padding: 10px;
+    display: inline;
+}
+
+.year_vols{
+    margin: 0px; 
+}

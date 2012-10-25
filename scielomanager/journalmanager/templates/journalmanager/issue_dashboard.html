@@ -58,4 +58,46 @@
   </tbody>
 </table>
 
+<ul id="issue-grid"> <!-- first -->
+  {% for year, vols in issue_grid.items %}
+    {% for vol, nums in vols.items %}
+      <li>
+        <ul id="{{ year }}v{{ vol|default:'-' }}" class="year_vols"><!-- second -->
+            <li style="background-color: #E0E0E0;font-weight: bold;">{{ year }}</li>
+            <li style="background-color: #E0E0E0;font-weight: bold;">{{ vol|default:'-' }}</li>
+            <li>
+              <ul class="sortable" id="numbers">
+                {% for num in nums.numbers %}
+                  {% if not num.number and not num.suppl_number and not num.suppl_volume %}
+                    <li><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                  {% else %}
+                    <li><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% for num in nums.others %}
+                  {% if not num.number and not num.suppl_number and not num.suppl_volume %}
+                    <li><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                  {% else %}
+                    <li><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </li>
+        </ul><!-- second -->
+      </li>
+    {% endfor %}
+  {% endfor %}
+</ul> <!-- first -->
+
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+  <script>
+    $(function() {
+        $( "ul.sortable" ).sortable({
+            placeholder: "ui-state-highlight"
+        });
+    });
+  </script>
 {% endblock %}

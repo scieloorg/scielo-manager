@@ -75,7 +75,7 @@ MEDIA_URL  = '/static/media/'
 # Webassets
 ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
 ASSETS_URL = '/static/'
-ASSETS_DEBUG = False
+ASSETS_DEBUG = True
 
 #Third-party URLS
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest'
