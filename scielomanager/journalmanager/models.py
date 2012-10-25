@@ -379,6 +379,18 @@ class Sponsor(Institution):
         permissions = (("list_sponsor", "Can list Sponsors"),)
 
 
+class SubjectCategory(caching.base.CachingMixin, models.Model):
+
+    #Custom manager
+    objects = JournalCustomManager()
+    nocacheobjects = models.Manager()
+
+    term = models.CharField(_('Term'), max_length=256, db_index=True)
+
+    def __unicode__(self):
+        return self.term
+
+
 class Journal(caching.base.CachingMixin, models.Model):
 
     #Custom manager
@@ -394,6 +406,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
+    subject_categories = models.ManyToManyField(SubjectCategory, verbose_name="Subject Categories", related_name="journals", null=True)
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
@@ -443,6 +456,9 @@ class Journal(caching.base.CachingMixin, models.Model):
     publisher_country = models.CharField(_('Publisher Country'), max_length=64, blank=False,)
     publisher_state = models.CharField(_('Publisher State'), max_length=64, blank=False,)
     publication_city = models.CharField(_('Publication City'), max_length=64, blank=False,)
+    is_indexed_scie = models.BooleanField(_('SCIE'), default=False, db_index=True)
+    is_indexed_ssci = models.BooleanField(_('SSCI'), default=False, db_index=True)
+    is_indexed_aehci = models.BooleanField(_('A&HCI'), default=False, db_index=True)
 
     def __unicode__(self):
         return self.title

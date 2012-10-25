@@ -581,6 +581,7 @@ class JournalFormTests(WebTest):
         sponsor = modelfactories.SponsorFactory.create()
         use_license = modelfactories.UseLicenseFactory.create()
         language = modelfactories.LanguageFactory.create()
+        subject_category = modelfactories.SubjectCategoryFactory.create()
 
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
 
@@ -614,6 +615,10 @@ class JournalFormTests(WebTest):
         form['journal-collection'] = str(self.collection.pk)
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
+        form.set('journal-subject_categories', str(subject_category.pk))
+        form['journal-is_indexed_scie'] = True
+        form['journal-is_indexed_ssci'] = False
+        form['journal-is_indexed_aehci'] = True
 
         upload_cover_name = os.path.dirname(__file__) + '/image_test/cover.gif'
         uploaded_cover_contents = open(upload_cover_name, "rb").read()
