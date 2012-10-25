@@ -5,6 +5,12 @@ from django_factory_boy import auth
 from journalmanager import models
 
 
+class SubjectCategoryFactory(factory.Factory):
+    FACTORY_FOR = models.SubjectCategory
+
+    term = 'Acoustics'
+
+
 class SponsorFactory(factory.Factory):
     FACTORY_FOR = models.Sponsor
 
