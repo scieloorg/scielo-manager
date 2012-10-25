@@ -25,6 +25,7 @@
     <li><a href="#languages">{% trans 'Languages' %}</a></li>
     <li><a href="#system_information">{% trans 'System Information' %}</a></li>
     <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
+    <li><a href="#web_of_science">{% trans 'Web of Science' %}</a></li>
     <li><a href="#license">{% trans 'Licenses' %}</a></li>
     <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
     <li><a href="#address">{% trans "Address" %}</a></li>
@@ -263,12 +264,23 @@
     <p>
       {{ studyareaformset.management_form }}
     </p>
+    <div class="control-group {% if add_form.subject_categories.errors %}error{% endif %}">
+    <label for="{{ add_form.subject_categories.auto_id }}">
+      <span {% if add_form.subject_categories.field.required %}class="req-field"{% endif %}>
+        {% trans add_form.subject_categories.label %}
+      </span>
+    </label>
+    <div class="controls">
+      {{ add_form.subject_categories }}
+      {% field_help add_form.subject_categories.label add_form.subject_categories.help_text term-subject_categories %}
+    </div>
     <div class="control-group {% if add_form.subject_descriptors.errors %}error{% endif %}">
       <label for="{{ add_form.subject_descriptors.auto_id }}">
         <span {% if add_form.subject_descriptors.field.required %}class="req-field"{% endif %}>
           {% trans add_form.subject_descriptors.label %}
         </span>
       </label>
+    </div>
       <div class="controls">
         {% field_help add_form.subject_descriptors.label add_form.subject_descriptors.help_text term-subject-descriptors %}
         {{ add_form.subject_descriptors }}
@@ -497,6 +509,27 @@
         {% field_help add_form.sponsor.label add_form.sponsor.help_text term-sponsor %}
       </div>
     </div>
+  </div>
+
+  <span class="label"><a name="web_of_science"></a>{% trans "Web of Science" %}</span>
+  <div class="well">
+      <label>{% trans "Indexed at:" %}</label>
+      <label class="checkbox inline">
+        {{ add_form.is_indexed_scie }} {{add_form.is_indexed_scie.label}}
+      </label>
+      <label class="checkbox inline">
+        {{ add_form.is_indexed_ssci }} {{add_form.is_indexed_ssci.label}}
+      </label>
+      <label class="checkbox inline">
+        {{ add_form.is_indexed_aehci }} {{add_form.is_indexed_aehci.label}}
+      </label>
+      <div>
+        <ul>
+          <li class="muted inline"><small>SCIE - Science Citation Index</small></li>
+          <li class="muted"><small>SSCI - Social Science Citation</small></li>
+          <li class="muted"><small>A&HCI - Arts & Humanities Citation</small></li>
+        </ul>
+      </div>
   </div>
 
   <span class="label"><a name="license"></a>{% trans "Licenses" %}</span>

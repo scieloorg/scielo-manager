@@ -19,12 +19,15 @@ dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
 
+loaddata:
+	@python $(MANAGE) loaddata $(FIXTURES_DIR)/subject_categories.json --settings=$(SETTINGS)
+
 dbmigrate:
 	@python $(MANAGE) migrate --settings=$(SETTINGS)
 
 compilemessages:
 	@cd $(APP_PATH) && python manage.py compilemessages --settings=$(SETTINGS)
 
-setup: deps dbsetup dbmigrate compilemessages test
+setup: deps dbsetup dbmigrate loaddata compilemessages test
 
 upgrade: deps dbmigrate compilemessages test
