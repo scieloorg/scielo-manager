@@ -1,0 +1,1745 @@
+[
+  {
+    "pk": 1, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Acoustics"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Agricultural Economics & Policy"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Agricultural Engineering"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Agriculture, Dairy & Animal Science"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Agriculture, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Agronomy"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Allergy"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Anatomy & Morphology"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Andrology"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Anesthesiology"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Anthropology"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Archaeology"
+    }
+  }, 
+  {
+    "pk": 13, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Architecture"
+    }
+  }, 
+  {
+    "pk": 14, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Area Studies"
+    }
+  }, 
+  {
+    "pk": 15, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Art"
+    }
+  }, 
+  {
+    "pk": 16, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Asian Studies"
+    }
+  }, 
+  {
+    "pk": 17, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Astronomy & Astrophysics"
+    }
+  }, 
+  {
+    "pk": 18, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Automation & Control Systems"
+    }
+  }, 
+  {
+    "pk": 19, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Behavioral Sciences"
+    }
+  }, 
+  {
+    "pk": 20, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Biochemical Research Methods"
+    }
+  }, 
+  {
+    "pk": 21, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Biochemistry & Molecular Biology"
+    }
+  }, 
+  {
+    "pk": 22, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Biodiversity Conservation"
+    }
+  }, 
+  {
+    "pk": 23, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Biology"
+    }
+  }, 
+  {
+    "pk": 24, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Biophysics"
+    }
+  }, 
+  {
+    "pk": 25, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Biotechnology & Applied Microbiology"
+    }
+  }, 
+  {
+    "pk": 26, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Business"
+    }
+  }, 
+  {
+    "pk": 27, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Business, Finance"
+    }
+  }, 
+  {
+    "pk": 28, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Cardiac & Cardiovascular Systems"
+    }
+  }, 
+  {
+    "pk": 29, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Cell & Tissue Engineering"
+    }
+  }, 
+  {
+    "pk": 30, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Cell Biology"
+    }
+  }, 
+  {
+    "pk": 31, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Analytical"
+    }
+  }, 
+  {
+    "pk": 32, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Applied"
+    }
+  }, 
+  {
+    "pk": 33, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Inorganic & Nuclear"
+    }
+  }, 
+  {
+    "pk": 34, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Medicinal"
+    }
+  }, 
+  {
+    "pk": 35, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 36, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Organic"
+    }
+  }, 
+  {
+    "pk": 37, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Chemistry, Physical"
+    }
+  }, 
+  {
+    "pk": 38, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Classics"
+    }
+  }, 
+  {
+    "pk": 39, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Clinical Neurology"
+    }
+  }, 
+  {
+    "pk": 40, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Communication"
+    }
+  }, 
+  {
+    "pk": 41, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Artificial Intelligence"
+    }
+  }, 
+  {
+    "pk": 42, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Cybernetics"
+    }
+  }, 
+  {
+    "pk": 43, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Hardware & Architecture"
+    }
+  }, 
+  {
+    "pk": 44, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Information Systems"
+    }
+  }, 
+  {
+    "pk": 45, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Interdisciplinary Applications"
+    }
+  }, 
+  {
+    "pk": 46, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Software Engineering"
+    }
+  }, 
+  {
+    "pk": 47, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Computer Science, Theory & Methods"
+    }
+  }, 
+  {
+    "pk": 48, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Construction & Building Technology"
+    }
+  }, 
+  {
+    "pk": 49, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Criminology & Penology"
+    }
+  }, 
+  {
+    "pk": 50, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Critical Care Medicine"
+    }
+  }, 
+  {
+    "pk": 51, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Crystallography"
+    }
+  }, 
+  {
+    "pk": 52, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Cultural Studies"
+    }
+  }, 
+  {
+    "pk": 53, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Dance"
+    }
+  }, 
+  {
+    "pk": 54, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Demography"
+    }
+  }, 
+  {
+    "pk": 55, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Dentistry, Oral Surgery & Medicine"
+    }
+  }, 
+  {
+    "pk": 56, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Dermatology"
+    }
+  }, 
+  {
+    "pk": 57, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Developmental Biology"
+    }
+  }, 
+  {
+    "pk": 58, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Ecology"
+    }
+  }, 
+  {
+    "pk": 59, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Economics"
+    }
+  }, 
+  {
+    "pk": 60, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Education & Educational Research"
+    }
+  }, 
+  {
+    "pk": 61, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Education, Scientific Disciplines"
+    }
+  }, 
+  {
+    "pk": 62, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Education, Special"
+    }
+  }, 
+  {
+    "pk": 63, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Electrochemistry"
+    }
+  }, 
+  {
+    "pk": 64, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Emergency Medicine"
+    }
+  }, 
+  {
+    "pk": 65, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Endocrinology & Metabolism"
+    }
+  }, 
+  {
+    "pk": 66, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Energy & Fuels"
+    }
+  }, 
+  {
+    "pk": 67, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Aerospace"
+    }
+  }, 
+  {
+    "pk": 68, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Biomedical"
+    }
+  }, 
+  {
+    "pk": 69, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Chemical"
+    }
+  }, 
+  {
+    "pk": 70, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Civil"
+    }
+  }, 
+  {
+    "pk": 71, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Electrical & Electronic"
+    }
+  }, 
+  {
+    "pk": 72, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Environmental"
+    }
+  }, 
+  {
+    "pk": 73, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Geological"
+    }
+  }, 
+  {
+    "pk": 74, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Industrial"
+    }
+  }, 
+  {
+    "pk": 75, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Manufacturing"
+    }
+  }, 
+  {
+    "pk": 76, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Marine"
+    }
+  }, 
+  {
+    "pk": 77, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Mechanical"
+    }
+  }, 
+  {
+    "pk": 78, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 79, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Ocean"
+    }
+  }, 
+  {
+    "pk": 80, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Engineering, Petroleum"
+    }
+  }, 
+  {
+    "pk": 81, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Entomology"
+    }
+  }, 
+  {
+    "pk": 82, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Environmental Sciences"
+    }
+  }, 
+  {
+    "pk": 83, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Environmental Studies"
+    }
+  }, 
+  {
+    "pk": 84, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Ergonomics"
+    }
+  }, 
+  {
+    "pk": 85, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Ethics"
+    }
+  }, 
+  {
+    "pk": 86, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Ethnic Studies"
+    }
+  }, 
+  {
+    "pk": 87, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Evolutionary Biology"
+    }
+  }, 
+  {
+    "pk": 88, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Family Studies"
+    }
+  }, 
+  {
+    "pk": 89, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Film, Radio, Television"
+    }
+  }, 
+  {
+    "pk": 90, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Fisheries"
+    }
+  }, 
+  {
+    "pk": 91, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Folklore"
+    }
+  }, 
+  {
+    "pk": 92, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Food Science & Technology"
+    }
+  }, 
+  {
+    "pk": 93, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Forestry"
+    }
+  }, 
+  {
+    "pk": 94, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Gastroenterology & Hepatology"
+    }
+  }, 
+  {
+    "pk": 95, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Genetics & Heredity"
+    }
+  }, 
+  {
+    "pk": 96, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Geochemistry & Geophysics"
+    }
+  }, 
+  {
+    "pk": 97, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Geography"
+    }
+  }, 
+  {
+    "pk": 98, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Geography, Physical"
+    }
+  }, 
+  {
+    "pk": 99, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Geology"
+    }
+  }, 
+  {
+    "pk": 100, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Geosciences, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 101, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Geriatrics & Gerontology"
+    }
+  }, 
+  {
+    "pk": 102, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Gerontology"
+    }
+  }, 
+  {
+    "pk": 103, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Health Care Sciences & Services"
+    }
+  }, 
+  {
+    "pk": 104, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Health Policy & Services"
+    }
+  }, 
+  {
+    "pk": 105, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Hematology"
+    }
+  }, 
+  {
+    "pk": 106, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "History"
+    }
+  }, 
+  {
+    "pk": 107, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "History & Philosophy Of Science"
+    }
+  }, 
+  {
+    "pk": 108, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "History Of Social Sciences"
+    }
+  }, 
+  {
+    "pk": 109, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Horticulture"
+    }
+  }, 
+  {
+    "pk": 110, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Hospitality, Leisure, Sport & Tourism"
+    }
+  }, 
+  {
+    "pk": 111, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Humanities, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 112, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Imaging Science & Photographic Technology"
+    }
+  }, 
+  {
+    "pk": 113, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Immunology"
+    }
+  }, 
+  {
+    "pk": 114, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Industrial Relations & Labor"
+    }
+  }, 
+  {
+    "pk": 115, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Infectious Diseases"
+    }
+  }, 
+  {
+    "pk": 116, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Information Science & Library Science"
+    }
+  }, 
+  {
+    "pk": 117, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Instruments & Instrumentation"
+    }
+  }, 
+  {
+    "pk": 118, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Integrative & Complementary Medicine"
+    }
+  }, 
+  {
+    "pk": 119, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "International Relations"
+    }
+  }, 
+  {
+    "pk": 120, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Language & Linguistics"
+    }
+  }, 
+  {
+    "pk": 121, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Law"
+    }
+  }, 
+  {
+    "pk": 122, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Limnology"
+    }
+  }, 
+  {
+    "pk": 123, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Linguistics"
+    }
+  }, 
+  {
+    "pk": 124, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literary Reviews"
+    }
+  }, 
+  {
+    "pk": 125, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literary Theory & Criticism"
+    }
+  }, 
+  {
+    "pk": 126, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature"
+    }
+  }, 
+  {
+    "pk": 127, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature, African, Australian, Canadian"
+    }
+  }, 
+  {
+    "pk": 128, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature, American"
+    }
+  }, 
+  {
+    "pk": 129, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature, British Isles"
+    }
+  }, 
+  {
+    "pk": 130, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature, German, Dutch, Scandinavian"
+    }
+  }, 
+  {
+    "pk": 131, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature, Romance"
+    }
+  }, 
+  {
+    "pk": 132, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Literature, Slavic"
+    }
+  }, 
+  {
+    "pk": 133, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Management"
+    }
+  }, 
+  {
+    "pk": 134, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Marine & Freshwater Biology"
+    }
+  }, 
+  {
+    "pk": 135, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Biomaterials"
+    }
+  }, 
+  {
+    "pk": 136, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Ceramics"
+    }
+  }, 
+  {
+    "pk": 137, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Characterization & Testing"
+    }
+  }, 
+  {
+    "pk": 138, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Coatings & Films"
+    }
+  }, 
+  {
+    "pk": 139, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Composites"
+    }
+  }, 
+  {
+    "pk": 140, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 141, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Paper & Wood"
+    }
+  }, 
+  {
+    "pk": 142, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Materials Science, Textiles"
+    }
+  }, 
+  {
+    "pk": 143, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mathematical & Computational Biology"
+    }
+  }, 
+  {
+    "pk": 144, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mathematics"
+    }
+  }, 
+  {
+    "pk": 145, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mathematics, Applied"
+    }
+  }, 
+  {
+    "pk": 146, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mathematics, Interdisciplinary Applications"
+    }
+  }, 
+  {
+    "pk": 147, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mechanics"
+    }
+  }, 
+  {
+    "pk": 148, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medical Ethics"
+    }
+  }, 
+  {
+    "pk": 149, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medical Informatics"
+    }
+  }, 
+  {
+    "pk": 150, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medical Laboratory Technology"
+    }
+  }, 
+  {
+    "pk": 151, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medicine, General & Internal"
+    }
+  }, 
+  {
+    "pk": 152, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medicine, Legal"
+    }
+  }, 
+  {
+    "pk": 153, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medicine, Research & Experimental"
+    }
+  }, 
+  {
+    "pk": 154, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Medieval & Renaissance Studies"
+    }
+  }, 
+  {
+    "pk": 155, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Metallurgy & Metallurgical Engineering"
+    }
+  }, 
+  {
+    "pk": 156, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Meteorology & Atmospheric Sciences"
+    }
+  }, 
+  {
+    "pk": 157, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Microbiology"
+    }
+  }, 
+  {
+    "pk": 158, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Microscopy"
+    }
+  }, 
+  {
+    "pk": 159, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mineralogy"
+    }
+  }, 
+  {
+    "pk": 160, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mining & Mineral Processing"
+    }
+  }, 
+  {
+    "pk": 161, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Multidisciplinary Sciences"
+    }
+  }, 
+  {
+    "pk": 162, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Music"
+    }
+  }, 
+  {
+    "pk": 163, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Mycology"
+    }
+  }, 
+  {
+    "pk": 164, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Nanoscience & Nanotechnology"
+    }
+  }, 
+  {
+    "pk": 165, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Neuroimaging"
+    }
+  }, 
+  {
+    "pk": 166, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Neurosciences"
+    }
+  }, 
+  {
+    "pk": 167, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Nuclear Science & Technology"
+    }
+  }, 
+  {
+    "pk": 168, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Nursing"
+    }
+  }, 
+  {
+    "pk": 169, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Nutrition & Dietetics"
+    }
+  }, 
+  {
+    "pk": 170, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Obstetrics & Gynecology"
+    }
+  }, 
+  {
+    "pk": 171, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Oceanography"
+    }
+  }, 
+  {
+    "pk": 172, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Oncology"
+    }
+  }, 
+  {
+    "pk": 173, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Operations Research & Management Science"
+    }
+  }, 
+  {
+    "pk": 174, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Ophthalmology"
+    }
+  }, 
+  {
+    "pk": 175, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Optics"
+    }
+  }, 
+  {
+    "pk": 176, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Ornithology"
+    }
+  }, 
+  {
+    "pk": 177, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Orthopedics"
+    }
+  }, 
+  {
+    "pk": 178, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Otorhinolaryngology"
+    }
+  }, 
+  {
+    "pk": 179, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Paleontology"
+    }
+  }, 
+  {
+    "pk": 180, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Parasitology"
+    }
+  }, 
+  {
+    "pk": 181, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Pathology"
+    }
+  }, 
+  {
+    "pk": 182, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Pediatrics"
+    }
+  }, 
+  {
+    "pk": 183, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Peripheral Vascular Disease"
+    }
+  }, 
+  {
+    "pk": 184, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Pharmacology & Pharmacy"
+    }
+  }, 
+  {
+    "pk": 185, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Philosophy"
+    }
+  }, 
+  {
+    "pk": 186, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Applied"
+    }
+  }, 
+  {
+    "pk": 187, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Atomic, Molecular & Chemical"
+    }
+  }, 
+  {
+    "pk": 188, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Condensed Matter"
+    }
+  }, 
+  {
+    "pk": 189, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Fluids & Plasmas"
+    }
+  }, 
+  {
+    "pk": 190, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Mathematical"
+    }
+  }, 
+  {
+    "pk": 191, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 192, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Nuclear"
+    }
+  }, 
+  {
+    "pk": 193, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physics, Particles & Fields"
+    }
+  }, 
+  {
+    "pk": 194, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Physiology"
+    }
+  }, 
+  {
+    "pk": 195, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Planning & Development"
+    }
+  }, 
+  {
+    "pk": 196, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Plant Sciences"
+    }
+  }, 
+  {
+    "pk": 197, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Poetry"
+    }
+  }, 
+  {
+    "pk": 198, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Political Science"
+    }
+  }, 
+  {
+    "pk": 199, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Polymer Science"
+    }
+  }, 
+  {
+    "pk": 200, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Primary Health Care"
+    }
+  }, 
+  {
+    "pk": 201, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychiatry"
+    }
+  }, 
+  {
+    "pk": 202, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology"
+    }
+  }, 
+  {
+    "pk": 203, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Applied"
+    }
+  }, 
+  {
+    "pk": 204, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Biological"
+    }
+  }, 
+  {
+    "pk": 205, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Clinical"
+    }
+  }, 
+  {
+    "pk": 206, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Developmental"
+    }
+  }, 
+  {
+    "pk": 207, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Educational"
+    }
+  }, 
+  {
+    "pk": 208, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Experimental"
+    }
+  }, 
+  {
+    "pk": 209, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Mathematical"
+    }
+  }, 
+  {
+    "pk": 210, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Multidisciplinary"
+    }
+  }, 
+  {
+    "pk": 211, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Psychoanalysis"
+    }
+  }, 
+  {
+    "pk": 212, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Psychology, Social"
+    }
+  }, 
+  {
+    "pk": 213, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Public Administration"
+    }
+  }, 
+  {
+    "pk": 214, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Public, Environmental & Occupational Health"
+    }
+  }, 
+  {
+    "pk": 215, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Radiology, Nuclear Medicine & Medical Imaging"
+    }
+  }, 
+  {
+    "pk": 216, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Rehabilitation"
+    }
+  }, 
+  {
+    "pk": 217, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Religion"
+    }
+  }, 
+  {
+    "pk": 218, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Remote Sensing"
+    }
+  }, 
+  {
+    "pk": 219, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Reproductive Biology"
+    }
+  }, 
+  {
+    "pk": 220, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Respiratory System"
+    }
+  }, 
+  {
+    "pk": 221, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Rheumatology"
+    }
+  }, 
+  {
+    "pk": 222, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Robotics"
+    }
+  }, 
+  {
+    "pk": 223, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Social Issues"
+    }
+  }, 
+  {
+    "pk": 224, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Social Sciences, Biomedical"
+    }
+  }, 
+  {
+    "pk": 225, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Social Sciences, Interdisciplinary"
+    }
+  }, 
+  {
+    "pk": 226, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Social Sciences, Mathematical Methods"
+    }
+  }, 
+  {
+    "pk": 227, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Social Work"
+    }
+  }, 
+  {
+    "pk": 228, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Sociology"
+    }
+  }, 
+  {
+    "pk": 229, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Soil Science"
+    }
+  }, 
+  {
+    "pk": 230, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Spectroscopy"
+    }
+  }, 
+  {
+    "pk": 231, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Sport Sciences"
+    }
+  }, 
+  {
+    "pk": 232, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Statistics & Probability"
+    }
+  }, 
+  {
+    "pk": 233, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Substance Abuse"
+    }
+  }, 
+  {
+    "pk": 234, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Surgery"
+    }
+  }, 
+  {
+    "pk": 235, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Telecommunications"
+    }
+  }, 
+  {
+    "pk": 236, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Theater"
+    }
+  }, 
+  {
+    "pk": 237, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Thermodynamics"
+    }
+  }, 
+  {
+    "pk": 238, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Toxicology"
+    }
+  }, 
+  {
+    "pk": 239, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Transplantation"
+    }
+  }, 
+  {
+    "pk": 240, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Transportation"
+    }
+  }, 
+  {
+    "pk": 241, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Transportation Science & Technology"
+    }
+  }, 
+  {
+    "pk": 242, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Tropical Medicine"
+    }
+  }, 
+  {
+    "pk": 243, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Urban Studies"
+    }
+  }, 
+  {
+    "pk": 244, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Urology & Nephrology"
+    }
+  }, 
+  {
+    "pk": 245, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Veterinary Sciences"
+    }
+  }, 
+  {
+    "pk": 246, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Virology"
+    }
+  }, 
+  {
+    "pk": 247, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Water Resources"
+    }
+  }, 
+  {
+    "pk": 248, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Women'S Studies"
+    }
+  }, 
+  {
+    "pk": 249, 
+    "model": "journalmanager.subjectcategory", 
+    "fields": {
+      "term": "Zoology"
+    }
+  }
+]
