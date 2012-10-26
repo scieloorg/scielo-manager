@@ -62,11 +62,11 @@
   {% for year, vols in issue_grid.items %}
     {% for vol, nums in vols.items %}
       <li>
-        <ul id="{{ year }}v{{ vol|default:'-' }}" class="year_vols"><!-- second -->
+        <ul class="year_vols"><!-- second -->
             <li style="background-color: #E0E0E0;font-weight: bold;">{{ year }}</li>
             <li style="background-color: #E0E0E0;font-weight: bold;">{{ vol|default:'-' }}</li>
             <li>
-              <ul class="sortable" id="numbers">
+              <ul class="sortable" id="numbers-{{ year }}{{ vol }}">
                 {% for num in nums.numbers %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
                     <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>

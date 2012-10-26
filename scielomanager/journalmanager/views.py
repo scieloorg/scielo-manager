@@ -584,6 +584,7 @@ def issue_reorder(request, journal_id):
     if request.is_ajax():
         # check if the user has privileges in this journal
         # update the order attribute for que given issue subset.
+        pass
 
 
 
