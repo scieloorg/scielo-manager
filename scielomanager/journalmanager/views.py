@@ -576,6 +576,17 @@ def add_issue(request, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
+@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+def issue_reorder(request, journal_id):
+    """
+    Handles issues reordering based on ajax interactions.
+    """
+    if request.is_ajax():
+        # check if the user has privileges in this journal
+        # update the order attribute for que given issue subset.
+
+
+
 @permission_required('journalmanager.change_section', login_url=AUTHZ_REDIRECT_URL)
 def add_section(request, journal_id, section_id=None):
     """

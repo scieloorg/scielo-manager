@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     # Issue Tools
     url(r'^(?P<journal_id>\d+)/issue/$', views.issue_index, name='issue.index'),
     url(r'^(?P<journal_id>\d+)/issue/new/$', views.add_issue, name='issue.add'),
+    url(r'^(?P<journal_id>\d+)/issue/reorder/$', views.issue_reorder, name='issue.reorder.ajax'),
     url(r'^(?P<journal_id>\d+)/issue/(?P<issue_id>\d+)/edit/$', views.add_issue, name='issue.edit'),
     url(r'^issue/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
         {'model': models.Issue}, name='issue.toggle_availability'),

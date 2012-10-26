@@ -69,16 +69,16 @@
               <ul class="sortable" id="numbers">
                 {% for num in nums.numbers %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
                   {% else %}
-                    <li><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
                   {% endif %}
                 {% endfor %}
                 {% for num in nums.others %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
                   {% else %}
-                    <li><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
                   {% endif %}
                 {% endfor %}
               </ul>
@@ -95,8 +95,17 @@
 {{ block.super }}
   <script>
     $(function() {
-        $( "ul.sortable" ).sortable({
-            placeholder: "ui-state-highlight"
+        $("ul.sortable").sortable({
+            placeholder: "ui-state-highlight",
+            opacity: 0.5,
+            update: function(event, ui) {
+              $.ajax({
+                url: "{% url issue.reorder.ajax journal.pk %}",
+                data: {
+                  numbers: $(this).sortable('serialize')
+                }
+              });
+            }
         });
     });
   </script>
