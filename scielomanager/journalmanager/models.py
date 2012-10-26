@@ -506,6 +506,43 @@ class Journal(caching.base.CachingMixin, models.Model):
 
         return grid
 
+    def has_issues(self, issues):
+        """
+        Returns ``True`` if all the given issues are bound to the journal.
+
+        ``issues`` is a list of Issue pk.
+        """
+        issues_to_test = set(int(issue) for issue in issues)
+        bound_issues = set(issue.pk for issue in self.issue_set.all())
+
+        return issues_to_test.issubset(bound_issues)
+
+    def reorder_issues(self, new_order, publication_year, volume=None):
+        """
+        Make persistent the ordering received as a list of ``pk``,
+        to all the issues in a given ``publication_year`` and ``volume``.
+
+        The lenght of ``new_order`` must match with the subset of
+        issues by ``publication_year`` and ``volume``.
+        """
+        filters = {'publication_year': publication_year}
+        if volume:
+            filters['volume'] = volume
+
+        issues = self.issue_set.filter(**filters)
+
+        issues_count = issues.count()
+        new_order_count = len(new_order)
+
+        if new_order_count != issues_count:
+            raise ValueError('new_order lenght does not match. %s:%s' % (new_order_count, issues_count))
+
+        for i, pk in enumerate(new_order):
+            order = i + 1
+            issue = issues.get(pk=pk)
+            issue.order = order
+            issue.save()
+
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """

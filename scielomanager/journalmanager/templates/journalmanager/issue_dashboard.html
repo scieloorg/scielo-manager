@@ -66,7 +66,7 @@
             <li style="background-color: #E0E0E0;font-weight: bold;">{{ year }}</li>
             <li style="background-color: #E0E0E0;font-weight: bold;">{{ vol|default:'-' }}</li>
             <li>
-              <ul class="sortable" id="numbers-{{ year }}{{ vol }}">
+              <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
                 {% for num in nums.numbers %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
                     <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
@@ -102,7 +102,8 @@
               $.ajax({
                 url: "{% url issue.reorder.ajax journal.pk %}",
                 data: {
-                  numbers: $(this).sortable('serialize')
+                  numbers: $(this).sortable('serialize'),
+                  issues_set: $(this).attr('id')
                 }
               });
             }
