@@ -28,66 +28,35 @@
       <th>{% trans 'Numbers' %}</th>
     </tr>
   </thead>
-  <tbody>
   {% for year, vols in issue_grid.items %}
     {% for vol, nums in vols.items %}
-    <tr>
-      <th>{{ year }}</th>
-      <th>{{ vol|default:'-' }}</th>
-      {% for num in nums.numbers %}
-        {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-        <td><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
-        {% else %}
-        <td><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></td>
-        {% endif %}
-      {% endfor %}
-      {% for num in nums.others %}
-        {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-        <td><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></td>
-        {% else %}
-        <td><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></td>
-        {% endif %}
-      {% endfor %}
-    </tr>
-    {% endfor %}
-    {% empty %}
-    <tr>
-      <td colspan="5">{% trans 'There are no items.' %}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-
-<ul id="issue-grid"> <!-- first -->
-  {% for year, vols in issue_grid.items %}
-    {% for vol, nums in vols.items %}
-      <li>
-        <ul class="year_vols"><!-- second -->
-            <li style="background-color: #E0E0E0;font-weight: bold;">{{ year }}</li>
-            <li style="background-color: #E0E0E0;font-weight: bold;">{{ vol|default:'-' }}</li>
-            <li>
-              <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
+      <tr>
+        <th>{{ year }}</th>
+        <th>{{ vol }}</th>
+        <td>
+          <div class="sortable-div">
+              <ul class="sortable" id="numbers-{{ year }}{{ vol }}">
                 {% for num in nums.numbers %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
                   {% else %}
-                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
                   {% endif %}
                 {% endfor %}
                 {% for num in nums.others %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
                   {% else %}
-                    <li id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
                   {% endif %}
                 {% endfor %}
               </ul>
-            </li>
-        </ul><!-- second -->
-      </li>
-    {% endfor %}
-  {% endfor %}
-</ul> <!-- first -->
+            </div>
+            {% endfor %}
+          </td>
+      {% endfor %}
+      </tr>
+</table>
 
 {% endblock %}
 

@@ -1,25 +1,22 @@
 
 /*Toggle action list visibility on mouse over a table row*/
 
-.table-issue td {
-    background-color: #F0F0F0;
+/*.table-issue td {
     text-align: center;
     border: solid 5px #FFFFFF;
     padding: 2px;
     width: 80px;
     height: 30px;
-
 }
-
+*/
 .table-issue th {
-    background-color: #E0E0E0;
+    background-color: #B0B0B0;
     text-align: center;
     font-weight: bold;
     border: solid 5px #FFFFFF;
     padding: 2px;
     width: 80px;
     height: 30px;
-
 }
 
 ul._actions {
@@ -218,59 +215,33 @@ table._listings h4 {
 }
 
 .sortable {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    width: 60%;
-    display:inline;
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 100%;
 }
-
 .sortable li {
-    padding: 5px; 
-    display:inline;
-}
-
-html>body .sortable li {
-    height: 1.5em;
-    line-height: 1.2em;
-}
-
-html>body .sortable li a {
-    max-width: 100px;
-    min-width: 100px;
+    float:left; 
+    width: 40px; 
+    padding: 10px;
+    display:block;  
+    font-size: 10pt;
+    text-align: center;
+    margin: 5px 0px 0px 5px;
+    border: 0px solid #CCCCCC;
+    line-height: 0.8em;
 }
 
 .ui-state-highlight {
-    height: 1.5em;
+    height: 0.8em;
     line-height: 1.2em;
 }
 
-#numbers{
-    display: inline;
+.sortable-div{
+    float: left;
+    width: 900px;
+    /*border: 1px solid red;*/
 }
-
-#numbers li{
-    height: 15px;
-    border: 5px solid #FFFFFF;
-    padding: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    background-color: #F0F0F0;
-    border: 2px solid #FFFFFF;
-    display: inline;
-}
-
-#issue-grid{
-    list-style-type: none;
-    margin:0;
-}
-
-#issue-grid li{
-    margin: 0 0 2px;
-    padding: 10px;
-    display: inline;
-}
-
-.year_vols{
-    margin: 0px; 
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited{
+    color: #0088CC;
 }
