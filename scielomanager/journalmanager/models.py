@@ -500,9 +500,9 @@ class Journal(caching.base.CachingMixin, models.Model):
         for year, volume in grid.items():
             for vol, issues in volume.items():
                 if 'numbers' in issues:
-                    issues['numbers'].sort(key=lambda x: int(x.identification))
+                    issues['numbers'].sort(key=lambda x: x.order)
                 if 'others' in issues:
-                    issues['others'].sort(key=lambda x: x.identification)
+                    issues['others'].sort(key=lambda x: x.order)
 
         return grid
 

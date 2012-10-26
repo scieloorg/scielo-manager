@@ -4,7 +4,7 @@ import os
 
 from django.contrib.messages import constants as messages
 
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -75,7 +75,7 @@ MEDIA_URL  = '/static/media/'
 # Webassets
 ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
 ASSETS_URL = '/static/'
-ASSETS_DEBUG = True
+ASSETS_DEBUG = False
 
 #Third-party URLS
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest'

@@ -32,10 +32,10 @@
     {% for vol, nums in vols.items %}
       <tr>
         <th>{{ year }}</th>
-        <th>{{ vol }}</th>
+        <th>{{ vol|default:'-' }}</th>
         <td>
           <div class="sortable-div">
-              <ul class="sortable" id="numbers-{{ year }}{{ vol }}">
+              <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
                 {% for num in nums.numbers %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
                     <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
