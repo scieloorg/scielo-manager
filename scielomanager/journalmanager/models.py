@@ -731,7 +731,8 @@ class Issue(caching.base.CachingMixin, models.Model):
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
-        permissions = (("list_issue", "Can list Issues"),)
+        permissions = (("list_issue", "Can list Issues"),
+            ("can_reorder_issues", "Can Reorder Issues"))
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
