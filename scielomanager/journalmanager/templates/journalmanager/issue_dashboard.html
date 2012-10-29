@@ -36,14 +36,7 @@
         <td>
           <div class="sortable-div">
               <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
-                {% for num in nums.numbers %}
-                  {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
-                  {% else %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
-                  {% endif %}
-                {% endfor %}
-                {% for num in nums.others %}
+                {% for num in nums %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
                     <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
                   {% else %}

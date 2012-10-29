@@ -166,7 +166,7 @@ class JournalTests(TestCase):
 
         self.assertTrue(2012 in grid)
         self.assertTrue('9' in grid[2012])
-        self.assertEqual(len(grid[2012]['9']['numbers']), 5)
+        self.assertEqual(len(grid[2012]['9']), 5)
 
     def test_issues_grid_with_alphabetical_issue_numbers(self):
         journal = JournalFactory.create()
@@ -182,10 +182,7 @@ class JournalTests(TestCase):
 
         self.assertTrue(2012 in grid)
         self.assertTrue('9' in grid[2012])
-        self.assertTrue('numbers' in grid[2012]['9'])
-        self.assertTrue('others' in grid[2012]['9'])
-        self.assertEqual(len(grid[2012]['9']['numbers']), 2)
-        self.assertEqual(len(grid[2012]['9']['others']), 3)
+        self.assertEqual(len(grid[2012]['9']), 5)
 
     def test_issues_grid_with_unavailable_issues(self):
         journal = JournalFactory.create()

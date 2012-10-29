@@ -484,25 +484,12 @@ class Journal(caching.base.CachingMixin, models.Model):
 
         for issue in objects_all:
             year_node = grid.setdefault(issue.publication_year, {})
-            volume_node = year_node.setdefault(issue.volume, {})
-
-            try:
-                # numbers must be separated from string ids.
-                int(issue.identification)
-            except ValueError:
-                node_name = 'others'
-            else:
-                node_name = 'numbers'
-
-            node = volume_node.setdefault(node_name, [])
-            node.append(issue)
+            volume_node = year_node.setdefault(issue.volume, [])
+            volume_node.append(issue)
 
         for year, volume in grid.items():
             for vol, issues in volume.items():
-                if 'numbers' in issues:
-                    issues['numbers'].sort(key=lambda x: x.order)
-                if 'others' in issues:
-                    issues['others'].sort(key=lambda x: x.order)
+                issues.sort(key=lambda x: x.order)
 
         return grid
 
