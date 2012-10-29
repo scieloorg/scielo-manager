@@ -1,4 +1,6 @@
-run ``pip install -r requirements.txt`` to install all dependencies needed to run this application.
+just create a database, preferably in PostgreSQL, and make the necessary db settings in ``scielomanager/settings_local.include``.
+
+run ``make setup`` et voilà.
 
 See more information about this project in http://docs.scielo.org
 
