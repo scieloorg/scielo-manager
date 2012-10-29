@@ -1,14 +1,6 @@
 
 /*Toggle action list visibility on mouse over a table row*/
 
-/*.table-issue td {
-    text-align: center;
-    border: solid 5px #FFFFFF;
-    padding: 2px;
-    width: 80px;
-    height: 30px;
-}
-*/
 .table-issue th {
     background-color: #B0B0B0;
     text-align: center;
@@ -214,6 +206,10 @@ table._listings h4 {
     margin: 5px 0;
 }
 
+.img_lock{
+    vertical-align: baseline;
+}
+
 .sortable {
     list-style-type: none; 
     margin: 0; 
@@ -240,8 +236,11 @@ table._listings h4 {
 .sortable-div{
     float: left;
     width: 900px;
-    /*border: 1px solid red;*/
 }
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited{
     color: #0088CC;
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+    opacity: 1;
 }
