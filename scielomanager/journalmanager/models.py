@@ -719,7 +719,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),
-            ("can_reorder_issues", "Can Reorder Issues"))
+            ("reorder_issue", "Can Reorder Issues"))
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):

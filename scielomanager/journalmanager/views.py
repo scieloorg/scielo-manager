@@ -577,7 +577,7 @@ def add_issue(request, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.reorder_issue', login_url=AUTHZ_REDIRECT_URL)
 def issue_reorder(request, journal_id):
     """
     Handles issues reordering based on ajax interactions.
@@ -620,7 +620,7 @@ def issue_reorder(request, journal_id):
         journal.reorder_issues(numbers,
             publication_year=issues_set['year'], volume=issues_set['vol'])
 
-        return HttpResponse(status=200)
+    return HttpResponse(status=200)
 
 
 @permission_required('journalmanager.change_section', login_url=AUTHZ_REDIRECT_URL)
