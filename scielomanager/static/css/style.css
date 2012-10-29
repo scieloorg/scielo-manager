@@ -1,25 +1,14 @@
 
 /*Toggle action list visibility on mouse over a table row*/
 
-.table-issue td {
-    background-color: #F0F0F0;
-    text-align: center;
-    border: solid 5px #FFFFFF;
-    padding: 2px;
-    width: 80px;
-    height: 30px;
-
-}
-
 .table-issue th {
-    background-color: #E0E0E0;
+    background-color: #B0B0B0;
     text-align: center;
     font-weight: bold;
     border: solid 5px #FFFFFF;
     padding: 2px;
     width: 80px;
     height: 30px;
-
 }
 
 ul._actions {
@@ -215,4 +204,43 @@ table._listings h4 a {
 
 table._listings h4 {
     margin: 5px 0;
+}
+
+.img_lock{
+    vertical-align: baseline;
+}
+
+.sortable {
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 100%;
+}
+.sortable li {
+    float:left; 
+    width: 40px; 
+    padding: 10px;
+    display:block;  
+    font-size: 10pt;
+    text-align: center;
+    margin: 5px 0px 0px 5px;
+    border: 0px solid #CCCCCC;
+    line-height: 0.8em;
+}
+
+.ui-state-highlight {
+    height: 0.8em;
+    line-height: 1.2em;
+}
+
+.sortable-div{
+    float: left;
+    width: 900px;
+}
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited{
+    color: #0088CC;
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+    opacity: 1;
 }

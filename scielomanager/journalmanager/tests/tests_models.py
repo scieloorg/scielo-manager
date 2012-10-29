@@ -209,6 +209,80 @@ class JournalTests(TestCase):
 
         self.assertEqual(grid.keys(), expected)
 
+    def test_journal_has_issues_must_be_true(self):
+        journal = JournalFactory.create()
+        issues = []
+        for i in range(5):
+            year = 2012 - i
+            issue = IssueFactory.create(volume=9, publication_year=year)
+            journal.issue_set.add(issue)
+
+            issues.append(issue.pk)
+
+        self.assertTrue(journal.has_issues(issues))
+
+    def test_journal_has_issues_must_be_false(self):
+        journal = JournalFactory.create()
+        issues = [666, ]
+        for i in range(5):
+            year = 2012 - i
+            issue = IssueFactory.create(volume=9, publication_year=year)
+            journal.issue_set.add(issue)
+
+            issues.append(issue.pk)
+
+        self.assertFalse(journal.has_issues(issues))
+
+    def test_issues_reordering(self):
+        journal = JournalFactory.create()
+        issues = []
+        for i in range(5):
+            issue = IssueFactory.create(volume=9, publication_year=2012)
+            journal.issue_set.add(issue)
+
+            issues.append(issue.pk)
+
+        expected_order = [1, 2, 4, 3, 5]
+
+        journal.reorder_issues(expected_order, volume=9, publication_year=2012)
+
+        ordered_issues = [issue.pk for issue in journal.issue_set.order_by('order')]
+
+        self.assertEqual(expected_order, ordered_issues)
+
+    def test_issues_reordering_must_accept_pks_as_string(self):
+        journal = JournalFactory.create()
+        issues = []
+        for i in range(5):
+            issue = IssueFactory.create(volume=9, publication_year=2012)
+            journal.issue_set.add(issue)
+
+            issues.append(issue.pk)
+
+        expected_order = ['1', '2', '4', '3', '5']
+
+        journal.reorder_issues(expected_order, volume=9, publication_year=2012)
+
+        ordered_issues = [str(issue.pk) for issue in journal.issue_set.order_by('order')]
+
+        self.assertEqual(expected_order, ordered_issues)
+
+    def test_issues_reordering_lenght_must_match(self):
+        journal = JournalFactory.create()
+        issues = []
+        for i in range(5):
+            issue = IssueFactory.create(volume=9, publication_year=2012)
+            journal.issue_set.add(issue)
+
+            issues.append(issue.pk)
+
+        expected_order = [1, 2, 4]
+
+        self.assertRaises(ValueError,
+            lambda: journal.reorder_issues(expected_order,
+                                           volume=9,
+                                           publication_year=2012))
+
 
 class CollectionTests(TestCase):
 
