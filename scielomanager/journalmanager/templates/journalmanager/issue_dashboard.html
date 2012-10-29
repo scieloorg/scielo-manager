@@ -20,9 +20,6 @@
   </div>
 </div>
 
-{% if perms.journalmanager.list_journal %}
-
-{% endif %}
 <table class="table-issue">
   <thead>
     <tr>
@@ -77,7 +74,7 @@
 {{ block.super }}
   <script>
     $(function() {
-      
+
       $("ul.sortable").sortable({
           placeholder: "ui-state-highlight",
           opacity: 0.5,
