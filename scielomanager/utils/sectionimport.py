@@ -45,10 +45,10 @@ class SectionImport:
 
     def load_journal(self, issn, collection):
         try:
-            journal = Journal.objects.get(eletronic_issn=issn, collections__id=collection.id)
+            journal = Journal.objects.get(eletronic_issn=issn, collection=collection.id)
         except ObjectDoesNotExist:
             try:
-                journal = Journal.objects.get(print_issn=issn, collections__id=collection.id)
+                journal = Journal.objects.get(print_issn=issn, collection=collection.id)
             except ObjectDoesNotExist:
                 return None
 

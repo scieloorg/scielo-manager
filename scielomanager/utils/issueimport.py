@@ -47,7 +47,7 @@ class IssueImport:
         asign the correct section id to an issue. This must be done to avoid mistakes because Journal
         Manager handle same journals for different collections.
         """
-        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collections__id=self._collection.id)]
+        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collection=self._collection.id)]
         self._sections = {}
         for journal in journals_sections:
             for section in journal:
@@ -123,10 +123,10 @@ class IssueImport:
         error = False
 
         try:
-            journal = Journal.objects.get(print_issn=record['35'][0], collections__id=self._collection.id)
+            journal = Journal.objects.get(print_issn=record['35'][0], collection=self._collection.id)
         except ObjectDoesNotExist:
             try:
-                journal = Journal.objects.get(eletronic_issn=record['35'][0], collections__id=self._collection.id)
+                journal = Journal.objects.get(eletronic_issn=record['35'][0], collection=self._collection.id)
             except ObjectDoesNotExist:
                 print u"Inconsistência de dados tentando encontrar periódico com ISSN: %s" % record['35'][0]
                 error = True
@@ -148,7 +148,7 @@ class IssueImport:
         if '33' in record:
             issue.title = record['33'][0]
         if '36' in record:
-            issue.order = record['36'][0]
+            issue.order = int(str(record['36'][0])[4:])
         if '41' in record:
             if record['41'][0] == 'pr':
                 issue.is_press_release = True
