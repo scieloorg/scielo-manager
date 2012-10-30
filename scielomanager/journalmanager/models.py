@@ -7,6 +7,7 @@ except ImportError:
     from ordereddict import OrderedDict
 
 from django.db import models
+from django.db import transaction
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
@@ -524,11 +525,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         if new_order_count != issues_count:
             raise ValueError('new_order lenght does not match. %s:%s' % (new_order_count, issues_count))
 
-        for i, pk in enumerate(new_order):
-            order = i + 1
-            issue = issues.get(pk=pk)
-            issue.order = order
-            issue.save()
+        with transaction.commit_on_success():
+            for i, pk in enumerate(new_order):
+                order = i + 1
+                issue = issues.get(pk=pk)
+                issue.order = order
+                issue.save()
 
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
@@ -690,8 +692,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
-    # this field will be removed ASAP
-    order = models.IntegerField(_('Issue Order'))
+    order = models.IntegerField(_('Issue Order'), blank=True)
 
     @property
     def identification(self):
@@ -713,8 +714,37 @@ class Issue(caching.base.CachingMixin, models.Model):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
             self.publication_end_month, self.publication_year)
 
+    def _suggest_order(self):
+        """
+        Based on ``publication_year``, ``volume`` and a pre defined
+        ``order``, this method suggests the subsequent ``order`` value.
+
+        If the Issues already has a ``order``, it suggests it. Else,
+        a query is made for the given ``publication_year`` and ``volume``
+        and the ``order`` attribute of the last instance is used.
+        """
+        if self.order:
+            return self.order
+
+        filters = {
+            'publication_year': self.publication_year,
+            'journal': self.journal,
+        }
+
+        if self.volume:
+            filters['volume'] = self.volume
+
+        try:
+            last = Issue.objects.filter(**filters).order_by('order').reverse()[0]
+            next_order = last.order + 1
+        except IndexError:
+            next_order = 1
+
+        return next_order
+
     def save(self, *args, **kwargs):
         self.label = unicode(self)
+        self.order = self._suggest_order()
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:

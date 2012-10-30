@@ -134,6 +134,30 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue.publication_date, expected)
 
+    def test_get_suggested_issue_order_for_first_issue(self):
+        issue = IssueFactory.create(publication_year=2012, volume=2)
+        self.assertEqual(issue._suggest_order(), 1)
+
+    def test_get_suggested_issue_order_having_multiple_issues(self):
+        journal = JournalFactory.create()
+
+        for i in range(1, 6):
+            issue = IssueFactory.create(volume=9,
+                publication_year=2012, journal=journal)
+
+            self.assertEqual(issue._suggest_order(), i)
+
+    def test_get_suggested_issue_order_having_multiple_years(self):
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(volume=9,
+            publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume=9,
+            publication_year=2011, journal=journal)
+
+        self.assertEqual(issue1._suggest_order(), 1)
+        self.assertEqual(issue2._suggest_order(), 1)
+
 
 class LanguageTests(TestCase):
 
@@ -239,7 +263,8 @@ class JournalTests(TestCase):
 
             issues.append(issue.pk)
 
-        expected_order = [1, 2, 4, 3, 5]
+        issues[2], issues[3] = issues[3], issues[2]  # reordering
+        expected_order = issues
 
         journal.reorder_issues(expected_order, volume=9, publication_year=2012)
 
@@ -256,7 +281,8 @@ class JournalTests(TestCase):
 
             issues.append(issue.pk)
 
-        expected_order = ['1', '2', '4', '3', '5']
+        issues[2], issues[3] = issues[3], issues[2]  # reordering
+        expected_order = [str(i_pk) for i_pk in issues]
 
         journal.reorder_issues(expected_order, volume=9, publication_year=2012)
 
