@@ -947,7 +947,6 @@ class IssueFormTests(WebTest):
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
-        form['order'] = '201203'
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
 
@@ -980,7 +979,6 @@ class IssueFormTests(WebTest):
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
-        form['order'] = '201203'
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
 
@@ -1013,7 +1011,6 @@ class IssueFormTests(WebTest):
         form['is_press_release'] = False
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
-        form['order'] = '201203'
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
 
@@ -1050,7 +1047,6 @@ class IssueFormTests(WebTest):
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = str(issue.publication_year)
-        form['order'] = '201203'
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
 
