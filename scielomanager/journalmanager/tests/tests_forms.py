@@ -608,8 +608,14 @@ class JournalFormTests(WebTest):
         form['journal-publisher_country'] = 'BR'
         form['journal-publisher_state'] = 'SP'
         form['journal-publication_city'] = 'São Paulo'
-        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 \
-                                          São Paulo/SP Brasil, Tel.: (11) 3288-8174/3289-0741'
+        form['journal-editor_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11'
+        form['journal-editor_address_city'] = 'São Paulo'
+        form['journal-editor_address_state'] = 'SP'
+        form['journal-editor_address_zip'] = '01318-901'
+        form['journal-editor_address_country'] = 'BR'
+        form['journal-editor_phone1'] = '(11) 3288-8174'
+        form['journal-editor_phone2'] = '(11) 3289-0741'
         form['journal-editor_email'] = 'cbcd@cbcd.org.br'
         form['journal-use_license'] = use_license.pk
         form['journal-collection'] = str(self.collection.pk)

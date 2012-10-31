@@ -16,6 +16,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
+from scielo_extensions import modelfields
 
 import caching.base
 
@@ -393,6 +394,14 @@ class SubjectCategory(caching.base.CachingMixin, models.Model):
 
 
 class Journal(caching.base.CachingMixin, models.Model):
+    """
+    Represents a Journal that is managed by one SciELO Collection.
+
+    `editor_address` references the institution who operates the
+    process.
+    `publisher_address` references the institution who is responsible
+    for the Journal.
+    """
 
     #Custom manager
     objects = JournalCustomManager()
@@ -448,18 +457,25 @@ class Journal(caching.base.CachingMixin, models.Model):
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
-    logo = models.ImageField(_('Journal Logomarca'), upload_to='img/journals_logos', null=True, blank=True)
+    logo = models.ImageField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True)
-    editor_address = models.TextField(_('Address'), blank=False,)
-    editor_email = models.EmailField(_('E-mail'), blank=False,)
-    publisher_name = models.CharField(_('Publisher Name'), max_length=256, blank=False,)
-    publisher_country = models.CharField(_('Publisher Country'), max_length=64, blank=False,)
-    publisher_state = models.CharField(_('Publisher State'), max_length=64, blank=False,)
-    publication_city = models.CharField(_('Publication City'), max_length=64, blank=False,)
-    is_indexed_scie = models.BooleanField(_('SCIE'), default=False, db_index=True)
-    is_indexed_ssci = models.BooleanField(_('SSCI'), default=False, db_index=True)
-    is_indexed_aehci = models.BooleanField(_('A&HCI'), default=False, db_index=True)
+    editor_name = models.CharField(_('Editor Names'), max_length=512)
+    editor_address = models.CharField(_('Editor Address'), max_length=512)
+    editor_address_city = models.CharField(_('Editor City'), max_length=256)
+    editor_address_state = models.CharField(_('Editor State/Province/Region'), max_length=128)
+    editor_address_zip = models.CharField(_('Editor Zip/Postal Code'), max_length=64)
+    editor_address_country = modelfields.CountryField(_('Editor Country'))
+    editor_phone1 = models.CharField(_('Editor Phone 1'), max_length=32)
+    editor_phone2 = models.CharField(_('Editor Phone 2'), null=True, blank=True, max_length=32)
+    editor_email = models.EmailField(_('Editor E-mail'))
+    publisher_name = models.CharField(_('Publisher Name'), max_length=256)
+    publisher_country = modelfields.CountryField(_('Publisher Country'))
+    publisher_state = models.CharField(_('Publisher State/Province/Region'), max_length=64)
+    publication_city = models.CharField(_('Publication City'), max_length=64)
+    is_indexed_scie = models.BooleanField(_('SCIE'), default=False)
+    is_indexed_ssci = models.BooleanField(_('SSCI'), default=False)
+    is_indexed_aehci = models.BooleanField(_('A&HCI'), default=False)
 
     def __unicode__(self):
         return self.title

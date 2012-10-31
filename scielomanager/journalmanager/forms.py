@@ -180,6 +180,8 @@ class JournalForm(ModelForm):
            'copyrighter': forms.TextInput(attrs={'class': 'span8'}),
            'index_coverage': forms.Textarea(attrs={'class': 'span9'}),
            'other_previous_title': forms.TextInput(attrs={'class': 'span9'}),
+           'editor_address': forms.TextInput(attrs={'class': 'span9'}),
+           'publisher_name': forms.TextInput(attrs={'class': 'span9'}),
         }
 
 
