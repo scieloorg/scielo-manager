@@ -28,7 +28,9 @@
     <li><a href="#web_of_science">{% trans 'Web of Science' %}</a></li>
     <li><a href="#license">{% trans 'Licenses' %}</a></li>
     <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
-    <li><a href="#address">{% trans "Address" %}</a></li>
+    <li><a href="#publisher">{% trans "Publisher" %}</a></li>
+    <li><a href="#sponsors">{% trans "Sponsors" %}</a></li>
+    <li><a href="#editor">{% trans "Editors" %}</a></li>
     <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
     <li><a href="#images">{% trans 'Images' %}</a></li>
   </ul>
@@ -445,72 +447,6 @@
     </div>
   </div>
 
-  <span class="label"><a name="publisher_and_sponsor"></a>{% trans "Publisher and Sponsors" %}</span>
-  <div class="well">
-
-    <div class="control-group {% if add_form.publisher_name.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_name.auto_id }}">
-        <span {% if add_form.publisher_name.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_name.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_name }}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.publisher_country.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_country.auto_id }}">
-        <span {% if add_form.publisher_country.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_country.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_country }}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.publisher_state.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_state.auto_id }}">
-        <span {% if add_form.publisher_state.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_state.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_state }}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.publication_city.errors %}error{% endif %}">
-      <label for="{{ add_form.publication_city.auto_id }}">
-        <span {% if add_form.publication_city.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publication_city.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publication_city }}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.sponsor.errors %}error{% endif %}">
-      <label for="{{ add_form.sponsor.auto_id }}">
-        <span {% if add_form.sponsor.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.sponsor.label %}
-          <a class="popup" href="{% url sponsor.add %}?popup=1">
-            <img width="10"
-                 height="10"
-                 alt="{% trans 'Add new' %}"
-                 src="/static/images/icon_addlink.gif"/>
-          </a>
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.sponsor }}
-        {% field_help add_form.sponsor.label add_form.sponsor.help_text term-sponsor %}
-      </div>
-    </div>
-  </div>
-
   <span class="label"><a name="web_of_science"></a>{% trans "Web of Science" %}</span>
   <div class="well">
       <label>{% trans "Indexed at:" %}</label>
@@ -694,8 +630,88 @@
     </table>
   </div>
 
-  <span class="label"><a name="address"></a>{% trans "Address" %}</span>
+  <span class="label"><a name="publisher"></a>{% trans "Publisher" %}</span>
   <div class="well">
+
+    <div class="control-group {% if add_form.publisher_name.errors %}error{% endif %}">
+      <label for="{{ add_form.publisher_name.auto_id }}">
+        <span {% if add_form.publisher_name.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publisher_name.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publisher_name }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publisher_state.errors %}error{% endif %}">
+      <label for="{{ add_form.publisher_state.auto_id }}">
+        <span {% if add_form.publisher_state.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publisher_state.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publisher_state }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publisher_country.errors %}error{% endif %}">
+      <label for="{{ add_form.publisher_country.auto_id }}">
+        <span {% if add_form.publisher_country.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publisher_country.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publisher_country }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.publication_city.errors %}error{% endif %}">
+      <label for="{{ add_form.publication_city.auto_id }}">
+        <span {% if add_form.publication_city.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.publication_city.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.publication_city }}
+      </div>
+    </div>
+  </div>
+
+  <span class="label"><a name="sponsors"></a>{% trans "Sponsors" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.sponsor.errors %}error{% endif %}">
+      <label for="{{ add_form.sponsor.auto_id }}">
+        <span {% if add_form.sponsor.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.sponsor.label %}
+          <a class="popup" href="{% url sponsor.add %}?popup=1">
+            <img width="10"
+                 height="10"
+                 alt="{% trans 'Add new' %}"
+                 src="/static/images/icon_addlink.gif"/>
+          </a>
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.sponsor }}
+        {% field_help add_form.sponsor.label add_form.sponsor.help_text term-sponsor %}
+      </div>
+    </div>
+  </div>
+
+  <span class="label"><a name="editor"></a>{% trans "Editor" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.editor_name.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_name.auto_id }}">
+        <span {% if add_form.editor_name.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_name.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_name }}
+      </div>
+    </div>
+
     <div class="control-group {% if add_form.editor_address.errors %}error{% endif %}">
       <label for="{{ add_form.editor_address.auto_id }}">
         <span {% if add_form.editor_address.field.required %}class="req-field"{% endif %}>
@@ -704,6 +720,72 @@
       </label>
       <div class="controls">
         {{ add_form.editor_address }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editor_address_city.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_address_city.auto_id }}">
+        <span {% if add_form.editor_address_city.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_address_city.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_address_city }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editor_address_state.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_address_state.auto_id }}">
+        <span {% if add_form.editor_address_state.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_address_state.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_address_state }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editor_address_zip.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_address_zip.auto_id }}">
+        <span {% if add_form.editor_address_zip.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_address_zip.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_address_zip }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editor_address_country.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_address_country.auto_id }}">
+        <span {% if add_form.editor_address_country.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_address_country.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_address_country }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editor_phone1.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_phone1.auto_id }}">
+        <span {% if add_form.editor_phone1.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_phone1.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_phone1 }}
+      </div>
+    </div>
+
+    <div class="control-group {% if add_form.editor_phone2.errors %}error{% endif %}">
+      <label for="{{ add_form.editor_phone2.auto_id }}">
+        <span {% if add_form.editor_phone2.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.editor_phone2.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.editor_phone2 }}
       </div>
     </div>
 
