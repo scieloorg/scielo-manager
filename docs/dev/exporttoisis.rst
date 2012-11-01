@@ -111,11 +111,11 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
 
     <norma> é um dos valores, podendo ser: 
 
-      * other 
-      * vanc 
-      * apa
-      * abnt
-      * iso
+      * other (other standard)
+      * vancouv (the vancouver group - uniform requirements for manuscripts submitted to biomedical journals) 
+      * apa (American Psychological Association)
+      * nbr6023 (nbr 6023/89 - associação nacional de normas técnicas)
+      * iso690 (iso 690/87 - international standard organization)
 
   Exemplo::
 

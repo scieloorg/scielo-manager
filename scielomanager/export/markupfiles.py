@@ -21,11 +21,11 @@ class Automata(object):
     """
     # {dbvalue: (citat, norma)}
     standards = {
-        'iso690': ('icitat', 'iso'),
-        'nbr6023': ('acitat', 'abnt'),
-        'other': ('ocitat', 'other'),
-        'vancouv': ('vcitat', 'vanc'),
-        'apa': ('pcitat', 'apa'),
+        'iso690': ('icitat', 'iso', u'iso 690/87 - international standard organization'),
+        'nbr6023': ('acitat', 'abnt', u'nbr 6023/89 - associação nacional de normas técnicas'),
+        'other': ('ocitat', 'other', u'other standard'),
+        'vancouv': ('vcitat', 'vanc', u'the vancouver group - uniform requirements for manuscripts submitted to biomedical journals'),
+        'apa': ('pcitat', 'apa', u'American Psychological Association'),
     }
     # {dbvalue: journalmethod}
     issns = {
@@ -46,11 +46,26 @@ class Automata(object):
 
     @property
     def norma(self):
+        if not self._journal.editorial_standard:
+            return ''
+        else:
+            return self._journal.editorial_standard
+
+    @property
+    def norma_acron(self):
         tags = self.standards.get(self._journal.editorial_standard, None)
         if not tags:
             return ''
 
         return tags[1]
+
+    @property
+    def norma_name(self):
+        tags = self.standards.get(self._journal.editorial_standard, None)
+        if not tags:
+            return ''
+
+        return tags[2]
 
     @property
     def issn(self):
@@ -67,7 +82,7 @@ class Automata(object):
 
     def __unicode__(self):
         return '{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
-            self.citat, self.acron, self.norma)
+            self.citat, self.acron, self.norma_acron)
 
 
 class Issue(object):
@@ -164,12 +179,12 @@ class L10nIssue(Automata, Issue):
     @property
     def sections(self):
         sections = ';'.join([unicode(section) for section in self._issue.section.all()])
-        return sections if sections else u'No section title'
+        return sections + u';No section title' if sections else u'No section title'
 
     @property
     def sections_ids(self):
         ids = ';'.join([unicode(section.actual_code) for section in self._issue.section.all()])
-        return ids if ids else u'nd'
+        return ids + u';nd' if ids else u'nd'
 
     @property
     def ctrl_vocabulary(self):
@@ -184,7 +199,7 @@ class L10nIssue(Automata, Issue):
             self.sections,
             self.sections_ids,
             self.ctrl_vocabulary,
-            self.norma,
+            self.norma_name,
             '',
         ])
         return rows

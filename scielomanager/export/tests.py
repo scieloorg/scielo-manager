@@ -107,7 +107,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'iso')
+        self.assertEqual(automata.norma_acron, 'iso')
 
     def test_norma_nbr6023(self):
         dummy_journal = self.mocker.mock()
@@ -118,7 +118,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'abnt')
+        self.assertEqual(automata.norma_acron, 'abnt')
 
     def test_norma_other(self):
         dummy_journal = self.mocker.mock()
@@ -129,7 +129,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'other')
+        self.assertEqual(automata.norma_acron, 'other')
 
     def test_norma_vancouv(self):
         dummy_journal = self.mocker.mock()
@@ -140,7 +140,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'vanc')
+        self.assertEqual(automata.norma_acron, 'vanc')
 
     def test_norma_apa(self):
         dummy_journal = self.mocker.mock()
@@ -151,7 +151,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'apa')
+        self.assertEqual(automata.norma_acron, 'apa')
 
     def test_norma_unknown_value_must_return_empty_string(self):
         dummy_journal = self.mocker.mock()
@@ -162,7 +162,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, '')
+        self.assertEqual(automata.norma_acron, '')
 
     def test_norma_none_value_must_return_empty_string(self):
         dummy_journal = self.mocker.mock()
@@ -173,7 +173,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, '')
+        self.assertEqual(automata.norma_acron, '')
 
     def test_issn_for_printed(self):
         dummy_journal = self.mocker.mock()
@@ -704,7 +704,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue)
-        expected_sections = u'sec0;sec1;sec2;sec3;sec4'
+        expected_sections = u'sec0;sec1;sec2;sec3;sec4;No section title'
         sections = l10nissue.sections
         self.assertEqual(sections, expected_sections)
         self.assertIsInstance(sections, unicode)
@@ -745,7 +745,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue)
-        expected_ids = u'6;6;6;6;6'
+        expected_ids = u'6;6;6;6;6;nd'
         ids = l10nissue.sections_ids
         self.assertEqual(ids, expected_ids)
         self.assertIsInstance(ids, unicode)
@@ -951,6 +951,7 @@ class JournalStandardTests(MockerTestCase):
 
         dummy_journal.editorial_standard
         self.mocker.result('apa')
+        self.mocker.count(2)
 
         dummy_journal.scielo_issn
         self.mocker.result('electronic')
