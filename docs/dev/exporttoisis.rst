@@ -131,7 +131,7 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
 
     linha 1: Braz. J. Microbiol. v.41 n.4  # Legenda do número
     linha 2: mes inicial/mes final
-    linha 3: issue order (v36)
+    linha 3: issue order (v64 + v36)
     linha 4: em branco
     linha 5: em branco
 
@@ -139,12 +139,12 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
 
     Braz. J. Microbiol. v.41 n.4
     01/03  
-    1
+    20031
 
 
     Rev. Saúde Pública  n.ahead pr 2010
     10/12  
-    2
+    20032
 
 
 

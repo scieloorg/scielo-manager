@@ -92,7 +92,7 @@ class Issue(object):
     @property
     def order(self):
         '''
-        A propriedade order deve ser o publication_year com a ordem.
+        A propriedade order deve ser o publication_year concatenado com o order.
         '''
         return str(self._issue.publication_year) + str(self._issue.order)
 
