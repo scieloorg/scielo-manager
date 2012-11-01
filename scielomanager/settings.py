@@ -4,7 +4,7 @@ import os
 
 from django.contrib.messages import constants as messages
 
-DEBUG = False
+DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))

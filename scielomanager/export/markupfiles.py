@@ -76,17 +76,25 @@ class Issue(object):
 
     @property
     def legend(self):
-        return u'{0} {1}'.format(self._issue.journal.title_iso,
-                                unicode(self._issue))
+        return u'{0} v.{1} n.{2}'.format(self._issue.journal.title_iso,
+                                unicode(self._issue.volume),
+                                unicode(self._issue.identification))
 
     @property
     def period(self):
+        '''
+        O período deve ser o especificado pelo PMC.
+        EX.: Apr./June
+        '''
         return '%02d/%02d' % (self._issue.publication_start_month,
             self._issue.publication_end_month)
 
     @property
     def order(self):
-        return str(self._issue.order)
+        '''
+        A propriedade order deve ser o publication_year com a ordem.
+        '''
+        return str(self._issue.publication_year) + str(self._issue.order)
 
     def __unicode__(self):
         rows = '\r\n'.join([self.legend, self.period, self.order, '', ''])

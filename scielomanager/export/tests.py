@@ -287,16 +287,23 @@ class IssueTests(MockerTestCase):
         dummy_issue.journal
         self.mocker.result(dummy_journal)
 
+        dummy_issue.volume
+        self.mocker.result('33')
+
+        dummy_issue.identification
+        self.mocker.result('3')
+
         dummy_journal.title_iso
         self.mocker.result('Star Wars')
 
         unicode(dummy_issue)
-        self.mocker.result('(ep 1)')
+        self.mocker.result('v.33 n.3')
 
         self.mocker.replay()
 
         issue = self._makeOne(dummy_issue)
-        self.assertTrue(issue.legend, 'Star Wars (ep 1)')
+
+        self.assertTrue(issue.legend, 'Star Wars v.33 n.3')
 
     def test_period(self):
         dummy_issue = self.mocker.mock()
@@ -318,10 +325,13 @@ class IssueTests(MockerTestCase):
         dummy_issue.order
         self.mocker.result(7)
 
+        dummy_issue.publication_year
+        self.mocker.result(2012)
+
         self.mocker.replay()
 
         issue = self._makeOne(dummy_issue)
-        self.assertTrue(issue.order, '7')
+        self.assertTrue(issue.order, '20127')
 
     def test_perfect_unicode_representation(self):
         dummy_issue = self.mocker.mock()
@@ -333,8 +343,17 @@ class IssueTests(MockerTestCase):
         dummy_journal.title_iso
         self.mocker.result('Star Wars')
 
+        dummy_issue.volume
+        self.mocker.result('33')
+
+        dummy_issue.identification
+        self.mocker.result('3')
+
+        dummy_issue.publication_year
+        self.mocker.result(2012)
+
         unicode(dummy_issue)
-        self.mocker.result('(ep 1)')
+        self.mocker.result('v.33 n.3')
 
         dummy_issue.publication_start_month
         self.mocker.result(3)
@@ -347,7 +366,7 @@ class IssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        expected_result = 'Star Wars (ep 1)\r\n03/05\r\n7\r\n\r\n'
+        expected_result = 'Star Wars v.33 n.3\r\n03/05\r\n7\r\n\r\n'
 
         issue = self._makeOne(dummy_issue)
         self.assertTrue(unicode(issue), expected_result)
