@@ -117,6 +117,36 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
       * nbr6023 (nbr 6023/89 - associação nacional de normas técnicas)
       * iso690 (iso 690/87 - international standard organization)
 
+        'iso690': ('icitat', 'iso', u'iso 690/87 - international standard organization'),
+        'nbr6023': ('acitat', 'abnt', u'nbr 6023/89 - associação nacional de normas técnicas'),
+        'other': ('ocitat', 'other', u'other standard'),
+        'vancouv': ('vcitat', 'vanc', u'the vancouver group - uniform requirements for manuscripts submitted to biomedical journals'),
+        'apa': ('pcitat', 'apa', u'American Psychological Association'),
+
+    Valores utilizados no arquivo automata.mds
+
+      * icitat
+      * acitat
+      * ocitat
+      * vcitat
+      * pcitat
+
+    Valores utilizados no arquivo LANGUAGE_issue.mds
+
+      * iso 690/87 - international standard organization
+      * nbr 6023/89 - associação nacional de normas técnicas
+      * other standard
+      * the vancouver group - uniform requirements for manuscripts submitted to biomedical journals
+      * American Psychological Association
+
+    Valores utilizados para o arquivo journal_standart.txt
+
+      * iso690
+      * nbr6023
+      * other
+      * vancouv
+      * apa 
+
   Exemplo::
 
     0044-5967;ocitat;aa.amd;tgother.amd
