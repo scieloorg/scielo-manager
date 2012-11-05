@@ -107,7 +107,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'iso')
+        self.assertEqual(automata.norma_acron, 'iso')
 
     def test_norma_nbr6023(self):
         dummy_journal = self.mocker.mock()
@@ -118,7 +118,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'abnt')
+        self.assertEqual(automata.norma_acron, 'abnt')
 
     def test_norma_other(self):
         dummy_journal = self.mocker.mock()
@@ -129,7 +129,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'other')
+        self.assertEqual(automata.norma_acron, 'other')
 
     def test_norma_vancouv(self):
         dummy_journal = self.mocker.mock()
@@ -140,7 +140,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'vanc')
+        self.assertEqual(automata.norma_acron, 'vanc')
 
     def test_norma_apa(self):
         dummy_journal = self.mocker.mock()
@@ -151,7 +151,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, 'apa')
+        self.assertEqual(automata.norma_acron, 'apa')
 
     def test_norma_unknown_value_must_return_empty_string(self):
         dummy_journal = self.mocker.mock()
@@ -162,7 +162,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, '')
+        self.assertEqual(automata.norma_acron, '')
 
     def test_norma_none_value_must_return_empty_string(self):
         dummy_journal = self.mocker.mock()
@@ -173,7 +173,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.norma, '')
+        self.assertEqual(automata.norma_acron, '')
 
     def test_issn_for_printed(self):
         dummy_journal = self.mocker.mock()
@@ -287,16 +287,23 @@ class IssueTests(MockerTestCase):
         dummy_issue.journal
         self.mocker.result(dummy_journal)
 
+        dummy_issue.volume
+        self.mocker.result('33')
+
+        dummy_issue.identification
+        self.mocker.result('3')
+
         dummy_journal.title_iso
         self.mocker.result('Star Wars')
 
         unicode(dummy_issue)
-        self.mocker.result('(ep 1)')
+        self.mocker.result('v.33 n.3')
 
         self.mocker.replay()
 
         issue = self._makeOne(dummy_issue)
-        self.assertTrue(issue.legend, 'Star Wars (ep 1)')
+
+        self.assertTrue(issue.legend, 'Star Wars v.33 n.3')
 
     def test_period(self):
         dummy_issue = self.mocker.mock()
@@ -318,10 +325,13 @@ class IssueTests(MockerTestCase):
         dummy_issue.order
         self.mocker.result(7)
 
+        dummy_issue.publication_year
+        self.mocker.result(2012)
+
         self.mocker.replay()
 
         issue = self._makeOne(dummy_issue)
-        self.assertTrue(issue.order, '7')
+        self.assertTrue(issue.order, '20127')
 
     def test_perfect_unicode_representation(self):
         dummy_issue = self.mocker.mock()
@@ -333,8 +343,17 @@ class IssueTests(MockerTestCase):
         dummy_journal.title_iso
         self.mocker.result('Star Wars')
 
+        dummy_issue.volume
+        self.mocker.result('33')
+
+        dummy_issue.identification
+        self.mocker.result('3')
+
+        dummy_issue.publication_year
+        self.mocker.result(2012)
+
         unicode(dummy_issue)
-        self.mocker.result('(ep 1)')
+        self.mocker.result('v.33 n.3')
 
         dummy_issue.publication_start_month
         self.mocker.result(3)
@@ -347,7 +366,7 @@ class IssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        expected_result = 'Star Wars (ep 1)\r\n03/05\r\n7\r\n\r\n'
+        expected_result = 'Star Wars v.33 n.3\r\n03/05\r\n7\r\n\r\n'
 
         issue = self._makeOne(dummy_issue)
         self.assertTrue(unicode(issue), expected_result)
@@ -685,7 +704,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue)
-        expected_sections = u'sec0;sec1;sec2;sec3;sec4'
+        expected_sections = u'sec0;sec1;sec2;sec3;sec4;No section title'
         sections = l10nissue.sections
         self.assertEqual(sections, expected_sections)
         self.assertIsInstance(sections, unicode)
@@ -726,7 +745,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue)
-        expected_ids = u'6;6;6;6;6'
+        expected_ids = u'6;6;6;6;6;nd'
         ids = l10nissue.sections_ids
         self.assertEqual(ids, expected_ids)
         self.assertIsInstance(ids, unicode)
@@ -932,6 +951,7 @@ class JournalStandardTests(MockerTestCase):
 
         dummy_journal.editorial_standard
         self.mocker.result('apa')
+        self.mocker.count(2)
 
         dummy_journal.scielo_issn
         self.mocker.result('electronic')

@@ -111,11 +111,35 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
 
     <norma> é um dos valores, podendo ser: 
 
-      * other 
-      * vanc 
-      * apa
-      * abnt
-      * iso
+      * other (other standard)
+      * vancouv (the vancouver group - uniform requirements for manuscripts submitted to biomedical journals) 
+      * apa (American Psychological Association)
+      * nbr6023 (nbr 6023/89 - associação nacional de normas técnicas)
+      * iso690 (iso 690/87 - international standard organization)
+
+    Valores utilizados no arquivo automata.mds
+
+      * icitat
+      * acitat
+      * ocitat
+      * vcitat
+      * pcitat
+
+    Valores utilizados no arquivo LANGUAGE_issue.mds
+
+      * iso 690/87 - international standard organization
+      * nbr 6023/89 - associação nacional de normas técnicas
+      * other standard
+      * the vancouver group - uniform requirements for manuscripts submitted to biomedical journals
+      * American Psychological Association
+
+    Valores utilizados para o arquivo journal_standart.txt
+
+      * iso690
+      * nbr6023
+      * other
+      * vancouv
+      * apa 
 
   Exemplo::
 
@@ -131,7 +155,7 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
 
     linha 1: Braz. J. Microbiol. v.41 n.4  # Legenda do número
     linha 2: mes inicial/mes final
-    linha 3: issue order (v36)
+    linha 3: issue order (v64 + v36)
     linha 4: em branco
     linha 5: em branco
 
@@ -139,12 +163,12 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
 
     Braz. J. Microbiol. v.41 n.4
     01/03  
-    1
+    20031
 
 
     Rev. Saúde Pública  n.ahead pr 2010
     10/12  
-    2
+    20032
 
 
 
