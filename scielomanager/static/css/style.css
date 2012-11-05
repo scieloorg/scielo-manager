@@ -244,3 +244,9 @@ table._listings h4 {
 .ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
     opacity: 1;
 }
+
+.disabled {
+    color: #CCCCCC;
+    margin: 5px 0px 5px 20px;
+
+}
