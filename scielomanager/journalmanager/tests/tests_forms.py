@@ -25,6 +25,120 @@ def _makePermission(perm, model, app_label='journalmanager'):
                                         app_label=app_label)
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
+class CollectionFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user, is_manager=False)
+
+        response = self.app.get(reverse('collection.edit', args=[collection.pk]),
+            user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
+    def test_POST_workflow_with_valid_formdata(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the index page.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_collection``.
+        """
+        perm1 = _makePermission(perm='change_collection', model='collection')
+        self.user.user_permissions.add(perm1)
+
+        form = self.app.get(reverse('collection.edit', args=[self.collection.pk]),
+            user=self.user).forms['collection-form']
+
+        form['collection-name'] = 'Brasil'
+        form['collection-url'] = 'http://www.scielo.br'
+        form['collection-country'] = 'Brasil'
+        form['collection-address'] = 'Rua Machado Bittencourt'
+        form['collection-address_number'] = '430'
+        form['collection-email'] = 'scielo@scielo.org'
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response,
+            'journalmanager/add_collection.html')
+        response.mustcontain('Saved')
+
+    def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm = _makePermission(perm='change_collection', model='collection')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('collection.edit', args=[self.collection.pk]),
+            user=self.user).forms['collection-form']
+
+        form['collection-name'] = ''
+        form['collection-url'] = ''
+        form['collection-country'] = ''
+        form['collection-address'] = ''
+        form['collection-address_number'] = ''
+        form['collection-email'] = ''
+
+        response = form.submit()
+
+        response.mustcontain('There are some errors or missing data')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the section form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='change_collection', model='collection')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('collection.edit', args=[self.collection.pk]),
+            user=self.user).forms['collection-form']
+
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the section form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='change_collection', model='collection')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('collection.edit', args=[self.collection.pk]),
+            user=self.user).forms['collection-form']
+
+        self.assertEqual(form.method.lower(), 'post')
+
+    def test_form_enctype_must_be_multipart_formdata(self):
+        """
+        Asserts that the enctype attribute of the section form is
+        ``multipart/form-data``.
+        """
+        perm = _makePermission(perm='change_collection', model='collection')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('collection.edit', args=[self.collection.pk]),
+            user=self.user).forms['collection-form']
+
+        self.assertEqual(form.enctype.lower(), 'multipart/form-data')
+
 
 class SectionFormTests(WebTest):
 
