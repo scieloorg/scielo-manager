@@ -492,15 +492,16 @@ def add_sponsor(request, sponsor_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_collection', login_url=AUTHZ_REDIRECT_URL)
-def add_collection(request, collection_id=None):
+@permission_required('journalmanager.change_collection', login_url=AUTHZ_REDIRECT_URL)
+def add_collection(request, collection_id):
     """
     Handles existing collections
     """
-    if  collection_id is None:
-        collection = models.Collection()
-    else:
-        collection = get_object_or_404(models.Collection, id=collection_id)
+    
+    collection = get_object_or_404(models.Collection, id=collection_id)
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
 
     if request.method == "POST":
         collectionform = CollectionForm(request.POST, request.FILES, instance=collection, prefix='collection')
