@@ -93,12 +93,6 @@ class Issue(object):
     def __init__(self, issue):
         self._issue = issue
 
-    def month(self, num_month=0):
-        if num_month != 0:
-            return self.MONTHS[num_month]
-        else:
-            return ''
-
     @property
     def legend(self):
         return u'{0} v.{1} n.{2}'.format(self._issue.journal.title_iso,
@@ -111,8 +105,8 @@ class Issue(object):
         O período deve ser o especificado pelo PMC.
         EX.: Apr/Jun ou Apr/ ou /Jun
         '''
-        return '%s/%s' % (self.month(self._issue.publication_start_month),
-            self.month(self._issue.publication_end_month))
+        return '%s/%s' % (self.MONTHS.get(self._issue.publication_start_month, ''),
+             self.MONTHS.get(self._issue.publication_end_month, ''))
 
     @property
     def order(self):
