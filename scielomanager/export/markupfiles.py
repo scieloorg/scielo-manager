@@ -86,6 +86,10 @@ class Automata(object):
 
 
 class Issue(object):
+
+    MONTHS = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+
     def __init__(self, issue):
         self._issue = issue
 
@@ -99,10 +103,10 @@ class Issue(object):
     def period(self):
         '''
         O período deve ser o especificado pelo PMC.
-        EX.: Apr./June
+        EX.: Apr/Jun ou Apr/ ou /Jun
         '''
-        return '%02d/%02d' % (self._issue.publication_start_month,
-            self._issue.publication_end_month)
+        return '%s/%s' % (self.MONTHS.get(self._issue.publication_start_month, ''),
+             self.MONTHS.get(self._issue.publication_end_month, ''))
 
     @property
     def order(self):
@@ -117,9 +121,15 @@ class Issue(object):
 
 
 class L10nIssue(Automata, Issue):
-    def __init__(self, journal, issue):
+
+    L10ISSUEMGS = {'en': (u'No section title', u'No Descriptor', u'Health Sciences Descriptors'),
+            'es': (u'Sín título de sección', u'Ningun Descriptor', u'Descriptores en Ciencia de la Salud'),
+            'pt': (u'Sem título de seção', u'Nenhum Descriptor', u'Descritores em Ciência da Saúde')}
+
+    def __init__(self, journal, issue, language):
         self._journal = journal
         self._issue = issue
+        self._language = language
 
     @property
     def abbrev_title(self):
@@ -179,7 +189,7 @@ class L10nIssue(Automata, Issue):
     @property
     def sections(self):
         sections = ';'.join([unicode(section) for section in self._issue.section.all()])
-        return sections + u';No section title' if sections else u'No section title'
+        return sections + u';' + self.L10ISSUEMGS[self._language][0] if sections else self.L10ISSUEMGS[self._language][0]
 
     @property
     def sections_ids(self):
@@ -188,9 +198,13 @@ class L10nIssue(Automata, Issue):
 
     @property
     def ctrl_vocabulary(self):
-        vocabulary = dict(choices.CTRL_VOCABULARY)
-        return unicode(vocabulary.get(self._issue.journal.ctrl_vocabulary,
-            'No Descriptor'))
+        '''
+        O vocabulário controlado deve ser traduzido
+        '''
+        if self._issue.journal.ctrl_vocabulary == 'decs':
+            return self.L10ISSUEMGS[self._language][2]
+        else:
+            return self.L10ISSUEMGS[self._language][1]
 
     def __unicode__(self):
         rows = '\r\n'.join([
@@ -206,6 +220,10 @@ class L10nIssue(Automata, Issue):
 
 
 class JournalStandard(L10nIssue):
+
+    def __init__(self, journal, issue):
+        self._journal = journal
+        self._issue = issue
 
     @property
     def pub_type(self):
@@ -268,17 +286,18 @@ class JournalStandard(L10nIssue):
 def generate(journal, issue):
     export_automata = Automata(journal)
     export_issue = Issue(issue)
-    export_l10n_issue = L10nIssue(journal, issue)
+    export_l10n_issue_en = L10nIssue(journal, issue, 'en')
+    export_l10n_issue_pt = L10nIssue(journal, issue, 'pt')
+    export_l10n_issue_es = L10nIssue(journal, issue, 'es')
     export_journal_standard = JournalStandard(journal, issue)
 
     try:
-        l10n_issue = unicode(export_l10n_issue)
         packmeta = [
             ('automata.mds', unicode(export_automata)),
             ('issue.mds', unicode(export_issue)),
-            ('en_issue.mds', l10n_issue),
-            ('es_issue.mds', l10n_issue),
-            ('pt_issue.mds', l10n_issue),
+            ('en_issue.mds', unicode(export_l10n_issue_en)),
+            ('es_issue.mds', unicode(export_l10n_issue_es)),
+            ('pt_issue.mds', unicode(export_l10n_issue_pt)),
             ('journal-standard.txt', unicode(export_journal_standard)),
         ]
     except AttributeError as exc:
