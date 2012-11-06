@@ -162,12 +162,12 @@ Alguns arquivos texto também são gerados como entrada de dados para ferramenta
   Exemplo::
 
     Braz. J. Microbiol. v.41 n.4
-    01/03  
+    Jan/Mar  
     20031
 
 
     Rev. Saúde Pública  n.ahead pr 2010
-    10/12  
+    Oct/Dec  
     20032
 
 
