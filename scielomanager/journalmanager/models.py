@@ -21,6 +21,7 @@ from scielo_extensions import modelfields
 import caching.base
 
 import choices
+import mongomodels
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -798,11 +799,19 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     value = models.TextField()
 
+
+# class Article(caching.base.CachingMixin, models.Model):
+#     objects = caching.base.CachingManager()
+#     nocacheobjects = models.Manager()
+#     mongoobjects = mongomodels.MongoManager()
+
+#     object_id = models.CharField(max_length=32)
+#     issue = models.ForeignKey(Issue)
+
+
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-
-
 @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """

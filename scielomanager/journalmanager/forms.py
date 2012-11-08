@@ -4,6 +4,7 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory, BaseFormSet
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
@@ -419,3 +420,67 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(FirstFieldRequiredFormSet, self).__init__(*args, **kwargs)
         self.forms[0].empty_permitted = False
+
+
+# Article
+class AbstractForm(forms.Form):
+    language = forms.ChoiceField(label='Language', choices=[('pt', 'Portuguese')])
+    abstract = forms.CharField(label='Abstract')
+
+
+class DatesForm(forms.Form):
+    thesis = forms.DateField(label='Thesis')
+    conference = forms.DateField(label='Conference')
+    publication = forms.DateField(label='Publication')
+    revision = forms.DateField(label='Revision')
+
+
+class AffiliationForm(forms.Form):
+    institution = forms.CharField(label='Institution')
+    country = forms.CharField(label='Country')
+    state = forms.CharField(label='State')
+    city = forms.CharField(label='City')
+    email = forms.CharField(label='E-mail')
+
+
+class AnalyticalAuthorForm(forms.Form):
+    firstname = forms.CharField(label='Firstname')
+    lastname = forms.CharField(label='Lastname')
+    role = forms.ChoiceField(label='Role', choices=[('coord', 'Coordinator')])
+
+
+class TitleForm(forms.Form):
+    language = forms.ChoiceField(label='Language', choices=[('pt', 'Portuguese')])
+    title = forms.CharField(label='Title')
+
+
+class ArticleForm(forms.Form):
+    language = forms.ChoiceField(label='Language', choices=[('pt', 'Portuguese')])
+    publication_city = forms.CharField(label='City of publication')
+    publication_state = forms.CharField(label='State of publication')
+    publication_country = forms.CharField(label='Country of publication')
+    doctopic = forms.CharField(label='Doctopic')
+    bibliographic_standard = forms.CharField(label='Bibliographic standard')
+    sponsor = forms.CharField(label='Sponsor')
+    type_literature = forms.CharField(label='Type of literature')
+    first_page = forms.IntegerField(label='First page')
+    last_page = forms.IntegerField(label='Last page')
+
+
+def get_all_article_forms(*args):
+
+    class BaseAnalyticalAuthorFormSet(BaseFormSet):
+
+        def add_fields(self, form, index):
+            super(BaseAnalyticalAuthorFormSet, self).add_fields(form, index)
+            form.affiliations = formset_factory(AffiliationForm)(*args, prefix='affiliations')
+
+    d = {
+        'article_form': ArticleForm(*args),
+        'abstract_formset': formset_factory(AbstractForm)(*args, prefix='abstracts'),
+        'dates_formset': formset_factory(DatesForm, extra=1)(*args, prefix='dates'),
+        'analytical_formset': formset_factory(AnalyticalAuthorForm)(*args, prefix='analyticalauthors'),
+        'title_formset': formset_factory(TitleForm)(*args, prefix='titles')
+    }
+
+    return d
