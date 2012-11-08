@@ -124,7 +124,7 @@ class L10nIssue(Automata, Issue):
 
     L10ISSUEMGS = {'en': (u'No section title', u'No Descriptor', u'Health Sciences Descriptors'),
             'es': (u'Sín título de sección', u'Ningun Descriptor', u'Descriptores en Ciencia de la Salud'),
-            'pt': (u'Sem título de seção', u'Nenhum Descriptor', u'Descritores em Ciência da Saúde')}
+            'pt': (u'Sem título de seção', u'Nenhum Descritor', u'Descritores em Ciência da Saúde')}
 
     def __init__(self, journal, issue, language):
         self._journal = journal
