@@ -385,7 +385,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         self.assertIsInstance(l10nissue, L10nIssue)
 
     def test_abbrev_title(self):
@@ -400,7 +400,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         self.assertEqual(l10nissue.abbrev_title, u'blitz')
 
     def test_abbrev_title_must_return_unicode(self):
@@ -415,7 +415,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         self.assertIsInstance(l10nissue.abbrev_title, unicode)
 
     def test_short_title(self):
@@ -430,7 +430,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         self.assertEqual(l10nissue.short_title, u'blitz')
 
     def test_short_title_must_return_unicode(self):
@@ -445,7 +445,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         self.assertIsInstance(l10nissue.short_title, unicode)
 
     def test_volume(self):
@@ -457,7 +457,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         volume = l10nissue.volume
         self.assertEqual(volume, u'7')
@@ -472,7 +472,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         volume = l10nissue.volume
         self.assertIsInstance(volume, unicode)
@@ -486,7 +486,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         number = l10nissue.number
         self.assertEqual(number, u'7')
@@ -501,7 +501,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         number = l10nissue.number
         self.assertIsInstance(number, unicode)
@@ -515,7 +515,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_volume = l10nissue.suppl_volume
         self.assertEqual(suppl_volume, u'foo')
@@ -530,7 +530,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_volume = l10nissue.suppl_volume
         self.assertIsInstance(suppl_volume, unicode)
@@ -544,7 +544,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_number = l10nissue.suppl_number
         self.assertEqual(suppl_number, u'foo')
@@ -559,7 +559,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_number = l10nissue.suppl_number
         self.assertIsInstance(suppl_number, unicode)
@@ -576,7 +576,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         date_iso = l10nissue.date_iso
         self.assertEqual(date_iso, u'foo0000')
@@ -594,7 +594,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         date_iso = l10nissue.date_iso
         self.assertIsInstance(date_iso, unicode)
@@ -605,7 +605,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         status = l10nissue.status
         self.assertEqual(status, u'1')
@@ -647,7 +647,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         expected_issue_meta = u'blitz;7;foo;4;bar;baz0000;1234-1234;1'
         self.assertEqual(l10nissue.issue_meta, expected_issue_meta)
 
@@ -687,7 +687,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         self.assertIsInstance(l10nissue.issue_meta, unicode)
 
     def test_sections(self):
@@ -703,7 +703,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         expected_sections = u'sec0;sec1;sec2;sec3;sec4;No section title'
         sections = l10nissue.sections
         self.assertEqual(sections, expected_sections)
@@ -722,7 +722,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         sections = l10nissue.sections
         self.assertEqual(sections, u'No section title')
         self.assertIsInstance(sections, unicode)
@@ -744,7 +744,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         expected_ids = u'6;6;6;6;6;nd'
         ids = l10nissue.sections_ids
         self.assertEqual(ids, expected_ids)
@@ -763,7 +763,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         ids = l10nissue.sections_ids
         self.assertEqual(ids, 'nd')
         self.assertIsInstance(ids, unicode)
@@ -780,7 +780,7 @@ class L10nIssueTests(MockerTestCase):
 
         self.mocker.replay()
 
-        l10nissue = self._makeOne(dummy_journal, dummy_issue)
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         vocabulary = l10nissue.ctrl_vocabulary
         self.assertEqual(vocabulary, u'Health Sciences Descriptors')
         self.assertIsInstance(vocabulary, unicode)
