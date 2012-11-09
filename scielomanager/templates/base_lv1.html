@@ -45,6 +45,11 @@
               </li>
             </ul>
           </li>
+          {% if system_notes.count > 0 %}
+          <li id="maintenance-link" class="dropdown">
+            <a href="/#maintenances">{% trans 'Maintenances' %} ({{ system_notes.count }})</a>
+          </li>
+          {% endif %}
         </ul>
         <ul class="nav pull-right">
           <li id="nav-user" class="dropdown">
