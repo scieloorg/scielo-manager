@@ -3,7 +3,7 @@ from django.conf import settings
 from journalmanager import models
 from maintenancewindow import models as maintenance_models
 
-from datetime import date
+from datetime import datetime
 
 
 def dynamic_template_inheritance(request):
@@ -25,9 +25,9 @@ def show_system_notes(request):
     Add system notes as maintenance events, notes, etc to the context
     """
 
-    today = date.today()
+    now = datetime.today()
 
-    system_notes = maintenance_models.Event.objects.filter(end_at__gt=today)
+    system_notes = maintenance_models.Event.objects.filter(end_at__gte=now)
 
     return {'system_notes': system_notes}
 
@@ -37,14 +37,7 @@ def on_maintenance(request):
     Add system notes as maintenance events, notes, etc to the context
     """
 
-    today = date.today()
-
-    system_notes = maintenance_models.Event.objects.filter(begin_at__lt=today, end_at__gt=today)
-
-    if system_notes:
-        return {'on_maintenance': True}
-    else:
-        return {'on_maintenance': None}
+    return {'on_maintenance': maintenance_models.Event.on_maintenance()}
 
 
 def show_user_collections(request):
