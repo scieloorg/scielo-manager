@@ -122,6 +122,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'scielomanager.maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',

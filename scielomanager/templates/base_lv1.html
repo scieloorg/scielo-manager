@@ -47,7 +47,17 @@
           </li>
           {% if system_notes.count > 0 %}
           <li id="maintenance-link" class="dropdown">
-            <a href="/#maintenances">{% trans 'Maintenances' %} ({{ system_notes.count }})</a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              {% trans 'Maintenances' %} ({{ system_notes.count }})
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              {% for event in system_notes %}
+              <li id="maintenaces">
+                <a href="/#maintenances">{{ event.begin_at }} - {{ event.title }}</a>
+              </li>
+              {% endfor %}
+            </ul>
           </li>
           {% endif %}
         </ul>

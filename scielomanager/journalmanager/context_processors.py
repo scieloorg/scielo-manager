@@ -25,9 +25,7 @@ def show_system_notes(request):
     Add system notes as maintenance events, notes, etc to the context
     """
 
-    now = datetime.today()
-
-    system_notes = maintenance_models.Event.objects.filter(end_at__gte=now)
+    system_notes = maintenance_models.Event.scheduled_events()
 
     return {'system_notes': system_notes}
 
