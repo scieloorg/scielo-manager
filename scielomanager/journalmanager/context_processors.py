@@ -1,7 +1,9 @@
 # coding: utf-8
 from django.conf import settings
-
 from journalmanager import models
+from maintenancewindow import models as maintenance_models
+
+from datetime import datetime
 
 
 def dynamic_template_inheritance(request):
@@ -16,6 +18,25 @@ def dynamic_template_inheritance(request):
 
 def access_to_settings(request):
     return {'SETTINGS': settings}
+
+
+def show_system_notes(request):
+    """
+    Add system notes as maintenance events, notes, etc to the context
+    """
+
+    system_notes = maintenance_models.Event.objects.scheduled_events()
+
+    return {'system_notes': system_notes}
+
+
+def on_maintenance(request):
+    """
+    Add on_maintenance item to the context. Defining if there is or not active
+    maintenance events.
+    """
+
+    return {'on_maintenance': maintenance_models.Event.on_maintenance()}
 
 
 def show_user_collections(request):
