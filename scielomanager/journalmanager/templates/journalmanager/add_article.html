@@ -1,256 +1,198 @@
 {% extends dynamic_tpl %}
 {% load i18n %}
 {% load static %}
-{% load wtforms %}
-{% load fake_management_form %}
 
 
 {% block content %}
 <form method="post" action="#">
   {% csrf_token %}
-  <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
+
+  <span class="label">{% trans "Titles" %}</span>
   <div class="well">
 
-    <div class="control-group {% if form.titles.errors %}error{% endif %}">
-      <table id="titleformset" class="table table-bordered table-striped">
+    <div class="control-group {% if forms.title_formset.errors %}error{% endif %}">
+      <table id="titlesformset" class="table table-bordered table-striped">
         <tr>
           <td>{% trans 'Title' %}</td>
-          <td>{% trans 'Language'%}</td>
+          <td>{% trans 'Language' %}</td>
         </tr>
-        {% for title in form_titles %}
+        {% for title in forms.title_formset %}
         <tr>
-          <td>
-            {% form_field title.title %}
-          </td>
-          <td>{% form_field title.language %}</td>
+          <td>{{ title.title }}</td>
+          <td>{{ title.language }}</td>
         </tr>
         {% endfor %}
       </table>
       <p>
-        {% fake_management_form 'titles' form_titles %}
+        {{ forms.title_formset.management_form }}
       </p>
     </div>
 
   </div>
 
-  <span class="label"></a>{% trans "Analytical authors" %}</span>
   <div class="well">
+    <label for="{{ forms.article_form.language.id }}">
+      <span {% if 'required' in forms.article_form.language.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.language.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.language.errors %}error{% endif %}">
+      {{ forms.article_form.language }}
+    </div>
 
-    <div class="control-group {% if form.analytical_authors.errors %}error{% endif %}">
-      <table id="analyticalauthorformset" class="table table-bordered table-striped">
+    <label for="{{ forms.article_form.publication_city.id }}">
+      <span {% if 'required' in forms.article_form.publication_city.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.publication_city.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.publication_city.errors %}error{% endif %}">
+      {{ forms.article_form.publication_city }}
+    </div>
+
+    <label for="{{ forms.article_form.publication_state.id }}">
+      <span {% if 'required' in forms.article_form.publication_state.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.publication_state.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.publication_state.errors %}error{% endif %}">
+      {{ forms.article_form.publication_state }}
+    </div>
+
+    <label for="{{ forms.article_form.publication_country.id }}">
+      <span {% if 'required' in forms.article_form.publication_country.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.publication_country.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.publication_country.errors %}error{% endif %}">
+      {{ forms.article_form.publication_country }}
+    </div>
+
+    <label for="{{ forms.article_form.doctopic.id }}">
+      <span {% if 'required' in forms.article_form.doctopic.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.doctopic.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.doctopic.errors %}error{% endif %}">
+      {{ forms.article_form.doctopic }}
+    </div>
+
+    <label for="{{ forms.article_form.bibliographic_standard.id }}">
+      <span {% if 'required' in forms.article_form.bibliographic_standard.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.bibliographic_standard.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.bibliographic_standard.errors %}error{% endif %}">
+      {{ forms.article_form.bibliographic_standard }}
+    </div>
+
+    <label for="{{ forms.article_form.sponsor.id }}">
+      <span {% if 'required' in forms.article_form.sponsor.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.sponsor.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.sponsor.errors %}error{% endif %}">
+      {{ forms.article_form.sponsor }}
+    </div>
+
+    <label for="{{ forms.article_form.type_literature.id }}">
+      <span {% if 'required' in forms.article_form.type_literature.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.type_literature.label }}
+      </span>
+    </label>
+    <div class="control-group {% if forms.article_form.type_literature.errors %}error{% endif %}">
+      {{ forms.article_form.type_literature }}
+    </div>
+
+    <div class="control-group {% if forms.abstract_formset.errors %}error{% endif %}">
+      <table id="abstractformset" class="table table-bordered table-striped">
+        <tr>
+          <td>{% trans 'Abstract' %}</td>
+          <td>{% trans 'Language'%}</td>
+        </tr>
+        {% for abstract in forms.abstract_formset %}
+        <tr>
+          <td>
+            {{ abstract.abstract }}
+          </td>
+          <td>{{ abstract.language }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <p>
+        {{ forms.abstract_formset.management_form }}
+      </p>
+    </div>
+
+  </div>
+
+  <span class="label">{% trans "Dates" %}</span>
+  <div class="well">
+    <div class="control-group {% if forms.dates_formset.errors %}error{% endif %}">
+      <table id="datesformset" class="table table-bordered table-striped">
+        <tr>
+          <td>{% trans 'Thesis' %}</td>
+          <td>{% trans 'Conference'%}</td>
+          <td>{% trans 'Publication'%}</td>
+          <td>{% trans 'Revision'%}</td>
+        </tr>
+        {% for date in forms.dates_formset %}
+        <tr>
+          <td>{{ date.thesis }}</td>
+          <td>{{ date.conference }}</td>
+          <td>{{ date.publication }}</td>
+          <td>{{ date.revision }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <p>
+        {{ forms.dates_formset.management_form }}
+      </p>
+    </div>
+  </div>
+
+  <span class="label">{% trans "Pages" %}</span>
+  <div class="well">
+    <div class="control-group {% if forms.article_form.errors %}error{% endif %}">
+      <label for="{{ forms.article_form.first_page.auto_id }}">
+        <span {% if forms.article_form.first_page.field.required %}class="req-field"{% endif %}>
+          {% trans forms.article_form.first_page.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ forms.article_form.first_page }}
+      </div>
+
+      <label for="{{ forms.article_form.last_page.auto_id }}">
+        <span {% if forms.article_form.last_page.field.required %}class="req-field"{% endif %}>
+          {% trans forms.article_form.last_page.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ forms.article_form.last_page }}
+      </div>
+    </div>
+  </div>
+  <span class="label">{% trans "Analytical Authors" %}</span>
+
+  <div class="well">
+    <div class="control-group {% if forms.analytical_formset.errors %}error{% endif %}">
+      <table id="analyticalauthorsformset" class="table table-bordered table-striped">
         <tr>
           <td>{% trans 'Firstname' %}</td>
           <td>{% trans 'Lastname' %}</td>
           <td>{% trans 'Role' %}</td>
         </tr>
-        {% for analytical_author in form_analytical_authors %}
+        {% for a_author in forms.analytical_formset %}
         <tr>
-          <td>{% form_field analytical_author.firstname %}</td>
-          <td>{% form_field analytical_author.lastname %}</td>
-          <td>{% form_field analytical_author.role %}</td>
+          <td>{{ a_author.firstname }}</td>
+          <td>{{ a_author.lastname }}</td>
+          <td>{{ a_author.role }}</td>
         </tr>
         {% endfor %}
       </table>
       <p>
-        {% fake_management_form 'analytical_authors' form_analytical_authors %}
+        {{ forms.analytical_formset.management_form }}
       </p>
-    </div>
-
-  </div>
-
-  <span class="label"></a>{% trans "Corporate authors" %}</span>
-  <div class="well">
-    <div class="control-group {% if form.corporate_authors.errors %}error{% endif %}">
-
-      <table id="corporateauthorformset" class="table table-bordered table-striped">
-        <tr>
-          <td>{% trans 'Institution name' %}</td>
-        </tr>
-        {% for corporate_author in form_corporate_authors %}
-        <tr>
-          <td>{% form_field corporate_author.institution_name %}</td>
-        </tr>
-        {% endfor %}
-      </table>
-      <p>
-        {% fake_management_form 'corporate_authors' form_corporate_authors %}
-      </p>
-    </div>
-  </div>
-
-  <span class="label"></a>{% trans "Text language" %}</span>
-  <div class="well">
-    <div class="control-group {% if form.language.errors %}error{% endif %}">
-      <label for="{{ form.language.id }}">
-        <span {% if 'required' in form.language.flags %}class="req-field"{% endif %}>
-          {% form_field form.language.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.language %}
-      </div>
-    </div>
-  </div>
-
-  <span class="label"></a>{% trans "Dates" %}</span>
-  <div class="well">
-    <div class="control-group {% if form.dates.errors %}error{% endif %}">
-      <label for="{{ form.dates.thesis.id }}">
-        <span {% if 'required' in form.dates.thesis.flags %}class="req-field"{% endif %}>
-          {% form_field form.dates.thesis.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.dates.thesis %}
-      </div>
-
-      <label for="{{ form.dates.conference.id }}">
-        <span {% if 'required' in form.dates.conference.flags %}class="req-field"{% endif %}>
-          {% form_field form.dates.conference.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.dates.conference %}
-      </div>
-
-      <label for="{{ form.dates.publication.id }}">
-        <span {% if 'required' in form.dates.publication.flags %}class="req-field"{% endif %}>
-          {% form_field form.dates.publication.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.dates.publication %}
-      </div>
-
-      <label for="{{ form.dates.revision.id }}">
-        <span {% if 'required' in form.dates.revision.flags %}class="req-field"{% endif %}>
-          {% form_field form.dates.revision.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.dates.revision %}
-      </div>
-    </div>
-  </div>
-
-  <span class="label">{% trans "Publication address" %}</span>
-  <div class="well">
-
-    <div class="control-group {% if form.publication_city.errors %}error{% endif %}">
-      <label for="{{ form.publication_city.id }}">
-        <span {% if 'required' in form.publication_city.flags %}class="req-field"{% endif %}>
-          {% form_field form.publication_city.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.publication_city %}
-      </div>
-    </div>
-
-    <div class="control-group {% if form.publication_state.errors %}error{% endif %}">
-      <label for="{{ form.publication_state.id }}">
-        <span {% if 'required' in form.publication_state.flags %}class="req-field"{% endif %}>
-          {% form_field form.publication_state.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.publication_state %}
-      </div>
-    </div>
-
-    <div class="control-group {% if form.publication_country.errors %}error{% endif %}">
-      <label for="{{ form.publication_country.id }}">
-        <span {% if 'required' in form.publication_country.flags %}class="req-field"{% endif %}>
-          {% form_field form.publication_country.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.publication_country %}
-      </div>
-    </div>
-  </div>
-
-  <div class="well">
-
-    <div class="control-group {% if form.doctopic.errors %}error{% endif %}">
-      <label for="{{ form.doctopic.id }}">
-        <span {% if 'required' in form.doctopic.flags %}class="req-field"{% endif %}>
-          {% form_field form.doctopic.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.doctopic %}
-      </div>
-    </div>
-
-    <div class="control-group {% if form.type_literature.errors %}error{% endif %}">
-      <label for="{{ form.type_literature.id }}">
-        <span {% if 'required' in form.type_literature.flags %}class="req-field"{% endif %}>
-          {% form_field form.type_literature.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.type_literature %}
-      </div>
-    </div>
-
-    <div class="control-group {% if form.bibliographic_standard.errors %}error{% endif %}">
-      <label for="{{ form.bibliographic_standard.id }}">
-        <span {% if 'required' in form.bibliographic_standard.flags %}class="req-field"{% endif %}>
-          {% form_field form.bibliographic_standard.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.bibliographic_standard %}
-      </div>
-    </div>
-  </div>
-
-  <span class="label">{% trans "Abstract" %}</span>
-  <div class="well">
-
-    <div class="control-group {% if abstract.abstract.errors %}error{% endif %}">
-      <table id="abstractsformset" class="table table-bordered table-striped">
-        <tr>
-          <td>{% trans 'Abstract' %}</td>
-          <td>{% trans 'Language' %}</td>
-        </tr>
-        {% for abstract in form_article_form_abstracts %}
-        <tr>
-          <td>{% form_field abstract.abstract %}</td>
-          <td>{% form_field abstract.language %}</td>
-        </tr>
-        {% endfor %}
-      </table>
-      <p>
-        {% fake_management_form 'abstracts' form_article_form_abstracts %}
-      </p>
-    </div>
-  </div>
-
-  <div class="well">
-    <div class="control-group {% if form.sponsor.errors %}error{% endif %}">
-      <label for="{{ form.sponsor.id }}">
-        <span {% if 'required' in form.sponsor.flags %}class="req-field"{% endif %}>
-          {% form_field form.sponsor.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.sponsor %}
-      </div>
-    </div>
-  </div>
-
-  <div class="well">
-    <div class="control-group {% if form.pid.errors %}error{% endif %}">
-      <label for="{{ form.pid.id }}">
-        <span {% if 'required' in form.pid.flags %}class="req-field"{% endif %}>
-          {% form_field form.pid.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% form_field form.pid %}
-      </div>
     </div>
   </div>
 
@@ -270,25 +212,22 @@
 {{ block.super }}
 <script>
 $(document).ready(function() {
-  $('#titleformset tbody tr').formset({
-    formCssClass: 'dynamic-titleformset-form',
-    prefix: 'titles'
-  });
-
-  $('#analyticalauthorformset tbody tr').formset({
-    formCssClass: 'dynamic-titleformset-form',
-    prefix: 'analytical_authors'
-  });
-
-  $('#corporateauthorformset tbody tr').formset({
-    formCssClass: 'dynamic-titleformset-form',
-    prefix: 'corporate_authors'
-  });
-
-  $('#abstractsformset tbody tr').formset({
-    formCssClass: 'dynamic-titleformset-form',
-    prefix: 'abstracts'
-  });
+  $('#titlesformset tbody tr').formset({
+      formCssClass: 'dynamic-titleformset-form',
+      prefix: '{{ forms.title_formset.prefix }}'
+    });
+  $('#abstractformset tbody tr').formset({
+      formCssClass: 'dynamic-abstractformset-form',
+      prefix: '{{ forms.abstract_formset.prefix }}'
+    });
+  $('#pagesformset tbody tr').formset({
+      formCssClass: 'dynamic-pagesformset-form',
+      prefix: '{{ forms.pages_formset.prefix }}'
+    });
+  $('#analyticalauthorsformset tbody tr').formset({
+      formCssClass: 'dynamic-analyticalauthorsformset-form',
+      prefix: '{{ forms.analytical_formset.prefix }}'
+    });
 });
 </script>
 {% endblock %}

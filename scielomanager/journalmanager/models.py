@@ -800,14 +800,55 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     value = models.TextField()
 
 
-# class Article(caching.base.CachingMixin, models.Model):
-#     objects = caching.base.CachingManager()
-#     nocacheobjects = models.Manager()
-#     mongoobjects = mongomodels.MongoManager()
+class Article(caching.base.CachingMixin, models.Model):
+    """
+    Represents an Article bound to an Issue. The actual
+    article is stored in MongoDB its manipulation must be
+    done using ``mongoobjects``, which is a django
+    manager-like object that exposes parts of the
+    ``Pymongo`` API.
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    mongoobjects = mongomodels.MongoManager()
 
-#     object_id = models.CharField(max_length=32)
-#     issue = models.ForeignKey(Issue)
+    object_id = models.CharField(max_length=32)
+    issue = models.ForeignKey(Issue)
 
+    def _bind_article(self):
+        """
+        Binds the current instance with its documental related part.
+
+        If the ``object_id`` attr is filled, the corresponding item
+        is retrieved from the documental db. Otherwise, a new instance
+        is created.
+
+        If the ``object_id`` has no correspondance in the documental
+        db, a ``DocumentDoesNotExist`` exception is raised.
+        """
+        if not self.object_id:
+            self._article = mongomodels.Article()
+
+    @property
+    def data(self):
+        """
+        Acts as a proxy between the relational and the documental models.
+
+        May raise ``DocumentDoesNotExist`` exception if you try to fetch
+        a non-existing document.
+        """
+        if not hasattr(self, '_article'):
+            self._bind_article()
+
+        return self._article
+
+    def save(self, **kwargs):
+        """
+        Saves also the documental part.
+        """
+        self.object_id = self.data.save()
+
+        super(Article, self).save(**kwargs)
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

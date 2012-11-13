@@ -1478,3 +1478,69 @@ class SearchFormTests(WebTest):
 
         self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
             page.body)
+
+
+class ArticleFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+        self.issue = modelfactories.IssueFactory(journal=self.journal)
+
+    def test_basic_struture(self):
+        """
+        Just to make sure that the required hidden fields are all
+        present.
+
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
+        perm = _makePermission(perm='add_article',
+            model='article', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user)
+
+        page.mustcontain('titles-0-title',
+                         'titles-0-language',
+                         'titles-TOTAL_FORMS',
+                         'titles-INITIAL_FORMS',
+                         'titles-MAX_NUM_FORMS',
+                         'abstracts-0-abstract',
+                         'abstracts-0-language',
+                         'abstracts-TOTAL_FORMS',
+                         'abstracts-INITIAL_FORMS',
+                         'abstracts-MAX_NUM_FORMS',
+                         'dates-0-thesis',
+                         'dates-0-conference',
+                         'dates-0-publication',
+                         'dates-0-revision',
+                         'dates-TOTAL_FORMS',
+                         'dates-INITIAL_FORMS',
+                         'dates-MAX_NUM_FORMS',
+                         'analyticalauthors-0-firstname',
+                         'analyticalauthors-0-lastname',
+                         'analyticalauthors-0-role',
+                         'analyticalauthors-TOTAL_FORMS',
+                         'analyticalauthors-INITIAL_FORMS',
+                         'analyticalauthors-MAX_NUM_FORMS',
+                         )
+
+        self.assertTemplateUsed(page, 'journalmanager/add_article.html')
+
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        page = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).follow()
+
+        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+        page.mustcontain('not authorized to access')

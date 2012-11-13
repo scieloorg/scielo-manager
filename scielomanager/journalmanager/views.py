@@ -739,7 +739,8 @@ def trash_listing(request):
         context_instance=RequestContext(request))
 
 
-def add_article(request):
+@permission_required('journalmanager.add_article', login_url=AUTHZ_REDIRECT_URL)
+def add_article(request, journal_id, issue_id):
 
     if request.method == 'POST':
         article_forms = get_all_article_forms(request.POST)
@@ -748,7 +749,7 @@ def add_article(request):
         article_forms = get_all_article_forms()
 
     return render_to_response(
-        'journalmanager/add_article2.html',
+        'journalmanager/add_article.html',
         {'forms': article_forms},
         context_instance=RequestContext(request)
     )

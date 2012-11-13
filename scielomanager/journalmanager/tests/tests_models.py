@@ -10,6 +10,7 @@ from .modelfactories import (
     SectionTitleFactory,
     JournalFactory,
     CollectionFactory,
+    ArticleFactory,
 )
 
 
@@ -450,3 +451,14 @@ class CollectionManagerTests(TestCase):
         from journalmanager import models
         self.assertRaises(models.Collection.DoesNotExist,
             lambda: models.Collection.objects.get_default_by_user(user))
+
+
+class ArticleTests(TestCase):
+
+    def test_basic_attribute_access(self):
+        article = ArticleFactory.build()
+        article.data.title = 'Some title'
+
+        from journalmanager import mongomodels
+        self.assertIsInstance(article.data, mongomodels.Article)
+        self.assertEqual(article.data.title, 'Some title')
