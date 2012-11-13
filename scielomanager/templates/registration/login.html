@@ -3,6 +3,32 @@
 {% load widget_tweaks %}
 
 {% block content %}
+
+{% if on_maintenance %}
+<div class="well">
+  <table id="maintenances" class="table table-condensed" name="maintenances">
+    <thead>
+      <th colspan="2">{% trans 'Maintenance Schedule' %}<th>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>From</strong></td>
+        <td><strong>To</strong></td>
+        <td><strong>Description</strong></td>
+      </tr>
+      {% for event in system_notes %}
+      <tr>
+        <td>{{ event.begin_at }}</td>
+        <td>{{ event.end_at }}</td>
+        <td> {{ event.description }}</td>
+      <tr>
+      {% empty %}
+      <tr><td>{% trans 'There are no items.' %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
 <div class="login">
 
   {% if form.errors %}
@@ -40,4 +66,5 @@
     </a>
   </div>
 </div>
+{% endif %}
 {% endblock %}

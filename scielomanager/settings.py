@@ -122,6 +122,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'scielomanager.maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
@@ -149,6 +150,7 @@ INSTALLED_APPS = (
     'journalmanager',
     'export',
     'accounts',
+    'maintenancewindow',
     'south',
     'scielo_extensions',
     'widget_tweaks',
@@ -167,6 +169,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'journalmanager.context_processors.access_to_settings',
     'journalmanager.context_processors.show_user_collections',
     'journalmanager.context_processors.add_default_collection',
+    'journalmanager.context_processors.show_system_notes',
+    'journalmanager.context_processors.on_maintenance',
     'scielo_extensions.context_processors.from_settings',
 )
 
