@@ -5,7 +5,19 @@ from django.utils.translation import ugettext_lazy as _
 import caching.base
 
 
+class EventManager(models.Manager):
+
+    def scheduled_events(self, actual_date=date.today()):
+        """
+        Returns a list of scheduled events with the end_date greater than a given date.
+        """
+
+        return self.filter(end_at__gte=actual_date, is_finished=False)
+
+
 class Event(caching.base.CachingMixin, models.Model):
+
+    objects = EventManager()
     title = models.CharField(_('Title'), max_length=128, null=False, blank=False)
     begin_at = models.DateTimeField(_('Begin at'), null=False, blank=False)
     end_at = models.DateTimeField(_('End at'), null=False, blank=False)
@@ -28,10 +40,3 @@ class Event(caching.base.CachingMixin, models.Model):
 
         return True if cls.objects.filter(is_blocking_users=True).count() else False
 
-    @classmethod
-    def scheduled_events(cls, actual_date=date.today()):
-        """
-        Returns a list of scheduled events with the end_date greater than a given date.
-        """
-
-        return cls.objects.filter(end_at__gte=actual_date)

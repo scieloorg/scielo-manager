@@ -1,12 +1,12 @@
 # coding: utf-8
 from django.test import TestCase
-
+from maintenancewindow import models
 from .modelfactories import (
     EventFactory,
 )
 
 
-class SectionTests(TestCase):
+class MaintenancewindowTests(TestCase):
 
     def test_on_maintenace(self):
         """
@@ -29,17 +29,17 @@ class SectionTests(TestCase):
 
     def test_scheduled_events_unavailable(self):
 
-        event = EventFactory.create(
+        EventFactory.create(
             end_at=u'2012-11-12',
         )
 
         # Once no date was given, the call for open_events is assuming the current date.
-        self.assertTrue(len(event.scheduled_events()) == 0)
+        self.assertTrue(len(models.Event.objects.scheduled_events()) == 0)
 
     def test_scheduled_events_available(self):
 
-        event = EventFactory.create(
+        EventFactory.create(
             end_at=u'2012-11-12',
         )
 
-        self.assertTrue(len(event.scheduled_events(actual_date="2012-11-11")) > 0)
+        self.assertTrue(len(models.Event.objects.scheduled_events(actual_date="2012-11-11")) > 0)
