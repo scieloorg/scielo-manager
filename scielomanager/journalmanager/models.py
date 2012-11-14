@@ -815,6 +815,10 @@ class Article(caching.base.CachingMixin, models.Model):
     object_id = models.CharField(max_length=32)
     issue = models.ForeignKey(Issue)
 
+    def __init__(self, *args, **kwargs):
+        self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
+        super(Article, self).__init__(*args, **kwargs)
+
     def _bind_article(self):
         """
         Binds the current instance with its documental related part.
@@ -827,7 +831,7 @@ class Article(caching.base.CachingMixin, models.Model):
         db, a ``DocumentDoesNotExist`` exception is raised.
         """
         if not self.object_id:
-            self._article = mongomodels.Article()
+            self._article = self.article_obj()
 
     @property
     def data(self):

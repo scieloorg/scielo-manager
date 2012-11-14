@@ -1,6 +1,12 @@
 # coding: utf-8
 from django.test import TestCase
 from django_factory_boy import auth
+from mocker import (
+    MockerTestCase,
+    ANY,
+    ARGS,
+    KWARGS,
+)
 
 from .modelfactories import (
     IssueFactory,
@@ -453,7 +459,7 @@ class CollectionManagerTests(TestCase):
             lambda: models.Collection.objects.get_default_by_user(user))
 
 
-class ArticleTests(TestCase):
+class ArticleTests(TestCase, MockerTestCase):
 
     def test_basic_attribute_access(self):
         article = ArticleFactory.build()
@@ -462,3 +468,24 @@ class ArticleTests(TestCase):
         from journalmanager import mongomodels
         self.assertIsInstance(article.data, mongomodels.Article)
         self.assertEqual(article.data.title, 'Some title')
+
+    def test_basic_attribute_save(self):
+        import pymongo
+        from journalmanager import mongomodels
+        article_obj = self.mocker.mock(mongomodels.Article)
+
+        article_obj()
+        self.mocker.result(article_obj)
+
+        article_obj.title = 'Some title'
+
+        article_obj.save()
+        self.mocker.result('6f1ed002ab5595859014ebf0951522d9')
+
+        self.mocker.replay()
+
+        article = ArticleFactory.build(article_obj=article_obj)
+        article.data.title = 'Some title'
+        article.save()
+
+        self.assertEqual(article.object_id, '6f1ed002ab5595859014ebf0951522d9')
