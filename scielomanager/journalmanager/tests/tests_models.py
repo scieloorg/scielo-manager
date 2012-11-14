@@ -470,7 +470,6 @@ class ArticleTests(TestCase, MockerTestCase):
         self.assertEqual(article.data.title, 'Some title')
 
     def test_basic_attribute_save(self):
-        import pymongo
         from journalmanager import mongomodels
         article_obj = self.mocker.mock(mongomodels.Article)
 
@@ -485,7 +484,10 @@ class ArticleTests(TestCase, MockerTestCase):
         self.mocker.replay()
 
         article = ArticleFactory.build(article_obj=article_obj)
+        issue = IssueFactory.create()
+
         article.data.title = 'Some title'
+        article.issue = issue
         article.save()
 
         self.assertEqual(article.object_id, '6f1ed002ab5595859014ebf0951522d9')
