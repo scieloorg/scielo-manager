@@ -31,7 +31,8 @@ class MongoConnector(object):
 class MongoManager(MongoConnector):
     """
     Wraps a subset of pymongo.collection.Collection methods, in order
-    to act as a manager for mongodb documents.
+    to act as a manager for mongodb documents. The collection must be
+    set, in instantiation, using the ``mongo_collection`` arg.
 
     The exposed methods must be in the ``exposed_api_methods`` list.
 
@@ -39,7 +40,7 @@ class MongoManager(MongoConnector):
     methods:
     http://api.mongodb.org/python/current/api/pymongo/collection.html
     """
-    exposed_api_methods = ['find']
+    exposed_api_methods = ['find', 'find_one']
 
     def __getattr__(self, name):
 
@@ -74,6 +75,14 @@ class Article(MongoConnector):
 
         self._data = kwargs
 
+    def __setattr__(self, name, value):
+        # only some attributes are allowed to be set in the instance
+        if name in ['_conn', 'db', 'col', '_data']:
+            super(Article, self).__setattr__(name, value)
+        else:
+            _data = self.__dict__.setdefault('_data', {})
+            _data[name] = value
+
     def __getattr__(self, name):
         if name in self._data:
             return self._data[name]
@@ -83,4 +92,4 @@ class Article(MongoConnector):
             )
 
     def save(self):
-        return self.col.update(self._data, upsert=True, safe=True)
+        return self.col.save(self._data, safe=True)

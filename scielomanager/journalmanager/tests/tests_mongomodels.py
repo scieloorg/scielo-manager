@@ -34,7 +34,7 @@ class MongoManagerTest(TestCase, MockerTestCase):
         mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
         mm = self._makeOne(mongodb_driver=mongo_driver, mongo_uri=mongo_uri)
 
-        self.assertNotIsInstance(mm.db, pymongo.database.Database)
+        self.assertIsInstance(mm.db, pymongo.database.Database)
 
     def test_expose_pymongo_find_method(self):
         mongo_driver = self.mocker.mock()
@@ -105,7 +105,7 @@ class ArticleModelTest(TestCase, MockerTestCase):
         self.assertEqual(a.title,
             'Micronucleated lymphocytes in parents of lalala children')
 
-    def test_save_a_new_document(self):
+    def test_simple_late_defined_attr(self):
         mongo_driver = self.mocker.mock()
         mongo_conn = self.mocker.mock()
         mongo_db = self.mocker.mock(pymongo.database.Database)
@@ -123,14 +123,42 @@ class ArticleModelTest(TestCase, MockerTestCase):
         mongo_db['articles']
         self.mocker.result(mongo_col)
 
-        mongo_col.update(ARGS, KWARGS)
-        self.mocker.result('6f1ed002ab5595859014ebf0951522d9')
-
         self.mocker.replay()
 
+        mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
+        a = self._makeOne(mongodb_driver=mongo_driver,
+                          mongo_uri=mongo_uri)
+
+        a.title = 'Micronucleated lymphocytes in parents of lalala children'
+        self.assertEqual(a.title,
+            'Micronucleated lymphocytes in parents of lalala children')
+
+    def test_save_a_new_document(self):
         article_microdata = {
             'title': 'Micronucleated lymphocytes in parents of lalala children'
         }
+
+        mongo_driver = self.mocker.mock()
+        mongo_conn = self.mocker.mock()
+        mongo_db = self.mocker.mock(pymongo.database.Database)
+        mongo_col = self.mocker.mock()
+
+        mongo_driver.Connection(host=ANY, port=ANY)
+        self.mocker.result(mongo_conn)
+
+        mongo_conn[ANY]
+        self.mocker.result(mongo_db)
+
+        mongo_db.authenticate(ANY, ANY)
+        self.mocker.result(None)
+
+        mongo_db['articles']
+        self.mocker.result(mongo_col)
+
+        mongo_col.save(article_microdata, safe=True)
+        self.mocker.result('6f1ed002ab5595859014ebf0951522d9')
+
+        self.mocker.replay()
 
         mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
         a = self._makeOne(mongodb_driver=mongo_driver,

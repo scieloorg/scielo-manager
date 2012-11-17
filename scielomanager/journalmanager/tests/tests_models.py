@@ -491,3 +491,29 @@ class ArticleTests(TestCase, MockerTestCase):
         article.save()
 
         self.assertEqual(article.object_id, '6f1ed002ab5595859014ebf0951522d9')
+
+    def test_document_retrieval(self):
+        article_obj = self.mocker.mock()
+        mongoobjectid_obj = self.mocker.mock()
+        mongoobjects_obj = self.mocker.mock()
+
+        mongoobjectid_obj('6f1ed002ab5595859014ebf0951522d9')
+        self.mocker.result('fake_mongo_id')
+
+        mongoobjects_obj.find_one({'_id': 'fake_mongo_id'})
+        self.mocker.result({'title': 'Some title'})
+
+        article_obj(title='Some title')
+        self.mocker.result(article_obj)
+
+        article_obj.title
+        self.mocker.result('Some title')
+
+        self.mocker.replay()
+
+        article = ArticleFactory.build(article_obj=article_obj,
+                                       mongoobjects_obj=mongoobjects_obj,
+                                       mongoobjectid_obj=mongoobjectid_obj)
+        article.object_id = '6f1ed002ab5595859014ebf0951522d9'
+
+        self.assertEqual(article.data.title, 'Some title')

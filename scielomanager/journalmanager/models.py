@@ -17,6 +17,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from scielo_extensions import modelfields
+from bson.objectid import ObjectId
 
 import caching.base
 
@@ -810,13 +811,21 @@ class Article(caching.base.CachingMixin, models.Model):
     """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    mongoobjects = mongomodels.MongoManager()
+    mongoobjects = mongomodels.MongoManager(mongo_collection='articles')
 
     object_id = models.CharField(max_length=32)
     issue = models.ForeignKey(Issue)
 
     def __init__(self, *args, **kwargs):
+        """
+        ``article_obj``, ``mongoobjectid_obj`` and ``mongoobjects_obj``
+        are dependencies injected for testing purposes.
+        """
         self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
+        self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
+        if 'mongoobjects_obj' in kwargs:
+            self.__class__.mongoobjects = kwargs.pop('mongoobjects_obj')
+
         super(Article, self).__init__(*args, **kwargs)
 
     def _bind_article(self):
@@ -832,6 +841,15 @@ class Article(caching.base.CachingMixin, models.Model):
         """
         if not self.object_id:
             self._article = self.article_obj()
+        else:
+            qry_result = self.mongoobjects.find_one(
+                {'_id': self.ObjectId(self.object_id)}
+            )
+
+            if qry_result:
+                self._article = self.article_obj(**qry_result)
+            else:
+                self._article = self.article_obj()
 
     @property
     def data(self):
