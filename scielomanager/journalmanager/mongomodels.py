@@ -34,6 +34,11 @@ class MongoManager(MongoConnector):
     to act as a manager for mongodb documents. The collection must be
     set, in instantiation, using the ``mongo_collection`` arg.
 
+    The first positional argument must be a reference to the class
+    that represents the document under manipulation. If you want the
+    result directly from pymongo, set the ``_raw`` boolean arg to
+    ``True``.
+
     The exposed methods must be in the ``exposed_api_methods`` list.
 
     See the pymongo docs for more information about using the exposed
@@ -41,6 +46,15 @@ class MongoManager(MongoConnector):
     http://api.mongodb.org/python/current/api/pymongo/collection.html
     """
     exposed_api_methods = ['find', 'find_one']
+
+    def __init__(self, doc, **kwargs):
+        self._doc = doc
+
+        # introspect the ``self._doc`` class to discover the collection name
+        if 'mongo_collection' not in kwargs:
+            kwargs['mongo_collection'] = self._doc._collection_name_
+
+        super(MongoManager, self).__init__(**kwargs)
 
     def __getattr__(self, name):
 
@@ -50,15 +64,35 @@ class MongoManager(MongoConnector):
                     'method %s needs a collection to be defined' % name)
 
             if hasattr(self.col, name):
-                return getattr(self.col, name)
+                return self._decorate_getattr(getattr(self.col, name))
             else:
                 raise AttributeError()
         else:
-            # django makes mystic things on attr retrieval
+            # django makes mystical things on attr retrieval
             super(MongoManager, self).__getattr__(name)
+
+    def _decorate_getattr(self, func):
+        """
+        Decorates the attribute fetching machinery in order to
+        wrapp the result with the object defined at
+        instantiation time by the ``doc`` arg.
+        """
+        def wrapper(*args, **kwargs):
+            # _raw returns the values right from pymongo
+            is_raw = kwargs.pop('_raw', False)
+            return_value = func(*args, **kwargs)
+
+            if is_raw:
+                return return_value
+            else:
+                return self._doc(**return_value)
+
+        return wrapper
 
 
 class Article(MongoConnector):
+    _collection_name_ = 'articles'
+
     init_params = ['mongodb_driver', 'mongo_uri', 'mongo_collection']
 
     def __init__(self, **kwargs):

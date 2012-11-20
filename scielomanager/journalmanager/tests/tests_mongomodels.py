@@ -19,6 +19,8 @@ class MongoManagerTest(TestCase, MockerTestCase):
         mongo_driver = self.mocker.mock()
         mongo_conn = self.mocker.mock()
         mongo_db = self.mocker.mock(pymongo.database.Database)
+        mongo_col = self.mocker.mock()
+        article = self.mocker.mock()
 
         mongo_driver.Connection(host=ANY, port=ANY)
         self.mocker.result(mongo_conn)
@@ -29,18 +31,95 @@ class MongoManagerTest(TestCase, MockerTestCase):
         mongo_db.authenticate(ANY, ANY)
         self.mocker.result(None)
 
+        mongo_db['articles']
+        self.mocker.result(mongo_col)
+
         self.mocker.replay()
 
         mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
-        mm = self._makeOne(mongodb_driver=mongo_driver, mongo_uri=mongo_uri)
+        mm = self._makeOne(article,
+                           mongodb_driver=mongo_driver,
+                           mongo_uri=mongo_uri,
+                           mongo_collection='articles')
 
         self.assertIsInstance(mm.db, pymongo.database.Database)
 
-    def test_expose_pymongo_find_method(self):
+    def test_instrospect_object_for_mongo_collection_discovery(self):
         mongo_driver = self.mocker.mock()
         mongo_conn = self.mocker.mock()
         mongo_db = self.mocker.mock(pymongo.database.Database)
         mongo_col = self.mocker.mock()
+        article = self.mocker.mock()
+
+        mongo_driver.Connection(host=ANY, port=ANY)
+        self.mocker.result(mongo_conn)
+
+        mongo_conn[ANY]
+        self.mocker.result(mongo_db)
+
+        mongo_db.authenticate(ANY, ANY)
+        self.mocker.result(None)
+
+        article._collection_name_
+        self.mocker.result('articles')
+
+        mongo_db['articles']
+        self.mocker.result(mongo_col)
+
+        self.mocker.replay()
+
+        mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
+        mm = self._makeOne(article,
+                           mongodb_driver=mongo_driver,
+                           mongo_uri=mongo_uri)
+
+        self.assertTrue(mm.col)
+
+    def test_expose_pymongo_find_method(self):
+        from journalmanager.mongomodels import Article
+
+        mongo_driver = self.mocker.mock()
+        mongo_conn = self.mocker.mock()
+        mongo_db = self.mocker.mock(pymongo.database.Database)
+        mongo_col = self.mocker.mock()
+        article = self.mocker.mock(Article)
+
+        mongo_driver.Connection(host=ANY, port=ANY)
+        self.mocker.result(mongo_conn)
+
+        mongo_conn[ANY]
+        self.mocker.result(mongo_db)
+
+        mongo_db.authenticate(ANY, ANY)
+        self.mocker.result(None)
+
+        mongo_db['articles']
+        self.mocker.result(mongo_col)
+
+        article()
+        self.mocker.result(article)
+
+        mongo_col.find()
+        self.mocker.result({})
+
+        self.mocker.replay()
+
+        mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
+        mm = self._makeOne(article,
+                           mongodb_driver=mongo_driver,
+                           mongo_uri=mongo_uri,
+                           mongo_collection='articles')
+
+        self.assertIsInstance(mm.find(), Article)
+
+    def test_raw_access_to_pymongo_api(self):
+        from journalmanager.mongomodels import Article
+
+        mongo_driver = self.mocker.mock()
+        mongo_conn = self.mocker.mock()
+        mongo_db = self.mocker.mock(pymongo.database.Database)
+        mongo_col = self.mocker.mock()
+        article = self.mocker.mock(Article)
 
         mongo_driver.Connection(host=ANY, port=ANY)
         self.mocker.result(mongo_conn)
@@ -55,16 +134,17 @@ class MongoManagerTest(TestCase, MockerTestCase):
         self.mocker.result(mongo_col)
 
         mongo_col.find()
-        self.mocker.result({})
+        self.mocker.result([{'title': 'Some title'}])
 
         self.mocker.replay()
 
         mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
-        mm = self._makeOne(mongodb_driver=mongo_driver,
+        mm = self._makeOne(article,
+                           mongodb_driver=mongo_driver,
                            mongo_uri=mongo_uri,
                            mongo_collection='articles')
 
-        self.assertEqual(mm.find(), {})
+        self.assertEqual(mm.find(_raw=True), [{'title': 'Some title'}])
 
 
 class ArticleModelTest(TestCase, MockerTestCase):

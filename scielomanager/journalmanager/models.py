@@ -811,7 +811,8 @@ class Article(caching.base.CachingMixin, models.Model):
     """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    mongoobjects = mongomodels.MongoManager(mongo_collection='articles')
+    mongoobjects = mongomodels.MongoManager(mongomodels.Article,
+                                            mongo_collection='articles')
 
     object_id = models.CharField(max_length=32)
     issue = models.ForeignKey(Issue)
@@ -823,6 +824,7 @@ class Article(caching.base.CachingMixin, models.Model):
         """
         self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
         self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
+
         if 'mongoobjects_obj' in kwargs:
             self.__class__.mongoobjects = kwargs.pop('mongoobjects_obj')
 
@@ -847,7 +849,7 @@ class Article(caching.base.CachingMixin, models.Model):
             )
 
             if qry_result:
-                self._article = self.article_obj(**qry_result)
+                self._article = qry_result
             else:
                 self._article = self.article_obj()
 
