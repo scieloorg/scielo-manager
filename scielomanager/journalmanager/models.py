@@ -811,8 +811,7 @@ class Article(caching.base.CachingMixin, models.Model):
     """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    mongoobjects = mongomodels.MongoManager(mongomodels.Article,
-                                            mongo_collection='articles')
+    mongoobjects = mongomodels.MongoManager(mongomodels.Article)
 
     object_id = models.CharField(max_length=32)
     issue = models.ForeignKey(Issue)
@@ -822,15 +821,20 @@ class Article(caching.base.CachingMixin, models.Model):
         ``article_obj``, ``mongoobjectid_obj`` and ``mongoobjects_obj``
         are dependencies injected for testing purposes.
         """
+        # injected dependencies
         self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
         self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
-
         if 'mongoobjects_obj' in kwargs:
             self.__class__.mongoobjects = kwargs.pop('mongoobjects_obj')
 
+        # set pre-existing ``mongomodels.Article`` instance
+        data = kwargs.pop('data', None)
+        if data:
+            self._bind_article(data)
+
         super(Article, self).__init__(*args, **kwargs)
 
-    def _bind_article(self):
+    def _bind_article(self, article=None):
         """
         Binds the current instance with its documental related part.
 
@@ -842,7 +846,10 @@ class Article(caching.base.CachingMixin, models.Model):
         db, a ``DocumentDoesNotExist`` exception is raised.
         """
         if not self.object_id:
-            self._article = self.article_obj()
+            if article and isinstance(article, self.article_obj):
+                self._article = article
+            else:
+                self._article = self.article_obj()
         else:
             qry_result = self.mongoobjects.find_one(
                 {'_id': self.ObjectId(self.object_id)}
