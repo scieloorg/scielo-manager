@@ -43,5 +43,6 @@ urlpatterns = patterns('',
     url(r'^user/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$',
         views.toggle_active_collection, name='usercollection.toggle_active'),
 
+    # Article Tools
     url(r'^(?P<journal_id>\d+)/issue/(?P<issue_id>\d+)/article/new/$', views.add_article, name='article.add'),
 )
