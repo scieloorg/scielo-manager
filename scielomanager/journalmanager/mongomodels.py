@@ -36,8 +36,8 @@ class MongoManager(MongoConnector):
 
     The first positional argument must be a reference to the class
     that represents the document under manipulation. If you want the
-    result directly from pymongo, set the ``_raw`` boolean arg to
-    ``True``.
+    result to be a domain object instance, pass ``_raw=False`` arg
+    the exposed method. Else, the return will come directly from pymongo.
 
     The exposed methods must be in the ``exposed_api_methods`` list.
 
@@ -79,7 +79,7 @@ class MongoManager(MongoConnector):
         """
         def wrapper(*args, **kwargs):
             # _raw returns the values right from pymongo
-            is_raw = kwargs.pop('_raw', False)
+            is_raw = kwargs.pop('_raw', True)
             return_value = func(*args, **kwargs)
 
             if is_raw:

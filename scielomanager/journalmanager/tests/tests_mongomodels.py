@@ -110,7 +110,7 @@ class MongoManagerTest(TestCase, MockerTestCase):
                            mongo_uri=mongo_uri,
                            mongo_collection='articles')
 
-        self.assertIsInstance(mm.find(), Article)
+        self.assertIsInstance(mm.find(_raw=False), Article)
 
     def test_raw_access_to_pymongo_api(self):
         from journalmanager.mongomodels import Article

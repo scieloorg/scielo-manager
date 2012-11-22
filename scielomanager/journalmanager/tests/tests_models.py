@@ -500,7 +500,7 @@ class ArticleTests(TestCase, MockerTestCase):
         mongoobjectid_obj('6f1ed002ab5595859014ebf0951522d9')
         self.mocker.result('fake_mongo_id')
 
-        mongoobjects_obj.find_one({'_id': 'fake_mongo_id'})
+        mongoobjects_obj.find_one({'_id': 'fake_mongo_id'}, _raw=False)
         self.mocker.result(article_obj)
 
         article_obj.title

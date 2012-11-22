@@ -852,7 +852,8 @@ class Article(caching.base.CachingMixin, models.Model):
                 self._article = self.article_obj()
         else:
             qry_result = self.mongoobjects.find_one(
-                {'_id': self.ObjectId(self.object_id)}
+                {'_id': self.ObjectId(self.object_id)},
+                _raw=False
             )
 
             if qry_result:
