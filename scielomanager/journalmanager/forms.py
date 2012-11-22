@@ -486,10 +486,13 @@ class ArticleForm(forms.Form):
     publication_city = forms.CharField(label='City of publication')
     publication_state = forms.CharField(label='State of publication')
     publication_country = forms.CharField(label='Country of publication', required=True)
-    document_type = forms.CharField(label='Document Type', required=True)
-    bibliographic_standard = forms.CharField(label='Bibliographic standard', required=True)
+    bibliographic_standard = forms.ChoiceField(label='Bibliographic standard',
+                                               choices=choices.STANDARD,
+                                               required=True)
     sponsor = forms.CharField(label='Sponsor', required=True)
-    type_literature = forms.CharField(label='Type of literature', required=True)
+    literature_type = forms.ChoiceField(label='Type of literature',
+                                        choices=choices.LITERATURE_TYPE,
+                                        required=True)
     first_page = forms.IntegerField(label='First page', required=True)
     last_page = forms.IntegerField(label='Last page', required=True)
 
