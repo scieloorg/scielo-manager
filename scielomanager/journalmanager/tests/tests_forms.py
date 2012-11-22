@@ -1550,8 +1550,10 @@ class ArticleFormTests(WebTest):
         page.mustcontain('first_page',
                          'last_page',
                          'publication_country',
-                         'type_literature',
+                         'literature_type',
                          'language',
+                         'bibliographic_standard',
+                         'sponsor',
                          )
 
         self.assertTemplateUsed(page, 'journalmanager/add_article.html')
