@@ -8,6 +8,7 @@ except ImportError:
 
 from django.db import models
 from django.db import transaction
+from django.db import DatabaseError
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
@@ -878,7 +879,10 @@ class Article(caching.base.CachingMixin, models.Model):
         """
         Saves also the documental part.
         """
-        self.object_id = self.data.save()
+        try:
+            self.object_id = self.data.save()
+        except mongomodels.DbOperationsError, exc:
+            raise DatabaseError(exc)
 
         super(Article, self).save(**kwargs)
 

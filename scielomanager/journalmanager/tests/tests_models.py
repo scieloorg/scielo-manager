@@ -514,3 +514,27 @@ class ArticleTests(TestCase, MockerTestCase):
         article.object_id = '6f1ed002ab5595859014ebf0951522d9'
 
         self.assertEqual(article.data.title, 'Some title')
+
+    def test_rollback_if_errors_while_saving(self):
+        from journalmanager import mongomodels
+        from django.db import DatabaseError
+
+        article_obj = self.mocker.mock(mongomodels.Article)
+
+        article_obj()
+        self.mocker.result(article_obj)
+
+        article_obj.title = 'Some title'
+
+        article_obj.save()
+        self.mocker.throw(mongomodels.DbOperationsError)
+
+        self.mocker.replay()
+
+        article = ArticleFactory.build(article_obj=article_obj)
+        issue = IssueFactory.create()
+
+        article.data.title = 'Some title'
+        article.issue = issue
+
+        self.assertRaises(DatabaseError, lambda: article.save())

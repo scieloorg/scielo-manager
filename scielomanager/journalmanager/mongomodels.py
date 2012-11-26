@@ -9,6 +9,12 @@ MONGO_URI = getattr(settings, 'MONGO_URI',
     'mongodb://localhost:27017/journalmanager')
 
 
+class DbOperationsError(Exception):
+    """Represents all possible exceptions while interacting with
+    MongoDB.
+    """
+
+
 class MongoConnector(object):
     """
     Connects to MongoDB and makes self.db and self.col
@@ -126,4 +132,7 @@ class Article(MongoConnector):
             )
 
     def save(self):
-        return self.col.save(self._data, safe=True)
+        try:
+            return self.col.save(self._data, safe=True)
+        except pymongo.errors.PyMongoError, exc:
+            raise DbOperationsError(exc)
