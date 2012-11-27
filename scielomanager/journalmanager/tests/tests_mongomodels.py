@@ -83,6 +83,7 @@ class MongoManagerTest(TestCase, MockerTestCase):
         mongo_db = self.mocker.mock(pymongo.database.Database)
         mongo_col = self.mocker.mock()
         article = self.mocker.mock(Article)
+        mongo_cursor = self.mocker.mock(pymongo.cursor.Cursor)
 
         mongo_driver.Connection(host=ANY, port=ANY)
         self.mocker.result(mongo_conn)
@@ -96,11 +97,8 @@ class MongoManagerTest(TestCase, MockerTestCase):
         mongo_db['articles']
         self.mocker.result(mongo_col)
 
-        article()
-        self.mocker.result(article)
-
         mongo_col.find()
-        self.mocker.result({})
+        self.mocker.result(mongo_cursor)
 
         self.mocker.replay()
 
@@ -110,7 +108,7 @@ class MongoManagerTest(TestCase, MockerTestCase):
                            mongo_uri=mongo_uri,
                            mongo_collection='articles')
 
-        self.assertIsInstance(mm.find(_raw=False), Article)
+        self.assertIsInstance(mm.find(), pymongo.cursor.Cursor)
 
     def test_raw_access_to_pymongo_api(self):
         from journalmanager.mongomodels import Article
@@ -144,7 +142,9 @@ class MongoManagerTest(TestCase, MockerTestCase):
                            mongo_uri=mongo_uri,
                            mongo_collection='articles')
 
-        self.assertEqual(mm.find(_raw=True), [{'title': 'Some title'}])
+        resultset = mm.find()
+        for r in resultset:
+            self.assertEqual(r, {'title': 'Some title'})
 
 
 class ArticleModelTest(TestCase, MockerTestCase):

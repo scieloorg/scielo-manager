@@ -40,11 +40,6 @@ class MongoManager(MongoConnector):
     to act as a manager for mongodb documents. The collection must be
     set, in instantiation, using the ``mongo_collection`` arg.
 
-    The first positional argument must be a reference to the class
-    that represents the document under manipulation. If you want the
-    result to be a domain object instance, pass ``_raw=False`` arg
-    the exposed method. Else, the return will come directly from pymongo.
-
     The exposed methods must be in the ``exposed_api_methods`` list.
 
     See the pymongo docs for more information about using the exposed
@@ -70,30 +65,12 @@ class MongoManager(MongoConnector):
                     'method %s needs a collection to be defined' % name)
 
             if hasattr(self.col, name):
-                return self._decorate_getattr(getattr(self.col, name))
+                return getattr(self.col, name)
             else:
                 raise AttributeError()
         else:
             # django makes mystical things on attr retrieval
             super(MongoManager, self).__getattr__(name)
-
-    def _decorate_getattr(self, func):
-        """
-        Decorates the attribute fetching machinery in order to
-        wrapp the result with the object defined at
-        instantiation time by the ``doc`` arg.
-        """
-        def wrapper(*args, **kwargs):
-            # _raw returns the values right from pymongo
-            is_raw = kwargs.pop('_raw', True)
-            return_value = func(*args, **kwargs)
-
-            if is_raw:
-                return return_value
-            else:
-                return self._doc(**return_value)
-
-        return wrapper
 
 
 class ManagerFactory(object):
