@@ -1,0 +1,23 @@
+{% extends "base_list_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+
+{% block page_title %}{% trans "Journal objects_issue" %}{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+  <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Issues' %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<ul>
+  {% for article in articles %}
+  <li>{{ article.title }}</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

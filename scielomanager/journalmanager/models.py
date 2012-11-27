@@ -809,13 +809,18 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         kwargs['issue_ref'] = self.pk
 
-        return self.article_obj(**kwargs)
+        art = self.article_obj(**kwargs)
+        art.save()
+
+        return art
 
     def list_articles(self):
         """
         Returns all articles bound to the current Issue.
         """
-        return self.article_obj.objects.find({'issue_ref': self.pk})
+        resultset = self.article_obj.objects.find({'issue_ref': self.pk})
+        for res in resultset:
+            yield self.article_obj(**res)
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):

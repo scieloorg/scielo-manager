@@ -174,6 +174,9 @@ class IssueTests(TestCase, MockerTestCase):
         article_cls(KWARGS)
         self.mocker.result(article_obj)
 
+        article_obj.save()
+        self.mocker.result(None)
+
         self.mocker.replay()
 
         journal = JournalFactory.create()
@@ -194,7 +197,7 @@ class IssueTests(TestCase, MockerTestCase):
 
         self.assertRaises(ValueError, lambda: issue.create_article())
 
-    def test_binding_article_when_created(self):
+    def test_binding_article_to_issues_when_it_is_created(self):
         article_cls = self.mocker.mock()
         article_obj = self.mocker.mock()
 
@@ -203,6 +206,9 @@ class IssueTests(TestCase, MockerTestCase):
 
         article_obj.issue_ref
         self.mocker.result(1)
+
+        article_obj.save()
+        self.mocker.result(None)
 
         self.mocker.replay()
 
@@ -231,7 +237,10 @@ class IssueTests(TestCase, MockerTestCase):
         self.mocker.result(article_cls)
 
         article_cls.find(ARGS)
-        self.mocker.result(['foo'])
+        self.mocker.result([{'title': 'blah'}])
+
+        article_cls(title='blah')
+        self.mocker.result(article_obj)
 
         self.mocker.replay()
 
@@ -243,10 +252,33 @@ class IssueTests(TestCase, MockerTestCase):
                                     article_obj=article_cls)
 
         article = issue.create_article(**{'title': 'blah'})
-        article.save()
 
         articles = issue.list_articles()
         self.assertEqual(len(list(articles)), 1)
+
+    def test_list_articles_returns_generator_objects(self):
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock()
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.save()
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article(**{'title': 'blah'})
+
+        articles = issue.list_articles()
+        self.assertTrue(hasattr(articles, 'next'))
 
 
 class LanguageTests(TestCase):
