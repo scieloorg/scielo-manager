@@ -1500,7 +1500,7 @@ class ArticleFormTests(WebTest):
         form should be part of this test.
         """
         perm = _makePermission(perm='add_article',
-            model='article', app_label='journalmanager')
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         page = self.app.get(reverse('article.add',

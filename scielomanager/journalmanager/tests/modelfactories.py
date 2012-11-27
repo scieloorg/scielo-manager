@@ -130,7 +130,3 @@ class SectionTitleFactory(factory.Factory):
 
     language = factory.SubFactory(LanguageFactory)
     section = factory.SubFactory(SectionFactory)
-
-
-class ArticleFactory(factory.Factory):
-    FACTORY_FOR = models.Article

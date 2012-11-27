@@ -1,10 +1,11 @@
 # coding: utf-8
+from django.utils import unittest
 from django.test import TestCase
 from django_factory_boy import auth
 from mocker import (
     MockerTestCase,
-    ANY,
     ARGS,
+    ANY,
     KWARGS,
 )
 
@@ -16,7 +17,6 @@ from .modelfactories import (
     SectionTitleFactory,
     JournalFactory,
     CollectionFactory,
-    ArticleFactory,
 )
 
 
@@ -85,7 +85,7 @@ class UserProfileTests(TestCase):
         self.assertEqual(profile.avatar_url, expected_url)
 
 
-class IssueTests(TestCase):
+class IssueTests(TestCase, MockerTestCase):
 
     def test_identification_for_suppl_volume(self):
         issue = IssueFactory.create(number='1', suppl_volume='2')
@@ -164,6 +164,89 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 1)
+
+    def test_create_new_article(self):
+        from journalmanager.mongomodels import Article
+
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock(Article)
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article(**{'title': 'blah'})
+        self.assertIsInstance(article, Article)
+
+    def test_create_new_article_with_missing_data(self):
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+            publication_year=2012, journal=journal)
+
+        self.assertRaises(ValueError, lambda: issue.create_article())
+
+    def test_binding_article_when_created(self):
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock()
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.issue_ref
+        self.mocker.result(1)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(pk=1,
+                                    volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article(**{'title': 'blah'})
+        self.assertEqual(article.issue_ref, issue.pk)
+
+    def test_list_articles(self):
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock()
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.save()
+        self.mocker.result(None)
+
+        article_cls.objects
+        self.mocker.result(article_cls)
+
+        article_cls.find(ARGS)
+        self.mocker.result(['foo'])
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article(**{'title': 'blah'})
+        article.save()
+
+        articles = issue.list_articles()
+        self.assertEqual(len(list(articles)), 1)
 
 
 class LanguageTests(TestCase):
@@ -457,84 +540,3 @@ class CollectionManagerTests(TestCase):
         from journalmanager import models
         self.assertRaises(models.Collection.DoesNotExist,
             lambda: models.Collection.objects.get_default_by_user(user))
-
-
-class ArticleTests(TestCase, MockerTestCase):
-
-    def test_basic_attribute_access(self):
-        article = ArticleFactory.build()
-        article.data.title = 'Some title'
-
-        from journalmanager import mongomodels
-        self.assertIsInstance(article.data, mongomodels.Article)
-        self.assertEqual(article.data.title, 'Some title')
-
-    def test_basic_attribute_save(self):
-        from journalmanager import mongomodels
-        article_obj = self.mocker.mock(mongomodels.Article)
-
-        article_obj()
-        self.mocker.result(article_obj)
-
-        article_obj.title = 'Some title'
-
-        article_obj.save()
-        self.mocker.result('6f1ed002ab5595859014ebf0951522d9')
-
-        self.mocker.replay()
-
-        article = ArticleFactory.build(article_obj=article_obj)
-        issue = IssueFactory.create()
-
-        article.data.title = 'Some title'
-        article.issue = issue
-        article.save()
-
-        self.assertEqual(article.object_id, '6f1ed002ab5595859014ebf0951522d9')
-
-    def test_document_retrieval(self):
-        article_obj = self.mocker.mock()
-        mongoobjectid_obj = self.mocker.mock()
-        mongoobjects_obj = self.mocker.mock()
-
-        mongoobjectid_obj('6f1ed002ab5595859014ebf0951522d9')
-        self.mocker.result('fake_mongo_id')
-
-        mongoobjects_obj.find_one({'_id': 'fake_mongo_id'}, _raw=False)
-        self.mocker.result(article_obj)
-
-        article_obj.title
-        self.mocker.result('Some title')
-
-        self.mocker.replay()
-
-        article = ArticleFactory.build(article_obj=article_obj,
-                                       mongoobjects_obj=mongoobjects_obj,
-                                       mongoobjectid_obj=mongoobjectid_obj)
-        article.object_id = '6f1ed002ab5595859014ebf0951522d9'
-
-        self.assertEqual(article.data.title, 'Some title')
-
-    def test_rollback_if_errors_while_saving(self):
-        from journalmanager import mongomodels
-        from django.db import DatabaseError
-
-        article_obj = self.mocker.mock(mongomodels.Article)
-
-        article_obj()
-        self.mocker.result(article_obj)
-
-        article_obj.title = 'Some title'
-
-        article_obj.save()
-        self.mocker.throw(mongomodels.DbOperationsError)
-
-        self.mocker.replay()
-
-        article = ArticleFactory.build(article_obj=article_obj)
-        issue = IssueFactory.create()
-
-        article.data.title = 'Some title'
-        article.issue = issue
-
-        self.assertRaises(DatabaseError, lambda: article.save())

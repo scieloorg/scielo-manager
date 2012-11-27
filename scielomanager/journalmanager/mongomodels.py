@@ -96,8 +96,17 @@ class MongoManager(MongoConnector):
         return wrapper
 
 
+class ManagerFactory(object):
+    def __get__(self, instance, cls):
+        if not hasattr(cls, '_objects'):
+            setattr(cls, '_objects', MongoManager(cls))
+
+        return cls._objects
+
+
 class Article(MongoConnector):
     _collection_name_ = 'articles'
+    objects = ManagerFactory()
 
     init_params = ['mongodb_driver', 'mongo_uri', 'mongo_collection']
 

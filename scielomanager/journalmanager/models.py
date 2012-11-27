@@ -683,6 +683,22 @@ class Section(caching.base.CachingMixin, models.Model):
 
 
 class Issue(caching.base.CachingMixin, models.Model):
+    """
+    Represents an Issue that is bound to a Journal and has some
+    Articles.
+
+    All its Articles are stored in a documental DB, so Issue instances
+    have acquired some functionality in order to fill the gap between
+    these two worlds.
+
+    Custom permissions:
+    * ``list_issue``
+    * ``reorder_issue``
+    * ``add_article``
+    * ``list_article``
+
+    Note that Article permissions are handled by the Issue class.
+    """
 
     #Custom manager
     objects = IssueCustomManager()
@@ -712,6 +728,13 @@ class Issue(caching.base.CachingMixin, models.Model):
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
     order = models.IntegerField(_('Issue Order'), blank=True)
+
+    def __init__(self, *args, **kwargs):
+        # injected dependencies
+        self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
+        self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
+
+        super(Issue, self).__init__(*args, **kwargs)
 
     @property
     def identification(self):
@@ -767,8 +790,32 @@ class Issue(caching.base.CachingMixin, models.Model):
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
-        permissions = (("list_issue", "Can list Issues"),
-            ("reorder_issue", "Can Reorder Issues"))
+        permissions = (
+            ('list_issue', 'Can list Issues'),
+            ('reorder_issue', 'Can Reorder Issues'),
+            ('add_article', 'Can add Articles'),
+            ('list_article', 'Can list Articles'),
+        )
+
+    def create_article(self, **kwargs):
+        """
+        Returns a Article instance bound to the current Issue.
+        """
+        if not kwargs:
+            raise ValueError('missing article initial data.')
+
+        if not self.pk:
+            raise ValueError('issue_ref must not be None. be sure the issue is saved.')
+
+        kwargs['issue_ref'] = self.pk
+
+        return self.article_obj(**kwargs)
+
+    def list_articles(self):
+        """
+        Returns all articles bound to the current Issue.
+        """
+        return self.article_obj.objects.find({'issue_ref': self.pk})
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
@@ -801,90 +848,6 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     value = models.TextField()
 
-
-class Article(caching.base.CachingMixin, models.Model):
-    """
-    Represents an Article bound to an Issue. The actual
-    article is stored in MongoDB its manipulation must be
-    done using ``mongoobjects``, which is a django
-    manager-like object that exposes parts of the
-    ``Pymongo`` API.
-    """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    mongoobjects = mongomodels.MongoManager(mongomodels.Article)
-
-    object_id = models.CharField(max_length=32)
-    issue = models.ForeignKey(Issue)
-
-    def __init__(self, *args, **kwargs):
-        """
-        ``article_obj``, ``mongoobjectid_obj`` and ``mongoobjects_obj``
-        are dependencies injected for testing purposes.
-        """
-        # injected dependencies
-        self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
-        self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
-        if 'mongoobjects_obj' in kwargs:
-            self.__class__.mongoobjects = kwargs.pop('mongoobjects_obj')
-
-        # set pre-existing ``mongomodels.Article`` instance
-        data = kwargs.pop('data', None)
-        if data:
-            self._bind_article(data)
-
-        super(Article, self).__init__(*args, **kwargs)
-
-    def _bind_article(self, article=None):
-        """
-        Binds the current instance with its documental related part.
-
-        If the ``object_id`` attr is filled, the corresponding item
-        is retrieved from the documental db. Otherwise, a new instance
-        is created.
-
-        If the ``object_id`` has no correspondance in the documental
-        db, a ``DocumentDoesNotExist`` exception is raised.
-        """
-        if not self.object_id:
-            if article and isinstance(article, self.article_obj):
-                self._article = article
-            else:
-                self._article = self.article_obj()
-        else:
-            qry_result = self.mongoobjects.find_one(
-                {'_id': self.ObjectId(self.object_id)},
-                _raw=False
-            )
-
-            if qry_result:
-                self._article = qry_result
-            else:
-                self._article = self.article_obj()
-
-    @property
-    def data(self):
-        """
-        Acts as a proxy between the relational and the documental models.
-
-        May raise ``DocumentDoesNotExist`` exception if you try to fetch
-        a non-existing document.
-        """
-        if not hasattr(self, '_article'):
-            self._bind_article()
-
-        return self._article
-
-    def save(self, **kwargs):
-        """
-        Saves also the documental part.
-        """
-        try:
-            self.object_id = self.data.save()
-        except mongomodels.DbOperationsError, exc:
-            raise DatabaseError(exc)
-
-        super(Article, self).save(**kwargs)
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
