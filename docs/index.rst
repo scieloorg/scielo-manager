@@ -23,13 +23,14 @@ and design decisions.
 
 .. toctree::
    :maxdepth: 2
-
+   
    dev/helptexts
    dev/db-diagram
    dev/mockups
    dev/notes
    dev/exporttoisis
    dev/api
+   dev/importscielo
 
 Indices and tables
 ==================
