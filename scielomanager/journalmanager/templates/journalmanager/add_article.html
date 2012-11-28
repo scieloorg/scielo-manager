@@ -200,10 +200,11 @@
     <input class="btn btn-primary"
     name="submit"
     type="submit"
-    value="{% trans "save" %}"/>
+    value="{% trans "save" %}" />
     <input class="btn btn-warning"
     type="reset"
-    value="{% trans "cancel" %}"/>
+    value="{% trans "cancel" %}"
+    onclick="javascript: window.history.back()" />
   </div>
 </form>
 {% endblock %}
