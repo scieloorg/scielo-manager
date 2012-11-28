@@ -1,9 +1,94 @@
-SciELO Importação
-==================
+SciELO Importação XML
+=====================
 
-PMC - Back
+Front
+-----
+Body
+----
+Back
+----
 
-Publication-Type: journal
+Tag: <ref>
+
+Tipos possíveis no atributo Publication-Type:
+
+#. journal_.
+
+#. book
+
+#. confproc
+
+#. thesis
+
+#. software
+
+#. database
+
+#. webpage
+
+#. patent
+
+#. report
+
+#. newspaper
+
+**Publication-Type: Journal**
+
+Tipos possíveis no atributo Person-Group-Type:
+
+#. allauthors
+
+#. assignee
+
+#. author
+
+#. compiler
+
+#. director
+
+#. editor
+
+#. guest-editor
+
+#. inventor
+
+#. transed
+
+#. translator 
+
+Tipos possíveis no atributo pub-id-type:
+
+#. art-access-id
+
+#. coden
+
+#. doaj
+
+#. doi
+
+#. manuscript
+
+#. other
+
+#. pii
+
+#. pmcid
+
+#. pmid
+
+#. publisher-id
+
+#. sici          
+
+Tipos possíveis no atributo content-type:
+
+#. epub
+#. updated
+#. acess-date      
+      
+.. _journal:
+
+Exemplo:
 
 .. code-block:: text
 
@@ -12,13 +97,13 @@ Publication-Type: journal
     <element-citation publication-type="journal">
       <name>
         <surname>{surname}</surname>
-        <given-names>{given-name}</given-names>
+        <given-names>{given-names}</given-names>
         <suffix>{suffix}</suffix>
         <prefix>{prefix}</prefix>
       </name>                 
       <string-name>
         <surname>{surname}</surname>
-        <given-names>{given-name}</given-names>
+        <given-names>{given-names}</given-names>
         <suffix>{suffix}</suffix>
         <prefix>{prefix}</prefix>
       </string-name>
@@ -26,11 +111,11 @@ Publication-Type: journal
       <person-group person-group-type="author">
         <name>
           <surname>{surname}</surname>
-          <given-names>{given-name}</given-names>
+          <given-names>{given-names}</given-names>
         </name>
         <string-name>
           <surname>{surname}</surname>
-          <given-names>{given-name}</given-names>
+          <given-names>{given-names}</given-names>
           <suffix>{suffix}</suffix>
           <prefix>{prefix}</prefix>
         </string-name>
@@ -64,13 +149,5 @@ Publication-Type: journal
       <date-in-citation content-type="epub">{epub}</date-in-citation>           
     </element-citation> 
   </ref>
-
-
-
-
-
-
-
-
 
 
