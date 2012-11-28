@@ -17,10 +17,12 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from scielo_extensions import modelfields
+from bson.objectid import ObjectId
 
 import caching.base
 
 import choices
+import mongomodels
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -798,11 +800,83 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     value = models.TextField()
 
+
+class Article(caching.base.CachingMixin, models.Model):
+    """
+    Represents an Article bound to an Issue. The actual
+    article is stored in MongoDB its manipulation must be
+    done using ``mongoobjects``, which is a django
+    manager-like object that exposes parts of the
+    ``Pymongo`` API.
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    mongoobjects = mongomodels.MongoManager(mongomodels.Article,
+                                            mongo_collection='articles')
+
+    object_id = models.CharField(max_length=32)
+    issue = models.ForeignKey(Issue)
+
+    def __init__(self, *args, **kwargs):
+        """
+        ``article_obj``, ``mongoobjectid_obj`` and ``mongoobjects_obj``
+        are dependencies injected for testing purposes.
+        """
+        self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
+        self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
+
+        if 'mongoobjects_obj' in kwargs:
+            self.__class__.mongoobjects = kwargs.pop('mongoobjects_obj')
+
+        super(Article, self).__init__(*args, **kwargs)
+
+    def _bind_article(self):
+        """
+        Binds the current instance with its documental related part.
+
+        If the ``object_id`` attr is filled, the corresponding item
+        is retrieved from the documental db. Otherwise, a new instance
+        is created.
+
+        If the ``object_id`` has no correspondance in the documental
+        db, a ``DocumentDoesNotExist`` exception is raised.
+        """
+        if not self.object_id:
+            self._article = self.article_obj()
+        else:
+            qry_result = self.mongoobjects.find_one(
+                {'_id': self.ObjectId(self.object_id)}
+            )
+
+            if qry_result:
+                self._article = qry_result
+            else:
+                self._article = self.article_obj()
+
+    @property
+    def data(self):
+        """
+        Acts as a proxy between the relational and the documental models.
+
+        May raise ``DocumentDoesNotExist`` exception if you try to fetch
+        a non-existing document.
+        """
+        if not hasattr(self, '_article'):
+            self._bind_article()
+
+        return self._article
+
+    def save(self, **kwargs):
+        """
+        Saves also the documental part.
+        """
+        self.object_id = self.data.save()
+
+        super(Article, self).save(**kwargs)
+
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-
-
 @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """

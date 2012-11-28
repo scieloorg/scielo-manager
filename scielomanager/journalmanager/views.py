@@ -497,7 +497,7 @@ def add_collection(request, collection_id):
     """
     Handles existing collections
     """
-    
+
     collection = get_object_or_404(models.Collection, id=collection_id)
 
     if not collection.is_managed_by_user(request.user):
@@ -737,3 +737,19 @@ def trash_listing(request):
         'journalmanager/trash_listing.html',
         {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.add_article', login_url=AUTHZ_REDIRECT_URL)
+def add_article(request, journal_id, issue_id):
+
+    if request.method == 'POST':
+        article_forms = get_all_article_forms(request.POST)
+
+    else:
+        article_forms = get_all_article_forms()
+
+    return render_to_response(
+        'journalmanager/add_article.html',
+        {'forms': article_forms},
+        context_instance=RequestContext(request)
+    )

@@ -1,6 +1,12 @@
 # coding: utf-8
 from django.test import TestCase
 from django_factory_boy import auth
+from mocker import (
+    MockerTestCase,
+    ANY,
+    ARGS,
+    KWARGS,
+)
 
 from .modelfactories import (
     IssueFactory,
@@ -10,6 +16,7 @@ from .modelfactories import (
     SectionTitleFactory,
     JournalFactory,
     CollectionFactory,
+    ArticleFactory,
 )
 
 
@@ -450,3 +457,60 @@ class CollectionManagerTests(TestCase):
         from journalmanager import models
         self.assertRaises(models.Collection.DoesNotExist,
             lambda: models.Collection.objects.get_default_by_user(user))
+
+
+class ArticleTests(TestCase, MockerTestCase):
+
+    def test_basic_attribute_access(self):
+        article = ArticleFactory.build()
+        article.data.title = 'Some title'
+
+        from journalmanager import mongomodels
+        self.assertIsInstance(article.data, mongomodels.Article)
+        self.assertEqual(article.data.title, 'Some title')
+
+    def test_basic_attribute_save(self):
+        from journalmanager import mongomodels
+        article_obj = self.mocker.mock(mongomodels.Article)
+
+        article_obj()
+        self.mocker.result(article_obj)
+
+        article_obj.title = 'Some title'
+
+        article_obj.save()
+        self.mocker.result('6f1ed002ab5595859014ebf0951522d9')
+
+        self.mocker.replay()
+
+        article = ArticleFactory.build(article_obj=article_obj)
+        issue = IssueFactory.create()
+
+        article.data.title = 'Some title'
+        article.issue = issue
+        article.save()
+
+        self.assertEqual(article.object_id, '6f1ed002ab5595859014ebf0951522d9')
+
+    def test_document_retrieval(self):
+        article_obj = self.mocker.mock()
+        mongoobjectid_obj = self.mocker.mock()
+        mongoobjects_obj = self.mocker.mock()
+
+        mongoobjectid_obj('6f1ed002ab5595859014ebf0951522d9')
+        self.mocker.result('fake_mongo_id')
+
+        mongoobjects_obj.find_one({'_id': 'fake_mongo_id'})
+        self.mocker.result(article_obj)
+
+        article_obj.title
+        self.mocker.result('Some title')
+
+        self.mocker.replay()
+
+        article = ArticleFactory.build(article_obj=article_obj,
+                                       mongoobjects_obj=mongoobjects_obj,
+                                       mongoobjectid_obj=mongoobjectid_obj)
+        article.object_id = '6f1ed002ab5595859014ebf0951522d9'
+
+        self.assertEqual(article.data.title, 'Some title')
