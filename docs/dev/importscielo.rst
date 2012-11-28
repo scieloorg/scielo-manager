@@ -1,6 +1,8 @@
 SciELO Importação XML
 =====================
 
+DTD Pubmed Central Version3: http://dtd.nlm.nih.gov/publishing/tag-library/3.0/n-qdc2.html.
+
 Front
 -----
 Body
@@ -88,7 +90,7 @@ Tipos possíveis no atributo content-type:
       
 .. _journal:
 
-Exemplo:
+Exemplo da estrutura do XML da referência tipo Journal:
 
 .. code-block:: text
 
@@ -100,7 +102,7 @@ Exemplo:
         <given-names>{given-names}</given-names>
         <suffix>{suffix}</suffix>
         <prefix>{prefix}</prefix>
-      </name>                 
+      </name>
       <string-name>
         <surname>{surname}</surname>
         <given-names>{given-names}</given-names>
@@ -150,4 +152,83 @@ Exemplo:
     </element-citation> 
   </ref>
 
+Exemplo da estrutura do ref tipo Journal utilizando deserialização do Porteira http://pypi.python.org/pypi/porteira/:
+
+.. code-block:: text
+
+  {
+    "ref": {
+      "@id": "{id}", 
+      "label": "{label}", 
+      "element-citation": {
+        "@publication-type": "journal", 
+        "name": {
+          "surname": "{surname}", 
+          "given-names": "{given-names}", 
+          "suffix": "{suffix}", 
+          "prefix": "{prefix}"
+        }, 
+        "string-name": {
+          "surname": "{surname}", 
+          "given-names": "{given-names}", 
+          "suffix": "{suffix}", 
+          "prefix": "{prefix}"
+        }, 
+        "collab": "{collab}", 
+        "person-group": {
+          "@person-group-type": "author", 
+          "name": {
+            "surname": "{surname}", 
+            "given-names": "{given-names}"
+          }, 
+          "string-name": {
+            "surname": "{surname}", 
+            "given-names": "{given-names}", 
+            "suffix": "{suffix}", 
+            "prefix": "{prefix}"
+          }, 
+          "collab": "{collab}", 
+          "etal": null
+        }, 
+        "etal": null, 
+        "article-title": "{article-title}", 
+        "source": "{source}", 
+        "publisher-loc": "{publisher-loc}", 
+        "year": "{year}", 
+        "month": "{month}", 
+        "season": "{season}", 
+        "day": "{day}", 
+        "volume": "{volume}", 
+        "issue": "{issue}", 
+        "issue-part": "{issue-part}", 
+        "edition": "{edition}", 
+        "supplement": "{supplement}", 
+        "fpage": "{fpage}", 
+        "lpage": "{lpage}", 
+        "page-range": "{page-range}", 
+        "comment": [
+          "{comment}", 
+          {
+            "uri": "{uri}", 
+            "ext-link": "{url}"
+          }
+        ], 
+        "ext-link": "{url}", 
+        "pub-id": [
+          {
+            "@pub-id-type": "doi", 
+            "#text": "{doi}"
+          }, 
+          {
+            "@pub-id-type": "pmid", 
+            "#text": "{pmid}"
+          }
+        ], 
+        "date-in-citation": {
+          "@content-type": "epub", 
+          "#text": "{epub}"
+        }
+      }
+    }
+  }
 
