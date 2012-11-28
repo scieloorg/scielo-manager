@@ -757,10 +757,12 @@ def add_article(request, journal_id, issue_id):
 
 def article_index(request, journal_id, issue_id):
     issue = get_object_or_404(models.Issue, pk=issue_id)
-    articles = issue.list_articles()
+    # articles = issue.list_articles()
 
     return render_to_response(
         'journalmanager/article_dashboard.html',
-        {'articles': articles},
+        {
+          'issue': issue,
+        },
         context_instance=RequestContext(request)
     )
