@@ -1541,7 +1541,7 @@ class ArticleFormTests(WebTest):
         are displayed in the form.
         """
         perm = _makePermission(perm='add_article',
-            model='article', app_label='journalmanager')
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         page = self.app.get(reverse('article.add',
@@ -1576,7 +1576,7 @@ class ArticleFormTests(WebTest):
         ``application/x-www-form-urlencoded``
         """
         perm = _makePermission(perm='add_article',
-            model='article', app_label='journalmanager')
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('article.add',
@@ -1591,7 +1591,7 @@ class ArticleFormTests(WebTest):
         a new or edit an existing entry.
         """
         perm = _makePermission(perm='add_article',
-            model='article', app_label='journalmanager')
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('article.add',
@@ -1605,7 +1605,7 @@ class ArticleFormTests(WebTest):
         ``POST``.
         """
         perm = _makePermission(perm='add_article',
-            model='article', app_label='journalmanager')
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('article.add',
