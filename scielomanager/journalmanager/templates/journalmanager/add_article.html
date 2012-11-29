@@ -4,7 +4,10 @@
 
 
 {% block content %}
-<form method="post" action="#">
+<form id="article-form"
+      method="post"
+      action=""
+      enctype="multipart/form-data">
   {% csrf_token %}
 
   <span class="label">{% trans "Titles" %}</span>
@@ -67,15 +70,6 @@
       {{ forms.article_form.publication_country }}
     </div>
 
-    <label for="{{ forms.article_form.doctopic.id }}">
-      <span {% if 'required' in forms.article_form.doctopic.flags %}class="req-field"{% endif %}>
-        {{ forms.article_form.doctopic.label }}
-      </span>
-    </label>
-    <div class="control-group {% if forms.article_form.doctopic.errors %}error{% endif %}">
-      {{ forms.article_form.doctopic }}
-    </div>
-
     <label for="{{ forms.article_form.bibliographic_standard.id }}">
       <span {% if 'required' in forms.article_form.bibliographic_standard.flags %}class="req-field"{% endif %}>
         {{ forms.article_form.bibliographic_standard.label }}
@@ -94,13 +88,13 @@
       {{ forms.article_form.sponsor }}
     </div>
 
-    <label for="{{ forms.article_form.type_literature.id }}">
-      <span {% if 'required' in forms.article_form.type_literature.flags %}class="req-field"{% endif %}>
-        {{ forms.article_form.type_literature.label }}
+    <label for="{{ forms.article_form.literature_type.id }}">
+      <span {% if 'required' in forms.article_form.literature_type.flags %}class="req-field"{% endif %}>
+        {{ forms.article_form.literature_type.label }}
       </span>
     </label>
-    <div class="control-group {% if forms.article_form.type_literature.errors %}error{% endif %}">
-      {{ forms.article_form.type_literature }}
+    <div class="control-group {% if forms.article_form.literature_type.errors %}error{% endif %}">
+      {{ forms.article_form.literature_type }}
     </div>
 
     <div class="control-group {% if forms.abstract_formset.errors %}error{% endif %}">
