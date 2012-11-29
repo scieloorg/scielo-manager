@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django_factory_boy import auth
 
+from journalmanager import forms
 from journalmanager.tests import modelfactories
 
 
@@ -24,6 +25,7 @@ def _makePermission(perm, model, app_label='journalmanager'):
     ct = models.ContentType.objects.get(model=model,
                                         app_label=app_label)
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
+
 
 class CollectionFormTests(WebTest):
 
@@ -1533,6 +1535,29 @@ class ArticleFormTests(WebTest):
 
         self.assertTemplateUsed(page, 'journalmanager/add_article.html')
 
+    def test_required_fields_presence(self):
+        """
+        Asserts that all the required fields that must be filled by the user
+        are displayed in the form.
+        """
+        perm = _makePermission(perm='add_article',
+            model='article', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user)
+
+        page.mustcontain('first_page',
+                         'last_page',
+                         'publication_country',
+                         'literature_type',
+                         'language',
+                         'bibliographic_standard',
+                         'sponsor',
+                         )
+
+        self.assertTemplateUsed(page, 'journalmanager/add_article.html')
+
     def test_access_without_permission(self):
         """
         Asserts that authenticated users without the required permissions
@@ -1544,3 +1569,46 @@ class ArticleFormTests(WebTest):
 
         self.assertTemplateUsed(page, 'accounts/unauthorized.html')
         page.mustcontain('not authorized to access')
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the status form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm = _makePermission(perm='add_article',
+            model='article', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        self.assertEqual(form.enctype, 'multipart/form-data')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the status form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='add_article',
+            model='article', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the status form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='add_article',
+            model='article', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        self.assertEqual(form.method.lower(), 'post')

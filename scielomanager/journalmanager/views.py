@@ -458,7 +458,7 @@ def add_sponsor(request, sponsor_id=None):
     Handles new and existing sponsors
     """
 
-    if  sponsor_id is None:
+    if sponsor_id is None:
         sponsor = models.Sponsor()
     else:
         sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
@@ -743,10 +743,10 @@ def trash_listing(request):
 def add_article(request, journal_id, issue_id):
 
     if request.method == 'POST':
-        article_forms = get_all_article_forms(request.POST)
+        article_forms = get_all_article_forms(request.POST, journal=journal_id)
 
     else:
-        article_forms = get_all_article_forms()
+        article_forms = get_all_article_forms(journal=journal_id)
 
     return render_to_response(
         'journalmanager/add_article.html',
