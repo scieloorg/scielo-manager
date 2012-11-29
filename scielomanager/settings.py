@@ -170,6 +170,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'journalmanager.context_processors.show_user_collections',
     'journalmanager.context_processors.add_default_collection',
     'journalmanager.context_processors.show_system_notes',
+    'journalmanager.context_processors.show_system_notes_blocking_users',
     'journalmanager.context_processors.on_maintenance',
     'scielo_extensions.context_processors.from_settings',
 )
