@@ -37,7 +37,7 @@
        {% trans 'Edit this issue' %}
     </a>
     <a class="btn btn-primary"
-       href="#">
+       href="{% url article.add issue.journal.pk issue.id %}">
        {% trans 'Add article' %}
     </a>
   </div>

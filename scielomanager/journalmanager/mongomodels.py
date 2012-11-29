@@ -33,6 +33,10 @@ class MongoConnector(object):
 
         self.col = self.db[mongo_collection] if mongo_collection else None
 
+        #  ensure indexes if they exist
+        if hasattr(self, '_ensure_indexes'):
+            self._ensure_indexes()
+
 
 class MongoManager(MongoConnector):
     """
@@ -100,6 +104,12 @@ class Article(MongoConnector):
         super(Article, self).__init__(**init_args)
 
         self._data = kwargs
+
+    def _ensure_indexes(self):
+        """
+        Registers all the MongoDB indexes needed by Article instances
+        """
+        self.col.ensure_index('issue_ref')
 
     def __setattr__(self, name, value):
         # only some attributes are allowed to be set in the instance

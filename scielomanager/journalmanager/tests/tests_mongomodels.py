@@ -246,3 +246,32 @@ class ArticleModelTest(TestCase, MockerTestCase):
                           **article_microdata)
 
         self.assertEqual(a.save(), '6f1ed002ab5595859014ebf0951522d9')
+
+    def test_needed_indexes_are_created(self):
+        mongo_driver = self.mocker.mock()
+        mongo_conn = self.mocker.mock()
+        mongo_db = self.mocker.mock(pymongo.database.Database)
+        mongo_col = self.mocker.mock()
+
+        mongo_driver.Connection(host=ANY, port=ANY)
+        self.mocker.result(mongo_conn)
+
+        mongo_conn[ANY]
+        self.mocker.result(mongo_db)
+
+        mongo_db.authenticate(ANY, ANY)
+        self.mocker.result(None)
+
+        mongo_db['articles']
+        self.mocker.result(mongo_col)
+
+        mongo_col.ensure_index('issue_ref')
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
+        a = self._makeOne(mongodb_driver=mongo_driver,
+                          mongo_uri=mongo_uri)
+
+        self.assertTrue(True) # placebo
