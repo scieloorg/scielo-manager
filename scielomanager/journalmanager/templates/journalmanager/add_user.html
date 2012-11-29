@@ -135,8 +135,16 @@
     </p>
   </div>
   <div class="row-fluid">
-    <input class="btn btn-primary" name="submit" type="submit" value="{% trans "save" %}"/>
-    <input class="btn btn-warning" type="reset" value="{% trans "cancel" %}"/>
+    <input 
+      class="btn btn-primary" 
+      name="submit" 
+      type="submit" 
+      value="{% trans "save" %}" />
+    <input 
+      class="btn btn-warning" 
+      type="reset" 
+      value="{% trans "cancel" %}" 
+      onclick="javascript: window.history.back()" />
   </div>
 </form>
 {% endblock %}
