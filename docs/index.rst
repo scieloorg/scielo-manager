@@ -28,6 +28,7 @@ and design decisions.
    dev/db-diagram
    dev/mockups
    dev/notes
+   dev/useraccesslevel
    dev/exporttoisis
    dev/api
    dev/importscielo
