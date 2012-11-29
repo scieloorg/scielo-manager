@@ -30,6 +30,17 @@ def show_system_notes(request):
     return {'system_notes': system_notes}
 
 
+def show_system_notes_blocking_users(request):
+    """
+    Add system notes that are blockin the user access
+    as maintenance events, notes, etc to the context
+    """
+
+    system_note = maintenance_models.Event.objects.blocking_users_scheduled_event()
+
+    return {'blocking_users_system_note': system_note}
+
+
 def on_maintenance(request):
     """
     Add on_maintenance item to the context. Defining if there is or not active

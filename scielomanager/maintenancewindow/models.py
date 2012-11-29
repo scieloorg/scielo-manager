@@ -14,6 +14,14 @@ class EventManager(models.Manager):
 
         return self.filter(end_at__gte=actual_date, is_finished=False)
 
+    def blocking_users_scheduled_event(self):
+        """
+        Returns a list of scheduled events blocking users access
+        with the end_date greater than a given date.
+        """
+
+        return self.get(is_blocking_users=True)
+
 
 class Event(caching.base.CachingMixin, models.Model):
 
