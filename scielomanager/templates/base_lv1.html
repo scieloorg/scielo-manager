@@ -54,7 +54,12 @@
             <ul class="dropdown-menu">
               {% for event in system_notes %}
               <li id="maintenaces">
-                <a href="/#maintenances">{{ event.begin_at }} - {{ event.title }}</a>
+                <a  
+                    class="tip-bottom"
+                    rel="tooltip"
+                    data-original-title="{{ event.description }}">
+                  {{ event.begin_at }} - {{ event.title }}
+                </a>
               </li>
               {% endfor %}
             </ul>
