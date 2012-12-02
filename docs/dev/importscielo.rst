@@ -92,7 +92,7 @@ Tipos possíveis no atributo content-type:
 
 Exemplo da estrutura do XML da referência tipo Journal:
 
-.. code-block:: text
+.. code-block:: xml
 
   <ref id="{id}">
     <label>{label}</label>
@@ -154,7 +154,7 @@ Exemplo da estrutura do XML da referência tipo Journal:
 
 Exemplo da estrutura JSON do ref tipo Journal:
 
-.. code-block:: text
+.. code-block:: javascript
 
   {
     "ref": {
@@ -236,7 +236,7 @@ Exemplo da estrutura JSON do ref tipo Journal:
 
 Exemplo da estrutura do XML da referência tipo Book:
 
-.. code-block:: text
+.. code-block:: xml
 
   <ref id="{id}">
      <label>{label}</label>
@@ -300,7 +300,7 @@ Exemplo da estrutura do XML da referência tipo Book:
 
 Exemplo da estrutura JSON do ref tipo Book:
 
-.. code-block:: text
+.. code-block:: javascript
 
   {
       "ref": {
@@ -380,7 +380,7 @@ Exemplo da estrutura JSON do ref tipo Book:
 
 Exemplo da estrutura do XML da referência tipo Confproc:
 
-.. code-block:: text
+.. code-block:: xml
 
   <ref id="{id}">
     <label>{label}</label>
@@ -446,7 +446,7 @@ Exemplo da estrutura do XML da referência tipo Confproc:
 
 Exemplo da estrutura JSON do ref tipo Confproc:
 
-.. code-block:: text
+.. code-block:: javascript
 
   {
     "ref": {
@@ -530,7 +530,7 @@ Exemplo da estrutura JSON do ref tipo Confproc:
 
 Exemplo da estrutura do XML da referência tipo Thesis:
 
-.. code-block:: text
+.. code-block:: xml
 
    <ref id="{id}">
     <label>{label}</label>
@@ -597,7 +597,7 @@ Exemplo da estrutura do XML da referência tipo Thesis:
 
 Exemplo da estrutura JSON do ref tipo Thesis:
 
-.. code-block:: text
+.. code-block:: javascript
 
   {
     "ref": {
