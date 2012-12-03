@@ -103,11 +103,16 @@
     name="submit"
     type="submit"
     value="{% trans 'save' %}" />
-    <input
-    class="btn btn-warning"
-    type="reset"
-    value="{% trans 'cancel' %}"
-    onclick="javascript: window.history.back()" />
+      <input
+      class="btn btn-warning"
+      type="reset"
+      value="{% trans 'cancel' %}"
+      {% if request.GET.popup %}
+        onclick="javascript: window.close()" 
+      {% else %}
+        onclick="javascript: window.history.back()"
+      {% endif %}
+      />
   </div>
 </form>
 {% endblock %}
