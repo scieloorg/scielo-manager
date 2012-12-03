@@ -31,3 +31,4 @@ compilemessages:
 setup: deps dbsetup dbmigrate loaddata compilemessages test
 
 upgrade: deps dbmigrate compilemessages test
+	@python $(MANAGE) sync_perms --settings=$(SETTINGS)
