@@ -36,7 +36,7 @@ Tipos possíveis no atributo Publication-Type:
 
 **Publication-Type: Journal**
 
-Tipos possíveis no atributo Person-Group-Type:
+Tipos possíveis no atributo person-group-type da tag person-group:
 
 #. allauthors
 
@@ -58,7 +58,7 @@ Tipos possíveis no atributo Person-Group-Type:
 
 #. translator 
 
-Tipos possíveis no atributo pub-id-type:
+Tipos possíveis no atributo pub-id-type da tag pub-id:
 
 #. art-access-id
 
@@ -82,7 +82,7 @@ Tipos possíveis no atributo pub-id-type:
 
 #. sici          
 
-Tipos possíveis no atributo content-type:
+Tipos possíveis no atributo content-type da tag date-in-citation:
 
 #. epub
 #. updated
@@ -107,7 +107,7 @@ Campos comuns entre os tipos:
         <suffix>{suffix}</suffix>
         <prefix>{prefix}</prefix>
       </string-name>
-      <person-group person-group-type="author">
+      <person-group person-group-type="">
         <name>
           <surname>{surname}</surname>
           <given-names>{given-names}</given-names>
@@ -133,13 +133,13 @@ Campos comuns entre os tipos:
       <issue>{issue}</issue>
       <page-range>{page-range}</page-range>
       <comment>{comment}</comment>
-      <date-in-citation content-type="epub">{epub}</date-in-citation>
+      <date-in-citation content-type="">{epub}</date-in-citation>
       <element-citation>{element-citation}</element-citation> 
       <comment>
             <uri>{uri}</uri>
             <ext-link ext-link-type="uri" xlink:href="{url_value}">{url}</ext-link>
       </comment>
-      <pub-id pub-id-type="doi">{doi}</pub-id>
+      <pub-id pub-id-type="">{doi}</pub-id>
       <ext-link ext-link-type="uri" xlink:href="{url_value}">{url}</ext-link>
   </ref>
 
@@ -155,7 +155,7 @@ Exemplo da estrutura do XML da referência tipo Journal:
       <volume>{volume}</volume>
       <issue-part>{issue-part}</issue-part>
       <supplement>{supplement}</supplement>
-      <pub-id pub-id-type="pmid">{pmid}</pub-id> 
+      <pub-id pub-id-type="">{pmid}</pub-id> 
   </ref>
 
 .. _book:
@@ -217,5 +217,5 @@ Exemplo da estrutura do XML da referência tipo Thesis:
       <series>{series}</series>
       <size units="page"/>
       <isbn>{isbn}</isbn>
-      <pub-id pub-id-type="pmid">{pmid}</pub-id>
+      <pub-id pub-id-type="">{pmid}</pub-id>
   </ref>
