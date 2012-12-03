@@ -110,7 +110,12 @@
     name="reset" 
     type="reset" 
     value="{% trans "cancel" %}"
-    onclick="javascript: window.history.back()" />
+    {% if request.GET.popup %}
+      onclick="javascript: window.close()" 
+    {% else %}
+      onclick="javascript: window.history.back()"
+    {% endif %}
+    />
 </form>
 {% endblock %}
 
