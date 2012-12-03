@@ -36,7 +36,10 @@ def update(env):
 
     with cd(app_settings[env]['installation_path']):
         with prefix('source %s/bin/activate' % app_settings[env]['venv_path']):
+            # stash modifications to apply them later
+            run('git stash')
             run('git pull origin master')
+            run('git stash pop')
             run('make upgrade')
 
     restart_ws(env)

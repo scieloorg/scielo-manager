@@ -24,6 +24,7 @@ class SectionResource(ModelResource):
         queryset = Section.objects.all()
         resource_name = 'sections'
         allowed_methods = ['get']
+        excludes = ['legacy_code']
         filtering = {
             "journal": ('exact'),
         }

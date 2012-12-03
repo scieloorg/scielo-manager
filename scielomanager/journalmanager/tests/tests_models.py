@@ -1,6 +1,7 @@
 # coding: utf-8
 from django.test import TestCase
 from django_factory_boy import auth
+from mocker import MockerTestCase
 
 from .modelfactories import (
     IssueFactory,
@@ -13,7 +14,7 @@ from .modelfactories import (
 )
 
 
-class SectionTests(TestCase):
+class SectionTests(MockerTestCase):
 
     def test_section_not_being_used(self):
         section = SectionFactory.build()
@@ -25,13 +26,13 @@ class SectionTests(TestCase):
 
         self.assertTrue(section.is_used())
 
-    def test_actual_code_is_the_instance_pk(self):
+    def test_actual_code_is_the_instance_code(self):
         section = SectionFactory.create()
-        self.assertEqual(section.pk, section.actual_code)
+        self.assertEqual(section.code, section.actual_code)
 
     def test_actual_code_must_raise_attributeerror_for_unsaved_instances(self):
         section = SectionFactory.build()
-        self.assertRaises(AttributeError, section.actual_code)
+        self.assertRaises(AttributeError, lambda: section.actual_code)
 
     def test_unicode_repr_with_only_one_language(self):
         section_title = SectionTitleFactory.create()
@@ -61,6 +62,18 @@ class SectionTests(TestCase):
         self.assertEqual(section.titles.all().count(), 1)
         self.assertEqual(section.titles.all()[0].title, 'Original Article')
         self.assertEqual(section.titles.all()[0].language, language)
+
+    def test_suggest_code(self):
+        gen = self.mocker.mock()
+        gen(4)
+        self.mocker.result('XYZW')
+        self.mocker.replay()
+
+        section = SectionFactory.create()
+        expected_code = '{0}-{1}'.format(section.journal.acronym, 'XYZW')
+
+        self.assertEqual(section._suggest_code(rand_generator=gen),
+            expected_code)
 
 
 class UserProfileTests(TestCase):
