@@ -171,6 +171,9 @@ class ArticleModelTest(TestCase, MockerTestCase):
         mongo_db['articles']
         self.mocker.result(mongo_col)
 
+        mongo_col.ensure_index(ANY)
+        self.mocker.result(None)
+
         self.mocker.replay()
 
         article_microdata = {
@@ -203,6 +206,9 @@ class ArticleModelTest(TestCase, MockerTestCase):
         mongo_db['articles']
         self.mocker.result(mongo_col)
 
+        mongo_col.ensure_index(ANY)
+        self.mocker.result(None)
+
         self.mocker.replay()
 
         mongo_uri = r'mongodb://user:pass@localhost:27017/journalmanager'
@@ -234,6 +240,9 @@ class ArticleModelTest(TestCase, MockerTestCase):
 
         mongo_db['articles']
         self.mocker.result(mongo_col)
+
+        mongo_col.ensure_index(ANY)
+        self.mocker.result(None)
 
         mongo_col.save(article_microdata, safe=True)
         self.mocker.result('6f1ed002ab5595859014ebf0951522d9')

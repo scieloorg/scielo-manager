@@ -3,7 +3,7 @@ MANAGE = $(APP_PATH)/manage.py
 SETTINGS_TEST = scielomanager.settings_tests
 SETTINGS = scielomanager.settings
 FIXTURES_DIR = $(APP_PATH)/fixtures
-APPS_TO_TEST = journalmanager export api accounts
+APPS_TO_TEST = journalmanager export api accounts maintenancewindow
 
 deps:
 	@pip install -r requirements.txt

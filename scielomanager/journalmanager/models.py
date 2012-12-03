@@ -1,14 +1,18 @@
 # -*- encoding: utf-8 -*-
 import urllib
 import hashlib
+import logging
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
 
-from django.db import models
-from django.db import transaction
-from django.db import DatabaseError
+from django.db import (
+    models,
+    transaction,
+    IntegrityError,
+    DatabaseError,
+    )
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
@@ -16,17 +20,19 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from scielo_extensions import modelfields
 from bson.objectid import ObjectId
-
 import caching.base
 
 import choices
 import mongomodels
+from scielomanager.utils import base28
+
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
+
+logger = logging.getLogger(__name__)
 
 
 #  DEPRECATED (http://ref.scielo.org/5k8wjt)
@@ -39,28 +45,7 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
-
-
-#  DEPRECATED (http://ref.scielo.org/359zf3)
-def get_default_user_collections(user_id):
-    """
-    Return the collection that the user choose as default/active collection.
-    """
-    user_collections = User.cached_objects.get(pk=user_id).usercollections_set.filter(
-        is_default=True).order_by('collection__name')
-
-    if len(user_collections) == 0:
-        try:
-            user_collections = User.cached_objects.get(pk=user_id).usercollections_set.all().order_by(
-                'collection__name')[0]
-            user_collections.is_default = True
-            user_collections.save()
-            return [user_collections]
-        except IndexError:
-            return None
-
-    return user_collections
-
+    
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -645,13 +630,22 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
 
 
 class Section(caching.base.CachingMixin, models.Model):
+    """
+    Represents a multilingual section of one/many Issues of
+    a given Journal.
+
+    ``legacy_code`` contains the section code used by the old
+    title manager. We've decided to store this value just by
+    historical reasons, and we don't know if it will last forever.
+    """
     #Custom manager
     objects = SectionCustomManager()
     nocacheobjects = models.Manager()
 
     journal = models.ForeignKey(Journal)
 
-    code = models.CharField(_('Code'), null=True, blank=True, max_length=16)
+    code = models.CharField(unique=True, max_length=21, blank=True)
+    legacy_code = models.CharField(null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
@@ -661,7 +655,10 @@ class Section(caching.base.CachingMixin, models.Model):
 
     @property
     def actual_code(self):
-        return self.pk
+        if not self.pk or not self.code:
+            raise AttributeError('section must be saved in order to have a code')
+
+        return self.code
 
     def is_used(self):
         try:
@@ -678,8 +675,53 @@ class Section(caching.base.CachingMixin, models.Model):
         SectionTitle.objects.create(section=self,
             title=title, language=language)
 
+    def _suggest_code(self, rand_generator=base28.genbase):
+        """
+        Suggests a code for the section instance.
+        The code is formed by the journal acronym + 4 pseudo-random
+        base 28 chars.
+
+        ``rand_generator`` is the callable responsible for the pseudo-random
+        chars sequence. It may accept the number of chars as argument.
+        """
+        num_chars = getattr(settings, 'SECTION_CODE_TOTAL_RANDOM_CHARS', 4)
+        fmt = '{0}-{1}'.format(self.journal.acronym, rand_generator(num_chars))
+        return fmt
+
+    def _create_code(self, *args, **kwargs):
+        if not self.code:
+            tries = kwargs.pop('max_tries', 5)
+            while tries > 0:
+                self.code = self._suggest_code()
+                try:
+                    super(Section, self).save(*args, **kwargs)
+                except IntegrityError:
+                    tries -= 1
+                    logger.warning('conflict while trying to generate a section code. %i tries remaining.' % tries)
+                    continue
+                else:
+                    logger.info('code created successfully for %s' % unicode(self))
+                    break
+            else:
+                msg = 'max_tries reached while trying to generate a code for the section %s.' % unicode(self)
+                logger.error(msg)
+                raise DatabaseError(msg)
+
     class Meta:
         permissions = (("list_section", "Can list Sections"),)
+
+    def save(self, *args, **kwargs):
+        """
+        If ``code`` already exists, the section is saved. Else,
+        the ``code`` will be generated before the save process is
+        performed.
+        """
+        if self.code:
+            super(Section, self).save(*args, **kwargs)
+        else:
+            # the call to super().save is delegated to _create_code
+            # because there are needs to control saving max tries.
+            self._create_code(*args, **kwargs)
 
 
 class Issue(caching.base.CachingMixin, models.Model):
