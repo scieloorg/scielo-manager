@@ -94,7 +94,7 @@ Campos comuns entre os tipos:
 
   <ref id="{id}">
     <label>{label}</label>
-    <element-citation publication-type="journal">
+    <element-citation publication-type="">
       <name>
         <surname>{surname}</surname>
         <given-names>{given-names}</given-names>
