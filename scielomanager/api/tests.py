@@ -303,7 +303,7 @@ class SectionsRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_issue_filters(self):
+    def test_section_filters(self):
         resource_filters = SectionResource().Meta
         mandatory_filters = ['journal']
         for fltr in mandatory_filters:
