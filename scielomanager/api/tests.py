@@ -9,6 +9,12 @@ from django_webtest import WebTest
 
 from journalmanager.tests import modelfactories
 
+from api.resources import (
+    IssueResource,
+    SectionResource,
+    JournalResource,
+    )
+
 
 class JournalRestAPITest(WebTest):
 
@@ -16,6 +22,12 @@ class JournalRestAPITest(WebTest):
         response = self.client.get('/api/v1/journals/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
+
+    def test_journal_filters(self):
+        resource_filters = JournalResource().Meta
+        mandatory_filters = ['is_trashed']
+        for fltr in mandatory_filters:
+            self.assertTrue(fltr in resource_filters.filtering)
 
     def test_journal_getone(self):
         journal = modelfactories.JournalFactory.create()
@@ -209,6 +221,12 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
+    def test_issue_filters(self):
+        resource_filters = IssueResource().Meta
+        mandatory_filters = ['journal', 'is_marked_up']
+        for fltr in mandatory_filters:
+            self.assertTrue(fltr in resource_filters.filtering)
+
     def test_post_data(self):
         issue = modelfactories.IssueFactory.create()
         response = self.client.post('/api/v1/issues/')
@@ -284,6 +302,12 @@ class SectionsRestAPITest(WebTest):
         response = self.client.get('/api/v1/sections/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
+
+    def test_issue_filters(self):
+        resource_filters = SectionResource().Meta
+        mandatory_filters = ['journal']
+        for fltr in mandatory_filters:
+            self.assertTrue(fltr in resource_filters.filtering)
 
     def test_post_data(self):
         section = modelfactories.SectionFactory.create()
