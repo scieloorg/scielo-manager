@@ -337,10 +337,10 @@ class SectionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SectionForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
-        self.fields['code'].widget.attrs['readonly'] = True
+        self.fields['legacy_code'].widget.attrs['readonly'] = True
 
     def clean_code(self):
-        return self.instance.code
+        return self.instance.legacy_code
 
     def save_all(self, journal):
         section = self.save(commit=False)
@@ -351,7 +351,7 @@ class SectionForm(ModelForm):
 
     class Meta:
         model = models.Section
-        exclude = ('journal',)
+        exclude = ('journal', 'code')
 
 
 class UserCollectionsForm(ModelForm):
