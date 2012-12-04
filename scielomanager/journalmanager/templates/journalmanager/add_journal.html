@@ -39,6 +39,8 @@
 
 {% block messages %}
   {% if add_form.errors or add_form.non_field_errors %}
+  <div class="alert alert-error">
+    <button class="close" data-dismiss="alert" type="button">×</button>
     <ul>
       {% for field in add_form %}
         {% if field.errors %}
@@ -48,11 +50,12 @@
       {% for errors in add_form.non_field_errors %}
         <li>{{ errors }}</li>
       {% endfor %}
-    <ul>
+    </ul>
+  </div>
   {% endif %}
 {% endblock%}
 
-{% block content %}
+{% block form_content %}
   {% if request.GET.resume %}
     <form id="journal-form"
           method="post"
@@ -883,22 +886,22 @@
   </div>
 
   <div class="row-fluid">
-      <input 
-        class="btn btn-primary" 
-        name="submit" 
-        type="submit" 
+      <input
+        class="btn btn-primary"
+        name="submit"
+        type="submit"
         value="{% trans "save" %}" />
-      <input 
-        class="btn btn-warning" 
-        type="reset" 
+      <input
+        class="btn btn-warning"
+        type="reset"
         value="{% trans "cancel" %}"
         onclick="javascript: window.history.back()" />
       {% if is_new %}
-      <input 
-        class="btn btn-large btn-primary" 
-        name="pend" 
-        style="line-height: 1; position: fixed; bottom: 10px; right: 19px;" 
-        type="submit" 
+      <input
+        class="btn btn-large btn-primary"
+        name="pend"
+        style="line-height: 1; position: fixed; bottom: 10px; right: 19px;"
+        type="submit"
         value="{% trans "Save to Continue Later" %}" />
       {% endif %}
   </div>

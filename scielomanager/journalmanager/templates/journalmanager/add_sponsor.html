@@ -1,4 +1,4 @@
-{% extends dynamic_tpl %}
+{% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -13,6 +13,8 @@
 
 {% block messages %}
   {% if add_form.errors or add_form.non_field_errors %}
+  <div class="alert alert-error">
+    <button class="close" data-dismiss="alert" type="button">×</button>
     <ul>
       {% for field in add_form %}
         {% if field.errors %}
@@ -22,11 +24,12 @@
       {% for errors in add_form.non_field_errors %}
         <li>{{ errors }}</li>
       {% endfor %}
-    <ul>
+    </ul>
+  </div>
   {% endif %}
 {% endblock%}
 
-{% block content %}
+{% block form_content %}
 <form method="post" action="">
   {% csrf_token %}
 
@@ -100,15 +103,15 @@
     </div>
   </div>
 
-  <input 
-    class="btn btn-primary" 
-    name="submit" 
-    type="submit" 
+  <input
+    class="btn btn-primary"
+    name="submit"
+    type="submit"
     value="{% trans "save" %}" />
-  <input 
-    class="btn btn-warning" 
-    name="reset" 
-    type="reset" 
+  <input
+    class="btn btn-warning"
+    name="reset"
+    type="reset"
     value="{% trans "cancel" %}"
     onclick="javascript: window.history.back()" />
 </form>
