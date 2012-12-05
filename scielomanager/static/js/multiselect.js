@@ -5,12 +5,18 @@
  */
 
 $(document).ready(function() {
-    $("select[multiple]").asmSelect({
-        sortable: true,
-        animate: true,
-        addItemTarget: 'bottom',
-        hideWhenAdded: true,
-    });
+
+    if(!$("select[multiple]").attr('chosen')){
+      $("select[multiple]").asmSelect({
+          sortable: true,
+          animate: true,
+          addItemTarget: 'bottom',
+          hideWhenAdded: true
+      });
+    }else{
+      $("select[chosen]").select2({placeholder: "Select an item", width: '1100px'});
+    }
+
 });
 
 function updateSelect(win, newid, name, component){
