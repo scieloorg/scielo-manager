@@ -377,15 +377,7 @@ class UserCollectionsForm(ModelForm):
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
-
-
-# class JournalStudyAreaForm(ModelForm):
-#     class Meta:
-#         model = models.JournalStudyArea
-#         widgets = {
-#             'studyarea': forms.TextInput(attrs={'class': 'span10'}),
-#         }
-
+        
 
 class JournalMissionForm(ModelForm):
     class Meta:
