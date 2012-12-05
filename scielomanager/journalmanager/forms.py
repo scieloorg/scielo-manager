@@ -56,7 +56,7 @@ class JournalForm(ModelForm):
     subject_categories = forms.ModelMultipleChoiceField(models.SubjectCategory.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories')}),
         required=False)
-    study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
+    studyareas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
         required=False)
     regex = re.compile(r'^(1|2)\d{3}$')
@@ -379,12 +379,12 @@ class UserCollectionsForm(ModelForm):
         }
 
 
-class JournalStudyAreaForm(ModelForm):
-    class Meta:
-        model = models.JournalStudyArea
-        widgets = {
-            'studyarea': forms.TextInput(attrs={'class': 'span10'}),
-        }
+# class JournalStudyAreaForm(ModelForm):
+#     class Meta:
+#         model = models.JournalStudyArea
+#         widgets = {
+#             'studyarea': forms.TextInput(attrs={'class': 'span10'}),
+#         }
 
 
 class JournalMissionForm(ModelForm):
