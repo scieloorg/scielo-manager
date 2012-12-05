@@ -620,9 +620,6 @@ class JournalFormTests(WebTest):
                              'title-TOTAL_FORMS',
                              'title-INITIAL_FORMS',
                              'title-MAX_NUM_FORMS',
-                             'studyarea-TOTAL_FORMS',
-                             'studyarea-INITIAL_FORMS',
-                             'studyarea-MAX_NUM_FORMS',
                              'mission-TOTAL_FORMS',
                              'mission-INITIAL_FORMS',
                              'mission-MAX_NUM_FORMS',
@@ -696,6 +693,7 @@ class JournalFormTests(WebTest):
         use_license = modelfactories.UseLicenseFactory.create()
         language = modelfactories.LanguageFactory.create()
         subject_category = modelfactories.SubjectCategoryFactory.create()
+        study_area = modelfactories.StudyAreaFactory.create()
 
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
 
@@ -744,6 +742,7 @@ class JournalFormTests(WebTest):
         uploaded_cover_contents = open(upload_cover_name, "rb").read()
 
         form.set('journal-cover', (upload_cover_name, uploaded_cover_contents))
+        form.set('journal-study_areas', str(study_area.pk))
 
         response = form.submit().follow()
 

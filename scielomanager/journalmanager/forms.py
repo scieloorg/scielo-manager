@@ -38,7 +38,7 @@ class UserCollectionContext(ModelForm):
 
         if collections_qset is not None:
             self.fields['collections'].queryset = models.Collection.objects.filter(
-                pk__in = (collection.collection.pk for collection in collections_qset))
+                pk__in=(collection.collection.pk for collection in collections_qset))
 
 
 class JournalForm(ModelForm):
@@ -56,6 +56,9 @@ class JournalForm(ModelForm):
     subject_categories = forms.ModelMultipleChoiceField(models.SubjectCategory.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories')}),
         required=False)
+    study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
+        required=False)
     regex = re.compile(r'^(1|2)\d{3}$')
     collection = forms.ModelChoiceField(models.Collection.objects.none(),
         required=True)
@@ -66,7 +69,7 @@ class JournalForm(ModelForm):
 
         if collections_qset is not None:
             self.fields['collection'].queryset = models.Collection.objects.filter(
-                pk__in = (collection.collection.pk for collection in collections_qset))
+                pk__in=(collection.collection.pk for collection in collections_qset))
 
     def save_all(self, creator):
         journal = self.save(commit=False)

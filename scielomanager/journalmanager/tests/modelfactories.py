@@ -11,6 +11,12 @@ class SubjectCategoryFactory(factory.Factory):
     term = 'Acoustics'
 
 
+class StudyAreaFactory(factory.Factory):
+    FACTORY_FOR = models.StudyArea
+
+    study_area = 'Health Sciences'
+
+
 class SponsorFactory(factory.Factory):
     FACTORY_FOR = models.Sponsor
 

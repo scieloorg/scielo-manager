@@ -376,12 +376,10 @@ def add_journal(request, journal_id=None):
     form_hash = None
 
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
-    JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
-        studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
@@ -391,10 +389,8 @@ def add_journal(request, journal_id=None):
             messages.info(request, MSG_FORM_SAVED_PARTIALLY)
         else:
 
-            if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
-                and missionformset.is_valid():
+            if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
                 journalform.save_all(creator=request.user)
-                studyareaformset.save()
                 titleformset.save()
                 missionformset.save()
                 messages.info(request, MSG_FORM_SAVED)
@@ -411,12 +407,10 @@ def add_journal(request, journal_id=None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
 
             journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
-            studyareaformset = JournalStudyAreaFormSet(pended_post_data, instance=journal, prefix='studyarea')
             titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
         else:
             journalform = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
-            studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 
@@ -434,7 +428,6 @@ def add_journal(request, journal_id=None):
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
-                              'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'has_cover_url': has_cover_url,
