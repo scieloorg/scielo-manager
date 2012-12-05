@@ -414,7 +414,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name="Subject Categories", related_name="journals", null=True)
-    study_areas = models.ManyToManyField(StudyArea, verbose_name="Study Area", related_name="journals", null=True)
+    study_areas = models.ManyToManyField(StudyArea, verbose_name="Study Area", related_name="journals_migration_tmp", null=True)
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)

@@ -56,7 +56,7 @@ class JournalForm(ModelForm):
     subject_categories = forms.ModelMultipleChoiceField(models.SubjectCategory.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories')}),
         required=False)
-    studyareas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
+    study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
         required=False)
     regex = re.compile(r'^(1|2)\d{3}$')
