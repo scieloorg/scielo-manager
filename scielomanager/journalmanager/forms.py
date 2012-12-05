@@ -58,7 +58,7 @@ class JournalForm(ModelForm):
         required=False)
     study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
-        required=False)
+        required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
     collection = forms.ModelChoiceField(models.Collection.objects.none(),
         required=True)

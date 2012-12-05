@@ -698,6 +698,7 @@ class JournalFormTests(WebTest):
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
 
         form['journal-sponsor'] = [sponsor.pk]
+        form['journal-study_areas'] = [study_area.pk]
         form['journal-ctrl_vocabulary'] = 'decs'
         form['journal-frequency'] = 'Q'
         form['journal-final_num'] = ''
@@ -742,7 +743,6 @@ class JournalFormTests(WebTest):
         uploaded_cover_contents = open(upload_cover_name, "rb").read()
 
         form.set('journal-cover', (upload_cover_name, uploaded_cover_contents))
-        form.set('journal-study_areas', str(study_area.pk))
 
         response = form.submit().follow()
 
