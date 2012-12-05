@@ -30,7 +30,7 @@ css = Bundle('../static/css/bootstrap.css',
             '../static/css/jquery.asmselect.css',
             '../static/css/jquery-ui.css',
             '../static/css/jquery.asmselect.css',
-            '../static/js/select2/select2.css',
+            '../static/css/select2.css',
             '../static/css/style.css', filters='yui_css', output='bundle.min.css')
 
 register('css', css)
