@@ -497,7 +497,7 @@ def add_collection(request, collection_id):
     """
     Handles existing collections
     """
-    
+
     collection = get_object_or_404(models.Collection, id=collection_id)
 
     if not collection.is_managed_by_user(request.user):

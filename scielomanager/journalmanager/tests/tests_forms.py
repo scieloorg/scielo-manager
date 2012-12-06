@@ -1313,7 +1313,6 @@ class StatusFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response,
             'journalmanager/edit_journal_status.html')

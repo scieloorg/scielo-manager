@@ -1,6 +1,12 @@
-{% extends "base_lv1.html" %}
+{% extends dynamic_tpl %}
 {% load static %}
 
 {% block extrahead %}
 
+{% endblock %}
+
+{% block content %}
+
+    {% block messages %}{% endblock %}
+    {% block form_content %}{% endblock %}
 {% endblock %}
