@@ -22,7 +22,7 @@ Tipos possíveis no atributo Publication-Type:
 
 #. thesis_.
 
-#. software
+#. software_.
 
 #. database
 
@@ -218,4 +218,19 @@ Exemplo da estrutura do XML da referência tipo Thesis:
       <size units="page"/>
       <isbn>{isbn}</isbn>
       <pub-id pub-id-type="">{pmid}</pub-id>
+  </ref>
+
+.. _software:
+
+Exemplo da estrutura do XML da referência tipo Software:
+
+.. code-block:: xml
+
+  <ref id="{id}">
+      <element-citation publication-type="">
+          <edition>{edition}}</edition>
+          <publisher-loc>{publisher-loc}</publisher-loc>
+          <publisher-name>{publisher-name}</publisher-name>
+          <year>{year}</year>
+      </element-citation>
   </ref>
