@@ -14,25 +14,25 @@ Tag: <ref>
 
 Tipos possíveis no atributo Publication-Type:
 
-#. journal_.
+#. journal_
 
-#. book_.
+#. book_
 
-#. confproc_.
+#. confproc_
 
-#. thesis_.
+#. thesis_
 
-#. software_.
+#. software_
 
-#. database
+#. database_
 
-#. webpage
+#. webpage_
 
-#. patent
+#. patent_
 
-#. report
+#. report_
 
-#. newspaper
+#. newspaper_
 
 **Publication-Type: Journal**
 
@@ -233,4 +233,58 @@ Exemplo da estrutura do XML da referência tipo Software:
           <publisher-name>{publisher-name}</publisher-name>
           <year>{year}</year>
       </element-citation>
+  </ref>
+
+.. _database:
+
+.. code-block:: xml
+
+  Todos as tags utilizadas nesse tipo estão no XML comun. 
+
+.. _webpage:
+
+.. code-block:: xml
+
+  Todos as tags utilizadas nesse tipo estão no XML comun. 
+
+.. _patent:
+
+  Exemplo da estrutura do XML da referência tipo Webpage:
+
+.. code-block:: xml
+
+  <ref id="{id}">
+    <element-citation publication-type="">
+        <patent country="{country}">{country}</patent>
+    </element-citation>
+  </ref>
+
+.. _report:
+
+  Todos as tags utilizadas nesse tipo estão no XML comun.
+
+.. code-block:: xml
+
+  <ref id="{id}">
+    <element-citation publication-type="">
+        <chapter-title>{chapter}</chapter-title>
+        <series>{source}</series>
+        <publisher-loc>{publisher-loc}</publisher-loc>
+        <publisher-name>{publisher-name}</publisher-name>
+    </element-citation>
+  </ref>
+
+.. _newspaper:
+
+  Exemplo da estrutura do XML da referência tipo Newspaper:
+  
+.. code-block:: xml
+
+  <ref id="{id}">
+    <element-citation publication-type="">
+        <series>{series}</series>
+        <article-title>{article-title}</article-title>
+        <publisher-loc>{publisher-loc}}</publisher-loc>
+        <publisher-name>{publisher-name}</publisher-name>
+    </element-citation>
   </ref>
