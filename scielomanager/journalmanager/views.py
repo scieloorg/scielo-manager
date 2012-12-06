@@ -404,7 +404,6 @@ def add_journal(request, journal_id=None):
 
                 return HttpResponseRedirect(reverse('journal.index'))
             else:
-                # import pdb; pdb.set_trace()
                 messages.error(request, MSG_FORM_MISSING)
 
     else:
