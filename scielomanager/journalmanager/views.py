@@ -497,7 +497,7 @@ def add_collection(request, collection_id):
     """
     Handles existing collections
     """
-    
+
     collection = get_object_or_404(models.Collection, id=collection_id)
 
     if not collection.is_managed_by_user(request.user):
@@ -639,15 +639,12 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
         has_relation = section.is_used()
 
-    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
-        form=SectionTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+    all_forms = get_all_section_forms(request.POST, journal, section)
 
-    SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
+    add_form = all_forms['section_form']
+    section_title_formset = all_forms['section_title_formset']
 
     if request.method == 'POST':
-
-        add_form = SectionForm(request.POST, instance=section)
-        section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
 
         if add_form.is_valid() and section_title_formset.is_valid():
             add_form = add_form.save_all(journal)
@@ -662,10 +659,6 @@ def add_section(request, journal_id, section_id=None):
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
-
-    else:
-        add_form = SectionForm(instance=section)
-        section_title_formset = SectionTitleFormSet(instance=section, prefix='titles')
 
     return render_to_response('journalmanager/add_section.html', {
                               'add_form': add_form,

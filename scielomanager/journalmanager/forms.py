@@ -5,6 +5,7 @@ from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
 from django.core.exceptions import NON_FIELD_ERRORS
@@ -319,8 +320,9 @@ class SectionTitleForm(ModelForm):
             title = self.cleaned_data['title']
             language = self.cleaned_data['language']
 
-            if models.Section.objects.filter(titles__title__iexact=title, \
-                titles__language=language, journal=self.journal).exists():
+            if models.Section.objects.filter(titles__title__iexact=title,
+                titles__language=language, journal=self.journal,
+                is_trashed=False).exists():
 
                 raise forms.ValidationError({NON_FIELD_ERRORS:\
                     _('This section title already exists for this Journal.')})
@@ -352,6 +354,40 @@ class SectionForm(ModelForm):
     class Meta:
         model = models.Section
         exclude = ('journal', 'code')
+
+
+def get_all_section_forms(post_dict, journal, section):
+    """
+    Get all forms/formsets used by the Section form.
+
+    :Parameters:
+      - `post_dict`: The POST querydict, even if it is empty
+      - `journal`: The journal instance the section is part of
+      - `section`: The section instance bound to the form. Must be
+        a new instance when creating an empty form
+    """
+    args = []
+    kwargs = {}
+
+    if section:
+        kwargs['instance'] = section
+
+    if post_dict:
+        args.append(post_dict)
+
+    section_title_formset = inlineformset_factory(models.Section,
+        models.SectionTitle, form=SectionTitleForm, extra=1,
+        can_delete=True, formset=FirstFieldRequiredFormSet)
+    section_title_formset.form = staticmethod(
+        curry(SectionTitleForm, journal=journal))
+
+    d = {
+        'section_form': SectionForm(*args, **kwargs),
+        'section_title_formset': section_title_formset(prefix='titles',
+            *args, **kwargs),
+    }
+
+    return d
 
 
 class UserCollectionsForm(ModelForm):
