@@ -7,8 +7,10 @@ from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
 from django_factory_boy import auth
+from django.test import TestCase
 
 from journalmanager.tests import modelfactories
+from journalmanager import forms
 
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
@@ -1476,3 +1478,55 @@ class SearchFormTests(WebTest):
 
         self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
             page.body)
+
+
+class SectionTitleFormValidationTests(TestCase):
+
+    def test_same_titles_in_same_languages_must_be_invalid(self):
+        journal = modelfactories.JournalFactory()
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        journal.languages.add(language)
+
+        section = modelfactories.SectionFactory(journal=journal)
+        section.add_title('Original Article', language=language)
+
+        post_dict = {
+            u'titles-INITIAL_FORMS': 0,
+            u'titles-TOTAL_FORMS': 1,
+            u'legacy_code': u'',
+            u'titles-0-language': unicode(language.pk),
+            u'titles-0-title': u'Original Article',
+        }
+
+        section_forms = forms.get_all_section_forms(post_dict,
+            journal=journal, section=section)
+
+        self.assertTrue(section_forms['section_form'].is_valid())
+        self.assertFalse(section_forms['section_title_formset'].is_valid())
+
+    def test_same_titles_in_different_languages_must_be_valid(self):
+        journal = modelfactories.JournalFactory()
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        language2 = modelfactories.LanguageFactory.create(iso_code='pt',
+                                                         name='portuguese')
+        journal.languages.add(language)
+        journal.languages.add(language2)
+
+        section = modelfactories.SectionFactory(journal=journal)
+        section.add_title('Original Article', language=language)
+
+        post_dict = {
+            u'titles-INITIAL_FORMS': 0,
+            u'titles-TOTAL_FORMS': 1,
+            u'legacy_code': u'',
+            u'titles-0-language': unicode(language2.pk),
+            u'titles-0-title': u'Original Article',
+        }
+
+        section_forms = forms.get_all_section_forms(post_dict,
+            journal=journal, section=section)
+
+        self.assertTrue(section_forms['section_form'].is_valid())
+        self.assertTrue(section_forms['section_title_formset'].is_valid())
