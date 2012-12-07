@@ -10,14 +10,15 @@ class Migration(DataMigration):
     def forwards(self, orm):
         for journal in orm.Journal.objects.all():
             for area in journal.study_areas.all():
-                new_area = orm.StudyArea.objects.get(study_area=area.study_area)
-                journal.studyareas.add(new_area.pk)
+                new_area = orm.StudyArea.objects.get_or_create(study_area=area.study_area)[0]
+                journal.studyareas.add(new_area)
 
     def backwards(self, orm):
         for journal in orm.Journal.objects.all():
             rels = journal.studyareas.all()
             for area in rels:
-                journal.studyareas.remove(area)
+                journal.study_areas.add(
+                    orm.JournalStudyArea.objects.get_or_create(study_area=area.study_area, journal=journal)[0])
 
     models = {
         'auth.group': {
