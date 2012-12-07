@@ -246,7 +246,7 @@ JSON Sample with data
 XML Sample
 ==========
 
-.. code-block:: javascript
+.. code-block:: xml
 
     <article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" dtd-version="3.0" article-type="research-article" lang_id="pt">
         <front>
