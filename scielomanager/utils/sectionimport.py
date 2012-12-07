@@ -85,7 +85,7 @@ class SectionImport:
                 section.title = sec['es']
             else:
                 section.title = ''
-            section.code = sec_key
+            section.legacy_code = sec_key
             section.journal = journal
             section.creation_date = datetime.now()
             section.save(force_insert=True)

@@ -13,7 +13,7 @@ SUBJECTS = [
     ('Engineering', 'Engineering'),
     ('Exact and Earth Sciences', 'Exact and Earth Sciences'),
     ('Health Sciences', 'Health Sciences'),
-    ('Humanities', 'Humanities'),
+    ('Human Sciences', 'Human Sciences'),
     ('Linguistics, Letters and Arts', 'Linguistics, Letters and Arts'),
 ]
 
