@@ -2,8 +2,8 @@
 Data Model (samples) JSON / XML
 ===============================
 
-Sample with xpath
-=================
+JSON Sample with xpath
+======================
 
 .. code-block:: javascript
 
@@ -85,8 +85,8 @@ Sample with xpath
         ]
     }
 
-Sample with data
-================
+JSON Sample with data
+=====================
 
 .. code-block:: javascript
 
