@@ -21,6 +21,7 @@ dbsetup:
 
 loaddata:
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/subject_categories.json --settings=$(SETTINGS)
+	@python $(MANAGE) loaddata $(FIXTURES_DIR)/study_area.json --settings=$(SETTINGS)
 
 dbmigrate:
 	@python $(MANAGE) migrate --settings=$(SETTINGS)

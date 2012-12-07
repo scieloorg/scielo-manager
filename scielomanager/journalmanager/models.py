@@ -378,6 +378,18 @@ class SubjectCategory(caching.base.CachingMixin, models.Model):
         return self.term
 
 
+class StudyArea(caching.base.CachingMixin, models.Model):
+
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+
+    study_area = models.CharField(_('Study Area'), max_length=256,
+        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
+
+    def __unicode__(self):
+        return self.study_area
+
+
 class Journal(caching.base.CachingMixin, models.Model):
     """
     Represents a Journal that is managed by one SciELO Collection.
@@ -402,6 +414,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name="Subject Categories", related_name="journals", null=True)
+    study_areas = models.ManyToManyField(StudyArea, verbose_name="Study Area", related_name="journals_migration_tmp", null=True)
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
@@ -561,14 +574,6 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
         verbose_name_plural = 'Journal Publication Events'
         ordering = ['created_at']
         permissions = (("list_publication_events", "Can list Publication Events"),)
-
-
-class JournalStudyArea(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    journal = models.ForeignKey(Journal, related_name='study_areas')
-    study_area = models.CharField(_('Study Area'), max_length=256,
-        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
 
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
