@@ -247,7 +247,7 @@ def user_index(request):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
 
     col_users = models.User.cached_objects.filter(
-        usercollections__collection__in=[collection]).distinct('username')
+        usercollections__collection__in=[collection]).distinct('username').order_by('username')
 
     users = get_paginated(col_users, request.GET.get('page', 1))
 
