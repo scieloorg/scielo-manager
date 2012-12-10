@@ -493,13 +493,48 @@ class UserFormTests(WebTest):
         self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
         response.mustcontain('bazz', 'bazz@spam.org')
 
-        # check if an email has been sent to the new user
-        self.assertTrue(len(mail.outbox), 1)
-        self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
-
         # check if basic state has been set
         self.assertTrue(response.context['user'].user_collection.get(
             pk=self.collection.pk))
+
+    def test_new_users_must_receive_an_email_to_define_their_password(self):
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        # check if an email has been sent to the new user
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
+
+    def test_emails_are_not_sent_when_users_data_are_modified(self):
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]),
+            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        # check if the outbox is empty
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_POST_workflow_with_invalid_formdata(self):
         """
