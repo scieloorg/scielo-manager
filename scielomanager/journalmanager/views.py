@@ -298,14 +298,16 @@ def add_user(request, user_id=None):
 
             usercollectionsformset.save()
 
-            # mail the user, requesting for password change
-            password_form = auth_forms.PasswordResetForm({'email': new_user.email})
-            if password_form.is_valid():
-                opts = {
-                    'use_https': request.is_secure(),
-                    'request': request,
-                }
-                password_form.save(**opts)
+            # if it is a new user, mail him
+            # requesting for password change
+            if not user_id:
+                password_form = auth_forms.PasswordResetForm({'email': new_user.email})
+                if password_form.is_valid():
+                    opts = {
+                        'use_https': request.is_secure(),
+                        'request': request,
+                    }
+                    password_form.save(**opts)
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('user.index'))
