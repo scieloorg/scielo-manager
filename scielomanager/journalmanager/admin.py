@@ -12,10 +12,6 @@ class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
 
-class JournalStudyAreaInline(admin.StackedInline):
-    model = JournalStudyArea
-
-
 class CollectionAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
@@ -43,8 +39,7 @@ class JournalAdmin(admin.ModelAdmin):
     list_display = ('title',)
     search_fields = ('title',)
     filter_horizontal = ('languages',)
-    inlines = [JournalMissionInline,
-        JournalStudyAreaInline]
+    inlines = [JournalMissionInline]
 
 admin.site.register(Journal, JournalAdmin)
 

@@ -1,4 +1,4 @@
-{% extends dynamic_tpl %}
+{% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
@@ -15,6 +15,8 @@
 
 {% block messages %}
   {% if section_title_formset.errors or section_title_formset.non_field_errors %}
+  <div class="alert alert-error">
+    <button class="close" data-dismiss="alert" type="button">×</button>
     <ul>
       {% for dict_error in section_title_formset.errors %}
         {% for key, value in dict_error.items %}
@@ -25,12 +27,12 @@
           {% endif %}
         {% endfor %}
       {% endfor %}
-    <ul>
+    </ul>
+  </div>
   {% endif %}
 {% endblock %}
 
-{% block content %}
-
+{% block form_content %}
 <form id="section-form" method="POST" action="" enctype="application/x-www-form-urlencoded">
   {% csrf_token %}
 
@@ -99,15 +101,20 @@
   </div>
   <div class="row-fluid">
     <input
-    class="btn btn-primary"
-    name="submit"
-    type="submit"
-    value="{% trans 'save' %}" />
+      class="btn btn-primary"
+      name="submit"
+      type="submit"
+      value="{% trans 'save' %}" />
     <input
-    class="btn btn-warning"
-    type="reset"
-    value="{% trans 'cancel' %}"
-    onclick="javascript: window.history.back()" />
+      class="btn btn-warning"
+      type="reset"
+      value="{% trans 'cancel' %}"
+      {% if request.GET.popup %}
+        onclick="javascript: window.close()" 
+      {% else %}
+        onclick="javascript: window.history.back()"
+      {% endif %}
+    />
   </div>
 </form>
 {% endblock %}

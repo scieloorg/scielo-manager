@@ -45,6 +45,7 @@ class IssueResource(ModelResource):
         allowed_methods = ['get', ]
         filtering = {
             "journal": ('exact'),
+            "is_marked_up": ('exact'),
         }
 
     def build_filters(self, filters=None):

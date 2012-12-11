@@ -7,9 +7,11 @@ from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
 from django_factory_boy import auth
+from django.test import TestCase
 
 from journalmanager import forms
 from journalmanager.tests import modelfactories
+from journalmanager import forms
 
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
@@ -493,13 +495,48 @@ class UserFormTests(WebTest):
         self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
         response.mustcontain('bazz', 'bazz@spam.org')
 
-        # check if an email has been sent to the new user
-        self.assertTrue(len(mail.outbox), 1)
-        self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
-
         # check if basic state has been set
         self.assertTrue(response.context['user'].user_collection.get(
             pk=self.collection.pk))
+
+    def test_new_users_must_receive_an_email_to_define_their_password(self):
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'),
+            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        # check if an email has been sent to the new user
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
+
+    def test_emails_are_not_sent_when_users_data_are_modified(self):
+        perm = _makePermission(perm='change_user',
+            model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]),
+            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        # check if the outbox is empty
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_POST_workflow_with_invalid_formdata(self):
         """
@@ -622,9 +659,6 @@ class JournalFormTests(WebTest):
                              'title-TOTAL_FORMS',
                              'title-INITIAL_FORMS',
                              'title-MAX_NUM_FORMS',
-                             'studyarea-TOTAL_FORMS',
-                             'studyarea-INITIAL_FORMS',
-                             'studyarea-MAX_NUM_FORMS',
                              'mission-TOTAL_FORMS',
                              'mission-INITIAL_FORMS',
                              'mission-MAX_NUM_FORMS',
@@ -698,10 +732,12 @@ class JournalFormTests(WebTest):
         use_license = modelfactories.UseLicenseFactory.create()
         language = modelfactories.LanguageFactory.create()
         subject_category = modelfactories.SubjectCategoryFactory.create()
+        study_area = modelfactories.StudyAreaFactory.create()
 
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
 
         form['journal-sponsor'] = [sponsor.pk]
+        form['journal-study_areas'] = [study_area.pk]
         form['journal-ctrl_vocabulary'] = 'decs'
         form['journal-frequency'] = 'Q'
         form['journal-final_num'] = ''
@@ -1315,7 +1351,6 @@ class StatusFormTests(WebTest):
 
         response = form.submit()
 
-        self.assertTrue('alert alert-error' in response.body)
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response,
             'journalmanager/edit_journal_status.html')
@@ -1612,3 +1647,55 @@ class ArticleFormTests(WebTest):
             args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
 
         self.assertEqual(form.method.lower(), 'post')
+
+
+class SectionTitleFormValidationTests(TestCase):
+
+    def test_same_titles_in_same_languages_must_be_invalid(self):
+        journal = modelfactories.JournalFactory()
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        journal.languages.add(language)
+
+        section = modelfactories.SectionFactory(journal=journal)
+        section.add_title('Original Article', language=language)
+
+        post_dict = {
+            u'titles-INITIAL_FORMS': 0,
+            u'titles-TOTAL_FORMS': 1,
+            u'legacy_code': u'',
+            u'titles-0-language': unicode(language.pk),
+            u'titles-0-title': u'Original Article',
+        }
+
+        section_forms = forms.get_all_section_forms(post_dict,
+            journal=journal, section=section)
+
+        self.assertTrue(section_forms['section_form'].is_valid())
+        self.assertFalse(section_forms['section_title_formset'].is_valid())
+
+    def test_same_titles_in_different_languages_must_be_valid(self):
+        journal = modelfactories.JournalFactory()
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                         name='english')
+        language2 = modelfactories.LanguageFactory.create(iso_code='pt',
+                                                         name='portuguese')
+        journal.languages.add(language)
+        journal.languages.add(language2)
+
+        section = modelfactories.SectionFactory(journal=journal)
+        section.add_title('Original Article', language=language)
+
+        post_dict = {
+            u'titles-INITIAL_FORMS': 0,
+            u'titles-TOTAL_FORMS': 1,
+            u'legacy_code': u'',
+            u'titles-0-language': unicode(language2.pk),
+            u'titles-0-title': u'Original Article',
+        }
+
+        section_forms = forms.get_all_section_forms(post_dict,
+            journal=journal, section=section)
+
+        self.assertTrue(section_forms['section_form'].is_valid())
+        self.assertTrue(section_forms['section_title_formset'].is_valid())

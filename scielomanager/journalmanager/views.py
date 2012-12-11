@@ -247,7 +247,7 @@ def user_index(request):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
 
     col_users = models.User.cached_objects.filter(
-        usercollections__collection__in=[collection]).distinct('username')
+        usercollections__collection__in=[collection]).distinct('username').order_by('username')
 
     users = get_paginated(col_users, request.GET.get('page', 1))
 
@@ -298,14 +298,16 @@ def add_user(request, user_id=None):
 
             usercollectionsformset.save()
 
-            # mail the user, requesting for password change
-            password_form = auth_forms.PasswordResetForm({'email': new_user.email})
-            if password_form.is_valid():
-                opts = {
-                    'use_https': request.is_secure(),
-                    'request': request,
-                }
-                password_form.save(**opts)
+            # if it is a new user, mail him
+            # requesting for password change
+            if not user_id:
+                password_form = auth_forms.PasswordResetForm({'email': new_user.email})
+                if password_form.is_valid():
+                    opts = {
+                        'use_https': request.is_secure(),
+                        'request': request,
+                    }
+                    password_form.save(**opts)
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('user.index'))
@@ -376,12 +378,10 @@ def add_journal(request, journal_id=None):
     form_hash = None
 
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
-    JournalStudyAreaFormSet = inlineformset_factory(models.Journal, models.JournalStudyArea, form=JournalStudyAreaForm, extra=1, can_delete=True)
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
         journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
-        studyareaformset = JournalStudyAreaFormSet(request.POST, instance=journal, prefix='studyarea')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
@@ -391,10 +391,8 @@ def add_journal(request, journal_id=None):
             messages.info(request, MSG_FORM_SAVED_PARTIALLY)
         else:
 
-            if journalform.is_valid() and studyareaformset.is_valid() and titleformset.is_valid() \
-                and missionformset.is_valid():
+            if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
                 journalform.save_all(creator=request.user)
-                studyareaformset.save()
                 titleformset.save()
                 missionformset.save()
                 messages.info(request, MSG_FORM_SAVED)
@@ -411,12 +409,10 @@ def add_journal(request, journal_id=None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
 
             journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
-            studyareaformset = JournalStudyAreaFormSet(pended_post_data, instance=journal, prefix='studyarea')
             titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
         else:
             journalform = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
-            studyareaformset = JournalStudyAreaFormSet(instance=journal, prefix='studyarea')
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 
@@ -434,7 +430,6 @@ def add_journal(request, journal_id=None):
 
     return render_to_response('journalmanager/add_journal.html', {
                               'add_form': journalform,
-                              'studyareaformset': studyareaformset,
                               'titleformset': titleformset,
                               'missionformset': missionformset,
                               'has_cover_url': has_cover_url,
@@ -639,15 +634,12 @@ def add_section(request, journal_id, section_id=None):
         section = get_object_or_404(models.Section, pk=section_id)
         has_relation = section.is_used()
 
-    SectionTitleFormSet = inlineformset_factory(models.Section, models.SectionTitle,
-        form=SectionTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+    all_forms = get_all_section_forms(request.POST, journal, section)
 
-    SectionTitleFormSet.form = staticmethod(curry(SectionTitleForm, journal=journal))
+    add_form = all_forms['section_form']
+    section_title_formset = all_forms['section_title_formset']
 
     if request.method == 'POST':
-
-        add_form = SectionForm(request.POST, instance=section)
-        section_title_formset = SectionTitleFormSet(request.POST, instance=section, prefix='titles')
 
         if add_form.is_valid() and section_title_formset.is_valid():
             add_form = add_form.save_all(journal)
@@ -662,10 +654,6 @@ def add_section(request, journal_id, section_id=None):
             return HttpResponseRedirect(reverse('section.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
-
-    else:
-        add_form = SectionForm(instance=section)
-        section_title_formset = SectionTitleFormSet(instance=section, prefix='titles')
 
     return render_to_response('journalmanager/add_section.html', {
                               'add_form': add_form,

@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 import caching.base
 
 
-class EventManager(models.Manager):
+class EventManager(caching.base.CachingManager):
 
     def scheduled_events(self, actual_date=date.today()):
         """

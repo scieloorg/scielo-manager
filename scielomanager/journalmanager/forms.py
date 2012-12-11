@@ -6,6 +6,7 @@ from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory, BaseFormSet
 from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
 from django.core.exceptions import NON_FIELD_ERRORS
@@ -52,7 +53,7 @@ class UserCollectionContext(ModelForm):
 
         if collections_qset is not None:
             self.fields['collections'].queryset = models.Collection.objects.filter(
-                pk__in = (collection.collection.pk for collection in collections_qset))
+                pk__in=(collection.collection.pk for collection in collections_qset))
 
 
 class JournalForm(ModelForm):
@@ -70,6 +71,9 @@ class JournalForm(ModelForm):
     subject_categories = forms.ModelMultipleChoiceField(models.SubjectCategory.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories')}),
         required=False)
+    study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
+        required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
     collection = forms.ModelChoiceField(models.Collection.objects.none(),
         required=True)
@@ -80,7 +84,7 @@ class JournalForm(ModelForm):
 
         if collections_qset is not None:
             self.fields['collection'].queryset = models.Collection.objects.filter(
-                pk__in = (collection.collection.pk for collection in collections_qset))
+                pk__in=(collection.collection.pk for collection in collections_qset))
 
     def save_all(self, creator):
         journal = self.save(commit=False)
@@ -333,8 +337,9 @@ class SectionTitleForm(ModelForm):
             title = self.cleaned_data['title']
             language = self.cleaned_data['language']
 
-            if models.Section.objects.filter(titles__title__iexact=title, \
-                titles__language=language, journal=self.journal).exists():
+            if models.Section.objects.filter(titles__title__iexact=title,
+                titles__language=language, journal=self.journal,
+                is_trashed=False).exists():
 
                 raise forms.ValidationError({NON_FIELD_ERRORS:\
                     _('This section title already exists for this Journal.')})
@@ -368,6 +373,40 @@ class SectionForm(ModelForm):
         exclude = ('journal', 'code')
 
 
+def get_all_section_forms(post_dict, journal, section):
+    """
+    Get all forms/formsets used by the Section form.
+
+    :Parameters:
+      - `post_dict`: The POST querydict, even if it is empty
+      - `journal`: The journal instance the section is part of
+      - `section`: The section instance bound to the form. Must be
+        a new instance when creating an empty form
+    """
+    args = []
+    kwargs = {}
+
+    if section:
+        kwargs['instance'] = section
+
+    if post_dict:
+        args.append(post_dict)
+
+    section_title_formset = inlineformset_factory(models.Section,
+        models.SectionTitle, form=SectionTitleForm, extra=1,
+        can_delete=True, formset=FirstFieldRequiredFormSet)
+    section_title_formset.form = staticmethod(
+        curry(SectionTitleForm, journal=journal))
+
+    d = {
+        'section_form': SectionForm(*args, **kwargs),
+        'section_title_formset': section_title_formset(prefix='titles',
+            *args, **kwargs),
+    }
+
+    return d
+
+
 class UserCollectionsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         """
@@ -388,15 +427,7 @@ class UserCollectionsForm(ModelForm):
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
-
-
-class JournalStudyAreaForm(ModelForm):
-    class Meta:
-        model = models.JournalStudyArea
-        widgets = {
-            'studyarea': forms.TextInput(attrs={'class': 'span10'}),
-        }
-
+        
 
 class JournalMissionForm(ModelForm):
     class Meta:
