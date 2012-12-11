@@ -229,6 +229,9 @@ SECTION_CODE_TOTAL_RANDOM_CHARS = 4
 
 CACHE_PREFIX = 'scielomanager:'
 
+#One day (seconds)
+CACHE_COUNT_TIMEOUT = 84600
+
 CACHES = {
     'default': {
         #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
