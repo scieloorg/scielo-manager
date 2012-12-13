@@ -729,12 +729,14 @@ def trash_listing(request):
 
 @permission_required('journalmanager.add_article', login_url=AUTHZ_REDIRECT_URL)
 def add_article(request, journal_id, issue_id):
-
+    article_forms = get_all_article_forms(request.POST, journal=journal_id)
     if request.method == 'POST':
-        article_forms = get_all_article_forms(request.POST, journal=journal_id)
-
+        if all([art_form.is_valid() for art_form in article_forms.values()]):
+            pass
+        else:
+            pass
     else:
-        article_forms = get_all_article_forms(journal=journal_id)
+        pass
 
     return render_to_response(
         'journalmanager/add_article.html',

@@ -427,7 +427,7 @@ class UserCollectionsForm(ModelForm):
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
-        
+
 
 class JournalMissionForm(ModelForm):
     class Meta:
@@ -535,26 +535,33 @@ class ArticleForm(forms.Form):
             self.fields['language'].queryset = language_qs
 
 
-def get_all_article_forms(*args, **kwargs):
+def get_all_article_forms(post_dict, journal):
+    """
+    Get all forms/formsets used by the Article form.
 
-    class BaseAnalyticalAuthorFormSet(BaseFormSet):
+    :Parameters:
+      - `post_dict`: The POST querydict, even if it is empty
+      - `journal`: The journal instance the article is part of
+    """
+    args = []
 
-        def add_fields(self, form, index):
-            super(BaseAnalyticalAuthorFormSet, self).add_fields(form, index)
-            form.affiliations = formset_factory(AffiliationForm)(prefix='affiliations', *args)
-
-    journal = kwargs.pop('journal', None)
+    if post_dict:
+        args.append(post_dict)
 
     # loading allowed languages according to languages defined at the journal level.
     language_qs = models.Journal.objects.get(id=journal).languages.all()
-    abstract_formset = formset_factory(curry(AbstractForm, language_qs=language_qs))(prefix='abstracts', *args)
-    title_formset = formset_factory(curry(TitleForm, language_qs=language_qs))(prefix='titles', *args)
+
+    abstract_formset = formset_factory(AbstractForm, extra=1)(*args, **{'prefix': 'abstracts'})
+    abstract_formset.form = staticmethod(curry(AbstractForm, language_qs=language_qs))
+
+    title_formset = formset_factory(TitleForm, extra=1)(*args, **{'prefix': 'titles'})
+    title_formset.form = staticmethod(curry(TitleForm, language_qs=language_qs))
 
     d = {
-        'article_form': ArticleForm(*args, language_qs=language_qs),
+        'article_form': ArticleForm(*args, **{'language_qs': language_qs}),
         'abstract_formset': abstract_formset,
-        'dates_formset': formset_factory(DatesForm, extra=1)(prefix='dates', *args),
-        'analytical_formset': formset_factory(AnalyticalAuthorForm)(prefix='analyticalauthors', *args),
+        'dates_formset': formset_factory(DatesForm, extra=1)(*args, **{'prefix': 'dates'}),
+        'analytical_formset': formset_factory(AnalyticalAuthorForm)(*args, **{'prefix': 'analyticalauthors'}),
         'title_formset': title_formset
     }
 
