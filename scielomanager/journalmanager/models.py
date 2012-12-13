@@ -406,15 +406,15 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor', null=True, blank=True)
-    previous_title = models.ForeignKey('Journal', related_name='prev_title', null=True, blank=True)
-    use_license = models.ForeignKey('UseLicense')
-    collection = models.ForeignKey('Collection', related_name='journals')
+    sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
+    previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
+    use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
+    collection = models.ForeignKey('Collection', verbose_name=_('Collection'), related_name='journals')
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
-    subject_categories = models.ManyToManyField(SubjectCategory, verbose_name="Subject Categories", related_name="journals", null=True)
-    study_areas = models.ManyToManyField(StudyArea, verbose_name="Study Area", related_name="journals_migration_tmp", null=True)
+    subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
+    study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
 
     #Fields
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
@@ -426,7 +426,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'), max_length=16,
         choices=sorted(choices.SCIELO_ISSN, key=lambda SCIELO_ISSN: SCIELO_ISSN[1]))
     print_issn = models.CharField(_('Print ISSN'), max_length=9)
-    eletronic_issn = models.CharField(_('Eletronic ISSN'), max_length=9)
+    eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512)
     init_year = models.CharField(_('Initial Year'), max_length=4)
     init_vol = models.CharField(_('Initial Volume'), max_length=16)
