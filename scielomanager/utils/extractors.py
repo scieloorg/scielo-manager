@@ -138,14 +138,13 @@ class ArticleXMLDataExtractor(object):
                         'surname': contrib['name']['surname'],
                         'given-names': contrib['name']['given-names'],
                         'role': contrib['role'],
-                        'affiliations': contrib['xref']['@rid'],
+                        'affiliations': contrib['xref']['@rid'].split(),
                     }
                     contrib_node.append(contrib_data)
 
         # affiliations
         if 'aff' in article_meta:
-            contribgrp_node = front.setdefault('contrib-group', {})
-            aff_node = contribgrp_node.setdefault('affiliations', [])
+            aff_node = front.setdefault('affiliations', [])
             for aff in article_meta['aff']:
                 aff_data = {
                     'addr-line': aff['addr-line'],
@@ -160,20 +159,30 @@ class ArticleXMLDataExtractor(object):
             abstract_node = front.setdefault('abstract', {})
             if '@lang_id' in article_meta['abstract']:
                 # the abstract must be persisted as html
-                abs_as_dict = dict([key, value] for key, value in article_meta['abstract'].items() if not key.startswith('@'))
-                abs_text = self._schema.serialize(abs_as_dict).replace('<?xml version="1.0" encoding="utf-8"?>\n', '')
+                abs_as_dict = article_meta['abstract'].copy()
+                del(abs_as_dict['@lang_id'])
+
                 lang_key = article_meta['abstract']['@lang_id']
+                abs_text = self._schema.serialize(abs_as_dict).replace('<?xml version="1.0" encoding="utf-8"?>\n', '')
                 abstract_node[lang_key] = abs_text
 
             for abs_trans in article_meta['trans-abstract']:
                 if '@lang_id' in abs_trans:
                     # the abstract must be persisted as html
-                    abs_as_dict = dict([key, value] for key, value in abs_trans.items() if not key.startswith('@'))
+                    abs_as_dict = abs_trans.copy()
+                    del(abs_as_dict['@lang_id'])
+
                     abs_text = self._schema.serialize(abs_as_dict).replace('<?xml version="1.0" encoding="utf-8"?>\n', '')
+
                     lang_key = abs_trans['@lang_id']
                     abstract_node[lang_key] = abs_text
 
-
+        # keyword-group
+        if 'kwd-group' in article_meta:
+            keywordgroup_node = front.setdefault('keyword-group', {})
+            for kwd in article_meta['kwd-group']:
+                kwd_node = keywordgroup_node.setdefault(kwd['@lang_id'], [])
+                kwd_node.extend(kwd['kwd'])
 
         return front
 
@@ -185,5 +194,6 @@ class ArticleXMLDataExtractor(object):
         """
         data = {}
         data.update(self._extract_front_journal_meta())
+        data.update(self._extract_front_article_meta())
 
         return data

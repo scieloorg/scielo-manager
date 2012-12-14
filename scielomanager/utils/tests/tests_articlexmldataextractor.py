@@ -126,3 +126,12 @@ class ArticleXMLDataExtractorTests(MockerTestCase):
 
         extr = self._makeOne(xml, porteira_lib=porteira)
         self.assertEqual(extr._extract_front_journal_meta(), expected)
+
+    def test_get_front_meta(self):
+        import os
+        import json
+        here = os.path.abspath(os.path.dirname(__file__))
+        extr = extractors.ArticleXMLDataExtractor(open(os.path.join(here, 'sample-article.xml')))
+        expected_result = open(os.path.join(here, 'sample-article.json'))
+
+        self.assertEqual(extr.get_front_meta(), json.load(expected_result))
