@@ -31,6 +31,9 @@ class ArticleXMLDataExtractor(object):
             return True
 
     def _extract_front_journal_meta(self):
+        """
+        Extracts metadata from ``/article/front/journal-meta/`` substructure.
+        """
         journal_meta = self._data['article']['front']['journal-meta']
 
         front = {}
@@ -57,9 +60,122 @@ class ArticleXMLDataExtractor(object):
 
         # journal-id
         if 'journal-id' in journal_meta:
-            front['journal-id'] = journal_meta['journal-id']
+            front['journal-id'] = journal_meta['journal-id']['#text']
 
-        return front.copy()
+        return front
+
+    def _extract_front_article_meta(self):
+        article_meta = self._data['article']['front']['article-meta']
+
+        front = {}
+
+        # default-language
+        if '@lang_id' in self._data['article']:
+            front['default-language'] = self._data['article']['@lang_id']
+
+        # pub-date
+        if 'pub-date' in article_meta:
+            pub_date = {}
+            if 'month' in article_meta['pub-date']:
+                pub_date['month'] = article_meta['pub-date']['month']
+
+            if 'year' in article_meta['pub-date']:
+                pub_date['year'] = article_meta['pub-date']['year']
+
+            if 'day' in article_meta['pub-date']:
+                pub_date['day'] = article_meta['pub-date']['day']
+
+            if pub_date:
+                front['pub-date'] = pub_date
+
+        # volume
+        if 'volume' in article_meta:
+            front['volume'] = article_meta['volume']
+
+        # number
+        if 'number' in article_meta:
+            front['number'] = article_meta['number']
+
+        # fpage
+        if 'fpage' in article_meta:
+            front['fpage'] = article_meta['fpage']
+
+        # lpage
+        if 'lpage' in article_meta:
+            front['lpage'] = article_meta['lpage']
+
+        # article-ids
+        if 'article-id' in article_meta:
+            for art_id in article_meta['article-id']:
+                id_node = front.setdefault('article-ids', {})
+                id_node[art_id['@pub-id-type']] = art_id['#text']
+
+        # subjects
+        if 'article-categories' in article_meta:
+            subj_node = front.setdefault('subjects', {})
+            for subj in article_meta['article-categories']['subj-group']['subject']:
+                wos_node = subj_node.setdefault('wos', [])
+                wos_node.append(subj)
+
+        # title-group
+        if 'title-group' in article_meta:
+            titlegroup_node = front.setdefault('title-group', {})
+            if 'article-title' in article_meta['title-group']:
+                lang_key = article_meta['title-group']['article-title']['@lang_id']
+                titlegroup_node[lang_key] = article_meta['title-group']['article-title']['#text']
+
+            if 'trans-title-group' in article_meta['title-group']:
+                for title_trans in article_meta['title-group']['trans-title-group']:
+                    titlegroup_node[title_trans['@lang_id']] = title_trans['trans-title']
+
+        # contrib-group
+        if 'contrib-group' in article_meta:
+            if 'contrib' in article_meta['contrib-group']:
+                contribgrp_node = front.setdefault('contrib-group', {})
+                for contrib in article_meta['contrib-group']['contrib']:
+                    contrib_node = contribgrp_node.setdefault(contrib['@contrib-type'], [])
+                    contrib_data = {
+                        'surname': contrib['name']['surname'],
+                        'given-names': contrib['name']['given-names'],
+                        'role': contrib['role'],
+                        'affiliations': contrib['xref']['@rid'],
+                    }
+                    contrib_node.append(contrib_data)
+
+        # affiliations
+        if 'aff' in article_meta:
+            contribgrp_node = front.setdefault('contrib-group', {})
+            aff_node = contribgrp_node.setdefault('affiliations', [])
+            for aff in article_meta['aff']:
+                aff_data = {
+                    'addr-line': aff['addr-line'],
+                    'institution': aff['institution'],
+                    'country': aff['country'],
+                    'ref': aff['@id'],
+                }
+                aff_node.append(aff_data)
+
+        # abstract
+        if 'abstract' in article_meta:
+            abstract_node = front.setdefault('abstract', {})
+            if '@lang_id' in article_meta['abstract']:
+                # the abstract must be persisted as html
+                abs_as_dict = dict([key, value] for key, value in article_meta['abstract'].items() if not key.startswith('@'))
+                abs_text = self._schema.serialize(abs_as_dict).replace('<?xml version="1.0" encoding="utf-8"?>\n', '')
+                lang_key = article_meta['abstract']['@lang_id']
+                abstract_node[lang_key] = abs_text
+
+            for abs_trans in article_meta['trans-abstract']:
+                if '@lang_id' in abs_trans:
+                    # the abstract must be persisted as html
+                    abs_as_dict = dict([key, value] for key, value in abs_trans.items() if not key.startswith('@'))
+                    abs_text = self._schema.serialize(abs_as_dict).replace('<?xml version="1.0" encoding="utf-8"?>\n', '')
+                    lang_key = abs_trans['@lang_id']
+                    abstract_node[lang_key] = abs_text
+
+
+
+        return front
 
     def get_front_meta(self):
         """
