@@ -1528,48 +1528,6 @@ class ArticleFormTests(WebTest):
         self.journal = modelfactories.JournalFactory(collection=self.collection)
         self.issue = modelfactories.IssueFactory(journal=self.journal)
 
-    def test_basic_struture(self):
-        """
-        Just to make sure that the required hidden fields are all
-        present.
-
-        All the management fields from inlineformsets used in this
-        form should be part of this test.
-        """
-        perm = _makePermission(perm='add_article',
-            model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm)
-
-        page = self.app.get(reverse('article.add',
-            args=[self.journal.pk, self.issue.pk]), user=self.user)
-
-        page.mustcontain('titles-0-title',
-                         'titles-0-language',
-                         'titles-TOTAL_FORMS',
-                         'titles-INITIAL_FORMS',
-                         'titles-MAX_NUM_FORMS',
-                         'abstracts-0-abstract',
-                         'abstracts-0-language',
-                         'abstracts-TOTAL_FORMS',
-                         'abstracts-INITIAL_FORMS',
-                         'abstracts-MAX_NUM_FORMS',
-                         'dates-0-thesis',
-                         'dates-0-conference',
-                         'dates-0-publication',
-                         'dates-0-revision',
-                         'dates-TOTAL_FORMS',
-                         'dates-INITIAL_FORMS',
-                         'dates-MAX_NUM_FORMS',
-                         'analyticalauthors-0-firstname',
-                         'analyticalauthors-0-lastname',
-                         'analyticalauthors-0-role',
-                         'analyticalauthors-TOTAL_FORMS',
-                         'analyticalauthors-INITIAL_FORMS',
-                         'analyticalauthors-MAX_NUM_FORMS',
-                         )
-
-        self.assertTemplateUsed(page, 'journalmanager/add_article.html')
-
     def test_required_fields_presence(self):
         """
         Asserts that all the required fields that must be filled by the user
@@ -1582,14 +1540,8 @@ class ArticleFormTests(WebTest):
         page = self.app.get(reverse('article.add',
             args=[self.journal.pk, self.issue.pk]), user=self.user)
 
-        page.mustcontain('first_page',
-                         'last_page',
-                         'publication_country',
-                         'literature_type',
-                         'language',
-                         'bibliographic_standard',
-                         'sponsor',
-                         )
+        page.mustcontain('title',
+                         'author')
 
         self.assertTemplateUsed(page, 'journalmanager/add_article.html')
 
@@ -1647,6 +1599,41 @@ class ArticleFormTests(WebTest):
             args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
 
         self.assertEqual(form.method.lower(), 'post')
+
+    def test_form_with_valid_formdata(self):
+        """
+        Assert correct message when valid post was sent
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        form['title'] = "Resultados iniciais da ..."
+        form['author'] = "Flávio Kreimer"
+
+        response = form.submit().follow()
+
+        response.mustcontain("Article created sucessfully")
+
+    def test_form_with_invalid_formdata(self):
+        """
+        Assert correct message when valid post was sent
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        form['title'] = "Resultados iniciais da ..."
+
+        response = form.submit()
+
+        response.mustcontain("There are some errors or missing data.")
 
 
 class SectionTitleFormValidationTests(TestCase):
