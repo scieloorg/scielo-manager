@@ -18,7 +18,7 @@ class Migration(SchemaMigration):
         db.add_column('maintenancewindow_event', 'is_finished', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
         # Adding field 'Event.event_report'
-        db.add_column('maintenancewindow_event', 'event_report', self.gf('django.db.models.fields.TextField')(default=False), keep_default=False)
+        db.add_column('maintenancewindow_event', 'event_report', self.gf('django.db.models.fields.TextField')(default=''), keep_default=False)
 
 
     def backwards(self, orm):
