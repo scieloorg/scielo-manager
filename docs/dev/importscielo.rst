@@ -141,6 +141,7 @@ Campos comuns entre os tipos:
       </comment>
       <pub-id pub-id-type="">{doi}</pub-id>
       <ext-link ext-link-type="uri" xlink:href="{url_value}">{url}</ext-link>
+      </element-citation>
   </ref>
 
 .. _journal:
@@ -261,7 +262,7 @@ Exemplo da estrutura do XML da referência tipo Software:
 
 .. _report:
 
-  Todos as tags utilizadas nesse tipo estão no XML comun.
+  Exemplo da estrutura do XML da referência tipo Report:
 
 .. code-block:: xml
 
@@ -288,3 +289,7 @@ Exemplo da estrutura do XML da referência tipo Software:
         <publisher-name>{publisher-name}</publisher-name>
     </element-citation>
   </ref>
+
+Documento com informação dos campos que são utilizados na bibliometria:
+
+Enviado em 18/12/2012 Rogério Mugnaini: . _Bibliometria: http://www.python.org/
