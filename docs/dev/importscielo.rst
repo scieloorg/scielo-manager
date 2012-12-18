@@ -290,6 +290,7 @@ Exemplo da estrutura do XML da referência tipo Software:
     </element-citation>
   </ref>
 
-Documento com informação dos campos que são utilizados na bibliometria:
+Documento com os campos que são utilizados na bibliometria:
 
-Enviado em 18/12/2012 Rogério Mugnaini: . _Bibliometria: http://www.python.org/
+Enviado em 18/12/2012 por Rogério Mugnaini: `Bibliometria Campos
+<https://github.com/scieloorg/SciELO-Manager/raw/master/docs/_static/campos_usados_bibliometria.doc>`_.
