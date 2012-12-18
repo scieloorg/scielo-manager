@@ -238,11 +238,15 @@ Exemplo da estrutura do XML da referência tipo Software:
 
 .. _database:
 
+  Database:
+
 .. code-block:: xml
 
   Todos as tags utilizadas nesse tipo estão no XML comun. 
 
 .. _webpage:
+
+  Webpage:
 
 .. code-block:: xml
 
