@@ -1519,6 +1519,7 @@ class SearchFormTests(WebTest):
 
 class ArticleFormTests(WebTest):
 
+
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
@@ -1527,6 +1528,17 @@ class ArticleFormTests(WebTest):
 
         self.journal = modelfactories.JournalFactory(collection=self.collection)
         self.issue = modelfactories.IssueFactory(journal=self.journal)
+
+    def tearDown(self):
+        from journalmanager import mongomodels
+        import pymongo
+
+        conn = mongomodels.MongoConnector()
+        for col in conn.db.collection_names():
+            try:
+                conn.db.drop_collection(col)
+            except pymongo.errors.OperationFailure:
+                continue
 
     def test_required_fields_presence(self):
         """

@@ -9,6 +9,7 @@ PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 execfile(os.path.join(PROJECT_PATH, 'settings.py'))
 
+MONGO_URI = r'mongodb://localhost:27017/journalmanager-tests'
 
 DATABASES = {
     'default': {
