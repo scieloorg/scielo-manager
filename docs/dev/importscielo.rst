@@ -141,6 +141,7 @@ Campos comuns entre os tipos:
       </comment>
       <pub-id pub-id-type="">{doi}</pub-id>
       <ext-link ext-link-type="uri" xlink:href="{url_value}">{url}</ext-link>
+      </element-citation>
   </ref>
 
 .. _journal:
@@ -237,11 +238,15 @@ Exemplo da estrutura do XML da referência tipo Software:
 
 .. _database:
 
+  Database:
+
 .. code-block:: xml
 
   Todos as tags utilizadas nesse tipo estão no XML comun. 
 
 .. _webpage:
+
+  Webpage:
 
 .. code-block:: xml
 
@@ -261,7 +266,7 @@ Exemplo da estrutura do XML da referência tipo Software:
 
 .. _report:
 
-  Todos as tags utilizadas nesse tipo estão no XML comun.
+  Exemplo da estrutura do XML da referência tipo Report:
 
 .. code-block:: xml
 
@@ -288,3 +293,8 @@ Exemplo da estrutura do XML da referência tipo Software:
         <publisher-name>{publisher-name}</publisher-name>
     </element-citation>
   </ref>
+
+Documento com os campos que são utilizados na bibliometria:
+
+Enviado em 18/12/2012 por Rogério Mugnaini: `Bibliometria Campos
+<https://github.com/scieloorg/SciELO-Manager/raw/master/docs/_static/campos_usados_bibliometria.doc>`_.
