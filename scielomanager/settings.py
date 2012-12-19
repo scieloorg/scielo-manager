@@ -232,6 +232,8 @@ CACHE_PREFIX = 'scielomanager:'
 #One day (seconds)
 CACHE_COUNT_TIMEOUT = 84600
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 CACHES = {
     'default': {
         #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',

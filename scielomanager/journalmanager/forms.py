@@ -18,18 +18,6 @@ from scielo_extensions import formfields as fields
 from django.conf import settings
 
 
-class BlindLanguageModelChoiceField(forms.ModelChoiceField):
-    def to_python(self, value):
-        try:
-            language_pk = int(value)
-        except ValueError:
-            raise ValidationError(self.error_messages['invalid_choice'])
-        try:
-            return models.Language.objects.get(pk=language_pk)
-        except models.Language.DoesNotExist:
-            raise ValidationError(self.error_messages['invalid_choice'])
-
-
 class UserCollectionContext(ModelForm):
     """
     Inherit from this base class if you have a ``collections`` attribute
@@ -466,103 +454,9 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
         self.forms[0].empty_permitted = False
 
 
-# Article
-class AbstractForm(forms.Form):
-    language = BlindLanguageModelChoiceField(queryset=models.Language.objects.all())
-    abstract = forms.CharField(label='Abstract', required=True)
-
-    def __init__(self, *args, **kwargs):
-        language_qs = kwargs.pop('language_qs', None)
-        super(AbstractForm, self).__init__(*args, **kwargs)
-
-        if language_qs:
-            self.fields['language'].queryset = language_qs
-
-
-class DatesForm(forms.Form):
-    thesis = forms.DateField(label='Thesis')
-    conference = forms.DateField(label='Conference')
-    publication = forms.DateField(label='Publication')
-    revision = forms.DateField(label='Revision')
-
-
-class AffiliationForm(forms.Form):
-    institution = forms.CharField(label='Institution')
-    country = forms.CharField(label='Country')
-    state = forms.CharField(label='State')
-    city = forms.CharField(label='City')
-    email = forms.CharField(label='E-mail')
-
-
-class AnalyticalAuthorForm(forms.Form):
-    firstname = forms.CharField(label='Firstname')
-    lastname = forms.CharField(label='Lastname')
-    role = forms.ChoiceField(label='Role', choices=choices.AUTHOR_ROLES)
-
-
-class TitleForm(forms.Form):
-    language = BlindLanguageModelChoiceField(queryset=models.Language.objects.all())
-    title = forms.CharField(label='Title', required=True)
-
-    def __init__(self, *args, **kwargs):
-        language_qs = kwargs.pop('language_qs', None)
-        super(TitleForm, self).__init__(*args, **kwargs)
-
-        if language_qs:
-            self.fields['language'].queryset = language_qs
-
-
+#Article
 class ArticleForm(forms.Form):
-    language = BlindLanguageModelChoiceField(queryset=models.Language.objects.all())
-    publication_city = forms.CharField(label='City of publication')
-    publication_state = forms.CharField(label='State of publication')
-    publication_country = forms.CharField(label='Country of publication', required=True)
-    bibliographic_standard = forms.ChoiceField(label='Bibliographic standard',
-                                               choices=choices.STANDARD,
-                                               required=True)
-    sponsor = forms.CharField(label='Sponsor', required=True)
-    literature_type = forms.ChoiceField(label='Type of literature',
-                                        choices=choices.LITERATURE_TYPE,
-                                        required=True)
-    first_page = forms.IntegerField(label='First page', required=True)
-    last_page = forms.IntegerField(label='Last page', required=True)
-
-    def __init__(self, *args, **kwargs):
-        language_qs = kwargs.pop('language_qs', None)
-        super(ArticleForm, self).__init__(*args, **kwargs)
-
-        if language_qs:
-            self.fields['language'].queryset = language_qs
-
-
-def get_all_article_forms(post_dict, journal):
-    """
-    Get all forms/formsets used by the Article form.
-
-    :Parameters:
-      - `post_dict`: The POST querydict, even if it is empty
-      - `journal`: The journal instance the article is part of
-    """
-    args = []
-
-    if post_dict:
-        args.append(post_dict)
-
-    # loading allowed languages according to languages defined at the journal level.
-    language_qs = models.Journal.objects.get(id=journal).languages.all()
-
-    abstract_formset = formset_factory(AbstractForm, extra=1)(*args, **{'prefix': 'abstracts'})
-    abstract_formset.form = staticmethod(curry(AbstractForm, language_qs=language_qs))
-
-    title_formset = formset_factory(TitleForm, extra=1)(*args, **{'prefix': 'titles'})
-    title_formset.form = staticmethod(curry(TitleForm, language_qs=language_qs))
-
-    d = {
-        'article_form': ArticleForm(*args, **{'language_qs': language_qs}),
-        'abstract_formset': abstract_formset,
-        'dates_formset': formset_factory(DatesForm, extra=1)(*args, **{'prefix': 'dates'}),
-        'analytical_formset': formset_factory(AnalyticalAuthorForm)(*args, **{'prefix': 'analyticalauthors'}),
-        'title_formset': title_formset
-    }
-
-    return d
+    title = forms.CharField(label=_('Title'),
+        widget=forms.TextInput(attrs={'class': 'span12'}))
+    author = forms.CharField(label=_('Author'),
+        widget=forms.TextInput(attrs={'class': 'span12'}))
