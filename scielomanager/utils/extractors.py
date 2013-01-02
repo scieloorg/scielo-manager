@@ -144,15 +144,7 @@ class ArticleXMLDataExtractor(object):
 
         # affiliations
         if 'aff' in article_meta:
-            aff_node = front.setdefault('affiliations', [])
-            for aff in article_meta['aff']:
-                aff_data = {
-                    'addr-line': aff['addr-line'],
-                    'institution': aff['institution'],
-                    'country': aff['country'],
-                    'ref': aff['@id'],
-                }
-                aff_node.append(aff_data)
+            front['affiliations'] = self._get_affiliations()
 
         # abstract
         if 'abstract' in article_meta:
@@ -185,6 +177,27 @@ class ArticleXMLDataExtractor(object):
                 kwd_node.extend(kwd['kwd'])
 
         return front
+
+    def _get_affiliations(self):
+        article_meta = self._data['article']['front']['article-meta']
+        aff_node = []
+
+        # handle single elements as multiple
+        if isinstance(article_meta['aff'], dict):
+            raw_affs = [article_meta['aff']]
+        else:
+            raw_affs = article_meta['aff']
+
+        for aff in raw_affs:
+            aff_data = {
+                'addr-line': aff['addr-line'],
+                'institution': aff['institution'],
+                'country': aff['country'],
+                'ref': aff['@id'],
+            }
+            aff_node.append(aff_data)
+
+        return aff_node
 
     def get_front_meta(self):
         """

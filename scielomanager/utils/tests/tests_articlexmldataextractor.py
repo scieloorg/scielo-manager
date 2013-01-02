@@ -1,3 +1,4 @@
+# coding: utf-8
 from mocker import (
     MockerTestCase,
     ARGS,
@@ -135,3 +136,82 @@ class ArticleXMLDataExtractorTests(MockerTestCase):
         expected_result = open(os.path.join(here, 'sample-article.json'))
 
         self.assertEqual(extr.get_front_meta(), json.load(expected_result))
+
+
+class AffiliationsTests(MockerTestCase):
+
+    def _makeOne(self, *args, **kwargs):
+        return extractors.ArticleXMLDataExtractor(*args, **kwargs)
+
+    def test_single_affiliation(self):
+        xml = """
+        <article>
+            <front>
+                <journal-meta>
+                </journal-meta>
+                <article-meta>
+                    <aff id="A01">
+                        <addr-line>São Paulo</addr-line>
+                        <institution>Universidade de São Paulo</institution>
+                        <country>Brasil</country>
+                    </aff>
+                </article-meta>
+            </front>
+        </article>
+        """
+
+        expected = {
+            u'affiliations': [
+                {
+                    u'addr-line': u'São Paulo',
+                    u'ref': u'A01',
+                    u'institution': u'Universidade de São Paulo',
+                    u'country': u'Brasil'
+                }
+            ]
+        }
+
+        extr = self._makeOne(xml)
+        self.assertEqual(extr._extract_front_article_meta(), expected)
+
+    def test_many_affiliations(self):
+        xml = """
+        <article>
+            <front>
+                <journal-meta>
+                </journal-meta>
+                <article-meta>
+                    <aff id="A01">
+                        <addr-line>São Paulo</addr-line>
+                        <institution>Universidade de São Paulo</institution>
+                        <country>Brasil</country>
+                    </aff>
+                    <aff id="A02">
+                        <addr-line>São Paulo</addr-line>
+                        <institution>Faculdades Metropolitanas Unidas</institution>
+                        <country>Brasil</country>
+                    </aff>
+                </article-meta>
+            </front>
+        </article>
+        """
+
+        expected = {
+            u'affiliations': [
+                {
+                    u'addr-line': u'São Paulo',
+                    u'ref': u'A01',
+                    u'institution': u'Universidade de São Paulo',
+                    u'country': u'Brasil'
+                },
+                {
+                    u'addr-line': u'São Paulo',
+                    u'ref': u'A02',
+                    u'institution': u'Faculdades Metropolitanas Unidas',
+                    u'country': u'Brasil'
+                }
+            ]
+        }
+
+        extr = self._makeOne(xml)
+        self.assertEqual(extr._extract_front_article_meta(), expected)
