@@ -198,7 +198,7 @@ class IssueTests(TestCase, MockerTestCase):
                                     journal=journal,
                                     article_obj=article_cls)
 
-        article = issue.create_article(**{'title': 'blah'})
+        article = issue.create_article({'title': 'blah'})
         self.assertIsInstance(article, Article)
 
     def test_create_new_article_with_missing_data(self):
@@ -207,7 +207,7 @@ class IssueTests(TestCase, MockerTestCase):
         issue = IssueFactory.create(volume=9,
             publication_year=2012, journal=journal)
 
-        self.assertRaises(ValueError, lambda: issue.create_article())
+        self.assertRaises(ValueError, lambda: issue.create_article({}))
 
     def test_binding_article_to_issues_when_it_is_created(self):
         article_cls = self.mocker.mock()
@@ -232,7 +232,7 @@ class IssueTests(TestCase, MockerTestCase):
                                     journal=journal,
                                     article_obj=article_cls)
 
-        article = issue.create_article(**{'title': 'blah'})
+        article = issue.create_article({'title': 'blah'})
         self.assertEqual(article.issue_ref, issue.pk)
 
     def test_list_articles(self):
@@ -263,7 +263,7 @@ class IssueTests(TestCase, MockerTestCase):
                                     journal=journal,
                                     article_obj=article_cls)
 
-        article = issue.create_article(**{'title': 'blah'})
+        article = issue.create_article({'title': 'blah'})
 
         articles = issue.list_articles()
         self.assertEqual(len(list(articles)), 1)
@@ -287,7 +287,7 @@ class IssueTests(TestCase, MockerTestCase):
                                     journal=journal,
                                     article_obj=article_cls)
 
-        article = issue.create_article(**{'title': 'blah'})
+        article = issue.create_article({'title': 'blah'})
 
         articles = issue.list_articles()
         self.assertTrue(hasattr(articles, 'next'))

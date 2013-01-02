@@ -456,7 +456,4 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
 
 #Article
 class ArticleForm(forms.Form):
-    title = forms.CharField(label=_('Title'),
-        widget=forms.TextInput(attrs={'class': 'span12'}))
-    author = forms.CharField(label=_('Author'),
-        widget=forms.TextInput(attrs={'class': 'span12'}))
+    xml_data = forms.FileField()

@@ -47,14 +47,12 @@
   <thead>
     <tr>
       <th>{% trans 'Title' %}</th>
-      <th>{% trans 'Author' %}</th>
     </tr>
   </thead>
   <tbody>
     {% for article in issue.list_articles %}
       <tr id="{{ article.journal.pk }}">
-        <td>{{ article.title }}</td>
-        <td>{{ article.author }}</td>
+        <td>{{ article.original_title }}</td>
       </tr>
     {% empty %}
       <tr>

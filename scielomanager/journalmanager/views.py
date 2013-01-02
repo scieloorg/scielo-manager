@@ -733,11 +733,9 @@ def add_article(request, journal_id, issue_id):
     issue = get_object_or_404(models.Issue, pk=issue_id)
 
     if request.method == 'POST':
-        article_form = ArticleForm(request.POST)
+        article_form = ArticleForm(request.POST, request.FILES)
         if article_form.is_valid():
-            form_data = {'title': request.POST.get('title'),
-                'author': request.POST.get('author')}
-            issue.create_article(**form_data)
+            issue.create_article(request.FILES['xml_data'])
             messages.info(request, _('Article created sucessfully'))
             return HttpResponseRedirect(reverse('article.index', args=[journal_id, issue.id]))
         else:

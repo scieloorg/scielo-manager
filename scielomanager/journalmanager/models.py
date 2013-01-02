@@ -26,7 +26,10 @@ import caching.base
 
 import choices
 import mongomodels
-from scielomanager.utils import base28
+from scielomanager.utils import (
+    base28,
+    extractors,
+)
 
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
@@ -45,7 +48,7 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
-    
+
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -844,19 +847,31 @@ class Issue(caching.base.CachingMixin, models.Model):
             ('list_article', 'Can list Articles'),
         )
 
-    def create_article(self, **kwargs):
+    def create_article(self, data):
         """
         Returns a Article instance bound to the current Issue.
+
+        ``data`` is the Article metadata either as a XML in string
+        or file-object, or as Python data structures like dictionaries.
         """
-        if not kwargs:
-            raise ValueError('missing article initial data.')
+        if not data:
+            raise ValueError('cannot create articles without data.')
 
         if not self.pk:
             raise ValueError('issue_ref must not be None. be sure the issue is saved.')
 
-        kwargs['issue_ref'] = self.pk
+        # if data is a string or a file-object, it is treated as XML and
+        # needs to pass through the extraction process.
+        if isinstance(data, basestring) or hasattr(data, 'read'):
+            extr = extractors.ArticleXMLDataExtractor(data)
+            front_meta = extr.get_front_meta()
+        else:
+            front_meta = data
 
-        art = self.article_obj(**kwargs)
+        # add a backref to the Issue it is part of
+        front_meta['issue_ref'] = self.pk
+
+        art = self.article_obj(**front_meta)
         art.save()
 
         return art

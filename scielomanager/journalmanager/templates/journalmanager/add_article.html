@@ -39,32 +39,28 @@
 
   <span class="label">{% trans "Article Information" %}</span>
   <div class="well">
-    <label for="{{ article_form.title.id }}">
-      <span {% if 'required' in forms.article_form.language.flags %}class="req-field"{% endif %}>
-        {{ article_form.title.label }}
+
+    <label for="{{ article_form.xml_data.id }}">
+      <span {% if 'required' in article_form.xml_data.flags %}class="req-field"{% endif %}>
+        {{ article_form.xml_data.label }}
       </span>
     </label>
-    <div class="control-group {% if article_form.title.errors %}error{% endif %}">
-      {{ article_form.title }}
+    <div class="control-group {% if article_form.xml_data.errors %}error{% endif %}">
+      {{ article_form.xml_data }}
     </div>
 
-    <label for="{{ article_form.author.id }}">
-      <span {% if 'required' in article_form.author.flags %}class="req-field"{% endif %}>
-        {{ article_form.author.label }}
-      </span>
-    </label>
-    <div class="control-group {% if article_form.author.errors %}error{% endif %}">
-      {{ article_form.author }}
-    </div>
   </div>
   <div class="row-fluid">
     <input class="btn btn-primary"
     name="submit"
     type="submit"
     value="{% trans "save" %}"/>
-    <input class="btn btn-warning"
+    <input
+    class="btn btn-warning"
+    name="reset"
     type="reset"
-    value="{% trans "cancel" %}"/>
+    value="{% trans 'cancel' %}"
+    onclick="javascript: window.history.back()" />
   </div>
 </form>
 {% endblock %}

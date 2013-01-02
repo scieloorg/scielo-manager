@@ -132,3 +132,10 @@ class Article(MongoConnector):
             return self.col.save(self._data, safe=True)
         except pymongo.errors.PyMongoError, exc:
             raise DbOperationsError(exc)
+
+    @property
+    def original_title(self):
+        try:
+            return self._data['title-group'][self._data['default-language']]
+        except KeyError:
+            return u''

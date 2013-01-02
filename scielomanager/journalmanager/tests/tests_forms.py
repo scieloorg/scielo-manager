@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django_factory_boy import auth
 from django.test import TestCase
+from django.conf import settings
 
 from journalmanager import forms
 from journalmanager.tests import modelfactories
@@ -1519,7 +1520,6 @@ class SearchFormTests(WebTest):
 
 class ArticleFormTests(WebTest):
 
-
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
@@ -1552,8 +1552,7 @@ class ArticleFormTests(WebTest):
         page = self.app.get(reverse('article.add',
             args=[self.journal.pk, self.issue.pk]), user=self.user)
 
-        page.mustcontain('title',
-                         'author')
+        page.mustcontain('xml_data')
 
         self.assertTemplateUsed(page, 'journalmanager/add_article.html')
 
@@ -1616,6 +1615,9 @@ class ArticleFormTests(WebTest):
         """
         Assert correct message when valid post was sent
         """
+        file_name = os.path.join(settings.PROJECT_PATH,
+            'utils', 'tests', 'sample-article.xml')
+
         perm = _makePermission(perm='add_article',
             model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
@@ -1623,8 +1625,7 @@ class ArticleFormTests(WebTest):
         form = self.app.get(reverse('article.add',
             args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
 
-        form['title'] = "Resultados iniciais da ..."
-        form['author'] = "Flávio Kreimer"
+        form.set('xml_data', (file_name, ))
 
         response = form.submit().follow()
 
@@ -1640,8 +1641,6 @@ class ArticleFormTests(WebTest):
 
         form = self.app.get(reverse('article.add',
             args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
-
-        form['title'] = "Resultados iniciais da ..."
 
         response = form.submit()
 
