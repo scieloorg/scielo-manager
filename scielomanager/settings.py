@@ -261,6 +261,9 @@ FILE_UPLOAD_HANDLERS = (
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5Mb
 
+BASE_PATH = PROJECT_PATH
+TEST_DISCOVERY_ROOT = BASE_PATH
+TEST_RUNNER = 'utils.runner.DiscoveryRunner'
 
 ### END App customization settings
 #################################################################
