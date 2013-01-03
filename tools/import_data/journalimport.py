@@ -11,7 +11,7 @@ from django.core import exceptions
 try:
     from scielomanager import settings
 except ImportError:
-    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
     from sys import path
     path.append(BASE_PATH)
 
