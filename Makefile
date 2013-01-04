@@ -5,7 +5,7 @@ SETTINGS = scielomanager.settings
 FIXTURES_DIR = $(APP_PATH)/fixtures
 
 deps:
-	@pip install -r requirements.txt
+	@pip install -f file:`pwd`/libs/ -r requirements.txt
 	@pip install -r requirements-test.txt
 
 clean:

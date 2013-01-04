@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from tastypie.resources import ModelResource
 from tastypie import fields
+from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 
 from journalmanager.models import (
     Journal,
@@ -10,6 +11,7 @@ from journalmanager.models import (
     Collection,
     Issue,
     Section,
+    DataChangeEvent,
 )
 
 
@@ -159,3 +161,37 @@ class JournalResource(ModelResource):
     def dehydrate_study_areas(self, bundle):
         return [area.study_area
             for area in bundle.obj.study_areas.all()]
+
+
+class DataChangeEventResource(ModelResource):
+    collections = fields.ForeignKey(CollectionResource, 'collection')
+
+    content_object = GenericForeignKeyField({
+        Journal: JournalResource,
+        Issue: IssueResource,
+    }, 'content_object')
+
+    class Meta:
+        resource_name = 'changes'
+        queryset = DataChangeEvent.objects.all()
+        excludes = [
+            'object_id',
+            'id',
+        ]
+        filtering = {}
+
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by the collection's name_slug.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(DataChangeEventResource, self).build_filters(filters)
+
+        if 'collection' in filters:
+            issues = DataChangeEvent.objects.filter(
+                collection__name_slug=filters['collection'])
+            orm_filters['pk__in'] = issues
+
+        return orm_filters
