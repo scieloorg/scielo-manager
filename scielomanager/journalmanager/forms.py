@@ -42,6 +42,16 @@ class UserCollectionContext(ModelForm):
                 pk__in=(collection.collection.pk for collection in collections_qset))
 
 
+class AheadForm(ModelForm):
+
+    class Meta():
+        model = models.Journal
+        fields = ('previous_ahead_documents', 'current_ahead_documents')
+        widgets = {
+           'previous_ahead_documents': forms.TextInput(attrs={'class': 'input-small'}),
+           'current_ahead_documents': forms.TextInput(attrs={'class': 'input-small'}),
+           }
+
 class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
