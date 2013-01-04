@@ -18,6 +18,7 @@
   <div class="span1">
     <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
   </div>
+  {% if perms.journalmanager.change_journal %}
   <div class="span11">
     <div class="span12" style="padding-left: 18px;">{% trans 'Total of ahead of print documents at:' %}</div>
     <div class="span12">
@@ -38,6 +39,7 @@
       </form>
     </div>
   </div>
+  {% endif %}
 </div>
 
 <table class="table-issue">
