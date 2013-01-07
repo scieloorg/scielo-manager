@@ -68,6 +68,7 @@ class IssueResource(ModelResource):
 
 
 class CollectionResource(ModelResource):
+
     class Meta:
         queryset = Collection.objects.all()
         resource_name = 'collections'

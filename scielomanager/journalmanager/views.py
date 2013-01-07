@@ -1,5 +1,6 @@
 import json
 import urlparse
+from datetime import datetime
 
 try:
     from collections import OrderedDict
@@ -120,10 +121,25 @@ def list_search(request, model, journal_id):
 def issue_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
+    current_year = datetime.now().year
+    previous_year = current_year - 1
+
+    if request.method == 'POST':
+        aheadform = AheadForm(request.POST, instance=journal, prefix='journal')
+        if aheadform.is_valid():
+            aheadform.save()
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        aheadform = AheadForm(instance=journal, prefix='journal')
+
     return render_to_response(
         'journalmanager/issue_dashboard.html',
         {
             'journal': journal,
+            'aheadform': aheadform,
+            'current_year': current_year,
+            'previous_year': previous_year,
             'issue_grid': journal.issues_as_grid(
                 request.GET.get('is_available')
             ),

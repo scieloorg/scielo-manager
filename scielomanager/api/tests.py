@@ -84,6 +84,7 @@ class JournalRestAPITest(WebTest):
             u'creator',
             u'ctrl_vocabulary',
             u'national_code',
+            u'updated',
             u'frequency',
             u'url_journal',
             u'short_title',
@@ -111,7 +112,6 @@ class JournalRestAPITest(WebTest):
             u'is_indexed_aehci',
             u'use_license',
             u'other_titles',
-            u'updated',
             u'editor_address_country',
             u'acronym',
             u'publisher_state',
@@ -142,10 +142,15 @@ class JournalRestAPITest(WebTest):
             u'pub_status_reason',
             u'title_iso',
             u'notes',
-            u'resource_uri'
+            u'resource_uri',
+            u'previous_ahead_documents',
+            u'current_ahead_documents',
         ]
 
-        self.assertEqual(response.json.keys(), expected_keys)
+        json_keys = response.json.keys()
+
+        for key in expected_keys:
+            self.assertEqual(True, key in json_keys)
 
 
 class CollectionRestAPITest(WebTest):
