@@ -136,3 +136,12 @@ class SectionTitleFactory(factory.Factory):
 
     language = factory.SubFactory(LanguageFactory)
     section = factory.SubFactory(SectionFactory)
+
+
+class DataChangeEventFactory(factory.Factory):
+    FACTORY_FOR = models.DataChangeEvent
+
+    user = factory.SubFactory(auth.UserF)
+    content_object = factory.SubFactory(JournalFactory)
+    collection = factory.SubFactory(CollectionFactory)
+    event_type = 'added'

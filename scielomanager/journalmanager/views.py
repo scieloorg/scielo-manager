@@ -408,13 +408,21 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                journalform.save_all(creator=request.user)
+                saved_journal = journalform.save_all(creator=request.user)
                 titleformset.save()
                 missionformset.save()
                 messages.info(request, MSG_FORM_SAVED)
 
                 if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
                     models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+
+                # record the event
+                models.DataChangeEvent.objects.create(
+                    user=request.user,
+                    content_object=saved_journal,
+                    collection=models.Collection.objects.get_default_by_user(request.user),
+                    event_type='updated' if journal_id else 'added'
+                )
 
                 return HttpResponseRedirect(reverse('journal.index'))
             else:
@@ -563,9 +571,18 @@ def add_issue(request, journal_id, issue_id=None):
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
         if add_form.is_valid() and titleformset.is_valid():
-            add_form.save_all(journal)
+            saved_issue = add_form.save_all(journal)
             titleformset.save()
             messages.info(request, MSG_FORM_SAVED)
+
+            # record the event
+            models.DataChangeEvent.objects.create(
+                user=request.user,
+                content_object=saved_issue,
+                collection=models.Collection.objects.get_default_by_user(request.user),
+                event_type='updated' if issue_id else 'added'
+            )
+
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
