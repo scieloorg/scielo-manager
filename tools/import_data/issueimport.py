@@ -134,26 +134,12 @@ class IssueImport:
         if error:
             return False
 
-        issue.journal = journal
-        issue.creation_date = datetime.now()
-
-        if '31' in record:
-            issue.volume = record['31'][0]
         if '32' in record:
             issue.number = record['32'][0]
-        if '131' in record:
-            issue.suppl_volume = record['131'][0]
-        if '132' in record:
-            issue.suppl_number = record['132'][0]
-        if '33' in record:
-            issue.title = record['33'][0]
-        if '36' in record:
-            issue.order = int(str(record['36'][0])[4:])
+
         if '41' in record:
             if record['41'][0] == 'pr':
                 issue.is_press_release = True
-        if '33' in record:
-            issue.title = record['33'][0]
 
         if '43' in record:
             expanded = subfield.expand(record['43'][0])
@@ -166,6 +152,11 @@ class IssueImport:
                     month_start = 0
             else:
                 month_start = 0
+
+        if '122' in record:
+            issue.total_documents = record['122'][0]
+        else:
+            issue.total_documents = 0
 
         if '65' in record:
             year = record['65'][0][0:4]
@@ -181,12 +172,34 @@ class IssueImport:
             issue.publication_end_month = 0
             issue.publication_year = 0000
 
-        #if '42' in record:
-            #if int(record['42'][0]) == 1:
-                #issue.is_trashed = False
-            #else:
-                #issue.is_trashed = True
+        current_year = datetime.date(datetime.now()).year
+        previous_year = current_year - 1
+        if issue.number.lower() == 'ahead':
+            if int(issue.publication_year) == int(current_year):
+                journal.current_ahead_documents = issue.total_documents
+                print u"ahead {0} de {1} removido da lista de issues, o total ({2}) de documentos foi transferido para models.journal.current_ahead_documents".format(journal.title, issue.publication_year, issue.total_documents)
 
+            if int(issue.publication_year) == int(previous_year):
+                journal.previous_ahead_documents = issue.total_documents
+                print u"ahead {0} de {1} removido da lista de issues, o total ({2}) de documentos foi transferido para models.journal.previous_ahead_documents".format(journal.title, issue.publication_year, issue.total_documents)
+            journal.save()
+            return False
+
+        issue.journal = journal
+        issue.creation_date = datetime.now()
+
+        if '31' in record:
+            issue.volume = record['31'][0]
+        if '131' in record:
+            issue.suppl_volume = record['131'][0]
+        if '132' in record:
+            issue.suppl_number = record['132'][0]
+        if '33' in record:
+            issue.title = record['33'][0]
+        if '36' in record:
+            issue.order = int(str(record['36'][0])[4:])
+        if '33' in record:
+            issue.title = record['33'][0]
         if '200' in record:
             if int(record['200'][0]) == 1:
                 issue.is_marked_up = True
@@ -194,8 +207,6 @@ class IssueImport:
                 issue.is_marked_up = False
         if '62' in record:
             issue.publisher_fullname = record['62'][0]
-        if '122' in record:
-            issue.total_documents = record['122'][0]
         if '85' in record:
             issue.ctrl_vocabulary = record['85'][0]
         if '117' in record:
