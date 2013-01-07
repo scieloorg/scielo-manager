@@ -164,9 +164,9 @@ class JournalResource(ModelResource):
 
 
 class DataChangeEventResource(ModelResource):
-    collections = fields.ForeignKey(CollectionResource, 'collection')
-
-    content_object = GenericForeignKeyField({
+    collection_uri = fields.ForeignKey(CollectionResource, 'collection')
+    seq = fields.IntegerField(attribute='pk', readonly=True)
+    object_uri = GenericForeignKeyField({
         Journal: JournalResource,
         Issue: IssueResource,
     }, 'content_object')
@@ -178,7 +178,7 @@ class DataChangeEventResource(ModelResource):
             'object_id',
             'id',
         ]
-        filtering = {}
+        allowed_methods = ['get', ]
 
     def build_filters(self, filters=None):
         """
@@ -189,9 +189,9 @@ class DataChangeEventResource(ModelResource):
 
         orm_filters = super(DataChangeEventResource, self).build_filters(filters)
 
-        if 'collection' in filters:
-            issues = DataChangeEvent.objects.filter(
-                collection__name_slug=filters['collection'])
-            orm_filters['pk__in'] = issues
+        if 'since' in filters:
+            events = DataChangeEvent.objects.filter(
+                pk__gte=int(filters['since']))
+            orm_filters['pk__in'] = events
 
         return orm_filters

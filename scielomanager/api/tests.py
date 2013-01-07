@@ -5,6 +5,8 @@
 these tests are in a, maybe, wrong app for pragmatic purposes
 of the app `api` not being part of the django installed apps.
 """
+import json
+
 from django_webtest import WebTest
 
 from journalmanager.tests import modelfactories
@@ -353,23 +355,28 @@ class ChangesRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_mandatory_fields(self):
-        resource_filters = DataChangeEventResource().Meta
-        mandatory_filters = []
-        for fltr in mandatory_filters:
-            self.assertTrue(fltr in resource_filters.filtering)
+    def test_since_filter(self):
+        seqs = []
+        for i in range(5):
+            event = modelfactories.DataChangeEventFactory.create()
+            seqs.append(event.pk)
 
-    def test_filter_by_collection(self):
-        import json
-        event1 = modelfactories.DataChangeEventFactory.create()
-        event2 = modelfactories.DataChangeEventFactory.create()
+        response = self.client.get('/api/v1/changes/?since=%s' % seqs[1])
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 4)
 
-        response1 = self.client.get('/api/v1/changes/?collection=%s' % event1.collection.name_slug)
-        self.assertEqual(response1.status_code, 200)
-        self.assertTrue('objects' in response1.content)
-        self.assertEqual(len(json.loads(response1.content)['objects']), 1)
+    def test_post_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.post('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
 
-        response2 = self.client.get('/api/v1/changes/?collection=%s' % event2.collection.name_slug)
-        self.assertEqual(response2.status_code, 200)
-        self.assertTrue('objects' in response2.content)
-        self.assertEqual(len(json.loads(response2.content)['objects']), 1)
+    def test_put_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.put('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.delete('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
