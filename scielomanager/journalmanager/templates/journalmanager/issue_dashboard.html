@@ -15,9 +15,31 @@
 
 {% block content %}
 <div class="row-fluid show-grid">
-  <div class="span10">
+  <div class="span1">
     <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
   </div>
+  {% if perms.journalmanager.change_journal %}
+  <div class="span11">
+    <div class="span12" style="padding-left: 18px;">{% trans 'Total of ahead of print documents at:' %}</div>
+    <div class="span12">
+      <form method="post" action="" enctype="multipart/form-data" class="form-inline">
+        {% csrf_token %}
+        <div class="control-group {% if aheadform.current_ahead_documents.errors %}error{% endif %}" style="
+        float: left; padding-right: 10px;">
+          {{ current_year }} {{ aheadform.current_ahead_documents }}
+        </div>
+        <div class="control-group {% if aheadform.previous_ahead_documents.errors %}error{% endif %}" style="float: left; padding-right: 10px;">
+          {{ previous_year }} {{ aheadform.previous_ahead_documents }}
+        </div>
+        <input
+          class="btn btn-primary"
+          name="submit"
+          type="submit"
+          value="{% trans 'update' %}" />
+      </form>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 <table class="table-issue">
