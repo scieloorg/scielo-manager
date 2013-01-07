@@ -1565,3 +1565,78 @@ class SectionTitleFormValidationTests(TestCase):
 
         self.assertTrue(section_forms['section_form'].is_valid())
         self.assertTrue(section_forms['section_title_formset'].is_valid())
+
+
+class AheadFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the ahead form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.index', args=[self.journal.pk]),
+            user=self.user).forms['ahead-form']
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the ahead form is
+        empty.
+        """
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.index', args=[self.journal.pk]),
+            user=self.user).forms['ahead-form']
+
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the ahead form is
+        ``POST``.
+        """
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.index', args=[self.journal.pk]),
+            user=self.user).forms['ahead-form']
+
+        self.assertEqual(form.method.lower(), 'post')
+
+    def test_basic_structure(self):
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        form = self.app.get(reverse('issue.index', args=[self.journal.pk]),
+            user=self.user).forms['ahead-form']
+
+        self.assertIn('csrfmiddlewaretoken', form.fields)
