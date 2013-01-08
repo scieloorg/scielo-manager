@@ -13,6 +13,8 @@ from django.db import (
     IntegrityError,
     DatabaseError,
     )
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
@@ -26,10 +28,13 @@ import caching.base
 import choices
 from scielomanager.utils import base28
 
+
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
+
+EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
 
 
 #  DEPRECATED (http://ref.scielo.org/5k8wjt)
@@ -42,7 +47,7 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
-    
+
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -847,11 +852,24 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     value = models.TextField()
 
+
+class DataChangeEvent(models.Model):
+    """
+    Tracks data changes to make possible for consumer apps to know
+    what to sync.
+    """
+    changed_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    event_type = models.CharField(max_length=16, choices=EVENT_TYPES)
+    collection = models.ForeignKey(Collection)
+
+
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-
-
 @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """

@@ -1,0 +1,4 @@
+django-extensions
+django-debug-toolbar
+coverage
+django-coverage
