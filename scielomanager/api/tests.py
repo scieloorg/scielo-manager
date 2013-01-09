@@ -5,6 +5,8 @@
 these tests are in a, maybe, wrong app for pragmatic purposes
 of the app `api` not being part of the django installed apps.
 """
+import json
+
 from django_webtest import WebTest
 
 from journalmanager.tests import modelfactories
@@ -13,6 +15,7 @@ from api.resources import (
     IssueResource,
     SectionResource,
     JournalResource,
+    DataChangeEventResource,
     )
 
 
@@ -346,3 +349,39 @@ class SectionsRestAPITest(WebTest):
         ]
 
         self.assertEqual(response.json.keys(), expected_keys)
+
+
+class ChangesRestAPITest(WebTest):
+
+    def test_changes_index(self):
+        event = modelfactories.DataChangeEventFactory.create()
+
+        response = self.client.get('/api/v1/changes/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_since_filter(self):
+        seqs = []
+        for i in range(5):
+            event = modelfactories.DataChangeEventFactory.create()
+            seqs.append(event.pk)
+
+        response = self.client.get('/api/v1/changes/?since=%s' % seqs[1])
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 4)
+
+    def test_post_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.post('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.put('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.delete('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)

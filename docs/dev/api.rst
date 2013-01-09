@@ -25,6 +25,7 @@ Available endpoints
   sponsors-api
   uselicenses-api
   users-api
+  changes-api
 
 
 .. note::
