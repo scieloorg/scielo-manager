@@ -1,7 +1,13 @@
 # coding: utf-8
+from django.utils import unittest
 from django.test import TestCase
 from django_factory_boy import auth
-from mocker import MockerTestCase
+from mocker import (
+    MockerTestCase,
+    ARGS,
+    ANY,
+    KWARGS,
+)
 
 from .modelfactories import (
     IssueFactory,
@@ -91,7 +97,7 @@ class UserProfileTests(TestCase):
         self.assertEqual(profile.avatar_url, expected_url)
 
 
-class IssueTests(TestCase):
+class IssueTests(TestCase, MockerTestCase):
 
     def test_identification_for_suppl_volume(self):
         issue = IssueFactory.create(number='1', suppl_volume='2')
@@ -170,6 +176,121 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 1)
+
+    def test_create_new_article(self):
+        from journalmanager.mongomodels import Article
+
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock(Article)
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.save()
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article({'title': 'blah'})
+        self.assertIsInstance(article, Article)
+
+    def test_create_new_article_with_missing_data(self):
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+            publication_year=2012, journal=journal)
+
+        self.assertRaises(ValueError, lambda: issue.create_article({}))
+
+    def test_binding_article_to_issues_when_it_is_created(self):
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock()
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.issue_ref
+        self.mocker.result(1)
+
+        article_obj.save()
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(pk=1,
+                                    volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article({'title': 'blah'})
+        self.assertEqual(article.issue_ref, issue.pk)
+
+    def test_list_articles(self):
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock()
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.save()
+        self.mocker.result(None)
+
+        article_cls.objects
+        self.mocker.result(article_cls)
+
+        article_cls.find(ARGS)
+        self.mocker.result([{'title': 'blah'}])
+
+        article_cls(title='blah')
+        self.mocker.result(article_obj)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article({'title': 'blah'})
+
+        articles = issue.list_articles()
+        self.assertEqual(len(list(articles)), 1)
+
+    def test_list_articles_returns_generator_objects(self):
+        article_cls = self.mocker.mock()
+        article_obj = self.mocker.mock()
+
+        article_cls(KWARGS)
+        self.mocker.result(article_obj)
+
+        article_obj.save()
+        self.mocker.result(None)
+
+        self.mocker.replay()
+
+        journal = JournalFactory.create()
+
+        issue = IssueFactory.create(volume=9,
+                                    publication_year=2012,
+                                    journal=journal,
+                                    article_obj=article_cls)
+
+        article = issue.create_article({'title': 'blah'})
+
+        articles = issue.list_articles()
+        self.assertTrue(hasattr(articles, 'next'))
 
 
 class LanguageTests(TestCase):

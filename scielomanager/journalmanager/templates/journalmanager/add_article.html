@@ -1,0 +1,66 @@
+{% extends dynamic_tpl %}
+{% load i18n %}
+{% load static %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li>
+    <a href="{% url index %}">{% trans 'Home' %}</a>
+    <span class="divider">/</span>
+  </li>
+  <li>
+    <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
+    <span class="divider">/</span>
+  </li>
+  <li>
+    {{ issue.journal.title_iso }}
+    <span class="divider">/</span>
+  </li>
+  <li>
+    <a href="{% url issue.index issue.journal.pk %}">{% trans 'Issues' %}</a>
+    <span class="divider">/</span>
+  </li>
+  <li>
+    <a href="{% url article.index issue.journal.pk issue.pk %}">{{ issue }}</a>
+    <span class="divider">/</span>
+  </li>
+  <li class="active">
+    {% trans 'New Article' %}
+  </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<form id="article-form"
+      method="post"
+      action=""
+      enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <span class="label">{% trans "Article Information" %}</span>
+  <div class="well">
+
+    <label for="{{ article_form.xml_data.id }}">
+      <span {% if 'required' in article_form.xml_data.flags %}class="req-field"{% endif %}>
+        {{ article_form.xml_data.label }}
+      </span>
+    </label>
+    <div class="control-group {% if article_form.xml_data.errors %}error{% endif %}">
+      {{ article_form.xml_data }}
+    </div>
+
+  </div>
+  <div class="row-fluid">
+    <input class="btn btn-primary"
+    name="submit"
+    type="submit"
+    value="{% trans "save" %}"/>
+    <input
+    class="btn btn-warning"
+    name="reset"
+    type="reset"
+    value="{% trans 'cancel' %}"
+    onclick="javascript: window.history.back()" />
+  </div>
+</form>
+{% endblock %}

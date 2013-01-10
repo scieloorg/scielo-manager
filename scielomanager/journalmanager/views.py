@@ -469,7 +469,7 @@ def add_sponsor(request, sponsor_id=None):
     Handles new and existing sponsors
     """
 
-    if  sponsor_id is None:
+    if sponsor_id is None:
         sponsor = models.Sponsor()
     else:
         sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
@@ -741,3 +741,38 @@ def trash_listing(request):
         'journalmanager/trash_listing.html',
         {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.add_article', login_url=AUTHZ_REDIRECT_URL)
+def add_article(request, journal_id, issue_id):
+
+    issue = get_object_or_404(models.Issue, pk=issue_id)
+
+    if request.method == 'POST':
+        article_form = ArticleForm(request.POST, request.FILES)
+        if article_form.is_valid():
+            issue.create_article(request.FILES['xml_data'])
+            messages.info(request, _('Article created sucessfully'))
+            return HttpResponseRedirect(reverse('article.index', args=[journal_id, issue.id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        article_form = ArticleForm()
+
+    return render_to_response(
+        'journalmanager/add_article.html',
+        {'article_form': article_form, 'issue': issue},
+        context_instance=RequestContext(request)
+    )
+
+
+def article_index(request, journal_id, issue_id):
+    issue = get_object_or_404(models.Issue, pk=issue_id)
+
+    return render_to_response(
+        'journalmanager/article_dashboard.html',
+        {
+          'issue': issue,
+        },
+        context_instance=RequestContext(request)
+    )

@@ -4,12 +4,14 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory, BaseFormSet
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
 from django.core.exceptions import NON_FIELD_ERRORS
-
+from django.core.exceptions import ValidationError
+from django.utils.functional import curry
 from journalmanager import models
 from journalmanager import choices
 from scielo_extensions import formfields as fields
@@ -423,7 +425,7 @@ class UserCollectionsForm(ModelForm):
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
-        
+
 
 class JournalMissionForm(ModelForm):
     class Meta:
@@ -460,3 +462,8 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(FirstFieldRequiredFormSet, self).__init__(*args, **kwargs)
         self.forms[0].empty_permitted = False
+
+
+#Article
+class ArticleForm(forms.Form):
+    xml_data = forms.FileField()

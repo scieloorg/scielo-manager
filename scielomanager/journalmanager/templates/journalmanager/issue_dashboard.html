@@ -47,7 +47,7 @@
     <tr>
       <th>{% trans 'Year' %}</th>
       <th>{% trans 'Volume' %}</th>
-      <th>{% trans 'Numbers' %} 
+      <th>{% trans 'Numbers' %}
         {% if perms.journalmanager.can_reorder_issues %}
           <a id="issue_locked_unlocked" href="javascript:void(0)">
             <img id="issue_locked_unlocked_img" class="img_lock" src="/static/img/lock.png" >
@@ -65,11 +65,15 @@
           <div class="sortable-div">
               <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
                 {% for num in nums %}
-                  {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
-                  {% else %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
-                  {% endif %}
+                  <li class="ui-state-default" id="num_{{ num.id }}">
+                    <a href="{% url article.index journal.pk num.id %}">
+                    {% if not num.number and not num.suppl_number and not num.suppl_volume %}
+                      {% trans 'volume issue' %}
+                    {% else %}
+                      {{ num.identification }}
+                    {% endif %}
+                    </a>
+                  </li>
                 {% endfor %}
               </ul>
             </div>

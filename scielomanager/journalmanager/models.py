@@ -21,10 +21,16 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
+from bson.objectid import ObjectId
 import caching.base
 
 import choices
-from scielomanager.utils import base28
+import mongomodels
+from scielomanager.utils import (
+    base28,
+    extractors,
+)
+
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
@@ -42,7 +48,7 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
-    
+
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -729,6 +735,22 @@ class Section(caching.base.CachingMixin, models.Model):
 
 
 class Issue(caching.base.CachingMixin, models.Model):
+    """
+    Represents an Issue that is bound to a Journal and has some
+    Articles.
+
+    All its Articles are stored in a documental DB, so Issue instances
+    have acquired some functionality in order to fill the gap between
+    these two worlds.
+
+    Custom permissions:
+    * ``list_issue``
+    * ``reorder_issue``
+    * ``add_article``
+    * ``list_article``
+
+    Note that Article permissions are handled by the Issue class.
+    """
 
     #Custom manager
     objects = IssueCustomManager()
@@ -758,6 +780,13 @@ class Issue(caching.base.CachingMixin, models.Model):
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
     order = models.IntegerField(_('Issue Order'), blank=True)
+
+    def __init__(self, *args, **kwargs):
+        # injected dependencies
+        self.article_obj = kwargs.pop('article_obj', mongomodels.Article)
+        self.ObjectId = kwargs.pop('mongoobjectid_obj', ObjectId)
+
+        super(Issue, self).__init__(*args, **kwargs)
 
     @property
     def identification(self):
@@ -813,8 +842,49 @@ class Issue(caching.base.CachingMixin, models.Model):
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
-        permissions = (("list_issue", "Can list Issues"),
-            ("reorder_issue", "Can Reorder Issues"))
+        permissions = (
+            ('list_issue', 'Can list Issues'),
+            ('reorder_issue', 'Can Reorder Issues'),
+            ('add_article', 'Can add Articles'),
+            ('list_article', 'Can list Articles'),
+        )
+
+    def create_article(self, data):
+        """
+        Returns a Article instance bound to the current Issue.
+
+        ``data`` is the Article metadata either as a XML in string
+        or file-object, or as Python data structures like dictionaries.
+        """
+        if not data:
+            raise ValueError('cannot create articles without data.')
+
+        if not self.pk:
+            raise ValueError('issue_ref must not be None. be sure the issue is saved.')
+
+        # if data is a string or a file-object, it is treated as XML and
+        # needs to pass through the extraction process.
+        if isinstance(data, basestring) or hasattr(data, 'read'):
+            extr = extractors.ArticleXMLDataExtractor(data)
+            front_meta = extr.get_front_meta()
+        else:
+            front_meta = data
+
+        # add a backref to the Issue it is part of
+        front_meta['issue_ref'] = self.pk
+
+        art = self.article_obj(**front_meta)
+        art.save()
+
+        return art
+
+    def list_articles(self):
+        """
+        Returns all articles bound to the current Issue.
+        """
+        resultset = self.article_obj.objects.find({'issue_ref': self.pk})
+        for res in resultset:
+            yield self.article_obj(**res)
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
@@ -847,11 +917,10 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     value = models.TextField()
 
+
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-
-
 @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """

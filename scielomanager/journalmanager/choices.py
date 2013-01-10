@@ -78,3 +78,32 @@ JOURNAL_PUBLICATION_STATUS = [
 
 # the index 0 has an empty value
 MONTHS = [(i, month) for i, month in enumerate(calendar.month_name) if i > 0]
+
+AUTHOR_ROLES = [
+    ('nd', 'Not defined'),
+    ('coord', 'coordinator'),
+    ('ed', 'Publisher'),
+    ('org', 'Organizer'),
+    ('tr', 'Translator'),
+]
+
+LITERATURE_TYPE = [
+    ('C','Conference'),
+    ('M','Monograph'),
+    ('MC','Conference papers and monograph'),
+    ('MCP','Project and conference papers as monograph'),
+    ('MP','Project papers and monograph'),
+    ('MS','Monograph series'),
+    ('MSC','Conference papers as monograph series'),
+    ('MSP','Project paperas as monograph series'),
+    ('N','Document in a non convetional form'),
+    ('NC','Conference papers in a non conventional form'),
+    ('P','Project'),
+    ('S','Serial'),
+    ('SC','Project papers as periodical series'),
+    ('SCP','Conference and project papers as periodical series'),
+    ('SP','Project papers as periodical series'),
+    ('T','Thesis and dissertation'),
+    ('TS','Thesis series'),
+
+]

@@ -8,7 +8,9 @@ from django.core.urlresolvers import reverse
 from django.core import mail
 from django_factory_boy import auth
 from django.test import TestCase
+from django.conf import settings
 
+from journalmanager import forms
 from journalmanager.tests import modelfactories
 from journalmanager import forms
 
@@ -26,6 +28,7 @@ def _makePermission(perm, model, app_label='journalmanager'):
     ct = models.ContentType.objects.get(model=model,
                                         app_label=app_label)
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
+
 
 class CollectionFormTests(WebTest):
 
@@ -1513,6 +1516,135 @@ class SearchFormTests(WebTest):
 
         self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo',
             page.body)
+
+
+class ArticleFormTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+        self.issue = modelfactories.IssueFactory(journal=self.journal)
+
+    def tearDown(self):
+        from journalmanager import mongomodels
+        import pymongo
+
+        conn = mongomodels.MongoConnector()
+        for col in conn.db.collection_names():
+            try:
+                conn.db.drop_collection(col)
+            except pymongo.errors.OperationFailure:
+                continue
+
+    def test_required_fields_presence(self):
+        """
+        Asserts that all the required fields that must be filled by the user
+        are displayed in the form.
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user)
+
+        page.mustcontain('xml_data')
+
+        self.assertTemplateUsed(page, 'journalmanager/add_article.html')
+
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        page = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).follow()
+
+        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+        page.mustcontain('not authorized to access')
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the status form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        self.assertEqual(form.enctype, 'multipart/form-data')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the status form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the status form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        self.assertEqual(form.method.lower(), 'post')
+
+    def test_form_with_valid_formdata(self):
+        """
+        Assert correct message when valid post was sent
+        """
+        file_name = os.path.join(settings.PROJECT_PATH,
+            'utils', 'tests', 'sample-article.xml')
+
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        form.set('xml_data', (file_name, ))
+
+        response = form.submit().follow()
+
+        response.mustcontain("Article created sucessfully")
+
+    def test_form_with_invalid_formdata(self):
+        """
+        Assert correct message when valid post was sent
+        """
+        perm = _makePermission(perm='add_article',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('article.add',
+            args=[self.journal.pk, self.issue.pk]), user=self.user).forms['article-form']
+
+        response = form.submit()
+
+        response.mustcontain("There are some errors or missing data.")
 
 
 class SectionTitleFormValidationTests(TestCase):
