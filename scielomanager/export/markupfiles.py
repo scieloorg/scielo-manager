@@ -2,8 +2,6 @@
 from django.conf import settings
 
 from scielomanager.export import bundle
-from scielomanager.journalmanager import choices
-
 
 MEDIA_ROOT = settings.MEDIA_ROOT + '/export/'
 MEDIA_URL = settings.MEDIA_URL + '/export/'
@@ -299,6 +297,55 @@ def generate(journal, issue):
             ('es_issue.mds', unicode(export_l10n_issue_es)),
             ('pt_issue.mds', unicode(export_l10n_issue_pt)),
             ('journal-standard.txt', unicode(export_journal_standard)),
+        ]
+    except AttributeError as exc:
+        raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))
+    else:
+        pkg = bundle.Bundle(*packmeta)
+
+    pkg_filename = bundle.generate_filename('markupfiles', filetype='zip')
+
+    pkg.deploy(MEDIA_ROOT + pkg_filename)
+    return MEDIA_URL + pkg_filename
+
+
+class L10nIssueAhead(L10nIssue):
+
+    def __init__(self, journal, year, language):
+        self._journal = journal
+        self._year = year
+
+    @property
+    def title_ahead(self):
+        return self._journal.short_title + ' n.ahead ' + self._year
+
+    def __unicode__(self):
+        rows = '\r\n'.join([
+            self.title_ahead,
+            '',
+        ])
+        return rows
+
+
+def generate_ahead(journal_id, year):
+    from scielomanager.journalmanager import models
+    journal = models.Journal.objects.get(id=journal_id)
+
+    export_automata = Automata(journal)
+    # export_issue = Issue(issue)
+    export_l10n_issue_en = L10nIssueAhead(journal, year, 'en')
+    export_l10n_issue_pt = L10nIssueAhead(journal, year, 'pt')
+    export_l10n_issue_es = L10nIssueAhead(journal, year, 'es')
+    # export_journal_standard = JournalStandard(journal)
+
+    try:
+        packmeta = [
+            ('automata.mds', unicode(export_automata)),
+            # ('issue.mds', unicode(export_issue)),
+            ('en_issue.mds', unicode(export_l10n_issue_en)),
+            ('es_issue.mds', unicode(export_l10n_issue_es)),
+            ('pt_issue.mds', unicode(export_l10n_issue_pt)),
+            # ('journal-standard.txt', unicode(export_journal_standard)),
         ]
     except AttributeError as exc:
         raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))
