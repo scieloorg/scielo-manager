@@ -41,6 +41,9 @@
         </span>
       </div>
     </div>
+    <div>
+      <p><input type="checkbox" name="all_issues" id="all_issues" /> {% trans 'all issues' %}</p>
+    </div>
     <div class="row-fluid">
       <input class="btn btn-primary"
              name="submit"
@@ -82,9 +85,14 @@
   $(document).ready(function() {
     $("#{{form.journal.auto_id}}").change(function() {
       var selected = $('option:selected', this).val();
+      var what_issues = '&is_marked_up=False'; //default issues filter
+      if ($("#all_issues").is(":checked")){
+        //considering all issues, markedup or not.
+        var what_issues = '';
+      }
       $('#loading').show();
       $.ajax({
-        url: '/api/v1/issues/?format=json&limit=0&journal=' + selected,
+        url: '/api/v1/issues/?format=json&limit=0&journal=' + selected + what_issues,
         success: function(data) {
           $("#{{form.issue.auto_id}} option").remove();
           for (var issue in data['objects']) {
@@ -95,10 +103,40 @@
 
             $("#{{form.issue.auto_id}}").append('<option value="'+issue_id+'">'+display+'</option>');
           }
+          //Ahead for current and last year
+          $("#{{form.issue.auto_id}}").append('<option value="ahead:{{previous_year}}">' + '{{previous_year}} - Ahead' + '</option>');
+          $("#{{form.issue.auto_id}}").append('<option value="ahead:{{current_year}}">' + '{{current_year}} - Ahead' + '</option>');
           $('#loading').hide();
         }
       });
     });
+    $("#all_issues").change(function() {
+      var selected = $('#id_journal').val();
+      var what_issues = '&is_marked_up=False'; //default issues filter
+      if ($("#all_issues").is(":checked")){
+        //considering all issues, markedup or not.
+        var what_issues = '';
+      }
+      if (selected != ''){
+        $('#loading').show();
+        $.ajax({
+          url: '/api/v1/issues/?format=json&limit=0&journal=' + selected + what_issues,
+          success: function(data) {
+            $("#{{form.issue.auto_id}} option").remove();
+            for (var issue in data['objects']) {
+              var label = data['objects'][issue]['label'];
+              var year = data['objects'][issue]['publication_year'];
+              var issue_id = data['objects'][issue]['id'];
+              var display = year + ' - ' + label;
+
+              $("#{{form.issue.auto_id}}").append('<option value="'+issue_id+'">'+display+'</option>');
+            }
+            $('#loading').hide();
+          }
+        });
+      }
+    });
   });
+
 </script>
 {% endblock %}
