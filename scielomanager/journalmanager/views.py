@@ -28,9 +28,12 @@ from django.conf import settings
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
-from scielomanager.tools import get_paginated
-from scielomanager.tools import get_referer_view
-from scielomanager.tools import PendingPostData
+from scielomanager.tools import (
+    get_paginated,
+    get_referer_view,
+    PendingPostData,
+    asbool,
+)
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -768,12 +771,12 @@ def ajx_list_issues(request):
     journal_id = request.GET.get('j', None)
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
-    is_marked_up = bool(request.GET.get('imu', False))
+    all_issues = asbool(request.GET.get('all', True))
 
     journal_issues = journal.issue_set.all()
 
-    if is_marked_up:
-        journal_issues = journal_issues.filter(is_marked_up=is_marked_up)
+    if not all_issues:
+        journal_issues = journal_issues.filter(is_marked_up=False)
 
     issues = []
     for issue in journal_issues:

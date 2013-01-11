@@ -82,47 +82,36 @@
 {% block extrafooter %}
 {{ block.super }}
 <script type="text/javascript">
-  $(document).ready(function() {
-    $("#{{form.journal.auto_id}}").change(function() {
-      var selected = $('option:selected', this).val();
-      var what_issues = '&imu=0'; //default issues filter
-      if ($("#all_issues").is(":checked")){
-        //considering all issues, markedup or not.
-        var what_issues = '';
-      }
-      $('#loading').show();
-      $.ajax({
-        url: '{% url ajx.list_issues %}?j=' + selected + what_issues,
-        success: function(data) {
-          $("#{{form.issue.auto_id}} option").remove();
-          for (var issue in data) {
-            $("#{{form.issue.auto_id}}").append('<option value="'+data[issue]["id"]+'">'+data[issue]["text"]+'</option>');
-          }
-          $('#loading').hide();
+
+  function qry_data(journal, is_all) {
+    $('#loading').show();
+    $.ajax({
+      url: "{% url ajx.list_issues %}?j=" + journal + "&all=" + is_all,
+      success: function (data) {
+        $("#{{form.issue.auto_id}} option").remove();
+        for (var issue in data) {
+          var item = '<option value="' + data[issue]["id"] + '">' + data[issue]["text"] + '</option>';
+          $("#{{form.issue.auto_id}}").append(item);
         }
-      });
+        $('#loading').hide();
+      }
     });
+  }
+
+  $(document).ready(function() {
+
+    $("#{{form.journal.auto_id}}").change(function() {
+      var journal = $("option:selected", this).val();
+      var is_all = $("#all_issues").is(":checked") ? 1 : 0;
+      qry_data(journal, is_all);
+    });
+
     $("#all_issues").change(function() {
-      var selected = $('#id_journal').val();
-      var what_issues = '&imu=0'; //default issues filter
-      if ($("#all_issues").is(":checked")){
-        //considering all issues, markedup or not.
-        var what_issues = '';
-      }
-      if (selected != ''){
-        $('#loading').show();
-        $.ajax({
-          url: '{% url ajx.list_issues %}?j=' + selected + what_issues,
-          success: function(data) {
-            $("#{{form.issue.auto_id}} option").remove();
-            for (var issue in data) {
-              $("#{{form.issue.auto_id}}").append('<option value="'+data[issue]["id"]+'">'+data[issue]["text"]+'</option>');
-            }
-            $('#loading').hide();
-          }
-        });
-      }
+      var journal = $("#id_journal").val();
+      var is_all = $("#all_issues").is(":checked") ? 1 : 0;
+      qry_data(journal, is_all);
     });
+
   });
 
 </script>
