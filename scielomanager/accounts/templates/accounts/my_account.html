@@ -9,8 +9,20 @@
 {% endblock %}
 
 {% block content %}
-    <ul>
-        <li><a href="{% url journalmanager.password_change %}">Change my password</a></li>
-        <li>Update my personal information</li>
-    </ul>
+    <div class="span8">
+        <ul>
+            <li><a href="{% url journalmanager.password_change %}">Change my password</a></li>
+            <li>Update my personal information</li>
+        </ul>
+    </div>
+    <div class="span4 alert alert-info">
+        <h4>API Token</h4>
+        <p>{{user.api_key.key}}</p>
+        <p>
+            <a href="http://docs.scielo.org/projects/scielo-manager/en/latest/dev/api.html"
+               target="_blank">
+                {% trans 'Read more about the API usage' %}
+            </a>
+        </p>
+    </div>
 {% endblock %}

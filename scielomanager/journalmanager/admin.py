@@ -2,19 +2,12 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-# from tastypie.admin import ApiKeyInline
-# from tastypie.models import ApiAccess, ApiKey
+from tastypie.models import ApiAccess
 
 from scielomanager.journalmanager.models import *
 
 
-# class UserModelAdmin(UserAdmin):
-#     inlines = UserAdmin.inlines + [ApiKeyInline]
-
-# admin.site.register(ApiKey)
-# admin.site.register(ApiAccess)
-# admin.site.unregister(User)
-# admin.site.register(User, UserModelAdmin)
+admin.site.register(ApiAccess)
 
 
 class JournalMissionInline(admin.StackedInline):
