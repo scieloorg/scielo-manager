@@ -14,25 +14,25 @@ Tag: <ref>
 
 Tipos possíveis no atributo Publication-Type:
 
-#. journal_.
+#. journal_
 
-#. book_.
+#. book_
 
-#. confproc_.
+#. confproc_
 
-#. thesis_.
+#. thesis_
 
-#. software
+#. software_
 
-#. database
+#. database_
 
-#. webpage
+#. webpage_
 
-#. patent
+#. patent_
 
-#. report
+#. report_
 
-#. newspaper
+#. newspaper_
 
 **Publication-Type: Journal**
 
@@ -141,6 +141,7 @@ Campos comuns entre os tipos:
       </comment>
       <pub-id pub-id-type="">{doi}</pub-id>
       <ext-link ext-link-type="uri" xlink:href="{url_value}">{url}</ext-link>
+      </element-citation>
   </ref>
 
 .. _journal:
@@ -219,3 +220,81 @@ Exemplo da estrutura do XML da referência tipo Thesis:
       <isbn>{isbn}</isbn>
       <pub-id pub-id-type="">{pmid}</pub-id>
   </ref>
+
+.. _software:
+
+Exemplo da estrutura do XML da referência tipo Software:
+
+.. code-block:: xml
+
+  <ref id="{id}">
+      <element-citation publication-type="">
+          <edition>{edition}}</edition>
+          <publisher-loc>{publisher-loc}</publisher-loc>
+          <publisher-name>{publisher-name}</publisher-name>
+          <year>{year}</year>
+      </element-citation>
+  </ref>
+
+.. _database:
+
+  Database:
+
+.. code-block:: xml
+
+  Todos as tags utilizadas nesse tipo estão no XML comun. 
+
+.. _webpage:
+
+  Webpage:
+
+.. code-block:: xml
+
+  Todos as tags utilizadas nesse tipo estão no XML comun. 
+
+.. _patent:
+
+  Exemplo da estrutura do XML da referência tipo Webpage:
+
+.. code-block:: xml
+
+  <ref id="{id}">
+    <element-citation publication-type="">
+        <patent country="{country}">{country}</patent>
+    </element-citation>
+  </ref>
+
+.. _report:
+
+  Exemplo da estrutura do XML da referência tipo Report:
+
+.. code-block:: xml
+
+  <ref id="{id}">
+    <element-citation publication-type="">
+        <chapter-title>{chapter}</chapter-title>
+        <series>{source}</series>
+        <publisher-loc>{publisher-loc}</publisher-loc>
+        <publisher-name>{publisher-name}</publisher-name>
+    </element-citation>
+  </ref>
+
+.. _newspaper:
+
+  Exemplo da estrutura do XML da referência tipo Newspaper:
+  
+.. code-block:: xml
+
+  <ref id="{id}">
+    <element-citation publication-type="">
+        <series>{series}</series>
+        <article-title>{article-title}</article-title>
+        <publisher-loc>{publisher-loc}}</publisher-loc>
+        <publisher-name>{publisher-name}</publisher-name>
+    </element-citation>
+  </ref>
+
+Documento com os campos que são utilizados na bibliometria:
+
+Enviado em 18/12/2012 por Rogério Mugnaini: `Bibliometria Campos
+<https://github.com/scieloorg/SciELO-Manager/raw/master/docs/_static/campos_usados_bibliometria.doc>`_.

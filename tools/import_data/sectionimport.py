@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 try:
     from scielomanager import settings
 except ImportError:
-    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
     from sys import path
     path.append(BASE_PATH)
     import settings
@@ -85,7 +85,7 @@ class SectionImport:
                 section.title = sec['es']
             else:
                 section.title = ''
-            section.code = sec_key
+            section.legacy_code = sec_key
             section.journal = journal
             section.creation_date = datetime.now()
             section.save(force_insert=True)

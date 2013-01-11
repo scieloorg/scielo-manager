@@ -32,6 +32,7 @@ and design decisions.
    dev/exporttoisis
    dev/api
    dev/importscielo
+   dev/json_sample
 
 Indices and tables
 ==================

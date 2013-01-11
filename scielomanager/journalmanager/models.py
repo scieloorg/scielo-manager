@@ -13,6 +13,8 @@ from django.db import (
     IntegrityError,
     DatabaseError,
     )
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext as __
@@ -26,10 +28,13 @@ import caching.base
 import choices
 from scielomanager.utils import base28
 
+
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('cached_objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
+
+EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
 
 
 #  DEPRECATED (http://ref.scielo.org/5k8wjt)
@@ -42,7 +47,7 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
-    
+
 
 class AppCustomManager(caching.base.CachingManager):
     """
@@ -378,6 +383,18 @@ class SubjectCategory(caching.base.CachingMixin, models.Model):
         return self.term
 
 
+class StudyArea(caching.base.CachingMixin, models.Model):
+
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+
+    study_area = models.CharField(_('Study Area'), max_length=256,
+        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
+
+    def __unicode__(self):
+        return self.study_area
+
+
 class Journal(caching.base.CachingMixin, models.Model):
     """
     Represents a Journal that is managed by one SciELO Collection.
@@ -394,16 +411,19 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
-    sponsor = models.ManyToManyField('Sponsor', related_name='journal_sponsor', null=True, blank=True)
-    previous_title = models.ForeignKey('Journal', related_name='prev_title', null=True, blank=True)
-    use_license = models.ForeignKey('UseLicense')
-    collection = models.ForeignKey('Collection', related_name='journals')
+    sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
+    previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
+    use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
+    collection = models.ForeignKey('Collection', verbose_name=_('Collection'), related_name='journals')
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=16, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
-    subject_categories = models.ManyToManyField(SubjectCategory, verbose_name="Subject Categories", related_name="journals", null=True)
+    subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
+    study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
 
     #Fields
+    current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)
+    previous_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the previous year'), max_length=3, default=0, blank=True, null=True)
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
     title_iso = models.CharField(_('ISO abbreviated title'), max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'), max_length=256, db_index=True, null=True)
@@ -413,7 +433,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'), max_length=16,
         choices=sorted(choices.SCIELO_ISSN, key=lambda SCIELO_ISSN: SCIELO_ISSN[1]))
     print_issn = models.CharField(_('Print ISSN'), max_length=9)
-    eletronic_issn = models.CharField(_('Eletronic ISSN'), max_length=9)
+    eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512)
     init_year = models.CharField(_('Initial Year'), max_length=4)
     init_vol = models.CharField(_('Initial Volume'), max_length=16)
@@ -561,14 +581,6 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
         verbose_name_plural = 'Journal Publication Events'
         ordering = ['created_at']
         permissions = (("list_publication_events", "Can list Publication Events"),)
-
-
-class JournalStudyArea(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    journal = models.ForeignKey(Journal, related_name='study_areas')
-    study_area = models.CharField(_('Study Area'), max_length=256,
-        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
 
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
@@ -840,11 +852,24 @@ class PendedValue(caching.base.CachingMixin, models.Model):
     name = models.CharField(max_length=255)
     value = models.TextField()
 
+
+class DataChangeEvent(models.Model):
+    """
+    Tracks data changes to make possible for consumer apps to know
+    what to sync.
+    """
+    changed_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    event_type = models.CharField(max_length=16, choices=EVENT_TYPES)
+    collection = models.ForeignKey(Collection)
+
+
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-
-
 @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """

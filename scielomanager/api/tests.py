@@ -5,9 +5,18 @@
 these tests are in a, maybe, wrong app for pragmatic purposes
 of the app `api` not being part of the django installed apps.
 """
+import json
+
 from django_webtest import WebTest
 
 from journalmanager.tests import modelfactories
+
+from api.resources import (
+    IssueResource,
+    SectionResource,
+    JournalResource,
+    DataChangeEventResource,
+    )
 
 
 class JournalRestAPITest(WebTest):
@@ -16,6 +25,12 @@ class JournalRestAPITest(WebTest):
         response = self.client.get('/api/v1/journals/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
+
+    def test_journal_filters(self):
+        resource_filters = JournalResource().Meta
+        mandatory_filters = ['is_trashed']
+        for fltr in mandatory_filters:
+            self.assertTrue(fltr in resource_filters.filtering)
 
     def test_journal_getone(self):
         journal = modelfactories.JournalFactory.create()
@@ -69,6 +84,7 @@ class JournalRestAPITest(WebTest):
             u'creator',
             u'ctrl_vocabulary',
             u'national_code',
+            u'updated',
             u'frequency',
             u'url_journal',
             u'short_title',
@@ -96,7 +112,6 @@ class JournalRestAPITest(WebTest):
             u'is_indexed_aehci',
             u'use_license',
             u'other_titles',
-            u'updated',
             u'editor_address_country',
             u'acronym',
             u'publisher_state',
@@ -127,10 +142,15 @@ class JournalRestAPITest(WebTest):
             u'pub_status_reason',
             u'title_iso',
             u'notes',
-            u'resource_uri'
+            u'resource_uri',
+            u'previous_ahead_documents',
+            u'current_ahead_documents',
         ]
 
-        self.assertEqual(response.json.keys(), expected_keys)
+        json_keys = response.json.keys()
+
+        for key in expected_keys:
+            self.assertEqual(True, key in json_keys)
 
 
 class CollectionRestAPITest(WebTest):
@@ -209,6 +229,12 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
+    def test_issue_filters(self):
+        resource_filters = IssueResource().Meta
+        mandatory_filters = ['journal', 'is_marked_up']
+        for fltr in mandatory_filters:
+            self.assertTrue(fltr in resource_filters.filtering)
+
     def test_post_data(self):
         issue = modelfactories.IssueFactory.create()
         response = self.client.post('/api/v1/issues/')
@@ -285,6 +311,12 @@ class SectionsRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
+    def test_section_filters(self):
+        resource_filters = SectionResource().Meta
+        mandatory_filters = ['journal']
+        for fltr in mandatory_filters:
+            self.assertTrue(fltr in resource_filters.filtering)
+
     def test_post_data(self):
         section = modelfactories.SectionFactory.create()
         response = self.client.post('/api/v1/sections/')
@@ -317,3 +349,39 @@ class SectionsRestAPITest(WebTest):
         ]
 
         self.assertEqual(response.json.keys(), expected_keys)
+
+
+class ChangesRestAPITest(WebTest):
+
+    def test_changes_index(self):
+        event = modelfactories.DataChangeEventFactory.create()
+
+        response = self.client.get('/api/v1/changes/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_since_filter(self):
+        seqs = []
+        for i in range(5):
+            event = modelfactories.DataChangeEventFactory.create()
+            seqs.append(event.pk)
+
+        response = self.client.get('/api/v1/changes/?since=%s' % seqs[1])
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 4)
+
+    def test_post_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.post('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.put('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.client.delete('/api/v1/changes/')
+        self.assertEqual(response.status_code, 405)

@@ -229,6 +229,11 @@ SECTION_CODE_TOTAL_RANDOM_CHARS = 4
 
 CACHE_PREFIX = 'scielomanager:'
 
+#One day (seconds)
+CACHE_COUNT_TIMEOUT = 84600
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 CACHES = {
     'default': {
         #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -256,6 +261,9 @@ FILE_UPLOAD_HANDLERS = (
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5Mb
 
+BASE_PATH = PROJECT_PATH
+TEST_DISCOVERY_ROOT = BASE_PATH
+TEST_RUNNER = 'utils.runner.DiscoveryRunner'
 
 ### END App customization settings
 #################################################################

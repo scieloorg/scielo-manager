@@ -10,7 +10,7 @@
 </ul>
 {% endblock %}
 
-{% block content %}
+{% block form_content %}
 <form id="collection-form" method="post" enctype="multipart/form-data">
   {% csrf_token %}
   <span class="label">{% trans "Collection Information" %}</span>
@@ -161,15 +161,15 @@
       </div>
     </div>
   </div>
-  <input 
-    class="btn btn-primary" 
-    name="submit" 
-    type="submit" 
+  <input
+    class="btn btn-primary"
+    name="submit"
+    type="submit"
     value="{% trans "save" %}" />
-  <input 
-    class="btn btn-warning" 
-    name="reset" 
-    type="reset" 
+  <input
+    class="btn btn-warning"
+    name="reset"
+    type="reset"
     value="{% trans "cancel" %}"
     onclick="javascript: window.history.back()" />
 </form>

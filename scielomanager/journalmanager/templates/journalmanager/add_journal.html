@@ -39,6 +39,8 @@
 
 {% block messages %}
   {% if add_form.errors or add_form.non_field_errors %}
+  <div class="alert alert-error">
+    <button class="close" data-dismiss="alert" type="button">×</button>
     <ul>
       {% for field in add_form %}
         {% if field.errors %}
@@ -48,11 +50,12 @@
       {% for errors in add_form.non_field_errors %}
         <li>{{ errors }}</li>
       {% endfor %}
-    <ul>
+    </ul>
+  </div>
   {% endif %}
 {% endblock%}
 
-{% block content %}
+{% block form_content %}
   {% if request.GET.resume %}
     <form id="journal-form"
           method="post"
@@ -242,39 +245,27 @@
 
   <span class="label"><a name="subject"></a>{% trans "Subject" %}</span>
   <div class="well">
-    <table id="studyareaformset" class="table table-bordered table-striped">
-      <thead>
-          <tr>
-          	<td>
-          		{% trans "Study Area" %}
-            	{% field_help studyareaformset.forms.0.study_area.label studyareaformset.forms.0.study_area.help_text term-study-area %}
-            </td>
-          </tr>
-      </thead>
-      <tbody>
-        {% for form in studyareaformset.forms %}
-        <tr id="{{ form.prefix }}-row">
-          <td>
-            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-            {{ form.study_area }}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <p>
-      {{ studyareaformset.management_form }}
-    </p>
+    <div class="control-group {% if add_form.study_areas.errors %}error{% endif %}">
+      <label for="{{ add_form.study_areas.auto_id }}">
+        <span {% if add_form.study_areas.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.study_areas.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.study_areas }}
+        {% field_help add_form.study_areas.label add_form.study_areas.help_text term-study_areas %}
+      </div>
+    </div>
     <div class="control-group {% if add_form.subject_categories.errors %}error{% endif %}">
-    <label for="{{ add_form.subject_categories.auto_id }}">
-      <span {% if add_form.subject_categories.field.required %}class="req-field"{% endif %}>
-        {% trans add_form.subject_categories.label %}
-      </span>
-    </label>
-    <div class="controls">
-      {{ add_form.subject_categories }}
-      {% field_help add_form.subject_categories.label add_form.subject_categories.help_text term-subject_categories %}
+      <label for="{{ add_form.subject_categories.auto_id }}">
+        <span {% if add_form.subject_categories.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.subject_categories.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.subject_categories }}
+        {% field_help add_form.subject_categories.label add_form.subject_categories.help_text term-subject_categories %}
+      </div>
     </div>
     <div class="control-group {% if add_form.subject_descriptors.errors %}error{% endif %}">
       <label for="{{ add_form.subject_descriptors.auto_id }}">
@@ -282,7 +273,6 @@
           {% trans add_form.subject_descriptors.label %}
         </span>
       </label>
-    </div>
       <div class="controls">
         {% field_help add_form.subject_descriptors.label add_form.subject_descriptors.help_text term-subject-descriptors %}
         {{ add_form.subject_descriptors }}
@@ -883,22 +873,22 @@
   </div>
 
   <div class="row-fluid">
-      <input 
-        class="btn btn-primary" 
-        name="submit" 
-        type="submit" 
+      <input
+        class="btn btn-primary"
+        name="submit"
+        type="submit"
         value="{% trans "save" %}" />
-      <input 
-        class="btn btn-warning" 
-        type="reset" 
+      <input
+        class="btn btn-warning"
+        type="reset"
         value="{% trans "cancel" %}"
         onclick="javascript: window.history.back()" />
       {% if is_new %}
-      <input 
-        class="btn btn-large btn-primary" 
-        name="pend" 
-        style="line-height: 1; position: fixed; bottom: 10px; right: 19px;" 
-        type="submit" 
+      <input
+        class="btn btn-large btn-primary"
+        name="pend"
+        style="line-height: 1; position: fixed; bottom: 10px; right: 19px;"
+        type="submit"
         value="{% trans "Save to Continue Later" %}" />
       {% endif %}
   </div>
@@ -919,10 +909,6 @@
     $('#missionformset tbody tr').formset({
       formCssClass: 'dynamic-missionformset-form',
       prefix: '{{ missionformset.prefix }}'
-    });
-    $('#studyareaformset tbody tr').formset({
-      formCssClass: 'dynamic-studyareaformset-form',
-      prefix: '{{ studyareaformset.prefix }}'
     });
     $('.popup').popupWindow({
       scrollbars:1,

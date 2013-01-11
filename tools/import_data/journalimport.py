@@ -11,7 +11,7 @@ from django.core import exceptions
 try:
     from scielomanager import settings
 except ImportError:
-    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
     from sys import path
     path.append(BASE_PATH)
 
@@ -114,10 +114,12 @@ class JournalImport:
     def load_studyarea(self, journal, areas):
 
         for i in areas:
-            studyarea = JournalStudyArea()
-            studyarea.study_area = i
-            journal.study_areas.add(studyarea)
-            self.charge_summary("studyarea")
+            try:
+                studyarea = StudyArea.objects.get(study_area=i)
+                journal.studyareas.add(studyarea)
+                self.charge_summary("studyarea")
+            except:
+                self.charge_summary("studyarea_{0}_notdefined".format(i))
 
     def load_textlanguage(self, journal, langs):
 

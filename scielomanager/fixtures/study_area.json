@@ -1,0 +1,58 @@
+[
+  {
+    "pk": 1, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Agricultural Sciences"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Applied Social Sciences"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Biological Sciences"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Engineering"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Exact and Earth Sciences"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "journalmanager.studyarea",
+    "fields": {
+      "study_area": "Health Sciences"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Human Sciences"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "journalmanager.studyarea", 
+    "fields": {
+      "study_area": "Linguistics, Letters and Arts"
+    }
+  }
+]
