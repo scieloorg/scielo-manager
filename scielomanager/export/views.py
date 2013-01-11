@@ -9,9 +9,8 @@ from scielomanager.export import markupfiles
 
 
 def markup_files(request):
+
     if request.method == 'POST':
-        current_year = datetime.now().year
-        previous_year = int(datetime.now().year) - 1
 
         if 'ahead' in request.POST['issue']:
             year = request.POST['issue'].split(':')[1]
@@ -28,6 +27,6 @@ def markup_files(request):
     form = forms.MarkupFilesForm(user=request.user)
     return render_to_response('export/markup_files.html',
                               {'form': form,
-                              'previous_year': previous_year,
-                              'current_year': current_year},
+                              'previous_year': datetime.now().year,
+                              'current_year': int(datetime.now().year) - 1},
                               context_instance=RequestContext(request))
