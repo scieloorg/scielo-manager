@@ -1,7 +1,20 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from scielomanager.journalmanager.models import *
+from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
+# from tastypie.admin import ApiKeyInline
+# from tastypie.models import ApiAccess, ApiKey
+
+from scielomanager.journalmanager.models import *
+
+
+# class UserModelAdmin(UserAdmin):
+#     inlines = UserAdmin.inlines + [ApiKeyInline]
+
+# admin.site.register(ApiKey)
+# admin.site.register(ApiAccess)
+# admin.site.unregister(User)
+# admin.site.register(User, UserModelAdmin)
 
 
 class JournalMissionInline(admin.StackedInline):
@@ -139,8 +152,8 @@ class JournalPublicationEventsAdmin(admin.ModelAdmin):
     def queryset(self, request):
         return JournalPublicationEvents.nocacheobjects
 
-    list_display = ['journal', 'status', 'created_at',]
-    list_filter = ['status',]
-    search_fields = ['journal',]
+    list_display = ['journal', 'status', 'created_at']
+    list_filter = ['status']
+    search_fields = ['journal']
 
 admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
