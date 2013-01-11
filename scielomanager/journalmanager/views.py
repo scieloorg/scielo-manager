@@ -758,3 +758,28 @@ def trash_listing(request):
         'journalmanager/trash_listing.html',
         {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
+
+
+@login_required
+def ajx_list_issues(request):
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    journal_id = request.GET.get('j', None)
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    is_marked_up = bool(request.GET.get('imu', False))
+
+    journal_issues = journal.issue_set.all()
+
+    if is_marked_up:
+        journal_issues = journal_issues.filter(is_marked_up=is_marked_up)
+
+    issues = []
+    for issue in journal_issues:
+        text = '{0} - {1}'.format(issue.publication_year, issue.label)
+        issues.append({'id': issue.pk, 'text': text})
+
+    response_data = json.dumps(issues)
+
+    return HttpResponse(response_data, mimetype="application/json")
