@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from tastypie.resources import ModelResource
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
+from tastypie.authentication import ApiKeyAuthentication
+from tastypie.authorization import DjangoAuthorization
 
 from journalmanager.models import (
     Journal,
@@ -15,6 +17,11 @@ from journalmanager.models import (
 )
 
 
+class ApiKeyAuthMeta:
+    authentication = ApiKeyAuthentication()
+    authorization = DjangoAuthorization()
+
+
 class SectionResource(ModelResource):
     journal = fields.ForeignKey('api.resources.JournalResource',
         'journal')
@@ -22,7 +29,7 @@ class SectionResource(ModelResource):
         'issue_set')
     titles = fields.CharField(readonly=True)
 
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = Section.objects.all()
         resource_name = 'sections'
         allowed_methods = ['get']
@@ -41,7 +48,7 @@ class IssueResource(ModelResource):
         'journal')
     sections = fields.ManyToManyField(SectionResource, 'section')
 
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
         resource_name = 'issues'
         allowed_methods = ['get', ]
@@ -69,28 +76,28 @@ class IssueResource(ModelResource):
 
 class CollectionResource(ModelResource):
 
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = Collection.objects.all()
         resource_name = 'collections'
         allowed_methods = ['get', ]
 
 
 class SponsorResource(ModelResource):
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = Sponsor.objects.all()
         resource_name = 'sponsors'
         allowed_methods = ['get', ]
 
 
 class UseLicenseResource(ModelResource):
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = UseLicense.objects.all()
         resource_name = 'uselicenses'
         allowed_methods = ['get', ]
 
 
 class UserResource(ModelResource):
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = User.objects.all()
         resource_name = 'users'
         allowed_methods = ['get', ]
@@ -118,7 +125,7 @@ class JournalResource(ModelResource):
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
 
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = Journal.objects.all().filter()
         resource_name = 'journals'
         allowed_methods = ['get', ]
@@ -172,7 +179,7 @@ class DataChangeEventResource(ModelResource):
         Issue: IssueResource,
     }, 'content_object')
 
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         resource_name = 'changes'
         queryset = DataChangeEvent.objects.all()
         excludes = [
