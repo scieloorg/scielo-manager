@@ -86,7 +86,7 @@
   function qry_data(journal, is_all) {
     $('#loading').show();
     $.ajax({
-      url: "{% url ajx.list_issues %}?j=" + journal + "&all=" + is_all,
+      url: "{% url ajx.list_issues_for_markup_files %}?j=" + journal + "&all=" + is_all,
       success: function (data) {
         $("#{{form.issue.auto_id}} option").remove();
         for (var issue in data) {

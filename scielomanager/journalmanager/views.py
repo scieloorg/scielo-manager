@@ -764,7 +764,19 @@ def trash_listing(request):
 
 
 @login_required
-def ajx_list_issues(request):
+def ajx_list_issues_for_markup_files(request):
+    """
+    Lists the issues of a given journal to be used by the
+    ``markup_files.html`` page.
+
+    The following values must be passed as querystring parameters:
+
+    ``j`` is a journal's id
+
+    ``all`` is a boolean value that returns all issues
+    from a journal or only the ones containing the attribute
+    ``is_marked_up`` set to False.
+    """
     if not request.is_ajax():
         return HttpResponse(status=400)
 
