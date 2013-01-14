@@ -575,56 +575,6 @@ class JournalStandardTests(MockerTestCase):
         self.assertIsInstance(journal_meta, unicode)
 
 
-class AheadTests(MockerTestCase):
-    def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.Ahead(*args, **kwargs)
-
-    def test_legend(self):
-        dummy_journal = self.mocker.mock()
-        dummy_year = self.mocker.mock()
-
-        dummy_journal.title_iso
-        self.mocker.result('Star Wars')
-
-        self.mocker.replay()
-
-        ahead = self._makeOne(dummy_journal, dummy_year)
-
-        self.assertEqual(ahead.legend, 'Star Wars n.ahead')
-
-    def test_period(self):
-        dummy_journal = self.mocker.mock()
-        dummy_year = self.mocker.mock()
-
-        self.mocker.replay()
-
-        ahead = self._makeOne(dummy_journal, dummy_year)
-
-        self.assertEqual(ahead.period, '/')
-
-    def test_order(self):
-        dummy_journal = self.mocker.mock()
-
-        self.mocker.replay()
-
-        journal = self._makeOne(dummy_journal, '2012')
-        self.assertEqual(journal.order, '201250')
-
-    def test_perfect_unicode_representation(self):
-        dummy_journal = self.mocker.mock()
-
-        dummy_journal.title_iso
-        self.mocker.result('Star Wars')
-
-        self.mocker.replay()
-
-        expected_result = 'Star Wars n.ahead\r\n/\r\n201250\r\n\r\n'
-
-        ahead = self._makeOne(dummy_journal, '2012')
-        self.assertEqual(unicode(ahead), expected_result)
-
-
 class L10nIssueTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
         from scielomanager.export import markupfiles
@@ -1037,6 +987,56 @@ class L10nIssueTests(MockerTestCase):
         vocabulary = l10nissue.ctrl_vocabulary
         self.assertEqual(vocabulary, u'Health Sciences Descriptors')
         self.assertIsInstance(vocabulary, unicode)
+
+
+class AheadTests(MockerTestCase):
+    def _makeOne(self, *args, **kwargs):
+        from scielomanager.export import markupfiles
+        return markupfiles.Ahead(*args, **kwargs)
+
+    def test_legend(self):
+        dummy_journal = self.mocker.mock()
+        dummy_year = self.mocker.mock()
+
+        dummy_journal.title_iso
+        self.mocker.result('Star Wars')
+
+        self.mocker.replay()
+
+        ahead = self._makeOne(dummy_journal, dummy_year)
+
+        self.assertEqual(ahead.legend, 'Star Wars n.ahead')
+
+    def test_period(self):
+        dummy_journal = self.mocker.mock()
+        dummy_year = self.mocker.mock()
+
+        self.mocker.replay()
+
+        ahead = self._makeOne(dummy_journal, dummy_year)
+
+        self.assertEqual(ahead.period, '/')
+
+    def test_order(self):
+        dummy_journal = self.mocker.mock()
+
+        self.mocker.replay()
+
+        journal = self._makeOne(dummy_journal, '2012')
+        self.assertEqual(journal.order, '201250')
+
+    def test_perfect_unicode_representation(self):
+        dummy_journal = self.mocker.mock()
+
+        dummy_journal.title_iso
+        self.mocker.result('Star Wars')
+
+        self.mocker.replay()
+
+        expected_result = 'Star Wars n.ahead\r\n/\r\n201250\r\n\r\n'
+
+        ahead = self._makeOne(dummy_journal, '2012')
+        self.assertEqual(unicode(ahead), expected_result)
 
 
 class L10nAheadTests(MockerTestCase):
