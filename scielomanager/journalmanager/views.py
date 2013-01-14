@@ -28,9 +28,12 @@ from django.conf import settings
 
 from scielomanager.journalmanager import models
 from scielomanager.journalmanager.forms import *
-from scielomanager.tools import get_paginated
-from scielomanager.tools import get_referer_view
-from scielomanager.tools import PendingPostData
+from scielomanager.tools import (
+    get_paginated,
+    get_referer_view,
+    PendingPostData,
+    asbool,
+)
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -758,3 +761,40 @@ def trash_listing(request):
         'journalmanager/trash_listing.html',
         {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
+
+
+@login_required
+def ajx_list_issues_for_markup_files(request):
+    """
+    Lists the issues of a given journal to be used by the
+    ``markup_files.html`` page.
+
+    The following values must be passed as querystring parameters:
+
+    ``j`` is a journal's id
+
+    ``all`` is a boolean value that returns all issues
+    from a journal or only the ones containing the attribute
+    ``is_marked_up`` set to False.
+    """
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    journal_id = request.GET.get('j', None)
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    all_issues = asbool(request.GET.get('all', True))
+
+    journal_issues = journal.issue_set.all()
+
+    if not all_issues:
+        journal_issues = journal_issues.filter(is_marked_up=False)
+
+    issues = []
+    for issue in journal_issues:
+        text = '{0} - {1}'.format(issue.publication_year, issue.label)
+        issues.append({'id': issue.pk, 'text': text})
+
+    response_data = json.dumps(issues)
+
+    return HttpResponse(response_data, mimetype="application/json")

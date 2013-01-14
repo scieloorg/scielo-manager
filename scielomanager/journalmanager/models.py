@@ -24,6 +24,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
 import caching.base
+from tastypie.models import create_api_key
 
 import choices
 from scielomanager.utils import base28
@@ -891,3 +892,5 @@ def journal_pub_status_post_save(sender, instance, created, **kwargs):
 
     JournalPublicationEvents.objects.create(journal=instance,
         status=instance.pub_status, changed_by=instance.pub_status_changed_by, reason=instance.pub_status_reason)
+
+models.signals.post_save.connect(create_api_key, sender=User)
