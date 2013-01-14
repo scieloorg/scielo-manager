@@ -1585,8 +1585,8 @@ class AheadFormTests(WebTest):
         """
         perm_issue_list = _makePermission(perm='list_issue',
             model='issue', app_label='journalmanager')
-        perm_journal_change = _makePermission(perm='change_journal',
-            model='journal', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_issue_list)
 
@@ -1602,8 +1602,8 @@ class AheadFormTests(WebTest):
         """
         perm_issue_list = _makePermission(perm='list_issue',
             model='issue', app_label='journalmanager')
-        perm_journal_change = _makePermission(perm='change_journal',
-            model='journal', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_issue_list)
 
@@ -1619,8 +1619,8 @@ class AheadFormTests(WebTest):
         """
         perm_issue_list = _makePermission(perm='list_issue',
             model='issue', app_label='journalmanager')
-        perm_journal_change = _makePermission(perm='change_journal',
-            model='journal', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_issue_list)
 
@@ -1632,8 +1632,8 @@ class AheadFormTests(WebTest):
     def test_basic_structure(self):
         perm_issue_list = _makePermission(perm='list_issue',
             model='issue', app_label='journalmanager')
-        perm_journal_change = _makePermission(perm='change_journal',
-            model='journal', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_issue',
+            model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_issue_list)
 
