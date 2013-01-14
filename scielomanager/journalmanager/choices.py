@@ -67,6 +67,9 @@ PDF_DOWNLOAD = [
 TITLE_CATEGORY = [
     ('paralleltitle', 'Parallel Title'),
     ('other', 'Other'),
+    ('abbrev_scopus', 'Scopus (abbreviated)'),
+    ('abbrev_wos', 'Web of Science (abbreviated)'),
+    ('abbrev_nlm', 'National Library of Medicine (abbreviated)'),
 ]
 
 JOURNAL_PUBLICATION_STATUS = [
