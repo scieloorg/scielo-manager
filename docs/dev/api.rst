@@ -12,6 +12,20 @@ If you have any problems or requests please contact
 **Current version:** API v1
 
 
+.. note::
+
+  Although all data are available to be consumed by the API, the requesting
+  user needs to be authorized by the system.
+  This authorization is made by Api Key, sending a request header
+  as follows::
+
+    ``Authorization: ApiKey <username>:<api_key>``
+
+  Or as GET params::
+
+    ``?username=<username>&api_key=<api_key>``
+
+
 Available endpoints
 -------------------
 
