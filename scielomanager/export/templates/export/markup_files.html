@@ -93,6 +93,9 @@
           var item = '<option value="' + data[issue]["id"] + '">' + data[issue]["text"] + '</option>';
           $("#{{form.issue.auto_id}}").append(item);
         }
+        //Ahead for current and last year
+        $("#{{form.issue.auto_id}}").append('<option value="ahead:2012">' + '2012 - Ahead' + '</option>');
+        $("#{{form.issue.auto_id}}").append('<option value="ahead:2013">' + '2013 - Ahead' + '</option>');
         $('#loading').hide();
       }
     });
