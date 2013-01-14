@@ -3,6 +3,8 @@
 {% load static %}
 {% load scielo_common %}
 
+{% block page_title %}{% trans "Issues" %} - {{journal.title}}{% endblock %}
+
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>

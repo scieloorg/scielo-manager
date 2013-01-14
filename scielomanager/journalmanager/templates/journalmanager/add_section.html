@@ -4,6 +4,8 @@
 {% load scielo_common %}
 {% load widget_tweaks %}
 
+{% block page_title %}{% trans "Section" %} - {{journal.title}}{% endblock %}
+
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
@@ -110,7 +112,7 @@
       type="reset"
       value="{% trans 'cancel' %}"
       {% if request.GET.popup %}
-        onclick="javascript: window.close()" 
+        onclick="javascript: window.close()"
       {% else %}
         onclick="javascript: window.history.back()"
       {% endif %}
