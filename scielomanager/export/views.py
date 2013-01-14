@@ -1,8 +1,6 @@
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
-from datetime import datetime
-# from django.shortcuts import get_object_or_404
 
 from scielomanager.export import forms
 from scielomanager.export import markupfiles
@@ -26,7 +24,5 @@ def markup_files(request):
 
     form = forms.MarkupFilesForm(user=request.user)
     return render_to_response('export/markup_files.html',
-                              {'form': form,
-                              'previous_year': datetime.now().year,
-                              'current_year': int(datetime.now().year) - 1},
+                              {'form': form},
                               context_instance=RequestContext(request))
