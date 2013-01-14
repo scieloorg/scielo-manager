@@ -328,11 +328,15 @@ class Ahead(object):
         return '%s/%s' % ('', '')
 
     @property
+    def year(self):
+        return self._year
+
+    @property
     def order(self):
         '''
         A propriedade order deve ser o publication_year concatenado com o order.
         '''
-        return str(self._year) + '50'
+        return str(self.year) + '50'
 
     def __unicode__(self):
         rows = '\r\n'.join([self.legend, self.period, self.order, '', ''])
@@ -343,7 +347,6 @@ class L10nAhead(Ahead):
 
     def __init__(self, journal, year, language):
         self._journal = journal
-        self._issue = None
         self._year = year
         self._language = language
 
