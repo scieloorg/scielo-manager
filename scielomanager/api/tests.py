@@ -8,6 +8,7 @@ of the app `api` not being part of the django installed apps.
 import json
 
 from django_webtest import WebTest
+from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 
@@ -15,14 +16,24 @@ from api.resources import (
     IssueResource,
     SectionResource,
     JournalResource,
-    DataChangeEventResource,
     )
+
+
+def _make_auth_environ(username, token):
+    return {'HTTP_AUTHORIZATION': 'ApiKey {0}:{1}'.format(username, token)}
 
 
 class JournalRestAPITest(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
     def test_journal_index(self):
-        response = self.client.get('/api/v1/journals/')
+        response = self.app.get('/api/v1/journals/',
+            extra_environ=self.extra_environ)
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -34,47 +45,56 @@ class JournalRestAPITest(WebTest):
 
     def test_journal_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.client.get('/api/v1/journals/%s/' % journal.pk)
+        response = self.app.get('/api/v1/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('title' in response.content)
 
     def test_post_data_index(self):
-        response = self.client.post('/api/v1/journals/')
+        response = self.app.post('/api/v1/journals/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_index(self):
-        response = self.client.put('/api/v1/journals/')
+        response = self.app.put('/api/v1/journals/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_index(self):
-        response = self.client.delete('/api/v1/journals/')
+        response = self.app.delete('/api/v1/journals/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_post_data_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.client.post('/api/v1/journals/%s/' % journal.pk)
+        response = self.app.post('/api/v1/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.client.put('/api/v1/journals/%s/' % journal.pk)
+        response = self.app.put('/api/v1/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.client.delete('/api/v1/journals/%s/' % journal.pk)
+        response = self.app.delete('/api/v1/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_list_all_by_collection(self):
         journal = modelfactories.JournalFactory.create()
         collection_name = journal.collection.name
-        response = self.client.get('/api/v1/journals/?collection=%s' % collection_name)
+        response = self.app.get('/api/v1/journals/?collection=%s' % collection_name,
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
     def test_api_v1_datamodel(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.app.get('/api/v1/journals/%s/' % journal.pk)
+        response = self.app.get('/api/v1/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ)
 
         expected_keys = [
             u'editor_address',
@@ -152,51 +172,71 @@ class JournalRestAPITest(WebTest):
         for key in expected_keys:
             self.assertEqual(True, key in json_keys)
 
+    def test_access_denied_for_unauthorized_users(self):
+        response = self.app.get('/api/v1/journals/',
+            status=401)
+
+        self.assertEqual(response.status_code, 401)
+
 
 class CollectionRestAPITest(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
     def test_index(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.client.get('/api/v1/collections/')
+        response = self.app.get('/api/v1/collections/',
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
     def test_post_data(self):
-        response = self.client.post('/api/v1/collections/')
+        response = self.app.post('/api/v1/collections/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
-        response = self.client.put('/api/v1/collections/')
+        response = self.app.put('/api/v1/collections/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
-        response = self.client.delete('/api/v1/collections/')
+        response = self.app.delete('/api/v1/collections/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.client.get('/api/v1/collections/%s/' % collection.pk)
+        response = self.app.get('/api/v1/collections/%s/' % collection.pk,
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('name' in response.content)
 
     def test_post_data_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.client.post('/api/v1/collections/%s/' % collection.pk)
+        response = self.app.post('/api/v1/collections/%s/' % collection.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.client.put('/api/v1/collections/%s/' % collection.pk)
+        response = self.app.put('/api/v1/collections/%s/' % collection.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.client.delete('/api/v1/collections/%s/' % collection.pk)
+        response = self.app.delete('/api/v1/collections/%s/' % collection.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_api_v1_datamodel(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.app.get('/api/v1/collections/%s/' % collection.pk)
+        response = self.app.get('/api/v1/collections/%s/' % collection.pk,
+            extra_environ=self.extra_environ)
 
         expected_keys = [
             u'city',
@@ -220,12 +260,23 @@ class CollectionRestAPITest(WebTest):
 
         self.assertEqual(response.json.keys(), expected_keys)
 
+    def test_access_denied_for_unathorized_users(self):
+        collection = modelfactories.CollectionFactory.create()
+        response = self.app.get('/api/v1/collections/', status=401)
+        self.assertEqual(response.status_code, 401)
+
 
 class IssuesRestAPITest(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
     def test_issue_index(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.get('/api/v1/issues/')
+        response = self.app.get('/api/v1/issues/',
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -237,43 +288,51 @@ class IssuesRestAPITest(WebTest):
 
     def test_post_data(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.post('/api/v1/issues/')
+        response = self.app.post('/api/v1/issues/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.put('/api/v1/issues/')
+        response = self.app.put('/api/v1/issues/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.delete('/api/v1/issues/')
+        response = self.app.delete('/api/v1/issues/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_issue_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.get('/api/v1/issues/%s/' % issue.pk)
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('number' in response.content)
 
     def test_post_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.post('/api/v1/issues/%s/' % issue.pk)
+        response = self.app.post('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.put('/api/v1/issues/%s/' % issue.pk)
+        response = self.app.put('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.client.delete('/api/v1/issues/%s/' % issue.pk)
+        response = self.app.delete('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_api_v1_datamodel(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk)
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ)
 
         expected_keys = [
             u'is_press_release',
@@ -302,12 +361,23 @@ class IssuesRestAPITest(WebTest):
 
         self.assertEqual(response.json.keys(), expected_keys)
 
+    def test_access_denied_for_unauthenticated_users(self):
+        issue = modelfactories.IssueFactory.create()
+        response = self.app.get('/api/v1/issues/', status=401)
+        self.assertEqual(response.status_code, 401)
+
 
 class SectionsRestAPITest(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
     def test_section_index(self):
         section = modelfactories.SectionFactory.create()
-        response = self.client.get('/api/v1/sections/')
+        response = self.app.get('/api/v1/sections/',
+            extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -319,22 +389,26 @@ class SectionsRestAPITest(WebTest):
 
     def test_post_data(self):
         section = modelfactories.SectionFactory.create()
-        response = self.client.post('/api/v1/sections/')
+        response = self.app.post('/api/v1/sections/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         section = modelfactories.SectionFactory.create()
-        response = self.client.put('/api/v1/sections/')
+        response = self.app.put('/api/v1/sections/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         section = modelfactories.SectionFactory.create()
-        response = self.client.delete('/api/v1/sections/')
+        response = self.app.delete('/api/v1/sections/',
+            extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_api_v1_datamodel(self):
         section = modelfactories.SectionFactory.create()
-        response = self.app.get('/api/v1/sections/%s/' % section.pk)
+        response = self.app.get('/api/v1/sections/%s/' % section.pk,
+            extra_environ=self.extra_environ)
 
         expected_keys = [
             u'updated',
@@ -350,13 +424,24 @@ class SectionsRestAPITest(WebTest):
 
         self.assertEqual(response.json.keys(), expected_keys)
 
+    def test_access_denied_for_unauthenticated_users(self):
+        section = modelfactories.SectionFactory.create()
+        response = self.app.get('/api/v1/sections/', status=401)
+        self.assertEqual(response.status_code, 401)
+
 
 class ChangesRestAPITest(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
     def test_changes_index(self):
         event = modelfactories.DataChangeEventFactory.create()
+        response = self.app.get('/api/v1/changes/',
+            extra_environ=self.extra_environ)
 
-        response = self.client.get('/api/v1/changes/')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -366,22 +451,36 @@ class ChangesRestAPITest(WebTest):
             event = modelfactories.DataChangeEventFactory.create()
             seqs.append(event.pk)
 
-        response = self.client.get('/api/v1/changes/?since=%s' % seqs[1])
+        response = self.app.get('/api/v1/changes/?since=%s' % seqs[1],
+            extra_environ=self.extra_environ)
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
         self.assertEqual(len(json.loads(response.content)['objects']), 4)
 
     def test_post_data(self):
         event = modelfactories.DataChangeEventFactory.create()
-        response = self.client.post('/api/v1/changes/')
+        response = self.app.post('/api/v1/changes/',
+            extra_environ=self.extra_environ, status=405)
+
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         event = modelfactories.DataChangeEventFactory.create()
-        response = self.client.put('/api/v1/changes/')
+        response = self.app.put('/api/v1/changes/',
+            extra_environ=self.extra_environ, status=405)
+
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         event = modelfactories.DataChangeEventFactory.create()
-        response = self.client.delete('/api/v1/changes/')
+        response = self.app.delete('/api/v1/changes/',
+            extra_environ=self.extra_environ, status=405)
+
         self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        event = modelfactories.DataChangeEventFactory.create()
+        response = self.app.get('/api/v1/changes/', status=401)
+
+        self.assertEqual(response.status_code, 401)

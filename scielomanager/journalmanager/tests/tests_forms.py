@@ -27,6 +27,7 @@ def _makePermission(perm, model, app_label='journalmanager'):
                                         app_label=app_label)
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
+
 class CollectionFormTests(WebTest):
 
     def setUp(self):
