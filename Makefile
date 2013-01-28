@@ -28,7 +28,10 @@ dbmigrate:
 compilemessages:
 	@cd $(APP_PATH) && python manage.py compilemessages --settings=$(SETTINGS)
 
-setup: deps dbsetup dbmigrate loaddata compilemessages test
+setup: deps dbsetup dbmigrate loaddata compilemessages test refreshsecretkey
 
 upgrade: deps dbmigrate compilemessages test
 	@python $(MANAGE) sync_perms --settings=$(SETTINGS)
+
+refreshsecretkey:
+	@sed -e 's:^\(SECRET_KEY\).*$$:\1 = '" '`openssl rand -base64 32`' "':g' -i $(APP_PATH)/settings.py
