@@ -7,6 +7,15 @@ See more information about this project in http://docs.scielo.org
 .. image:: https://secure.travis-ci.org/scieloorg/SciELO-Manager.png?branch=master
 `See Build details <http://travis-ci.org/#!/scieloorg/SciELO-Manager>`_
 
+------
+
+**Current internationalization status**
+
+.. image:: https://www.transifex.com/projects/p/scielomanager/resource/english/chart/image_png
+`Help with translations <https://www.transifex.com/projects/p/scielomanager/resource/english/>`_
+    
+    
+
 Use License
 ===========
 
