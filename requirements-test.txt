@@ -1,5 +1,5 @@
 mocker
 factory_boy
 django_factory_boy
-webtest
-django-webtest
+webtest==1.4.0
+django-webtest==1.5.6
