@@ -815,7 +815,10 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     def save(self, *args, **kwargs):
         self.label = unicode(self)
-        self.order = self._suggest_order()
+
+        if not self.pk:
+            self.order = self._suggest_order()
+
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
