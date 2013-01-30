@@ -51,7 +51,7 @@ class IssueImport:
         self._sections = {}
         for journal in journals_sections:
             for section in journal:
-                self._sections[section.code] = section.id
+                self._sections[section.legacy_code] = section.id
 
 
     def charge_summary(self, attribute):
@@ -99,6 +99,7 @@ class IssueImport:
     def load_sections(self, issue, record):
 
         issue_sections = []
+
         if '49' in record:
             for code in record['49']:
                 expanded = subfield.expand(code)
