@@ -307,7 +307,7 @@ class IssueForm(ModelForm):
 
     class Meta:
         model = models.Issue
-        exclude = ('collection', 'journal', 'created', 'updated')
+        exclude = ('collection', 'journal', 'created', 'updated', 'order')
         widgets = {
             'publication_date': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker'}),
         }
@@ -423,7 +423,7 @@ class UserCollectionsForm(ModelForm):
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
-        
+
 
 class JournalMissionForm(ModelForm):
     class Meta:

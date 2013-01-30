@@ -171,6 +171,20 @@ class IssueTests(TestCase):
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 1)
 
+    def test_get_suggested_issue_order_only_for_new_issues(self):
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(volume=9,
+            publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume=9,
+            publication_year=2012, journal=journal)
+
+        # editing the first issue
+        issue1.total_documents = 17
+        issue1.save()
+
+        self.assertTrue(issue1.order < issue2.order)
+
 
 class LanguageTests(TestCase):
 

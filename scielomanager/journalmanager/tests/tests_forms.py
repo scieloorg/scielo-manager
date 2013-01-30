@@ -1216,6 +1216,42 @@ class IssueFormTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
 
+    def test_issues_can_be_edited(self):
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        issue1 = modelfactories.IssueFactory(journal=self.journal,
+            volume='29')
+
+        issue2 = modelfactories.IssueFactory(journal=self.journal,
+            volume='29')
+
+        form = self.app.get(reverse('issue.edit',
+            args=[self.journal.pk, issue1.pk]), user=self.user).forms[1]
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = str(issue1.number)
+        form['volume'] = str(issue1.volume)
+        form['editorial_standard'] = ''
+        form['is_press_release'] = False
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = str(issue1.publication_year)
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+        form.set('use_license', str(issue1.journal.use_license.pk))
+
+        response = form.submit().follow()
+
+        self.assertIn('Saved.', response.body)
+        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+
+
     def test_form_enctype_must_be_multipart_formdata(self):
         """
         Asserts that the enctype attribute of the issue form is
