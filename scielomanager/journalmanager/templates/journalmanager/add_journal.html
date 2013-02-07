@@ -33,6 +33,7 @@
     <li><a href="#publisher">{% trans "Publisher" %}</a></li>
     <li><a href="#sponsors">{% trans "Sponsors" %}</a></li>
     <li><a href="#editor">{% trans "Editors" %}</a></li>
+    <li><a href="#social_network">{% trans "Social Network" %}</a></li>
     <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
     <li><a href="#images">{% trans 'Images' %}</a></li>
   </ul>
@@ -789,6 +790,21 @@
       </label>
       <div class="controls">
         {{ add_form.editor_email }}
+      </div>
+    </div>
+  </div>
+
+  <span class="label"><a name="social_network"></a>{% trans "Social Network" %}</span>
+  <div class="well">
+    <div class="control-group {% if add_form.twitter_user.errors %}error{% endif %}">
+      <label for="{{ add_form.twitter_user.auto_id }}">
+        <span {% if add_form.twitter_user.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.twitter_user.label %}
+        </span>
+      </label>
+      <div class="controls">
+        {{ add_form.twitter_user }}
+        {% field_help add_form.twitter_user.label add_form.twitter_user.help_text term-twitter_user %}
       </div>
     </div>
   </div>
