@@ -425,6 +425,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     #Fields
     current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)
     previous_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the previous year'), max_length=3, default=0, blank=True, null=True)
+    twitter_user = models.CharField(_('Twitter User'), max_length=128, null=True, blank=True)
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
     title_iso = models.CharField(_('ISO abbreviated title'), max_length=256, db_index=True)
     short_title = models.CharField(_('Short Title'), max_length=256, db_index=True, null=True)

@@ -137,6 +137,7 @@ Response::
       "resource_uri": "/api/v1/journals/1/",
       "scielo_issn": "print",
       "secs_code": "6633",
+      "twitter_user": "redescielo",
       "sections": [
         "/api/v1/sections/5676/",
         "/api/v1/sections/5677/",
@@ -292,6 +293,7 @@ Response::
     "resource_uri": "/api/v1/journals/1/",
     "scielo_issn": "print",
     "secs_code": "6633",
+    "twitter_user": "redescielo",
     "sections": [
       "/api/v1/sections/5676/",
       "/api/v1/sections/5677/",
