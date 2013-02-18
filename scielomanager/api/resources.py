@@ -147,6 +147,18 @@ class JournalResource(ModelResource):
                 collection__name_slug=filters['collection'])
             orm_filters['pk__in'] = journals
 
+        if 'pubstatus' in filters:
+            # keep the previous filtering
+            try:
+                j = orm_filters['pk__in']
+            except KeyError:
+                j = Journal.objects
+
+            statuses = filters.getlist('pubstatus')
+            journals = j.filter(
+                pub_status__in=statuses)
+            orm_filters['pk__in'] = journals
+
         return orm_filters
 
     def dehydrate_missions(self, bundle):
