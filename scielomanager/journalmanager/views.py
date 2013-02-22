@@ -642,6 +642,9 @@ def issue_reorder(request, journal_id):
 
     # here starts the actual view code. sorry.
     if request.is_ajax():
+        if not request.GET:
+            return HttpResponse(status=500)
+
         journal = get_object_or_404(models.Journal, pk=journal_id)
         issues_set, numbers = _parse_data(request.GET)
 

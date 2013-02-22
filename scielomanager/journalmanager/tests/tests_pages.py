@@ -281,7 +281,9 @@ class IssuesListTests(WebTest):
 
         response = self.app.get(
             reverse('issue.reorder.ajax', args=[self.journal.pk]),
+            headers={'x-requested-with': 'XMLHttpRequest'},
             user=self.user,
+            expect_errors=True
         )
 
-        self.assertEqual(response.body, '')
+        self.assertEqual(response.status_code, 500)
