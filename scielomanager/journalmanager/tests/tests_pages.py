@@ -270,7 +270,7 @@ class IssuesListTests(WebTest):
 
     def test_user_reordering_without_passing_params(self):
         """
-        The server must respond a http 200 code and do nothing.
+        The server must respond a http 500 code and do nothing.
         """
         perm1 = _makePermission(perm='list_issue',
             model='issue', app_label='journalmanager')
