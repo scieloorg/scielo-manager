@@ -55,4 +55,4 @@ class Event(caching.base.CachingMixin, models.Model):
         Indicates if the system is on maintenance according to a given datetime object.
         """
 
-        return True if cls.objects.filter(is_blocking_users=True).count() else False
+        return cls.objects.filter(is_blocking_users=True).exists()

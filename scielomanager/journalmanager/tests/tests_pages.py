@@ -270,7 +270,7 @@ class IssuesListTests(WebTest):
 
     def test_user_reordering_without_passing_params(self):
         """
-        The server must respond a http 200 code and do nothing.
+        The server must respond a http 500 code and do nothing.
         """
         perm1 = _makePermission(perm='list_issue',
             model='issue', app_label='journalmanager')
@@ -281,7 +281,9 @@ class IssuesListTests(WebTest):
 
         response = self.app.get(
             reverse('issue.reorder.ajax', args=[self.journal.pk]),
+            headers={'x-requested-with': 'XMLHttpRequest'},
             user=self.user,
+            expect_errors=True
         )
 
-        self.assertEqual(response.body, '')
+        self.assertEqual(response.status_code, 500)
