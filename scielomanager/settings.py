@@ -252,8 +252,6 @@ IMAGE_DIMENSIONS = {
 
 IMAGE_SIZE = 300 * 1014
 
-CACHE_COUNT_TIMEOUT = 60  # seconds, not too long.
-
 FILE_UPLOAD_HANDLERS = (
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
