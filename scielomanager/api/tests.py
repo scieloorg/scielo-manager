@@ -165,10 +165,16 @@ class JournalRestAPITest(WebTest):
             u'resource_uri',
             u'previous_ahead_documents',
             u'current_ahead_documents',
+            u'twitter_user',
         ]
 
-        json_keys = response.json.keys()
+        json_keys = set(response.json.keys())
+        expected_keys = set(expected_keys)
 
+        # looks for unexpected fields
+        self.assertFalse(json_keys.difference(expected_keys))
+
+        # make sure all expected fields are present
         for key in expected_keys:
             self.assertEqual(True, key in json_keys)
 
@@ -177,6 +183,35 @@ class JournalRestAPITest(WebTest):
             status=401)
 
         self.assertEqual(response.status_code, 401)
+
+    def test_filter_by_pubstatus(self):
+        journal = modelfactories.JournalFactory.create(pub_status='current')
+        journal2 = modelfactories.JournalFactory.create(pub_status='deceased')
+        response = self.app.get('/api/v1/journals/?pubstatus=current',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+    def test_filter_by_pubstatus_many_values(self):
+        journal = modelfactories.JournalFactory.create(pub_status='current')
+        journal2 = modelfactories.JournalFactory.create(pub_status='deceased')
+        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)['objects']), 2)
+
+    def test_filter_by_pubstatus_many_values_filtering_by_collection(self):
+        journal = modelfactories.JournalFactory.create(pub_status='current')
+        journal2 = modelfactories.JournalFactory.create(pub_status='deceased')
+        collection_name = journal.collection.name
+
+        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % collection_name,
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
 
 
 class CollectionRestAPITest(WebTest):

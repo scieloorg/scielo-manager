@@ -32,6 +32,12 @@ Optional Parameters:
     *String* of the **name_slug** of the collection to be used as a
     filter param.
 
+  **pubstatus**
+
+    *String* of the pub_status. Options are **current, deceased, suspended or inprogress**. 
+    It is important to note that this param can be repeated in the same query in order to perform 
+    as an OR query.
+
 Response::
 
   {
@@ -46,9 +52,7 @@ Response::
     {
       "abstract_keyword_languages": null,
       "acronym": "ABCD",
-      "collections": [
-        "/api/v1/collections/1/"
-      ],
+      "collections": "/api/v1/collections/1/",
       "contact": null,
       "copyrighter": "Colégio Brasileiro de Cirurgia Digestiva - CBCD",
       "cover": null,
@@ -137,6 +141,7 @@ Response::
       "resource_uri": "/api/v1/journals/1/",
       "scielo_issn": "print",
       "secs_code": "6633",
+      "twitter_user": "redescielo",
       "sections": [
         "/api/v1/sections/5676/",
         "/api/v1/sections/5677/",
@@ -292,6 +297,7 @@ Response::
     "resource_uri": "/api/v1/journals/1/",
     "scielo_issn": "print",
     "secs_code": "6633",
+    "twitter_user": "redescielo",
     "sections": [
       "/api/v1/sections/5676/",
       "/api/v1/sections/5677/",

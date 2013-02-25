@@ -19,7 +19,14 @@ except ImportError:
 setup_environ(settings)
 from journalmanager.models import *
 
-LANG_DICT = {'pt':'Portuguese', 'en':'English', 'es':'Spanish', 'de':'German', 'it':'Italian', 'fr':'French', 'la':'Latin'}
+LANG_DICT = {'pt': 'Portuguese',
+             'en': 'English',
+             'es': 'Spanish',
+             'de': 'German',
+             'it': 'Italian',
+             'fr': 'French',
+             'la': 'Latin'}
+
 
 class SectionImport:
 
@@ -31,7 +38,7 @@ class SectionImport:
         Function: charge_summary
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
-        if not self._summary.has_key(attribute):
+        if not attribute in self._summary:
             self._summary[attribute] = 0
 
         self._summary[attribute] += 1
@@ -93,7 +100,7 @@ class SectionImport:
 
             lang_dict = LANG_DICT
 
-            for trans_key,trans in sec.items():
+            for trans_key, trans in sec.items():
                 try:
                     language = Language.objects.get(iso_code=trans_key)
                 except Language.DoesNotExist:
@@ -104,7 +111,6 @@ class SectionImport:
 
                 self.charge_summary('translations')
 
-
         return section
 
     def run_import(self, json_file, collection):
@@ -112,10 +118,7 @@ class SectionImport:
         Function: run_import
         Dispara processo de importacao de dados
         """
-
-        json_parsed={}
-
-        section_json_file = open(json_file,'r')
+        section_json_file = open(json_file, 'r')
         section_json_parsed = json.loads(section_json_file.read())
 
         for record in section_json_parsed:
