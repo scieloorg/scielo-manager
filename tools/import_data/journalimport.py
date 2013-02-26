@@ -116,7 +116,7 @@ class JournalImport:
         for i in areas:
             try:
                 studyarea = StudyArea.objects.get(study_area=i)
-                journal.studyareas.add(studyarea)
+                journal.study_areas.add(studyarea)
                 self.charge_summary("studyarea")
             except:
                 self.charge_summary("studyarea_{0}_notdefined".format(i))
