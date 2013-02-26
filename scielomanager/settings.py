@@ -32,6 +32,9 @@ MONGO_URI = r'mongodb://localhost:27017/journalmanager'
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
 GRAVATAR_BASE_URL = 'https://secure.gravatar.com'
 
+# https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
