@@ -166,6 +166,7 @@ class JournalRestAPITest(WebTest):
             u'previous_ahead_documents',
             u'current_ahead_documents',
             u'twitter_user',
+            u'previous_title',
         ]
 
         json_keys = set(response.json.keys())

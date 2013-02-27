@@ -125,6 +125,9 @@ class JournalResource(ModelResource):
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
 
+    #recursive field
+    previous_title = fields.ForeignKey('self', 'previous_title', null=True)
+
     class Meta(ApiKeyAuthMeta):
         queryset = Journal.objects.all().filter()
         resource_name = 'journals'
