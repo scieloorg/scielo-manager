@@ -187,7 +187,7 @@ class JournalResource(ModelResource):
 
     def dehydrate_previous_title(self, bundle):
         if bundle.obj.previous_title:
-            return bundle.obj.previous_title.id
+            return bundle.obj.previous_title.title
 
 
 class DataChangeEventResource(ModelResource):
