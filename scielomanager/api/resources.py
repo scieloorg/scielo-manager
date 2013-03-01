@@ -185,10 +185,6 @@ class JournalResource(ModelResource):
         return [area.study_area
             for area in bundle.obj.study_areas.all()]
 
-    def dehydrate_previous_title(self, bundle):
-        if bundle.obj.previous_title:
-            return bundle.obj.previous_title.title
-
 
 class DataChangeEventResource(ModelResource):
     collection_uri = fields.ForeignKey(CollectionResource, 'collection')
