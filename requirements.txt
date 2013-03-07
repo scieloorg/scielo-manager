@@ -4,7 +4,6 @@ psycopg2==2.4.1
 wsgiref==0.1.2
 scielo-django-extensions==0.4
 python-memcached==1.48
-django-cache-machine==0.6
 ordereddict==1.1
 pil==1.1.7
 django-widget-tweaks==1.1.1
@@ -15,3 +14,4 @@ yuicompressor
 pymongo
 django-htmlmin
 git+git://github.com/toastdriven/django-tastypie.git
+git+git://github.com/jbalogh/django-cache-machine.git#egg=django-cache-machine

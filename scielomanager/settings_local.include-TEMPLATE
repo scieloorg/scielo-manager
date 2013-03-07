@@ -23,7 +23,7 @@ EMAIL_HOST_PASSWORD = ''
 
 CACHES = {
     'default': {
-        #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        #'BACKEND': 'caching.backends.memcached.CacheClass',
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         'LOCATION': '',
     }
