@@ -265,7 +265,7 @@ def user_index(request):
     if not collection.is_managed_by_user(request.user):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
 
-    col_users = models.User.cached_objects.filter(
+    col_users = models.User.objects.filter(
         usercollections__collection__in=[collection]).distinct('username').order_by('username')
 
     users = get_paginated(col_users, request.GET.get('page', 1))

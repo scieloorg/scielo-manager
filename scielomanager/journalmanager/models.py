@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
 
 
-#  DEPRECATED (http://ref.scielo.org/5k8wjt)
 def get_user_collections(user_id):
     """
     Return all the collections of a given user, The returned collections are the collections where the
