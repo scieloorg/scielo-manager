@@ -47,6 +47,7 @@ class IssueResource(ModelResource):
     journal = fields.ForeignKey('api.resources.JournalResource',
         'journal')
     sections = fields.ManyToManyField(SectionResource, 'section')
+    thematic_titles = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
@@ -72,6 +73,10 @@ class IssueResource(ModelResource):
             orm_filters['pk__in'] = issues
 
         return orm_filters
+
+    def dehydrate_thematic_titles(self, bundle):
+        return {title.language.iso_code: title.title
+            for title in bundle.obj.issuetitle_set.all()}
 
 
 class CollectionResource(ModelResource):

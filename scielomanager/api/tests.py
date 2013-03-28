@@ -392,15 +392,37 @@ class IssuesRestAPITest(WebTest):
             u'cover',
             u'publication_year',
             u'order',
-            u'resource_uri'
+            u'resource_uri',
+            u'thematic_titles',
         ]
 
-        self.assertEqual(response.json.keys(), expected_keys)
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
     def test_access_denied_for_unauthenticated_users(self):
         issue = modelfactories.IssueFactory.create()
         response = self.app.get('/api/v1/issues/', status=401)
         self.assertEqual(response.status_code, 401)
+
+    def test_thematic_titles_must_be_dict(self):
+        issue = modelfactories.IssueFactory.create()
+        issue_title = modelfactories.IssueTitleFactory.create(issue=issue)
+
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ)
+
+        content = json.loads(response.content)
+        self.assertEqual(content.get('thematic_titles', None),
+            {'pt': 'Bla'})
+
+    def test_thematic_titles_must_be_dict_even_if_empty(self):
+        issue = modelfactories.IssueFactory.create()
+
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
+            extra_environ=self.extra_environ)
+
+        content = json.loads(response.content)
+        self.assertIsInstance(content.get('thematic_titles', None),
+            dict)
 
 
 class SectionsRestAPITest(WebTest):
