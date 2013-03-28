@@ -75,8 +75,8 @@ class IssueResource(ModelResource):
         return orm_filters
 
     def dehydrate_thematic_titles(self, bundle):
-        return {title.language.iso_code: title.title
-            for title in bundle.obj.issuetitle_set.all()}
+        return dict([title.language.iso_code, title.title]
+            for title in bundle.obj.issuetitle_set.all())
 
 
 class CollectionResource(ModelResource):
