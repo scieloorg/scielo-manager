@@ -92,6 +92,23 @@ class SectionFactory(factory.Factory):
     journal = factory.SubFactory(JournalFactory)
 
 
+class LanguageFactory(factory.Factory):
+    FACTORY_FOR = models.Language
+
+    iso_code = 'pt'
+    name = 'portuguese'
+
+
+class IssueTitleFactory(factory.Factory):
+    """
+    ``issue`` must be provided
+    """
+    FACTORY_FOR = models.IssueTitle
+
+    language = factory.SubFactory(LanguageFactory)
+    title = u'Bla'
+
+
 class IssueFactory(factory.Factory):
     FACTORY_FOR = models.Issue
 
@@ -120,13 +137,6 @@ class UserProfileFactory(factory.Factory):
 
     user = factory.SubFactory(auth.UserF)
     email = factory.Sequence(lambda n: 'email%s@example.com' % n)
-
-
-class LanguageFactory(factory.Factory):
-    FACTORY_FOR = models.Language
-
-    iso_code = 'pt'
-    name = 'portuguese'
 
 
 class SectionTitleFactory(factory.Factory):
