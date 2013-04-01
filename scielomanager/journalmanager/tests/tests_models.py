@@ -11,6 +11,7 @@ from .modelfactories import (
     SectionTitleFactory,
     JournalFactory,
     CollectionFactory,
+    PressReleaseFactory,
 )
 
 
@@ -477,3 +478,122 @@ class CollectionManagerTests(TestCase):
         from journalmanager import models
         self.assertRaises(models.Collection.DoesNotExist,
             lambda: models.Collection.objects.get_default_by_user(user))
+
+
+class PressReleaseTests(TestCase):
+
+    def test_add_translation(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+        self.assertEqual(pr.translations.all()[0].title, 'Breaking news!')
+        self.assertEqual(pr.translations.all()[0].language, language)
+
+    def test_remove_translation(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation(language)
+        self.assertEqual(pr.translations.all().count(), 0)
+
+    def test_remove_translation_with_language_as_iso_code(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation('en')
+        self.assertEqual(pr.translations.all().count(), 0)
+
+    def test_remove_translation_with_language_as_pk(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation(language.pk)
+        self.assertEqual(pr.translations.all().count(), 0)
+
+    def test_remove_translation_fails_silently_when_translation_doesnt_exists(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation('jp')
+        self.assertEqual(pr.translations.all().count(), 1)
+
+    def test_object_is_subscriptable(self):
+        from journalmanager.models import PressReleaseTranslation
+
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertIsInstance(pr['en'], PressReleaseTranslation)
+
+    def test_raises_DoesNotExist_in_dict_style_access(self):
+        from journalmanager.models import PressReleaseTranslation
+
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertRaises(PressReleaseTranslation.DoesNotExist,
+                          lambda: pr['jp'])
+
+    def test_add_article(self):
+        issue = IssueFactory()
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_article('S0102-311X2013000300003')
+
+        self.assertEqual(pr.articles.all().count(), 1)
+
+    def test_remove_article(self):
+        issue = IssueFactory()
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_article('S0102-311X2013000300003')
+
+        self.assertEqual(pr.articles.all().count(), 1)
+
+        pr.remove_article('S0102-311X2013000300003')
+        self.assertEqual(pr.articles.all().count(), 0)
+
+    def test_remove_article_fails_silently_when_translation_doesnt_exists(self):
+        issue = IssueFactory()
+        pr = PressReleaseFactory.create(issue=issue)
+        pr.add_article('S0102-311X2013000300003')
+
+        self.assertEqual(pr.articles.all().count(), 1)
+
+        pr.remove_article('S0102-311X201300030000X')
+        self.assertEqual(pr.articles.all().count(), 1)

@@ -871,6 +871,92 @@ class DataChangeEvent(models.Model):
     collection = models.ForeignKey(Collection)
 
 
+class PressRelease(caching.base.CachingMixin, models.Model):
+    """
+    Represents a press-release bound to an Issue. It can be
+    available in one or any languages (restricted by the Journal
+    publishing policy).
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    issue = models.ForeignKey(Issue, related_name='press_releases')
+
+    def add_article(self, article):
+        """
+        ``article`` is a string of the article pid.
+        """
+        PressReleaseArticle.objects.create(press_release=self,
+                                           article_pid=article)
+
+    def remove_article(self, article):
+        try:
+            pra = PressReleaseArticle.objects.get(press_release=self,
+                                                  article_pid=article)
+        except PressReleaseArticle.DoesNotExist:
+            return None
+        else:
+            pra.delete()
+
+    def add_translation(self, title, content, language):
+        """
+        Adds a new press-release translation.
+
+        ``language`` is an instance of Language.
+        """
+        PressReleaseTranslation.objects.create(press_release=self,
+                                               language=language,
+                                               title=title,
+                                               content=content)
+
+    def remove_translation(self, language):
+        """
+        Removes the translation for the given press-release.
+        If the translation doesn't exist, nothing happens silently.
+        """
+        qry_params = {'press_release': self}
+        if isinstance(language, basestring):
+            qry_params['language__iso_code'] = language
+        else:
+            qry_params['language'] = language
+
+        try:
+            pr = PressReleaseTranslation.objects.get(**qry_params)
+        except PressReleaseTranslation.DoesNotExist:
+            return None
+        else:
+            pr.delete()
+
+    def __getitem__(self, language):
+        """
+        Enables the dict interface to PressRelease objects, i.e:
+        ``translation = press_release['en']``
+        """
+        prt = PressReleaseTranslation.objects.get(press_release=self,
+                                                  language__iso_code=language)
+        return prt
+
+
+class PressReleaseTranslation(caching.base.CachingMixin, models.Model):
+    """
+    Represents a press-release in a given language.
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    press_release = models.ForeignKey(PressRelease, related_name='translations')
+    language = models.ForeignKey('Language', blank=True, null=True)
+    title = models.CharField(_('Title'), max_length=128, null=True, blank=True)
+    content = models.TextField(_('Content'))
+
+
+class PressReleaseArticle(caching.base.CachingMixin, models.Model):
+    """
+    Represents press-releases bound to Articles.
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    press_release = models.ForeignKey(PressRelease, related_name='articles')
+    article_pid = models.CharField(_('PID'), max_length=32)
+
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####

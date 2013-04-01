@@ -155,3 +155,9 @@ class DataChangeEventFactory(factory.Factory):
     content_object = factory.SubFactory(JournalFactory)
     collection = factory.SubFactory(CollectionFactory)
     event_type = 'added'
+
+
+class PressReleaseFactory(factory.Factory):
+    FACTORY_FOR = models.PressRelease
+
+    issue = factory.SubFactory(IssueFactory)
