@@ -11,6 +11,7 @@ from django.test import TestCase
 
 from journalmanager.tests import modelfactories
 from journalmanager import forms
+from journalmanager import models
 
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
@@ -1708,3 +1709,57 @@ class AheadFormTests(WebTest):
             user=self.user).forms['ahead-form']
 
         self.assertIn('csrfmiddlewaretoken', form.fields)
+
+
+class PressReleaseFormTests(WebTest):
+
+    def test_pressrelease_translations_language_filtering(self):
+        language1 = modelfactories.LanguageFactory.create(iso_code='en',
+                                                          name='english')
+        language2 = modelfactories.LanguageFactory.create(iso_code='pt',
+                                                          name='portuguese')
+
+        journal = modelfactories.JournalFactory.create()
+        journal.languages.add(language1)
+
+        testing_form = forms.PressReleaseTranslationForm(journal=journal)
+
+        res_qset = testing_form['language'].field.queryset
+        self.assertEqual(len(res_qset), 1)
+        self.assertEqual(res_qset[0], language1)
+
+    def test_pressrelease_translations_raises_TypeError_while_missing_journal(self):
+        self.assertRaises(
+            TypeError,
+            lambda: forms.PressReleaseTranslationForm())
+
+    def test_get_all_pressrelease_forms(self):
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                          name='english')
+        journal = modelfactories.JournalFactory.create()
+        journal.languages.add(language)
+
+        pr_forms = forms.get_all_pressrelease_forms(
+            {}, journal, models.PressRelease())
+
+        self.assertEqual(
+            sorted(pr_forms.keys()),
+            sorted([
+                'pressrelease_form',
+                'translation_formset',
+                'article_formset',
+                ])
+            )
+
+    def test_get_all_pressrelease_language_filtering(self):
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                          name='english')
+        journal = modelfactories.JournalFactory.create()
+        journal.languages.add(language)
+
+        pr_forms = forms.get_all_pressrelease_forms(
+            {}, journal, models.PressRelease())
+
+        res_qset = pr_forms['translation_formset'][0].fields['language'].queryset
+        self.assertEqual(len(res_qset), 1)
+        self.assertEqual(res_qset[0], language)

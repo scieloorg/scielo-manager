@@ -801,3 +801,23 @@ def ajx_list_issues_for_markup_files(request):
     response_data = json.dumps(issues)
 
     return HttpResponse(response_data, mimetype="application/json")
+
+
+@login_required
+def add_pressrelease(request, journal_id):
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    pressrelease = models.PressRelease()
+
+    pr_forms = get_all_pressrelease_forms(request.POST, journal, pressrelease)
+
+    return render_to_response(
+        'journalmanager/add_pressrelease.html',
+        {
+            'pressrelease_form': pr_forms['pressrelease_form'],
+            'translation_formset': pr_forms['translation_formset'],
+            'article_formset': pr_forms['article_formset'],
+            'journal': journal,
+        },
+        context_instance=RequestContext(request)
+    )
