@@ -14,6 +14,8 @@ from journalmanager.models import (
     Issue,
     Section,
     DataChangeEvent,
+    PressRelease,
+    PressReleaseTranslation,
 )
 
 
@@ -223,3 +225,27 @@ class DataChangeEventResource(ModelResource):
             orm_filters['pk__in'] = events
 
         return orm_filters
+
+
+class PressReleaseTranslationResource(ModelResource):
+    language = fields.CharField(readonly=True)
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'pressreleases'
+        queryset = PressReleaseTranslation.objects.all()
+        allowed_methods = ['get', ]
+
+    def dehydrate_language(self, bundle):
+        return bundle.obj.language.iso_code
+
+
+class PressReleaseResource(ModelResource):
+    issue_uri = fields.ForeignKey(IssueResource, 'issue')
+    translations = fields.OneToManyField(PressReleaseTranslationResource,
+                                         'translations',
+                                         full=True)
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'pressreleases'
+        queryset = PressRelease.objects.all()
+        allowed_methods = ['get', ]
