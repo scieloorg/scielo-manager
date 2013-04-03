@@ -12,6 +12,6 @@ pyyaml
 webassets==0.7.1
 yuicompressor
 pymongo
-django-htmlmin
+git+git://github.com/scieloorg/django-htmlmin.git
 git+git://github.com/toastdriven/django-tastypie.git
 git+git://github.com/jbalogh/django-cache-machine.git#egg=django-cache-machine
