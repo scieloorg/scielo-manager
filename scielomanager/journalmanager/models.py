@@ -189,6 +189,21 @@ class CollectionCustomManager(AppCustomManager):
         return collections
 
 
+class PressReleaseCustomManager(caching.base.CachingManager):
+
+    def by_journal_pid(self, journal_pid):
+        """
+        Returns all PressReleases related to a Journal
+        """
+        journal = Journal.objects.get(
+            models.Q(print_issn=journal_pid) | models.Q(eletronic_issn=journal_pid))
+
+        issues_pks = [iss.pk for iss in journal.issue_set.all()]
+        preleases = self.filter(issue__pk__in=issues_pks)
+
+        return preleases
+
+
 class Language(caching.base.CachingMixin, models.Model):
     """
     Represents ISO 639-1 Language Code and its language name in English. Django
@@ -554,6 +569,15 @@ class Journal(caching.base.CachingMixin, models.Model):
                 issue.order = order
                 issue.save()
 
+    @property
+    def scielo_pid(self):
+        """
+        Returns the ISSN used as PID on SciELO public catalogs.
+        """
+
+        attr = u'print_issn' if self.scielo_issn == u'print' else u'eletronic_issn'
+        return getattr(self, attr)
+
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """
@@ -877,7 +901,7 @@ class PressRelease(caching.base.CachingMixin, models.Model):
     available in one or any languages (restricted by the Journal
     publishing policy).
     """
-    objects = caching.base.CachingManager()
+    objects = PressReleaseCustomManager()
     nocacheobjects = models.Manager()
     issue = models.ForeignKey(Issue, related_name='press_releases')
 

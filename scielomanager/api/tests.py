@@ -631,3 +631,16 @@ class PressReleaseRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+    def test_journal_filter(self):
+        prs = []
+        for pr in range(5):
+            prs.append(modelfactories.PressReleaseFactory.create())
+
+        response = self.app.get(
+            '/api/v1/pressreleases/?journal_pid=%s' % prs[0].issue.journal.scielo_pid,
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)

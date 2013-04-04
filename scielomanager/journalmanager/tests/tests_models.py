@@ -334,6 +334,18 @@ class JournalTests(TestCase):
                                            volume=9,
                                            publication_year=2012))
 
+    def test_scielo_pid_when_print(self):
+        journal = JournalFactory.create(scielo_issn=u'print',
+                                        print_issn='1234-4321',
+                                        eletronic_issn='4321-1234')
+        self.assertEqual(journal.scielo_pid, '1234-4321')
+
+    def test_scielo_pid_when_electronic(self):
+        journal = JournalFactory.create(scielo_issn=u'electronic',
+                                        print_issn='1234-4321',
+                                        eletronic_issn='4321-1234')
+        self.assertEqual(journal.scielo_pid, '4321-1234')
+
 
 class CollectionTests(TestCase):
 
@@ -597,3 +609,38 @@ class PressReleaseTests(TestCase):
 
         pr.remove_article('S0102-311X201300030000X')
         self.assertEqual(pr.articles.all().count(), 1)
+
+
+class PressReleaseManagerTests(TestCase):
+
+    def _makeOneElectronic(self):
+        j = JournalFactory.create(scielo_issn='electronic',
+                                  eletronic_issn='1234-4321')
+        i = IssueFactory.create(journal=j)
+        return PressReleaseFactory.create(issue=i)
+
+    def _makeOnePrint(self):
+        j = JournalFactory.create(scielo_issn='electronic',
+                                  eletronic_issn='1234-4321')
+        i = IssueFactory.create(journal=j)
+        return PressReleaseFactory.create(issue=i)
+
+    def test_by_journal_pid_when_electronic(self):
+        pr = self._makeOneElectronic()
+        pr2 = PressReleaseFactory.create()
+
+        from journalmanager.models import PressRelease
+        self.assertEqual(
+            PressRelease.objects.by_journal_pid(pr.issue.journal.print_issn)[0],
+            pr
+        )
+
+    def test_by_journal_pid_when_print(self):
+        pr = self._makeOnePrint()
+        pr2 = PressReleaseFactory.create()
+
+        from journalmanager.models import PressRelease
+        self.assertEqual(
+            PressRelease.objects.by_journal_pid(pr.issue.journal.print_issn)[0],
+            pr
+        )
