@@ -16,6 +16,7 @@ from journalmanager.models import (
     DataChangeEvent,
     PressRelease,
     PressReleaseTranslation,
+    PressReleaseArticle,
 )
 
 
@@ -244,8 +245,12 @@ class PressReleaseResource(ModelResource):
     translations = fields.OneToManyField(PressReleaseTranslationResource,
                                          'translations',
                                          full=True)
+    articles = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         resource_name = 'pressreleases'
         queryset = PressRelease.objects.all()
         allowed_methods = ['get', ]
+
+    def dehydrate_articles(self, bundle):
+        return [art.article_pid for art in bundle.obj.articles.all()]
