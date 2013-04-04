@@ -434,6 +434,22 @@ class JournalImport:
 
         return journal
 
+    def try_update_previous_title(self, json_file, collection):
+        """
+        Field 710 is the next journal title.
+        This function get the previous journal by title and update the previous
+        title of next journal set in the 710 field.
+        """
+        for record in json_file:
+            if '710' in record:
+                try:
+                    previous_journal = Journal.objects.get(title__exact=record['100'][0],
+                                                           collection=collection)
+                    next_journal = Journal.objects.filter(title__exact=record['710'][0],
+                                                          collection=collection).update(previous_title=previous_journal.id)
+                except Journal.DoesNotExist:
+                    print "Not possible to update the previous title of the journal: " + next_journal.title
+
     def run_import(self, json_file, collection):
         """
         Function: run_import
@@ -447,6 +463,9 @@ class JournalImport:
         for record in json_parsed:
             loaded_sponsor = self.load_sponsor(collection, record)
             self.load_journal(collection, loaded_sponsor, record)
+
+        # Try to update the previous title
+        self.try_update_previous_title(json_parsed, collection)
 
         # Cleaning data
         JournalPublicationEvents.objects.filter(created_at__month=date.today().month, created_at__year=date.today().year).delete()
