@@ -232,7 +232,7 @@ class PressReleaseTranslationResource(ModelResource):
     language = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
-        resource_name = 'pressreleases'
+        resource_name = 'prtranslations'
         queryset = PressReleaseTranslation.objects.all()
         allowed_methods = ['get', ]
 
@@ -251,6 +251,22 @@ class PressReleaseResource(ModelResource):
         resource_name = 'pressreleases'
         queryset = PressRelease.objects.all()
         allowed_methods = ['get', ]
+
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by the article PID.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PressReleaseResource, self).build_filters(filters)
+
+        if 'article_pid' in filters:
+            preleases = PressRelease.objects.filter(
+                articles__article_pid=filters['article_pid'])
+            orm_filters['pk__in'] = preleases
+
+        return orm_filters
 
     def dehydrate_articles(self, bundle):
         return [art.article_pid for art in bundle.obj.articles.all()]

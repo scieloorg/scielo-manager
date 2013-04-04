@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table('journalmanager_pressreleasearticle', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('press_release', self.gf('django.db.models.fields.related.ForeignKey')(related_name='articles', to=orm['journalmanager.PressRelease'])),
-            ('article_pid', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('article_pid', self.gf('django.db.models.fields.CharField')(max_length=32, db_index=True)),
         ))
         db.send_create_signal('journalmanager', ['PressReleaseArticle'])
 
@@ -284,7 +284,7 @@ class Migration(SchemaMigration):
         },
         'journalmanager.pressreleasearticle': {
             'Meta': {'object_name': 'PressReleaseArticle'},
-            'article_pid': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'article_pid': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_index': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'articles'", 'to': "orm['journalmanager.PressRelease']"})
         },

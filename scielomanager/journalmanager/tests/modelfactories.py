@@ -161,3 +161,19 @@ class PressReleaseFactory(factory.Factory):
     FACTORY_FOR = models.PressRelease
 
     issue = factory.SubFactory(IssueFactory)
+
+
+class PressReleaseTranslationFactory(factory.Factory):
+    FACTORY_FOR = models.PressReleaseTranslation
+
+    language = factory.SubFactory(LanguageFactory)
+    press_release = factory.SubFactory(PressReleaseFactory)
+    title = u'Yeah, this issue is amazing!'
+    content = u'Want to read more about...'
+
+
+class PressReleaseArticleFactory(factory.Factory):
+    FACTORY_FOR = models.PressReleaseArticle
+
+    press_release = factory.SubFactory(PressReleaseFactory)
+    article_pid = factory.Sequence(lambda n: 'S0102-311X201300030000%s' % n)

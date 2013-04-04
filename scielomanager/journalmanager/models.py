@@ -955,7 +955,7 @@ class PressReleaseArticle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     press_release = models.ForeignKey(PressRelease, related_name='articles')
-    article_pid = models.CharField(_('PID'), max_length=32)
+    article_pid = models.CharField(_('PID'), max_length=32, db_index=True)
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
