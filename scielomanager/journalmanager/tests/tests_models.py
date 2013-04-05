@@ -644,3 +644,8 @@ class PressReleaseManagerTests(TestCase):
             PressRelease.objects.by_journal_pid(pr.issue.journal.print_issn)[0],
             pr
         )
+
+    def test_by_journal_pid_returns_an_empty_queryset_for_invalid_pid(self):
+        from journalmanager.models import PressRelease
+        pr = PressRelease.objects.by_journal_pid('INVALID')
+        self.assertQuerysetEqual(pr, [])

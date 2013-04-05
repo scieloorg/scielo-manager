@@ -644,3 +644,28 @@ class PressReleaseRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+    def test_journal_filter_for_nonexisting_values_skips_filtering(self):
+        prs = []
+        for pr in range(5):
+            prs.append(modelfactories.PressReleaseFactory.create())
+        response = self.app.get(
+            '/api/v1/pressreleases/?journal_pid=5',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 0)
+
+    def test_article_filter_for_nonexisting_values_skips_filtering(self):
+        pr_articles = []
+        for pr in range(5):
+            pr_articles.append(modelfactories.PressReleaseArticleFactory.create())
+
+        response = self.app.get(
+            '/api/v1/pressreleases/?article_pid=EMPTY',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 0)

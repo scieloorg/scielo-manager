@@ -195,12 +195,16 @@ class PressReleaseCustomManager(caching.base.CachingManager):
         """
         Returns all PressReleases related to a Journal
         """
-        journal = Journal.objects.get(
-            models.Q(print_issn=journal_pid) | models.Q(eletronic_issn=journal_pid))
+        try:
+            journal = Journal.objects.get(
+                models.Q(print_issn=journal_pid) | models.Q(eletronic_issn=journal_pid))
+            issues_pks = [iss.pk for iss in journal.issue_set.all()]
+        except Journal.DoesNotExist:
+            # little hack to act as .filter, returning an empty
+            # queryset bound to the model.
+            issues_pks = [None]
 
-        issues_pks = [iss.pk for iss in journal.issue_set.all()]
         preleases = self.filter(issue__pk__in=issues_pks)
-
         return preleases
 
 
