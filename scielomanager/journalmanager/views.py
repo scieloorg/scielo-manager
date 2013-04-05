@@ -803,7 +803,7 @@ def ajx_list_issues_for_markup_files(request):
     return HttpResponse(response_data, mimetype="application/json")
 
 
-@login_required
+@permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def add_pressrelease(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
