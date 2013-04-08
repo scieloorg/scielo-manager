@@ -1,3 +1,4 @@
+import sys
 import json
 import urlparse
 from datetime import datetime
@@ -41,6 +42,11 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+
+def handler_error(request):
+    sys.exc_info(),
+    import pdb; pdb.set_trace()
 
 
 def get_first_letter(objects_all):
@@ -567,7 +573,7 @@ def add_issue(request, journal_id, issue_id=None):
         issue = models.Issue.objects.get(pk=issue_id)
 
     IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
-        form=IssueTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+        form=IssueTitleForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
         add_form = IssueForm(request.POST, request.FILES, journal_id=journal.pk, instance=issue)
