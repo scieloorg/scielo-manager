@@ -598,6 +598,7 @@ class PressReleaseRestAPITest(WebTest):
             u'resource_uri',
             u'translations',
             u'issue_meta',
+            u'doi',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

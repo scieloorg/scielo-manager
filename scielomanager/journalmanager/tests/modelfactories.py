@@ -161,6 +161,7 @@ class PressReleaseFactory(factory.Factory):
     FACTORY_FOR = models.PressRelease
 
     issue = factory.SubFactory(IssueFactory)
+    doi = factory.Sequence(lambda n: 'http://dx.doi.org/10.4415/ANN_12_01_%s' % n)
 
 
 class PressReleaseTranslationFactory(factory.Factory):
