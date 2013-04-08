@@ -44,11 +44,6 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
-def handler_error(request):
-    sys.exc_info(),
-    import pdb; pdb.set_trace()
-
-
 def get_first_letter(objects_all):
     """
     Returns a set of first letters from names in `objects_all`
