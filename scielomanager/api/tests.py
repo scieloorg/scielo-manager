@@ -597,6 +597,7 @@ class PressReleaseRestAPITest(WebTest):
             u'issue_uri',
             u'resource_uri',
             u'translations',
+            u'issue_meta',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
@@ -616,6 +617,28 @@ class PressReleaseRestAPITest(WebTest):
 
         self.assertEqual(
             sorted(response.json['translations'][0].keys()),
+            sorted(expected_keys)
+        )
+
+    def test_issue_meta_api_v1_datamodel(self):
+        pr_trans = modelfactories.PressReleaseTranslationFactory.create()
+        response = self.app.get('/api/v1/pressreleases/%s/' % pr_trans.press_release.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            'short_title',
+            'volume',
+            'number',
+            'suppl_volume',
+            'suppl_number',
+            'publication_start_month',
+            'publication_end_month',
+            'publication_city',
+            'publication_year',
+        ]
+
+        self.assertEqual(
+            sorted(response.json['issue_meta'].keys()),
             sorted(expected_keys)
         )
 

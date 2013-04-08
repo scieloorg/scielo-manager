@@ -246,6 +246,7 @@ class PressReleaseResource(ModelResource):
                                          'translations',
                                          full=True)
     articles = fields.CharField(readonly=True)
+    issue_meta = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         resource_name = 'pressreleases'
@@ -275,3 +276,20 @@ class PressReleaseResource(ModelResource):
 
     def dehydrate_articles(self, bundle):
         return [art.article_pid for art in bundle.obj.articles.all()]
+
+    def dehydrate_issue_meta(self, bundle):
+        issue = bundle.obj.issue
+
+        meta_data = {
+            'short_title': issue.journal.short_title,
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_volume': issue.suppl_volume,
+            'suppl_number': issue.suppl_number,
+            'publication_start_month': issue.publication_start_month,
+            'publication_end_month': issue.publication_end_month,
+            'publication_city': issue.journal.publication_city,
+            'publication_year': issue.publication_year,
+        }
+
+        return meta_data
