@@ -148,42 +148,108 @@ class IssueTests(TestCase):
         self.assertEqual(issue.publication_date, expected)
 
     def test_get_suggested_issue_order_for_first_issue(self):
-        issue = IssueFactory.create(publication_year=2012, volume=2)
+        issue = IssueFactory.create(publication_year=2012, volume='2')
         self.assertEqual(issue._suggest_order(), 1)
+
+    def test_get_suggested_issue_order_with_param_force(self):
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(publication_year=2012, volume='2',
+                                     journal=journal)
+        issue2 = IssueFactory.create(publication_year=2012, volume='2',
+                                     journal=journal)
+
+        self.assertEqual(issue1._suggest_order(force=True), 3)
+        issue1.order = issue1._suggest_order(force=True)
+        issue1.save()
+        self.assertEqual(issue2._suggest_order(force=True), 4)
+
+    def test_get_suggested_issue_order_without_param_force(self):
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(publication_year=2012, volume='2',
+                                     journal=journal)
+        issue2 = IssueFactory.create(publication_year=2012, volume='2',
+                                     journal=journal)
+
+        self.assertEqual(issue1._suggest_order(force=False), 1)
+        issue1.order = issue1._suggest_order(force=False)
+        issue1.save()
+        self.assertEqual(issue2._suggest_order(force=False), 2)
 
     def test_get_suggested_issue_order_having_multiple_issues(self):
         journal = JournalFactory.create()
 
         for i in range(1, 6):
-            issue = IssueFactory.create(volume=9,
-                publication_year=2012, journal=journal)
+            issue = IssueFactory.create(volume='9',
+                                        publication_year=2012, journal=journal)
 
             self.assertEqual(issue._suggest_order(), i)
 
     def test_get_suggested_issue_order_having_multiple_years(self):
         journal = JournalFactory.create()
 
-        issue1 = IssueFactory.create(volume=9,
-            publication_year=2012, journal=journal)
-        issue2 = IssueFactory.create(volume=9,
-            publication_year=2011, journal=journal)
+        issue1 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume='9',
+                                     publication_year=2011, journal=journal)
 
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 1)
 
-    def test_get_suggested_issue_order_only_for_new_issues(self):
+    def test_get_suggested_issue_order_on_edit_without_change_publication_year_or_volume(self):
         journal = JournalFactory.create()
 
-        issue1 = IssueFactory.create(volume=9,
-            publication_year=2012, journal=journal)
-        issue2 = IssueFactory.create(volume=9,
-            publication_year=2012, journal=journal)
+        issue1 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
 
         # editing the first issue
         issue1.total_documents = 17
         issue1.save()
 
         self.assertTrue(issue1.order < issue2.order)
+
+    def test_get_suggested_issue_order_on_edit_change_volume(self):
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue3 = IssueFactory.create(volume='10',
+                                     publication_year=2012, journal=journal)
+
+        issue3.volume = '9'
+        issue3.save()
+
+        self.assertTrue(issue2.order < issue3.order)
+        self.assertEqual(issue3.order, 3)
+
+    def test_get_suggested_issue_order_on_edit_change_publication_year_and_volume(self):
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue3 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+
+        issue4 = IssueFactory.create(volume='10',
+                                     publication_year=2013, journal=journal)
+        issue5 = IssueFactory.create(volume='10',
+                                     publication_year=2013, journal=journal)
+        issue6 = IssueFactory.create(volume='10',
+                                     publication_year=2013, journal=journal)
+
+        issue6.publication_year = 2012
+        issue6.volume = '9'
+        issue6.save()
+
+        self.assertTrue(issue3.order < issue6.order)
+        self.assertEqual(issue6.order, 4)
 
 
 class LanguageTests(TestCase):
