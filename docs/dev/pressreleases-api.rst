@@ -49,13 +49,13 @@ Response::
         "id": 1,
         "issue_uri": "/api/v1/issues/1420/",
         "resource_uri": "/api/v1/pressreleases/1/",
-        "translations": [
+        "translations": [{
           "content": "Era uma vez...",
           "id": 1,
           "language": "pt",
           "resource_uri": "/api/v1/prtranslations/1/",
-          "title": "Como a descoberta do XYZ mudou a humanidade",
-        ],
+          "title": "Como a descoberta do XYZ mudou a humanidade"
+        }],
         "issue_meta": {
           "short_title": "Ann. Ist. Super. Sanità",
           "volume": "45",
