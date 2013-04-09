@@ -183,6 +183,22 @@ def collection_index(request, model, journal_id=None):
     return list_search(request, model, journal_id)
 
 
+@permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+def pressrelease_index(request, journal_id):
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+    preleases = models.PressRelease.objects.all_by_journal(journal_id)
+
+    objects = get_paginated(preleases, request.GET.get('page', 1))
+
+    return render_to_response(
+        'journalmanager/pressrelease_dashboard.html',
+        {
+           'objects': objects,
+           'journal': journal,
+        },
+        context_instance=RequestContext(request))
+
+
 @login_required
 def generic_toggle_availability(request, object_id, model):
 

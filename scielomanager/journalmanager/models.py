@@ -207,6 +207,13 @@ class PressReleaseCustomManager(caching.base.CachingManager):
         preleases = self.filter(issue__pk__in=issues_pks)
         return preleases
 
+    def all_by_journal(self, journal):
+        """
+        Returns all PressReleases related to a Journal
+        """
+        preleases = self.filter(issue__journal=journal)
+        return preleases
+
 
 class Language(caching.base.CachingMixin, models.Model):
     """

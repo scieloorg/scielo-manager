@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/del/$', views.del_section, name='section.del'),
 
     # Press release Tools
-    # url(r'^(?P<journal_id>\d+)/prelease/$', views.pressrelease_index, {'model': models.PressRelease}, name='prelease.index'),
+    url(r'^(?P<journal_id>\d+)/prelease/$', views.pressrelease_index, name='prelease.index'),
     url(r'^(?P<journal_id>\d+)/prelease/new/$', views.add_pressrelease, name='prelease.add'),
     # url(r'^(?P<journal_id>\d+)/prelease/(?P<prelease_id>\d+)/edit/$', views.add_pressrelease, name='prelease.edit'),
     # url(r'^(?P<journal_id>\d+)/prelease/(?P<prelease_id>\d+)/del/$', views.del_pressrelease, name='prelease.del'),
