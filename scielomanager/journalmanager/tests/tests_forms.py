@@ -437,7 +437,7 @@ class UserFormTests(WebTest):
         other_collection.make_default_to_user(self.user)
 
         response = self.app.get(reverse('user.add'),
-            user=self.user).follow()
+                                user=self.user).follow()
 
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
@@ -451,7 +451,7 @@ class UserFormTests(WebTest):
         form should be part of this test.
         """
         perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+                               model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
         page = self.app.get(reverse('user.add'), user=self.user)
@@ -500,11 +500,11 @@ class UserFormTests(WebTest):
 
     def test_new_users_must_receive_an_email_to_define_their_password(self):
         perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+                               model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('user.add'),
-            user=self.user).forms['user-form']
+                            user=self.user).forms['user-form']
 
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
@@ -553,6 +553,56 @@ class UserFormTests(WebTest):
         response = form.submit()
 
         response.mustcontain('There are some errors or missing data')
+
+    def test_POST_workflow_with_invalid_formdata_without_collection_add_form(self):
+        """
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_user``.
+
+        The collection is mandatory on user add form.
+        """
+        perm = _makePermission(perm='change_user',
+                               model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'),
+                            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+
+        response = form.submit()
+
+        self.assertTemplateUsed(response, 'journalmanager/add_user.html')
+        response.mustcontain('Please fill in at least one form')
+
+    def test_POST_workflow_with_invalid_formdata_without_collection_edit_form(self):
+        """
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.change_user``.
+
+        The collection is mandatory on user edit form.
+        """
+        perm = _makePermission(perm='change_user',
+                               model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]),
+                            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['userprofile-0-email'] = 'bazz@spam.org'
+        #Remove the collection
+        form.set('usercollections-0-collection', '')
+
+        response = form.submit()
+
+        self.assertTemplateUsed(response, 'journalmanager/add_user.html')
+        response.mustcontain('Please fill in at least one form')
 
     def test_form_enctype_must_be_urlencoded(self):
         """
