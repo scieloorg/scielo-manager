@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.test import TestCase
+from .modelfactories import IssueFactory
 
 
 class PaginationTest(TestCase):
@@ -65,3 +66,30 @@ class PaginationTest(TestCase):
                           items_list,
                           page_num,
                           items_per_page=items_per_page)
+
+
+class HasChangedTest(TestCase):
+
+    def _makeOne(self, *args, **kwargs):
+        from scielomanager.tools import has_changed
+        return has_changed(*args, **kwargs)
+
+    def test_has_changed_must_return_false_when_field_doesnt_change(self):
+        issue = IssueFactory.create()
+
+        self.assertFalse(self._makeOne(issue, 'total_documents'))
+
+    def test_has_changed_must_return_false_when_field_is_changed(self):
+        issue = IssueFactory.create(total_documents=10)
+
+        self.assertFalse(self._makeOne(issue, 'total_documents'))
+
+    def test_has_changed_must_return_none_when_instance_doesnt_exist_in_database(self):
+        issue = IssueFactory.create(pk=None)
+        self._makeOne(issue, 'volume')
+
+    def test_has_changed_must_return_except_when_field_doesnt_exist(self):
+        from django.core.exceptions import FieldError
+        issue = IssueFactory.create()
+
+        self.assertRaises(FieldError, lambda: self._makeOne(issue, 'fake_field'))
