@@ -27,8 +27,8 @@ def has_changed(instance, field):
     """
     This function return the boolean value ``True`` if field of any instance
     was changed and ``False`` otherwise.
-    Return None if the instance doesn`t exist in the database and raise FieldError
-    if field doesn`t exist.
+    Raise DoesNotExist except if the instance doesn`t exist in the database and
+    raise FieldError if field doesn`t exist.
     """
 
     if not instance.pk:
