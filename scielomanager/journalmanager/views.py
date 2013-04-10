@@ -559,8 +559,8 @@ def add_issue(request, journal_id, issue_id=None):
 
     if issue_id is None:
         data_dict = {'use_license': journal.use_license.id,
-        'editorial_standard': journal.editorial_standard,
-        'ctrl_vocabulary': journal.ctrl_vocabulary}
+                     'editorial_standard': journal.editorial_standard,
+                     'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
     else:
         data_dict = None
