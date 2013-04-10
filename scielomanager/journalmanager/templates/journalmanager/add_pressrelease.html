@@ -72,6 +72,13 @@
             <br/>
             <label>Body</label>
             {{ form.content|attr:"style:width:607px; height: 150px" }}
+            <a href="#pr-preview"
+               role="button"
+               class="btn"
+               data-toggle="modal"
+               onClick="preview(this)">
+               Preview as HTML
+            </a>
           </td>
         </tr>
         {% endfor %}
@@ -98,6 +105,18 @@
     />
   </div>
 </form>
+
+<!-- Modal -->
+<div id="pr-preview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="lbl-pr-preview" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="lbl-pr-preview">Preview</h3>
+  </div>
+  <div class="modal-body" id="body-pr-preview"></div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
 {% endblock %}
 
 {% block extrafooter %}
@@ -113,5 +132,9 @@
         prefix: '{{ article_formset.prefix }}'
       });
     });
+    function preview(part){
+      var html = $(part).prev().val();
+      $('#body-pr-preview').html(html);
+    }
   </script>
 {% endblock %}
