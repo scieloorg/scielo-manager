@@ -468,6 +468,7 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
             try:
                 if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
                     count += 1
+                    break
             except AttributeError:
                 pass
         if count < 1:
