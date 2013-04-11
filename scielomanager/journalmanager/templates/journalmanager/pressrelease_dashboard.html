@@ -1,0 +1,51 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+{% load scielo_common %}
+
+{% block page_title %}{% trans "Sections" %} - {{journal.title}}{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+  <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Press Releases' %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<div class="row-fluid show-grid">
+  <div class="span10">
+   <a class="btn btn-primary" href="{% url prelease.add journal.id %}">{% trans 'New' %}</a>
+  </div>
+  <div class="span2">
+    {% simple_pagination objects %}
+  </div>
+</div>
+
+<table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in objects.object_list %}
+    <tr>
+      <td>
+        <h4>
+          <a href="">{{ item }}</a>
+        </h4>
+      </td>
+    </tr>
+   {% empty %}
+    <tr>
+      <td colspan="2">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+</table>
+
+{% pagination objects %}
+
+{% endblock %}

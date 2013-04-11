@@ -135,6 +135,14 @@
             </a>
             {% endif %}
           </li>
+          <li>
+            {% if perms.journalmanager.list_pressrelease %}
+            <a href="{% url prelease.index journal.pk %}"
+               class="btn btn-mini">
+              {% trans 'Press Releases' %}
+            </a>
+            {% endif %}
+          </li>
           {% if perms.journalmanager.change_journalpublicationevents %}
             <li>
               <a href="{% url journal_status.edit journal.pk %}"
