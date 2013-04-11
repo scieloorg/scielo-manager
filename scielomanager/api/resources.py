@@ -271,6 +271,10 @@ class PressReleaseResource(ModelResource):
             preleases = PressRelease.objects.by_journal_pid(
                 filters['journal_pid'])
             orm_filters['pk__in'] = preleases
+        elif 'issue_pid' in filters:
+            preleases = PressRelease.objects.by_issue_pid(
+                filters['issue_pid'])
+            orm_filters['pk__in'] = preleases
 
         return orm_filters
 

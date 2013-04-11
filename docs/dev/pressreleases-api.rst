@@ -29,8 +29,11 @@ Optional Parameters:
 
   **article_pid**
 
-    *String* of the **journal pid** as used by SciELO catalogs.
+    *String* of the **article pid** as used by SciELO catalogs.
 
+  **issue_pid**
+
+    *String* of the **issue pid** as used by SciELO catalogs.
 
 Response::
 

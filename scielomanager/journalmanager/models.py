@@ -195,7 +195,8 @@ class PressReleaseCustomManager(caching.base.CachingManager):
 
     def by_journal_pid(self, journal_pid):
         """
-        Returns all PressReleases related to a Journal
+        Returns all PressReleases related to a Journal, given its
+        PID.
         """
         try:
             journal = Journal.objects.get(
@@ -215,6 +216,22 @@ class PressReleaseCustomManager(caching.base.CachingManager):
         """
         preleases = self.filter(issue__journal=journal)
         return preleases
+
+    def by_issue_pid(self, issue_pid):
+        """
+        Returns all PressReleases related to an Issue, given its
+        PID.
+        """
+        issn_slice = slice(0, 9)
+        year_slice = slice(9, 13)
+        order_slice = slice(13, None)
+
+        issn = issue_pid[issn_slice]
+        year = issue_pid[year_slice]
+        order = int(issue_pid[order_slice])
+
+        preleases_qset = self.by_journal_pid(issn)
+        return preleases_qset.filter(issue__publication_year=year).filter(issue__order=order)
 
 
 class Language(caching.base.CachingMixin, models.Model):
@@ -801,6 +818,21 @@ class Issue(caching.base.CachingMixin, models.Model):
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
     order = models.IntegerField(_('Issue Order'), blank=True)
+
+    @property
+    def scielo_pid(self):
+        """
+        Returns the PID used on SciELO public catalogs, in the form:
+        ``journal_issn + year + order``
+        """
+        jissn = self.journal.scielo_pid
+        return ''.join(
+            [
+                jissn,
+                unicode(self.publication_year),
+                u'%04d' % self.order,
+            ]
+        )
 
     @property
     def identification(self):
