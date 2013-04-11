@@ -826,7 +826,6 @@ def ajx_list_issues_for_markup_files(request):
 @permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def add_pressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    import pdb; pdb.set_trace()
 
     if prelease_id:
         pressrelease = get_object_or_404(models.PressRelease, pk=prelease_id)
@@ -845,11 +844,16 @@ def add_pressrelease(request, journal_id, prelease_id=None):
             pressrelease_form.save()
 
             if translation_formset.is_valid():
-                import pdb; pdb.set_trace()
                 translation_formset.save()
 
-    else:
-        pass
+            if article_formset.is_valid():
+                article_formset.save()
+
+            messages.info(request, MSG_FORM_SAVED)
+
+            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
 
     return render_to_response(
         'journalmanager/add_pressrelease.html',
