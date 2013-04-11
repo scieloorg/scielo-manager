@@ -575,23 +575,27 @@ def add_issue(request, journal_id, issue_id=None):
 
     if issue_id is None:
         data_dict = {'use_license': journal.use_license.id,
-        'editorial_standard': journal.editorial_standard,
-        'ctrl_vocabulary': journal.ctrl_vocabulary}
+                     'editorial_standard': journal.editorial_standard,
+                     'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
     else:
         data_dict = None
         issue = models.Issue.objects.get(pk=issue_id)
 
     IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
-        form=IssueTitleForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+        form=IssueTitleForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
         add_form = IssueForm(request.POST, request.FILES, journal_id=journal.pk, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
-        if add_form.is_valid() and titleformset.is_valid():
+        if add_form.is_valid():
             saved_issue = add_form.save_all(journal)
-            titleformset.save()
+            # the backward relation is created only
+            # if title is given.
+            if titleformset.is_valid():
+                titleformset.save()
+
             messages.info(request, MSG_FORM_SAVED)
 
             # record the event

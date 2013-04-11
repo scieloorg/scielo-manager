@@ -541,14 +541,23 @@ class IssueTitleForm(ModelForm):
         }
 
 
-## Formsets ##
+# ## Formsets ##
 class FirstFieldRequiredFormSet(BaseInlineFormSet):
     """
-    Formset class that makes the first item required.
+    Formset class that makes the first item required in edit and create form.
 
     Usage: ABCFormSet = inlineformset_factory(models.Wrappee, models.Wrapped,
         extra=1, formset=FirstFieldRequiredFormSet)
     """
-    def __init__(self, *args, **kwargs):
-        super(FirstFieldRequiredFormSet, self).__init__(*args, **kwargs)
-        self.forms[0].empty_permitted = False
+
+    def clean(self):
+        count = 0
+        for form in self.forms:
+            try:
+                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                    count += 1
+                    break
+            except AttributeError:
+                pass
+        if count < 1:
+            raise forms.ValidationError(_('Please fill in at least one form'))

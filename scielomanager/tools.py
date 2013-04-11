@@ -23,6 +23,22 @@ class NullPaginator(object):
         return None
 
 
+def has_changed(instance, field):
+    """
+    This function return the boolean value ``True`` if field of any instance
+    was changed and ``False`` otherwise.
+    Raise DoesNotExist except if the instance doesn`t exist in the database and
+    raise FieldError if field doesn`t exist.
+    """
+
+    if not instance.pk:
+        raise instance.DoesNotExist('%s must be saved in order to use this function' % instance)
+
+    old_value = instance.__class__._default_manager.filter(pk=instance.pk).values(field).get()[field]
+
+    return not getattr(instance, field) == old_value
+
+
 def get_paginated(items, page_num, items_per_page=settings.PAGINATION__ITEMS_PER_PAGE):
     """
     Wraps django core pagination object

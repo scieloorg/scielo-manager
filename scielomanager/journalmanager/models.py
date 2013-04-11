@@ -2,6 +2,10 @@
 import urllib
 import hashlib
 import logging
+import choices
+import caching.base
+import tools
+
 try:
     from collections import OrderedDict
 except ImportError:
@@ -23,10 +27,8 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
-import caching.base
 from tastypie.models import create_api_key
 
-import choices
 from scielomanager.utils import base28
 
 
@@ -818,9 +820,10 @@ class Issue(caching.base.CachingMixin, models.Model):
     @property
     def publication_date(self):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
-            self.publication_end_month, self.publication_year)
+                                        self.publication_end_month,
+                                        self.publication_year)
 
-    def _suggest_order(self):
+    def _suggest_order(self, force=False):
         """
         Based on ``publication_year``, ``volume`` and a pre defined
         ``order``, this method suggests the subsequent ``order`` value.
@@ -828,8 +831,11 @@ class Issue(caching.base.CachingMixin, models.Model):
         If the Issues already has a ``order``, it suggests it. Else,
         a query is made for the given ``publication_year`` and ``volume``
         and the ``order`` attribute of the last instance is used.
+
+        When force ``True`` this method ignore order attribute from the instance
+        and return the suggest order.
         """
-        if self.order:
+        if self.order and force == False:
             return self.order
 
         filters = {
@@ -853,20 +859,23 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         if not self.pk:
             self.order = self._suggest_order()
+        else:
+            if tools.has_changed(self, 'publication_year') or tools.has_changed(self, 'volume'):
+                self.order = self._suggest_order(force=True)
 
         super(Issue, self).save(*args, **kwargs)
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),
-            ("reorder_issue", "Can Reorder Issues"))
+                      ("reorder_issue", "Can Reorder Issues"))
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    issue = models.ForeignKey(Issue)
-    language = models.ForeignKey('Language', blank=True, null=True)
-    title = models.CharField(_('Title'), max_length=128, null=True, blank=True)
+    issue = models.ForeignKey(Issue, null=True, blank=True)
+    language = models.ForeignKey('Language')
+    title = models.CharField(_('Title'), max_length=128)
 
 
 class Supplement(Issue):

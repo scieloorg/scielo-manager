@@ -12,19 +12,10 @@
 {% endblock %}
 
 {% block messages %}
-  {% if add_form.errors or usercollectionsformset.non_field_errors %}
+  {% if add_form.errors %}
   <div class="alert alert-error">
     <button class="close" data-dismiss="alert" type="button">×</button>
     <ul>
-      {% for dict_error in usercollectionsformset.errors %}
-        {% for key, value in dict_error.items %}
-          {% if key != '__all__' %}
-            <li>{{key}}</li>
-          {% else %}
-            {{value}}
-          {% endif %}
-        {% endfor %}
-      {% endfor %}
       {% for field in add_form %}
         {% if field.errors %}
           <li>{{ field.label }}</li>
@@ -100,6 +91,17 @@
       </div>
     </div>
   </div>
+
+{% if usercollectionsformset.non_form_errors %}
+  <div class="alert alert-error">
+    <button class="close" data-dismiss="alert" type="button">×</button>
+    <ul>
+      {% for non_form_error in usercollectionsformset.non_form_errors %}
+        <li>{{ non_form_error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
   <span class="label">{% trans "User Collections" %}</span>
   <div class="well">
