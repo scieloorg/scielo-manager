@@ -474,7 +474,7 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
     args = []
     kwargs = {}
 
-    if pressrelease.pk:
+    if pressrelease:
         kwargs['instance'] = pressrelease
 
     if post_dict:

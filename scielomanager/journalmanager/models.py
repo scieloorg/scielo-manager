@@ -924,7 +924,8 @@ class PressRelease(caching.base.CachingMixin, models.Model):
     objects = PressReleaseCustomManager()
     nocacheobjects = models.Manager()
     issue = models.ForeignKey(Issue, related_name='press_releases')
-    doi = models.CharField(_("Press release DOI number"), max_length=128)
+    doi = models.CharField(_("Press release DOI number"), max_length=128,
+                           null=True, blank=True)
 
     def add_article(self, article):
         """
