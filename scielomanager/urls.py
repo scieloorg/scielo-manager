@@ -21,6 +21,7 @@ v1_api_resources = [
     resources.IssueResource(),
     resources.SectionResource(),
     resources.DataChangeEventResource(),
+    resources.PressReleaseResource(),
 ]
 for res in v1_api_resources:
     v1_api.register(res)
