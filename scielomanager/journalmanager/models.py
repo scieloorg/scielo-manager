@@ -1036,8 +1036,8 @@ class PressReleaseTranslation(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
     press_release = models.ForeignKey(PressRelease, related_name='translations')
-    language = models.ForeignKey('Language', blank=True, null=True)
-    title = models.CharField(_('Title'), max_length=128, null=True, blank=True)
+    language = models.ForeignKey('Language')
+    title = models.CharField(_('Title'), max_length=128)
     content = models.TextField(_('Content'))
 
 

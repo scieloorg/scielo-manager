@@ -20,8 +20,8 @@ class Migration(SchemaMigration):
         db.create_table('journalmanager_pressreleasetranslation', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('press_release', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', to=orm['journalmanager.PressRelease'])),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'], null=True, blank=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
+            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'])),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('content', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal('journalmanager', ['PressReleaseTranslation'])
@@ -30,10 +30,13 @@ class Migration(SchemaMigration):
         db.create_table('journalmanager_pressrelease', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('issue', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Issue'])),
-            ('doi', self.gf('django.db.models.fields.CharField')(max_length=128)),
+            ('doi', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
         ))
         db.send_create_signal('journalmanager', ['PressRelease'])
 
+
+        # Changing field 'IssueTitle.issue'
+        db.alter_column('journalmanager_issuetitle', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'], null=True))
 
     def backwards(self, orm):
         # Deleting model 'PressReleaseArticle'
@@ -45,6 +48,9 @@ class Migration(SchemaMigration):
         # Deleting model 'PressRelease'
         db.delete_table('journalmanager_pressrelease')
 
+
+        # User chose to not deal with backwards NULL issues for 'IssueTitle.issue'
+        # raise RuntimeError("Cannot reverse this migration. 'IssueTitle.issue' and its values cannot be restored.")
 
     models = {
         'auth.group': {
@@ -162,9 +168,9 @@ class Migration(SchemaMigration):
         'journalmanager.issuetitle': {
             'Meta': {'object_name': 'IssueTitle'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Issue']"}),
-            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'})
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Issue']", 'null': 'True', 'blank': 'True'}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'journalmanager.journal': {
             'Meta': {'ordering': "['title']", 'object_name': 'Journal'},
@@ -280,7 +286,7 @@ class Migration(SchemaMigration):
         },
         'journalmanager.pressrelease': {
             'Meta': {'object_name': 'PressRelease'},
-            'doi': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'doi': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Issue']"})
         },
@@ -294,9 +300,9 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'PressReleaseTranslation'},
             'content': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True', 'blank': 'True'}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
             'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'to': "orm['journalmanager.PressRelease']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'journalmanager.section': {
             'Meta': {'object_name': 'Section'},
