@@ -193,7 +193,7 @@ def pressrelease_index(request, journal_id):
     return render_to_response(
         'journalmanager/pressrelease_dashboard.html',
         {
-           'objects': objects,
+           'objects_pr': objects,
            'journal': journal,
         },
         context_instance=RequestContext(request))
@@ -840,11 +840,9 @@ def add_pressrelease(request, journal_id, prelease_id=None):
 
     if request.method == 'POST':
 
-        if pressrelease_form.is_valid():
+        if pressrelease_form.is_valid() and translation_formset.is_valid():
             pressrelease_form.save()
-
-            if translation_formset.is_valid():
-                translation_formset.save()
+            translation_formset.save()
 
             if article_formset.is_valid():
                 article_formset.save()

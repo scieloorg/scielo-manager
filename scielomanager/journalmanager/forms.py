@@ -496,7 +496,8 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
         models.PressReleaseArticle,
         form=PressReleaseArticleForm,
         extra=1,
-        can_delete=True)
+        can_delete=True,
+        formset=FirstFieldRequiredFormSet)
 
     d = {
         'pressrelease_form': PressReleaseForm(journal=journal, *args, **kwargs),
