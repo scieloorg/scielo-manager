@@ -95,11 +95,9 @@
 {% if usercollectionsformset.non_form_errors %}
   <div class="alert alert-error">
     <button class="close" data-dismiss="alert" type="button">×</button>
-    <ul>
       {% for non_form_error in usercollectionsformset.non_form_errors %}
-        <li>{{ non_form_error }}</li>
+        {{ non_form_error }}
       {% endfor %}
-    </ul>
   </div>
   {% endif %}
 

@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load scielo_common %}
 
-{% block page_title %}{% trans "Sections" %} - {{journal.title}}{% endblock %}
+{% block page_title %}{% trans "Press Releases" %} - {{journal.title}}{% endblock %}
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
@@ -19,23 +19,27 @@
    <a class="btn btn-primary" href="{% url prelease.add journal.id %}">{% trans 'New' %}</a>
   </div>
   <div class="span2">
-    {% simple_pagination objects %}
+    {% simple_pagination objects_pr %}
   </div>
 </div>
 
 <table class="table table-striped _listings">
   <thead>
     <tr>
-      <th></th>
+      <th>{% trans 'Press Release' %}</th>
+      <th>{% trans 'Issue' %}</th>
     </tr>
   </thead>
   <tbody>
-    {% for item in objects.object_list %}
+    {% for item in objects_pr.object_list %}
     <tr>
       <td>
         <h4>
-          <a href="">{{ item }}</a>
+          <a href="{% url prelease.edit journal.id item.pk %}">{{ item }}</a>
         </h4>
+      </td>
+      <td>
+        {{ item.issue }}
       </td>
     </tr>
    {% empty %}
@@ -46,6 +50,6 @@
   <tbody>
 </table>
 
-{% pagination objects %}
+{% pagination objects_pr %}
 
 {% endblock %}

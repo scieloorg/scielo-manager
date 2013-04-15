@@ -956,7 +956,8 @@ class PressRelease(caching.base.CachingMixin, models.Model):
     objects = PressReleaseCustomManager()
     nocacheobjects = models.Manager()
     issue = models.ForeignKey(Issue, related_name='press_releases')
-    doi = models.CharField(_("Press release DOI number"), max_length=128)
+    doi = models.CharField(_("Press release DOI number"), max_length=128,
+                           null=True, blank=True)
 
     def add_article(self, article):
         """
@@ -1003,14 +1004,29 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         else:
             pr.delete()
 
-    def __getitem__(self, language):
+    # def __getitem__(self, language):
+    #     """
+    #     Enables the dict interface to PressRelease objects, i.e:
+    #     ``translation = press_release['en']``
+    #     """
+    #     prt = PressReleaseTranslation.objects.get(press_release=self,
+    #                                               language__iso_code=language)
+    #     return prt
+
+    def __unicode__(self):
         """
-        Enables the dict interface to PressRelease objects, i.e:
-        ``translation = press_release['en']``
+        Try to get the first title of the Press Release.
+        The form ensures at least one title.
         """
-        prt = PressReleaseTranslation.objects.get(press_release=self,
-                                                  language__iso_code=language)
-        return prt
+        try:
+            title = PressReleaseTranslation.objects.filter(press_release=self).order_by('language')[0].title
+        except (PressReleaseTranslation.DoesNotExist, IndexError):
+            return _('No Title')
+
+        return title
+
+    class Meta:
+        permissions = (("list_pressrelease", "Can list PressReleases"),)
 
 
 class PressReleaseTranslation(caching.base.CachingMixin, models.Model):

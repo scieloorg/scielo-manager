@@ -30,8 +30,7 @@ urlpatterns = patterns('',
     # Press release Tools
     url(r'^(?P<journal_id>\d+)/prelease/$', views.pressrelease_index, name='prelease.index'),
     url(r'^(?P<journal_id>\d+)/prelease/new/$', views.add_pressrelease, name='prelease.add'),
-    # url(r'^(?P<journal_id>\d+)/prelease/(?P<prelease_id>\d+)/edit/$', views.add_pressrelease, name='prelease.edit'),
-    # url(r'^(?P<journal_id>\d+)/prelease/(?P<prelease_id>\d+)/del/$', views.del_pressrelease, name='prelease.del'),
+    url(r'^(?P<journal_id>\d+)/prelease/(?P<prelease_id>\d+)/edit/$', views.add_pressrelease, name='prelease.edit'),
 
     # Issue Tools
     url(r'^(?P<journal_id>\d+)/issue/$', views.issue_index, name='issue.index'),

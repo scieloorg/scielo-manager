@@ -417,6 +417,20 @@ def get_all_section_forms(post_dict, journal, section):
 
 class PressReleaseForm(ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        """
+        ``journal`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        self.journal = kwargs.pop('journal', None)
+        super(PressReleaseForm, self).__init__(*args, **kwargs)
+
+        if not self.journal:
+            raise TypeError('missing journal argument')
+
+        self.fields['issue'].queryset = models.Issue.objects.filter(
+            journal__pk=self.journal.pk)
+
     class Meta:
         model = models.PressRelease
 
@@ -460,7 +474,7 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
     args = []
     kwargs = {}
 
-    if pressrelease.pk:
+    if pressrelease:
         kwargs['instance'] = pressrelease
 
     if post_dict:
@@ -482,10 +496,11 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
         models.PressReleaseArticle,
         form=PressReleaseArticleForm,
         extra=1,
-        can_delete=True)
+        can_delete=True,
+        formset=FirstFieldRequiredFormSet)
 
     d = {
-        'pressrelease_form': PressReleaseForm(*args, **kwargs),
+        'pressrelease_form': PressReleaseForm(journal=journal, *args, **kwargs),
         'translation_formset': translations_formset(prefix='translation',
                                                     *args,
                                                     **kwargs),
