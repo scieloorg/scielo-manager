@@ -253,6 +253,16 @@ class IssueTests(TestCase):
         self.assertTrue(issue3.order < issue6.order)
         self.assertEqual(issue6.order, 4)
 
+    def test_scielo_pid(self):
+        journal = JournalFactory.create(print_issn='1234-1234',
+                                        scielo_issn='print')
+        issue = IssueFactory.create(publication_year=2013,
+                                    order=3,
+                                    journal=journal)
+        expected = '1234-123420130003'
+
+        self.assertEqual(issue.scielo_pid, expected)
+
 
 class LanguageTests(TestCase):
 
@@ -718,3 +728,17 @@ class PressReleaseManagerTests(TestCase):
         from journalmanager.models import PressRelease
         pr = PressRelease.objects.by_journal_pid('INVALID')
         self.assertQuerysetEqual(pr, [])
+
+    def test_by_issue_pid(self):
+        pr = self._makeOnePrint()
+        pr2 = PressReleaseFactory.create()
+
+        from journalmanager.models import PressRelease
+
+        result = PressRelease.objects.by_issue_pid(pr.issue.scielo_pid)
+
+        self.assertEqual(
+            result[0],
+            pr
+        )
+        self.assertEqual(len(result), 1)
