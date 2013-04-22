@@ -415,7 +415,7 @@ def get_all_section_forms(post_dict, journal, section):
 # Press Release
 ###########################################
 
-class PressReleaseForm(ModelForm):
+class RegularPressReleaseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         """
@@ -423,7 +423,7 @@ class PressReleaseForm(ModelForm):
         ``__init__`` method.
         """
         self.journal = kwargs.pop('journal', None)
-        super(PressReleaseForm, self).__init__(*args, **kwargs)
+        super(RegularPressReleaseForm, self).__init__(*args, **kwargs)
 
         if not self.journal:
             raise TypeError('missing journal argument')
@@ -432,7 +432,7 @@ class PressReleaseForm(ModelForm):
             journal__pk=self.journal.pk)
 
     class Meta:
-        model = models.PressRelease
+        model = models.RegularPressRelease
 
 
 class PressReleaseTranslationForm(ModelForm):
@@ -500,11 +500,15 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
         formset=FirstFieldRequiredFormSet)
 
     d = {
-        'pressrelease_form': PressReleaseForm(journal=journal, *args, **kwargs),
+        'pressrelease_form': RegularPressReleaseForm(journal=journal,
+                                                    *args,
+                                                    **kwargs),
         'translation_formset': translations_formset(prefix='translation',
                                                     *args,
                                                     **kwargs),
-        'article_formset': article_formset(prefix='article', *args, **kwargs),
+        'article_formset': article_formset(prefix='article',
+                                           *args,
+                                           **kwargs),
     }
 
     return d

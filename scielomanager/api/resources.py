@@ -14,7 +14,7 @@ from journalmanager.models import (
     Issue,
     Section,
     DataChangeEvent,
-    PressRelease,
+    RegularPressRelease,
     PressReleaseTranslation,
     PressReleaseArticle,
 )
@@ -250,7 +250,7 @@ class PressReleaseResource(ModelResource):
 
     class Meta(ApiKeyAuthMeta):
         resource_name = 'pressreleases'
-        queryset = PressRelease.objects.all()
+        queryset = RegularPressRelease.objects.all()
         allowed_methods = ['get', ]
 
     def build_filters(self, filters=None):
@@ -263,16 +263,16 @@ class PressReleaseResource(ModelResource):
         orm_filters = super(PressReleaseResource, self).build_filters(filters)
 
         if 'article_pid' in filters:
-            preleases = PressRelease.objects.filter(
+            preleases = RegularPressRelease.objects.filter(
                 articles__article_pid=filters['article_pid'])
             orm_filters['pk__in'] = preleases
 
         elif 'journal_pid' in filters:
-            preleases = PressRelease.objects.by_journal_pid(
+            preleases = RegularPressRelease.objects.by_journal_pid(
                 filters['journal_pid'])
             orm_filters['pk__in'] = preleases
         elif 'issue_pid' in filters:
-            preleases = PressRelease.objects.by_issue_pid(
+            preleases = RegularPressRelease.objects.by_issue_pid(
                 filters['issue_pid'])
             orm_filters['pk__in'] = preleases
 

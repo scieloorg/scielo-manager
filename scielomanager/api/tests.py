@@ -552,34 +552,34 @@ class PressReleaseRestAPITest(WebTest):
             self.user.api_key.key)
 
     def test_post_data(self):
-        pr = modelfactories.PressReleaseFactory.create()
+        pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.post('/api/v1/pressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
-        pr = modelfactories.PressReleaseFactory.create()
+        pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.put('/api/v1/pressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
-        pr = modelfactories.PressReleaseFactory.create()
+        pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.delete('/api/v1/pressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        pr = modelfactories.PressReleaseFactory.create()
+        pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.get('/api/v1/pressreleases/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_pressrelease_index(self):
-        pr = modelfactories.PressReleaseFactory.create()
+        pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.get('/api/v1/pressreleases/',
             extra_environ=self.extra_environ)
 
@@ -587,7 +587,7 @@ class PressReleaseRestAPITest(WebTest):
         self.assertTrue('objects' in response.content)
 
     def test_api_v1_datamodel(self):
-        pr = modelfactories.PressReleaseFactory.create()
+        pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.get('/api/v1/pressreleases/%s/' % pr.pk,
             extra_environ=self.extra_environ)
 
@@ -659,7 +659,7 @@ class PressReleaseRestAPITest(WebTest):
     def test_journal_filter(self):
         prs = []
         for pr in range(5):
-            prs.append(modelfactories.PressReleaseFactory.create())
+            prs.append(modelfactories.RegularPressReleaseFactory.create())
 
         response = self.app.get(
             '/api/v1/pressreleases/?journal_pid=%s' % prs[0].issue.journal.scielo_pid,
@@ -672,7 +672,7 @@ class PressReleaseRestAPITest(WebTest):
     def test_journal_filter_for_nonexisting_values_skips_filtering(self):
         prs = []
         for pr in range(5):
-            prs.append(modelfactories.PressReleaseFactory.create())
+            prs.append(modelfactories.RegularPressReleaseFactory.create())
         response = self.app.get(
             '/api/v1/pressreleases/?journal_pid=5',
             extra_environ=self.extra_environ)
@@ -697,7 +697,7 @@ class PressReleaseRestAPITest(WebTest):
     def test_issue_filter(self):
         prs = []
         for pr in range(5):
-            prs.append(modelfactories.PressReleaseFactory.create())
+            prs.append(modelfactories.RegularPressReleaseFactory.create())
 
         response = self.app.get(
             '/api/v1/pressreleases/?issue_pid=%s' % prs[0].issue.scielo_pid,

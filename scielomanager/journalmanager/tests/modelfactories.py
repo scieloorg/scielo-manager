@@ -157,8 +157,8 @@ class DataChangeEventFactory(factory.Factory):
     event_type = 'added'
 
 
-class PressReleaseFactory(factory.Factory):
-    FACTORY_FOR = models.PressRelease
+class RegularPressReleaseFactory(factory.Factory):
+    FACTORY_FOR = models.RegularPressRelease
 
     issue = factory.SubFactory(IssueFactory)
     doi = factory.Sequence(lambda n: 'http://dx.doi.org/10.4415/ANN_12_01_%s' % n)
@@ -168,7 +168,7 @@ class PressReleaseTranslationFactory(factory.Factory):
     FACTORY_FOR = models.PressReleaseTranslation
 
     language = factory.SubFactory(LanguageFactory)
-    press_release = factory.SubFactory(PressReleaseFactory)
+    press_release = factory.SubFactory(RegularPressReleaseFactory)
     title = u'Yeah, this issue is amazing!'
     content = u'Want to read more about...'
 
@@ -176,5 +176,5 @@ class PressReleaseTranslationFactory(factory.Factory):
 class PressReleaseArticleFactory(factory.Factory):
     FACTORY_FOR = models.PressReleaseArticle
 
-    press_release = factory.SubFactory(PressReleaseFactory)
+    press_release = factory.SubFactory(RegularPressReleaseFactory)
     article_pid = factory.Sequence(lambda n: 'S0102-311X201300030000%s' % n)

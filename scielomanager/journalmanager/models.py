@@ -191,7 +191,7 @@ class CollectionCustomManager(AppCustomManager):
         return collections
 
 
-class PressReleaseCustomManager(caching.base.CachingManager):
+class RegularPressReleaseCustomManager(caching.base.CachingManager):
 
     def by_journal_pid(self, journal_pid):
         """
@@ -949,15 +949,15 @@ class DataChangeEvent(models.Model):
 
 class PressRelease(caching.base.CachingMixin, models.Model):
     """
-    Represents a press-release bound to an Issue. It can be
-    available in one or any languages (restricted by the Journal
+    Represents a press-release bound to a Journal.
+    If ``issue`` is None, the pressrelease is refers to an ahead article.
+    It can be available in one or any languages (restricted by the Journal
     publishing policy).
     """
-    objects = PressReleaseCustomManager()
     nocacheobjects = models.Manager()
-    issue = models.ForeignKey(Issue, related_name='press_releases')
-    doi = models.CharField(_("Press release DOI number"), max_length=128,
-                           null=True, blank=True)
+    objects = models.Manager()
+    doi = models.CharField(_("Press release DOI number"),
+        max_length=128, null=True, blank=True)
 
     def add_article(self, article):
         """
@@ -1004,14 +1004,12 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         else:
             pr.delete()
 
-    # def __getitem__(self, language):
-    #     """
-    #     Enables the dict interface to PressRelease objects, i.e:
-    #     ``translation = press_release['en']``
-    #     """
-    #     prt = PressReleaseTranslation.objects.get(press_release=self,
-    #                                               language__iso_code=language)
-    #     return prt
+    def get_trans(self, language):
+        """
+        Syntatic suggar for retrieving translations in a given language
+        """
+        prt = self.translations.get(language__iso_code=language)
+        return prt
 
     def __unicode__(self):
         """
@@ -1026,6 +1024,7 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         return title
 
     class Meta:
+        abstract = False
         permissions = (("list_pressrelease", "Can list PressReleases"),)
 
 
@@ -1049,6 +1048,15 @@ class PressReleaseArticle(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     press_release = models.ForeignKey(PressRelease, related_name='articles')
     article_pid = models.CharField(_('PID'), max_length=32, db_index=True)
+
+
+class RegularPressRelease(PressRelease):
+    objects = RegularPressReleaseCustomManager()
+    issue = models.ForeignKey(Issue, related_name='press_releases')
+
+
+class AheadPressRelease(PressRelease):
+    journal = models.ForeignKey(Journal, related_name='press_releases')
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

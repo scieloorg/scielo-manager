@@ -8,6 +8,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'AheadPressRelease'
+        db.create_table('journalmanager_aheadpressrelease', (
+            ('pressrelease_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.PressRelease'], unique=True, primary_key=True)),
+            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Journal'])),
+        ))
+        db.send_create_signal('journalmanager', ['AheadPressRelease'])
+
         # Adding model 'PressReleaseArticle'
         db.create_table('journalmanager_pressreleasearticle', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -15,6 +22,13 @@ class Migration(SchemaMigration):
             ('article_pid', self.gf('django.db.models.fields.CharField')(max_length=32, db_index=True)),
         ))
         db.send_create_signal('journalmanager', ['PressReleaseArticle'])
+
+        # Adding model 'RegularPressRelease'
+        db.create_table('journalmanager_regularpressrelease', (
+            ('pressrelease_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.PressRelease'], unique=True, primary_key=True)),
+            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Issue'])),
+        ))
+        db.send_create_signal('journalmanager', ['RegularPressRelease'])
 
         # Adding model 'PressReleaseTranslation'
         db.create_table('journalmanager_pressreleasetranslation', (
@@ -29,7 +43,6 @@ class Migration(SchemaMigration):
         # Adding model 'PressRelease'
         db.create_table('journalmanager_pressrelease', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Issue'])),
             ('doi', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
         ))
         db.send_create_signal('journalmanager', ['PressRelease'])
@@ -39,8 +52,14 @@ class Migration(SchemaMigration):
         db.alter_column('journalmanager_issuetitle', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'], null=True))
 
     def backwards(self, orm):
+        # Deleting model 'AheadPressRelease'
+        db.delete_table('journalmanager_aheadpressrelease')
+
         # Deleting model 'PressReleaseArticle'
         db.delete_table('journalmanager_pressreleasearticle')
+
+        # Deleting model 'RegularPressRelease'
+        db.delete_table('journalmanager_regularpressrelease')
 
         # Deleting model 'PressReleaseTranslation'
         db.delete_table('journalmanager_pressreleasetranslation')
@@ -50,7 +69,7 @@ class Migration(SchemaMigration):
 
 
         # User chose to not deal with backwards NULL issues for 'IssueTitle.issue'
-        # raise RuntimeError("Cannot reverse this migration. 'IssueTitle.issue' and its values cannot be restored.")
+        raise RuntimeError("Cannot reverse this migration. 'IssueTitle.issue' and its values cannot be restored.")
 
     models = {
         'auth.group': {
@@ -88,6 +107,11 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        'journalmanager.aheadpressrelease': {
+            'Meta': {'object_name': 'AheadPressRelease', '_ormbases': ['journalmanager.PressRelease']},
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Journal']"}),
+            'pressrelease_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.PressRelease']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
@@ -287,8 +311,7 @@ class Migration(SchemaMigration):
         'journalmanager.pressrelease': {
             'Meta': {'object_name': 'PressRelease'},
             'doi': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Issue']"})
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'journalmanager.pressreleasearticle': {
             'Meta': {'object_name': 'PressReleaseArticle'},
@@ -303,6 +326,11 @@ class Migration(SchemaMigration):
             'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
             'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'to': "orm['journalmanager.PressRelease']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
+        'journalmanager.regularpressrelease': {
+            'Meta': {'object_name': 'RegularPressRelease', '_ormbases': ['journalmanager.PressRelease']},
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Issue']"}),
+            'pressrelease_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.PressRelease']", 'unique': 'True', 'primary_key': 'True'})
         },
         'journalmanager.section': {
             'Meta': {'object_name': 'Section'},

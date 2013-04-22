@@ -186,7 +186,7 @@ def collection_index(request, model, journal_id=None):
 @permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    preleases = models.PressRelease.objects.all_by_journal(journal_id)
+    preleases = models.RegularPressRelease.objects.all_by_journal(journal_id)
 
     objects = get_paginated(preleases, request.GET.get('page', 1))
 
@@ -828,9 +828,10 @@ def add_pressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     if prelease_id:
-        pressrelease = get_object_or_404(models.PressRelease, pk=prelease_id)
+        pressrelease = get_object_or_404(models.RegularPressRelease,
+                                         pk=prelease_id)
     else:
-        pressrelease = models.PressRelease()
+        pressrelease = models.RegularPressRelease()
 
     pr_forms = get_all_pressrelease_forms(request.POST, journal, pressrelease)
 
