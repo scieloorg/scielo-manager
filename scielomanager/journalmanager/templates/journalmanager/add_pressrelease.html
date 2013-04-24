@@ -1,6 +1,7 @@
 {% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load widget_tweaks %}
+{% load formerrormessages %}
 
 {% block page_title %}{% trans "Press release" %} - {{journal.title}}{% endblock %}
 
@@ -22,6 +23,10 @@
 </ul>
 {% endblock %}
 
+{% block messages %}
+  {% summarize_errors pressrelease_form article_formset translation_formset %}
+{% endblock %}
+
 {% block form_content %}
 <form id="prelease-form"
       method="POST"
@@ -35,8 +40,15 @@
 
   <span class="label"><a name="title"></a>{% trans "Settings" %}</span>
   <div class="well">
-    <label>Issue</label>
+
+    {% if pressrelease_form.issue %}
+    <label>
+      <span {% if pressrelease_form.issue.field.required %}class="req-field"{% endif %}>
+        Issue
+      </span>
+    </label>
     {{ pressrelease_form.issue }}
+    {% endif %}
 
     <label>DOI</label>
     {{ pressrelease_form.doi }}
@@ -44,7 +56,13 @@
     <table id="article_formset"
            class="table table-bordered table-striped">
       <thead>
-        <th>Article PID</th>
+        <tr>
+          <td>
+            <span {% if article_formset.forms.0.article_pid.field.required %}class="req-field"{% endif %}>
+            Article PID
+            </span>
+          </td>
+        </tr>
       </thead>
       <tbody>
         {% for form in article_formset %}
@@ -60,15 +78,6 @@
     </table>
       {{ article_formset.management_form }}
   </div>
-
-{% if translation_formset.non_form_errors %}
-  <div class="alert alert-error">
-    <button class="close" data-dismiss="alert" type="button">×</button>
-      {% for non_form_error in translation_formset.non_form_errors %}
-        {{ non_form_error }}
-      {% endfor %}
-  </div>
-  {% endif %}
 
   <span class="label"><a name="title"></a>{% trans "Content" %}</span>
   <div class="well">

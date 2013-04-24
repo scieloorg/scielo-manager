@@ -17,7 +17,7 @@
 <div class="row-fluid show-grid">
   <div class="span8">
    <a class="btn btn-primary" href="{% url prelease.add journal.id %}">{% trans 'New regular press release' %}</a>
-   <a class="btn btn-primary" href="{% url prelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a>
+   <a class="btn btn-primary" href="{% url aprelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a>
   </div>
   <div class="span2">
     {% simple_pagination objects_pr %}
