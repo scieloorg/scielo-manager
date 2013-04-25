@@ -1,7 +1,7 @@
 {% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load widget_tweaks %}
-{% load formerrormessages %}
+{% load formstamps %}
 
 {% block page_title %}{% trans "Press release" %} - {{journal.title}}{% endblock %}
 
@@ -42,16 +42,10 @@
   <div class="well">
 
     {% if pressrelease_form.issue %}
-    <label>
-      <span {% if pressrelease_form.issue.field.required %}class="req-field"{% endif %}>
-        Issue
-      </span>
-    </label>
-    {{ pressrelease_form.issue }}
+    {% stamp_regular_field pressrelease_form.issue %}
     {% endif %}
 
-    <label>DOI</label>
-    {{ pressrelease_form.doi }}
+    {% stamp_regular_field pressrelease_form.doi %}
 
     <table id="article_formset"
            class="table table-bordered table-striped">
@@ -70,7 +64,7 @@
           <td>
           {% for field in form.hidden_fields %}{{ field }}{% endfor %}
           {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-          {{ form.article_pid }}
+          {% stamp_regular_field form.article_pid 0 %}
           </td>
         </tr>
         {% endfor %}
