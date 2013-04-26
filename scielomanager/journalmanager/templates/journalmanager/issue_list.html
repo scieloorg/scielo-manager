@@ -7,7 +7,7 @@
 {% block page_title %}{% trans "Issues" %} - {{journal.title}}{% endblock %}
 
 {% block content %}
-{% journaldash_toolbar 'issue' %}
+{% journaldash_toolbar 'issue' journal.pk %}
 <div class="row-fluid show-grid">
   <div class="span1">
     <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>

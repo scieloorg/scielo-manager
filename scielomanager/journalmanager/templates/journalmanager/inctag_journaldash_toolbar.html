@@ -1,21 +1,20 @@
 {% load i18n %}
-{% load scielo_common %}
 
-{% if journal.pk %}
+{% if journal_id %}
   <div class="navbar">
     <div class="navbar-inner">
       <ul class="nav">
         <li {% if page == 'dashboard' %}class="active activedash" {% endif %}>
-          <a href="{% url journal.dash journal.pk %}">{% trans 'Dashboard' %}</a>
+          <a href="{% url journal.dash journal_id %}">{% trans 'Dashboard' %}</a>
         </li>
         {% if perms.journalmanager.list_issue %}
         <li {% if page == 'issue' %}class="active activedash" {% endif %}>
-          <a href="{% url issue.index journal.pk %}">{% trans 'Issues' %}</a>
+          <a href="{% url issue.index journal_id %}">{% trans 'Issues' %}</a>
         </li>
         {% endif %}
         {% if perms.journalmanager.list_section %}
         <li {% if page == 'section' %}class="active activedash" {% endif %}>
-          <a href="{% url section.index journal.pk %}">{% trans 'Sections' %}</a>
+          <a href="{% url section.index journal_id %}">{% trans 'Sections' %}</a>
         </li>
         {% endif %}
         <!--
@@ -28,7 +27,7 @@
         -->
         {% if perms.journalmanager.change_journalpublicationevents %}
         <li {% if page == 'status' %}class="active activedash" {% endif %}>
-          <a href="{% url journal_status.edit journal.pk %}">{% trans 'Status' %}</a>
+          <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>
         {% endif %}
       </ul>

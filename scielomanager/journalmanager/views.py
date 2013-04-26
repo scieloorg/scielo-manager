@@ -389,22 +389,8 @@ def dash_journal(request, journal_id=None):
 
     journal = get_object_or_404(models.Journal, id=journal_id)
 
-    # Recovering Journal Cover url.
-    try:
-        has_cover_url = journal.cover.url
-    except ValueError:
-        has_cover_url = None
-
-    # Recovering Journal Logo url.
-    try:
-        has_logo_url = journal.logo.url
-    except ValueError:
-        has_logo_url = None
-
     return render_to_response('journalmanager/journal_dash.html', {
                               'journal': journal,
-                              'has_cover_url': has_cover_url,
-                              'has_logo_url': has_logo_url,
                               }, context_instance=RequestContext(request))
 
 
@@ -416,7 +402,7 @@ def add_journal(request, journal_id=None):
 
     user_collections = models.get_user_collections(request.user.id)
 
-    if  journal_id is None:
+    if journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)

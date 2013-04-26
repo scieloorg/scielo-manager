@@ -114,10 +114,10 @@
       {% block journaltitle %}
         {% if journal.pk %}
         <h3>{{ journal.collection }}:
-          <span style="margin-left: 20px; color: #909090">
+          <span style="margin-left: 10px; color: #909090">
             {{ journal.short_title }}
             <a href="{% url journal.edit journal.pk %}" class="btn btn-mini">
-              <i class="icon-pencil icon-black"></i> edit
+              <i class="icon-pencil icon-black"></i> {% trans 'edit' %}
             </a>
           </span>
         </h3>

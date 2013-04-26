@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block form_content %}
-{% journaldash_toolbar 'section' %}
+{% journaldash_toolbar 'section' journal.pk %}
 <form id="section-form" method="POST" action="" enctype="application/x-www-form-urlencoded">
   {% csrf_token %}
 
