@@ -105,34 +105,6 @@
       </td>
       <td>{{ journal.print_issn|default:"n.a." }}</td>
       <td>{{ journal.eletronic_issn|default:"n.a." }}</td>
-      <td>
-        <ul class="_actions">
-          <li>
-            {% if perms.journalmanager.list_issue %}
-            <a href="{% url issue.index journal.pk %}"
-               class="btn btn-mini">
-              {% trans 'Issues' %}
-            </a>
-            {% endif %}
-          </li>
-          <li>
-            {% if perms.journalmanager.list_section %}
-            <a href="{% url section.index journal.pk %}"
-               class="btn btn-mini">
-              {% trans 'Sections' %}
-            </a>
-            {% endif %}
-          </li>
-          {% if perms.journalmanager.change_journalpublicationevents %}
-            <li>
-              <a href="{% url journal_status.edit journal.pk %}"
-                 class="btn btn-mini">
-                {% trans 'Status' %}
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </td>
     </tr>
     {% empty %}
     <tr>
