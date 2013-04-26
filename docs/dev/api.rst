@@ -40,6 +40,7 @@ Available endpoints
   uselicenses-api
   users-api
   changes-api
+  pressreleases-api
 
 
 .. note::
