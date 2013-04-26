@@ -1,6 +1,7 @@
 {% extends "base_lv1.html" %}
 {% load i18n %}
 {% load scielo_common %}
+{% load query_string %}
 
 {% block page_title %}{% trans "Press Releases" %} - {{journal.title}}{% endblock %}
 
@@ -13,7 +14,6 @@
 {% endblock %}
 
 {% block content %}
-
 <ul class="nav nav-tabs">
   <li>
     <div class="btn-group" style="margin-right: 10px">
@@ -27,26 +27,52 @@
       </ul>
     </div>
   </li>
-  <li class="active"><a href="#tab1" data-toggle="tab">{% trans 'Press Release of Issue' %}</a></li>
-  <li><a href="#tab2" data-toggle="tab">{% trans 'Press Release of Article' %}</a></li>
-  <li><a href="#tab3" data-toggle="tab">{% trans 'Press Release of Ahead' %}</a></li>
+  <li class="{% if not request.GET.press %} active {% endif %}">
+    <a href="{% query_string request "" "include_ampersand" %}">{% trans 'Press Release of Issue' %}</a>
+  </li>
+  <li class="{% if request.GET.press == 'article' %} active {% endif %}">
+    <a href="?press=article">{% trans 'Press Release of Article' %}</a>
+  </li>
+  <li class="{% if request.GET.press == 'ahead' %} active {% endif %}">
+    <a href="?press=ahead">{% trans 'Press Release of Ahead' %}</a>
+  </li>
   <li style="float:right; margin-button: 2px">{% simple_pagination objects_pr %}</li>
 </ul>
 
 <div class="tab-content">
-  <div class="tab-pane active" id="tab1">
+  {% if not request.GET.press %}
     {% include "include_press_release/issue.html" %}
-  </div>
+  {% endif %}
 
-  <div class="tab-pane" id="tab2">
+  {% if request.GET.press == 'article' %}
     {% include "include_press_release/article.html" %}
-  </div>
+  {% endif %}
 
-  <div class="tab-pane" id="tab3">
+  {% if request.GET.press == 'ahead' %}
     {% include "include_press_release/ahead.html" %}
-  </div>
+  {% endif %}
 </div>
 
 {% pagination objects_pr %}
+
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+
+<script>
+  function showTitles(div_id){
+
+    $('#' + div_id).toggle('slow', function(){
+      if($('#' + div_id).css('display') == 'none'){
+        $('#toggle_' + div_id).html("{% trans 'Todos os títulos' %}");
+      }else{
+        $('#toggle_' + div_id).html("{% trans 'Ocultar os títulos' %}");
+      }
+    });
+
+  }
+</script>
+
 
 {% endblock %}
