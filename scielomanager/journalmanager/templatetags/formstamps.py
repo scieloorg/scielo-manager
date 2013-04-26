@@ -18,6 +18,17 @@ def stamp_regular_field(field, show_label=True):
     return {'field': field, 'show_label': bool(show_label)}
 
 
+@register.inclusion_tag('journalmanager/inctag_stamp_inlineformset_field.html')
+def stamp_inlineformset_field(field, show_label=True):
+    """
+    Prints a inlineformset field using a standardized layout.
+
+    ``show_label`` is set to True by default, but if you
+    want to suppress it, just pass ``0``.
+    """
+    return {'field': field, 'show_label': bool(show_label)}
+
+
 @register.inclusion_tag('journalmanager/inctag_sum_errors.html')
 def summarize_errors(form1,
                form2=None,

@@ -64,7 +64,7 @@
           <td>
           {% for field in form.hidden_fields %}{{ field }}{% endfor %}
           {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-          {% stamp_regular_field form.article_pid 0 %}
+          {% stamp_inlineformset_field form.article_pid 0 %}
           </td>
         </tr>
         {% endfor %}

@@ -473,11 +473,11 @@ class AheadPressReleaseArticleForm(ModelForm):
 
     class Meta:
         model = models.PressReleaseArticle
+        exclude = ('article_pid',)
 
     def clean_article_pid(self):
-
         if not self.cleaned_data['article_pid']:
-            raise forms.ValidationError()
+            raise forms.ValidationError('Field is required')
 
         return self.cleaned_data['article_pid']
 
@@ -517,8 +517,7 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
         models.PressReleaseArticle,
         form=PressReleaseArticleForm,
         extra=1,
-        can_delete=True,
-        formset=FirstFieldRequiredFormSet)
+        can_delete=True)
 
     d = {
         'pressrelease_form': RegularPressReleaseForm(journal=journal,
@@ -643,6 +642,7 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
     """
 
     def clean(self):
+        super(FirstFieldRequiredFormSet, self).clean()
         count = 0
         for form in self.forms:
             try:
