@@ -24,7 +24,7 @@
 {% endblock %}
 
 {% block messages %}
-  {% summarize_errors pressrelease_form article_formset translation_formset %}
+  {% summarize_errors pressrelease_form article_formset %}
 {% endblock %}
 
 {% block form_content %}
@@ -72,6 +72,8 @@
     </table>
       {{ article_formset.management_form }}
   </div>
+
+  {% summarize_errors translation_formset %}
 
   <span class="label"><a name="title"></a>{% trans "Content" %}</span>
   <div class="well">

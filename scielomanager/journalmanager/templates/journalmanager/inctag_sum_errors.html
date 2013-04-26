@@ -7,8 +7,11 @@
     {% for field in field_errors %}
     <li>{{ field.label }}</li>
     {% endfor %}
-    {% for field in non_field_errors %}
-    <li>{{ field }}</li>
+    {% for msg in non_field_errors %}
+    <li>{{ msg }}</li>
+    {% endfor %}
+    {% for msg in non_form_errors %}
+    <li>{{ msg }}</li>
     {% endfor %}
   </ul>
 </div>

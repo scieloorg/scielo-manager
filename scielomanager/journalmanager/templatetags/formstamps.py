@@ -51,12 +51,19 @@ def summarize_errors(form1,
 
     field_errors = [(field for field in form if field.errors) for form in forms]
     non_field_errors = [attr() for attr in [getattr(form, 'non_field_errors', None) for form in forms] if attr]
+    non_form_errors = [attr() for attr in [getattr(form, 'non_form_errors', None) for form in forms] if attr]
 
     expanded_field_errors = list(itertools.chain(*field_errors))
     expanded_non_field_errors = list(itertools.chain(*non_field_errors))
+    expanded_non_form_errors = list(itertools.chain(*non_form_errors))
+
+    show_block = (bool(expanded_field_errors) or
+                  bool(expanded_non_form_errors) or
+                  bool(expanded_non_field_errors))
 
     return {
-        'show_block': bool(expanded_field_errors),
+        'show_block': show_block,
         'field_errors': expanded_field_errors,
         'non_field_errors': expanded_non_field_errors,
+        'non_form_errors': expanded_non_form_errors,
     }
