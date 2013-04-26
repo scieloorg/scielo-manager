@@ -957,7 +957,7 @@ class PressRelease(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     objects = models.Manager()
     doi = models.CharField(_("Press release DOI number"),
-        max_length=128, null=True, blank=True)
+                           max_length=128, null=True, blank=True)
 
     def add_article(self, article):
         """
@@ -1018,10 +1018,17 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         """
         try:
             title = PressReleaseTranslation.objects.filter(press_release=self).order_by('language')[0].title
-        except (PressReleaseTranslation.DoesNotExist, IndexError):
+        except IndexError:
             return _('No Title')
 
         return title
+
+    @property
+    def get_titles(self):
+        """
+        Get all titles from Press Release
+        """
+        return [trans.title for trans in PressReleaseTranslation.objects.filter(press_release=self).order_by('language')]
 
     class Meta:
         abstract = False
