@@ -51,8 +51,11 @@
   {% endif %}
 {% endblock%}
 
+{% block journal_toolbar %}
+{% journaldash_toolbar 'journal' journal.pk %}
+{% endblock %}
+
 {% block form_content %}
-  {% journaldash_toolbar 'journal' journal.pk %}
   {% if request.GET.resume %}
     <form id="journal-form"
           method="post"

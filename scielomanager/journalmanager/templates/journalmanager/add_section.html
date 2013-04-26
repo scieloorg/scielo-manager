@@ -26,8 +26,11 @@
   {% endif %}
 {% endblock %}
 
-{% block form_content %}
+{% block journal_toolbar %}
 {% journaldash_toolbar 'section' journal.pk %}
+{% endblock %}
+
+{% block form_content %}
 <form id="section-form" method="POST" action="" enctype="application/x-www-form-urlencoded">
   {% csrf_token %}
 
