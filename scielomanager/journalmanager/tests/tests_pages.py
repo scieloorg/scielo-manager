@@ -176,7 +176,7 @@ class UserIndexPageTests(WebTest):
 
         response = self.app.get(reverse('user.index'), user=self.user)
 
-        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
 
     def test_logged_user_access_users_not_being_manager_of_the_collection(self):
         user = auth.UserF(is_active=True)

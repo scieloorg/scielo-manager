@@ -109,7 +109,7 @@ def list_search(request, model, journal_id):
                 title__icontains=request.REQUEST['q']).order_by('title')
 
     objects = get_paginated(objects_all, request.GET.get('page', 1))
-    template_name = 'journalmanager/%s_dashboard.html' % model.__name__.lower()
+    template_name = 'journalmanager/%s_list.html' % model.__name__.lower()
 
     return render_to_response(
         template_name, {
@@ -137,7 +137,7 @@ def issue_index(request, journal_id):
         aheadform = AheadForm(instance=journal, prefix='journal')
 
     return render_to_response(
-        'journalmanager/issue_dashboard.html',
+        'journalmanager/issue_list.html',
         {
             'journal': journal,
             'aheadform': aheadform,
@@ -270,7 +270,7 @@ def user_index(request):
 
     users = get_paginated(col_users, request.GET.get('page', 1))
 
-    t = loader.get_template('journalmanager/user_dashboard.html')
+    t = loader.get_template('journalmanager/user_list.html')
     c = RequestContext(request, {
                        'users': users,
                        })
@@ -382,6 +382,33 @@ def edit_journal_status(request, journal_id=None):
 
 
 @permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
+def dash_journal(request, journal_id=None):
+    """
+    Handles new and existing journals
+    """
+
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = journal.cover.url
+    except ValueError:
+        has_cover_url = None
+
+    # Recovering Journal Logo url.
+    try:
+        has_logo_url = journal.logo.url
+    except ValueError:
+        has_logo_url = None
+
+    return render_to_response('journalmanager/journal_dash.html', {
+                              'journal': journal,
+                              'has_cover_url': has_cover_url,
+                              'has_logo_url': has_logo_url,
+                              }, context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def add_journal(request, journal_id=None):
     """
     Handles new and existing journals
@@ -426,8 +453,7 @@ def add_journal(request, journal_id=None):
                     collection=models.Collection.objects.get_default_by_user(request.user),
                     event_type='updated' if journal_id else 'added'
                 )
-
-                return HttpResponseRedirect(reverse('journal.index'))
+                return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
             else:
                 messages.error(request, MSG_FORM_MISSING)
 
@@ -456,6 +482,7 @@ def add_journal(request, journal_id=None):
         has_logo_url = False
 
     return render_to_response('journalmanager/add_journal.html', {
+                              'journal': journal,
                               'add_form': journalform,
                               'titleformset': titleformset,
                               'missionformset': missionformset,

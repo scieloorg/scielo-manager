@@ -3,20 +3,9 @@
 {% load static %}
 {% load scielo_common %}
 {% load query_string %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Journals" %}{% endblock %}
-
-{% block breadcrumb %}
-  <ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    {% if request.GET.q %}
-       <li><a href="{% url journal.index %}">{% trans 'Journals DashBoard' %}</a> <span class="divider">/</span></li>
-       <li class="active">{% trans 'Search' %}</li>
-    {% else %}
-      <li class="active">{% trans 'Journals DashBoard' %}</li>
-    {% endif %}
-  </ul>
-{% endblock %}
 
 {% block content %}
 <div class="row-fluid show-grid">
@@ -89,7 +78,6 @@
       <th>{% trans "Journal Title" %}</th>
       <th>{% trans "Print ISSN" %}</th>
       <th>{% trans "Electronic ISSN" %}</th>
-      <th>{% trans "Browse" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -104,7 +92,7 @@
                 data-original-title="{{ journal.pub_status|capfirst }}"
                 rel="tooltip"></span>
             {% if perms.journalmanager.change_journal %}
-              <a href="{% url journal.edit journal.pk %}"
+              <a href="{% url journal.dash journal.pk %}"
                  class="tip-bottom"
                  data-original-title="{{ journal.title }}"
                  rel="tooltip">

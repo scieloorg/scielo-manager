@@ -3,14 +3,6 @@
 {% load static %}
 {% load scielo_common %}
 
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url user.index %}">{% trans 'Users DashBoard' %}</a> <span class="divider">/</span></li>
-  <li class="active">{% trans 'New User' %}</li>
-</ul>
-{% endblock %}
-
 {% block messages %}
   {% if add_form.errors %}
   <div class="alert alert-error">

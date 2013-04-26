@@ -2,15 +2,9 @@
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Users" %}{% endblock %}
-
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-  <li class="active">{% trans 'Users DashBoard' %}</li>
-</ul>
-{% endblock %}
 
 {% block content %}
 {% if perms.auth.add_user %}
