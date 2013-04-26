@@ -1,0 +1,36 @@
+{% load i18n %}
+
+{% if journal_id %}
+  <div class="navbar">
+    <div class="navbar-inner">
+      <ul class="nav">
+        <li {% if page == 'dashboard' %}class="active activedash" {% endif %}>
+          <a href="{% url journal.dash journal_id %}">{% trans 'Dashboard' %}</a>
+        </li>
+        {% if perms.journalmanager.list_issue %}
+        <li {% if page == 'issue' %}class="active activedash" {% endif %}>
+          <a href="{% url issue.index journal_id %}">{% trans 'Issues' %}</a>
+        </li>
+        {% endif %}
+        {% if perms.journalmanager.list_section %}
+        <li {% if page == 'section' %}class="active activedash" {% endif %}>
+          <a href="{% url section.index journal_id %}">{% trans 'Sections' %}</a>
+        </li>
+        {% endif %}
+        <!--
+        <li {% if page == 'press_release' %}class="active activedash" {% endif %}>
+          <a href="#">Press Releases</a>
+        </li>
+        <li {% if page == 'ahead' %}class="active activedash" {% endif %}>
+          <a href="#">Ahead of Print</a>
+        </li>
+        -->
+        {% if perms.journalmanager.change_journalpublicationevents %}
+        <li {% if page == 'status' %}class="active activedash" {% endif %}>
+          <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+{% endif %}

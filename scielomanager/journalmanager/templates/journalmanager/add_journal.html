@@ -3,16 +3,9 @@
 {% load static %}
 {% load scielo_common %}
 {% load widget_tweaks %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Journal" %}{% endblock %}
-
-{% block breadcrumb %}
-<ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url journal.index %}">{% trans 'Journal Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New Journal' %}</li>
-</ul>
-{% endblock %}
 
 {% block shortaccess %}
 <div class="slide-out-div">
@@ -59,6 +52,7 @@
 {% endblock%}
 
 {% block form_content %}
+  {% journaldash_toolbar 'journal' journal.pk %}
   {% if request.GET.resume %}
     <form id="journal-form"
           method="post"

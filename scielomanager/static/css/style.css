@@ -260,3 +260,8 @@ table._listings h4 {
     max-width: 50%;
     min-width: 30%;
 }
+
+.activedash {
+    border-bottom: solid 1px;
+    border-color: #FF9D40;
+}

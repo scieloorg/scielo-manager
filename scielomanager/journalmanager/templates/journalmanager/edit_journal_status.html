@@ -2,17 +2,9 @@
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Publication Status" %} - {{journal.title}}{% endblock %}
-
-{% block breadcrumb %}
-<ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url journal.index %}">{% trans 'Journal Dashboard' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url journal.edit journal.pk %}">{{ journal.title }}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'Journal Status' %}</li>
-</ul>
-{% endblock %}
 
 {% block messages %}
   {% if add_form.errors or add_form.non_field_errors %}
@@ -30,6 +22,7 @@
 {% endblock%}
 
 {% block content %}
+{% journaldash_toolbar 'status' journal.pk %}
 <span class="label"><a name="status"></a>{% trans "Journal Status History" %}</span>
 <div class="well">
   <table class="table table-striped">
