@@ -183,6 +183,22 @@ def collection_index(request, model, journal_id=None):
     return list_search(request, model, journal_id)
 
 
+@permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+def pressrelease_index(request, journal_id):
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+    preleases = models.RegularPressRelease.objects.all_by_journal(journal_id)
+
+    objects = get_paginated(preleases, request.GET.get('page', 1))
+
+    return render_to_response(
+        'journalmanager/pressrelease_dashboard.html',
+        {
+           'objects_pr': objects,
+           'journal': journal,
+        },
+        context_instance=RequestContext(request))
+
+
 @login_required
 def generic_toggle_availability(request, object_id, model):
 
@@ -805,3 +821,46 @@ def ajx_list_issues_for_markup_files(request):
     response_data = json.dumps(issues)
 
     return HttpResponse(response_data, mimetype="application/json")
+
+
+@permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+def add_pressrelease(request, journal_id, prelease_id=None):
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if prelease_id:
+        pressrelease = get_object_or_404(models.RegularPressRelease,
+                                         pk=prelease_id)
+    else:
+        pressrelease = models.RegularPressRelease()
+
+    pr_forms = get_all_pressrelease_forms(request.POST, journal, pressrelease)
+
+    pressrelease_form = pr_forms['pressrelease_form']
+    translation_formset = pr_forms['translation_formset']
+    article_formset = pr_forms['article_formset']
+
+    if request.method == 'POST':
+
+        if pressrelease_form.is_valid() and translation_formset.is_valid():
+            pressrelease_form.save()
+            translation_formset.save()
+
+            if article_formset.is_valid():
+                article_formset.save()
+
+            messages.info(request, MSG_FORM_SAVED)
+
+            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+
+    return render_to_response(
+        'journalmanager/add_pressrelease.html',
+        {
+            'pressrelease_form': pressrelease_form,
+            'translation_formset': translation_formset,
+            'article_formset': article_formset,
+            'journal': journal,
+        },
+        context_instance=RequestContext(request)
+    )

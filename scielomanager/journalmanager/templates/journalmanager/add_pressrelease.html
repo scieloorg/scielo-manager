@@ -1,0 +1,156 @@
+{% extends "base_form_lv0.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block page_title %}{% trans "Press release" %} - {{journal.title}}{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li>
+    <a href="{% url index %}">{% trans 'Home' %}</a>
+    <span class="divider">/</span>
+  </li>
+  <li>
+    <a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a>
+    <span class="divider">/</span>
+  </li>
+  <li>
+    <a href="{% url prelease.index journal.id %}">{{journal.title}}</a>
+    <span class="divider">/</span>
+  </li>
+  <li class="active">{% trans 'New press release' %}</li>
+</ul>
+{% endblock %}
+
+{% block form_content %}
+<form id="prelease-form"
+      method="POST"
+      action=""
+      enctype="application/x-www-form-urlencoded">
+  {% csrf_token %}
+
+  {% if request.GET.popup %}
+    <input type="hidden" value="1" name="popup" />
+  {% endif %}
+
+  <span class="label"><a name="title"></a>{% trans "Settings" %}</span>
+  <div class="well">
+    <label>Issue</label>
+    {{ pressrelease_form.issue }}
+
+    <label>DOI</label>
+    {{ pressrelease_form.doi }}
+
+    <table id="article_formset"
+           class="table table-bordered table-striped">
+      <thead>
+        <th>Article PID</th>
+      </thead>
+      <tbody>
+        {% for form in article_formset %}
+        <tr id="{{ form.prefix }}-row">
+          <td>
+          {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+          {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+          {{ form.article_pid }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+      {{ article_formset.management_form }}
+  </div>
+
+{% if translation_formset.non_form_errors %}
+  <div class="alert alert-error">
+    <button class="close" data-dismiss="alert" type="button">×</button>
+      {% for non_form_error in translation_formset.non_form_errors %}
+        {{ non_form_error }}
+      {% endfor %}
+  </div>
+  {% endif %}
+
+  <span class="label"><a name="title"></a>{% trans "Content" %}</span>
+  <div class="well">
+    <table id="translation_formset"
+           class="table table-bordered table-striped">
+      <tbody>
+        {% for form in translation_formset %}
+        <tr id="{{ form.prefix }}-row">
+          <td>
+            <label>Language</label>
+            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+            {{ form.language }}
+          </td>
+          <td>
+            <label>Title</label>
+            {{ form.title|add_class:"span9" }}
+            <br/>
+            <label>Body</label>
+            {{ form.content|attr:"style:width:607px; height: 150px" }}
+            <a href="#pr-preview"
+               role="button"
+               class="btn"
+               data-toggle="modal"
+               onClick="preview(this)">
+               Preview as HTML
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+      {{ translation_formset.management_form }}
+  </div>
+  <div class="row-fluid">
+    <input
+      class="btn btn-primary"
+      name="submit"
+      type="submit"
+      value="{% trans 'save' %}" />
+    <input
+      class="btn btn-warning"
+      type="reset"
+      value="{% trans 'cancel' %}"
+      {% if request.GET.popup %}
+        onclick="javascript: window.close()"
+      {% else %}
+        onclick="javascript: window.history.back()"
+      {% endif %}
+    />
+  </div>
+</form>
+
+<!-- Modal -->
+<div id="pr-preview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="lbl-pr-preview" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="lbl-pr-preview">Preview</h3>
+  </div>
+  <div class="modal-body" id="body-pr-preview"></div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+  <script>
+    $(document).ready(function() {
+      $('#translation_formset tbody tr').formset({
+        formCssClass: 'dynamic-translation_formset-form',
+        prefix: '{{ translation_formset.prefix }}'
+      });
+      $('#article_formset tbody tr').formset({
+        formCssClass: 'dynamic-article_formset-form',
+        prefix: '{{ article_formset.prefix }}'
+      });
+    });
+    function preview(part){
+      var html = $(part).prev().val();
+      $('#body-pr-preview').html(html);
+    }
+  </script>
+{% endblock %}

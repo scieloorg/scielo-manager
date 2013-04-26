@@ -1,0 +1,52 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+{% load scielo_common %}
+
+{% block page_title %}{% trans "Press Releases" %} - {{journal.title}}{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
+  <li class="active">{{journal.title}} <span class="divider">/</span> {% trans 'Press Releases' %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<ul class="nav nav-tabs">
+  <li>
+    <div class="btn-group" style="margin-right: 10px">
+      <button class="btn btn-primary">{% trans 'New' %}</button>
+      <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="{% url prelease.add journal.id %}">{% trans 'New regular press release' %}</a></li>
+        <li><a href="{% url prelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a></li>
+      </ul>
+    </div>
+  </li>
+  <li class="active"><a href="#tab1" data-toggle="tab">{% trans 'Press Release of Issue' %}</a></li>
+  <li><a href="#tab2" data-toggle="tab">{% trans 'Press Release of Article' %}</a></li>
+  <li><a href="#tab3" data-toggle="tab">{% trans 'Press Release of Ahead' %}</a></li>
+  <li style="float:right; margin-button: 2px">{% simple_pagination objects_pr %}</li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane active" id="tab1">
+    {% include "include_press_release/issue.html" %}
+  </div>
+
+  <div class="tab-pane" id="tab2">
+    {% include "include_press_release/article.html" %}
+  </div>
+
+  <div class="tab-pane" id="tab3">
+    {% include "include_press_release/ahead.html" %}
+  </div>
+</div>
+
+{% pagination objects_pr %}
+
+{% endblock %}

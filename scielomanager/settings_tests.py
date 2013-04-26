@@ -31,3 +31,5 @@ CACHES = {
 INSTALLED_APPS += (
     'api',
 )
+
+ALLOWED_HOSTS = ['*']
