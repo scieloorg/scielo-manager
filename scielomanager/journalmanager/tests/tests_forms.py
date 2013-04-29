@@ -1874,8 +1874,6 @@ class PressReleaseFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response,
-                                'journalmanager/pressrelease_dashboard.html')
 
     def test_POST_pressrelease_with_invalid_data(self):
         perm_prelease_list = _makePermission(perm='list_pressrelease',
@@ -2104,8 +2102,6 @@ class AheadPressReleaseFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response,
-                                'journalmanager/pressrelease_dashboard.html')
 
     def test_POST_pressrelease_with_invalid_data(self):
         perm_prelease_list = _makePermission(perm='list_pressrelease',
