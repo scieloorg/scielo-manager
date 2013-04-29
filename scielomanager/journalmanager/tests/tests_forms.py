@@ -191,7 +191,7 @@ class SectionFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the section's dashboard and the new section must be part
+        the section's list and the new section must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -217,7 +217,7 @@ class SectionFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTemplateUsed(response,
-            'journalmanager/section_dashboard.html')
+            'journalmanager/section_list.html')
         response.mustcontain('Original Article')
 
     def test_POST_workflow_with_invalid_formdata(self):
@@ -331,7 +331,7 @@ class SectionFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTemplateUsed(response,
-            'journalmanager/section_dashboard.html')
+            'journalmanager/section_list.html')
         response.mustcontain('Original Article / Artigo Original')
 
     def test_section_translations_based_on_the_journal_languages(self):
@@ -468,7 +468,7 @@ class UserFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the user's dashboard and the new user must be part
+        the user's list and the new user must be part
         of the list.
 
         An email must be sent to the new user.
@@ -492,7 +492,7 @@ class UserFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
         response.mustcontain('bazz', 'bazz@spam.org')
 
         # check if basic state has been set
@@ -764,7 +764,7 @@ class JournalFormTests(WebTest):
     def test_user_add_journal_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the journal's dashboard and the new user must be part
+        the journal's list and the new user must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -836,9 +836,9 @@ class JournalFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+        self.assertIn('ABCD.(São Paulo)',
             response.body)
-        self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/journal_dash.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
@@ -954,7 +954,7 @@ class SponsorFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the sponsor's dashboard and the new sponsor must be part
+        the sponsor's list and the new sponsor must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -980,7 +980,7 @@ class SponsorFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTemplateUsed(response,
-            'journalmanager/sponsor_dashboard.html')
+            'journalmanager/sponsor_list.html')
         self.assertIn('Saved.', response.body)
         self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo', response.body)
 
@@ -1129,7 +1129,7 @@ class IssueFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the issue's dashboard and the new user must be part
+        the issue's list and the new user must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -1161,7 +1161,7 @@ class IssueFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_POST_workflow_without_volume_and_number_formdata(self):
         """
@@ -1300,7 +1300,7 @@ class IssueFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_press_release_of_existing_issue_can_be_created(self):
         perm_issue_change = _makePermission(perm='add_issue',
@@ -1332,7 +1332,7 @@ class IssueFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """

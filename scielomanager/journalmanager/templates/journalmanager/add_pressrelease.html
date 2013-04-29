@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load widget_tweaks %}
 {% load formstamps %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Press release" %} - {{journal.title}}{% endblock %}
 
@@ -25,6 +26,10 @@
 
 {% block messages %}
   {% summarize_errors pressrelease_form article_formset %}
+{% endblock %}
+
+{% block journal_toolbar %}
+{% journaldash_toolbar 'press_release' journal.pk %}
 {% endblock %}
 
 {% block form_content %}

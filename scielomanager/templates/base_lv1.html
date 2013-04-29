@@ -110,8 +110,21 @@
       {% endif %}
     </ul>
   </div>
-
-  <div class="nav pull-right" style="margin-bottom: 0px;">
+  <div class="span6">
+      {% block journaltitle %}
+        {% if journal.pk %}
+        <h3>{{ journal.collection }}:
+          <span style="margin-left: 10px; color: #909090">
+            {{ journal.short_title }}
+            <a href="{% url journal.edit journal.pk %}" class="btn btn-mini">
+              <i class="icon-pencil icon-black"></i> {% trans 'edit' %}
+            </a>
+          </span>
+        </h3>
+        {% endif %}
+      {% endblock %}
+  </div>
+  <div class="nav pull-right">
     <form id="search-form" action="" method="get">
       <select id="list_model" class="list-model" name="list_model">
         {% if perms.journalmanager.list_journal %}
@@ -139,11 +152,7 @@
       </button>
     </form>
   </div>
-
   <div class="row-fluid" style="min-height: 380px;">
-    <div class="span12">
-      {% block breadcrumb %}{% endblock %}
-    </div>
     <div>
       {% block shortaccess %}{% endblock %}
     </div>

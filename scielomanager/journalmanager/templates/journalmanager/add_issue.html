@@ -3,21 +3,17 @@
 {% load static %}
 {% load scielo_common %}
 {% load formstamps %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Issues" %} - {{journal.title}}{% endblock %}
-
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url issue.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
-  <li class="active">{% trans 'New Issue' %}</li>
-</ul>
-{% endblock %}
 
 {% block messages %}
   {% summarize_errors add_form %}
 {% endblock%}
+
+{% block journal_toolbar %}
+{% journaldash_toolbar 'issue' journal.pk %}
+{% endblock %}
 
 {% block form_content %}
 <form method="post" action="" enctype="multipart/form-data">
