@@ -5,14 +5,6 @@
 
 {% block page_title %}{% trans "Sponsor" %}{% endblock %}
 
-{% block breadcrumb %}
-<ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li><a href="{% url sponsor.index %}">{% trans 'Sponsor Dashboard' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'New sponsor' %}</li>
-</ul>
-{% endblock %}
-
 {% block messages %}
   {% if add_form.errors or add_form.non_field_errors %}
   <div class="alert alert-error">

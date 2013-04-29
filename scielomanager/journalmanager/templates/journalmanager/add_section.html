@@ -3,17 +3,9 @@
 {% load static %}
 {% load scielo_common %}
 {% load widget_tweaks %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Section" %} - {{journal.title}}{% endblock %}
-
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url section.index journal.id %}">{{journal.title}} <span class="divider">/</span> {% trans 'Issue Dashboard' %}</a> <span class="divider">/</span></li>
-  <li class="active">{% trans 'New Section' %}</li>
-</ul>
-{% endblock %}
 
 {% block messages %}
   {% if section_title_formset.errors or section_title_formset.non_field_errors %}
@@ -32,6 +24,10 @@
     </ul>
   </div>
   {% endif %}
+{% endblock %}
+
+{% block journal_toolbar %}
+{% journaldash_toolbar 'section' journal.pk %}
 {% endblock %}
 
 {% block form_content %}

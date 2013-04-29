@@ -191,7 +191,7 @@ class SectionFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the section's dashboard and the new section must be part
+        the section's list and the new section must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -217,7 +217,7 @@ class SectionFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTemplateUsed(response,
-            'journalmanager/section_dashboard.html')
+            'journalmanager/section_list.html')
         response.mustcontain('Original Article')
 
     def test_POST_workflow_with_invalid_formdata(self):
@@ -331,7 +331,7 @@ class SectionFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTemplateUsed(response,
-            'journalmanager/section_dashboard.html')
+            'journalmanager/section_list.html')
         response.mustcontain('Original Article / Artigo Original')
 
     def test_section_translations_based_on_the_journal_languages(self):
@@ -468,7 +468,7 @@ class UserFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the user's dashboard and the new user must be part
+        the user's list and the new user must be part
         of the list.
 
         An email must be sent to the new user.
@@ -492,7 +492,7 @@ class UserFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response, 'journalmanager/user_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
         response.mustcontain('bazz', 'bazz@spam.org')
 
         # check if basic state has been set
@@ -764,7 +764,7 @@ class JournalFormTests(WebTest):
     def test_user_add_journal_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the journal's dashboard and the new user must be part
+        the journal's list and the new user must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -836,9 +836,9 @@ class JournalFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertIn('ABCD. Arquivos Brasileiros de Cirurgia Digestiva (S\xc3\xa3o Paulo)',
+        self.assertIn('ABCD.(São Paulo)',
             response.body)
-        self.assertTemplateUsed(response, 'journalmanager/journal_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/journal_dash.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
@@ -954,7 +954,7 @@ class SponsorFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the sponsor's dashboard and the new sponsor must be part
+        the sponsor's list and the new sponsor must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -980,7 +980,7 @@ class SponsorFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertTemplateUsed(response,
-            'journalmanager/sponsor_dashboard.html')
+            'journalmanager/sponsor_list.html')
         self.assertIn('Saved.', response.body)
         self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo', response.body)
 
@@ -1129,7 +1129,7 @@ class IssueFormTests(WebTest):
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
-        the issue's dashboard and the new user must be part
+        the issue's list and the new user must be part
         of the list.
 
         In order to take this action, the user needs the following
@@ -1161,7 +1161,7 @@ class IssueFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_POST_workflow_without_volume_and_number_formdata(self):
         """
@@ -1300,7 +1300,7 @@ class IssueFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_press_release_of_existing_issue_can_be_created(self):
         perm_issue_change = _makePermission(perm='add_issue',
@@ -1332,7 +1332,7 @@ class IssueFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_dashboard.html')
+        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
@@ -1874,8 +1874,6 @@ class PressReleaseFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response,
-                                'journalmanager/pressrelease_dashboard.html')
 
     def test_POST_pressrelease_with_invalid_data(self):
         perm_prelease_list = _makePermission(perm='list_pressrelease',
@@ -1989,4 +1987,229 @@ class PressReleaseFormTests(WebTest):
         self.assertEqual(res_qset[0], language)
 
 
+class AheadPressReleaseFormTests(WebTest):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the pressrelease form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                              model='pressrelease',
+                                              app_label='journalmanager')
+
+        self.user.user_permissions.add(perm_prelease_add)
+        self.user.user_permissions.add(perm_prelease_list)
+
+        form = self.app.get(reverse('aprelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the press release form is
+        empty.
+        """
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                               model='pressrelease',
+                                               app_label='journalmanager')
+
+        self.user.user_permissions.add(perm_prelease_list)
+        self.user.user_permissions.add(perm_prelease_add)
+
+        form = self.app.get(reverse('aprelease.add', args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the press release form is
+        ``POST``.
+        """
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_prelease_list)
+        self.user.user_permissions.add(perm_prelease_add)
+
+        form = self.app.get(reverse('aprelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        self.assertEqual(form.method.lower(), 'post')
+
+    def test_basic_structure(self):
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_prelease_add)
+        self.user.user_permissions.add(perm_prelease_list)
+
+        form = self.app.get(reverse('aprelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        self.assertIn('csrfmiddlewaretoken', form.fields)
+
+    def test_POST_pressrelease_with_valid_data(self):
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_prelease_add)
+        self.user.user_permissions.add(perm_prelease_list)
+
+        language = modelfactories.LanguageFactory(iso_code='en',
+                                                  name='english')
+        self.journal.languages.add(language)
+
+        form = self.app.get(reverse('aprelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        form['doi'] = "http://dx.doi.org/10.1590/S0102-86502013001300002"
+
+        form['article-0-article_pid'] = 'S0102-86502013001300002'
+        form.set('translation-0-language', language.pk)
+        form['translation-0-title'] = "Press Relasea MFP"
+        form['translation-0-content'] = "<p>Body of some HTML</p>"
+
+        response = form.submit().follow()
+
+        self.assertIn('Saved.', response.body)
+
+    def test_POST_pressrelease_with_invalid_data(self):
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_prelease_add)
+        self.user.user_permissions.add(perm_prelease_list)
+
+        language = modelfactories.LanguageFactory(iso_code='en',
+                                                  name='english')
+        self.journal.languages.add(language)
+
+        form = self.app.get(reverse('aprelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        form['doi'] = "http://dx.doi.org/10.1590/S0102-86502013001300002"
+
+        form['article-0-article_pid'] = 'S0102-86502013001300002'
+        # missing translation language
+        form['translation-0-title'] = "Press Relasea MFP"
+        form['translation-0-content'] = "<p>Body of some HTML</p>"
+
+        response = form.submit()
+
+        self.assertIn('There are some errors or missing data.', response.body)
+        self.assertTemplateUsed(response,
+                                'journalmanager/add_pressrelease.html')
+
+    def test_POST_pressrelease_must_contain_at_least_one_press_release_translation(self):
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_prelease_add)
+        self.user.user_permissions.add(perm_prelease_list)
+
+        language = modelfactories.LanguageFactory(iso_code='en',
+                                                  name='english')
+        self.journal.languages.add(language)
+
+        form = self.app.get(reverse('aprelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        form['doi'] = "http://dx.doi.org/10.1590/S0102-86502013001300002"
+
+        form['article-0-article_pid'] = 'S0102-86502013001300002'
+
+        response = form.submit()
+
+        self.assertIn('There are some errors or missing data.', response.body)
+        self.assertIn('Please fill in at least one form', response.body)
+        self.assertTemplateUsed(response,
+                                'journalmanager/add_pressrelease.html')
+
+    def test_pressrelease_translations_language_filtering(self):
+        language1 = modelfactories.LanguageFactory.create(iso_code='en',
+                                                          name='english')
+        language2 = modelfactories.LanguageFactory.create(iso_code='pt',
+                                                          name='portuguese')
+
+        journal = modelfactories.JournalFactory.create()
+        journal.languages.add(language1)
+
+        testing_form = forms.PressReleaseTranslationForm(journal=journal)
+
+        res_qset = testing_form['language'].field.queryset
+        self.assertEqual(len(res_qset), 1)
+        self.assertEqual(res_qset[0], language1)
+
+    def test_pressrelease_translations_raises_TypeError_while_missing_journal(self):
+        self.assertRaises(
+            TypeError,
+            lambda: forms.PressReleaseTranslationForm())
+
+    def test_get_all_pressrelease_forms(self):
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                          name='english')
+        journal = modelfactories.JournalFactory.create()
+        journal.languages.add(language)
+
+        pr_forms = forms.get_all_pressrelease_forms(
+            {}, journal, models.PressRelease())
+
+        self.assertEqual(
+            sorted(pr_forms.keys()),
+            sorted([
+                'pressrelease_form',
+                'translation_formset',
+                'article_formset',
+                ])
+            )
+
+    def test_get_all_ahead_pressrelease_language_filtering(self):
+        language = modelfactories.LanguageFactory.create(iso_code='en',
+                                                          name='english')
+        journal = modelfactories.JournalFactory.create()
+        journal.languages.add(language)
+
+        pr_forms = forms.get_all_ahead_pressrelease_forms(
+            {}, journal, models.AheadPressRelease())
+
+        res_qset = pr_forms['translation_formset'][0].fields['language'].queryset
+        self.assertEqual(len(res_qset), 1)
+        self.assertEqual(res_qset[0], language)

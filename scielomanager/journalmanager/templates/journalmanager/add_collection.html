@@ -5,13 +5,6 @@
 
 {% block page_title %}{% trans "Collection" %}{% endblock %}
 
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-  <li class="active">{% trans 'Collection' %}</li>
-</ul>
-{% endblock %}
-
 {% block form_content %}
 <form id="collection-form" method="post" enctype="multipart/form-data">
   {% csrf_token %}
