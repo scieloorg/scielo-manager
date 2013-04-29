@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.test import TestCase
+from django.utils import unittest
 from django_factory_boy import auth
 from mocker import MockerTestCase
 
@@ -11,6 +12,7 @@ from .modelfactories import (
     SectionTitleFactory,
     JournalFactory,
     CollectionFactory,
+    RegularPressReleaseFactory,
 )
 
 
@@ -251,6 +253,16 @@ class IssueTests(TestCase):
         self.assertTrue(issue3.order < issue6.order)
         self.assertEqual(issue6.order, 4)
 
+    def test_scielo_pid(self):
+        journal = JournalFactory.create(print_issn='1234-1234',
+                                        scielo_issn='print')
+        issue = IssueFactory.create(publication_year=2013,
+                                    order=3,
+                                    journal=journal)
+        expected = '1234-123420130003'
+
+        self.assertEqual(issue.scielo_pid, expected)
+
 
 class LanguageTests(TestCase):
 
@@ -399,6 +411,18 @@ class JournalTests(TestCase):
                                            volume=9,
                                            publication_year=2012))
 
+    def test_scielo_pid_when_print(self):
+        journal = JournalFactory.create(scielo_issn=u'print',
+                                        print_issn='1234-4321',
+                                        eletronic_issn='4321-1234')
+        self.assertEqual(journal.scielo_pid, '1234-4321')
+
+    def test_scielo_pid_when_electronic(self):
+        journal = JournalFactory.create(scielo_issn=u'electronic',
+                                        print_issn='1234-4321',
+                                        eletronic_issn='4321-1234')
+        self.assertEqual(journal.scielo_pid, '4321-1234')
+
 
 class CollectionTests(TestCase):
 
@@ -543,3 +567,193 @@ class CollectionManagerTests(TestCase):
         from journalmanager import models
         self.assertRaises(models.Collection.DoesNotExist,
             lambda: models.Collection.objects.get_default_by_user(user))
+
+
+class PressReleaseTests(TestCase):
+
+    def test_add_translation(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+        self.assertEqual(pr.translations.all()[0].title, 'Breaking news!')
+        self.assertEqual(pr.translations.all()[0].language, language)
+
+    def test_remove_translation(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation(language)
+        self.assertEqual(pr.translations.all().count(), 0)
+
+    def test_remove_translation_with_language_as_iso_code(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation('en')
+        self.assertEqual(pr.translations.all().count(), 0)
+
+    def test_remove_translation_with_language_as_pk(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation(language.pk)
+        self.assertEqual(pr.translations.all().count(), 0)
+
+    def test_remove_translation_fails_silently_when_translation_doesnt_exists(self):
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertEqual(pr.translations.all().count(), 1)
+
+        pr.remove_translation('jp')
+        self.assertEqual(pr.translations.all().count(), 1)
+
+    def test_get_trans_method_to_get_translation(self):
+        from journalmanager.models import PressReleaseTranslation
+
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertIsInstance(pr.get_trans('en'), PressReleaseTranslation)
+
+    def test_property_get_titles_must_return_list_of_titles(self):
+
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+        pr.add_translation('I will nerver know the translation!',
+                           'Fantastic content!',
+                            language)
+
+        self.assertIsInstance(pr.get_titles, list)
+        self.assertEqual(pr.get_titles[0], 'Breaking news!')
+        self.assertEqual([title for title in pr.get_titles], ['Breaking news!',
+                        'I will nerver know the translation!'])
+
+    def test_raises_DoesNotExist_if_unknown_iso_code_for_get_trans(self):
+        from journalmanager.models import PressReleaseTranslation
+
+        issue = IssueFactory()
+        language = LanguageFactory.create(iso_code='en', name='english')
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('Breaking news!',
+                           'This issue is awesome!',
+                            language)
+
+        self.assertRaises(PressReleaseTranslation.DoesNotExist,
+                          lambda: pr.get_trans('jp'))
+
+    def test_add_article(self):
+        issue = IssueFactory()
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_article('S0102-311X2013000300003')
+
+        self.assertEqual(pr.articles.all().count(), 1)
+
+    def test_remove_article(self):
+        issue = IssueFactory()
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_article('S0102-311X2013000300003')
+
+        self.assertEqual(pr.articles.all().count(), 1)
+
+        pr.remove_article('S0102-311X2013000300003')
+        self.assertEqual(pr.articles.all().count(), 0)
+
+    def test_remove_article_fails_silently_when_translation_doesnt_exists(self):
+        issue = IssueFactory()
+        pr = RegularPressReleaseFactory.create(issue=issue)
+        pr.add_article('S0102-311X2013000300003')
+
+        self.assertEqual(pr.articles.all().count(), 1)
+
+        pr.remove_article('S0102-311X201300030000X')
+        self.assertEqual(pr.articles.all().count(), 1)
+
+
+class PressReleaseManagerTests(TestCase):
+
+    def _makeOneElectronic(self):
+        j = JournalFactory.create(scielo_issn='electronic',
+                                  eletronic_issn='1234-4321')
+        i = IssueFactory.create(journal=j)
+        return RegularPressReleaseFactory.create(issue=i)
+
+    def _makeOnePrint(self):
+        j = JournalFactory.create(scielo_issn='electronic',
+                                  eletronic_issn='1234-4321')
+        i = IssueFactory.create(journal=j)
+        return RegularPressReleaseFactory.create(issue=i)
+
+    def test_by_journal_pid_when_electronic(self):
+        pr = self._makeOneElectronic()
+        pr2 = RegularPressReleaseFactory.create()
+
+        from journalmanager.models import RegularPressRelease
+        self.assertEqual(
+            RegularPressRelease.objects.by_journal_pid(pr.issue.journal.print_issn)[0],
+            pr
+        )
+
+    def test_by_journal_pid_when_print(self):
+        pr = self._makeOnePrint()
+        pr2 = RegularPressReleaseFactory.create()
+
+        from journalmanager.models import RegularPressRelease
+        self.assertEqual(
+            RegularPressRelease.objects.by_journal_pid(pr.issue.journal.print_issn)[0],
+            pr
+        )
+
+    def test_by_journal_pid_returns_an_empty_queryset_for_invalid_pid(self):
+        from journalmanager.models import RegularPressRelease
+        pr = RegularPressRelease.objects.by_journal_pid('INVALID')
+        self.assertQuerysetEqual(pr, [])
+
+    def test_by_issue_pid(self):
+        pr = self._makeOnePrint()
+        pr2 = RegularPressReleaseFactory.create()
+
+        from journalmanager.models import RegularPressRelease
+
+        result = RegularPressRelease.objects.by_issue_pid(pr.issue.scielo_pid)
+
+        self.assertEqual(
+            result[0],
+            pr
+        )
+        self.assertEqual(len(result), 1)

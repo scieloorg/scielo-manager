@@ -14,6 +14,9 @@ from journalmanager.models import (
     Issue,
     Section,
     DataChangeEvent,
+    RegularPressRelease,
+    PressReleaseTranslation,
+    PressReleaseArticle,
 )
 
 
@@ -223,3 +226,74 @@ class DataChangeEventResource(ModelResource):
             orm_filters['pk__in'] = events
 
         return orm_filters
+
+
+class PressReleaseTranslationResource(ModelResource):
+    language = fields.CharField(readonly=True)
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'prtranslations'
+        queryset = PressReleaseTranslation.objects.all()
+        allowed_methods = ['get', ]
+
+    def dehydrate_language(self, bundle):
+        return bundle.obj.language.iso_code
+
+
+class PressReleaseResource(ModelResource):
+    issue_uri = fields.ForeignKey(IssueResource, 'issue')
+    translations = fields.OneToManyField(PressReleaseTranslationResource,
+                                         'translations',
+                                         full=True)
+    articles = fields.CharField(readonly=True)
+    issue_meta = fields.CharField(readonly=True)
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'pressreleases'
+        queryset = RegularPressRelease.objects.all()
+        allowed_methods = ['get', ]
+
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by the article PID.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(PressReleaseResource, self).build_filters(filters)
+
+        if 'article_pid' in filters:
+            preleases = RegularPressRelease.objects.filter(
+                articles__article_pid=filters['article_pid'])
+            orm_filters['pk__in'] = preleases
+
+        elif 'journal_pid' in filters:
+            preleases = RegularPressRelease.objects.by_journal_pid(
+                filters['journal_pid'])
+            orm_filters['pk__in'] = preleases
+        elif 'issue_pid' in filters:
+            preleases = RegularPressRelease.objects.by_issue_pid(
+                filters['issue_pid'])
+            orm_filters['pk__in'] = preleases
+
+        return orm_filters
+
+    def dehydrate_articles(self, bundle):
+        return [art.article_pid for art in bundle.obj.articles.all()]
+
+    def dehydrate_issue_meta(self, bundle):
+        issue = bundle.obj.issue
+
+        meta_data = {
+            'short_title': issue.journal.short_title,
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_volume': issue.suppl_volume,
+            'suppl_number': issue.suppl_number,
+            'publication_start_month': issue.publication_start_month,
+            'publication_end_month': issue.publication_end_month,
+            'publication_city': issue.journal.publication_city,
+            'publication_year': issue.publication_year,
+        }
+
+        return meta_data
