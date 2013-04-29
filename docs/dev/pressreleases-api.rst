@@ -1,5 +1,12 @@
 Press Releases API
-============
+==================
+
+..note::
+
+  There are two endpoints for querying press releases.
+  **pressreleases**, for regular press releases, and **apressreleases**
+  for articles published as ahead of print.
+
 
 List all press releases
 -----------------------

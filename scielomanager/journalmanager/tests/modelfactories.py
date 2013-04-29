@@ -164,6 +164,13 @@ class RegularPressReleaseFactory(factory.Factory):
     doi = factory.Sequence(lambda n: 'http://dx.doi.org/10.4415/ANN_12_01_%s' % n)
 
 
+class AheadPressReleaseFactory(factory.Factory):
+    FACTORY_FOR = models.AheadPressRelease
+
+    journal = factory.SubFactory(JournalFactory)
+    doi = factory.Sequence(lambda n: 'http://dx.doi.org/10.4415/ANN_12_01_%s' % n)
+
+
 class PressReleaseTranslationFactory(factory.Factory):
     FACTORY_FOR = models.PressReleaseTranslation
 

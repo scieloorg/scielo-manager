@@ -706,3 +706,134 @@ class PressReleaseRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+
+class AheadPressReleaseRestAPITest(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
+    def test_post_data(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        response = self.app.post('/api/v1/apressreleases/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        response = self.app.put('/api/v1/apressreleases/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        response = self.app.delete('/api/v1/apressreleases/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        response = self.app.get('/api/v1/apressreleases/', status=401)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_pressrelease_index(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        response = self.app.get('/api/v1/apressreleases/',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v1_datamodel(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        response = self.app.get('/api/v1/apressreleases/%s/' % pr.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            u'articles',
+            u'id',
+            u'journal_uri',
+            u'resource_uri',
+            u'translations',
+            u'doi',
+        ]
+
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+    def test_translations_api_v1_datamodel(self):
+        pr = modelfactories.AheadPressReleaseFactory.create()
+        pr_trans = modelfactories.PressReleaseTranslationFactory.create(press_release=pr)
+        response = self.app.get('/api/v1/apressreleases/%s/' % pr_trans.press_release.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            u'content',
+            u'id',
+            u'language',
+            u'resource_uri',
+            u'title',
+        ]
+
+        self.assertEqual(
+            sorted(response.json['translations'][0].keys()),
+            sorted(expected_keys)
+        )
+
+    def test_article_filter(self):
+        prelease = modelfactories.AheadPressReleaseFactory.create()
+        pr_articles = []
+        for pr in range(5):
+            pr_articles.append(modelfactories.PressReleaseArticleFactory.create(press_release=prelease))
+
+        response = self.app.get(
+            '/api/v1/apressreleases/?article_pid=%s' % pr_articles[0].article_pid,
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+    def test_journal_filter(self):
+        prs = []
+        for pr in range(5):
+            prs.append(modelfactories.AheadPressReleaseFactory.create())
+
+        response = self.app.get(
+            '/api/v1/apressreleases/?journal_pid=%s' % prs[0].journal.scielo_pid,
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+    def test_journal_filter_for_nonexisting_values_skips_filtering(self):
+        prs = []
+        for pr in range(5):
+            prs.append(modelfactories.AheadPressReleaseFactory.create())
+        response = self.app.get(
+            '/api/v1/apressreleases/?journal_pid=5',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 0)
+
+    def test_article_filter_for_nonexisting_values_skips_filtering(self):
+        prelease = modelfactories.AheadPressReleaseFactory.create()
+        pr_articles = []
+        for pr in range(5):
+            pr_articles.append(modelfactories.PressReleaseArticleFactory.create(press_release=prelease))
+
+        response = self.app.get(
+            '/api/v1/apressreleases/?article_pid=EMPTY',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(json.loads(response.content)['objects']), 0)
