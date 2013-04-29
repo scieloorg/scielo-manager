@@ -1,0 +1,71 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+{% load scielo_common %}
+{% load query_string %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "Press Releases" %} - {{journal.title}}{% endblock %}
+
+{% block content %}
+{% journaldash_toolbar 'press_release' journal.pk %}
+<ul class="nav nav-tabs">
+  <li>
+    <div class="btn-group" style="margin-right: 10px">
+      <button class="btn btn-primary">{% trans 'New' %}</button>
+      <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+      <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="{% url prelease.add journal.id %}">{% trans 'New regular press release' %}</a></li>
+        <li><a href="{% url aprelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a></li>
+      </ul>
+    </div>
+  </li>
+  <li class="{% if not request.GET.press %}active{% endif %}">
+    <a href="{% query_string request '' 'include_ampersand' %}">{% trans 'Press Release of Issue' %}</a>
+  </li>
+  <li class="{% if request.GET.press == 'article' %}active{% endif %}">
+    <a href="?press=article">{% trans 'Press Release of Article' %}</a>
+  </li>
+  <li class="{% if request.GET.press == 'ahead' %}active{% endif %}">
+    <a href="?press=ahead">{% trans 'Press Release of Ahead' %}</a>
+  </li>
+  <li style="float:right; margin-button: 2px">{% simple_pagination objects_pr %}</li>
+</ul>
+
+<div class="tab-content">
+  {% if not request.GET.press %}
+    {% include "include_press_release/issue.html" %}
+  {% endif %}
+
+  {% if request.GET.press == 'article' %}
+    {% include "include_press_release/article.html" %}
+  {% endif %}
+
+  {% if request.GET.press == 'ahead' %}
+    {% include "include_press_release/ahead.html" %}
+  {% endif %}
+</div>
+
+{% pagination objects_pr %}
+
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+
+<script>
+  function showTitles(div_id){
+
+    $('#' + div_id).toggle('slow', function(){
+      if($('#' + div_id).css('display') == 'none'){
+        $('#toggle_' + div_id).html("{% trans 'Show translations' %}");
+      }else{
+        $('#toggle_' + div_id).html("{% trans 'Hide translations' %}");
+      }
+    });
+
+  }
+</script>
+
+{% endblock %}
