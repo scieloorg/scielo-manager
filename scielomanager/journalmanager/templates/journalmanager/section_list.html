@@ -28,9 +28,18 @@
     {% for item in objects_section.object_list %}
     <tr>
       <td>
-        <h4>
+        <b>
           <a href="{% url section.edit item.journal.pk item.pk %}">{{ item }}</a>
-        </h4>
+        </b>
+        {% if item.get_titles|length > 1  %}
+          <div class="toggler" style="display: none;">
+            {% for title in item.get_titles %}
+              {% if not forloop.first %}
+                <a href="{% url section.edit item.journal.pk item.pk %}">{{ title }}</a></br>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
       </td>
       <td>
         {{ item.actual_code }}

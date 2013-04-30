@@ -50,22 +50,3 @@
 {% pagination objects_pr %}
 
 {% endblock %}
-
-{% block extrafooter %}
-{{ block.super }}
-
-<script>
-  function showTitles(div_id){
-
-    $('#' + div_id).toggle('slow', function(){
-      if($('#' + div_id).css('display') == 'none'){
-        $('#toggle_' + div_id).html("{% trans 'Show translations' %}");
-      }else{
-        $('#toggle_' + div_id).html("{% trans 'Hide translations' %}");
-      }
-    });
-
-  }
-</script>
-
-{% endblock %}
