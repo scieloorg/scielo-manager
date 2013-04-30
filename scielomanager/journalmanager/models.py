@@ -718,13 +718,6 @@ class Section(caching.base.CachingMixin, models.Model):
         return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
     @property
-    def get_titles(self):
-        """
-        Get all titles from Section
-        """
-        return [trans.title for trans in SectionTitle.objects.filter(section=self).order_by('language')]
-
-    @property
     def actual_code(self):
         if not self.pk or not self.code:
             raise AttributeError('section must be saved in order to have a code')
@@ -1029,13 +1022,6 @@ class PressRelease(caching.base.CachingMixin, models.Model):
             return _('No Title')
 
         return title
-
-    @property
-    def get_titles(self):
-        """
-        Get all titles from Press Release
-        """
-        return [trans.title for trans in PressReleaseTranslation.objects.filter(press_release=self).order_by('language')]
 
     class Meta:
         abstract = False
