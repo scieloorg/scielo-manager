@@ -31,11 +31,11 @@
         <b>
           <a href="{% url section.edit item.journal.pk item.pk %}">{{ item }}</a>
         </b>
-        {% if item.get_titles|length > 1  %}
+        {% if item.titles.all|length > 1  %}
           <div class="toggler" style="display: none;">
-            {% for title in item.get_titles %}
+            {% for trans in item.titles.all %}
               {% if not forloop.first %}
-                <a href="{% url section.edit item.journal.pk item.pk %}">{{ title }}</a></br>
+                <a href="{% url section.edit item.journal.pk item.pk %}">{{ trans.title }}</a></br>
               {% endif %}
             {% endfor %}
           </div>
