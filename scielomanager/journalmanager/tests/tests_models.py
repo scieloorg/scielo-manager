@@ -647,23 +647,6 @@ class PressReleaseTests(TestCase):
 
         self.assertIsInstance(pr.get_trans('en'), PressReleaseTranslation)
 
-    def test_property_get_titles_must_return_list_of_titles(self):
-
-        issue = IssueFactory()
-        language = LanguageFactory.create(iso_code='en', name='english')
-        pr = RegularPressReleaseFactory.create(issue=issue)
-        pr.add_translation('Breaking news!',
-                           'This issue is awesome!',
-                            language)
-        pr.add_translation('I will nerver know the translation!',
-                           'Fantastic content!',
-                            language)
-
-        self.assertIsInstance(pr.get_titles, list)
-        self.assertEqual(pr.get_titles[0], 'Breaking news!')
-        self.assertEqual([title for title in pr.get_titles], ['Breaking news!',
-                        'I will nerver know the translation!'])
-
     def test_raises_DoesNotExist_if_unknown_iso_code_for_get_trans(self):
         from journalmanager.models import PressReleaseTranslation
 

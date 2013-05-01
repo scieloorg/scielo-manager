@@ -1034,13 +1034,6 @@ class PressRelease(caching.base.CachingMixin, models.Model):
 
         return title
 
-    @property
-    def get_titles(self):
-        """
-        Get all titles from Press Release
-        """
-        return [trans.title for trans in PressReleaseTranslation.objects.filter(press_release=self).order_by('language')]
-
     class Meta:
         abstract = False
         permissions = (("list_pressrelease", "Can list PressReleases"),)

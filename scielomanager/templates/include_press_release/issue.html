@@ -11,15 +11,14 @@
     <tr>
       <td>
           <b><a href="{% url prelease.edit journal.id item.pk %}">{{ item }}</a></b>
-          {% if item.get_titles.count > 1 %}
-            <div id="{{item.pk}}" style="display: none;">
-              {% for title in item.get_titles %}
+          {% if item.translations.all|length > 1  %}
+            <div class="toggler" style="display: none;">
+              {% for trans in item.translations.all %}
                 {% if not forloop.first %}
-                  <a href="{% url prelease.edit journal.id item.pk %}">{{ title }}</a></br>
+                  <a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a></br>
                 {% endif %}
               {% endfor %}
             </div>
-            <small>(<a href="#" id="toggle_{{item.pk}}" OnClick="showTitles({{item.pk}})">{% trans 'Todos os títulos' %}</a>)</small>
           {% endif %}
       </td>
       <td>
