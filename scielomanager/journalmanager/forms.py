@@ -317,6 +317,10 @@ class IssueForm(ModelForm):
         }
 
 
+###########################################
+# Section
+###########################################
+
 class SectionTitleForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -407,6 +411,181 @@ def get_all_section_forms(post_dict, journal, section):
     return d
 
 
+###########################################
+# Press Release
+###########################################
+
+class RegularPressReleaseForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        """
+        ``journal`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        self.journal = kwargs.pop('journal', None)
+        super(RegularPressReleaseForm, self).__init__(*args, **kwargs)
+
+        if not self.journal:
+            raise TypeError('missing journal argument')
+
+        self.fields['issue'].queryset = models.Issue.objects.filter(
+            journal__pk=self.journal.pk)
+
+    class Meta:
+        model = models.RegularPressRelease
+
+
+class AheadPressReleaseForm(ModelForm):
+
+    class Meta:
+        model = models.AheadPressRelease
+        exclude = ('journal',)
+
+
+class PressReleaseTranslationForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        """
+        ``journal`` should not be passed to the superclass
+        ``__init__`` method.
+        """
+        self.journal = kwargs.pop('journal', None)
+        super(PressReleaseTranslationForm, self).__init__(*args, **kwargs)
+
+        if not self.journal:
+            raise TypeError('missing journal argument')
+
+        self.fields['language'].queryset = models.Language.objects.filter(
+                journal__pk=self.journal.pk)
+
+    class Meta:
+        model = models.PressReleaseTranslation
+
+
+class PressReleaseArticleForm(ModelForm):
+
+    class Meta:
+        model = models.PressReleaseArticle
+
+
+class AheadPressReleaseArticleForm(ModelForm):
+    article_pid = forms.CharField(required=True)
+
+    class Meta:
+        model = models.PressReleaseArticle
+        exclude = ('article_pid',)
+
+    def clean_article_pid(self):
+        if not self.cleaned_data['article_pid']:
+            raise forms.ValidationError('Field is required')
+
+        return self.cleaned_data['article_pid']
+
+
+def get_all_pressrelease_forms(post_dict, journal, pressrelease):
+    """
+    Get all forms/formsets used by the PressRelease form.
+
+    :Parameters:
+      - ``post_dict``: The POST querydict, even if it is empty
+      - ``journal``: The journal instance the press-release is part of
+      - ``pressrelease``: The instance bound to the form. Must be
+        a new instance when creating an empty form
+    """
+    args = []
+    kwargs = {}
+
+    if pressrelease:
+        kwargs['instance'] = pressrelease
+
+    if post_dict:
+        args.append(post_dict)
+
+    translations_formset = inlineformset_factory(
+        models.PressRelease,
+        models.PressReleaseTranslation,
+        form=PressReleaseTranslationForm,
+        extra=1,
+        can_delete=True,
+        formset=FirstFieldRequiredFormSet)
+
+    translations_formset.form = staticmethod(
+        curry(PressReleaseTranslationForm, journal=journal))
+
+    article_formset = inlineformset_factory(
+        models.PressRelease,
+        models.PressReleaseArticle,
+        form=PressReleaseArticleForm,
+        extra=1,
+        can_delete=True)
+
+    d = {
+        'pressrelease_form': RegularPressReleaseForm(journal=journal,
+                                                    *args,
+                                                    **kwargs),
+        'translation_formset': translations_formset(prefix='translation',
+                                                    *args,
+                                                    **kwargs),
+        'article_formset': article_formset(prefix='article',
+                                           *args,
+                                           **kwargs),
+    }
+
+    return d
+
+
+def get_all_ahead_pressrelease_forms(post_dict, journal, pressrelease):
+    """
+    Get all forms/formsets used by the AheadPressRelease form.
+
+    :Parameters:
+      - ``post_dict``: The POST querydict, even if it is empty
+      - ``journal``: The journal instance the press-release is part of
+      - ``pressrelease``: The instance bound to the form. Must be
+        a new instance when creating an empty form
+    """
+    args = []
+    kwargs = {}
+
+    if pressrelease:
+        kwargs['instance'] = pressrelease
+
+    if post_dict:
+        args.append(post_dict)
+
+    translations_formset = inlineformset_factory(
+        models.PressRelease,
+        models.PressReleaseTranslation,
+        form=PressReleaseTranslationForm,
+        extra=1,
+        can_delete=True,
+        formset=FirstFieldRequiredFormSet)
+
+    translations_formset.form = staticmethod(
+        curry(PressReleaseTranslationForm, journal=journal))
+
+    article_formset = inlineformset_factory(
+        models.PressRelease,
+        models.PressReleaseArticle,
+        form=AheadPressReleaseArticleForm,
+        extra=1,
+        can_delete=True,
+        formset=FirstFieldRequiredFormSet)
+
+    d = {
+        'pressrelease_form': AheadPressReleaseForm(*args,
+                                                   **kwargs),
+        'translation_formset': translations_formset(prefix='translation',
+                                                    *args,
+                                                    **kwargs),
+        'article_formset': article_formset(prefix='article',
+                                           *args,
+                                           **kwargs),
+    }
+
+    return d
+
+
 class UserCollectionsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         """
@@ -463,6 +642,7 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
     """
 
     def clean(self):
+        super(FirstFieldRequiredFormSet, self).clean()
         count = 0
         for form in self.forms:
             try:

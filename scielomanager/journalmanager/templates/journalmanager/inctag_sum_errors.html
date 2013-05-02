@@ -1,0 +1,18 @@
+{% load i18n %}
+
+{% if show_block %}
+<div class="alert alert-error">
+  <button class="close" data-dismiss="alert" type="button">×</button>
+  <ul>
+    {% for field in field_errors %}
+    <li>{{ field.label }}</li>
+    {% endfor %}
+    {% for msg in non_field_errors %}
+    <li>{{ msg }}</li>
+    {% endfor %}
+    {% for msg in non_form_errors %}
+    <li>{{ msg }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

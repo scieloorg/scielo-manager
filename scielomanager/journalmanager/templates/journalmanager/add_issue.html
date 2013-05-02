@@ -2,26 +2,13 @@
 {% load i18n %}
 {% load static %}
 {% load scielo_common %}
+{% load formstamps %}
 {% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Issues" %} - {{journal.title}}{% endblock %}
 
 {% block messages %}
-  {% if add_form.errors or add_form.non_field_errors %}
-  <div class="alert alert-error">
-    <button class="close" data-dismiss="alert" type="button">×</button>
-    <ul>
-      {% for field in add_form %}
-        {% if field.errors %}
-          <li>{{ field.label }}</li>
-        {% endif %}
-      {% endfor %}
-      {% for errors in add_form.non_field_errors %}
-        <li>{{ errors }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+  {% summarize_errors add_form %}
 {% endblock%}
 
 {% block journal_toolbar %}

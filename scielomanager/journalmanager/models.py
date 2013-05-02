@@ -191,6 +191,60 @@ class CollectionCustomManager(AppCustomManager):
         return collections
 
 
+class RegularPressReleaseCustomManager(caching.base.CachingManager):
+
+    def by_journal_pid(self, journal_pid):
+        """
+        Returns all PressReleases related to a Journal, given its
+        PID.
+        """
+        try:
+            journal = Journal.objects.get(
+                models.Q(print_issn=journal_pid) | models.Q(eletronic_issn=journal_pid))
+            issues_pks = [iss.pk for iss in journal.issue_set.all()]
+        except Journal.DoesNotExist:
+            # little hack to act as .filter, returning an empty
+            # queryset bound to the model.
+            issues_pks = [None]
+
+        preleases = self.filter(issue__pk__in=issues_pks)
+        return preleases
+
+    def all_by_journal(self, journal):
+        """
+        Returns all PressReleases related to a Journal
+        """
+        preleases = self.filter(issue__journal=journal)
+        return preleases
+
+    def by_issue_pid(self, issue_pid):
+        """
+        Returns all PressReleases related to an Issue, given its
+        PID.
+        """
+        issn_slice = slice(0, 9)
+        year_slice = slice(9, 13)
+        order_slice = slice(13, None)
+
+        issn = issue_pid[issn_slice]
+        year = issue_pid[year_slice]
+        order = int(issue_pid[order_slice])
+
+        preleases_qset = self.by_journal_pid(issn)
+        return preleases_qset.filter(issue__publication_year=year).filter(issue__order=order)
+
+
+class AheadPressReleaseCustomManager(caching.base.CachingManager):
+
+    def by_journal_pid(self, journal_pid):
+        """
+        Returns all PressReleases related to a Journal, given its
+        PID.
+        """
+        preleases = self.filter(models.Q(journal__print_issn=journal_pid) | models.Q(journal__eletronic_issn=journal_pid))
+        return preleases
+
+
 class Language(caching.base.CachingMixin, models.Model):
     """
     Represents ISO 639-1 Language Code and its language name in English. Django
@@ -556,6 +610,15 @@ class Journal(caching.base.CachingMixin, models.Model):
                 issue.order = order
                 issue.save()
 
+    @property
+    def scielo_pid(self):
+        """
+        Returns the ISSN used as PID on SciELO public catalogs.
+        """
+
+        attr = u'print_issn' if self.scielo_issn == u'print' else u'eletronic_issn'
+        return getattr(self, attr)
+
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     """
@@ -768,6 +831,21 @@ class Issue(caching.base.CachingMixin, models.Model):
     order = models.IntegerField(_('Issue Order'), blank=True)
 
     @property
+    def scielo_pid(self):
+        """
+        Returns the PID used on SciELO public catalogs, in the form:
+        ``journal_issn + year + order``
+        """
+        jissn = self.journal.scielo_pid
+        return ''.join(
+            [
+                jissn,
+                unicode(self.publication_year),
+                u'%04d' % self.order,
+            ]
+        )
+
+    @property
     def identification(self):
         suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
         suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
@@ -879,6 +957,118 @@ class DataChangeEvent(models.Model):
     event_type = models.CharField(max_length=16, choices=EVENT_TYPES)
     collection = models.ForeignKey(Collection)
 
+
+class PressRelease(caching.base.CachingMixin, models.Model):
+    """
+    Represents a press-release bound to a Journal.
+    If ``issue`` is None, the pressrelease is refers to an ahead article.
+    It can be available in one or any languages (restricted by the Journal
+    publishing policy).
+    """
+    nocacheobjects = models.Manager()
+    objects = models.Manager()
+    doi = models.CharField(_("Press release DOI number"),
+                           max_length=128, null=True, blank=True)
+
+    def add_article(self, article):
+        """
+        ``article`` is a string of the article pid.
+        """
+        PressReleaseArticle.objects.create(press_release=self,
+                                           article_pid=article)
+
+    def remove_article(self, article):
+        try:
+            pra = PressReleaseArticle.objects.get(press_release=self,
+                                                  article_pid=article)
+        except PressReleaseArticle.DoesNotExist:
+            return None
+        else:
+            pra.delete()
+
+    def add_translation(self, title, content, language):
+        """
+        Adds a new press-release translation.
+
+        ``language`` is an instance of Language.
+        """
+        PressReleaseTranslation.objects.create(press_release=self,
+                                               language=language,
+                                               title=title,
+                                               content=content)
+
+    def remove_translation(self, language):
+        """
+        Removes the translation for the given press-release.
+        If the translation doesn't exist, nothing happens silently.
+        """
+        qry_params = {'press_release': self}
+        if isinstance(language, basestring):
+            qry_params['language__iso_code'] = language
+        else:
+            qry_params['language'] = language
+
+        try:
+            pr = PressReleaseTranslation.objects.get(**qry_params)
+        except PressReleaseTranslation.DoesNotExist:
+            return None
+        else:
+            pr.delete()
+
+    def get_trans(self, language):
+        """
+        Syntatic suggar for retrieving translations in a given language
+        """
+        prt = self.translations.get(language__iso_code=language)
+        return prt
+
+    def __unicode__(self):
+        """
+        Try to get the first title of the Press Release.
+        The form ensures at least one title.
+        """
+        try:
+            title = PressReleaseTranslation.objects.filter(press_release=self).order_by('language')[0].title
+        except IndexError:
+            return __('No Title')
+
+        return title
+
+    class Meta:
+        abstract = False
+        permissions = (("list_pressrelease", "Can list PressReleases"),)
+
+
+class PressReleaseTranslation(caching.base.CachingMixin, models.Model):
+    """
+    Represents a press-release in a given language.
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    press_release = models.ForeignKey(PressRelease, related_name='translations')
+    language = models.ForeignKey('Language')
+    title = models.CharField(_('Title'), max_length=128)
+    content = models.TextField(_('Content'))
+
+
+class PressReleaseArticle(caching.base.CachingMixin, models.Model):
+    """
+    Represents press-releases bound to Articles.
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    press_release = models.ForeignKey(PressRelease, related_name='articles')
+    article_pid = models.CharField(_('PID'), max_length=32, db_index=True)
+
+
+class RegularPressRelease(PressRelease):
+    objects = RegularPressReleaseCustomManager()
+    issue = models.ForeignKey(Issue, related_name='press_releases')
+
+
+class AheadPressRelease(PressRelease):
+    objects = AheadPressReleaseCustomManager()
+    journal = models.ForeignKey(Journal, related_name='press_releases')
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

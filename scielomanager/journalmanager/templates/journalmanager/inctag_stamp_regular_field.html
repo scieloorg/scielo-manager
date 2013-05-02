@@ -1,0 +1,11 @@
+<div class="control-group{% if field.errors %} error{% endif %}">
+  {% if show_label %}
+  <label for="{{ field.auto_id }}">
+    <span{% if field.field.required %} class="req-field"{% endif %}>
+      {{ field.label }}
+    </span>
+  </label>
+  {% endif %}
+  {{ field.errors }}
+  {{ field }}
+</div>

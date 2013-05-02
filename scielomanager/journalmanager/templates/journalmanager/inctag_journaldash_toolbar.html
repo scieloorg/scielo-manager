@@ -17,10 +17,10 @@
           <a href="{% url section.index journal_id %}">{% trans 'Sections' %}</a>
         </li>
         {% endif %}
-        <!--
         <li {% if page == 'press_release' %}class="active activedash" {% endif %}>
-          <a href="#">Press Releases</a>
+          <a href="{% url prelease.index journal_id %}">Press Releases</a>
         </li>
+        <!--
         <li {% if page == 'ahead' %}class="active activedash" {% endif %}>
           <a href="#">Ahead of Print</a>
         </li>
