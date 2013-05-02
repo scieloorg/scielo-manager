@@ -1030,7 +1030,7 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         try:
             title = PressReleaseTranslation.objects.filter(press_release=self).order_by('language')[0].title
         except IndexError:
-            return _('No Title')
+            return __('No Title')
 
         return title
 
