@@ -10,16 +10,19 @@
     {% for item in objects_pr.object_list %}
     <tr>
       <td>
+        {% if item.translations.all|length > 1 %}
+            {% for trans in item.translations.all %}
+              {% if forloop.first %}
+                <b><a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a></b>
+                <div class="toggler" style="display: none;">
+              {% else %}
+                <a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a></br>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
           <b><a href="{% url prelease.edit journal.id item.pk %}">{{ item }}</a></b>
-          {% if item.translations.all|length > 1 %}
-            <div class="toggler" style="display: none;">
-              {% for trans in item.translations.all %}
-                {% if not forloop.first %}
-                  <a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a></br>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
+        {% endif %}
       </td>
       <td>
         {{ item.doi|default:"-" }}
