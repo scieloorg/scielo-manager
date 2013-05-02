@@ -47,10 +47,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('journalmanager', ['PressRelease'])
 
-
-        # Changing field 'IssueTitle.issue'
-        db.alter_column('journalmanager_issuetitle', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'], null=True))
-
     def backwards(self, orm):
         # Deleting model 'AheadPressRelease'
         db.delete_table('journalmanager_aheadpressrelease')
@@ -66,10 +62,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'PressRelease'
         db.delete_table('journalmanager_pressrelease')
-
-
-        # User chose to not deal with backwards NULL issues for 'IssueTitle.issue'
-        raise RuntimeError("Cannot reverse this migration. 'IssueTitle.issue' and its values cannot be restored.")
 
     models = {
         'auth.group': {
