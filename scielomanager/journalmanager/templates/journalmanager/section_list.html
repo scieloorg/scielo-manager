@@ -28,17 +28,18 @@
     {% for item in objects_section.object_list %}
     <tr>
       <td>
-        <b>
-          <a href="{% url section.edit item.journal.pk item.pk %}">{{ item }}</a>
-        </b>
-        {% if item.titles.all|length > 1  %}
-          <div class="toggler" style="display: none;">
+        {% if item.titles.all|length > 1 %}
             {% for trans in item.titles.all %}
-              {% if not forloop.first %}
-                <a href="{% url section.edit item.journal.pk item.pk %}">{{ trans.title }}</a></br>
+              {% if forloop.first %}
+                <b><a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a></b>
+                <div class="toggler" style="display: none;">
+              {% else %}
+                <a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a></br>
               {% endif %}
             {% endfor %}
           </div>
+        {% else %}
+          <b><a href="{% url prelease.edit journal.id item.pk %}">{{ item }}</a></b>
         {% endif %}
       </td>
       <td>
