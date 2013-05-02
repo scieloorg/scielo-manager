@@ -332,7 +332,8 @@ class SectionFormTests(WebTest):
 
         self.assertTemplateUsed(response,
             'journalmanager/section_list.html')
-        response.mustcontain('Original Article / Artigo Original')
+        response.mustcontain('Artigo Original')
+        response.mustcontain('Original Article')
 
     def test_section_translations_based_on_the_journal_languages(self):
         """
