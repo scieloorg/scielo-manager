@@ -15,6 +15,7 @@ from journalmanager.models import (
     Section,
     DataChangeEvent,
     RegularPressRelease,
+    AheadPressRelease,
     PressReleaseTranslation,
     PressReleaseArticle,
 )
@@ -297,3 +298,40 @@ class PressReleaseResource(ModelResource):
         }
 
         return meta_data
+
+
+class AheadPressReleaseResource(ModelResource):
+    journal_uri = fields.ForeignKey(JournalResource, 'journal')
+    translations = fields.OneToManyField(PressReleaseTranslationResource,
+                                         'translations',
+                                         full=True)
+    articles = fields.CharField(readonly=True)
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'apressreleases'
+        queryset = AheadPressRelease.objects.all()
+        allowed_methods = ['get', ]
+
+    def dehydrate_articles(self, bundle):
+        return [art.article_pid for art in bundle.obj.articles.all()]
+
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by the article PID.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(AheadPressReleaseResource, self).build_filters(filters)
+
+        if 'article_pid' in filters:
+            preleases = AheadPressRelease.objects.filter(
+                articles__article_pid=filters['article_pid'])
+            orm_filters['pk__in'] = preleases
+
+        elif 'journal_pid' in filters:
+            preleases = AheadPressRelease.objects.by_journal_pid(
+                filters['journal_pid'])
+            orm_filters['pk__in'] = preleases
+
+        return orm_filters
