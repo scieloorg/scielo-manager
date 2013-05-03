@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Journal Tools
     url(r'^$', views.journal_index, {'model': models.Journal}, name="journal.index"),
     url(r'^new/$', views.add_journal, name='journal.add'),
+    url(r'^(?P<journal_id>\d+)/dash/$', views.dash_journal, name='journal.dash'),
     url(r'^(?P<journal_id>\d+)/edit/$', views.add_journal, name='journal.edit'),
     url(r'^(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
         {'model': models.Journal}, name='journal.toggle_availability'),
@@ -26,6 +27,13 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/section/new/$', views.add_section, name='section.add'),
     url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/edit/$', views.add_section, name='section.edit'),
     url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/del/$', views.del_section, name='section.del'),
+
+    # Press release Tools
+    url(r'^(?P<journal_id>\d+)/prelease/$', views.pressrelease_index, name='prelease.index'),
+    url(r'^(?P<journal_id>\d+)/prelease/new/$', views.add_pressrelease, name='prelease.add'),
+    url(r'^(?P<journal_id>\d+)/prelease/(?P<prelease_id>\d+)/edit/$', views.add_pressrelease, name='prelease.edit'),
+    url(r'^(?P<journal_id>\d+)/aprelease/new/$', views.add_aheadpressrelease, name='aprelease.add'),
+    url(r'^(?P<journal_id>\d+)/aprelease/(?P<prelease_id>\d+)/edit/$', views.add_aheadpressrelease, name='aprelease.edit'),
 
     # Issue Tools
     url(r'^(?P<journal_id>\d+)/issue/$', views.issue_index, name='issue.index'),

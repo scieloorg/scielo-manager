@@ -1,0 +1,39 @@
+{% load i18n %}
+<table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th>{% trans 'Press Release' %}</th>
+      <th>{% trans 'DOI' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in objects_pr.object_list %}
+    <tr>
+      <td>
+        {% for trans in item.translations.all %}
+          {% if forloop.first %}
+            <b>
+              <span class="label label-info">{{ trans.language.iso_code }}</span>
+              &nbsp;
+              <a href="{% url aprelease.edit journal.id item.pk %}">{{ trans.title }}</a>
+            </b>
+            <div {% if item.translations.all|length > 1 %}class="toggler"{% endif %} style="display: none;">
+          {% else %}
+            <span class="label label-info">{{ trans.language.iso_code }}</span>
+            &nbsp;
+            {{ trans.title }}</br>
+          {% endif %}
+        {% endfor %}
+            </div>
+      </td>
+      <td>
+        {{ item.doi|default:"-" }}
+      </td>
+    </tr>
+   {% empty %}
+    <tr>
+      <td colspan="2">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+</table>

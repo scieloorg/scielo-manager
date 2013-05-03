@@ -155,3 +155,33 @@ class DataChangeEventFactory(factory.Factory):
     content_object = factory.SubFactory(JournalFactory)
     collection = factory.SubFactory(CollectionFactory)
     event_type = 'added'
+
+
+class RegularPressReleaseFactory(factory.Factory):
+    FACTORY_FOR = models.RegularPressRelease
+
+    issue = factory.SubFactory(IssueFactory)
+    doi = factory.Sequence(lambda n: 'http://dx.doi.org/10.4415/ANN_12_01_%s' % n)
+
+
+class AheadPressReleaseFactory(factory.Factory):
+    FACTORY_FOR = models.AheadPressRelease
+
+    journal = factory.SubFactory(JournalFactory)
+    doi = factory.Sequence(lambda n: 'http://dx.doi.org/10.4415/ANN_12_01_%s' % n)
+
+
+class PressReleaseTranslationFactory(factory.Factory):
+    FACTORY_FOR = models.PressReleaseTranslation
+
+    language = factory.SubFactory(LanguageFactory)
+    press_release = factory.SubFactory(RegularPressReleaseFactory)
+    title = u'Yeah, this issue is amazing!'
+    content = u'Want to read more about...'
+
+
+class PressReleaseArticleFactory(factory.Factory):
+    FACTORY_FOR = models.PressReleaseArticle
+
+    press_release = factory.SubFactory(RegularPressReleaseFactory)
+    article_pid = factory.Sequence(lambda n: 'S0102-311X201300030000%s' % n)
