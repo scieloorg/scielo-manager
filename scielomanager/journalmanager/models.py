@@ -30,7 +30,7 @@ from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 
 from scielomanager.utils import base28
-
+from scielomanager.journalmanager import modelmanagers
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('objects', caching.base.CachingManager())
@@ -462,6 +462,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     """
 
     #Custom manager
+    userobjects = modelmanagers.JournalManager()
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
 
@@ -714,6 +715,7 @@ class Section(caching.base.CachingMixin, models.Model):
     historical reasons, and we don't know if it will last forever.
     """
     #Custom manager
+    userobjects = modelmanagers.SectionManager()
     objects = SectionCustomManager()
     nocacheobjects = models.Manager()
 
