@@ -29,7 +29,7 @@ Custom instance of ``models.query.QuerySet``
 * ``unavailable`` returns all objects marked as trash.
 
 """
-from django.db import models
+import caching.base
 
 from scielomanager.utils.middlewares import threadlocal
 
@@ -46,9 +46,10 @@ def get_current_user_active_collection():
         return colls.get(usercollections__is_default=True)
 
 
-class UserObjectQuerySet(models.query.QuerySet):
+class UserObjectQuerySet(caching.base.CachingQuerySet):
     """
-    Provides a basic implementation of userobject querysets.
+    Provides a basic implementation of userobject querysets with
+    caching features.
     """
     def available(self):
         return self
@@ -57,9 +58,10 @@ class UserObjectQuerySet(models.query.QuerySet):
         return self.none()
 
 
-class UserObjectManager(models.Manager):
+class UserObjectManager(caching.base.CachingManager):
     """
-    Provides a basic implementation of userobject managers.
+    Provides a basic implementation of userobject managers with
+    caching features.
     """
     def all(self):
         return self.get_query_set().by_user()
