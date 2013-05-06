@@ -186,7 +186,7 @@ def collection_index(request, model, journal_id=None):
 @permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    preleases = models.RegularPressRelease.objects.all_by_journal(journal_id)
+    preleases = models.RegularPressRelease.objects.all_by_journal(journal_id).select_related()
 
     objects = get_paginated(preleases, request.GET.get('page', 1))
 

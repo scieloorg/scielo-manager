@@ -16,6 +16,7 @@ plugins_bundle = Bundle('../static/js/jquery/datepicker.js',
 app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/languages.js',
                     '../static/js/multiselect.js',
+                    '../static/js/toggler.js',
                     '../static/js/tabslideout.js',
                     '../static/js/combobox.js',
                     '../static/js/bootstrap.js')

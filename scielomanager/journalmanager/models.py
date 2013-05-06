@@ -234,6 +234,17 @@ class RegularPressReleaseCustomManager(caching.base.CachingManager):
         return preleases_qset.filter(issue__publication_year=year).filter(issue__order=order)
 
 
+class AheadPressReleaseCustomManager(caching.base.CachingManager):
+
+    def by_journal_pid(self, journal_pid):
+        """
+        Returns all PressReleases related to a Journal, given its
+        PID.
+        """
+        preleases = self.filter(models.Q(journal__print_issn=journal_pid) | models.Q(journal__eletronic_issn=journal_pid))
+        return preleases
+
+
 class Language(caching.base.CachingMixin, models.Model):
     """
     Represents ISO 639-1 Language Code and its language name in English. Django
@@ -905,13 +916,9 @@ class Issue(caching.base.CachingMixin, models.Model):
 class IssueTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    issue = models.ForeignKey(Issue, null=True, blank=True)
+    issue = models.ForeignKey(Issue)
     language = models.ForeignKey('Language')
     title = models.CharField(_('Title'), max_length=128)
-
-
-class Supplement(Issue):
-    suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
 
 
 class PendedForm(caching.base.CachingMixin, models.Model):
@@ -1019,16 +1026,9 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         try:
             title = PressReleaseTranslation.objects.filter(press_release=self).order_by('language')[0].title
         except IndexError:
-            return _('No Title')
+            return __('No Title')
 
         return title
-
-    @property
-    def get_titles(self):
-        """
-        Get all titles from Press Release
-        """
-        return [trans.title for trans in PressReleaseTranslation.objects.filter(press_release=self).order_by('language')]
 
     class Meta:
         abstract = False
@@ -1063,6 +1063,7 @@ class RegularPressRelease(PressRelease):
 
 
 class AheadPressRelease(PressRelease):
+    objects = AheadPressReleaseCustomManager()
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
 ####

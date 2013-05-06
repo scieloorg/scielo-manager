@@ -1,67 +1,32 @@
-# -*- coding: utf-8 -*-
+# encoding: utf-8
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
-
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'AheadPressRelease'
-        db.create_table('journalmanager_aheadpressrelease', (
-            ('pressrelease_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.PressRelease'], unique=True, primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Journal'])),
-        ))
-        db.send_create_signal('journalmanager', ['AheadPressRelease'])
+        
+        # Deleting model 'Supplement'
+        db.delete_table('journalmanager_supplement')
 
-        # Adding model 'PressReleaseArticle'
-        db.create_table('journalmanager_pressreleasearticle', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('press_release', self.gf('django.db.models.fields.related.ForeignKey')(related_name='articles', to=orm['journalmanager.PressRelease'])),
-            ('article_pid', self.gf('django.db.models.fields.CharField')(max_length=32, db_index=True)),
-        ))
-        db.send_create_signal('journalmanager', ['PressReleaseArticle'])
+        # Changing field 'IssueTitle.issue'
+        db.alter_column('journalmanager_issuetitle', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['journalmanager.Issue']))
 
-        # Adding model 'RegularPressRelease'
-        db.create_table('journalmanager_regularpressrelease', (
-            ('pressrelease_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.PressRelease'], unique=True, primary_key=True)),
-            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Issue'])),
-        ))
-        db.send_create_signal('journalmanager', ['RegularPressRelease'])
-
-        # Adding model 'PressReleaseTranslation'
-        db.create_table('journalmanager_pressreleasetranslation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('press_release', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', to=orm['journalmanager.PressRelease'])),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('content', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('journalmanager', ['PressReleaseTranslation'])
-
-        # Adding model 'PressRelease'
-        db.create_table('journalmanager_pressrelease', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('doi', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-        ))
-        db.send_create_signal('journalmanager', ['PressRelease'])
 
     def backwards(self, orm):
-        # Deleting model 'AheadPressRelease'
-        db.delete_table('journalmanager_aheadpressrelease')
+        
+        # Adding model 'Supplement'
+        db.create_table('journalmanager_supplement', (
+            ('suppl_label', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True)),
+            ('issue_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.Issue'], unique=True, primary_key=True)),
+        ))
+        db.send_create_signal('journalmanager', ['Supplement'])
 
-        # Deleting model 'PressReleaseArticle'
-        db.delete_table('journalmanager_pressreleasearticle')
+        # Changing field 'IssueTitle.issue'
+        db.alter_column('journalmanager_issuetitle', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'], null=True))
 
-        # Deleting model 'RegularPressRelease'
-        db.delete_table('journalmanager_regularpressrelease')
-
-        # Deleting model 'PressReleaseTranslation'
-        db.delete_table('journalmanager_pressreleasetranslation')
-
-        # Deleting model 'PressRelease'
-        db.delete_table('journalmanager_pressrelease')
 
     models = {
         'auth.group': {
@@ -119,7 +84,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
-            'name_slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'name_slug': ('django.db.models.fields.SlugField', [], {'db_index': 'True', 'max_length': '50', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
@@ -184,7 +149,7 @@ class Migration(SchemaMigration):
         'journalmanager.issuetitle': {
             'Meta': {'object_name': 'IssueTitle'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Issue']", 'null': 'True', 'blank': 'True'}),
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Issue']"}),
             'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
@@ -355,11 +320,6 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'SubjectCategory'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'term': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
-        },
-        'journalmanager.supplement': {
-            'Meta': {'object_name': 'Supplement', '_ormbases': ['journalmanager.Issue']},
-            'issue_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Issue']", 'unique': 'True', 'primary_key': 'True'}),
-            'suppl_label': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.translateddata': {
             'Meta': {'object_name': 'TranslatedData'},
