@@ -18,7 +18,7 @@ Custom instance of ``models.Manager``
 Custom instance of ``models.query.QuerySet``
 --------------------------------------------
 
-* ``by_user`` returns all objects the user can access;
+* ``all`` returns all objects the user can access;
 * ``active`` returns all objects from the active collection.
 * ``startswith`` (optional) returns all objects with the given
   initial char in a meaningful field. this is used for sorting
@@ -63,25 +63,25 @@ class UserObjectManager(caching.base.CachingManager):
     Provides a basic implementation of userobject managers with
     caching features.
     """
-    def all(self):
-        return self.get_query_set().by_user()
+    def all(self, **kwargs):
+        return self.get_query_set().all(**kwargs)
 
-    def active(self):
-        return self.get_query_set().active()
+    def active(self, **kwargs):
+        return self.get_query_set().active(**kwargs)
 
 
 class JournalQuerySet(UserObjectQuerySet):
-    def by_user(self):
-        return self.filter(collection__in=get_current_user_collections())
+    def all(self, get_all_collections=get_current_user_collections):
+        return self.filter(collection__in=get_all_collections())
 
-    def active(self):
-        return self.filter(collection=get_current_user_active_collection())
+    def active(self, get_active_collection=get_current_user_active_collection):
+        return self.filter(collection=get_active_collection())
 
     def startswith(self, char):
         return self.filter(title__istartswith=unicode(char))
 
     def simple_search(self, term):
-        return self.filter(title__icontains=term)
+        return self.filter(title__icontains=unicode(term))
 
     def available(self):
         return self.filter(is_trashed=False)
@@ -108,7 +108,7 @@ class JournalManager(UserObjectManager):
 
 
 class SectionQuerySet(UserObjectQuerySet):
-    def by_user(self):
+    def all(self):
         return self.filter(
             journal__collection__in=get_current_user_collections())
 
@@ -126,3 +126,30 @@ class SectionQuerySet(UserObjectQuerySet):
 class SectionManager(UserObjectManager):
     def get_query_set(self):
         return SectionQuerySet(self.model, using=self._db)
+
+
+class SponsorQuerySet(UserObjectQuerySet):
+    def all(self):
+        return self.filter(
+            collections__in=get_current_user_collections()).distinct()
+
+    def active(self):
+        return self.filter(
+            collections=get_current_user_active_collection())
+
+    def startswith(self, char):
+        return self.filter(name__istartswith=unicode(char))
+
+    def simple_search(self, term):
+        return self.filter(name__icontains=term)
+
+    def available(self):
+        return self.filter(is_trashed=False)
+
+    def unavailable(self):
+        return self.filter(is_trashed=True)
+
+
+class SponsorManager(UserObjectManager):
+    def get_query_set(self):
+        return SponsorQuerySet(self.model, using=self._db)

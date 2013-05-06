@@ -1,6 +1,5 @@
 # coding: utf-8
 from django.test import TestCase
-from django.utils import unittest
 from django_factory_boy import auth
 from mocker import MockerTestCase
 

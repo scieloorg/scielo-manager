@@ -420,6 +420,7 @@ class Institution(caching.base.CachingMixin, models.Model):
 class Sponsor(Institution):
     objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.SponsorManager()
 
     collections = models.ManyToManyField(Collection)
 
@@ -462,9 +463,9 @@ class Journal(caching.base.CachingMixin, models.Model):
     """
 
     #Custom manager
-    userobjects = modelmanagers.JournalManager()
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.JournalManager()
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
@@ -715,9 +716,9 @@ class Section(caching.base.CachingMixin, models.Model):
     historical reasons, and we don't know if it will last forever.
     """
     #Custom manager
-    userobjects = modelmanagers.SectionManager()
     objects = SectionCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.SectionManager()
 
     journal = models.ForeignKey(Journal)
 
