@@ -108,13 +108,13 @@ class JournalManager(UserObjectManager):
 
 
 class SectionQuerySet(UserObjectQuerySet):
-    def all(self):
+    def all(self, get_all_collections=get_current_user_collections):
         return self.filter(
-            journal__collection__in=get_current_user_collections())
+            journal__collection__in=get_all_collections())
 
-    def active(self):
+    def active(self, get_active_collection=get_current_user_active_collection):
         return self.filter(
-            journal__collection=get_current_user_active_collection())
+            journal__collection=get_active_collection())
 
     def available(self):
         return self.filter(is_trashed=False)
@@ -129,19 +129,19 @@ class SectionManager(UserObjectManager):
 
 
 class SponsorQuerySet(UserObjectQuerySet):
-    def all(self):
+    def all(self, get_all_collections=get_current_user_collections):
         return self.filter(
-            collections__in=get_current_user_collections()).distinct()
+            collections__in=get_all_collections()).distinct()
 
-    def active(self):
+    def active(self, get_active_collection=get_current_user_active_collection):
         return self.filter(
-            collections=get_current_user_active_collection())
+            collections=get_active_collection())
 
     def startswith(self, char):
         return self.filter(name__istartswith=unicode(char))
 
     def simple_search(self, term):
-        return self.filter(name__icontains=term)
+        return self.filter(name__icontains=unicode(term))
 
     def available(self):
         return self.filter(is_trashed=False)
