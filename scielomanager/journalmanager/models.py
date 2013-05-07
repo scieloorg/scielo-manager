@@ -30,7 +30,7 @@ from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 
 from scielomanager.utils import base28
-
+from scielomanager.journalmanager import modelmanagers
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('objects', caching.base.CachingManager())
@@ -420,6 +420,7 @@ class Institution(caching.base.CachingMixin, models.Model):
 class Sponsor(Institution):
     objects = InstitutionCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.SponsorManager()
 
     collections = models.ManyToManyField(Collection)
 
@@ -464,6 +465,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     #Custom manager
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.JournalManager()
 
     #Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
@@ -716,6 +718,7 @@ class Section(caching.base.CachingMixin, models.Model):
     #Custom manager
     objects = SectionCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.SectionManager()
 
     journal = models.ForeignKey(Journal)
 
