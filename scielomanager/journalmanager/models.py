@@ -921,10 +921,6 @@ class IssueTitle(caching.base.CachingMixin, models.Model):
     title = models.CharField(_('Title'), max_length=128)
 
 
-class Supplement(Issue):
-    suppl_label = models.CharField(_('Supplement Label'), null=True, blank=True, max_length=256)
-
-
 class PendedForm(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()

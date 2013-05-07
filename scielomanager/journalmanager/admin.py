@@ -132,14 +132,6 @@ class TranslatedDataAdmin(admin.ModelAdmin):
 admin.site.register(TranslatedData)
 
 
-class SupplementAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Supplement.nocacheobjects
-
-admin.site.register(Supplement, SupplementAdmin)
-
-
 class JournalPublicationEventsAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
