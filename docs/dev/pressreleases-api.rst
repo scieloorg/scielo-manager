@@ -67,6 +67,7 @@ Response::
           "title": "Como a descoberta do XYZ mudou a humanidade"
         }],
         "issue_meta": {
+          "scielo_pid": "S0021-257120120001",
           "short_title": "Ann. Ist. Super. Sanità",
           "volume": "45",
           "number": "4",
@@ -122,6 +123,7 @@ Response::
       "title": "Como a descoberta do XYZ mudou a humanidade",
     ],
     "issue_meta": {
+      "scielo_pid": "S0021-257120120001",
       "short_title": "Ann. Ist. Super. Sanità",
       "volume": "45",
       "number": "4",

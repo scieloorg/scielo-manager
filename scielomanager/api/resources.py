@@ -286,6 +286,7 @@ class PressReleaseResource(ModelResource):
         issue = bundle.obj.issue
 
         meta_data = {
+            'scielo_pid': issue.scielo_pid,
             'short_title': issue.journal.short_title,
             'volume': issue.volume,
             'number': issue.number,

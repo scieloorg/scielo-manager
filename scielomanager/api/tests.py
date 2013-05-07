@@ -636,6 +636,7 @@ class PressReleaseRestAPITest(WebTest):
             'publication_end_month',
             'publication_city',
             'publication_year',
+            'scielo_pid',
         ]
 
         self.assertEqual(
