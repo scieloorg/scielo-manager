@@ -24,9 +24,6 @@
   <li class="{% if not request.GET.press %}active{% endif %}">
     <a href="{% query_string request '' 'include_ampersand' %}">{% trans 'Press Release of Issue' %}</a>
   </li>
-  <li class="{% if request.GET.press == 'article' %}active{% endif %}">
-    <a href="?press=article">{% trans 'Press Release of Article' %}</a>
-  </li>
   <li class="{% if request.GET.press == 'ahead' %}active{% endif %}">
     <a href="?press=ahead">{% trans 'Press Release of Ahead' %}</a>
   </li>
@@ -36,10 +33,6 @@
 <div class="tab-content">
   {% if not request.GET.press %}
     {% include "include_press_release/issue.html" %}
-  {% endif %}
-
-  {% if request.GET.press == 'article' %}
-    {% include "include_press_release/article.html" %}
   {% endif %}
 
   {% if request.GET.press == 'ahead' %}

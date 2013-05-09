@@ -140,6 +140,78 @@ class JournalsListTests(WebTest):
         self.assertTrue('There are no items.' in response.body)
 
 
+class PressReleasesListTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+    def test_pressrelease_list_without_itens(self):
+        """
+        Asserts the message ``'There are no items.`` is shown
+        when the pressrelease list is empty.
+        """
+        journal = modelfactories.JournalFactory()
+
+        perm_pressrelease_list = _makePermission(perm='list_pressrelease',
+                                                 model='pressrelease',
+                                                 app_label='journalmanager')
+        self.user.user_permissions.add(perm_pressrelease_list)
+
+        response = self.app.get(reverse('prelease.index', args=[journal.pk]), user=self.user)
+
+        self.assertTrue('There are no items.' in response.body)
+
+    def test_pressrelease_list_with_itens(self):
+        """
+        Asserts that threre is itens on press release list
+        """
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(journal=journal)
+        perm_journal_list = _makePermission(perm='list_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
+
+        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+        pr.add_translation('The new york times Journal',
+                           'Biggest rock entered the land was in 1969',
+                           language)
+
+        response = self.app.get(reverse('prelease.index',
+                                args=[journal.pk]),
+                                user=self.user)
+
+        self.assertTrue('The new york times Journal' in response.body)
+
+    def test_aheadpressrelease_list_with_itens(self):
+        """
+        Asserts that threre is itens on ahead press release list
+        """
+        journal = modelfactories.JournalFactory()
+        perm_journal_list = _makePermission(perm='list_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        language = modelfactories.LanguageFactory.create(iso_code='en', name='english')
+
+        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+        pr.add_translation('Ahead Press Release on new york times',
+                           'Biggest rock entered the land was in 1969',
+                           language)
+
+        response = self.app.get(reverse('prelease.index',
+                                args=[journal.pk]) + '?press=ahead',
+                                user=self.user)
+
+        self.assertTrue('Ahead Press Release on new york times' in response.body)
+
+
 class IndexPageTests(WebTest):
 
     def test_logged_user_access_to_index(self):
