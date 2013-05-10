@@ -208,7 +208,6 @@ class PressReleasesListTests(WebTest):
         response = self.app.get(reverse('prelease.index',
                                 args=[journal.pk]) + '?tab=ahead',
                                 user=self.user)
-
         self.assertTrue('Ahead Press Release on new york times' in response.body)
 
 

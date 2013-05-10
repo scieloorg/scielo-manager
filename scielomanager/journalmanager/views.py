@@ -187,9 +187,9 @@ def collection_index(request, model, journal_id=None):
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
-    param_press = request.GET.get('press', '')
+    param_tab = request.GET.get('tab', '')
 
-    if param_press == 'ahead':
+    if param_tab == 'ahead':
         preleases = models.AheadPressRelease.objects.filter(journal=journal).select_related()
     else:
         preleases = models.RegularPressRelease.objects.all_by_journal(journal_id).select_related()
