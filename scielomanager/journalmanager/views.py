@@ -914,7 +914,7 @@ def add_aheadpressrelease(request, journal_id, prelease_id=None):
 
             messages.info(request, MSG_FORM_SAVED)
 
-            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]) + '?press=ahead')
+            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]) + '?tab=ahead')
         else:
             messages.error(request, MSG_FORM_MISSING)
 
