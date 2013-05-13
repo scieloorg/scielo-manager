@@ -186,7 +186,13 @@ def collection_index(request, model, journal_id=None):
 @permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    preleases = models.RegularPressRelease.objects.all_by_journal(journal_id).select_related()
+
+    param_tab = request.GET.get('tab', '')
+
+    if param_tab == 'ahead':
+        preleases = models.AheadPressRelease.objects.filter(journal=journal).select_related()
+    else:
+        preleases = models.RegularPressRelease.objects.all_by_journal(journal_id).select_related()
 
     objects = get_paginated(preleases, request.GET.get('page', 1))
 
@@ -908,7 +914,7 @@ def add_aheadpressrelease(request, journal_id, prelease_id=None):
 
             messages.info(request, MSG_FORM_SAVED)
 
-            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]))
+            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]) + '?tab=ahead')
         else:
             messages.error(request, MSG_FORM_MISSING)
 
