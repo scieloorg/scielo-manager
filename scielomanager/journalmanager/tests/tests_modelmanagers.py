@@ -323,6 +323,24 @@ class JournalManagerTests(TestCase):
         for j in user_journals:
             self.assertEqual(j.pub_status, 'suspended')
 
+    def test_suspended_incompat_pub_policy(self):
+        collection = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection)
+
+        modelfactories.JournalFactory.create(
+            collection=collection, pub_status='suspended_ipp')
+
+        def get_user_collections():
+            return user.user_collection.all()
+
+        user_journals = models.Journal.userobjects.all(
+            get_all_collections=get_user_collections).suspended()
+
+        self.assertEqual(user_journals.count(), 1)
+        for j in user_journals:
+            self.assertEqual(j.pub_status, 'suspended_ipp')
+
     def test_deceased(self):
         collection = modelfactories.CollectionFactory.create()
 

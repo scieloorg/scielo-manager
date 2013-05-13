@@ -1,6 +1,9 @@
 # coding: utf-8
 import calendar
 
+from django.utils.translation import ugettext_lazy as _
+
+
 SCIELO_ISSN = [
     ('print', 'print'),
     ('electronic', 'electronic'),
@@ -15,14 +18,6 @@ SUBJECTS = [
     ('Health Sciences', 'Health Sciences'),
     ('Human Sciences', 'Human Sciences'),
     ('Linguistics, Letters and Arts', 'Linguistics, Letters and Arts'),
-]
-
-PUBLICATION_STATUS = [
-    ('C', 'Current'),
-    ('D', 'Ceased'),
-    ('R', 'Reports Only'),
-    ('S', 'Suspended'),
-    ('?', 'Unknow'),
 ]
 
 LANGUAGE = [
@@ -73,10 +68,11 @@ TITLE_CATEGORY = [
 ]
 
 JOURNAL_PUBLICATION_STATUS = [
-    ('current', 'Current'),
-    ('deceased', 'Deceased'),
-    ('suspended', 'Suspended'),
-    ('inprogress', 'In Progress'),
+    ('current', _('Current')),
+    ('deceased', _('Deceased')),
+    ('suspended', _('Suspended')),
+    ('suspended_ipp', _('Suspended for incompatibility of publication policy')),
+    ('inprogress', _('In Progress')),
 ]
 
 # the index 0 has an empty value
