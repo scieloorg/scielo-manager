@@ -473,7 +473,6 @@ class AheadPressReleaseArticleForm(ModelForm):
 
     class Meta:
         model = models.PressReleaseArticle
-        exclude = ('article_pid',)
 
     def clean_article_pid(self):
         if not self.cleaned_data['article_pid']:
