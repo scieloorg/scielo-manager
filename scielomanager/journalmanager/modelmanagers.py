@@ -146,16 +146,16 @@ class SponsorManager(UserObjectManager):
 
 
 class RegularPressReleaseQuerySet(UserObjectQuerySet):
-    def all(self, get_all_collections=get_current_user_collections):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(
             issue__journal__collection__in=get_all_collections())
 
-    def active(self, get_active_collection=get_current_user_active_collection):
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(
             issue__journal__collection=get_active_collection())
 
     def journal(self, journal):
-        criteria = {'issue__journal_pk': journal} if isinstance(journal, int) else (
+        criteria = {'issue__journal__pk': journal} if isinstance(journal, int) else (
             {'issue__journal': journal})
         return self.filter(**criteria)
 
@@ -166,16 +166,16 @@ class RegularPressReleaseManager(UserObjectManager):
 
 
 class AheadPressReleaseQuerySet(UserObjectQuerySet):
-    def all(self, get_all_collections=get_current_user_collections):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(
             journal__collection__in=get_all_collections())
 
-    def active(self, get_active_collection=get_current_user_active_collection):
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(
             journal__collection=get_active_collection())
 
     def journal(self, journal):
-        criteria = {'journal_pk': journal} if isinstance(journal, int) else (
+        criteria = {'journal__pk': journal} if isinstance(journal, int) else (
             {'journal': journal})
         return self.filter(**criteria)
 
