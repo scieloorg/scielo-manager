@@ -33,17 +33,7 @@ import caching.base
 
 from scielomanager.utils.middlewares import threadlocal
 
-
-def get_current_user_collections():
-    user = threadlocal.get_current_user()
-    if user:
-        return user.user_collection.all()
-
-
-def get_current_user_active_collection():
-    colls = get_current_user_collections()
-    if colls:
-        return colls.get(usercollections__is_default=True)
+user_request_context = threadlocal.get_finder()
 
 
 class UserObjectQuerySet(caching.base.CachingQuerySet):
@@ -71,10 +61,10 @@ class UserObjectManager(caching.base.CachingManager):
 
 
 class JournalQuerySet(UserObjectQuerySet):
-    def all(self, get_all_collections=get_current_user_collections):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(collection__in=get_all_collections())
 
-    def active(self, get_active_collection=get_current_user_active_collection):
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(collection=get_active_collection())
 
     def startswith(self, char):
@@ -108,11 +98,11 @@ class JournalManager(UserObjectManager):
 
 
 class SectionQuerySet(UserObjectQuerySet):
-    def all(self, get_all_collections=get_current_user_collections):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(
             journal__collection__in=get_all_collections())
 
-    def active(self, get_active_collection=get_current_user_active_collection):
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(
             journal__collection=get_active_collection())
 
@@ -129,11 +119,11 @@ class SectionManager(UserObjectManager):
 
 
 class SponsorQuerySet(UserObjectQuerySet):
-    def all(self, get_all_collections=get_current_user_collections):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(
             collections__in=get_all_collections()).distinct()
 
-    def active(self, get_active_collection=get_current_user_active_collection):
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(
             collections=get_active_collection())
 
@@ -153,3 +143,43 @@ class SponsorQuerySet(UserObjectQuerySet):
 class SponsorManager(UserObjectManager):
     def get_query_set(self):
         return SponsorQuerySet(self.model, using=self._db)
+
+
+class RegularPressReleaseQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        return self.filter(
+            issue__journal__collection__in=get_all_collections())
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        return self.filter(
+            issue__journal__collection=get_active_collection())
+
+    def journal(self, journal):
+        criteria = {'issue__journal__pk': journal} if isinstance(journal, int) else (
+            {'issue__journal': journal})
+        return self.filter(**criteria)
+
+
+class RegularPressReleaseManager(UserObjectManager):
+    def get_query_set(self):
+        return RegularPressReleaseQuerySet(self.model, using=self._db)
+
+
+class AheadPressReleaseQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        return self.filter(
+            journal__collection__in=get_all_collections())
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        return self.filter(
+            journal__collection=get_active_collection())
+
+    def journal(self, journal):
+        criteria = {'journal__pk': journal} if isinstance(journal, int) else (
+            {'journal': journal})
+        return self.filter(**criteria)
+
+
+class AheadPressReleaseManager(UserObjectManager):
+    def get_query_set(self):
+        return AheadPressReleaseQuerySet(self.model, using=self._db)

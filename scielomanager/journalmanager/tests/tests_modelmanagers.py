@@ -813,3 +813,223 @@ class SponsorManagerTests(TestCase):
             get_all_collections=get_user_collections).unavailable()
 
         self.assertEqual(user_sponsors.count(), 0)
+
+
+class RegularPressReleaseManagerTests(TestCase):
+
+    def _make_user(self, *collection):
+        user = auth.UserF(is_active=True)
+        for coll in collection:
+            coll.add_user(user, is_manager=True)
+
+        return user
+
+    def test_manager_base_interface(self):
+        mandatory_attrs = ['all', 'active']
+
+        for attr in mandatory_attrs:
+            self.assertTrue(hasattr(models.RegularPressRelease.userobjects, attr))
+
+    def test_queryset_base_interface(self):
+        mandatory_attrs = ['all', 'active', 'available', 'unavailable']
+
+        mm = modelmanagers.RegularPressReleaseQuerySet()
+
+        for attr in mandatory_attrs:
+            self.assertTrue(hasattr(mm, attr))
+
+    def test_all_returns_user_objects_no_matter_the_active_context(self):
+        collection1 = modelfactories.CollectionFactory.create()
+        collection2 = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection1)
+        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        issue = modelfactories.IssueFactory.create(journal=journal)
+        issue2 = modelfactories.IssueFactory.create(journal=journal2)
+
+        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+        pr2 = modelfactories.RegularPressReleaseFactory.create(issue=issue2)
+
+        def get_user_collections():
+            return user.user_collection.all()
+
+        user_prs = models.RegularPressRelease.userobjects.all(
+            get_all_collections=get_user_collections)
+
+        self.assertEqual(user_prs.count(), 2)
+        self.assertIn(pr, user_prs)
+        self.assertIn(pr2, user_prs)
+
+    def test_active_returns_user_objects_bound_to_the_active_context(self):
+        collection1 = modelfactories.CollectionFactory.create()
+        collection2 = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection1)
+        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        issue = modelfactories.IssueFactory.create(journal=journal)
+        issue2 = modelfactories.IssueFactory.create(journal=journal2)
+
+        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+        pr2 = modelfactories.RegularPressReleaseFactory.create(issue=issue2)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_prs = models.RegularPressRelease.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_prs.count(), 1)
+        self.assertIn(pr2, user_prs)
+
+    def test_journal_accepts_journal_objects(self):
+        collection = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection)
+        collection.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection)
+        issue = modelfactories.IssueFactory.create(journal=journal)
+
+        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_prs = models.RegularPressRelease.userobjects.active(
+            get_active_collection=get_active_collection).journal(journal)
+
+        self.assertEqual(user_prs.count(), 1)
+        self.assertIn(pr, user_prs)
+
+    def test_journal_accepts_journal_pk(self):
+        collection = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection)
+        collection.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection)
+        issue = modelfactories.IssueFactory.create(journal=journal)
+
+        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_prs = models.RegularPressRelease.userobjects.active(
+            get_active_collection=get_active_collection).journal(journal.pk)
+
+        self.assertEqual(user_prs.count(), 1)
+        self.assertIn(pr, user_prs)
+
+
+class AheadPressReleaseManagerTests(TestCase):
+
+    def _make_user(self, *collection):
+        user = auth.UserF(is_active=True)
+        for coll in collection:
+            coll.add_user(user, is_manager=True)
+
+        return user
+
+    def test_manager_base_interface(self):
+        mandatory_attrs = ['all', 'active']
+
+        for attr in mandatory_attrs:
+            self.assertTrue(hasattr(models.AheadPressRelease.userobjects, attr))
+
+    def test_queryset_base_interface(self):
+        mandatory_attrs = ['all', 'active', 'available', 'unavailable']
+
+        mm = modelmanagers.AheadPressReleaseQuerySet()
+
+        for attr in mandatory_attrs:
+            self.assertTrue(hasattr(mm, attr))
+
+    def test_all_returns_user_objects_no_matter_the_active_context(self):
+        collection1 = modelfactories.CollectionFactory.create()
+        collection2 = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection1)
+        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+
+        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+        pr2 = modelfactories.AheadPressReleaseFactory.create(journal=journal2)
+
+        def get_user_collections():
+            return user.user_collection.all()
+
+        user_prs = models.AheadPressRelease.userobjects.all(
+            get_all_collections=get_user_collections)
+
+        self.assertEqual(user_prs.count(), 2)
+        self.assertIn(pr, user_prs)
+        self.assertIn(pr2, user_prs)
+
+    def test_active_returns_user_objects_bound_to_the_active_context(self):
+        collection1 = modelfactories.CollectionFactory.create()
+        collection2 = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection1)
+        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+
+        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+        pr2 = modelfactories.AheadPressReleaseFactory.create(journal=journal2)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_prs = models.AheadPressRelease.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_prs.count(), 1)
+        self.assertIn(pr2, user_prs)
+
+    def test_journal_accepts_journal_objects(self):
+        collection = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection)
+        collection.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection)
+
+        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_prs = models.AheadPressRelease.userobjects.active(
+            get_active_collection=get_active_collection).journal(journal)
+
+        self.assertEqual(user_prs.count(), 1)
+        self.assertIn(pr, user_prs)
+
+    def test_journal_accepts_journal_pk(self):
+        collection = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection)
+        collection.make_default_to_user(user)
+
+        journal = modelfactories.JournalFactory.create(collection=collection)
+
+        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_prs = models.AheadPressRelease.userobjects.active(
+            get_active_collection=get_active_collection).journal(journal.pk)
+
+        self.assertEqual(user_prs.count(), 1)
+        self.assertIn(pr, user_prs)

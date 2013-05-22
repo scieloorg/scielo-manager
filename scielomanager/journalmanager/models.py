@@ -1062,11 +1062,15 @@ class PressReleaseArticle(caching.base.CachingMixin, models.Model):
 
 class RegularPressRelease(PressRelease):
     objects = RegularPressReleaseCustomManager()
+    userobjects = modelmanagers.RegularPressReleaseManager()
+
     issue = models.ForeignKey(Issue, related_name='press_releases')
 
 
 class AheadPressRelease(PressRelease):
     objects = AheadPressReleaseCustomManager()
+    userobjects = modelmanagers.AheadPressReleaseManager()
+
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
 ####

@@ -3,12 +3,60 @@
 Use this module to write functional tests for the pages and
 screen components, only!
 """
+from django.conf import settings
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 from journalmanager.tests.tests_forms import _makePermission
+
+
+def _makeUserRequestContext(user):
+    """
+    Constructs a class to be used by settings.USERREQUESTCONTEXT_FINDER
+    bound to a user, for testing purposes.
+    """
+    class UserRequestContextTestFinder(object):
+
+        def get_current_user_collections(self):
+            return user.user_collection.all()
+
+        def get_current_user_active_collection(self):
+            colls = self.get_current_user_collections()
+            if colls:
+                return colls.get(usercollections__is_default=True)
+
+    return UserRequestContextTestFinder
+
+
+def _patch_userrequestcontextfinder_settings_setup(func):
+    """
+    Patch the setting USERREQUESTCONTEXT_FINDER to target a
+    testing-friendly version.
+    """
+    def wrapper(self, **kwargs):
+        func(self, **kwargs)
+
+        # override the setting responsible for retrieving the active user context
+        cls = self.__class__
+        cls.UserRequestContextTestFinder = _makeUserRequestContext(self.user)
+        self.default_USERREQUESTCONTEXT_FINDER = settings.USERREQUESTCONTEXT_FINDER
+        settings.USERREQUESTCONTEXT_FINDER = 'scielomanager.scielomanager.journalmanager.tests.tests_pages.%s.UserRequestContextTestFinder' % cls.__name__
+
+    return wrapper
+
+
+def _patch_userrequestcontextfinder_settings_teardown(func):
+    """
+    Restore the settings defaults.
+    """
+    def wrapper(self, **kwargs):
+        func(self, **kwargs)
+
+        settings.USERREQUESTCONTEXT_FINDER = self.default_USERREQUESTCONTEXT_FINDER
+
+    return wrapper
 
 
 class UserCollectionsSelectorTests(WebTest):
@@ -142,11 +190,18 @@ class JournalsListTests(WebTest):
 
 class PressReleasesListTests(WebTest):
 
+    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
 
     def test_pressrelease_list_without_itens(self):
         """
@@ -168,7 +223,7 @@ class PressReleasesListTests(WebTest):
         """
         Asserts that threre is itens on press release list
         """
-        journal = modelfactories.JournalFactory()
+        journal = modelfactories.JournalFactory(collection=self.collection)
         issue = modelfactories.IssueFactory(journal=journal)
         perm_journal_list = _makePermission(perm='list_pressrelease',
                                             model='pressrelease',
@@ -192,7 +247,7 @@ class PressReleasesListTests(WebTest):
         """
         Asserts that threre is itens on ahead press release list
         """
-        journal = modelfactories.JournalFactory()
+        journal = modelfactories.JournalFactory(collection=self.collection)
         perm_journal_list = _makePermission(perm='list_pressrelease',
                                             model='pressrelease',
                                             app_label='journalmanager')
