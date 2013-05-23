@@ -21,6 +21,7 @@ L10ISSUEMGS = {'en': (u'No section title', u'No Descriptor', u'Health Sciences D
 issns = {
     'print': 'print_issn',
     'electronic': 'eletronic_issn',
+    'eletronic': 'eletronic_issn',
 }
 
 
@@ -228,6 +229,7 @@ class JournalStandard(L10nIssue):
         issns = {
             'print': u'ppub',
             'electronic': u'epub',
+            'eletronic': u'epub',
         }
         return issns[self._journal.scielo_issn]
 
@@ -442,6 +444,7 @@ class JournalStandardAhead(L10nAhead):
         issns = {
             'print': u'ppub',
             'electronic': u'epub',
+            'eletronic': u'epub',
         }
         return issns[self._journal.scielo_issn]
 
