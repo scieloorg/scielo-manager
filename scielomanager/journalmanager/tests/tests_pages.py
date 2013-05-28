@@ -187,6 +187,13 @@ class JournalsListTests(WebTest):
 
         self.assertTrue('There are no items.' in response.body)
 
+    def test_list_journal_permission_is_required(self):
+        response = self.app.get(
+            reverse('journal.index'), user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
 
 class PressReleasesListTests(WebTest):
 

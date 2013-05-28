@@ -400,7 +400,7 @@ def edit_journal_status(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
 def dash_journal(request, journal_id=None):
     """
     Handles new and existing journals
