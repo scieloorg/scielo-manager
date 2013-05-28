@@ -277,7 +277,8 @@ class IssueForm(ModelForm):
         self.journal_id = kwargs.pop('journal_id', None)
         super(IssueForm, self).__init__(*args, **kwargs)
         if self.journal_id is not None:
-            self.fields['section'].queryset = models.Section.objects.filter(journal=self.journal_id)
+            self.fields['section'].queryset = models.Section.objects.available(
+                True).filter(journal=self.journal_id)
 
     def save_all(self, journal):
         issue = self.save(commit=False)

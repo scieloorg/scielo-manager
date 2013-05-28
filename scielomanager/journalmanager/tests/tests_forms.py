@@ -1387,6 +1387,27 @@ class IssueFormTests(WebTest):
 
         self.assertEqual(form.method.lower(), 'post')
 
+    def test_sections_must_not_be_trashed(self):
+        """
+        Only valid sections must be available for the user to
+        bind to a issue.
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        trashed_section = modelfactories.SectionFactory.create(
+            journal=self.journal, is_trashed=True)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertRaises(ValueError,
+            lambda: form.set('section', str(trashed_section.pk)))
+
 
 class StatusFormTests(WebTest):
 
