@@ -1,5 +1,5 @@
 from django.contrib import admin
-from scielomanager.maintenancewindow.models import *
+from maintenancewindow.models import *
 
 
 class EventAdmin(admin.ModelAdmin):

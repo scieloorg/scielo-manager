@@ -4,9 +4,8 @@ from django.contrib import admin
 from django.conf import settings
 from tastypie.api import Api
 
-from scielomanager.journalmanager import views
-from scielomanager.journalmanager import models
-from scielomanager.api import resources
+from journalmanager import views, models
+from api import resources
 
 admin.autodiscover()
 

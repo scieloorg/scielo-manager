@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.conf import settings
 
-from scielomanager.export import bundle
+from export import bundle
 
 MEDIA_ROOT = settings.MEDIA_ROOT + '/export/'
 MEDIA_URL = settings.MEDIA_URL + '/export/'

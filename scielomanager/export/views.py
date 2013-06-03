@@ -3,8 +3,7 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 
-from scielomanager.export import forms
-from scielomanager.export import markupfiles
+from export import forms, markupfiles
 
 
 @login_required

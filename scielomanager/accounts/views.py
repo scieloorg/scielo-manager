@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate
 from django.conf import settings
 
-from scielomanager.accounts import forms
+from accounts import forms
 
 
 @login_required

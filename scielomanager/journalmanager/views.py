@@ -24,16 +24,16 @@ from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
-from django.conf import settings
 
-from scielomanager.journalmanager import models
-from scielomanager.journalmanager.forms import *
-from scielomanager.tools import (
+from journalmanager import models
+from journalmanager.forms import *
+from tools import (
     get_paginated,
     get_referer_view,
-    PendingPostData,
     asbool,
 )
+
+from utils.pendingform import PendingPostData
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'

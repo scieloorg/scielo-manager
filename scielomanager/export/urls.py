@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.conf.urls.defaults import *
 
-from scielomanager.export import views
+from export import views
 
 
 urlpatterns = patterns('',

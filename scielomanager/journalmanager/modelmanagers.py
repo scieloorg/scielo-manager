@@ -31,7 +31,7 @@ Custom instance of ``models.query.QuerySet``
 """
 import caching.base
 
-from scielomanager.utils.middlewares import threadlocal
+from utils.middlewares import threadlocal
 
 user_request_context = threadlocal.get_finder()
 
