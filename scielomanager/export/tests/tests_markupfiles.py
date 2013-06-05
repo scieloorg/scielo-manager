@@ -901,6 +901,9 @@ class L10nIssueTests(MockerTestCase):
         dummy_issue.section
         self.mocker.result(dummy_section)
 
+        dummy_section.available(True)
+        self.mocker.result(dummy_section)
+
         dummy_section.all()
         self.mocker.result(['sec%s' % i for i in range(5)])
 
@@ -920,6 +923,9 @@ class L10nIssueTests(MockerTestCase):
         dummy_issue.section
         self.mocker.result(dummy_section)
 
+        dummy_section.available(True)
+        self.mocker.result(dummy_section)
+
         dummy_section.all()
         self.mocker.result([])
 
@@ -936,6 +942,9 @@ class L10nIssueTests(MockerTestCase):
         dummy_section = self.mocker.mock()
 
         dummy_issue.section
+        self.mocker.result(dummy_section)
+
+        dummy_section.available(True)
         self.mocker.result(dummy_section)
 
         dummy_section.all()
@@ -959,6 +968,9 @@ class L10nIssueTests(MockerTestCase):
         dummy_section = self.mocker.mock()
 
         dummy_issue.section
+        self.mocker.result(dummy_section)
+
+        dummy_section.available(True)
         self.mocker.result(dummy_section)
 
         dummy_section.all()

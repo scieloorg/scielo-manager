@@ -21,6 +21,7 @@ L10ISSUEMGS = {'en': (u'No section title', u'No Descriptor', u'Health Sciences D
 issns = {
     'print': 'print_issn',
     'electronic': 'eletronic_issn',
+    'eletronic': 'eletronic_issn',
 }
 
 
@@ -186,12 +187,12 @@ class L10nIssue(Automata, Issue):
 
     @property
     def sections(self):
-        sections = ';'.join([unicode(section) for section in self._issue.section.all()])
+        sections = ';'.join([unicode(section) for section in self._issue.section.available(True).all()])
         return sections + u';' + L10ISSUEMGS[self._language][0] if sections else L10ISSUEMGS[self._language][0]
 
     @property
     def sections_ids(self):
-        ids = ';'.join([unicode(section.actual_code) for section in self._issue.section.all()])
+        ids = ';'.join([unicode(section.actual_code) for section in self._issue.section.available(True).all()])
         return ids + u';nd' if ids else u'nd'
 
     @property
@@ -228,6 +229,7 @@ class JournalStandard(L10nIssue):
         issns = {
             'print': u'ppub',
             'electronic': u'epub',
+            'eletronic': u'epub',
         }
         return issns[self._journal.scielo_issn]
 
@@ -442,6 +444,7 @@ class JournalStandardAhead(L10nAhead):
         issns = {
             'print': u'ppub',
             'electronic': u'epub',
+            'eletronic': u'epub',
         }
         return issns[self._journal.scielo_issn]
 

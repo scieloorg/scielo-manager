@@ -186,8 +186,11 @@ def collection_index(request, model, journal_id=None):
 @permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
-    preleases = models.RegularPressRelease.objects.all_by_journal(journal_id).select_related()
 
+    param_tab = request.GET.get('tab')
+    pr_model = models.AheadPressRelease if param_tab == 'ahead' else models.RegularPressRelease
+
+    preleases = pr_model.userobjects.active().journal(journal).select_related()
     objects = get_paginated(preleases, request.GET.get('page', 1))
 
     return render_to_response(
@@ -397,7 +400,7 @@ def edit_journal_status(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
 def dash_journal(request, journal_id=None):
     """
     Handles new and existing journals
@@ -908,7 +911,7 @@ def add_aheadpressrelease(request, journal_id, prelease_id=None):
 
             messages.info(request, MSG_FORM_SAVED)
 
-            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]))
+            return HttpResponseRedirect(reverse('prelease.index', args=[journal_id]) + '?tab=ahead')
         else:
             messages.error(request, MSG_FORM_MISSING)
 

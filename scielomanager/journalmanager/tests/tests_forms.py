@@ -1387,6 +1387,27 @@ class IssueFormTests(WebTest):
 
         self.assertEqual(form.method.lower(), 'post')
 
+    def test_sections_must_not_be_trashed(self):
+        """
+        Only valid sections must be available for the user to
+        bind to a issue.
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        trashed_section = modelfactories.SectionFactory.create(
+            journal=self.journal, is_trashed=True)
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk]), user=self.user).forms[1]
+
+        self.assertRaises(ValueError,
+            lambda: form.set('section', str(trashed_section.pk)))
+
 
 class StatusFormTests(WebTest):
 
@@ -1905,6 +1926,25 @@ class PressReleaseFormTests(WebTest):
         self.assertIn('There are some errors or missing data.', response.body)
         self.assertTemplateUsed(response,
                                 'journalmanager/add_pressrelease.html')
+
+    def test_pressrelease_if_on_edit_form_it_has_article_pid(self):
+        perm_prelease_edit = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_prelease_edit)
+
+        ahead_prelease = modelfactories.AheadPressReleaseFactory()
+
+        article_prelease = modelfactories.PressReleaseArticleFactory(
+                                            press_release=ahead_prelease,
+                                            article_pid="S0102-311X2013000300001")
+
+        form_ahead_prelease = self.app.get(reverse('aprelease.edit',
+                                           args=[self.journal.pk, ahead_prelease.pk]),
+                                           user=self.user).forms['prelease-form']
+
+        self.assertEqual(form_ahead_prelease['article-0-article_pid'].value, "S0102-311X2013000300001")
+
 
     def test_POST_pressrelease_must_contain_at_least_one_press_release_translation(self):
         perm_prelease_list = _makePermission(perm='list_pressrelease',

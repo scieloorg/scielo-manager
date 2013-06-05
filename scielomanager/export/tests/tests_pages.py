@@ -8,6 +8,32 @@ from django_factory_boy import auth
 from scielomanager.journalmanager.tests import modelfactories
 
 
+class DownloadMarkupFilesTests(WebTest):
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.journal = modelfactories.JournalFactory(
+            collection=self.collection)
+
+    def test_non_authenticated_users_are_redirected_to_login_page(self):
+        response = self.app.get(
+            reverse('export.markupfiles'),
+            status=302
+        ).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_authenticated_users_can_access(self):
+        response = self.app.get(
+            reverse('export.markupfiles'),
+            user=self.user
+        )
+
+        self.assertTemplateUsed(response, 'export/markup_files.html')
+
+
 class ListIssuesForMarkupFilesTests(WebTest):
     """
     Tests ajax interactions
@@ -148,7 +174,11 @@ class ListIssuesForMarkupFilesTests(WebTest):
 
         self.assertEqual(response.status_code, 400)
 
-    def test_only_authenticated_users_can_have_access(self):
+    def test_only_authenticated_users_can_query_issues(self):
+        """
+        Access to the Ajax that returns a list of issues for a
+        given Journal.
+        """
         issue = modelfactories.IssueFactory(
             journal=self.journal, is_marked_up=False)
 

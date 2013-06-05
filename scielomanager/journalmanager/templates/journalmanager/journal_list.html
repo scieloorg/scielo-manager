@@ -91,7 +91,7 @@
           <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
                 data-original-title="{{ journal.pub_status|capfirst }}"
                 rel="tooltip"></span>
-            {% if perms.journalmanager.change_journal %}
+            {% if perms.journalmanager.list_journal %}
               <a href="{% url journal.dash journal.pk %}"
                  class="tip-bottom"
                  data-original-title="{{ journal.title }}"
