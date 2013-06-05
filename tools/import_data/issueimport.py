@@ -53,7 +53,6 @@ class IssueImport:
             for section in journal:
                 self._sections[section.legacy_code] = section.id
 
-
     def charge_summary(self, attribute):
         """
         Function: charge_summary
@@ -166,7 +165,7 @@ class IssueImport:
                 month_end = '01'
             issue.publication_start_month = month_start
             issue.publication_end_month = month_end
-            issue.publication_year = year
+            issue.publication_year = int(year)
         else:
             print u'Fasciculo %s %s %s não possui data de publicação' % (record['35'][0], record['31'][0], record['32'][0])
             issue.publication_start_month = 0
