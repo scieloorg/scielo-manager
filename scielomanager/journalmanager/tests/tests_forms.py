@@ -335,10 +335,11 @@ class SectionFormTests(WebTest):
         response.mustcontain('Artigo Original')
         response.mustcontain('Original Article')
 
-    def test_section_translations_based_on_the_journal_languages(self):
+    def test_section_translations_not_based_on_the_journal_languages(self):
         """
-        The language list in a Section form must be contextualized with
-        the languages bound to the Journal who it relates.
+        Section translations are no more restricted to the languages the journal
+        publishes its contents. See:
+        https://github.com/scieloorg/SciELO-Manager/issues/502
         """
         perm1 = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm1)
@@ -357,7 +358,7 @@ class SectionFormTests(WebTest):
 
         form['titles-0-title'] = 'Artigo Original'
 
-        self.assertRaises(ValueError, lambda: form.set('titles-0-language', language2.pk))
+        self.assertIsNone(form.set('titles-0-language', language2.pk))
 
     def test_form_enctype_must_be_urlencoded(self):
         """

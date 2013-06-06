@@ -334,8 +334,6 @@ class SectionTitleForm(ModelForm):
         """
         self.journal = kwargs.pop('journal', None)
         super(SectionTitleForm, self).__init__(*args, **kwargs)
-        if self.journal:
-            self.fields['language'].queryset = models.Language.objects.filter(journal__pk=self.journal.pk)
 
     def clean(self):
         if not self.instance.id and 'title' in self.cleaned_data and 'language' in self.cleaned_data:
