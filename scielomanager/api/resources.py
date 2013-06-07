@@ -20,10 +20,21 @@ from journalmanager.models import (
     PressReleaseArticle,
 )
 
+from articletrack.models import (
+    Attempt,
+)
+
 
 class ApiKeyAuthMeta:
     authentication = ApiKeyAuthentication()
     authorization = DjangoAuthorization()
+
+
+class ArticleTrackResource(ModelResource):
+
+    class Meta:
+        queryset = Attempt.objects.all()
+        resource_name = 'attempt'
 
 
 class SectionResource(ModelResource):

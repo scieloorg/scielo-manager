@@ -160,6 +160,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'tastypie',
     'django_assets',
+    'articletrack'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
