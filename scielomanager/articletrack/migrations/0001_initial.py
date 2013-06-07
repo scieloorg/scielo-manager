@@ -28,7 +28,7 @@ class Migration(SchemaMigration):
         # Adding model 'Status'
         db.create_table('articletrack_status', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['articletrack.Attempt'])),
+            ('attempt', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['articletrack.Attempt'])),
             ('accomplished', self.gf('django.db.models.fields.CharField')(max_length=32)),
         ))
         db.send_create_signal('articletrack', ['Status'])
@@ -62,8 +62,8 @@ class Migration(SchemaMigration):
         'articletrack.status': {
             'Meta': {'object_name': 'Status'},
             'accomplished': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['articletrack.Attempt']"})
+            'attempt': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['articletrack.Attempt']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         }
     }
 

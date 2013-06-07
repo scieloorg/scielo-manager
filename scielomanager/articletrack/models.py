@@ -17,5 +17,5 @@ class Attempt(models.Model):
 
 
 class Status(models.Model):
-    journal = models.ForeignKey(Attempt)
+    attempt = models.ForeignKey(Attempt)
     accomplished = models.CharField(choices=sorted(choices.ACCOMPLISHED_TASKS, key=lambda ACCOMPLISHED_TASKS: ACCOMPLISHED_TASKS[1]), max_length=32)
