@@ -839,6 +839,47 @@ def ajx_list_issues_for_markup_files(request):
     return HttpResponse(response_data, mimetype="application/json")
 
 
+@login_required
+def ajx_lookup_for_section_translation(request):
+    """
+    Says if a given translation already exists in a given
+    journal.
+
+    The following values must be passed as querystring parameters:
+
+    ``j`` is a journal's id
+    ``t`` is a urlencoded section translation
+    """
+    MSG_EXISTS = _('The section already exists.')
+    MSG_NOT_EXISTS = _('This is a new section.')
+
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    journal_id = request.GET.get('j', None)
+    if not journal_id:
+        return HttpResponse(status=400)
+
+    section_title = request.GET.get('t', None)
+    if not section_title:
+        return HttpResponse(status=400)
+
+    found_secs = models.Section.userobjects.all().available().filter(
+        journal__pk=journal_id, titles__title=section_title)
+
+    sections = [[unicode(sec), sec.actual_code] for sec in found_secs]
+    has_sections = bool(sections)
+    data = {
+        'exists': has_sections,
+        'sections': sections,
+        'message': MSG_EXISTS if has_sections else MSG_NOT_EXISTS,
+    }
+
+    response_data = json.dumps(data)
+
+    return HttpResponse(response_data, mimetype="application/json")
+
+
 @permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
 def add_pressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)

@@ -323,6 +323,7 @@ class IssueForm(ModelForm):
 ###########################################
 
 class SectionTitleForm(ModelForm):
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'checked_trans'}))
 
     def __init__(self, *args, **kwargs):
         """
