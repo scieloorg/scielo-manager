@@ -849,6 +849,7 @@ def ajx_lookup_for_section_translation(request):
 
     ``j`` is a journal's id
     ``t`` is a urlencoded section translation
+    ``exc`` is a section id to be excluded from the search
     """
     MSG_EXISTS = _('The section already exists.')
     MSG_NOT_EXISTS = _('This is a new section.')
@@ -864,10 +865,15 @@ def ajx_lookup_for_section_translation(request):
     if not section_title:
         return HttpResponse(status=400)
 
+    try:
+        exclude = int(request.GET.get('exc', 0))
+    except ValueError:
+        return HttpResponse(status=400)
+
     found_secs = models.Section.userobjects.all().available().filter(
         journal__pk=journal_id, titles__title=section_title)
 
-    sections = [[unicode(sec), sec.actual_code] for sec in found_secs]
+    sections = [[unicode(sec), sec.actual_code] for sec in found_secs if sec.pk != exclude]
     has_sections = bool(sections)
     data = {
         'exists': has_sections,
