@@ -420,3 +420,30 @@ class IssuesListTests(WebTest):
         )
 
         self.assertEqual(response.status_code, 500)
+
+
+class SectionLookupForTranslationsTests(WebTest):
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_new_section(self):
+        section = modelfactories.SectionFactory(journal=self.journal)
+        section_title = modelfactories.SectionTitleFactory(section=section)
+
+        params = 'j=%s&t=%s' % (self.journal.pk, section_title.title)
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=False
+        )
+
+        import json
+        response_py = json.loads(response.content)
+        self.assertEqual(response_py['exists'], True)
+

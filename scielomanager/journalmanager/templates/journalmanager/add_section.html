@@ -33,7 +33,6 @@
 {% block form_content %}
 
 <div id="async_msgs" class="alert" style="display:none;">
-  <button class="close" data-dismiss="alert" type="button">×</button>
   <ul></ul>
 </div>
 
@@ -138,7 +137,7 @@
                     $("#" + msg_id).remove();
                 }
                 if (data["exists"] === true) {
-                    var msg = "<li id=" + msg_id + ">" + data["message"] + "</li>";
+                    var msg = "<li id=" + msg_id + "><strong>" + title + ":</strong> " + data["message"] + "</li>";
                     $("#async_msgs ul").append(msg);
                     $('#async_msgs').show();
                 }
