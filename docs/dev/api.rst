@@ -41,6 +41,7 @@ Available endpoints
   users-api
   changes-api
   pressreleases-api
+  attempts-api
 
 
 .. note::

@@ -23,8 +23,10 @@ v1_api_resources = [
     resources.DataChangeEventResource(),
     resources.PressReleaseResource(),
     resources.AheadPressReleaseResource(),
-    resources.ArticleTrackResource(),
+    resources.AttemptResource(),
+    resources.AttemptStatusResource(),
 ]
+
 for res in v1_api_resources:
     v1_api.register(res)
 

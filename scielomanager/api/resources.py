@@ -5,6 +5,7 @@ from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
+from tastypie.authorization import Authorization
 
 from journalmanager.models import (
     Journal,
@@ -22,19 +23,13 @@ from journalmanager.models import (
 
 from articletrack.models import (
     Attempt,
+    Status
 )
 
 
 class ApiKeyAuthMeta:
     authentication = ApiKeyAuthentication()
     authorization = DjangoAuthorization()
-
-
-class ArticleTrackResource(ModelResource):
-
-    class Meta:
-        queryset = Attempt.objects.all()
-        resource_name = 'attempt'
 
 
 class SectionResource(ModelResource):
@@ -347,3 +342,20 @@ class AheadPressReleaseResource(ModelResource):
             orm_filters['pk__in'] = preleases
 
         return orm_filters
+
+
+class AttemptStatusResource(ModelResource):
+
+    class Meta:
+        queryset = Status.objects.all()
+        resource_name = 'attempt_status'
+
+
+class AttemptResource(ModelResource):
+    status = fields.OneToManyField(AttemptStatusResource, 'status_set')
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = Attempt.objects.all()
+        resource_name = 'attempts'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post']
