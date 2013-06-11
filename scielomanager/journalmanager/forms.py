@@ -323,31 +323,7 @@ class IssueForm(ModelForm):
 ###########################################
 
 class SectionTitleForm(ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Section field queryset is overridden to display only
-        sections related to a given journal.
-
-        ``journal_id`` should not be passed to the superclass
-        ``__init__`` method.
-        """
-        self.journal = kwargs.pop('journal', None)
-        super(SectionTitleForm, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        if not self.instance.id and 'title' in self.cleaned_data and 'language' in self.cleaned_data:
-            title = self.cleaned_data['title']
-            language = self.cleaned_data['language']
-
-            if models.Section.objects.filter(titles__title__iexact=title,
-                titles__language=language, journal=self.journal,
-                is_trashed=False).exists():
-
-                raise forms.ValidationError({NON_FIELD_ERRORS:\
-                    _('This section title already exists for this Journal.')})
-
-        return self.cleaned_data
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': 'checked_trans'}))
 
     class Meta:
         model = models.SectionTitle
@@ -398,8 +374,6 @@ def get_all_section_forms(post_dict, journal, section):
     section_title_formset = inlineformset_factory(models.Section,
         models.SectionTitle, form=SectionTitleForm, extra=1,
         can_delete=True, formset=FirstFieldRequiredFormSet)
-    section_title_formset.form = staticmethod(
-        curry(SectionTitleForm, journal=journal))
 
     d = {
         'section_form': SectionForm(*args, **kwargs),

@@ -31,6 +31,11 @@
 {% endblock %}
 
 {% block form_content %}
+
+<div id="async_msgs" class="alert" style="display:none;">
+  <ul></ul>
+</div>
+
 <form id="section-form" method="POST" action="" enctype="application/x-www-form-urlencoded">
   {% csrf_token %}
 
@@ -120,7 +125,32 @@
 {% block extrafooter %}
 {{ block.super }}
   <script>
+    function section_exists() {
+        var journal = "{{ journal.pk }}";
+        var title = $(this).val();
+        var title_id = $(this).attr("id");
+        $.ajax({
+            url: "{% url ajx.lookup_for_section_translation %}?j=" + journal + "&t=" + title,
+            success: function (data) {
+                var msg_id = "msg_" + title_id;
+                if ($("#" + msg_id).length > 0) {
+                    $("#" + msg_id).remove();
+                }
+                if (data["exists"] === true) {
+                    var msg = "<li id=" + msg_id + "><strong>" + title + ":</strong> " + data["message"] + "</li>";
+                    $("#async_msgs ul").append(msg);
+                    $('#async_msgs').show();
+                }
+                if ($("#async_msgs ul li").length <= 0) {
+                    $('#async_msgs').hide();
+                }
+            }
+        });
+    }
+
     $(document).ready(function() {
+
+      $(".checked_trans").blur(section_exists);
 
       $( "#id_publisher" ).combobox({ autoFocus: true });
 
