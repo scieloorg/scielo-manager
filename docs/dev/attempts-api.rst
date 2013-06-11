@@ -168,8 +168,8 @@ Request::
 
 warning::
   
-  Not all users with valid api token will be able to fetch a POST request, only those with the
-  apropriate privileges.
+  Not all users with a valid api token will be able to fetch a POST request, only those with the
+  apropriate privileges. 2693-8590 rita
 
 Parameters:
 
