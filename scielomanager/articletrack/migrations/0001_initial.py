@@ -30,7 +30,7 @@ class Migration(SchemaMigration):
         db.create_table('articletrack_status', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('attempt', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['articletrack.Attempt'])),
-            ('accomplished', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('accomplished', self.gf('django.db.models.fields.CharField')(default='upload', max_length=32)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
         ))
         db.send_create_signal('articletrack', ['Status'])
@@ -64,7 +64,7 @@ class Migration(SchemaMigration):
         },
         'articletrack.status': {
             'Meta': {'object_name': 'Status'},
-            'accomplished': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'accomplished': ('django.db.models.fields.CharField', [], {'default': "'upload'", 'max_length': '32'}),
             'attempt': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['articletrack.Attempt']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})

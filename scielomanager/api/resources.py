@@ -345,14 +345,17 @@ class AheadPressReleaseResource(ModelResource):
 
 
 class AttemptStatusResource(ModelResource):
+    attempt = fields.ToOneField('api.resources.AttemptResource', 'attempt', related_name='attempts_status')
 
-    class Meta:
+    class Meta(ApiKeyAuthMeta):
         queryset = Status.objects.all()
         resource_name = 'attempt_status'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post']
 
 
 class AttemptResource(ModelResource):
-    status = fields.OneToManyField(AttemptStatusResource, 'status_set')
+    status = fields.OneToManyField(AttemptStatusResource, 'status_set', related_name='attempts')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Attempt.objects.all()

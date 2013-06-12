@@ -109,7 +109,7 @@ Response::
       "pkgmeta_md5": "1212jk1h21h2k1jh2kj11",
       "pkgmeta_submitter": "caboverdeee",
       "resource_uri": "/api/v1/attempts/1/",
-      "status": []
+      "status": ["/api/v1/attempt_status/15/"
     }
   }
 
@@ -156,7 +156,6 @@ Response::
     "pkgmeta_md5": "1212jk1h21h2k1jh2kj11",
     "pkgmeta_submitter": "caboverdeee",
     "resource_uri": "/api/v1/attempts/1/",
-    "status": []
   }
 
 Register a attempt

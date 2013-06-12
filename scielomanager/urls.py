@@ -33,6 +33,9 @@ for res in v1_api_resources:
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
 
+    # Article Tracking
+    url(r'^atrk/', include('scielomanager.articletrack.urls')),
+
     # Journal Manager APP
     url(r'^journal/', include('scielomanager.journalmanager.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

@@ -1,0 +1,60 @@
+{% extends "base_list_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+{% load query_string %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "Journals" %}{% endblock %}
+
+{% block content %}
+<table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th>{% trans "Uploaded at" %}</th>  
+      <th>{% trans "Package name" %}</th>
+      <th>{% trans "Article title" %}</th>
+      <th>{% trans "Owner" %}</th>
+      <th>{% trans "Last status" %}</th>
+      <th>{% trans "Report" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for attempt in attempts %}
+    <tr>
+      <td>
+        {{ attempt.created_at }}
+      </td>
+      <td>
+        {{ attempt.pkgmeta_filename }} ({{attempt.pkgmeta_filesize}}kb)
+      </td>
+      <td>
+        {{ attempt.article_title|truncatewords:5 }}
+      </td>
+      <td>
+        {{ attempt.pkgmeta_submitter }}
+      </td>
+      <td>
+        {{ attempt.last_status.accomplished }}
+      </td>
+      <td>
+        <a href="#"><i class="icon-file"></i></a>
+      </td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <ul>
+            {% for status in attempt.all_status %}
+                <li>{{ status.accomplished }} ({{ status.created_at }})</li>
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+</table>
+{% endblock %}
