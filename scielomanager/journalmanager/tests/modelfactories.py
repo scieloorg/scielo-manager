@@ -116,7 +116,6 @@ class IssueFactory(factory.Factory):
     number = factory.Sequence(lambda n: '%s' % n)
     volume = factory.Sequence(lambda n: '%s' % n)
     is_trashed = False
-    is_press_release = False
     publication_start_month = 9
     publication_end_month = 11
     publication_year = 2012

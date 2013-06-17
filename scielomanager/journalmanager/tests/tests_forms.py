@@ -1120,7 +1120,6 @@ class IssueFormTests(WebTest):
         form['number'] = '3'
         form['volume'] = '29'
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
@@ -1152,7 +1151,6 @@ class IssueFormTests(WebTest):
         form['number'] = ''
         form['volume'] = ''
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
@@ -1185,7 +1183,6 @@ class IssueFormTests(WebTest):
         form['number'] = '3'
         form['editorial_standard'] = ''
         form['volume'] = ''
-        form['is_press_release'] = False
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
         form['is_marked_up'] = False
@@ -1220,7 +1217,6 @@ class IssueFormTests(WebTest):
         form['number'] = str(issue.number)
         form['volume'] = str(issue.volume)
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = str(issue.publication_year)
@@ -1258,39 +1254,6 @@ class IssueFormTests(WebTest):
         form['number'] = str(issue1.number)
         form['volume'] = str(issue1.volume)
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = str(issue1.publication_year)
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-        form.set('use_license', str(issue1.journal.use_license.pk))
-
-        response = form.submit().follow()
-
-        self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
-
-    def test_press_release_of_existing_issue_can_be_created(self):
-        perm_issue_change = _makePermission(perm='add_issue',
-            model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm_issue_change)
-        self.user.user_permissions.add(perm_issue_list)
-
-        issue1 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29', number='10', is_press_release=False)
-
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
-
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = str(issue1.number)
-        form['volume'] = str(issue1.volume)
-        form['editorial_standard'] = ''
-        form['is_press_release'] = True
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = str(issue1.publication_year)

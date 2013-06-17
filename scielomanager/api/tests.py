@@ -371,7 +371,6 @@ class IssuesRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'is_press_release',
             u'ctrl_vocabulary',
             u'number',
             u'total_documents',
