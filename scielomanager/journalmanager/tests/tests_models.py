@@ -118,12 +118,6 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue.identification, expected)
 
-    def test_identification_for_press_release(self):
-        issue = IssueFactory.create(number='1', is_press_release=True)
-        expected = u'1 pr'
-
-        self.assertEqual(issue.identification, expected)
-
     def test_identification_for_ahead(self):
         issue = IssueFactory.create(number='ahead')
         expected = u'ahead of print'
