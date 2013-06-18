@@ -8,7 +8,8 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         for pr in orm.Issue.objects.filter(is_press_release=True):
-            pr.delete()
+            pr.is_trashed = True
+            pr.save()
 
 
     def backwards(self, orm):
