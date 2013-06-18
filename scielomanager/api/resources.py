@@ -52,6 +52,7 @@ class IssueResource(ModelResource):
         'journal')
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
+    is_press_release = fields.BooleanField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
@@ -81,6 +82,9 @@ class IssueResource(ModelResource):
     def dehydrate_thematic_titles(self, bundle):
         return dict([title.language.iso_code, title.title]
             for title in bundle.obj.issuetitle_set.all())
+
+    def dehydrate_is_press_release(self, bundle):
+        return False
 
 
 class CollectionResource(ModelResource):
