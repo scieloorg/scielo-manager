@@ -45,7 +45,7 @@
         <td colspan="6">
             <ul>
             {% for status in attempt.all_status %}
-                <li>{{ status.accomplished }} ({{ status.created_at }})</li>
+                <li>{{ status.phase }} ({{ status.created_at }}): {{ status.is_accomplished }}</li>
             {% endfor %}
             </ul>
         </td>

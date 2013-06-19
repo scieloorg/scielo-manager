@@ -11,16 +11,32 @@ from django_webtest import WebTest
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
+from articletrack.tests import modelfactories as articletrack_modelfactories
 
 from api.resources import (
     IssueResource,
     SectionResource,
     JournalResource,
+    AttemptResource,
+    AttemptStatusResource
     )
 
 
 def _make_auth_environ(username, token):
     return {'HTTP_AUTHORIZATION': 'ApiKey {0}:{1}'.format(username, token)}
+
+
+def _makePermission(perm, model, app_label='journalmanager'):
+    """
+    Retrieves a Permission according to the given model and app_label.
+    """
+    from django.contrib.contenttypes import models
+    from django.contrib.auth import models as auth_models
+
+    ct = models.ContentType.objects.get(model=model,
+                                        app_label=app_label)
+
+    return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
 
 class JournalRestAPITest(WebTest):
@@ -838,3 +854,86 @@ class AheadPressReleaseRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
         self.assertEqual(len(json.loads(response.content)['objects']), 0)
+
+
+class AttemptRestAPITest(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+            self.user.api_key.key)
+
+    def test_post_data(self):
+
+        perm = _makePermission(perm='add_attempt', model='attempt', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {u'articlepkg_id': 1,
+               u'checkin_id': 1,
+               u'collection_uri': u'http://www.scielo.br',
+               u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
+               u'journal_title': u'Journal of the Brazilian Chemical Society',
+               u'issue_label': u'2013 v.24 n.4',
+               u'pkgmeta_filename': u'20132404.zip',
+               u'pkgmeta_md5': u'sha1 strint',
+               u'pkgmeta_filesize': 256,
+               u'pkgmeta_filecount': 10,
+               u'pkgmeta_submitter': u'SciELO Brasil',
+               }
+
+        response = self.app.post_json('/api/v1/attempts/', att,
+            extra_environ=self.extra_environ, status=200)
+
+        import pdb; pdb.set_trace()
+        
+        self.assertEqual(response.status_code, 200)
+
+    def test_put_data(self):
+        response = self.app.put('/api/v1/attempts/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        response = self.app.delete('/api/v1/attempts/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get('/api/v1/attempts/', status=401)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_attempt_index(self):
+        att = articletrack_modelfactories.AttemptFactory.create()
+        response = self.app.get('/api/v1/attempts/',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v1_datamodel(self):
+        att = articletrack_modelfactories.AttemptFactory.create()
+        response = self.app.get('/api/v1/attempts/%s/' % att.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            u'article_title',
+            u'articlepkg_id',
+            u'checkin_id',
+            u'collection_uri',
+            u'created_at',
+            u'id',
+            u'issue_label',
+            u'journal_title',
+            u'pkgmeta_filename',
+            u'pkgmeta_filesize',
+            u'pkgmeta_filecount',
+            u'pkgmeta_md5',
+            u'pkgmeta_submitter',
+            u'resource_uri',
+            u'status'
+        ]
+
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

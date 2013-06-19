@@ -2,6 +2,13 @@ from django.db import models
 from articletrack import choices
 
 
+class Status(models.Model):
+    attempt = models.ForeignKey('Attempt')
+    phase = models.CharField(choices=sorted(choices.ACCOMPLISHED_TASKS, key=lambda ACCOMPLISHED_TASKS: ACCOMPLISHED_TASKS[1]), max_length=32, default='upload')
+    is_accomplished = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Attempt(models.Model):
     checkin_id = models.CharField(max_length=32)
     articlepkg_id = models.CharField(max_length=32)
@@ -26,9 +33,3 @@ class Attempt(models.Model):
         query = self.status_set.all().order_by('-created_at')
 
         return query
-
-
-class Status(models.Model):
-    attempt = models.ForeignKey(Attempt)
-    accomplished = models.CharField(choices=sorted(choices.ACCOMPLISHED_TASKS, key=lambda ACCOMPLISHED_TASKS: ACCOMPLISHED_TASKS[1]), max_length=32, default='upload')
-    created_at = models.DateTimeField(auto_now_add=True)
