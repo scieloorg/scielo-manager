@@ -13,7 +13,7 @@ class Status(models.Model):
 
 
 class Attempt(models.Model):
-    checkin_id = models.CharField(max_length=32)
+    checkin_id = models.CharField(max_length=32, unique=True)
     articlepkg_id = models.CharField(max_length=32)
     collection_uri = models.URLField()
     article_title = models.CharField(max_length=512)
@@ -25,6 +25,7 @@ class Attempt(models.Model):
     pkgmeta_filecount = models.IntegerField()
     pkgmeta_submitter = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
+    closed_at = models.DateTimeField(null=True)
 
     @property
     def last_status(self):
@@ -43,6 +44,6 @@ def attempt_status_post_save(sender, instance, created, **kwargs):
     """
     Register status to an attempt as false
     """
-
-    for phase in choices.ACCOMPLISHED_TASKS:
-        Status.objects.create(attempt=instance, phase=phase[0])
+    if not Status.objects.filter(attempt=instance):
+        for phase in choices.ACCOMPLISHED_TASKS:
+            Status.objects.create(attempt=instance, phase=phase[0])

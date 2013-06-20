@@ -10,7 +10,6 @@ to change and retrieve the "changes status" of an **Article Package** .
   for managing Articles.
   This feature is currently `under development <https://github.com/scieloorg/SciELO-Manager/tree/articles>`_.
 
-
 :Available data:
 
 phase
@@ -28,7 +27,7 @@ Updating a status to an existing attempt
 
 Request::
 
-  POST /api/v1/attempt_status/{:id}/
+  PUT /api/v1/attempt_status/{:id}/
 
 warning::
   
@@ -40,5 +39,6 @@ warning::
 Parameters:
 
   {
-    "is_accomplished": true
+    "is_accomplished": true,
+    "changed_at": "2013-12-30T22:01:22"
   }

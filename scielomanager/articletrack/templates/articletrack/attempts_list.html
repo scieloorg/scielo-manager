@@ -11,7 +11,8 @@
 <table class="table table-striped _listings">
   <thead>
     <tr>
-      <th>{% trans "Uploaded at" %}</th>  
+      <th>{% trans "Began at" %}</th>
+      <th>{% trans "Closed at" %}</th>
       <th>{% trans "Package name" %}</th>
       <th>{% trans "Article" %}</th>
       <th>{% trans "Owner" %}</th>
@@ -23,6 +24,9 @@
     <tr>
       <td>
         {{ attempt.created_at }}
+      </td>
+      <td>
+        {{ attempt.closed_at }}
       </td>
       <td>
         {{ attempt.pkgmeta_filename }} ({{attempt.pkgmeta_filesize}}kb)
@@ -38,7 +42,7 @@
       </td>
     </tr>
     <tr>
-        <td colspan="5">
+        <td colspan="6">
             <div class="wizard-steps">
             {% for status in attempt.all_status %}
                 <div {%if status.is_accomplished%}class="accomplished"{%else%}class="not_accomplished"{%endif%}>

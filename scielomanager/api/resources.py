@@ -354,10 +354,9 @@ class AttemptStatusResource(ModelResource):
 
 
 class AttemptResource(ModelResource):
-    status = fields.OneToManyField(AttemptStatusResource, 'status_set')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Attempt.objects.all()
         resource_name = 'attempts'
         default_format = "application/json"
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post', 'put']

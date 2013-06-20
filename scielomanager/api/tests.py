@@ -881,16 +881,47 @@ class AttemptRestAPITest(WebTest):
                u'pkgmeta_submitter': u'SciELO Brasil',
                }
 
-        response = self.app.post_json('/api/v1/attempts/', att,
-            extra_environ=self.extra_environ, status=200)
+        response = self.app.post_json('/api/v1/attempts/',
+                                      att,
+                                      extra_environ=self.extra_environ,
+                                      status=201)
 
-        self.assertEqual(response.status_code, 200)
+        # 201 stands for CREATED Http status
+        self.assertEqual(response.status_code, 201)
 
     def test_put_data(self):
-        response = self.app.put('/api/v1/attempts/',
-            extra_environ=self.extra_environ, status=405)
+        perm = _makePermission(perm='add_attempt', model='attempt', app_label='articletrack')
+        self.user.user_permissions.add(perm)
 
-        self.assertEqual(response.status_code, 405)
+        att = {u'articlepkg_id': 1,
+               u'checkin_id': 1,
+               u'collection_uri': u'http://www.scielo.br',
+               u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
+               u'journal_title': u'Journal of the Brazilian Chemical Society',
+               u'issue_label': u'2013 v.24 n.4',
+               u'pkgmeta_filename': u'20132404.zip',
+               u'pkgmeta_md5': u'sha1 strint',
+               u'pkgmeta_filesize': 256,
+               u'pkgmeta_filecount': 10,
+               u'pkgmeta_submitter': u'SciELO Brasil',
+               }
+
+        response = self.app.post_json('/api/v1/attempts/',
+                                      att,
+                                      extra_environ=self.extra_environ,
+                                      status=201)
+
+        perm = _makePermission(perm='change_attempt', model='attempt', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {u'closed_at': u'2013-12-30T22:10:21'}
+
+        response = self.app.put_json('/api/v1/attempts/1/',
+                                att,
+                                extra_environ=self.extra_environ,
+                                status=204)
+
+        self.assertEqual(response.status_code, 204)
 
     def test_del_data(self):
         response = self.app.delete('/api/v1/attempts/',
@@ -920,6 +951,7 @@ class AttemptRestAPITest(WebTest):
             u'article_title',
             u'articlepkg_id',
             u'checkin_id',
+            u'closed_at',
             u'collection_uri',
             u'created_at',
             u'id',
@@ -931,7 +963,6 @@ class AttemptRestAPITest(WebTest):
             u'pkgmeta_md5',
             u'pkgmeta_submitter',
             u'resource_uri',
-            u'status'
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

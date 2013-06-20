@@ -21,7 +21,7 @@ class Migration(SchemaMigration):
         # Adding model 'Attempt'
         db.create_table('articletrack_attempt', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('checkin_id', self.gf('django.db.models.fields.CharField')(max_length=32)),
+            ('checkin_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=32)),
             ('articlepkg_id', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('collection_uri', self.gf('django.db.models.fields.URLField')(max_length=200)),
             ('article_title', self.gf('django.db.models.fields.CharField')(max_length=512)),
@@ -33,6 +33,7 @@ class Migration(SchemaMigration):
             ('pkgmeta_filecount', self.gf('django.db.models.fields.IntegerField')()),
             ('pkgmeta_submitter', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('closed_at', self.gf('django.db.models.fields.DateTimeField')(null=True)),
         ))
         db.send_create_signal('articletrack', ['Attempt'])
 
@@ -51,7 +52,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Attempt'},
             'article_title': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
             'articlepkg_id': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'checkin_id': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'checkin_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '32'}),
+            'closed_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'collection_uri': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
