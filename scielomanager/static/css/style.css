@@ -265,3 +265,101 @@ table._listings h4 {
     border-bottom: solid 1px;
     border-color: #FF9D40;
 }
+
+.steps {
+    margin:20px 10px 0px 10px;
+    padding:0px;
+    position: relative;
+    clear:both;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+
+.steps ul {
+    position:relative;
+}
+
+.steps li {
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 1px 5px;
+    float: left;
+    list-style: none;
+}
+
+.accomplished {
+    color: green;
+}
+
+.not_accomplished {
+    color: orange;
+}
+
+
+
+
+
+
+/* = STEPS CONTAINER
+----------------------------*/
+.wizard-steps {
+    margin:0px 0px 0px 10px;
+    padding:0px;
+    position: relative;
+    clear:both;
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+.wizard-steps div {
+    position:relative;
+}
+/* = DEFAULT STEPS
+----------------------------*/
+.wizard-steps a {
+    position:relative;
+    display:block;
+    width:auto;
+    height:24px;
+    margin-right: 18px;
+    padding:0px 10px 0px 3px;
+    float: left;
+    font-size:11px;
+    line-height:24px;
+    color:#666;
+    background: #F0EEE3;
+    text-decoration:none;
+    text-shadow:1px 1px 1px rgba(255,255,255, 0.8);
+}
+.wizard-steps a:before {
+    border-top: 12px solid #F0EEE3;
+    border-bottom: 12px solid #F0EEE3;
+    border-left:12px solid transparent;
+    position: absolute;
+    content: "";
+    top: 0px;
+    left: -12px;
+}
+.wizard-steps a:after {
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left:12px solid #F0EEE3;
+    position: absolute;
+    content: "";
+    top: 0px;
+    right: -12px;
+}
+ 
+/* = COMPLETED STEPS
+----------------------------*/
+ 
+.wizard-steps .accomplished a {
+    color:#163038;
+    background: rgb(115, 162, 108);
+}
+.wizard-steps .accomplished a:before {
+    border-top: 12px solid rgb(115, 162, 108);
+    border-bottom: 12px solid rgb(115, 162, 108);
+}
+.wizard-steps .accomplished a:after {
+    border-left: 12px solid rgb(115, 162, 108);
+}

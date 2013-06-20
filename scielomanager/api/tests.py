@@ -884,8 +884,6 @@ class AttemptRestAPITest(WebTest):
         response = self.app.post_json('/api/v1/attempts/', att,
             extra_environ=self.extra_environ, status=200)
 
-        import pdb; pdb.set_trace()
-        
         self.assertEqual(response.status_code, 200)
 
     def test_put_data(self):

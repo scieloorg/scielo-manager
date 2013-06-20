@@ -13,9 +13,8 @@
     <tr>
       <th>{% trans "Uploaded at" %}</th>  
       <th>{% trans "Package name" %}</th>
-      <th>{% trans "Article title" %}</th>
+      <th>{% trans "Article" %}</th>
       <th>{% trans "Owner" %}</th>
-      <th>{% trans "Last status" %}</th>
       <th>{% trans "Report" %}</th>
     </tr>
   </thead>
@@ -35,19 +34,26 @@
         {{ attempt.pkgmeta_submitter }}
       </td>
       <td>
-        {{ attempt.last_status.accomplished }}
-      </td>
-      <td>
         <a href="#"><i class="icon-file"></i></a>
       </td>
     </tr>
     <tr>
-        <td colspan="6">
-            <ul>
+        <td colspan="5">
+            <div class="wizard-steps">
             {% for status in attempt.all_status %}
-                <li>{{ status.phase }} ({{ status.created_at }}): {{ status.is_accomplished }}</li>
+                <div {%if status.is_accomplished%}class="accomplished"{%else%}class="not_accomplished"{%endif%}>
+                  <a href="#"> 
+                    <span class="popover-bottom"
+                     data-toggle="popover" 
+                     data-placement="bottom" 
+                     data-content="{{ status.changed_at }}"
+                     title data-original-title="{%if status.is_accomplished%} Finished at {%else%} Pendent since {%endif%}">
+                     {{ status.phase }}
+                   </span>
+                   </a>
+                </div>
             {% endfor %}
-            </ul>
+            </div>
         </td>
     </tr>
     {% empty %}

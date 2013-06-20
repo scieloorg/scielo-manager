@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 
 def attempts_index(request):
 
-    attempts = models.Attempt.objects.all()
+    attempts = models.Attempt.objects.all().order_by('-created_at')
 
     return render_to_response(
         'articletrack/attempts_list.html',

@@ -13,24 +13,22 @@ to change and retrieve the "changes status" of an **Article Package** .
 
 :Available data:
 
-{"attempt": "/api/v1/attempts/2/", "accomplished": "upload"}
+phase
+  A string containg a phase from the submission process.
 
-attempt
-  The resource of the related attempt in the API.
+is_accomplished
+  A boolean value to update the status.
 
-accomplished
-  A string containing the change status.
-
-created_at
-  Date when the status was registered.
+changed_at
+  Date when the status was registered and/or changed.
 
 
-Register a status to an existing attempt
+Updating a status to an existing attempt
 ----------------------------------------
 
 Request::
 
-  POST /api/v1/attempt_status
+  POST /api/v1/attempt_status/{:id}/
 
 warning::
   
@@ -42,6 +40,5 @@ warning::
 Parameters:
 
   {
-    "attempt": "/api/v1/attempts/2/",
-    "accomplished": "integrit_validation"
+    "is_accomplished": true
   }

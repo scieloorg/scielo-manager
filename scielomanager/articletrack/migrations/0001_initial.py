@@ -8,6 +8,16 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
+        # Adding model 'Status'
+        db.create_table('articletrack_status', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('attempt', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['articletrack.Attempt'])),
+            ('phase', self.gf('django.db.models.fields.CharField')(default='upload', max_length=32)),
+            ('is_accomplished', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
+            ('changed_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+        ))
+        db.send_create_signal('articletrack', ['Status'])
+
         # Adding model 'Attempt'
         db.create_table('articletrack_attempt', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -26,24 +36,14 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('articletrack', ['Attempt'])
 
-        # Adding model 'Status'
-        db.create_table('articletrack_status', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('attempt', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['articletrack.Attempt'])),
-            ('phase', self.gf('django.db.models.fields.CharField')(default='upload', max_length=32)),
-            ('is_accomplished', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-        ))
-        db.send_create_signal('articletrack', ['Status'])
-
 
     def backwards(self, orm):
         
-        # Deleting model 'Attempt'
-        db.delete_table('articletrack_attempt')
-
         # Deleting model 'Status'
         db.delete_table('articletrack_status')
+
+        # Deleting model 'Attempt'
+        db.delete_table('articletrack_attempt')
 
 
     models = {
@@ -66,7 +66,7 @@ class Migration(SchemaMigration):
         'articletrack.status': {
             'Meta': {'object_name': 'Status'},
             'attempt': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['articletrack.Attempt']"}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'changed_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_accomplished': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
             'phase': ('django.db.models.fields.CharField', [], {'default': "'upload'", 'max_length': '32'})
