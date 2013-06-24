@@ -243,7 +243,7 @@ class SectionFormTests(WebTest):
 
     def test_POST_workflow_with_exist_title_on_the_same_journal(self):
         """
-        Asserts that the Section invalid the insert with same title
+        Asserts that duplacates are allowed
         """
         perm1 = _makePermission(perm='change_section', model='section')
         self.user.user_permissions.add(perm1)
@@ -264,42 +264,9 @@ class SectionFormTests(WebTest):
         form['titles-0-title'] = 'Original Article'
         form.set('titles-0-language', language.pk)
 
-        response = form.submit()
-
-        response.mustcontain('This section title already exists for this Journal.')
+        response = form.submit().follow()
         self.assertTemplateUsed(response,
-            'journalmanager/add_section.html')
-
-    def test_section_title_must_be_case_insensitive(self):
-        """
-        Asserts that is not possible to create a Section if another with
-        the same name already exists for this Journal, even if its
-        font case is different.
-        """
-        perm1 = _makePermission(perm='change_section', model='section')
-        self.user.user_permissions.add(perm1)
-        perm2 = _makePermission(perm='list_section', model='section')
-        self.user.user_permissions.add(perm2)
-
-        journal = modelfactories.JournalFactory(collection=self.collection)
-        language = modelfactories.LanguageFactory.create(iso_code='en',
-                                                         name='english')
-        journal.languages.add(language)
-
-        section = modelfactories.SectionFactory(journal=journal)
-        section.add_title('original Article', language=language)
-
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
-            user=self.user).forms['section-form']
-
-        form['titles-0-title'] = 'Original Article'
-        form.set('titles-0-language', language.pk)
-
-        response = form.submit()
-
-        response.mustcontain('This section title already exists for this Journal.')
-        self.assertTemplateUsed(response,
-            'journalmanager/add_section.html')
+            'journalmanager/section_list.html')
 
     def test_section_must_allow_new_title_translations(self):
         """
@@ -1153,7 +1120,6 @@ class IssueFormTests(WebTest):
         form['number'] = '3'
         form['volume'] = '29'
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
@@ -1185,7 +1151,6 @@ class IssueFormTests(WebTest):
         form['number'] = ''
         form['volume'] = ''
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
@@ -1218,7 +1183,6 @@ class IssueFormTests(WebTest):
         form['number'] = '3'
         form['editorial_standard'] = ''
         form['volume'] = ''
-        form['is_press_release'] = False
         form['publication_end_month'] = '11'
         form['publication_year'] = '2012'
         form['is_marked_up'] = False
@@ -1253,7 +1217,6 @@ class IssueFormTests(WebTest):
         form['number'] = str(issue.number)
         form['volume'] = str(issue.volume)
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = str(issue.publication_year)
@@ -1291,39 +1254,6 @@ class IssueFormTests(WebTest):
         form['number'] = str(issue1.number)
         form['volume'] = str(issue1.volume)
         form['editorial_standard'] = ''
-        form['is_press_release'] = False
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = str(issue1.publication_year)
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-        form.set('use_license', str(issue1.journal.use_license.pk))
-
-        response = form.submit().follow()
-
-        self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
-
-    def test_press_release_of_existing_issue_can_be_created(self):
-        perm_issue_change = _makePermission(perm='add_issue',
-            model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm_issue_change)
-        self.user.user_permissions.add(perm_issue_list)
-
-        issue1 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29', number='10', is_press_release=False)
-
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
-
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = str(issue1.number)
-        form['volume'] = str(issue1.volume)
-        form['editorial_standard'] = ''
-        form['is_press_release'] = True
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = str(issue1.publication_year)
@@ -1658,29 +1588,6 @@ class SearchFormTests(WebTest):
 
 
 class SectionTitleFormValidationTests(TestCase):
-
-    def test_same_titles_in_same_languages_must_be_invalid(self):
-        journal = modelfactories.JournalFactory()
-        language = modelfactories.LanguageFactory.create(iso_code='en',
-                                                         name='english')
-        journal.languages.add(language)
-
-        section = modelfactories.SectionFactory(journal=journal)
-        section.add_title('Original Article', language=language)
-
-        post_dict = {
-            u'titles-INITIAL_FORMS': 0,
-            u'titles-TOTAL_FORMS': 1,
-            u'legacy_code': u'',
-            u'titles-0-language': unicode(language.pk),
-            u'titles-0-title': u'Original Article',
-        }
-
-        section_forms = forms.get_all_section_forms(post_dict,
-            journal=journal, section=section)
-
-        self.assertTrue(section_forms['section_form'].is_valid())
-        self.assertFalse(section_forms['section_title_formset'].is_valid())
 
     def test_same_titles_in_different_languages_must_be_valid(self):
         journal = modelfactories.JournalFactory()

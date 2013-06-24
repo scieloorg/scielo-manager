@@ -814,7 +814,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     number = models.CharField(_('Number'), blank=True, max_length=16)
     suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16)
     suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16)
-    is_press_release = models.BooleanField(_('Is Press Release?'), default=False, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     publication_start_month = models.IntegerField(_('Start Month'), choices=choices.MONTHS)
@@ -852,9 +851,8 @@ class Issue(caching.base.CachingMixin, models.Model):
     def identification(self):
         suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
         suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
-        is_press_release = _('pr') + '' if self.is_press_release else ''
 
-        values = [self.number, suppl_volume, suppl_number, is_press_release]
+        values = [self.number, suppl_volume, suppl_number]
 
         return ' '.join([val for val in values if val]).strip().replace(
                 'spe', 'special').replace('ahead', 'ahead of print')

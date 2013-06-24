@@ -420,3 +420,99 @@ class IssuesListTests(WebTest):
         )
 
         self.assertEqual(response.status_code, 500)
+
+
+class SectionLookupForTranslationsTests(WebTest):
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    def test_existing_section(self):
+        section = modelfactories.SectionFactory(journal=self.journal)
+        section_title = modelfactories.SectionTitleFactory(section=section)
+
+        params = 'j=%s&t=%s' % (self.journal.pk, section_title.title)
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=False
+        )
+
+        import json
+        response_py = json.loads(response.content)
+        self.assertEqual(response_py['exists'], True)
+        self.assertEqual(response_py['message'], 'The section already exists.')
+
+        title, code = response_py['sections'][0]
+        self.assertEqual(title, unicode(section))
+        self.assertEqual(code, section.actual_code)
+
+    def test_new_section(self):
+
+        params = 'j=%s&t=%s' % (self.journal.pk, 'newsection')
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=False
+        )
+
+        import json
+        response_py = json.loads(response.content)
+        self.assertEqual(response_py['exists'], False)
+        self.assertEqual(response_py['message'], 'This is a new section.')
+
+    def test_missing_journal_returns_400_status_code(self):
+        params = '?t=%s' % ('newsection')
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=True
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_missing_title_returns_400_status_code(self):
+        params = '?j=%s' % (self.journal.pk)
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=True
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_non_xhr_request_returns_400_status_code(self):
+        params = '?j=%s&t=%s' % (self.journal.pk, 'newsection')
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            user=self.user,
+            expect_errors=True
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_sections_can_be_excluded_from_the_search(self):
+        section = modelfactories.SectionFactory(journal=self.journal)
+        section_title = modelfactories.SectionTitleFactory(section=section)
+
+        params = 'j=%s&t=%s&exc=%s' % (self.journal.pk, section_title.title, section.pk)
+        response = self.app.get(
+            reverse('ajx.lookup_for_section_translation') + '?' + params,
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=False
+        )
+
+        import json
+        response_py = json.loads(response.content)
+        self.assertEqual(response_py['exists'], False)
+        self.assertEqual(response_py['message'], 'This is a new section.')
+

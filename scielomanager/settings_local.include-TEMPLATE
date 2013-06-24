@@ -23,10 +23,12 @@ EMAIL_HOST_PASSWORD = ''
 
 CACHES = {
     'default': {
-        #'BACKEND': 'caching.backends.memcached.CacheClass',
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        'LOCATION': '',
-    }
+        'BACKEND': 'caching.backends.memcached.MemcachedCache',
+        'LOCATION': [
+            '127.0.0.1:11211',
+        ],
+        'PREFIX': 'scielomanager:',
+    },
 }
 
 #
