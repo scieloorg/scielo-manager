@@ -1,21 +1,24 @@
+import caching.base
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from articletrack import choices
+from journalmanager.models import Collection
+from articletrack import choices, modelmanagers
 
 
-class Status(models.Model):
+class Status(caching.base.CachingMixin, models.Model):
     attempt = models.ForeignKey('Attempt')
     phase = models.CharField(choices=sorted(choices.ACCOMPLISHED_TASKS, key=lambda ACCOMPLISHED_TASKS: ACCOMPLISHED_TASKS[1]), max_length=32, default='upload')
     is_accomplished = models.BooleanField(default=False, db_index=True)
     changed_at = models.DateTimeField(auto_now_add=True)
 
 
-class Attempt(models.Model):
+class Attempt(caching.base.CachingMixin, models.Model):
     checkin_id = models.CharField(max_length=32, unique=True)
     articlepkg_id = models.CharField(max_length=32)
-    collection_uri = models.URLField()
+    collection = models.ForeignKey(Collection)
     article_title = models.CharField(max_length=512)
     journal_title = models.CharField(max_length=256)
     issue_label = models.CharField(max_length=64)
@@ -26,6 +29,7 @@ class Attempt(models.Model):
     pkgmeta_submitter = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     closed_at = models.DateTimeField(null=True)
+    userobjects = modelmanagers.AttemptManager()
 
     @property
     def last_status(self):
