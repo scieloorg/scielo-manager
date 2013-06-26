@@ -1,8 +1,6 @@
 # coding: utf-8
 from scielomanager.utils.middlewares import threadlocal
-from journalmanager.modelmanagers import UserObjectQuerySet, UserObjectManager
-
-user_request_context = threadlocal.get_finder()
+from journalmanager.modelmanagers import UserObjectQuerySet, UserObjectManager, user_request_context
 
 
 class AttemptQuerySet(UserObjectQuerySet):

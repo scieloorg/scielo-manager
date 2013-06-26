@@ -361,7 +361,7 @@ class AttemptResource(ModelResource):
     collection = fields.ForeignKey(CollectionResource, 'collection')
 
     class Meta(ApiKeyAuthMeta):
-        queryset = Attempt.userobjects.all()
+        queryset = Attempt.objects.all()
         resource_name = 'attempts'
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']

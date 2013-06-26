@@ -16,6 +16,11 @@ class Status(caching.base.CachingMixin, models.Model):
 
 
 class Attempt(caching.base.CachingMixin, models.Model):
+
+    #Custom Managers
+    objects = models.Manager()
+    userobjects = modelmanagers.AttemptManager()
+
     checkin_id = models.CharField(max_length=32, unique=True)
     articlepkg_id = models.CharField(max_length=32)
     collection = models.ForeignKey(Collection)
@@ -29,7 +34,6 @@ class Attempt(caching.base.CachingMixin, models.Model):
     pkgmeta_submitter = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     closed_at = models.DateTimeField(null=True)
-    userobjects = modelmanagers.AttemptManager()
 
     @property
     def last_status(self):
