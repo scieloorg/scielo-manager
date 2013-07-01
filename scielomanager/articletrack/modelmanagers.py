@@ -7,7 +7,7 @@ class AttemptQuerySet(UserObjectQuerySet):
 
     def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(
-            collection__in=get_all_collections()).distinct()
+            collection__in=get_all_collections())
 
     def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(
