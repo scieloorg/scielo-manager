@@ -4,12 +4,24 @@ import factory
 from articletrack import models
 
 
+class CollectionFactory(factory.Factory):
+    FACTORY_FOR = models.Collection
+
+    url = u'http://www.scielo.br/'
+    name = factory.Sequence(lambda n: 'scielo%s' % n)
+    address_number = u'430'
+    country = u'Brasil'
+    address = u'Rua Machado Bittencourt'
+    email = u'fapesp@scielo.org'
+    name_slug = factory.Sequence(lambda n: 'scl%s' % n)
+
+
 class AttemptFactory(factory.Factory):
     FACTORY_FOR = models.Attempt
 
     articlepkg_id = 1
     checkin_id = 1
-    collection_uri = u'http://www.scielo.br'
+    collection = factory.SubFactory(CollectionFactory)
     article_title = u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)'
     journal_title = u'Journal of the Brazilian Chemical Society'
     issue_label = u'2013 v.24 n.4'

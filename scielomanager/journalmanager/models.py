@@ -491,8 +491,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     acronym = models.CharField(_('Acronym'), max_length=16, blank=False)
     scielo_issn = models.CharField(_('The ISSN used to build the Journal PID.'), max_length=16,
         choices=sorted(choices.SCIELO_ISSN, key=lambda SCIELO_ISSN: SCIELO_ISSN[1]))
-    print_issn = models.CharField(_('Print ISSN'), max_length=9)
-    eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9)
+    print_issn = models.CharField(_('Print ISSN'), max_length=9, db_index=True)
+    eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9, db_index=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=512)
     init_year = models.CharField(_('Initial Year'), max_length=4)
     init_vol = models.CharField(_('Initial Volume'), max_length=16)

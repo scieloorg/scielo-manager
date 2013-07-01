@@ -263,6 +263,7 @@ class PressReleaseResource(ModelResource):
         resource_name = 'pressreleases'
         queryset = RegularPressRelease.objects.all()
         allowed_methods = ['get', ]
+        ordering = ['id']
 
     def build_filters(self, filters=None):
         """
@@ -358,6 +359,7 @@ class AttemptStatusResource(ModelResource):
 
 
 class AttemptResource(ModelResource):
+    collection = fields.ForeignKey(CollectionResource, 'collection')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Attempt.objects.all()
