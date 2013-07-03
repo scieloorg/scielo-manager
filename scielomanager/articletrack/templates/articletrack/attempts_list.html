@@ -11,6 +11,7 @@
 <table class="table table-striped _listings">
   <thead>
     <tr>
+      <th>{% trans "Collection" %}</th>
       <th>{% trans "Began at" %}</th>
       <th>{% trans "Closed at" %}</th>
       <th>{% trans "Package name" %}</th>
@@ -22,6 +23,9 @@
   <tbody>
     {% for attempt in attempts %}
     <tr>
+      <td>
+        {{ attempt.collection.name }}
+      </td>
       <td>
         {{ attempt.created_at }}
       </td>
@@ -43,7 +47,7 @@
     </tr>
     <tr>
         <td colspan="6">
-            <div class="wizard-steps">
+            <div class="wizard-steps" style="padding-bottom: 40px">
             {% for status in attempt.all_status %}
                 <div {%if status.is_accomplished%}class="accomplished"{%else%}class="not_accomplished"{%endif%}>
                   <a href="#"> 

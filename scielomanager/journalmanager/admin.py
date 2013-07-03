@@ -142,3 +142,11 @@ class JournalPublicationEventsAdmin(admin.ModelAdmin):
     search_fields = ['journal']
 
 admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
+
+
+class PressReleaseAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return PressRelease.nocacheobjects
+
+admin.site.register(PressRelease, PressReleaseAdmin)

@@ -21,6 +21,12 @@ from api.resources import (
     AttemptStatusResource
     )
 
+from journalmanager.tests.helpers import (
+    _makeUserRequestContext,
+    _patch_userrequestcontextfinder_settings_setup,
+    _patch_userrequestcontextfinder_settings_teardown
+    )
+
 
 def _make_auth_environ(username, token):
     return {'HTTP_AUTHORIZATION': 'ApiKey {0}:{1}'.format(username, token)}
@@ -858,10 +864,16 @@ class AheadPressReleaseRestAPITest(WebTest):
 
 class AttemptRestAPITest(WebTest):
 
+    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
         self.extra_environ = _make_auth_environ(self.user.username,
-            self.user.api_key.key)
+                                                self.user.api_key.key)
+        self.collection = modelfactories.CollectionFactory.create()
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        pass
 
     def test_post_data(self):
 
@@ -870,7 +882,7 @@ class AttemptRestAPITest(WebTest):
 
         att = {u'articlepkg_id': 1,
                u'checkin_id': 1,
-               u'collection_uri': u'http://www.scielo.br',
+               u'collection': u'/api/v1/collections/1/',
                u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
                u'journal_title': u'Journal of the Brazilian Chemical Society',
                u'issue_label': u'2013 v.24 n.4',
@@ -895,7 +907,7 @@ class AttemptRestAPITest(WebTest):
 
         att = {u'articlepkg_id': 1,
                u'checkin_id': 1,
-               u'collection_uri': u'http://www.scielo.br',
+               u'collection': u'/api/v1/collections/1/',
                u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
                u'journal_title': u'Journal of the Brazilian Chemical Society',
                u'issue_label': u'2013 v.24 n.4',
@@ -952,7 +964,7 @@ class AttemptRestAPITest(WebTest):
             u'articlepkg_id',
             u'checkin_id',
             u'closed_at',
-            u'collection_uri',
+            u'collection',
             u'created_at',
             u'id',
             u'issue_label',
