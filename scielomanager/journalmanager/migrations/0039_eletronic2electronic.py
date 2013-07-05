@@ -1,16 +1,17 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
         orm.Journal.objects.filter(scielo_issn='eletronic').update(scielo_issn='electronic')
 
+
     def backwards(self, orm):
-        pass
+        "Write your backwards methods here."
 
 
     models = {
