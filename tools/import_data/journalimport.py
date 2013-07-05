@@ -260,7 +260,7 @@ class JournalImport:
                 issn_type = "print"
                 print_issn = record['935'][0]
                 if record['935'][0] != record['400'][0]:
-                    issn_type = "eletronic"
+                    issn_type = "electronic"
                     electronic_issn = record['400'][0]
             else:
                 issn_type = "electronic"
