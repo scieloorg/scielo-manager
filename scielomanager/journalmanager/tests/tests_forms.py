@@ -1935,6 +1935,34 @@ class PressReleaseFormTests(WebTest):
         self.assertEqual(len(res_qset), 1)
         self.assertEqual(res_qset[0], language)
 
+    def test_issues_must_not_be_trashed(self):
+        """
+        Only valid issues must be available for the user to
+        bind to a pressrelease.
+        """
+        perm_prelease_list = _makePermission(perm='list_pressrelease',
+                                             model='pressrelease',
+                                             app_label='journalmanager')
+        perm_prelease_add = _makePermission(perm='add_pressrelease',
+                                            model='pressrelease',
+                                            app_label='journalmanager')
+
+        self.user.user_permissions.add(perm_prelease_list)
+        self.user.user_permissions.add(perm_prelease_add)
+
+        trashed_issue = modelfactories.IssueFactory.create(
+            journal=self.journal, is_trashed=True)
+
+        language = modelfactories.LanguageFactory(iso_code='en',
+                                                  name='english')
+        self.journal.languages.add(language)
+
+        form = self.app.get(reverse('prelease.add',
+                            args=[self.journal.pk]),
+                            user=self.user).forms['prelease-form']
+
+        self.assertRaises(ValueError,
+            lambda: form.set('issue', str(trashed_issue.pk)))
 
 class AheadPressReleaseFormTests(WebTest):
 
