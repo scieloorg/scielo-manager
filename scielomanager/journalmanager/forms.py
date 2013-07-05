@@ -399,7 +399,7 @@ class RegularPressReleaseForm(ModelForm):
         if not self.journal:
             raise TypeError('missing journal argument')
 
-        self.fields['issue'].queryset = models.Issue.objects.filter(
+        self.fields['issue'].queryset = models.Issue.objects.available().filter(
             journal__pk=self.journal.pk)
 
     class Meta:
