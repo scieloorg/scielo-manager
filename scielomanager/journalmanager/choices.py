@@ -17,14 +17,6 @@ SUBJECTS = [
     ('Linguistics, Letters and Arts', 'Linguistics, Letters and Arts'),
 ]
 
-PUBLICATION_STATUS = [
-    ('C', 'Current'),
-    ('D', 'Ceased'),
-    ('R', 'Reports Only'),
-    ('S', 'Suspended'),
-    ('?', 'Unknow'),
-]
-
 LANGUAGE = [
     ('pt', 'português'),
     ('en', 'inglês'),
