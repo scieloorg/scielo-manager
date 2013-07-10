@@ -505,7 +505,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
-        choices=choices.PUBLICATION_STATUS)
+        choices=choices.JOURNAL_PUBLICATION_STATUS)
     pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
     pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
