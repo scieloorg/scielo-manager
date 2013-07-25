@@ -147,6 +147,8 @@ class JournalResource(ModelResource):
         allowed_methods = ['get', ]
         filtering = {
             'is_trashed': ('exact',),
+            'eletronic_issn': ('exact',),
+            'print_issn': ('exact',),
         }
 
     def build_filters(self, filters=None):

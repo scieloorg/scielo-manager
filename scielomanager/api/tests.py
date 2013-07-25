@@ -214,7 +214,25 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
 
+    def test_filter_print_issn(self):
+        journal = modelfactories.JournalFactory.create(print_issn='1234-1234')
+        journal2 = modelfactories.JournalFactory.create(print_issn='4321-4321')
+        response = self.app.get('/api/v1/journals/?print_issn=1234-1234',
+            extra_environ=self.extra_environ)
 
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
+        self.assertEqual(json.loads(response.content)['objects'][0]['print_issn'], '1234-1234')
+
+    def test_filter_eletronic_issn(self):
+        journal = modelfactories.JournalFactory.create(eletronic_issn='1234-1234')
+        journal2 = modelfactories.JournalFactory.create(eletronic_issn='4321-4321')
+        response = self.app.get('/api/v1/journals/?eletronic_issn=1234-1234',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
+        self.assertEqual(json.loads(response.content)['objects'][0]['eletronic_issn'], '1234-1234')
 class CollectionRestAPITest(WebTest):
 
     def setUp(self):
