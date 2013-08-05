@@ -30,6 +30,9 @@
           <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>
         {% endif %}
+        <li {% if page == 'editors' %}class="active activedash" {% endif %}>
+          <a href="{% url journal_editors.index journal_id %}">{% trans 'Editors' %}</a>
+        </li>
       </ul>
     </div>
   </div>

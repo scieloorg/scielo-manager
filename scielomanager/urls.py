@@ -53,6 +53,9 @@ urlpatterns = patterns('',
     (r'^api/', include(v1_api.urls)),
 
     (r'^export/', include('scielomanager.export.urls')),
+
+    #AJAX 
+    url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
 )
 
 if settings.DEBUG:

@@ -7,6 +7,8 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
@@ -398,6 +400,68 @@ def edit_journal_status(request, journal_id=None):
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.list_user', login_url=AUTHZ_REDIRECT_URL)
+def journal_editors(request, journal_id=None):
+    """
+    Handle the users that have an editor profile for a specific journal
+    """
+
+    journal = get_object_or_404(models.Journal, id=journal_id)
+    editors = journal.editors.all()
+
+    return render_to_response('journalmanager/journal_editors_list.html', {
+                              'journal': journal,
+                              'editors': editors,
+                              }, context_instance=RequestContext(request))
+
+
+@permission_required('auth.change_journal', login_url=AUTHZ_REDIRECT_URL)
+def journal_editors_add(request, journal_id):
+
+    journal = get_object_or_404(models.Journal, pk=journal_id)
+
+    if request.method == 'POST':
+        username = request.POST.get('query')
+        try:
+            user = User.objects.get(username=username)
+            try:
+                journal.editors.add(user)
+                messages.error(request, _('Now, %s is an editor of this journal.' % user.username))
+            except IntegrityError:
+                messages.error(request, _('%s is already an editor of this journal.' % user.username))
+        except ObjectDoesNotExist:
+            messages.error(request, _('User %s does not exists' % username))
+
+    editors = journal.editors.all()
+
+    t = loader.get_template('journalmanager/journal_editors_list.html')
+    c = RequestContext(request, {
+                       'journal': journal,
+                       'editors': editors
+                       })
+    return HttpResponse(t.render(c))
+
+
+@permission_required('auth.change_journal', login_url=AUTHZ_REDIRECT_URL)
+def journal_editors_remove(request, journal_id, user_id):
+
+    journal = models.Journal.objects.get(pk=journal_id)
+    user2remove = models.User.objects.get(pk=user_id)
+
+    journal.editors.remove(user2remove)
+
+    messages.error(request, _('The user %s was removed from this journal.' % user2remove.username))
+
+    editors = journal.editors.all()
+
+    t = loader.get_template('journalmanager/journal_editors_list.html')
+    c = RequestContext(request, {
+                       'journal': journal,
+                       'editors': editors
+                       })
+    return HttpResponse(t.render(c))
 
 
 @permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
@@ -800,6 +864,25 @@ def trash_listing(request):
         'journalmanager/trash_listing.html',
         {'trashed_docs': trashed_docs_paginated},
         context_instance=RequestContext(request))
+
+
+@login_required
+def ajx_list_users(request):
+    """
+    Lists the users acoording to the a given string.
+    """
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    users = User.objects.all()
+
+    usrs = []
+    for user in users:
+        usrs.append(user.username)
+
+    response_data = json.dumps(usrs)
+
+    return HttpResponse(response_data, mimetype="application/json")
 
 
 @login_required
