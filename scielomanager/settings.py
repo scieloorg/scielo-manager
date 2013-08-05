@@ -128,6 +128,7 @@ MIDDLEWARE_CLASSES = (
     'scielomanager.utils.middlewares.threadlocal.ThreadLocalMiddleware',
     'scielomanager.maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'waffle.middleware.WaffleMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
@@ -160,6 +161,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'tastypie',
     'django_assets',
+    'waffle',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -177,6 +179,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'journalmanager.context_processors.show_system_notes_blocking_users',
     'journalmanager.context_processors.on_maintenance',
     'scielo_extensions.context_processors.from_settings',
+    'django.core.context_processors.request',
 )
 
 # Messages framework

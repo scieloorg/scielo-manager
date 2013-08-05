@@ -37,6 +37,7 @@ from scielomanager.tools import (
     asbool,
 )
 
+from waffle.decorators import waffle_flag
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 MSG_FORM_SAVED = _('Saved.')
@@ -402,6 +403,7 @@ def edit_journal_status(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
+@waffle_flag('editor_manager')
 @permission_required('journalmanager.list_user', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors(request, journal_id=None):
     """
@@ -417,6 +419,7 @@ def journal_editors(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
+@waffle_flag('editor_manager')
 @permission_required('auth.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors_add(request, journal_id):
 
@@ -444,6 +447,7 @@ def journal_editors_add(request, journal_id):
     return HttpResponse(t.render(c))
 
 
+@waffle_flag('editor_manager')
 @permission_required('auth.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors_remove(request, journal_id, user_id):
 
