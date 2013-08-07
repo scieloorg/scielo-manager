@@ -179,7 +179,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'journalmanager.context_processors.show_system_notes_blocking_users',
     'journalmanager.context_processors.on_maintenance',
     'scielo_extensions.context_processors.from_settings',
-    'django.core.context_processors.request',
 )
 
 # Messages framework
