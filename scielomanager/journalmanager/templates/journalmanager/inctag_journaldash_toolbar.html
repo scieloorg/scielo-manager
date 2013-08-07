@@ -18,23 +18,27 @@
           <a href="{% url section.index journal_id %}">{% trans 'Sections' %}</a>
         </li>
         {% endif %}
+        {% if perms.journalmanager.list_pressreleases %}
         <li {% if page == 'press_release' %}class="active activedash" {% endif %}>
           <a href="{% url prelease.index journal_id %}">Press Releases</a>
         </li>
-        <!--
-        <li {% if page == 'ahead' %}class="active activedash" {% endif %}>
-          <a href="#">Ahead of Print</a>
-        </li>
-        -->
+        {% endif %}
         {% if perms.journalmanager.change_journalpublicationevents %}
         <li {% if page == 'status' %}class="active activedash" {% endif %}>
           <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>
         {% endif %}
         {% flag 'editor_manager' %}
-        <li {% if page == 'editors' %}class="active activedash" {% endif %}>
-          <a href="{% url journal_editors.index journal_id %}">{% trans 'Editors' %}</a>
-        </li>
+          {% if perms.journalmanager.change_journal %}
+          <li {% if page == 'editors' %}class="active activedash" {% endif %}>
+            <a href="{% url journal_editors.index journal_id %}">{% trans 'Editors' %}</a>
+          </li>      
+          {% endif %}
+          {% if is_editor %}
+            <li {% if page == 'news' %}class="active activedash" {% endif %}>
+              <a href="{% url journal_editors.index journal_id %}">{% trans 'News' %}</a>
+            </li>
+          {% endif %}
         {% endflag %}
       </ul>
     </div>

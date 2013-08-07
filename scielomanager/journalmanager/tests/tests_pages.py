@@ -11,7 +11,6 @@ from django_factory_boy import auth
 from journalmanager.tests import modelfactories
 from journalmanager.tests.tests_forms import _makePermission
 
-
 def _makeUserRequestContext(user):
     """
     Constructs a class to be used by settings.USERREQUESTCONTEXT_FINDER
@@ -164,6 +163,58 @@ class SectionsListTests(WebTest):
         page = self.app.get(reverse('section.index', args=[journal.pk]), user=self.user)
 
         self.assertTrue('There are no items.' in page.body)
+
+
+class JournalEditorsTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection,
+                                                     creator=self.user)
+
+    def test_journal_editors_list_without_users(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        perm_journal_list = _makePermission(perm='list_journal',
+                                            model='journal',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        response = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user)
+
+        self.assertTrue('There are no editors to manage this journal' in response.body)
+
+    def test_journal_editors_list_permission_is_required(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        response = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user).follow()
+
+        response.mustcontain('not authorized to access')
+        self.assertTemplateUsed(response, 'accounts/unauthorized.html')
+
+    def test_journals_list_with_users(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        perm_journal_list = _makePermission(perm='list_journal',
+                                            model='journal',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        self.journal.editors.add(self.user)
+
+        response = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user)
+
+        self.assertTrue(self.user.username in response.body)
 
 
 class JournalsListTests(WebTest):

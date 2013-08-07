@@ -7,7 +7,7 @@
 {% block page_title %}{% trans "Press Releases" %} - {{journal.title}}{% endblock %}
 
 {% block content %}
-{% journaldash_toolbar 'press_release' journal.pk %}
+{% journaldash_toolbar 'press_release' journal user %}
 <ul class="nav nav-tabs">
   <li>
     <div class="btn-group" style="margin-right: 10px">

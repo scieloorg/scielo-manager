@@ -404,7 +404,7 @@ def edit_journal_status(request, journal_id=None):
 
 
 @waffle_flag('editor_manager')
-@permission_required('journalmanager.list_user', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors(request, journal_id=None):
     """
     Handle the users that have an editor profile for a specific journal
@@ -420,7 +420,7 @@ def journal_editors(request, journal_id=None):
 
 
 @waffle_flag('editor_manager')
-@permission_required('auth.change_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors_add(request, journal_id):
 
     journal = get_object_or_404(models.Journal, pk=journal_id)
@@ -442,13 +442,13 @@ def journal_editors_add(request, journal_id):
     t = loader.get_template('journalmanager/journal_editors_list.html')
     c = RequestContext(request, {
                        'journal': journal,
-                       'editors': editors
+                       'editors': editors,
                        })
     return HttpResponse(t.render(c))
 
 
 @waffle_flag('editor_manager')
-@permission_required('auth.change_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors_remove(request, journal_id, user_id):
 
     journal = models.Journal.objects.get(pk=journal_id)
@@ -463,7 +463,7 @@ def journal_editors_remove(request, journal_id, user_id):
     t = loader.get_template('journalmanager/journal_editors_list.html')
     c = RequestContext(request, {
                        'journal': journal,
-                       'editors': editors
+                       'editors': editors,
                        })
     return HttpResponse(t.render(c))
 

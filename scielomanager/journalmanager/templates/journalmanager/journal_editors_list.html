@@ -7,7 +7,7 @@
 {% block page_title %}{% trans "Users" %}{% endblock %}
 
 {% block content %}
-{% journaldash_toolbar 'editors' journal.pk %}
+{% journaldash_toolbar 'editors' journal user %}
 <div class="alert alert-info">
   {% trans 'The users above are allowed to manage some information about the journal, like: highlights, institucional pages, news, mission, address, etc.'%}
 </div>
@@ -50,10 +50,11 @@
 <div ng-app="autorslist">
   <div ng-controller="TypeaheadCtrl">
     {% trans 'Add a new editor to this journal' %}:
-    <form id="add-user"
+    <form name="add-editor"
+          id="add-editor"
           method="post"
           action="{% url journal_editors.add journal.id %}"
-          enctype="multipart/form-data">
+          enctype="application/x-www-form-urlencoded">
       {% csrf_token %}
       <input type="text"
              placeholder="select a user"

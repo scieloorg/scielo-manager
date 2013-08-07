@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block form_content %}
-{% journaldash_toolbar 'status' journal.pk %}
+{% journaldash_toolbar 'status' journal user %}
 <span class="label"><a name="status"></a>{% trans "Journal Status History" %}</span>
 <div class="well">
   <table class="table table-striped">

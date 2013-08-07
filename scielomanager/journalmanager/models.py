@@ -17,6 +17,8 @@ from django.db import (
     IntegrityError,
     DatabaseError,
     )
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
@@ -612,6 +614,19 @@ class Journal(caching.base.CachingMixin, models.Model):
                 issue = issues.get(pk=pk)
                 issue.order = order
                 issue.save()
+
+    def is_editor(self, user):
+        """
+        Returns a boolean value depending if the given user is an editor
+        of the current journal.
+        """
+
+        try:
+            self.editors.get(id=user.id)
+        except ObjectDoesNotExist:
+            return None
+
+        return True
 
     @property
     def scielo_pid(self):

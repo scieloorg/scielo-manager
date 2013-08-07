@@ -1616,6 +1616,90 @@ class SectionTitleFormValidationTests(TestCase):
         self.assertTrue(section_forms['section_title_formset'].is_valid())
 
 
+class JournalEditorsTests(WebTest):
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
+
+        self.journal = modelfactories.JournalFactory(collection=self.collection)
+        perm_journal_list = _makePermission(perm='list_journal',
+                                            model='journal',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+    def test_form_ectype_must_be_urlencoded(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        form = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user).forms['add-editor']
+
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the ahead form is
+        ``POST``.
+        """
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        form = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user).forms['add-editor']
+
+        self.assertEqual(form.method.lower(), 'post')
+
+    def test_form_action_must_not_be_empty(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        form = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user).forms['add-editor']
+
+        r = reverse('journal_editors.add', args=[self.journal.pk])
+
+        self.assertEqual(form.action, r)
+
+    def test_form_adding_an_editor_with_a_valid_username(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        perm_journal_change = _makePermission(perm='change_journal',
+                                              model='journal',
+                                              app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+
+        form = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user).forms['add-editor']
+
+        form['query'] = self.user.username
+
+        response = form.submit()
+
+        self.assertIn('Now, %s is an editor of this journal.' % self.user.username, response.body)
+
+    def test_form_adding_an_editor_with_a_invalid_username(self):
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        perm_journal_change = _makePermission(perm='change_journal',
+                                              model='journal',
+                                              app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+
+        form = self.app.get(reverse('journal_editors.index',
+            args=[self.journal.pk]), user=self.user).forms['add-editor']
+
+        form['query'] = 'fakeuser'
+
+        response = form.submit()
+
+        self.assertIn('User fakeuser does not exists', response.body)
+
+
 class AheadFormTests(WebTest):
 
     def setUp(self):
