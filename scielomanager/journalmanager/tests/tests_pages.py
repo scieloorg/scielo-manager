@@ -188,7 +188,7 @@ class JournalEditorsTests(WebTest):
         response = self.app.get(reverse('journal_editors.index',
             args=[self.journal.pk]), user=self.user)
 
-        self.assertTrue('There are no editors to manage this journal' in response.body)
+        self.assertIn('There are no editors to manage this journal', response.body)
 
     def test_journal_editors_list_permission_is_required(self):
         from waffle import Flag
@@ -200,21 +200,38 @@ class JournalEditorsTests(WebTest):
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
-    def test_journals_list_with_users(self):
+    def test_journals_editors_list_with_users(self):
         from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
 
         perm_journal_list = _makePermission(perm='list_journal',
                                             model='journal',
                                             app_label='journalmanager')
+
         self.user.user_permissions.add(perm_journal_list)
 
         self.journal.editors.add(self.user)
 
         response = self.app.get(reverse('journal_editors.index',
-            args=[self.journal.pk]), user=self.user)
+                                        args=[self.journal.pk]), user=self.user)
 
-        self.assertTrue(self.user.username in response.body)
+        self.assertIn(self.user.username, response.body)
+
+    def test_journals_editors_list_ajax(self):
+        import json
+        from waffle import Flag
+        Flag.objects.create(name='editor_manager', everyone=True)
+
+        response = self.app.get(
+            reverse('ajx.ajx_list_users'),
+            headers={'x-requested-with': 'XMLHttpRequest'},
+            user=self.user,
+            expect_errors=False
+        )
+
+        response_js = json.loads(response.content)
+
+        self.assertIn("username", response_js[0])
 
 
 class JournalsListTests(WebTest):

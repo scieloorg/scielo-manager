@@ -624,7 +624,7 @@ class Journal(caching.base.CachingMixin, models.Model):
         try:
             self.editors.get(id=user.id)
         except ObjectDoesNotExist:
-            return None
+            return False
 
         return True
 
