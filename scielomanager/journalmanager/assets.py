@@ -25,7 +25,7 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/bootstrap.js')
 
 
-js = Bundle(base_bundle, plugins_bundle, app_bundle, minify_bundle, filters='yui_js', output='bundle.min.js')
+js = Bundle(base_bundle, minify_bundle, plugins_bundle, app_bundle, filters='yui_js', output='bundle.min.js')
 
 register('js', js)
 
