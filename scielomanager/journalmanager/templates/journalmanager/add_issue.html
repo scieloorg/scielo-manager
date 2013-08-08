@@ -11,11 +11,8 @@
   {% summarize_errors add_form %}
 {% endblock%}
 
-{% block journal_toolbar %}
-{% journaldash_toolbar 'issue' journal.pk %}
-{% endblock %}
-
 {% block form_content %}
+{% journaldash_toolbar 'issue' journal user %}
 <form method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
   <span class="label">{% trans "Issue Information" %}</span>

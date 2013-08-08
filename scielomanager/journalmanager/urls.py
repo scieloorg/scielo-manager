@@ -22,6 +22,11 @@ urlpatterns = patterns('',
     url(r'^sponsor/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
         {'model': models.Sponsor}, name='sponsor.toggle_availability'),
 
+    # Editors
+    url(r'^(?P<journal_id>\d+)/editors/$', views.journal_editors,  name='journal_editors.index'),
+    url(r'^(?P<journal_id>\d+)/editors/add$', views.journal_editors_add,  name='journal_editors.add'),
+    url(r'^(?P<journal_id>\d+)/editors/(?P<user_id>\d+)/remove/$', views.journal_editors_remove,  name='journal_editors.remove'),
+
     # Section Tools
     url(r'^(?P<journal_id>\d+)/section/$', views.section_index, {'model': models.Section}, name='section.index'),
     url(r'^(?P<journal_id>\d+)/section/new/$', views.add_section, name='section.add'),

@@ -5,13 +5,16 @@
 from django_assets import Bundle, register
 
 base_bundle = Bundle('../static/js/jquery/jquery-1.7.1.js',
-                     '../static/js/jquery/jquery-ui.js',)
+                     '../static/js/jquery/jquery-ui.js')
+
+minify_bundle = Bundle('../static/js/angular/angular.min.js')
 
 plugins_bundle = Bundle('../static/js/jquery/datepicker.js',
                         '../static/js/jquery/jquery.asmselect.js',
                         '../static/js/jquery/jquery.tabslideout-1.3.js',
                         '../static/js/jquery/jquery.popupwindow.js',
-                        '../static/js/jquery/jquery.formset.js')
+                        '../static/js/jquery/jquery.formset.js',
+                        '../static/js/angular/ui-bootstrap-tpls-0.4.0.js')
 
 app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/languages.js',
@@ -21,7 +24,8 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/combobox.js',
                     '../static/js/bootstrap.js')
 
-js = Bundle(base_bundle, plugins_bundle, app_bundle, filters='yui_js', output='bundle.min.js')
+
+js = Bundle(base_bundle, plugins_bundle, app_bundle, minify_bundle, filters='yui_js', output='bundle.min.js')
 
 register('js', js)
 

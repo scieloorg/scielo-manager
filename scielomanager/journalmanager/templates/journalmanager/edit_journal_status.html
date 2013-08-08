@@ -21,11 +21,8 @@
   {% endif %}
 {% endblock %}
 
-{% block journal_toolbar %}
-{% journaldash_toolbar 'status' journal.pk %}
-{% endblock %}
-
 {% block form_content %}
+{% journaldash_toolbar 'status' journal user %}
 <span class="label"><a name="status"></a>{% trans "Journal Status History" %}</span>
 <div class="well">
   <table class="table table-striped">
