@@ -197,7 +197,10 @@ class IssueImport:
         if '33' in record:
             issue.title = record['33'][0]
         if '36' in record:
-            issue.order = int(str(record['36'][0])[4:])
+            try:
+                issue.order = int(str(record['36'][0])[4:])
+            except ValueError:
+                print record
         if '33' in record:
             issue.title = record['33'][0]
         if '200' in record:
@@ -246,7 +249,8 @@ class IssueImport:
         """
         for record in json_file:
             self._journals[record['400'][0]] = {}
-            self._journals[record['935'][0]] = {}  # Se for igual ao 400 ira sobrescrever
+            if '935' in record:
+                self._journals[record['935'][0]] = {}  # Se for igual ao 400 ira sobrescrever
 
             if '541' in record:
                 f540 = subfield.CompositeField(subfield.expand(record['540'][0]))
@@ -268,9 +272,16 @@ class IssueImport:
                 self._journals[record['935'][0]]['use_license']['reference_url'] = reference_url
                 self._journals[record['400'][0]]['use_license']['disclaimer'] = f540['t']
                 self._journals[record['935'][0]]['use_license']['disclaimer'] = f540['t']
+                if '935' in record:
+                    self._journals[record['935'][0]]['use_license'] = {}
+                    self._journals[record['935'][0]]['use_license']['license_code'] = record['541'][0]
+                    self._journals[record['935'][0]]['use_license']['reference_url'] = reference_url
+                    self._journals[record['935'][0]]['use_license']['disclaimer'] = f540['t']
+
             else:
                 self._journals[record['400'][0]]['use_license'] = False
-                self._journals[record['935'][0]]['use_license'] = False
+                if '935' in record:
+                    self._journals[record['935'][0]]['use_license'] = False
 
     def run_import(self, json_file):
         """
