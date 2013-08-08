@@ -7,7 +7,7 @@
 
 {% block page_title %}{% trans "Journals" %}{% endblock %}
 {% block content %}
-{% journaldash_toolbar 'dashboard' journal.pk %}
+{% journaldash_toolbar 'dashboard' journal user %}
 <b>{% trans 'Publisher' %}:</b> {{ journal.publisher_name|default:"n.a." }}<br/>
 <b>{% trans 'Print ISSN' %}:</b> {{ journal.print_issn|default:"n.a." }}<br/>
 <b>{% trans 'Electronic ISSN' %}:</b> {{ journal.eletronic_issn|default:"n.a." }}<br/>

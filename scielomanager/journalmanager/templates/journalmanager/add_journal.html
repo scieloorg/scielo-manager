@@ -52,7 +52,7 @@
 {% endblock%}
 
 {% block journal_toolbar %}
-{% journaldash_toolbar 'journal' journal.pk %}
+{% journaldash_toolbar 'journal' journal user %} 
 {% endblock %}
 
 {% block form_content %}

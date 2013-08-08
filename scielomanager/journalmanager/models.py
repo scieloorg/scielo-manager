@@ -17,6 +17,8 @@ from django.db import (
     IntegrityError,
     DatabaseError,
     )
+
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
@@ -478,6 +480,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
+    editors = models.ManyToManyField(User, related_name='user_editors', null=True, blank=True)
 
     #Fields
     current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)
@@ -611,6 +614,19 @@ class Journal(caching.base.CachingMixin, models.Model):
                 issue = issues.get(pk=pk)
                 issue.order = order
                 issue.save()
+
+    def is_editor(self, user):
+        """
+        Returns a boolean value depending if the given user is an editor
+        of the current journal.
+        """
+
+        try:
+            self.editors.get(id=user.id)
+        except ObjectDoesNotExist:
+            return False
+
+        return True
 
     @property
     def scielo_pid(self):

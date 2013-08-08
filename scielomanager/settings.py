@@ -128,6 +128,7 @@ MIDDLEWARE_CLASSES = (
     'scielomanager.utils.middlewares.threadlocal.ThreadLocalMiddleware',
     'scielomanager.maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'waffle.middleware.WaffleMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
@@ -160,6 +161,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'tastypie',
     'django_assets',
+    'waffle',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

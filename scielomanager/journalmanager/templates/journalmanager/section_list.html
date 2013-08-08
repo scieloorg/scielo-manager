@@ -6,7 +6,7 @@
 {% block page_title %}{% trans "Sections" %} - {{journal.title}}{% endblock %}
 
 {% block content %}
-{% journaldash_toolbar 'section' journal.pk %}
+{% journaldash_toolbar 'section' journal user %}
 <div class="row-fluid show-grid">
   <div class="span10">
    <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>

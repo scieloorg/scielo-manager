@@ -268,6 +268,20 @@ class LanguageTests(TestCase):
 
 class JournalTests(TestCase):
 
+    def test_valid_is_editors(self):
+        user = auth.UserF()
+        journal = JournalFactory.create()
+
+        journal.editors.add(user)
+
+        self.assertTrue(journal.is_editor(user))
+
+    def test_invalid_is_editors(self):
+        user = auth.UserF()
+        journal = JournalFactory.create()
+
+        self.assertFalse(journal.is_editor(user))
+
     def test_changing_publication_status(self):
         user = auth.UserF()
         journal = JournalFactory.create()
