@@ -228,8 +228,6 @@ class JournalEditorsTests(WebTest):
             user=self.user,
             expect_errors=False
         )
-
-        import pdb; pdb.set_trace()
         
         response_js = json.loads(response.content)
 
