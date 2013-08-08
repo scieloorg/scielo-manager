@@ -229,6 +229,8 @@ class JournalEditorsTests(WebTest):
             expect_errors=False
         )
 
+        import pdb; pdb.set_trace()
+        
         response_js = json.loads(response.content)
 
         self.assertIn("username", response_js[0])
