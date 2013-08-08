@@ -880,13 +880,9 @@ def ajx_list_users(request):
 
     users = User.objects.all()
 
-    usrs = []
-    for user in users:
-        usrs.append(user.username)
+    response_data = [user.username for user in users]
 
-    response_data = json.dumps(usrs)
-
-    return HttpResponse(response_data, mimetype="application/json")
+    return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
 
 @login_required

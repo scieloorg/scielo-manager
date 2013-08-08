@@ -228,7 +228,7 @@ class JournalEditorsTests(WebTest):
             user=self.user,
             expect_errors=False
         )
-
+        
         response_js = json.loads(response.content)
 
         self.assertIn("username", response_js[0])
