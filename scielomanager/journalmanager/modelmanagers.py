@@ -30,6 +30,7 @@ Custom instance of ``models.query.QuerySet``
 
 """
 import caching.base
+from django.db.models import Q
 
 from scielomanager.utils.middlewares import threadlocal
 
@@ -83,7 +84,8 @@ class JournalQuerySet(UserObjectQuerySet):
         return self.filter(pub_status='current')
 
     def suspended(self):
-        return self.filter(pub_status='suspended')
+        return self.filter(
+            Q(pub_status='suspended') | Q(pub_status='suspended_ipp'))
 
     def deceased(self):
         return self.filter(pub_status='deceased')
