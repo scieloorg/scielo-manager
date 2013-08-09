@@ -695,7 +695,7 @@ class JournalFormTests(WebTest):
 
         sponsor = modelfactories.SponsorFactory.create()
 
-        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('journal.add'), user=self.user).forms['journal-form']
 
         form['journal-sponsor'] = [sponsor.pk]
         form['journal-ctrl_vocabulary'] = 'decs'
@@ -937,7 +937,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
-        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
         form['sponsor-name'] = u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
         form['sponsor-address'] = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
@@ -966,7 +966,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
-        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
         form['sponsor-address'] = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
@@ -992,7 +992,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
-        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
         self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
 
@@ -1009,7 +1009,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
-        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
         self.assertEqual(form.action, '')
 
@@ -1025,7 +1025,7 @@ class SponsorFormTests(WebTest):
         self.user.user_permissions.add(perm_sponsor_change)
         self.user.user_permissions.add(perm_sponsor_list)
 
-        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
         self.assertEqual(form.method.lower(), 'post')
 
@@ -1043,7 +1043,7 @@ class SponsorFormTests(WebTest):
 
         another_collection = modelfactories.CollectionFactory.create()
 
-        form = self.app.get(reverse('sponsor.add'), user=self.user).forms[1]
+        form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
         self.assertRaises(ValueError,
             lambda: form.set('sponsor-collections', [another_collection.pk]))
@@ -1113,7 +1113,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -1144,7 +1144,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -1176,7 +1176,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -1210,7 +1210,7 @@ class IssueFormTests(WebTest):
         issue = modelfactories.IssueFactory(journal=self.journal)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -1247,7 +1247,7 @@ class IssueFormTests(WebTest):
             volume='29')
 
         form = self.app.get(reverse('issue.edit',
-            args=[self.journal.pk, issue1.pk]), user=self.user).forms[1]
+            args=[self.journal.pk, issue1.pk]), user=self.user).forms['issue-form']
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
@@ -1279,7 +1279,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         self.assertEqual(form.enctype, 'multipart/form-data')
 
@@ -1297,7 +1297,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         self.assertEqual(form.action, '')
 
@@ -1314,7 +1314,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         self.assertEqual(form.method.lower(), 'post')
 
@@ -1334,7 +1334,7 @@ class IssueFormTests(WebTest):
             journal=self.journal, is_trashed=True)
 
         form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         self.assertRaises(ValueError,
             lambda: form.set('section', str(trashed_section.pk)))
@@ -1394,7 +1394,7 @@ class StatusFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('journal_status.edit',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['journal-status-form']
 
         form.set('pub_status', 'deceased')
         form['pub_status_reason'] = 'Motivo 1'
@@ -1416,7 +1416,7 @@ class StatusFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('journal_status.edit',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['journal-status-form']
         form.set('pub_status', 'deceased')
 
         response = form.submit()
@@ -1435,7 +1435,7 @@ class StatusFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('journal_status.edit',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['journal-status-form']
 
         self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
 
@@ -1450,7 +1450,7 @@ class StatusFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('journal_status.edit',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['journal-status-form']
 
         self.assertEqual(form.action, '')
 
@@ -1464,7 +1464,7 @@ class StatusFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         form = self.app.get(reverse('journal_status.edit',
-            args=[self.journal.pk]), user=self.user).forms[1]
+            args=[self.journal.pk]), user=self.user).forms['journal-status-form']
 
         self.assertEqual(form.method.lower(), 'post')
 
@@ -1473,6 +1473,9 @@ class SearchFormTests(WebTest):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
+
+        perm = _makePermission(perm='list_journal', model='journal')
+        self.user.user_permissions.add(perm)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
@@ -1524,10 +1527,6 @@ class SearchFormTests(WebTest):
         """
         Asserts that the search return the correct journal list
         """
-        perm = _makePermission(perm='list_journal', model='journal',
-                app_label='journalmanager')
-        self.user.user_permissions.add(perm)
-
         modelfactories.JournalFactory(collection=self.collection)
 
         page = self.app.get(reverse('journal.index') + '?q=Arquivos',
