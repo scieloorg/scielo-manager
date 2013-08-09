@@ -255,19 +255,27 @@ class JournalImport:
         journal = Journal()
 
         # ISSN and Other Complex Stuffs from the old version
-        if '35' in record:
+        if not '935' in record:  # Old fashion ISSN persistance style
             if record['35'][0] == "PRINT":
                 issn_type = "print"
-                print_issn = record['935'][0]
-                if record['935'][0] != record['400'][0]:
-                    issn_type = "electronic"
-                    electronic_issn = record['400'][0]
+                print_issn = record['400'][0]
             else:
                 issn_type = "electronic"
-                electronic_issn = record['935'][0]
-                if record['935'][0] != record['400'][0]:
+                electronic_issn = record['400'][0]
+        else:  # New ISSN persistance style
+            if '35' in record:
+                if record['35'][0] == "PRINT":
                     issn_type = "print"
-                    print_issn = record['400'][0]
+                    print_issn = record['935'][0]
+                    if record['935'][0] != record['400'][0]:
+                        issn_type = "electronic"
+                        electronic_issn = record['400'][0]
+                else:
+                    issn_type = "electronic"
+                    electronic_issn = record['935'][0]
+                    if record['935'][0] != record['400'][0]:
+                        issn_type = "print"
+                        print_issn = record['400'][0]
 
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
