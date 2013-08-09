@@ -62,6 +62,8 @@ class UserCollectionsSelectorTests(WebTest):
 
     def test_auto_define_a_collection_as_default_when_it_is_the_unique(self):
         user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_collection', model='collection')
+        user.user_permissions.add(perm)
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
@@ -72,6 +74,8 @@ class UserCollectionsSelectorTests(WebTest):
 
     def test_toggle_active_collection_unavailable_for_users_with_a_single_collection(self):
         user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_collection', model='collection')
+        user.user_permissions.add(perm)
 
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
@@ -81,6 +85,8 @@ class UserCollectionsSelectorTests(WebTest):
 
     def test_toggle_active_collection_available_for_users_with_many_collections(self):
         user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_collection', model='collection')
+        user.user_permissions.add(perm)
 
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.make_default_to_user(user)

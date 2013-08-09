@@ -123,7 +123,7 @@ class UserMyAccountTests(WebTest):
                           password=HASH_FOR_123,
                           is_active=False)
 
-        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 123
         form['new_password'] = 321
         form['new_password_again'] = 321
@@ -137,7 +137,7 @@ class UserMyAccountTests(WebTest):
                           password=HASH_FOR_123,
                           is_active=False)
 
-        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 1234
         form['new_password'] = 321
         form['new_password_again'] = 321
@@ -151,7 +151,7 @@ class UserMyAccountTests(WebTest):
                           password=HASH_FOR_123,
                           is_active=False)
 
-        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 123
         form['new_password'] = 321123
         form['new_password_again'] = 321
@@ -165,7 +165,7 @@ class UserMyAccountTests(WebTest):
                           password=HASH_FOR_123,
                           is_active=False)
 
-        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms[1]
+        form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 123
         form['new_password'] = 321
         form['new_password_again'] = 321321

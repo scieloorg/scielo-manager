@@ -24,7 +24,7 @@
 {% endblock%}
 
 {% block form_content %}
-<form method="post" action="">
+<form id="sponsor-form" method="post" action="">
   {% csrf_token %}
 
   {% if request.GET.popup %}
