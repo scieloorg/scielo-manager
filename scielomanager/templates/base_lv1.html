@@ -34,36 +34,38 @@
             </li>
             {% endif %}
           {% endif %}
-          <li id="downloads-link" class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              Downloads
-              <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-              <li id="markupfiles">
-                <a href="{% url export.markupfiles %}">{% trans 'Metadata for Markup' %}</a>
-              </li>
-            </ul>
-          </li>
-          {% if system_notes.count > 0 %}
-          <li id="maintenance-link" class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              {% trans 'Maintenances' %} ({{ system_notes.count }})
-              <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-              {% for event in system_notes %}
-              <li id="maintenaces">
-                <a
-                    class="tip-bottom"
-                    rel="tooltip"
-                    data-original-title="{{ event.description }}">
-                  {{ event.begin_at }} - {{ event.title }}
-                </a>
-              </li>
-              {% endfor %}
-            </ul>
-          </li>
+          {% if perms.journalmanager.list_journal and perms.journalmanager.list_issue %}
+            <li id="downloads-link" class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                Downloads
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li id="markupfiles">
+                  <a href="{% url export.markupfiles %}">{% trans 'Metadata for Markup' %}</a>
+                </li>
+              </ul>
+            </li>
+            {% if system_notes.count > 0 %}
+            <li id="maintenance-link" class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                {% trans 'Maintenances' %} ({{ system_notes.count }})
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                {% for event in system_notes %}
+                <li id="maintenaces">
+                  <a
+                      class="tip-bottom"
+                      rel="tooltip"
+                      data-original-title="{{ event.description }}">
+                    {{ event.begin_at }} - {{ event.title }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+            {% endif %}
           {% endif %}
         </ul>
         <ul class="nav pull-right">
@@ -96,57 +98,65 @@
 
   <div id="main-nav" class="subnav" style="margin-top: 50px;">
     <ul id="user-collections" class="nav nav-pills" style="margin-bottom: -4px;">
-      {% user_collections_dashboard user_collections user %}
-      {% if perms.auth %}
-      <li>
-        <a href="{% url trash.listing %}"
-           class="btn tip-bottom"
-           rel="tooltip"
-           data-original-title="{% trans 'Trashed items' %}">
-        <i class="icon-trash"></i>
-        {% trans 'Trash' %}
-        </a>
-      </li>
+      {% if perms.journalmanager.list_collection %}
+        {% user_collections_dashboard user_collections user %}
+        {% if perms.auth %}
+          <li>
+            <a href="{% url trash.listing %}"
+               class="btn tip-bottom"
+               rel="tooltip"
+               data-original-title="{% trans 'Trashed items' %}">
+            <i class="icon-trash"></i>
+            {% trans 'Trash' %}
+            </a>
+          </li>
+        {% endif %}
       {% endif %}
-      <li class="pull-right">
-        <form id="search-form" action="" method="get">
-          <select id="list_model" class="list-model" name="list_model">
-            {% if perms.journalmanager.list_journal %}
-              <option {% if 'journal' in request.path %}selected{% endif %}
-                      value="{% url journal.index %}">
-                {% trans 'Journals' %}
-              </option>
-            {% endif %}
-            {% if perms.journalmanager.list_sponsor %}
-              <option {% if 'sponsor' in request.path %}selected{% endif %}
-                      value="{% url sponsor.index %}">
-                {% trans 'Sponsors' %}
-              </option>
-            {% endif %}
-          </select>
-          <input class="input-search"
-             placeholder="Search"
-             name="q"
-             value="{{request.GET.q}}"/>
-          <button class="btn"
-              style="vertical-align: 4px;"
-              type="submit">
-          <i class="icon-search icon-black"></i>
-          {% trans 'Search' %}
-          </button>
-        </form>
-      </li>
+      {% if perms.journalmanager.list_journal or perms.journalmanager.list_sponsor %}
+        <li class="pull-right">
+          <form id="search-form" action="" method="get">
+            <select id="list_model" class="list-model" name="list_model">
+              {% if perms.journalmanager.list_journal %}
+                <option {% if 'journal' in request.path %}selected{% endif %}
+                        value="{% url journal.index %}">
+                  {% trans 'Journals' %}
+                </option>
+              {% endif %}
+              {% if perms.journalmanager.list_sponsor %}
+                <option {% if 'sponsor' in request.path %}selected{% endif %}
+                        value="{% url sponsor.index %}">
+                  {% trans 'Sponsors' %}
+                </option>
+              {% endif %}
+            </select>
+            <input class="input-search"
+               placeholder="Search"
+               name="q"
+               value="{{request.GET.q}}"/>
+            <button class="btn"
+                style="vertical-align: 4px;"
+                type="submit">
+            <i class="icon-search icon-black"></i>
+            {% trans 'Search' %}
+            </button>
+          </form>
+        </li>
+      {% endif %}
     </ul>
   </div>
+
+
   <div class="span6">
       {% block journaltitle %}
         {% if journal.pk %}
         <h3>{{ journal.collection }}:
           <span style="margin-left: 10px; color: #909090">
             {{ journal.short_title }}
+            {% if perms.journalmanager.change_journal %}
             <a href="{% url journal.edit journal.pk %}" class="btn btn-mini">
               <i class="icon-pencil icon-black"></i> {% trans 'edit' %}
             </a>
+            {% endif %}
           </span>
         </h3>
         {% endif %}

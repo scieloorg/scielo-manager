@@ -15,7 +15,11 @@
             <b>
               <span class="label label-info">{{ trans.language.iso_code }}</span>
               &nbsp;
-              <a href="{% url aprelease.edit journal.id item.pk %}">{{ trans.title }}</a>
+              {% if perms.journalmanager.change_pressrelease %}
+                <a href="{% url aprelease.edit journal.id item.pk %}">{{ trans.title }}</a>
+              {% else %}
+                {{ trans.title }}
+              {% endif %}
             </b>
             <div {% if item.translations.all|length > 1 %}class="toggler"{% endif %} style="display: none;">
           {% else %}

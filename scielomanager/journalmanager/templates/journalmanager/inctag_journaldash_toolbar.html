@@ -18,7 +18,7 @@
           <a href="{% url section.index journal_id %}">{% trans 'Sections' %}</a>
         </li>
         {% endif %}
-        {% if perms.journalmanager.list_pressreleases %}
+        {% if perms.journalmanager.list_pressrelease %}
         <li {% if page == 'press_release' %}class="active activedash" {% endif %}>
           <a href="{% url prelease.index journal_id %}">Press Releases</a>
         </li>
