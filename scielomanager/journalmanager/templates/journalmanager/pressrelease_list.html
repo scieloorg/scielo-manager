@@ -9,6 +9,7 @@
 {% block content %}
 {% journaldash_toolbar 'press_release' journal user %}
 <ul class="nav nav-tabs">
+  {% if perms.journalmanager.change_press_release %}
   <li>
     <div class="btn-group" style="margin-right: 10px">
       <button class="btn btn-primary">{% trans 'New' %}</button>
@@ -21,6 +22,7 @@
       </ul>
     </div>
   </li>
+  {% endif %}
   <li class="{% if not request.GET.tab %}active{% endif %}">
     <a href="{% query_string request '' 'include_ampersand' %}">{% trans 'Press Release of Issue' %}</a>
   </li>
