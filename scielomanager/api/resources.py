@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.contrib.auth.models import User
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.authentication import ApiKeyAuthentication
@@ -59,10 +59,12 @@ class IssueResource(ModelResource):
         resource_name = 'issues'
         allowed_methods = ['get', ]
         filtering = {
-            "journal": ('exact'),
+            "journal": ALL_WITH_RELATIONS,
             "is_marked_up": ('exact'),
             "volume": ('exact'),
-            "number": ('exact')
+            "number": ('exact'),
+            "suppl_number": ('exact'),
+            "suppl_volume": ('exact')
         }
 
     def build_filters(self, filters=None):
