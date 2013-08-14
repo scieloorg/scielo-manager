@@ -12,6 +12,7 @@ from django.db import IntegrityError
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -46,6 +47,31 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
+def any_permission_required(perm, login_url=None, raise_exception=False):
+    """
+    Decorator for views that checks whether a user has a particular permission
+    enabled, redirecting to the log-in page if neccesary.
+    If the raise_exception parameter is given the PermissionDenied exception
+    is raised.
+    """
+    def check_perms(user):
+        if not isinstance(perm, (list, tuple)):
+            perms = (perm, )
+        else:
+            perms = perm
+        # First check if the user has the permission (even anon users)
+        import pdb; pdb.set_trace()
+        if user.has_any_perms(perms):
+            return True
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+
+    return user_passes_test(check_perms, login_url=login_url)
+
+
 def get_first_letter(objects_all):
     """
     Returns a set of first letters from names in `objects_all`
@@ -56,22 +82,27 @@ def get_first_letter(objects_all):
 
 
 def index(request):
-
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('journalmanager.user_login'))
 
-    pending_journals = models.PendedForm.objects.filter(
-        user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+    if 'editor' in [i.name.lower() for i in request.user.groups.all()]:
+        landing_page = 'journalmanager/home_editor.html'
+        editor_journals = request.user.user_editors.all()
+        context = {'editor_journals': editor_journals}
+    else:
+        pending_journals = models.PendedForm.objects.filter(
+            user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 
-    # recent activities
-    recent_journals = models.Journal.objects.recents_by_user(request.user)
+        # recent activities
+        recent_journals = models.Journal.objects.recents_by_user(request.user)
 
-    context = {
-        'pending_journals': pending_journals,
-        'recent_activities': recent_journals,
-    }
+        context = {
+            'pending_journals': pending_journals,
+            'recent_activities': recent_journals,
+        }
 
-    return render_to_response('journalmanager/home_journal.html',
+        landing_page = 'journalmanager/home_journal.html'
+    return render_to_response(landing_page,
         context, context_instance=RequestContext(request))
 
 
@@ -404,6 +435,19 @@ def edit_journal_status(request, journal_id=None):
 
 
 @waffle_flag('editor_manager')
+@permission_required('journalmanager.list_editor_journal', login_url=AUTHZ_REDIRECT_URL)
+def editor_journal(request):
+    """
+    Initial editor page, containing a list of all journals related to the user.
+    """
+    editor_journals = request.user.user_editors.all()
+
+    return render_to_response('journalmanager/home_editor.html', {
+                              'editor_journals': editor_journals,
+                              }, context_instance=RequestContext(request))
+
+
+@waffle_flag('editor_manager')
 @permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
 def journal_editors(request, journal_id=None):
     """
@@ -466,6 +510,20 @@ def journal_editors_remove(request, journal_id, user_id):
                        'editors': editors,
                        })
     return HttpResponse(t.render(c))
+
+
+@waffle_flag('editor_manager')
+@permission_required('journalmanager.list_editor_journal', login_url=AUTHZ_REDIRECT_URL)
+def dash_editor_journal(request, journal_id=None):
+    """
+    Handles new and existing journals
+    """
+
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    return render_to_response('journalmanager/journal_dash.html', {
+                              'journal': journal,
+                              }, context_instance=RequestContext(request))
 
 
 @permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)

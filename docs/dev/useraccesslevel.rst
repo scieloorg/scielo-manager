@@ -131,4 +131,12 @@ Editors
     de um periódico por parte de um Editor, tais como: highlights, news, pressreleases, corpo 
     editorial, informação institucional, etc.
 
-A definir
+#. journalmanager | journal | Can list editor Journals
+#. journalmanager | press release | Can add press release
+#. journalmanager | press release | Can change press release
+#. journalmanager | press release | Can list PressReleases
+#. journalmanager | press release article | Can add press release article
+#. journalmanager | press release article | Can change press release article
+#. journalmanager | press release translation | Can add press release translation
+#. journalmanager | press release translation | Can change press release translation
+#. journalmanager | press release translation | Can delete press release translation
