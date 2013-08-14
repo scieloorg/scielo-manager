@@ -61,6 +61,8 @@ class IssueResource(ModelResource):
         filtering = {
             "journal": ('exact'),
             "is_marked_up": ('exact'),
+            "volume": ('exact'),
+            "number": ('exact')
         }
 
     def build_filters(self, filters=None):
