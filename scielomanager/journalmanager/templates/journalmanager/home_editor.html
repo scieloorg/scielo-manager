@@ -1,0 +1,48 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+{% load static %}
+{% load get_title_for_pended %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{{block.super}}{% endblock %}
+
+{% block content %}
+{{block.super}}
+<h1>My Journals</h1>
+  <table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th>{% trans "Journal Title" %}</th>
+      <th>{% trans "Print ISSN" %}</th>
+      <th>{% trans "Electronic ISSN" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for journal in editor_journals %}
+    <tr id="{{ journal.pk }}">
+      <td>
+        <h4>
+            {% if perms.journalmanager.list_editor_journal %}
+              <a href="{% url editor_journal.dash journal.pk %}"
+                 class="tip-bottom"
+                 data-original-title="{{ journal.title }}"
+                 rel="tooltip">
+                {{ journal.title_iso }}
+              </a>
+            {% else %}
+              {{ journal.title_iso }}
+            {% endif %}
+        </h4>
+      </td>
+      <td>{{ journal.print_issn|default:"n.a." }}</td>
+      <td>{{ journal.eletronic_issn|default:"n.a." }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+  </table>
+{% endblock %}
+
