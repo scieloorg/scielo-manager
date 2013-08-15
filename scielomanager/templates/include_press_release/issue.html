@@ -16,7 +16,7 @@
               <span class="label label-info">{{ trans.language.iso_code }}</span>
               &nbsp;
               {% if perms.journalmanager.change_pressrelease %}
-                <a href="{% url aprelease.edit journal.id item.pk %}">{{ trans.title }}</a>
+                <a href="{% url prelease.edit journal.id item.pk %}">{{ trans.title }}</a>
               {% else %}
                 {{ trans.title }}
               {% endif %}
