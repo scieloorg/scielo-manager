@@ -9,7 +9,7 @@
 {% block content %}
 {% journaldash_toolbar 'press_release' journal user %}
 <ul class="nav nav-tabs">
-  {% if perms.journalmanager.change_press_release %}
+  {% if perms.journalmanager.change_pressrelease %}
   <li>
     <div class="btn-group" style="margin-right: 10px">
       <button class="btn btn-primary">{% trans 'New' %}</button>

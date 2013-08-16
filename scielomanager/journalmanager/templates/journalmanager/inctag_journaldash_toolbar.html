@@ -34,9 +34,9 @@
             <a href="{% url journal_editors.index journal_id %}">{% trans 'Editors' %}</a>
           </li>      
           {% endif %}
-          {% if is_editor %}
+          {% if perms.editormanager.list_news %}
             <li {% if page == 'news' %}class="active activedash" {% endif %}>
-              <a href="{% url journal_editors.index journal_id %}">{% trans 'News' %}</a>
+              <a href="#">{% trans 'News' %}</a>
             </li>
           {% endif %}
         {% endflag %}

@@ -15,6 +15,10 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/edit/status/$', views.edit_journal_status, name='journal_status.edit'),
     url(r'^del_pended/(?P<form_hash>\w+)/$', views.del_pended, name='journal.del_pended'),
 
+    #Editor Pages
+    url(r'^(?P<journal_id>\d+)/edash/$', views.dash_editor_journal, name='editor_journal.dash'),
+    url(r'ej/$', views.editor_journal, name='editor_journal.index'),
+
     # Sponsor Tools
     url(r'^sponsor/$', views.sponsor_index, {'model': models.Sponsor}, name='sponsor.index'),
     url(r'^sponsor/new/$', views.add_sponsor, name='sponsor.add'),

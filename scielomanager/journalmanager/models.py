@@ -549,7 +549,8 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ['title']
-        permissions = (("list_journal", "Can list Journals"),)
+        permissions = (("list_journal", "Can list Journals"),
+                       ("list_editor_journal", "Can list editor Journals"))
 
     def change_publication_status(self, status, reason, changed_by):
         """
