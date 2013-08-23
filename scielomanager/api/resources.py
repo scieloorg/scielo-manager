@@ -61,6 +61,10 @@ class IssueResource(ModelResource):
         filtering = {
             "journal": ('exact'),
             "is_marked_up": ('exact'),
+            "volume": ('exact'),
+            "number": ('exact'),
+            "suppl_number": ('exact'),
+            "suppl_volume": ('exact')
         }
 
     def build_filters(self, filters=None):
@@ -75,6 +79,16 @@ class IssueResource(ModelResource):
         if 'collection' in filters:
             issues = Issue.objects.filter(
                 journal__collection__name_slug=filters['collection'])
+            orm_filters['pk__in'] = issues
+
+        if 'eletronic_issn' in filters:
+            issues = Issue.objects.filter(
+                journal__eletronic_issn=filters['eletronic_issn'])
+            orm_filters['pk__in'] = issues
+
+        if 'print_issn' in filters:
+            issues = Issue.objects.filter(
+                journal__print_issn=filters['print_issn'])
             orm_filters['pk__in'] = issues
 
         return orm_filters

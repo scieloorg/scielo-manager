@@ -32,6 +32,14 @@ Optional Parameters:
     *String* of the **name_slug** of the collection to be used as a
     filter param.
 
+  **eletronic_issn**
+
+    *String* of the Electronic ISSN of the journal. Format ``1234-1234``
+
+  **print_issn**
+
+    *String* of the Print ISSN of the journal. Format ``1234-1234``
+
 Response::
 
   {
