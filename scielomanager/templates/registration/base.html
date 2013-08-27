@@ -19,50 +19,7 @@
         <div class="banner"><h1>Manager</h1></div>
     </div>
     {% block content %}{% endblock %}
-    <div class="footer row-fluid">
-      <div class="span3">
-        <p>
-          <strong>SciELO - Scientific Electronic Library Online <br/>
-            <a href="http://www.fapesp.br" target="_blank">FAPESP</a> <a href="http://www.cnpq.br" target="_blank">CNPq</a>
-            <a href="http://www.bireme.org">BIREME</a>
-            <a href="http://www.fapunifesp.edu.br" target="_blank">FapUnifesp</a>
-          </strong>
-        </p>
-        <p>Rua Dr. Diogo de   Farias, 1087 conj. 810&nbsp; - Vila Clementino  04037-003 São Paulo SP -   Brazil</p>
-        <p>Tel.: (55 11) 3369-4080 - Email: <a href="mailto:scielo@scielo.org">scielo@scielo.org</a>
-      </div>
-      <div class="span2">
-        <h4>{% trans 'Help' %}</h4>
-        <ul>
-          <li><a href="http://docs.scielo.org/projects/scielo-manager/en/latest/about.html" target="_blank">{% trans 'About' %}</a></li>
-          <li><a href="http://docs.scielo.org/projects/scielo-manager/en/latest/" target="_blank">{% trans 'Documentation'%}</a></li>
-          <li><a href="http://trac.scielo.org/trac/scielo-manager/newticket?type=bug">{% trans 'Report bug' %}</a></li>
-          <li><a href="http://groups.google.com/group/scielo-discuss" target="_blank">{% trans 'Discuss mailing list' %}</a></li>
-        </ul>
-      </div>
-      <div class="span2">
-        <h4>{% trans 'Development' %}</h4>
-        <ul>
-          <li><a href="http://www.github.com/scieloorg/" target="_blank">{% trans 'GitHub' %}</a></li>
-          <li><a href="http://groups.google.com/group/scielo-dev" target="_blank">{% trans 'Dev mailing list' %}</a></li>
-        </ul>
-      </div>
-      <div class="span2">
-        <h4>{% trans 'SciELO Project' %}</h4>
-        <ul>
-          <li><a href="http://docs.scielo.org/en/latest/index.html">{% trans 'About' %}</a></li>
-        </ul>
-      </div>
-      <div class="span3">
-        <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
-          <input type="hidden" id="language" name="language">
-          {% csrf_token %}
-          <select id="lang_options">
-            <option value="pt-br" {% if LANGUAGE_CODE == 'pt-br' %}selected{% endif %}>Português</option>
-            <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-            <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
-          </select>
-        </form>
-      </div>
-    </div>
+
+    {% include 'footer.html' %}
+
   </body>
