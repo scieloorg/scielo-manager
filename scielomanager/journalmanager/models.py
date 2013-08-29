@@ -563,12 +563,12 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     def issues_as_grid(self, is_available=True):
         objects_all = self.issue_set.available(is_available).order_by(
-            '-publication_year')
+            '-publication_year', '-volume')
 
         grid = OrderedDict()
 
         for issue in objects_all:
-            year_node = grid.setdefault(issue.publication_year, {})
+            year_node = grid.setdefault(issue.publication_year, OrderedDict())
             volume_node = year_node.setdefault(issue.volume, [])
             volume_node.append(issue)
 
