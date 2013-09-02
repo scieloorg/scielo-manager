@@ -904,9 +904,6 @@ class Issue(caching.base.CachingMixin, models.Model):
             'journal': self.journal,
         }
 
-        if self.volume:
-            filters['volume'] = self.volume
-
         try:
             last = Issue.objects.filter(**filters).order_by('order').reverse()[0]
             next_order = last.order + 1
@@ -921,7 +918,9 @@ class Issue(caching.base.CachingMixin, models.Model):
         if not self.pk:
             self.order = self._suggest_order()
         else:
-            if tools.has_changed(self, 'publication_year') or tools.has_changed(self, 'volume'):
+            # the ordering control is based on publication year attr.
+            # if an issue is moved between pub years, the order must be reset.
+            if tools.has_changed(self, 'publication_year'):
                 self.order = self._suggest_order(force=True)
 
         super(Issue, self).save(*args, **kwargs)
