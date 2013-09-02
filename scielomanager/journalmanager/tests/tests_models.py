@@ -256,6 +256,19 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue.scielo_pid, expected)
 
+    def test_get_suggested_issue_order_multiples_volumes_at_same_year(self):
+        """
+        Related to https://github.com/scieloorg/SciELO-Manager/issues/553
+        """
+        journal = JournalFactory.create()
+
+        issue1 = IssueFactory.create(volume='9',
+                                     publication_year=2012, journal=journal)
+        issue2 = IssueFactory.create(volume='10',
+                                     publication_year=2012, journal=journal)
+
+        self.assertEqual(issue1._suggest_order(), 1)
+        self.assertEqual(issue2._suggest_order(), 2)
 
 class LanguageTests(TestCase):
 
