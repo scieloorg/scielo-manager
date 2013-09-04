@@ -1,7 +1,8 @@
 # coding: utf-8
 from django.test import TestCase
-from django_factory_boy import auth
 from mocker import MockerTestCase
+from django.utils import unittest
+from django_factory_boy import auth
 
 from .modelfactories import (
     IssueFactory,
@@ -341,6 +342,27 @@ class JournalTests(TestCase):
         expected = [2012, 2011, 2010, 2009, 2008]
 
         self.assertEqual(grid.keys(), expected)
+
+    @unittest.expectedFailure
+    def test_issues_grid_must_be_ordered_by_volume_in_the_same_year(self):
+        journal = JournalFactory.create()
+
+        journal.issue_set.add(IssueFactory.create(volume='27',
+            publication_year='2014'))
+
+        journal.issue_set.add(IssueFactory.create(volume='10',
+            publication_year='2014'))
+
+        journal.issue_set.add(IssueFactory.create(volume='9',
+            publication_year='2014'))
+
+        journal.issue_set.add(IssueFactory.create(volume='2',
+            publication_year='2014'))
+
+        grid = journal.issues_as_grid()
+        expected = [u'27', u'10', u'9', u'2']
+
+        self.assertEqual(grid.values()[0].keys(), expected)
 
     def test_journal_has_issues_must_be_true(self):
         journal = JournalFactory.create()
