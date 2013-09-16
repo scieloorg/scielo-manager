@@ -343,6 +343,31 @@ class JournalTests(TestCase):
 
         self.assertEqual(grid.keys(), expected)
 
+    def test_issues_grid_must_be_ordered_by_volume_desc(self):
+        journal = JournalFactory.create()
+
+        for i in range(5):
+            volume = 9 - i
+            journal.issue_set.add(IssueFactory.create(volume=volume,
+                                  publication_year=2012))
+
+        grid = journal.issues_as_grid()
+        expected = [u'9', u'8', u'7', u'6', u'5']
+
+        self.assertEqual(grid.values()[0].keys(), expected)
+
+    def test_issues_grid_must_be_ordered_dict(self):
+        try:
+            from collections import OrderedDict
+        except ImportError:
+            from ordereddict import OrderedDict
+
+        journal = JournalFactory.create()
+
+        grid = journal.issues_as_grid()
+
+        self.assertIsInstance(grid, OrderedDict)
+
     @unittest.expectedFailure
     def test_issues_grid_must_be_ordered_by_volume_in_the_same_year(self):
         journal = JournalFactory.create()
