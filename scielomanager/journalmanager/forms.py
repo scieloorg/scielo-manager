@@ -291,11 +291,15 @@ class IssueForm(ModelForm):
     def clean(self):
         volume = self.cleaned_data.get('volume')
         number = self.cleaned_data.get('number')
+        suppl_volume = self.cleaned_data.get('suppl_volume')
+        suppl_number = self.cleaned_data.get('suppl_number')
         publication_year = self.cleaned_data.get('publication_year')
 
         if volume or number:
             issue = models.Issue.objects.filter(number=number,
                                                 volume=volume,
+                                                suppl_volume=suppl_volume,
+                                                suppl_number=suppl_number,
                                                 publication_year=publication_year,
                                                 journal=self.journal_id)
 
