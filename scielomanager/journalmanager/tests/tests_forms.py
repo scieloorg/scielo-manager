@@ -1207,7 +1207,8 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        issue = modelfactories.IssueFactory(journal=self.journal)
+        issue = modelfactories.IssueFactory(journal=self.journal,
+            suppl_volume='', suppl_number='')
 
         form = self.app.get(reverse('issue.add',
             args=[self.journal.pk]), user=self.user).forms['issue-form']
@@ -1216,6 +1217,8 @@ class IssueFormTests(WebTest):
         form.set('ctrl_vocabulary', 'decs')
         form['number'] = str(issue.number)
         form['volume'] = str(issue.volume)
+        form['suppl_volume'] = ''
+        form['suppl_number'] = ''
         form['editorial_standard'] = ''
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
@@ -1338,6 +1341,39 @@ class IssueFormTests(WebTest):
 
         self.assertRaises(ValueError,
             lambda: form.set('section', str(trashed_section.pk)))
+
+    def test_more_than_one_volume_supplement(self):
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        issue1 = modelfactories.IssueFactory(journal=self.journal,
+            volume='29', publication_year='2013')
+
+        issue2 = modelfactories.IssueFactory(journal=self.journal,
+            volume='29', number='', suppl_volume='1', publication_year='2013')
+
+        form = self.app.get(reverse('issue.add',
+            args=[self.journal.pk,]), user=self.user).forms['issue-form']
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['volume'] = '29'
+        form['number'] = ''
+        form['suppl_volume'] = '2'
+        form['editorial_standard'] = ''
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = '2013'
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+        form.set('use_license', str(issue1.journal.use_license.pk))
+
+        response = form.submit().follow()
+        self.assertIn('Saved.', response.body)
 
 
 class StatusFormTests(WebTest):
