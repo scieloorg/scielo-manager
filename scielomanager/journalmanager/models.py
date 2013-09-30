@@ -200,16 +200,10 @@ class RegularPressReleaseCustomManager(caching.base.CachingManager):
         Returns all PressReleases related to a Journal, given its
         PID.
         """
-        try:
-            journal = Journal.objects.get(
-                models.Q(print_issn=journal_pid) | models.Q(eletronic_issn=journal_pid))
-            issues_pks = [iss.pk for iss in journal.issue_set.all()]
-        except Journal.DoesNotExist:
-            # little hack to act as .filter, returning an empty
-            # queryset bound to the model.
-            issues_pks = [None]
+        journals = Journal.objects.filter(
+            models.Q(print_issn=journal_pid) | models.Q(eletronic_issn=journal_pid))
 
-        preleases = self.filter(issue__pk__in=issues_pks)
+        preleases = self.filter(issue__journal__in=journals.values('id')).select_related('translations')
         return preleases
 
     def all_by_journal(self, journal):
