@@ -1,0 +1,74 @@
+{% extends "base_list_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+{% load query_string %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "Journals" %}{% endblock %}
+
+{% block content %}
+<table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th>{% trans "Collection" %}</th>
+      <th>{% trans "Began at" %}</th>
+      <th>{% trans "Closed at" %}</th>
+      <th>{% trans "Package name" %}</th>
+      <th>{% trans "Article" %}</th>
+      <th>{% trans "Owner" %}</th>
+      <th>{% trans "Report" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for attempt in attempts %}
+    <tr>
+      <td>
+        {{ attempt.collection.name }}
+      </td>
+      <td>
+        {{ attempt.created_at }}
+      </td>
+      <td>
+        {{ attempt.closed_at }}
+      </td>
+      <td>
+        {{ attempt.pkgmeta_filename }} ({{attempt.pkgmeta_filesize}}kb)
+      </td>
+      <td>
+        {{ attempt.article_title|truncatewords:5 }}
+      </td>
+      <td>
+        {{ attempt.pkgmeta_submitter }}
+      </td>
+      <td>
+        <a href="#"><i class="icon-file"></i></a>
+      </td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <div class="wizard-steps" style="padding-bottom: 40px">
+            {% for status in attempt.all_status %}
+                <div {%if status.is_accomplished%}class="accomplished"{%else%}class="not_accomplished"{%endif%}>
+                  <a href="#"> 
+                    <span class="popover-bottom"
+                     data-toggle="popover" 
+                     data-placement="bottom" 
+                     data-content="{{ status.changed_at }}"
+                     title data-original-title="{%if status.is_accomplished%} Finished at {%else%} Pendent since {%endif%}">
+                     {{ status.phase }}
+                   </span>
+                   </a>
+                </div>
+            {% endfor %}
+            </div>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+</table>
+{% endblock %}

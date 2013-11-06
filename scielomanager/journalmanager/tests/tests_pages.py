@@ -10,52 +10,11 @@ from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 from journalmanager.tests.tests_forms import _makePermission
-
-def _makeUserRequestContext(user):
-    """
-    Constructs a class to be used by settings.USERREQUESTCONTEXT_FINDER
-    bound to a user, for testing purposes.
-    """
-    class UserRequestContextTestFinder(object):
-
-        def get_current_user_collections(self):
-            return user.user_collection.all()
-
-        def get_current_user_active_collection(self):
-            colls = self.get_current_user_collections()
-            if colls:
-                return colls.get(usercollections__is_default=True)
-
-    return UserRequestContextTestFinder
-
-
-def _patch_userrequestcontextfinder_settings_setup(func):
-    """
-    Patch the setting USERREQUESTCONTEXT_FINDER to target a
-    testing-friendly version.
-    """
-    def wrapper(self, **kwargs):
-        func(self, **kwargs)
-
-        # override the setting responsible for retrieving the active user context
-        cls = self.__class__
-        cls.UserRequestContextTestFinder = _makeUserRequestContext(self.user)
-        self.default_USERREQUESTCONTEXT_FINDER = settings.USERREQUESTCONTEXT_FINDER
-        settings.USERREQUESTCONTEXT_FINDER = 'scielomanager.scielomanager.journalmanager.tests.tests_pages.%s.UserRequestContextTestFinder' % cls.__name__
-
-    return wrapper
-
-
-def _patch_userrequestcontextfinder_settings_teardown(func):
-    """
-    Restore the settings defaults.
-    """
-    def wrapper(self, **kwargs):
-        func(self, **kwargs)
-
-        settings.USERREQUESTCONTEXT_FINDER = self.default_USERREQUESTCONTEXT_FINDER
-
-    return wrapper
+from helpers import (
+    _makeUserRequestContext,
+    _patch_userrequestcontextfinder_settings_setup,
+    _patch_userrequestcontextfinder_settings_teardown
+    )
 
 
 class UserCollectionsSelectorTests(WebTest):
@@ -234,7 +193,7 @@ class JournalEditorsTests(WebTest):
             user=self.user,
             expect_errors=False
         )
-        
+
         response_js = json.loads(response.content)
 
         self.assertIn("username", response_js[0])

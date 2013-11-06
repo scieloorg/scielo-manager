@@ -23,12 +23,18 @@ v1_api_resources = [
     resources.DataChangeEventResource(),
     resources.PressReleaseResource(),
     resources.AheadPressReleaseResource(),
+    resources.AttemptResource(),
+    resources.AttemptStatusResource(),
 ]
+
 for res in v1_api_resources:
     v1_api.register(res)
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
+
+    # Article Tracking
+    url(r'^atrk/', include('scielomanager.articletrack.urls')),
 
     # Journal Manager APP
     url(r'^journal/', include('scielomanager.journalmanager.urls')),
