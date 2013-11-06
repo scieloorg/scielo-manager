@@ -1183,8 +1183,9 @@ class IssueFormTests(WebTest):
         form['number'] = '3'
         form['editorial_standard'] = ''
         form['volume'] = ''
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2012'
+        form['publication_start_month'] = ''
+        form['publication_end_month'] = ''
+        form['publication_year'] = ''
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
 
