@@ -1,9 +1,8 @@
-# coding: utf-8
-from scielomanager.utils.middlewares import threadlocal
+#coding: utf-8
 from journalmanager.modelmanagers import UserObjectQuerySet, UserObjectManager, user_request_context
 
 
-class AttemptQuerySet(UserObjectQuerySet):
+class CheckinQuerySet(UserObjectQuerySet):
 
     def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(
@@ -14,7 +13,7 @@ class AttemptQuerySet(UserObjectQuerySet):
             collection=get_active_collection())
 
 
-class AttemptManager(UserObjectManager):
+class CheckinManager(UserObjectManager):
 
     def get_query_set(self):
-        return AttemptQuerySet(self.model, using=self._db)
+        return CheckinQuerySet(self.model, using=self._db)

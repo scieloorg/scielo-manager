@@ -22,8 +22,8 @@ from journalmanager.models import (
 )
 
 from articletrack.models import (
-    Attempt,
-    Status
+    Checkin,
+    Notice
 )
 
 
@@ -365,20 +365,21 @@ class AheadPressReleaseResource(ModelResource):
         return orm_filters
 
 
-class AttemptStatusResource(ModelResource):
+class CheckinResource(ModelResource):
+    collection = fields.ForeignKey(CollectionResource, 'collection')
 
     class Meta(ApiKeyAuthMeta):
-        queryset = Status.objects.all()
-        resource_name = 'attempt_status'
+        queryset = Checkin.objects.all()
+        resource_name = 'checkins'
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']
 
 
-class AttemptResource(ModelResource):
-    collection = fields.ForeignKey(CollectionResource, 'collection')
+class CheckinNoticeResource(ModelResource):
+    checkin = fields.ForeignKey(CheckinResource, 'checkin')
 
     class Meta(ApiKeyAuthMeta):
-        queryset = Attempt.objects.all()
-        resource_name = 'attempts'
+        queryset = Notice.objects.all()
+        resource_name = 'notices'
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']

@@ -23,8 +23,8 @@ v1_api_resources = [
     resources.DataChangeEventResource(),
     resources.PressReleaseResource(),
     resources.AheadPressReleaseResource(),
-    resources.AttemptResource(),
-    resources.AttemptStatusResource(),
+    resources.CheckinResource(),
+    resources.CheckinNoticeResource(),
 ]
 
 for res in v1_api_resources:
@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
 
     # Article Tracking
-    url(r'^atrk/', include('scielomanager.articletrack.urls')),
+    url(r'^arttrack/', include('scielomanager.articletrack.urls')),
 
     # Journal Manager APP
     url(r'^journal/', include('scielomanager.journalmanager.urls')),
@@ -60,7 +60,7 @@ urlpatterns = patterns('',
 
     (r'^export/', include('scielomanager.export.urls')),
 
-    #AJAX 
+    #AJAX
     url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
 )
 
