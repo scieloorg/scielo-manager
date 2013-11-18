@@ -27,7 +27,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
     objects = models.Manager()
     userobjects = modelmanagers.CheckinManager()
 
-    collection = models.ForeignKey(Collection)
+    collection = models.ForeignKey(Collection, null=True)
     articlepkg_ref = models.CharField(max_length=32)
     attempt_ref = models.CharField(max_length=32)
     article_title = models.CharField(max_length=512)

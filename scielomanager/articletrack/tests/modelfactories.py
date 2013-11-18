@@ -16,25 +16,28 @@ class CollectionFactory(factory.Factory):
     name_slug = factory.Sequence(lambda n: 'scl%s' % n)
 
 
-class AttemptFactory(factory.Factory):
-    FACTORY_FOR = models.Attempt
+class CheckinFactory(factory.Factory):
+    FACTORY_FOR = models.Checkin
 
-    articlepkg_id = 1
-    checkin_id = 1
     collection = factory.SubFactory(CollectionFactory)
+
+    articlepkg_ref = 1
+    attempt_ref = 1
     article_title = u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)'
     journal_title = u'Journal of the Brazilian Chemical Society'
     issue_label = u'2013 v.24 n.4'
-    pkgmeta_filename = u'20132404.zip'
-    pkgmeta_md5 = u'sha1 strint'
-    pkgmeta_filesize = 256
-    pkgmeta_filecount = 10
-    pkgmeta_submitter = u'SciELO Brasil'
+    package_name = u'20132404.zip'
+    uploaded_at = '2013-11-13 15:23:12.286068-02'
+    created_at = '2013-11-13 15:23:18.286068-02'
 
 
-class StatusFactory(factory.Factory):
-    FACTORY_FOR = models.Status
+class NoticeFactory(factory.Factory):
+    FACTORY_FOR = models.Notice
 
-    phase = u'upload'
-    is_accomplished = True
-    attempt = factory.SubFactory(AttemptFactory)
+    checkin = factory.SubFactory(CheckinFactory)
+
+    stage = u'reference'
+    checkpoint = u'Validation'
+    message = u'The reference xyz is not ok'
+    status = 'error'
+    created_at = '2013-11-13 15:23:18.286068-02'
