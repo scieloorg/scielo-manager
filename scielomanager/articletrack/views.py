@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import permission_required
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 
+
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_index(request):
 
@@ -21,6 +22,7 @@ def checkin_index(request):
         context_instance=RequestContext(request)
     )
 
+
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_history(request, articlepkg):
 
@@ -35,6 +37,7 @@ def checkin_history(request, articlepkg):
         },
         context_instance=RequestContext(request)
     )
+
 
 @permission_required('articletrack.list_notice', login_url=AUTHZ_REDIRECT_URL)
 def notice_detail(request, checkin_id):
