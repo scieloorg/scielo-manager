@@ -366,7 +366,7 @@ class AheadPressReleaseResource(ModelResource):
 
 
 class CheckinResource(ModelResource):
-    collection = fields.ForeignKey(CollectionResource, 'collection')
+    collection = fields.ForeignKey(CollectionResource, 'collection', null=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Checkin.objects.all()
