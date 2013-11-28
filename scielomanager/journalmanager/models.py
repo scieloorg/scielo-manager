@@ -112,6 +112,21 @@ class JournalCustomManager(AppCustomManager):
             collection=collection)
         return objects_all
 
+    def by_issn(self, issn):
+        """
+        Get the journal assigned to `issn`, being electronic or print.
+
+        In some cases more than one instance of the same journal will be
+        returned due to the fact that journals present in more than one
+        collection is handled separately.
+        """
+        if issn == '':
+            return Journal.objects.none()
+
+        journals = Journal.objects.filter(
+            models.Q(print_issn=issn) | models.Q(eletronic_issn=issn))
+        return journals
+
 
 class SectionCustomManager(AppCustomManager):
 

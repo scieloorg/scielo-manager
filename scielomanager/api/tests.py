@@ -902,13 +902,12 @@ class CheckinRestAPITest(WebTest):
 
         att = {u'articlepkg_ref': 1,
                u'attempt_ref': 1,
-               u'collection': u'/api/v1/collections/1/',
                u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
                u'journal_title': u'Journal of the Brazilian Chemical Society',
                u'issue_label': u'2013 v.24 n.4',
                u'package_name': u'20132404.zip',
                u'uploaded_at': u'2013-11-13 15:23:12.286068-02',
-               u'created_at': u'2013-11-13 15:23:18.286068-02'
+               u'created_at': u'2013-11-13 15:23:18.286068-02',
                }
 
         response = self.app.post_json('/api/v1/checkins/',
@@ -920,36 +919,25 @@ class CheckinRestAPITest(WebTest):
         self.assertEqual(response.status_code, 201)
 
     def test_put_data(self):
+        from articletrack import models
+
         perm = _makePermission(perm='add_checkin', model='checkin', app_label='articletrack')
         self.user.user_permissions.add(perm)
-
-        att = {u'articlepkg_ref': 1,
-               u'attempt_ref': 1,
-               u'collection': u'/api/v1/collections/1/',
-               u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
-               u'journal_title': u'Journal of the Brazilian Chemical Society',
-               u'issue_label': u'2013 v.24 n.4',
-               u'package_name': u'20132404.zip',
-               u'uploaded_at': u'2013-11-13 15:23:12.286068-02',
-               u'created_at': u'2013-11-13 15:23:18.286068-02'
-               }
-
-        response = self.app.post_json('/api/v1/checkins/',
-                                      att,
-                                      extra_environ=self.extra_environ,
-                                      status=201)
-
         perm = _makePermission(perm='change_checkin', model='checkin', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
         att = {u'issue_label': u'2013 v.24 n.5'}
 
-        response = self.app.put_json('/api/v1/checkins/1/',
+        checkin = articletrack_modelfactories.CheckinFactory.create()
+
+        response = self.app.put_json('/api/v1/checkins/%s/' % checkin.pk,
                                 att,
                                 extra_environ=self.extra_environ,
                                 status=204)
 
         self.assertEqual(response.status_code, 204)
+        checkin_check = models.Checkin.objects.get(pk=checkin.pk)
+        self.assertEqual(checkin_check.issue_label, u'2013 v.24 n.5')
 
     def test_del_data(self):
         response = self.app.delete('/api/v1/checkins/',
@@ -986,7 +974,9 @@ class CheckinRestAPITest(WebTest):
             u'issue_label',
             u'package_name',
             u'uploaded_at',
-            u'created_at'
+            u'created_at',
+            u'eissn',
+            u'pissn',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
@@ -1007,14 +997,14 @@ class NoticeRestAPITest(WebTest):
 
     def test_post_data(self):
 
-        articletrack_modelfactories.CheckinFactory.create()
+        checkin = articletrack_modelfactories.CheckinFactory.create()
 
         perm = _makePermission(perm='add_notice', model='notice', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
-        att = {u'checkin': u'/api/v1/checkins/1/',
+        att = {u'checkin': u'/api/v1/checkins/%s/' % checkin.pk,
                u'checkpoint': u'Validation',
-               u'created_at': u'2013-11-14T15:10:20.345520',
+               u'uploaded_at': u'2013-11-14T15:10:20.345520',
                u'message': u'The reference of xyz is not OK',
                u'stage': u'Reference',
                u'status': u'warning'
@@ -1029,35 +1019,24 @@ class NoticeRestAPITest(WebTest):
         self.assertEqual(response.status_code, 201)
 
     def test_put_data(self):
-        articletrack_modelfactories.CheckinFactory.create()
+        from articletrack import models
 
         perm = _makePermission(perm='add_notice', model='notice', app_label='articletrack')
         self.user.user_permissions.add(perm)
-
-        att = {u'checkin': u'/api/v1/checkins/1/',
-               u'checkpoint': u'Validation',
-               u'created_at': u'2013-11-14T15:10:20.345520',
-               u'message': u'The reference of xyz is not OK',
-               u'stage': u'Reference',
-               u'status': u'warning'
-               }
-
-        response = self.app.post_json('/api/v1/notices/',
-                                      att,
-                                      extra_environ=self.extra_environ,
-                                      status=201)
-
         perm = _makePermission(perm='change_notice', model='notice', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
         att = {u'stage': u'DOI'}
+        notice = articletrack_modelfactories.NoticeFactory.create(stage='References')
 
-        response = self.app.put_json('/api/v1/notices/1/',
+        response = self.app.put_json('/api/v1/notices/%s/' % notice.pk,
                                 att,
                                 extra_environ=self.extra_environ,
                                 status=204)
 
         self.assertEqual(response.status_code, 204)
+        notice_check = models.Notice.objects.get(pk=notice.pk)
+        self.assertEqual(notice_check.stage, 'DOI')
 
     def test_del_data(self):
         response = self.app.delete('/api/v1/notices/',
