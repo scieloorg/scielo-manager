@@ -3,6 +3,7 @@
 {% load static %}
 {% load user_collections_dashboard %}
 {% load waffle_tags %}
+{% load waffle_tags %}
 
 {% block base_struture %}
 <div class="container-fluid">
@@ -23,6 +24,11 @@
             <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
           </li>
           {% endif %}
+          {% flag 'articletrack' %}
+          <li id="articletrack-link">
+            <a href="{% url checkin_index %}">{% trans 'Articles in submission' %}</a>
+          </li>
+          {% endflag %}
           {% if perms.journalmanager.list_sponsor %}
           <li id="sponsors-link">
             <a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>

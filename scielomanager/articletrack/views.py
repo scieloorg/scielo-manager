@@ -1,12 +1,16 @@
-from articletrack import models
-from scielomanager.tools import get_paginated
+from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import permission_required
 
+from . import models
+from scielomanager.tools import get_paginated
+
+
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 
 
+@waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_index(request):
 
@@ -23,6 +27,7 @@ def checkin_index(request):
     )
 
 
+@waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_history(request, articlepkg):
 
@@ -31,7 +36,7 @@ def checkin_history(request, articlepkg):
     objects = get_paginated(checkins, request.GET.get('page', 1))
 
     return render_to_response(
-        'articletrack/checkin_list_by_package.html',
+        'articletrack/history.html',
         {
             'checkins': objects,
         },
@@ -39,6 +44,7 @@ def checkin_history(request, articlepkg):
     )
 
 
+@waffle_flag('articletrack')
 @permission_required('articletrack.list_notice', login_url=AUTHZ_REDIRECT_URL)
 def notice_detail(request, checkin_id):
 

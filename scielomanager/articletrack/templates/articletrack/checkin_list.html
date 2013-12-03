@@ -5,13 +5,13 @@
 {% load query_string %}
 {% load inctag_toolbars %}
 
-{% block page_title %}{% trans "List of attempts" %}{% endblock %}
+{% block page_title %}{% trans "List of Article Check ins" %}{% endblock %}
 
 {% block content %}
 
 <div class="row-fluid show-grid">
   <div class="span10">
-    <h4>{% trans 'List of Checkin' %}</h4>
+    <h4>{% trans 'List of Article Check ins' %}</h4>
   </div>
   <div class="2" style="text-align:right; margin-bottom:20px;">
     {% simple_pagination checkins %}
@@ -21,14 +21,11 @@
 <table class="table table-striped table-condensed">
   <thead>
     <tr>
-      <th>{% trans "Collection" %}</th>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Package" %}</th>
-      <th>{% trans "Attempt" %}</th>
+      <th>{% trans "Package Name" %}</th>
       <th>{% trans "Article Name" %}</th>
       <th>{% trans "Journal Name" %}</th>
-      <th>{% trans "Issue" %}</th>
-      <th>{% trans "Created" %}</th>
+      <th>{% trans "Issue Label" %}</th>
+      <th>{% trans "Uploaded at" %}</th>
       <th></th>
     </tr>
   </thead>
@@ -36,16 +33,7 @@
     {% for checkin in checkins.object_list %}
     <tr>
       <td>
-        {{ checkin.collection.name }}
-      </td>
-      <td>
         {{ checkin.package_name }}
-      </td>
-      <td>
-        {{ checkin.articlepkg_ref }}
-      </td>
-      <td>
-        {{ checkin.attempt_ref }}
       </td>
       <td>
         {{ checkin.article_title|truncatewords:5 }}

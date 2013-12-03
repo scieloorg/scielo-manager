@@ -11,7 +11,9 @@
 
 <div class="row-fluid show-grid">
   <div class="span10">
-    <h4>{% trans 'Attempts to article: ' %}<span class="muted">{{ checkins.object_list.0.article_title|truncatewords:12 }}</span></h4>
+    <h4>{% trans 'Attempts to article: ' %}
+      <span class="muted">{{ checkins.object_list.0.article_title|truncatewords:7 }}</span>
+    </h4>
   </div>
   <div class="2" style="text-align:right; margin-bottom:20px;">
     {% simple_pagination checkins %}
@@ -46,4 +48,9 @@
     {% endfor %}
   <tbody>
 </table>
+
+{% trans 'Go to' %}:
+
+<a href="{% url checkin_index %}">{% trans "List of check ins" %}</a>
+
 {% endblock %}
