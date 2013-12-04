@@ -34,5 +34,5 @@ CACHES = {
 #
 # Full qualified path to the class responsible for returning active user context
 #
-USERREQUESTCONTEXT_FINDER = 'scielomanager.utils.middlewares.threadlocal.UserRequestContextFinder'
+USERREQUESTCONTEXT_FINDER = 'scielomanager.utils.usercontext.UserRequestContextFinder'
 
