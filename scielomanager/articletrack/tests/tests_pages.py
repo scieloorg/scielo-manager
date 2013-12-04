@@ -117,7 +117,7 @@ class CheckinListTests(WebTest):
         response = self.app.get(reverse('checkin_history',
             args=[checkin.pk]), user=self.user)
 
-        response.mustcontain('<a href="/arttrack/notice/1/" class="btn btn-mini btn" type="button">Details</a>')
+        response.mustcontain('<a href="/arttrack/notice/%s/" class="btn btn-mini btn" type="button">Details</a>' % checkin.id)
 
 
 class NoticeListTests(WebTest):
