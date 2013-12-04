@@ -63,7 +63,7 @@ class CheckinListTests(WebTest):
 
         response.mustcontain('Journal of the Brazilian Chemical Society')
 
-    def test_checkin_list_create_detail_history_button(self):
+    def test_checkin_list_display_detail_and_history_button(self):
         self._addWaffleFlag()
         self._makeOne()
 
