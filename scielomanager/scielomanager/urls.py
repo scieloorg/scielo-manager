@@ -4,9 +4,8 @@ from django.contrib import admin
 from django.conf import settings
 from tastypie.api import Api
 
-from scielomanager.journalmanager import views
-from scielomanager.journalmanager import models
-from scielomanager.api import resources
+from journalmanager import views, models
+from api import resources
 
 admin.autodiscover()
 
@@ -34,10 +33,10 @@ urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
 
     # Article Tracking
-    url(r'^arttrack/', include('scielomanager.articletrack.urls')),
+    url(r'^arttrack/', include('articletrack.urls')),
 
     # Journal Manager APP
-    url(r'^journal/', include('scielomanager.journalmanager.urls')),
+    url(r'^journal/', include('journalmanager.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
@@ -46,7 +45,7 @@ urlpatterns = patterns('',
     url(r'^collection/new/$', views.add_collection, name='collection.add'),
     url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
 
-    url(r'accounts/', include('scielomanager.accounts.urls')),
+    url(r'accounts/', include('accounts.urls')),
 
     (r'^i18n/', include('django.conf.urls.i18n')),
 
@@ -58,7 +57,7 @@ urlpatterns = patterns('',
     #API version 1
     (r'^api/', include(v1_api.urls)),
 
-    (r'^export/', include('scielomanager.export.urls')),
+    (r'^export/', include('export.urls')),
 
     #AJAX
     url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),

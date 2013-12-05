@@ -7,8 +7,8 @@ from django.contrib.messages import constants as messages
 DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
-PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
-SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 ADMINS = (
     ('Admin SciELO', 'dev@scielo.org'),
@@ -18,7 +18,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'journalmanager',         # Or path to database file if using sqlite3.
         'USER': 'postgres',               # Not used with sqlite3.
         'PASSWORD': '',                   # Not used with sqlite3.
@@ -67,7 +67,7 @@ USE_L10N = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-MEDIA_ROOT  = os.path.join(PROJECT_PATH, 'static/media/')
+MEDIA_ROOT  = os.path.join(HERE, 'static/media/')
 #STATIC_ROOT = os.path.join(PROJECT_PATH, 'static/')
 
 # URL prefix for static files.
@@ -76,7 +76,7 @@ STATIC_URL = '/static/'
 MEDIA_URL  = '/static/media/'
 
 # Webassets
-ASSETS_ROOT = os.path.join(PROJECT_PATH, 'static/')
+ASSETS_ROOT = os.path.join(HERE, 'static/')
 ASSETS_URL = '/static/'
 ASSETS_DEBUG = False
 
@@ -97,7 +97,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_PATH, 'static/'),
+    os.path.join(HERE, 'static/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -126,11 +126,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'scielomanager.utils.middlewares.threadlocal.ThreadLocalMiddleware',
-    'scielomanager.maintenancewindow.middleware.MaintenanceMiddleware',
+    'maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'waffle.middleware.WaffleMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 )
 
 ROOT_URLCONF = 'scielomanager.urls'
@@ -139,7 +138,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_PATH, 'templates'),
+    os.path.join(HERE, 'templates'),
 )
 
 INSTALLED_APPS = (
@@ -151,7 +150,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'django.contrib.flatpages',
     'journalmanager',
     'export',
     'accounts',
@@ -166,7 +164,7 @@ INSTALLED_APPS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.i18n',
     'django.core.context_processors.csrf',
     'django.core.context_processors.media',
@@ -191,7 +189,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-error',
 }
 
-FIXTURE_DIRS = (os.path.join(PROJECT_PATH, 'fixtures'),)
+FIXTURE_DIRS = (os.path.join(HERE, 'fixtures'),)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -263,7 +261,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5Mb
 
 BASE_PATH = PROJECT_PATH
 TEST_DISCOVERY_ROOT = BASE_PATH
-TEST_RUNNER = 'utils.runner.DiscoveryRunner'
+TEST_RUNNER = 'scielomanager.utils.runner.DiscoveryRunner'
 
 ### END App customization settings
 #################################################################
@@ -276,7 +274,7 @@ TEST_RUNNER = 'utils.runner.DiscoveryRunner'
 # ...because (1) we want to be able to add to settings in this file, and
 # not only overwrite them, and (2) we do not want the app to launch if the
 # 'settings_local.include' file is not provided
-execfile(os.path.join(PROJECT_PATH,'settings_local.include'))
+execfile(os.path.join(HERE, 'settings_local.include'))
 
 # Always minify the HTML when the DEBUG mode is False
 HTML_MINIFY = not DEBUG

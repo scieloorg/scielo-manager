@@ -29,14 +29,15 @@ from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.conf import settings
 
-from scielomanager.journalmanager import models
-from scielomanager.journalmanager.forms import *
+from . import models
+from .forms import *
+from scielomanager.utils.pendingform import PendingPostData
 from scielomanager.tools import (
     get_paginated,
     get_referer_view,
-    PendingPostData,
     asbool,
 )
+
 
 from waffle.decorators import waffle_flag
 

@@ -4,7 +4,7 @@ import hashlib
 import logging
 import choices
 import caching.base
-import tools
+from scielomanager import tools
 
 try:
     from collections import OrderedDict
@@ -32,7 +32,7 @@ from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 
 from scielomanager.utils import base28
-from scielomanager.journalmanager import modelmanagers
+from . import modelmanagers
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
 User.add_to_class('objects', caching.base.CachingManager())

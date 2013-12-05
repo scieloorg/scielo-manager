@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.conf import settings
 
-from scielomanager.export import bundle
+from . import bundle
 
 MEDIA_ROOT = settings.MEDIA_ROOT + '/export/'
 MEDIA_URL = settings.MEDIA_URL + '/export/'
@@ -510,7 +510,7 @@ class JournalStandardAhead(L10nAhead):
 
 
 def generate_ahead(journal_id, year):
-    from scielomanager.journalmanager import models
+    from journalmanager import models
     journal = models.Journal.objects.get(id=journal_id)
 
     export_automata = Automata(journal)

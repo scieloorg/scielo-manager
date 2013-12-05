@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.views.generic.base import TemplateView
 
-from scielomanager.accounts import views
+from . import views
 
 
 urlpatterns = patterns('',

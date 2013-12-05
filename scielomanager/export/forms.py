@@ -2,7 +2,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from scielomanager.journalmanager import models as jm_models
+from journalmanager import models as jm_models
 
 
 class BlidModelChoiceField(forms.ModelChoiceField):

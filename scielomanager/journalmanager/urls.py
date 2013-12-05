@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 from django.conf.urls.defaults import *
-from scielomanager.journalmanager import views
-from scielomanager.journalmanager import models
+
+from . import views, models
+
 
 urlpatterns = patterns('',
 
