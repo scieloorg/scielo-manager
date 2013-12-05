@@ -5,6 +5,7 @@ from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
+from tastypie.authorization import Authorization
 
 from journalmanager.models import (
     Journal,
@@ -18,6 +19,11 @@ from journalmanager.models import (
     AheadPressRelease,
     PressReleaseTranslation,
     PressReleaseArticle,
+)
+
+from articletrack.models import (
+    Checkin,
+    Notice
 )
 
 
@@ -357,3 +363,23 @@ class AheadPressReleaseResource(ModelResource):
             orm_filters['pk__in'] = preleases
 
         return orm_filters
+
+
+class CheckinResource(ModelResource):
+    collection = fields.ForeignKey(CollectionResource, 'collection', null=True)
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = Checkin.objects.all()
+        resource_name = 'checkins'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post', 'put']
+
+
+class CheckinNoticeResource(ModelResource):
+    checkin = fields.ForeignKey(CheckinResource, 'checkin')
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = Notice.objects.all()
+        resource_name = 'notices'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post', 'put']

@@ -1,0 +1,56 @@
+{% extends "base_list_lv0.html" %}
+{% load i18n %}
+{% load static %}
+{% load scielo_common %}
+{% load query_string %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "List of specific attempt" %}{% endblock %}
+
+{% block content %}
+
+<div class="row-fluid show-grid">
+  <div class="span10">
+    <h4>{% trans 'Attempts to article: ' %}
+      <span class="muted">{{ checkins.object_list.0.article_title|truncatewords:7 }}</span>
+    </h4>
+  </div>
+  <div class="2" style="text-align:right; margin-bottom:20px;">
+    {% simple_pagination checkins %}
+  </div>
+</div>
+
+<table class="table table-striped table-condensed">
+  <thead>
+    <tr>
+      <th>{% trans "Package" %}</th>
+      <th>{% trans "Created" %}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for checkin in checkins.object_list %}
+    <tr>
+      <td>
+        {{ checkin.package_name }}
+      </td>
+      <td>
+        {{ checkin.created_at|date:"d/m/Y - H:i" }}
+      </td>
+      <td>
+        <a href="{% url notice_detail checkin.id %}" class="btn btn-mini btn" type="button">{% trans "Details" %}</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+</table>
+
+{% trans 'Go to' %}:
+
+<a href="{% url checkin_index %}">{% trans "List of check ins" %}</a>
+
+{% endblock %}

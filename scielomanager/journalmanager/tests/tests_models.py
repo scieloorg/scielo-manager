@@ -807,3 +807,13 @@ class PressReleaseManagerTests(TestCase):
             pr
         )
         self.assertEqual(len(result), 1)
+
+
+class JournalManagerTests(TestCase):
+    def test_by_issn(self):
+        from journalmanager import models
+        journal = JournalFactory.create(print_issn='2398-8734')
+        journal2 = JournalFactory.create()
+
+        self.assertEqual(models.Journal.objects.by_issn('2398-8734')[0], journal)
+

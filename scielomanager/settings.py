@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     'tastypie',
     'django_assets',
     'waffle',
+    'articletrack'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
