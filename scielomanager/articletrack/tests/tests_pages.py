@@ -71,8 +71,8 @@ class CheckinListTests(WebTest):
 
         response = self.app.get('/arttrack/', user=self.user)
 
-        response.mustcontain('<a href="/arttrack/notice/%s/" class="btn btn-mini btn" type="button">Details</a>' % checkin.id)
-        response.mustcontain('<a href="/arttrack/package/%s/" class="btn btn-mini btn" type="button">History</a>' % checkin.id)
+        response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
+        response.mustcontain('href="/arttrack/package/%s/"' % checkin.id)
 
     def test_status_code_package_history(self):
         self._addWaffleFlag()
@@ -117,7 +117,7 @@ class CheckinListTests(WebTest):
         response = self.app.get(reverse('checkin_history',
             args=[checkin.pk]), user=self.user)
 
-        response.mustcontain('<a href="/arttrack/notice/%s/" class="btn btn-mini btn" type="button">Details</a>' % checkin.id)
+        response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
 
 
 class NoticeListTests(WebTest):
@@ -181,5 +181,5 @@ class NoticeListTests(WebTest):
         response = self.app.get(reverse('notice_detail',
             args=[notice.checkin.pk]), user=self.user)
 
-        response.mustcontain('<a href="/arttrack/package/%s/">Package history</a>' % notice.id)
+        response.mustcontain('href="/arttrack/package/%s/"' % notice.id)
 
