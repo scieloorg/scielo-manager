@@ -33,6 +33,8 @@ and design decisions.
    dev/api
    dev/importscielo
    dev/json_sample
+   dev/middlewares
+   dev/modelmanagers
 
 Indices and tables
 ==================
