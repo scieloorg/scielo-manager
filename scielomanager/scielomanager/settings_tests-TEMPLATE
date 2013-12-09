@@ -17,8 +17,8 @@ DATABASES = {
         'NAME': 'journalmanager',
         'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
