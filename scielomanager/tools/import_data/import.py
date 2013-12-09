@@ -1,8 +1,9 @@
+import os
+import sys
+
 import journalimport
 import sectionimport
 import issueimport
-
-import sys
 
 from django.core.management import setup_environ
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,12 +11,16 @@ from django.core.exceptions import ObjectDoesNotExist
 try:
     from scielomanager import settings
 except ImportError:
-    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    BASE_PATH_APP = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
     from sys import path
     path.append(BASE_PATH)
+    path.append(BASE_PATH_APP)
+
     import settings
 
 setup_environ(settings)
+
 from journalmanager.models import Collection
 
 collectionname = sys.argv[1]

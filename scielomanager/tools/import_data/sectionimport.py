@@ -11,9 +11,12 @@ from django.core.exceptions import ObjectDoesNotExist
 try:
     from scielomanager import settings
 except ImportError:
-    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
+    BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    BASE_PATH_APP = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'scielomanager'))
     from sys import path
     path.append(BASE_PATH)
+    path.append(BASE_PATH_APP)
+
     import settings
 
 setup_environ(settings)
