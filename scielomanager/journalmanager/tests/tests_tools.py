@@ -85,7 +85,7 @@ class HasChangedTest(TestCase):
         self.assertFalse(self._makeOne(issue, 'total_documents'))
 
     def test_has_changed_must_return_none_when_instance_doesnt_exist_in_database(self):
-        from scielomanager.journalmanager import models
+        from journalmanager import models
         issue = models.Issue()
         self.assertRaises(models.Issue.DoesNotExist,
                           lambda: self._makeOne(issue, 'title'))

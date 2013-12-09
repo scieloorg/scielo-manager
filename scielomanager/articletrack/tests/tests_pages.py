@@ -72,7 +72,7 @@ class CheckinListTests(WebTest):
         response = self.app.get('/arttrack/', user=self.user)
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
-        response.mustcontain('href="/arttrack/package/%s/"' % checkin.id)
+        response.mustcontain('href="/arttrack/package/%s/"' % checkin.articlepkg_ref)
 
     def test_status_code_package_history(self):
         self._addWaffleFlag()
@@ -88,7 +88,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.pk]), user=self.user)
+            args=[checkin.articlepkg_ref]), user=self.user)
 
         response.mustcontain('20132404.zip')
 
@@ -97,7 +97,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.pk]), user=self.user)
+            args=[checkin.articlepkg_ref]), user=self.user)
 
         response.mustcontain('An azafluorenone alkaloid and a megastigmane from ...')
 
@@ -110,12 +110,11 @@ class CheckinListTests(WebTest):
 
         response.mustcontain('<a href="/arttrack/">List of check ins</a>')
 
-    def test_package_history_must_have_button_to_datail(self):
+    def test_package_history_must_have_button_to_detail(self):
         self._addWaffleFlag()
         checkin = self._makeOne()
 
-        response = self.app.get(reverse('checkin_history',
-            args=[checkin.pk]), user=self.user)
+        response = self.app.get("/arttrack/package/%s/" % checkin.articlepkg_ref, user=self.user)
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
 
@@ -181,5 +180,5 @@ class NoticeListTests(WebTest):
         response = self.app.get(reverse('notice_detail',
             args=[notice.checkin.pk]), user=self.user)
 
-        response.mustcontain('href="/arttrack/package/%s/"' % notice.id)
+        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.articlepkg_ref)
 

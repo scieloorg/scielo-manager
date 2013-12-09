@@ -4,6 +4,6 @@ from . import views
 
 urlpatterns = patterns('',
     url(r'^$', views.checkin_index, name="checkin_index"),
-    url(r'^package/(?P<articlepkg>\w+)/$', views.checkin_history, name="checkin_history"),
+    url(r'^package/(?P<articlepkg>\d+)/$', views.checkin_history, name="checkin_history"),
     url(r'^notice/(?P<checkin_id>\d+)/$', views.notice_detail, name="notice_detail"),
 )

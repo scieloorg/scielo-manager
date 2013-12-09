@@ -1,8 +1,30 @@
 # coding: utf-8
 import factory
-from django_factory_boy import auth
+import datetime
 
 from journalmanager import models
+
+class UserFactory(factory.Factory):
+    FACTORY_FOR = models.User
+
+    @classmethod
+    def _setup_next_sequence(cls):
+        try:
+            return cls._associated_class.objects.values_list(
+                'id', flat=True).order_by('-id')[0] + 1
+        except IndexError:
+            return 0
+
+    username = factory.Sequence(lambda n: "username%s" % n)
+    first_name = factory.Sequence(lambda n: "first_name%s" % n)
+    last_name = factory.Sequence(lambda n: "last_name%s" % n)
+    email = factory.Sequence(lambda n: "email%s@example.com" % n)
+    password = 'sha1$caffc$30d78063d8f2a5725f60bae2aca64e48804272c3'
+    is_staff = False
+    is_active = True
+    is_superuser = False
+    last_login = datetime.datetime(2000, 1, 1)
+    date_joined = datetime.datetime(1999, 1, 1)
 
 
 class SubjectCategoryFactory(factory.Factory):
@@ -78,8 +100,8 @@ class JournalFactory(factory.Factory):
     editor_address = u'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel. = (11) 3288-8174/3289-0741'
     editor_email = u'cbcd@cbcd.org.br'
 
-    creator = factory.SubFactory(auth.UserF)
-    pub_status_changed_by = factory.SubFactory(auth.UserF)
+    creator = factory.SubFactory(UserFactory)
+    pub_status_changed_by = factory.SubFactory(UserFactory)
     use_license = factory.SubFactory(UseLicenseFactory)
     collection = factory.SubFactory(CollectionFactory)
 
@@ -134,7 +156,7 @@ class IssueFactory(factory.Factory):
 class UserProfileFactory(factory.Factory):
     FACTORY_FOR = models.UserProfile
 
-    user = factory.SubFactory(auth.UserF)
+    user = factory.SubFactory(UserFactory)
     email = factory.Sequence(lambda n: 'email%s@example.com' % n)
 
 
@@ -150,7 +172,7 @@ class SectionTitleFactory(factory.Factory):
 class DataChangeEventFactory(factory.Factory):
     FACTORY_FOR = models.DataChangeEvent
 
-    user = factory.SubFactory(auth.UserF)
+    user = factory.SubFactory(UserFactory)
     content_object = factory.SubFactory(JournalFactory)
     collection = factory.SubFactory(CollectionFactory)
     event_type = 'added'
