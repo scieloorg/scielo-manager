@@ -4,6 +4,7 @@ This module is used by the test runner.
 """
 import os
 
+print "settings de teste"
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,12 +13,12 @@ execfile(os.path.join(PROJECT_PATH, 'settings.py'))
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'journalmanager.sqlite',
-        'USER': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'journalmanager',
+        'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
