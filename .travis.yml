@@ -5,11 +5,11 @@ python:
 services: 
   - mongodb
 env:
-  - DJANGO_VERSION=1.3.4
+  - DJANGO_VERSION=1.4
 install:
   - pip install -r requirements.txt --use-mirrors
   - pip install -r requirements-test.txt --use-mirrors
 before_script:
-  - cp scielomanager/settings_local.include-TEMPLATE scielomanager/settings_local.include
+  - cp scielomanager/scielomanager/settings_local.include-TEMPLATE scielomanager/scielomanager/settings_local.include
 script:
   - make test
