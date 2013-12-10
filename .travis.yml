@@ -11,7 +11,6 @@ install:
   - pip install -r requirements-test.txt --use-mirrors
 before_script:
   - cp scielomanager/scielomanager/settings_local.include-TEMPLATE scielomanager/scielomanager/settings_local.include
-  - cp scielomanager/scielomanager/settings_tests-TEMPLATE scielomanager/scielomanager/settings_tests.py
   - psql -c 'create database journalmanager;' -U postgres
 script:
   - make test
