@@ -11,17 +11,6 @@ PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 execfile(os.path.join(PROJECT_PATH, 'settings.py'))
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'journalmanager',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-    }
-}
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
