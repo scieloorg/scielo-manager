@@ -33,6 +33,7 @@ def checkin_history(request, articlepkg):
 
     checkins = models.Checkin.userobjects.active().filter(articlepkg_ref=articlepkg)
 
+    # import pdb; pdb.set_trace()
     objects = get_paginated(checkins, request.GET.get('page', 1))
 
     return render_to_response(

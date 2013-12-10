@@ -9,11 +9,11 @@ from mocker import (
 
 class AutomataTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.Automata(*args, **kwargs)
+        from export import markupfile
+        return markupfile.Automata(*args, **kwargs)
 
     def test_instantiation(self):
-        from scielomanager.export.markupfiles import Automata
+        from export.markupfile import Automata
 
         dummy_journal = self.mocker.mock()
         self.mocker.replay()
@@ -277,8 +277,8 @@ class AutomataTests(MockerTestCase):
 
 class IssueTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.Issue(*args, **kwargs)
+        from export import markupfile
+        return markupfile.Issue(*args, **kwargs)
 
     def test_legend(self):
         dummy_issue = self.mocker.mock()
@@ -368,8 +368,8 @@ class IssueTests(MockerTestCase):
 
 class JournalStandardTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.JournalStandard(*args, **kwargs)
+        from export import markupfile
+        return markupfile.JournalStandard(*args, **kwargs)
 
     def test_pub_type_for_print(self):
         dummy_journal = self.mocker.mock()
@@ -577,11 +577,11 @@ class JournalStandardTests(MockerTestCase):
 
 class L10nIssueTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.L10nIssue(*args, **kwargs)
+        from export import markupfile
+        return markupfile.L10nIssue(*args, **kwargs)
 
     def test_instantiation(self):
-        from scielomanager.export.markupfiles import L10nIssue
+        from export.markupfile import L10nIssue
 
         dummy_journal = self.mocker.mock()
         dummy_issue = self.mocker.mock()
@@ -1003,8 +1003,8 @@ class L10nIssueTests(MockerTestCase):
 
 class AheadTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.Ahead(*args, **kwargs)
+        from export import markupfile
+        return markupfile.Ahead(*args, **kwargs)
 
     def test_legend(self):
         dummy_journal = self.mocker.mock()
@@ -1053,11 +1053,11 @@ class AheadTests(MockerTestCase):
 
 class L10nAheadTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.L10nAhead(*args, **kwargs)
+        from export import markupfile
+        return markupfile.L10nAhead(*args, **kwargs)
 
     def test_instantiation(self):
-        from scielomanager.export.markupfiles import L10nAhead
+        from export.markupfile import L10nAhead
 
         dummy_journal = self.mocker.mock()
 
@@ -1183,8 +1183,8 @@ class L10nAheadTests(MockerTestCase):
 
 class JournalStandardAheadTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
-        from scielomanager.export import markupfiles
-        return markupfiles.JournalStandardAhead(*args, **kwargs)
+        from export import markupfile
+        return markupfile.JournalStandardAhead(*args, **kwargs)
 
     def test_pub_type_for_print(self):
         dummy_journal = self.mocker.mock()

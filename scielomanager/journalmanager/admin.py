@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from tastypie.models import ApiAccess
 
-from scielomanager.journalmanager.models import *
+from .models import *
 
 
 admin.site.register(ApiAccess)

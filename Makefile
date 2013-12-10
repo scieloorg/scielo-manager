@@ -2,7 +2,7 @@ APP_PATH = scielomanager
 MANAGE = $(APP_PATH)/manage.py
 SETTINGS_TEST = scielomanager.settings_tests
 SETTINGS = scielomanager.settings
-FIXTURES_DIR = $(APP_PATH)/fixtures
+FIXTURES_DIR = $(APP_PATH)/scielomanager/fixtures
 
 deps:
 	@pip install -r requirements.txt

@@ -5,7 +5,7 @@ from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django_factory_boy import auth
 
-from scielomanager.journalmanager.tests import modelfactories
+from journalmanager.tests import modelfactories
 
 
 class DownloadMarkupFilesTests(WebTest):
