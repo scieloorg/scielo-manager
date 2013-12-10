@@ -263,6 +263,10 @@ BASE_PATH = PROJECT_PATH
 TEST_DISCOVERY_ROOT = BASE_PATH
 TEST_RUNNER = 'scielomanager.utils.runner.DiscoveryRunner'
 
+LOCALE_PATHS = (
+    os.path.join(HERE, 'locale'),
+)
+
 ### END App customization settings
 #################################################################
 

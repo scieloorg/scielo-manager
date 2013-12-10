@@ -1,0 +1,993 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+#   <eliana.salgado@scielo.org>, 2012.
+#   <fabiobatalha@gmail.com>, 2012.
+# Gustavo Fonseca <gustavofons@gmail.com>, 2012.
+#   <tecnologia@scielo.org>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: SciELO Manager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-12-10 11:17-0200\n"
+"PO-Revision-Date: 2012-12-12 14:45+0000\n"
+"Last-Translator: fabiobatalha <fabiobatalha@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
+"scielomanager/language/pt_BR/)\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/base_lv1.html:24 templates/base_lv1.html.py:136
+msgid "Journals"
+msgstr "Periódicos"
+
+#: templates/base_lv1.html:29
+#, fuzzy
+msgid "Articles in submission"
+msgstr "URL de submissão on-line"
+
+#: templates/base_lv1.html:34 templates/base_lv1.html.py:142
+msgid "Sponsors"
+msgstr "Financiadores"
+
+#: templates/base_lv1.html:40
+msgid "Users"
+msgstr "Usuários"
+
+#: templates/base_lv1.html:47
+#, fuzzy
+msgid "My Journals"
+msgstr "Periódicos"
+
+#: templates/base_lv1.html:59
+msgid "Metadata for Markup"
+msgstr "Metadados para Markup"
+
+#: templates/base_lv1.html:66
+msgid "Maintenances"
+msgstr ""
+
+#: templates/base_lv1.html:96
+msgid "user settings"
+msgstr "configurações do usuário"
+
+#: templates/base_lv1.html:103
+msgid "logout"
+msgstr "sair"
+
+#: templates/base_lv1.html:122
+msgid "Trashed items"
+msgstr "Itens na lixeira"
+
+#: templates/base_lv1.html:124
+msgid "Trash"
+msgstr "Lixeira"
+
+#: templates/base_lv1.html:154
+msgid "Search"
+msgstr "Busca"
+
+#: templates/base_lv1.html:169
+msgid "edit"
+msgstr ""
+
+#: templates/footer.html:16
+msgid "Help"
+msgstr "Ajuda"
+
+#: templates/footer.html:18 templates/footer.html.py:34
+msgid "About"
+msgstr "Sobre"
+
+#: templates/footer.html:19
+msgid "Documentation"
+msgstr "Documentação"
+
+#: templates/footer.html:20
+msgid "Report bug"
+msgstr "Reportar bug"
+
+#: templates/footer.html:21
+msgid "Discuss mailing list"
+msgstr "Lista de discussões"
+
+#: templates/footer.html:25
+msgid "Development"
+msgstr "Desenvolvimento"
+
+#: templates/footer.html:27
+msgid "GitHub"
+msgstr "GitHub"
+
+#: templates/footer.html:28
+msgid "Dev mailing list"
+msgstr "Lista de desenvolvimento"
+
+#: templates/footer.html:32
+msgid "SciELO Project"
+msgstr "Projeto SciELO"
+
+#: templates/include_press_release/ahead.html:5
+#: templates/include_press_release/issue.html:5
+#, fuzzy
+msgid "Press Release"
+msgstr "É press release?"
+
+#: templates/include_press_release/ahead.html:6
+msgid "DOI"
+msgstr ""
+
+#: templates/include_press_release/ahead.html:39
+#: templates/include_press_release/issue.html:39
+msgid "There are no items."
+msgstr "Não existem itens"
+
+#: templates/include_press_release/issue.html:6
+msgid "Issue"
+msgstr "Fascículo"
+
+#: templates/registration/activate.html:6
+#: templates/registration/activation_complete.html:6
+msgid "Your account is now activated."
+msgstr "Sua conta foi ativada."
+
+#: templates/registration/activate.html:8
+#: templates/registration/activation_complete.html:8
+msgid "You may now login using your username and password."
+msgstr "Você deve autenticar-se usando seu usuário e senha."
+
+#: templates/registration/activation_email.txt:3
+#, fuzzy
+msgid "Please click on the link below to activate your account."
+msgstr "Você receberá um e-mail com um link para ativar sua conta."
+
+#: templates/registration/activation_email.txt:7
+#, python-format
+msgid ""
+"\n"
+"    This key will expire in %(expiration_days)s days.\n"
+msgstr ""
+
+#: templates/registration/login.html:9
+msgid "We are under maintenance!"
+msgstr ""
+
+#: templates/registration/login.html:11
+msgid "We expect to be back at"
+msgstr ""
+
+#: templates/registration/login.html:18
+msgid "Sorry, that's not a valid username or password"
+msgstr "Desculpe, este usuário e/ou senha é invalido"
+
+#: templates/registration/login.html:21
+msgid "Sign in"
+msgstr "Logar"
+
+#: templates/registration/login.html:28
+msgid "Username or email"
+msgstr "nome do usuário ou email"
+
+#: templates/registration/login.html:40
+msgid "Log in"
+msgstr "Entrar"
+
+#: templates/registration/login.html:46 templates/registration/login.html:47
+msgid "Forgot your password?"
+msgstr "Esqueceu sua senha?"
+
+#: templates/registration/logout.html:7
+msgid "Logout"
+msgstr "sair"
+
+#: templates/registration/password_reset_complete.html:10
+msgid ""
+"Your password has been reseted! You may now login in using your new "
+"credentials."
+msgstr ""
+"Sua senha for trocada! Você deve autenticar-se usando seu usuário e sua nova "
+"senha."
+
+#: templates/registration/password_reset_complete.html:10
+msgid "login"
+msgstr "entrar"
+
+#: templates/registration/password_reset_confirm.html:12
+msgid "Enter your new password below to reset your password:"
+msgstr "Entre sua nova senha para trocar pela atual."
+
+#: templates/registration/password_reset_confirm.html:15
+msgid "New Password"
+msgstr "Nova senha"
+
+#: templates/registration/password_reset_confirm.html:22
+msgid "save"
+msgstr "salvar"
+
+#: templates/registration/password_reset_confirm.html:29
+msgid "This link have already used to reset your password."
+msgstr "Este link já foi utilizado para recuperar sua senha"
+
+#: templates/registration/password_reset_done.html:10
+msgid ""
+"We have sent you an email with a link to reset your password. Please check "
+"your email and click the link to continue."
+msgstr ""
+"Enviamos um e-mail com um link para atualizar sua senha. Por favor, "
+"verifique seu e-mail e clique no link para continuar. "
+
+#: templates/registration/password_reset_done.html:10
+msgid "Login"
+msgstr "Entrar"
+
+#: templates/registration/password_reset_email.html:4
+#, python-format
+msgid ""
+"\n"
+"Greetings %(user)s,\n"
+"\n"
+"You are receiving this email because you (or someone pretending to be you)\n"
+"requested that your password be reset on %(site_name)s. If you do not\n"
+"wish to reset your password, please ignore this message.\n"
+"\n"
+"To reset your password, please click the following link, or copy and paste "
+"it\n"
+"into your web browser:\n"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:10
+msgid ""
+"Enter your e-mail in the form below and we will send your username and "
+"instructions to create a new password."
+msgstr ""
+"Insira seu e-mail no formulário abaixo e nós lhe enviaremos seu usuário e "
+"instruções para criar uma nova senha."
+
+#: templates/registration/password_reset_form.html:12
+msgid "Reset Password"
+msgstr "Trocar senha"
+
+#: templates/registration/password_reset_form.html:19
+msgid "Send instructions"
+msgstr "Enviar instruções"
+
+#: templates/registration/registration_complete.html:6
+msgid "A confirmation e-mail is on the way"
+msgstr "Um e-mail de confirmação esta a caminho."
+
+#: templates/registration/registration_complete.html:8
+msgid ""
+"Please click the activation link included in the e-mail to confirm you "
+"registration."
+msgstr ""
+"Por favor, clique no link de ativação enviado no e-mail para confirmar seu "
+"cadastro."
+
+#: templates/registration/registration_form.html:6
+msgid "Home"
+msgstr "Home"
+
+#: templates/registration/registration_form.html:6
+#: templates/registration/registration_form.html:19
+msgid "Register"
+msgstr "Registre-se"
+
+#: templates/registration/registration_form.html:9
+msgid "Please correct the errors below."
+msgstr "Por favor, corrija os erros abaixo."
+
+#: templates/registration/registration_form.html:12
+msgid "You will receive an email with a link to activate your account."
+msgstr "Você receberá um e-mail com um link para ativar sua conta."
+
+#~ msgid "Your new password and new password confirmation must match."
+#~ msgstr "A nova senha e a confirmação de senha devem combinar."
+
+#~ msgid "Your current password does not match. Please try again."
+#~ msgstr "Sua senha atual não é válida. Por favor, tente novamente."
+
+#~ msgid "Your new password has been set."
+#~ msgstr "Sua nova senha foi configurada."
+
+#~ msgid "My Account"
+#~ msgstr "Minha Conta"
+
+#~ msgid "Password Change"
+#~ msgstr "Mudar Senha"
+
+#~ msgid "Field required!"
+#~ msgstr "Campo obrigatório!"
+
+#~ msgid "cancel"
+#~ msgstr "cancelar"
+
+#~ msgid "Downloads"
+#~ msgstr "Downloads"
+
+#~ msgid "Journal"
+#~ msgstr "Periódico"
+
+#~ msgid "Retrieving its issues"
+#~ msgstr "Carregando fascículos"
+
+#, fuzzy
+#~ msgid "all issues"
+#~ msgstr "volume"
+
+#~ msgid "download"
+#~ msgstr "download"
+
+#~ msgid "Select one or more collections"
+#~ msgstr "Selecione uma ou mais coleções"
+
+#~ msgid "Select one or more languages"
+#~ msgstr "Selecione um ou mais idiomas"
+
+#~ msgid "Select one or more sponsors"
+#~ msgstr "Selecione um ou mais patrocinadores"
+
+#, fuzzy
+#~ msgid "Select one or more categories"
+#~ msgstr "Selecione um ou mais grupos"
+
+#, fuzzy
+#~ msgid "Select one or more study area"
+#~ msgstr "Selecione um ou mais idiomas"
+
+#~ msgid "Password"
+#~ msgstr "Senha"
+
+#~ msgid "Select one or more groups"
+#~ msgstr "Selecione um ou mais grupos"
+
+#~ msgid "Select one or more section"
+#~ msgstr "Seleciona uma ou mais seções"
+
+#~ msgid "You must complete at least one of two fields volume or number."
+#~ msgstr "Você deve preencher pelo menos um dos campos, volume ou número."
+
+#~ msgid "This section title already exists for this Journal."
+#~ msgstr "Essa seção já existe para este periódico."
+
+#~ msgid "ISO 639-1 Language Code"
+#~ msgstr "Norma ISO 639-1"
+
+#~ msgid "E-mail"
+#~ msgstr "E-mail"
+
+#~ msgid "Collection Name"
+#~ msgstr "Nome da coleção"
+
+#~ msgid "Instance URL"
+#~ msgstr "URL da coleção"
+
+#~ msgid "Logo"
+#~ msgstr "Logo da coleção"
+
+#~ msgid "Sigla"
+#~ msgstr "Sigla"
+
+#~ msgid "Country"
+#~ msgstr "País"
+
+#~ msgid "State"
+#~ msgstr "Estado"
+
+#~ msgid "City"
+#~ msgstr "Cidade"
+
+#~ msgid "Address"
+#~ msgstr "Endereço"
+
+#~ msgid "Number"
+#~ msgstr "Número"
+
+#~ msgid "Complement"
+#~ msgstr "Complemento"
+
+#~ msgid "Zip Code"
+#~ msgstr "Cep"
+
+#~ msgid "Phone Number"
+#~ msgstr "Número de telefone"
+
+#~ msgid "Fax Number"
+#~ msgstr "Número de fax"
+
+#~ msgid "Email"
+#~ msgstr "E-mail"
+
+#~ msgid "Is default"
+#~ msgstr "É padrão?"
+
+#~ msgid "Is manager of the collection?"
+#~ msgstr "É gestor da coleção?"
+
+#~ msgid "Institution Name"
+#~ msgstr "Nome da instituição"
+
+#~ msgid "Institution Complements"
+#~ msgstr "Complementos da instituição"
+
+#~ msgid "Address Complement"
+#~ msgstr "Endereço complementar"
+
+#~ msgid "Cel Number"
+#~ msgstr "Número de celular"
+
+#~ msgid "Is trashed?"
+#~ msgstr "Esta na lixeira?"
+
+#~ msgid "Study Area"
+#~ msgstr "Área de estudo"
+
+#~ msgid "Sponsor"
+#~ msgstr "Financiador"
+
+#, fuzzy
+#~ msgid "Previous title"
+#~ msgstr "Outro título anterior"
+
+#, fuzzy
+#~ msgid "Use license"
+#~ msgstr "Licenças"
+
+#~ msgid "Collection"
+#~ msgstr "Coleção"
+
+#~ msgid "National Code"
+#~ msgstr "Código Nacional"
+
+#, fuzzy
+#~ msgid "Subject Categories"
+#~ msgstr "Assunto / Descritores"
+
+#~ msgid "Journal Title"
+#~ msgstr "Título do periódico"
+
+#~ msgid "ISO abbreviated title"
+#~ msgstr "Título ISO abreviado"
+
+#~ msgid "Short Title"
+#~ msgstr "Título abreviado"
+
+#~ msgid "Acronym"
+#~ msgstr "Acrônimo"
+
+#~ msgid "The ISSN used to build the Journal PID."
+#~ msgstr "Qual é o ISSN usado no PID do periódico?"
+
+#~ msgid "Print ISSN"
+#~ msgstr "ISSN impresso"
+
+#~ msgid "Electronic ISSN"
+#~ msgstr "ISSN eletrônico"
+
+#~ msgid "Subject / Descriptors"
+#~ msgstr "Assunto / Descritores"
+
+#~ msgid "Initial Year"
+#~ msgstr "Ano inicial"
+
+#~ msgid "Initial Volume"
+#~ msgstr "Volume inicial"
+
+#~ msgid "Initial Number"
+#~ msgstr "número inicial"
+
+#~ msgid "Final Year"
+#~ msgstr "Ano final"
+
+#~ msgid "Final Volume"
+#~ msgstr "Volume final"
+
+#~ msgid "Final Number"
+#~ msgstr "Número final"
+
+#~ msgid "Medline Title"
+#~ msgstr "Título Medline"
+
+#~ msgid "Medline Code"
+#~ msgstr "Código Medline"
+
+#~ msgid "Frequency"
+#~ msgstr "Frequência"
+
+#~ msgid "Publication Status"
+#~ msgstr "Status de Publicação"
+
+#~ msgid "Why the journal status will change?"
+#~ msgstr "Porque o status do periódico será modificado?"
+
+#~ msgid "Editorial Standard"
+#~ msgstr "Padrão editorial"
+
+#~ msgid "Controlled Vocabulary"
+#~ msgstr "Vocabulário controlado"
+
+#~ msgid "Publication Level"
+#~ msgstr "Nível de publicação"
+
+#~ msgid "SECS Code"
+#~ msgstr "Código SECS"
+
+#~ msgid "Copyrighter"
+#~ msgstr "Copyrighter"
+
+#~ msgid "URL of the journal"
+#~ msgstr "URL do periódico"
+
+#~ msgid "Notes"
+#~ msgstr "Notas"
+
+#~ msgid "Index Coverage"
+#~ msgstr "Cobertura de indexação"
+
+#~ msgid "Journal Cover"
+#~ msgstr "Capa do periódico"
+
+#, fuzzy
+#~ msgid "Journal Logo"
+#~ msgstr "Logomarca do periódico"
+
+#~ msgid "Other Previous Title"
+#~ msgstr "Outro título anterior"
+
+#, fuzzy
+#~ msgid "Editor Address"
+#~ msgstr "Endereço"
+
+#, fuzzy
+#~ msgid "Editor Country"
+#~ msgstr "País"
+
+#, fuzzy
+#~ msgid "Editor E-mail"
+#~ msgstr "E-mail"
+
+#~ msgid "Publisher Name"
+#~ msgstr "Nome do Publicador"
+
+#~ msgid "Publisher Country"
+#~ msgstr "País do Publicador"
+
+#, fuzzy
+#~ msgid "Publisher State/Province/Region"
+#~ msgstr "Estado do Publicador"
+
+#~ msgid "Publication City"
+#~ msgstr "Cidade do Publicador"
+
+#~ msgid "Journal Status"
+#~ msgstr "Status do periódico"
+
+#~ msgid "Reason"
+#~ msgstr "motivo"
+
+#~ msgid "Changed at"
+#~ msgstr "modificado em"
+
+#~ msgid "Title"
+#~ msgstr "Título"
+
+#~ msgid "Title Category"
+#~ msgstr "Categoria do título"
+
+#~ msgid "Mission"
+#~ msgstr "Missão"
+
+#~ msgid "License Code"
+#~ msgstr "Código da licença"
+
+#~ msgid "License Reference URL"
+#~ msgstr "URL de referência da licença"
+
+#~ msgid "Disclaimer"
+#~ msgstr "Chamada"
+
+#~ msgid "Translation"
+#~ msgstr "Tradução"
+
+#~ msgid "Language"
+#~ msgstr "Idioma"
+
+#~ msgid "Model"
+#~ msgstr "Modelo"
+
+#~ msgid "Field"
+#~ msgstr "Campo"
+
+#~ msgid "Volume"
+#~ msgstr "Volume"
+
+#~ msgid "Volume Supplement"
+#~ msgstr "Suplemento de Volume"
+
+#~ msgid "Number Supplement"
+#~ msgstr "Suplemento de Número"
+
+#~ msgid "Start Month"
+#~ msgstr "Mês inicial"
+
+#~ msgid "End Month"
+#~ msgstr "Mês final"
+
+#~ msgid "Year"
+#~ msgstr "Ano"
+
+#~ msgid "Is Marked Up?"
+#~ msgstr "Esta Marcado?"
+
+#~ msgid "Total of Documents"
+#~ msgstr "Total de documentos"
+
+#~ msgid "Issue Cover"
+#~ msgstr "Capa do fascículo"
+
+#~ msgid "Issue Order"
+#~ msgstr "Ordem do fascículo"
+
+#~ msgid "suppl."
+#~ msgstr "supl."
+
+#~ msgid "pr"
+#~ msgstr "pr"
+
+#~ msgid "Supplement Label"
+#~ msgstr "Rótulo do suplemento"
+
+#~ msgid "Saved."
+#~ msgstr "salvo."
+
+#~ msgid "Saved partially. You can continue to fill in this form later."
+#~ msgstr ""
+#~ "Salvo parcialmente. Você pode continuar a preencher este formulário mais "
+#~ "tarde."
+
+#~ msgid "There are some errors or missing data."
+#~ msgstr ""
+#~ "Existem erros de preenchimento ou campo obrigatórios não preenchidos."
+
+#~ msgid "The pended form has been deleted."
+#~ msgstr "O formulário pendente foi removido."
+
+#~ msgid "The selected documents had been moved to the Trash."
+#~ msgstr "Os documentos selecionados foram movidos para lixeira."
+
+#~ msgid "The selected documents had been restored."
+#~ msgstr "Os documentos selecionados foram recuperados da lixeira."
+
+#~ msgid "Section removed successfully"
+#~ msgstr "Seção removida com sucesso"
+
+#~ msgid "Cant't delete, some issues are using this Section"
+#~ msgstr ""
+#~ "Não foi possível remover. Alguns fascículos estão utilizando esta seção."
+
+#~ msgid "Collection Information"
+#~ msgstr "Dados da Coleção"
+
+#~ msgid "Collection Logomarca"
+#~ msgstr "Logomarca da coleção"
+
+#~ msgid "This collections does not have a logomarca"
+#~ msgstr "Essa coleção não possui uma logomarca"
+
+#~ msgid "Journals Dashboard"
+#~ msgstr "Página das revistas da coleção"
+
+#~ msgid "Issue Dashboard"
+#~ msgstr "Página dos fascículos"
+
+#~ msgid "New Issue"
+#~ msgstr "Novo Fascículo"
+
+#~ msgid "Issue Information"
+#~ msgstr "Dados do Fascículo"
+
+#~ msgid "Thematic Title"
+#~ msgstr "Título temático"
+
+#~ msgid "Add new"
+#~ msgstr "Incluir novo"
+
+#~ msgid ""
+#~ "This issue does not have a cover, it will use the default journal cover"
+#~ msgstr ""
+#~ "Este fascículo não possui uma capa, será utilizada a capa padrão "
+#~ "configurada no periódico."
+
+#~ msgid "Journal Dashboard"
+#~ msgstr "Página da revista"
+
+#~ msgid "New Journal"
+#~ msgstr "Novo Periódico"
+
+#~ msgid "Access"
+#~ msgstr "Acesso"
+
+#~ msgid "Other Titles"
+#~ msgstr "Outros títulos"
+
+#~ msgid "ISSN"
+#~ msgstr "ISSN"
+
+#~ msgid "Journal Collections"
+#~ msgstr "Coleções do periódico"
+
+#~ msgid "Subjects"
+#~ msgstr "Temas"
+
+#~ msgid "Languages"
+#~ msgstr "Idiomas"
+
+#~ msgid "System Information"
+#~ msgstr "Dados do Sistema"
+
+#~ msgid "Publisher and Sponsor"
+#~ msgstr "Publicadores e Financiadores"
+
+#~ msgid "Licenses"
+#~ msgstr "Licenças"
+
+#~ msgid "Formal Information"
+#~ msgstr "Dados Formais"
+
+#, fuzzy
+#~ msgid "Publisher"
+#~ msgstr "Publicadores"
+
+#, fuzzy
+#~ msgid "Editors"
+#~ msgstr "Editar"
+
+#~ msgid "Further Information"
+#~ msgstr "Outros Dados"
+
+#~ msgid "Images"
+#~ msgstr "Imagens"
+
+#~ msgid "Titles"
+#~ msgstr "Títulos"
+
+#~ msgid "Category"
+#~ msgstr "Categoria"
+
+#~ msgid "Subject"
+#~ msgstr "Assunto"
+
+#~ msgid "Description"
+#~ msgstr "Descrição"
+
+#, fuzzy
+#~ msgid "Editor"
+#~ msgstr "Editar"
+
+#~ msgid "Journal Images"
+#~ msgstr "Imagens do periódico"
+
+#~ msgid "Image Size"
+#~ msgstr "Tamanho da Imagem"
+
+#~ msgid "height"
+#~ msgstr "altura"
+
+#~ msgid "width"
+#~ msgstr "largura"
+
+#~ msgid "Image Extensions"
+#~ msgstr "Extensões de Imagens"
+
+#~ msgid "This journal does not have a cover"
+#~ msgstr "Esse periódico não possui uma capa"
+
+#~ msgid "This journal does not have a logomarca"
+#~ msgstr "Esse periódico não possui uma logomarca"
+
+#~ msgid "Save to Continue Later"
+#~ msgstr "Salvar e continuar depois"
+
+#~ msgid "New Section"
+#~ msgstr "Nova seção"
+
+#~ msgid "Section Information"
+#~ msgstr "Dados de Seção"
+
+#~ msgid "Sponsor Dashboard"
+#~ msgstr "Página dos Patrocinadores"
+
+#~ msgid "New sponsor"
+#~ msgstr "Novo financiador"
+
+#~ msgid "Institution Information"
+#~ msgstr "Dados de Instituição"
+
+#~ msgid "Sponsor Collections"
+#~ msgstr "Coleções do financiador"
+
+#~ msgid "Users DashBoard"
+#~ msgstr "Página dos usuários"
+
+#~ msgid "New User"
+#~ msgstr "Novo usuário"
+
+#~ msgid "User Information"
+#~ msgstr "Dados do usuário"
+
+#~ msgid "User Collections"
+#~ msgstr "Coleções do usuário"
+
+#~ msgid "is_manager"
+#~ msgstr "É gestor?"
+
+#~ msgid "options"
+#~ msgstr "opções"
+
+#~ msgid "Journal Status History"
+#~ msgstr "Histórico de status do periódico"
+
+#~ msgid "Status"
+#~ msgstr "Status"
+
+#~ msgid "created at"
+#~ msgstr "criado em"
+
+#~ msgid "changed by"
+#~ msgstr "modificado por"
+
+#~ msgid "reason"
+#~ msgstr "motivo"
+
+#~ msgid "Change Status"
+#~ msgstr "Mudar status"
+
+#~ msgid "Be aware of this modification, once it could not be undone."
+#~ msgstr ""
+#~ "Atenção nas modificações, uma vez que essas não poderão ser desfeitas."
+
+#~ msgid "Drafts"
+#~ msgstr "Rascunhos"
+
+#~ msgid "Delete"
+#~ msgstr "Apagar"
+
+#~ msgid "Recent activities"
+#~ msgstr "Atividades recentes"
+
+#~ msgid "User"
+#~ msgstr "Usuário"
+
+#~ msgid "Updated at"
+#~ msgstr "Atualizado em"
+
+#~ msgid "Issues"
+#~ msgstr "Fascículos"
+
+#~ msgid "New"
+#~ msgstr "Novo"
+
+#~ msgid "Numbers"
+#~ msgstr "Números"
+
+#~ msgid "volume issue"
+#~ msgstr "volume"
+
+#~ msgid "All"
+#~ msgstr "Todos"
+
+#~ msgid "Current"
+#~ msgstr "Correntes"
+
+#~ msgid "Suspended"
+#~ msgstr "Suspendido"
+
+#~ msgid "Deceased"
+#~ msgstr "Extinto"
+
+#~ msgid "In progress"
+#~ msgstr "Em progresso"
+
+#~ msgid "Actions"
+#~ msgstr "Ações"
+
+#~ msgid "Move to trash"
+#~ msgstr "mover para lixeira"
+
+#~ msgid "Sections"
+#~ msgstr "Seções"
+
+#~ msgid "Journal Sections"
+#~ msgstr "Seções do periódico"
+
+#~ msgid "Section Title"
+#~ msgstr "Título da seção"
+
+#~ msgid "Code"
+#~ msgstr "Código"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "Publishers"
+#~ msgstr "Publicadores"
+
+#~ msgid "Restore"
+#~ msgstr "Recuperar"
+
+#~ msgid "Username"
+#~ msgstr "Usuário"
+
+#~ msgid "Full name"
+#~ msgstr "Nome completo"
+
+#~ msgid "Groups"
+#~ msgstr "Grupos"
+
+#~ msgid "Disable"
+#~ msgstr "Disabilitado"
+
+#~ msgid "Enable"
+#~ msgstr "Habilitado"
+
+#~ msgid "## This record doesn't have title ##"
+#~ msgstr "## Este registro não possui título ##"
+
+#~ msgid "Edit"
+#~ msgstr "Editar"
+
+#~ msgid "Activate"
+#~ msgstr "Ativar"
+
+#, fuzzy
+#~ msgid "End at"
+#~ msgstr "Mês final"
+
+#, fuzzy
+#~ msgid "Is finished"
+#~ msgstr "Esta na lixeira?"
+
+#, fuzzy
+#~ msgid "Report"
+#~ msgstr "Reportar bug"
+
+#~ msgid "Português"
+#~ msgstr "Português"
+
+#~ msgid "Español"
+#~ msgstr "Español"
+
+#~ msgid "English"
+#~ msgstr "English"
+
+#~ msgid "Forgot password?"
+#~ msgstr "Esqueceu sua senha?"
+
+#~ msgid "Your username and password did not match. Please try again."
+#~ msgstr "Usuário e senha inválidos. Por favor, tente novamente."
+
+#~ msgid ""
+#~ "Your account is not active. Please contact the SciELO or verify your e-"
+#~ "mail"
+#~ msgstr ""
+#~ "Sua conta não esta ativa. Por favor, entre em contato com a SciELO ou "
+#~ "verifique seu e-mail."
+
+#~ msgid "Please login on the system to see this page"
+#~ msgstr "Por favor, autentique-se no sistema para ver esta página"
+
+#~ msgid "Search: ISSN, Journal Title"
+#~ msgstr "Busca: ISSN, Título do periódico"
+
+#~ msgid "Eletronic ISSN"
+#~ msgstr "ISSN eletrônico"
+
+#~ msgid "Publisher and Sponsors"
+#~ msgstr "Publicadores e Financiadores"
+
+#~ msgid "Go to Gravatar.com"
+#~ msgstr "Acesse Gravatar.com"
