@@ -27,14 +27,14 @@
         <label class="control-label"
                for="{{ form.username.auto_id }}">{% trans 'Username or email' %}</label>
           <div class="controls">
-            {{ form.username|attr:"class:span4"|attr:"maxlength:75" }}
+            {{ form.username|attr:"class:span5"|attr:"maxlength:75" }}
           </div>
       </div>
      <div class="control-group">
      <label class="control-label"
             for="{{ form.password.auto_id }}">{% trans form.password.label %}</label>
         <div class="controls">
-            {{ form.password|attr:"class:span4" }}
+            {{ form.password|attr:"class:span5" }}
         </div>
       </div>
       <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />
