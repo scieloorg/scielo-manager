@@ -12,7 +12,9 @@
 {% endblock%}
 
 {% block form_content %}
+
 {% journaldash_toolbar 'issue' journal user %}
+
 <form id="issue-form" method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
   <span class="label">{% trans "Issue Information" %}</span>
