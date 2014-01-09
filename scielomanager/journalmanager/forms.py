@@ -84,7 +84,9 @@ class JournalForm(ModelForm):
 
     def save_all(self, creator):
         journal = self.save(commit=False)
-        journal.creator = creator
+
+        if self.instance.pk is None:
+            journal.creator = creator
 
         if not journal.pub_status_changed_by_id:
             journal.pub_status_changed_by = creator
