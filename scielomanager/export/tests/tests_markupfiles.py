@@ -1000,6 +1000,21 @@ class L10nIssueTests(MockerTestCase):
         self.assertEqual(vocabulary, u'Health Sciences Descriptors')
         self.assertIsInstance(vocabulary, unicode)
 
+    def test_date_iso_if_publication_end_month_is_None(self):
+        dummy_journal = self.mocker.mock()
+        dummy_issue = self.mocker.mock()
+
+        dummy_issue.publication_end_month
+        self.mocker.result(None)
+
+        dummy_issue.publication_year
+        self.mocker.result('2013')
+
+        self.mocker.replay()
+
+        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
+        self.assertEqual(l10nissue.date_iso, u'20130000')
+
 
 class AheadTests(MockerTestCase):
     def _makeOne(self, *args, **kwargs):
@@ -1108,6 +1123,7 @@ class L10nAheadTests(MockerTestCase):
 
         date_iso = l10nahead.date_iso
         self.assertIsInstance(date_iso, unicode)
+
 
     def test_status_must_return_always_1(self):
         dummy_journal = self.mocker.mock()
