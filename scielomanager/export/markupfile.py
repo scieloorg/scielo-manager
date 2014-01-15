@@ -160,8 +160,12 @@ class L10nIssue(Automata, Issue):
 
     @property
     def date_iso(self):
-        month = u'%02d' % self._issue.publication_end_month
+        try:
+            month = u'%02d' % self._issue.publication_end_month
+        except TypeError:
+            month = u'00'
         year = unicode(self._issue.publication_year)
+
         if year:
             return year + month + u'00'
         else:
