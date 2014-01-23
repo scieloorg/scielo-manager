@@ -1098,13 +1098,6 @@ class AheadPressRelease(PressRelease):
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
 
-class ArticleImage(caching.base.CachingMixin, models.Model):
-    objects = RegularPressReleaseCustomManager()
-    userobjects = modelmanagers.RegularPressReleaseManager()
-
-    image_url = models.CharField(_('Image URL'), max_length=256, db_index=True)
-
-
 class Article(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
@@ -1112,7 +1105,7 @@ class Article(caching.base.CachingMixin, models.Model):
     front = jsonfield.JSONField()
     xml_url = models.CharField(_('XML URL'), max_length=256)
     pdf_url = models.CharField(_('PDF URL'), max_length=256)
-    images_url = models.ManyToManyField(ArticleImage)
+    images_url = models.CharField(_('Images URL'), max_length=256)
 
 
 ####
