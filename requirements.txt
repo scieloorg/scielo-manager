@@ -12,6 +12,7 @@ pyyaml
 webassets==0.7.1
 yuicompressor
 pymongo
+jsonfield
 django-tastypie==0.9.14
 django-waffle==0.9.1
 git+git://github.com/scieloorg/django-htmlmin.git

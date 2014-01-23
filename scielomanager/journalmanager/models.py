@@ -1106,10 +1106,6 @@ class ArticleImage(caching.base.CachingMixin, models.Model):
 
 
 class Article(caching.base.CachingMixin, models.Model):
-    """
-    Class that represent the article object
-    """
-
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
