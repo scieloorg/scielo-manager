@@ -24,6 +24,7 @@ v1_api_resources = [
     resources.AheadPressReleaseResource(),
     resources.CheckinResource(),
     resources.CheckinNoticeResource(),
+    resources.ArticleResource(),
 ]
 
 for res in v1_api_resources:

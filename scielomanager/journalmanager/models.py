@@ -30,6 +30,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
+import jsonfield
 
 from scielomanager.utils import base28
 from . import modelmanagers
@@ -1095,6 +1096,17 @@ class AheadPressRelease(PressRelease):
     userobjects = modelmanagers.AheadPressReleaseManager()
 
     journal = models.ForeignKey(Journal, related_name='press_releases')
+
+
+class Article(caching.base.CachingMixin, models.Model):
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+
+    front = jsonfield.JSONField()
+    xml_url = models.CharField(_('XML URL'), max_length=256)
+    pdf_url = models.CharField(_('PDF URL'), max_length=256)
+    images_url = models.CharField(_('Images URL'), max_length=256)
+
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

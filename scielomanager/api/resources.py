@@ -19,6 +19,7 @@ from journalmanager.models import (
     AheadPressRelease,
     PressReleaseTranslation,
     PressReleaseArticle,
+    Article,
 )
 
 from articletrack.models import (
@@ -381,5 +382,14 @@ class CheckinNoticeResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
         queryset = Notice.objects.all()
         resource_name = 'notices'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post', 'put']
+
+
+class ArticleResource(ModelResource):
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = Article.objects.all()
+        resource_name = 'articles'
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']
