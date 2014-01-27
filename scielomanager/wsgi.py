@@ -14,6 +14,12 @@ framework.
 
 """
 import os
+import sys
+
+# Adding scielomanager package to the python path.
+here = os.path.abspath(os.path.dirname(__file__))
+if here not in sys.path:
+    sys.path.insert(0, here)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scielomanager.settings")
 
