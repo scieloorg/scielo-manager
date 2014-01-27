@@ -14,35 +14,14 @@ class Migration(SchemaMigration):
             ('front', self.gf('jsonfield.fields.JSONField')(default={})),
             ('xml_url', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('pdf_url', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('images_url', self.gf('django.db.models.fields.CharField')(max_length=256)),
         ))
         db.send_create_signal('journalmanager', ['Article'])
-
-        # Adding M2M table for field images_url on 'Article'
-        m2m_table_name = db.shorten_name('journalmanager_article_images_url')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('article', models.ForeignKey(orm['journalmanager.article'], null=False)),
-            ('articleimage', models.ForeignKey(orm['journalmanager.articleimage'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['article_id', 'articleimage_id'])
-
-        # Adding model 'ArticleImage'
-        db.create_table('journalmanager_articleimage', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('image_url', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
-        ))
-        db.send_create_signal('journalmanager', ['ArticleImage'])
 
 
     def backwards(self, orm):
         # Deleting model 'Article'
         db.delete_table('journalmanager_article')
-
-        # Removing M2M table for field images_url on 'Article'
-        db.delete_table(db.shorten_name('journalmanager_article_images_url'))
-
-        # Deleting model 'ArticleImage'
-        db.delete_table('journalmanager_articleimage')
 
 
     models = {
@@ -91,14 +70,9 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Article'},
             'front': ('jsonfield.fields.JSONField', [], {'default': '{}'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'images_url': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.ArticleImage']", 'symmetrical': 'False'}),
+            'images_url': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'pdf_url': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'xml_url': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'journalmanager.articleimage': {
-            'Meta': {'object_name': 'ArticleImage'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image_url': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
         },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
