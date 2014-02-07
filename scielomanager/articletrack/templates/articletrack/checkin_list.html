@@ -36,20 +36,20 @@
         {{ checkin.package_name }}
       </td>
       <td>
-        {{ checkin.article_title|truncatewords:5 }}
+        {{ checkin.article.article_title|truncatewords:5 }}
       </td>
       <td>
-        {{ checkin.journal_title }}
+        {{ checkin.article.journal_title }}
       </td>
       <td>
-        {{ checkin.issue_label }}
+        {{ checkin.article.issue_label }}
       </td>
       <td>
         {{ checkin.created_at|date:"d/m/Y - H:i" }}
       </td>
       <td>
         <a href="{% url notice_detail checkin.id %}" class="btn btn-mini btn" type="button">{% trans "Details" %}</a>
-        <a href="{% url checkin_history checkin.articlepkg_ref %}" class="btn btn-mini btn" type="button">{% trans "History" %}</a>
+        <a href="{% url checkin_history checkin.article.articlepkg_ref %}" class="btn btn-mini btn" type="button">{% trans "History" %}</a>
       </td>
     </tr>
     {% empty %}

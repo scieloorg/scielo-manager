@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.contrib.auth.models import User
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, Resource
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.authentication import ApiKeyAuthentication
@@ -24,7 +24,10 @@ from journalmanager.models import (
 
 from articletrack.models import (
     Checkin,
-    Notice
+    Notice,
+    Article as CheckinArticle,
+    Ticket,
+    Comment
 )
 
 
@@ -367,7 +370,7 @@ class AheadPressReleaseResource(ModelResource):
 
 
 class CheckinResource(ModelResource):
-    collection = fields.ForeignKey(CollectionResource, 'collection', null=True)
+    article = fields.ForeignKey('api.resources.CheckinArticleResource', 'article')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Checkin.objects.all()
@@ -382,6 +385,38 @@ class CheckinNoticeResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
         queryset = Notice.objects.all()
         resource_name = 'notices'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post', 'put']
+
+
+class CheckinArticleResource(ModelResource):
+    journals = fields.ToManyField(JournalResource, 'journals', null=True)
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = CheckinArticle.objects.all()
+        resource_name = 'checkins_articles'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post', 'put']
+
+
+class TicketResource(ModelResource):
+    author = fields.ForeignKey(UserResource, 'author')
+    article = fields.ForeignKey(CheckinArticleResource, 'article')
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = Ticket.objects.all()
+        resource_name = 'tickets'
+        default_format = "application/json"
+        allowed_methods = ['get', 'post', 'put']
+
+
+class CommentResource(ModelResource):
+    author = fields.ForeignKey(UserResource, 'author')
+    ticket = fields.ForeignKey(TicketResource, 'ticket')
+
+    class Meta(ApiKeyAuthMeta):
+        queryset = Comment.objects.all()
+        resource_name = 'comments'
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']
 

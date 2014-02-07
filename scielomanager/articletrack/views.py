@@ -31,7 +31,7 @@ def checkin_index(request):
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_history(request, articlepkg):
 
-    checkins = models.Checkin.userobjects.active().filter(articlepkg_ref=articlepkg)
+    checkins = models.Checkin.userobjects.active().filter(article__articlepkg_ref=articlepkg)
 
     # import pdb; pdb.set_trace()
     objects = get_paginated(checkins, request.GET.get('page', 1))

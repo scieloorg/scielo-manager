@@ -3,7 +3,6 @@ from waffle import Flag
 from django_webtest import WebTest
 from django_factory_boy import auth
 from django.core.urlresolvers import reverse
-
 from . import modelfactories
 
 
@@ -25,7 +24,7 @@ class CheckinListTests(WebTest):
         checkin = modelfactories.CheckinFactory.create()
 
         #Get only the first collection and set to the user
-        collection = checkin.journals.all()[0].collection
+        collection = checkin.article.journals.all()[0].collection
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return checkin
@@ -72,7 +71,7 @@ class CheckinListTests(WebTest):
         response = self.app.get('/arttrack/', user=self.user)
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
-        response.mustcontain('href="/arttrack/package/%s/"' % checkin.articlepkg_ref)
+        response.mustcontain('href="/arttrack/package/%s/"' % checkin.article.articlepkg_ref)
 
     def test_status_code_package_history(self):
         self._addWaffleFlag()
@@ -88,7 +87,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.articlepkg_ref]), user=self.user)
+            args=[checkin.article.articlepkg_ref]), user=self.user)
 
         response.mustcontain('20132404.zip')
 
@@ -97,7 +96,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.articlepkg_ref]), user=self.user)
+            args=[checkin.article.articlepkg_ref]), user=self.user)
 
         response.mustcontain('An azafluorenone alkaloid and a megastigmane from ...')
 
@@ -114,7 +113,7 @@ class CheckinListTests(WebTest):
         self._addWaffleFlag()
         checkin = self._makeOne()
 
-        response = self.app.get("/arttrack/package/%s/" % checkin.articlepkg_ref, user=self.user)
+        response = self.app.get("/arttrack/package/%s/" % checkin.article.articlepkg_ref, user=self.user)
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
 
@@ -125,7 +124,7 @@ class NoticeListTests(WebTest):
         notice = modelfactories.NoticeFactory.create()
 
         #Get only the first collection and set to the user
-        collection = notice.checkin.journals.all()[0].collection
+        collection = notice.checkin.article.journals.all()[0].collection
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return notice
@@ -179,6 +178,5 @@ class NoticeListTests(WebTest):
 
         response = self.app.get(reverse('notice_detail',
             args=[notice.checkin.pk]), user=self.user)
-
-        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.articlepkg_ref)
+        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.article.articlepkg_ref)
 
