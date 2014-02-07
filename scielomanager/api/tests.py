@@ -1266,7 +1266,7 @@ class CommentRestAPITest(WebTest):
         self.user = auth.UserF(is_active=True)
         self.extra_environ = _make_auth_environ(self.user.username,
                                                 self.user.api_key.key)
-        self.ticket = articletrack_modelfactories.TicketFactory.create(author=self.user)
+        self.ticket = articletrack_modelfactories.TicketFactory.create()
         self.author = modelfactories.UserFactory(is_active=True)
 
     @_patch_userrequestcontextfinder_settings_teardown

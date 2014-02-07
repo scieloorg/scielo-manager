@@ -52,17 +52,15 @@ class TicketFactory(factory.Factory):
     FACTORY_FOR = models.Ticket
 
     started_at = '2013-11-13 15:23:12'
-    #finished_at = '2013-11-20 15:23:18.286068-02'
     title = u'change XYZ at ABC for XXX'
     message = u'the XYZ at ABC must be changed for XXX because YYY'
     article = factory.SubFactory(ArticleFactory)
-    author = UserFactory(password=HASH_FOR_123, is_active=True)
+    author = factory.SubFactory(UserFactory)
 
 
 class CommentFactory(factory.Factory):
     FACTORY_FOR = models.Comment
 
-    #date = '2013-11-21 15:23:18'
-    author = UserFactory(password=HASH_FOR_123, is_active=True)
+    author = factory.SubFactory(UserFactory)
     ticket = factory.SubFactory(TicketFactory)
     message = u'Fixed!'
