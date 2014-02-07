@@ -6,7 +6,7 @@ these tests are in a, maybe, wrong app for pragmatic purposes
 of the app `api` not being part of the django installed apps.
 """
 import json
-
+import datetime
 from django_webtest import WebTest
 from django_factory_boy import auth
 
@@ -18,7 +18,10 @@ from api.resources import (
     SectionResource,
     JournalResource,
     CheckinResource,
-    CheckinNoticeResource
+    CheckinNoticeResource,
+    CheckinArticleResource,
+    TicketResource,
+    CommentResource,
     )
 
 from journalmanager.tests.helpers import (
@@ -889,7 +892,7 @@ class CheckinRestAPITest(WebTest):
         self.user = auth.UserF(is_active=True)
         self.extra_environ = _make_auth_environ(self.user.username,
                                                 self.user.api_key.key)
-        self.collection = modelfactories.CollectionFactory.create()
+        self.article = articletrack_modelfactories.ArticleFactory.create()
 
     @_patch_userrequestcontextfinder_settings_teardown
     def tearDown(self):
@@ -900,15 +903,13 @@ class CheckinRestAPITest(WebTest):
         perm = _makePermission(perm='add_checkin', model='checkin', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
-        att = {u'articlepkg_ref': 1,
+        att = {
                u'attempt_ref': 1,
-               u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
-               u'journal_title': u'Journal of the Brazilian Chemical Society',
-               u'issue_label': u'2013 v.24 n.4',
                u'package_name': u'20132404.zip',
                u'uploaded_at': u'2013-11-13 15:23:12.286068-02',
                u'created_at': u'2013-11-13 15:23:18.286068-02',
-               }
+               u'article': u'/api/v1/checkins_articles/%s/' % self.article.pk,
+        }
 
         response = self.app.post_json('/api/v1/checkins/',
                                       att,
@@ -926,7 +927,7 @@ class CheckinRestAPITest(WebTest):
         perm = _makePermission(perm='change_checkin', model='checkin', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
-        att = {u'issue_label': u'2013 v.24 n.5'}
+        att = {u'attempt_ref': 2}
 
         checkin = articletrack_modelfactories.CheckinFactory.create()
 
@@ -937,7 +938,7 @@ class CheckinRestAPITest(WebTest):
 
         self.assertEqual(response.status_code, 204)
         checkin_check = models.Checkin.objects.get(pk=checkin.pk)
-        self.assertEqual(checkin_check.issue_label, u'2013 v.24 n.5')
+        self.assertEqual(checkin_check.attempt_ref, u'2')
 
     def test_del_data(self):
         response = self.app.delete('/api/v1/checkins/',
@@ -964,19 +965,13 @@ class CheckinRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'articlepkg_ref',
+            u'article',
             u'attempt_ref',
-            u'collection',
-            u'id',
-            u'resource_uri',
-            u'article_title',
-            u'journal_title',
-            u'issue_label',
-            u'package_name',
-            u'uploaded_at',
             u'created_at',
-            u'eissn',
-            u'pissn',
+            u'id',
+            u'package_name',
+            u'resource_uri',
+            u'uploaded_at',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
@@ -1077,5 +1072,278 @@ class NoticeRestAPITest(WebTest):
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
 
+class CheckinArticleRestAPITest(WebTest):
+    
+    @_patch_userrequestcontextfinder_settings_setup
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+                                                self.user.api_key.key)
 
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        perm = _makePermission(perm='add_article', model='article', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {
+                u'articlepkg_ref': 1,
+                u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
+                u'journal_title': u'Journal of the Brazilian Chemical Society',
+                u'issue_label': u'2013 v.24 n.4',
+                u'eissn': u'111',
+                u'pissn': u'',
+        }
+        response = self.app.post_json('/api/v1/checkins_articles/',
+                                      att,
+                                      extra_environ=self.extra_environ,
+                                      status=201)
+
+        # 201 stands for CREATED Http status
+        self.assertEqual(response.status_code, 201)
+
+    def test_put_data(self):
+        from articletrack import models
+
+        perm = _makePermission(perm='add_article', model='article', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+        perm = _makePermission(perm='change_article', model='article', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {u'issue_label': u'2013 v.24 n.5'}
+
+        article = articletrack_modelfactories.ArticleFactory.create()
+
+        response = self.app.put_json('/api/v1/checkins_articles/%s/' % article.pk,
+                                att,
+                                extra_environ=self.extra_environ,
+                                status=204)
+
+        self.assertEqual(response.status_code, 204)
+        article_check = models.Article.objects.get(pk=article.pk)
+        self.assertEqual(article_check.issue_label, u'2013 v.24 n.5')
+
+    def test_del_data(self):
+        response = self.app.delete('/api/v1/checkins_articles/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get('/api/v1/checkins_articles/', status=401)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_checkin_index(self):
+        articletrack_modelfactories.ArticleFactory.create()
+        response = self.app.get('/api/v1/checkins_articles/',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v1_data_checkin(self):
+        article = articletrack_modelfactories.ArticleFactory.create()
+        response = self.app.get('/api/v1/checkins_articles/%s/' % article.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            u'article_title',
+            u'articlepkg_ref',
+            u'eissn',
+            u'id',
+            u'issue_label',
+            u'journal_title',
+            u'journals',
+            u'pissn',
+            u'resource_uri',
+        ]
+
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+        
+
+class TicketRestAPITest(WebTest):
+    
+    @_patch_userrequestcontextfinder_settings_setup
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+                                                self.user.api_key.key)
+        self.article = articletrack_modelfactories.ArticleFactory.create()
+        self.author =  modelfactories.UserFactory(is_active=True)
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        
+        perm = _makePermission(perm='add_ticket', model='ticket', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {
+               u'started_at': '2013-11-17 15:23:18',
+               u'author': u'/api/v1/users/%s/' % self.author.pk,
+               u'title': u'title of the ticket',
+               u'message': u'message of the ticket',
+               u'article': u'/api/v1/checkins_articles/%s/' % self.article.pk,
+        }
+
+        response = self.app.post_json('/api/v1/tickets/',
+                                      att,
+                                      extra_environ=self.extra_environ,
+                                      status=201)
+
+        # 201 stands for CREATED Http status
+        self.assertEqual(response.status_code, 201)
+
+    def test_put_data(self):
+        from articletrack import models
+
+        perm = _makePermission(perm='add_ticket', model='ticket', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+        perm = _makePermission(perm='change_ticket', model='ticket', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {u'finished_at': '2013-11-18 15:23:12',}
+        ticket = articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
+        
+        response = self.app.put_json('/api/v1/tickets/%s/' % ticket.pk,
+	                                att,
+	                                extra_environ=self.extra_environ,
+	                                status=204)
+
+        self.assertEqual(response.status_code, 204)
+        ticket_check = models.Ticket.objects.get(pk=ticket.pk)
+        self.assertEqual(ticket_check.finished_at, datetime.datetime(2013, 11, 18, 15, 23, 12))
+        self.assertFalse(ticket_check.is_open)
+
+
+    def test_del_data(self):
+        response = self.app.delete('/api/v1/tickets/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get('/api/v1/tickets/', status=401)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_checkin_index(self):
+        articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
+        response = self.app.get('/api/v1/tickets/',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v1_data_checkin(self):
+        ticket = articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
+        response = self.app.get('/api/v1/tickets/%s/' % ticket.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            u'article',
+            u'author',
+            u'finished_at',
+            u'id',
+            u'message',
+            u'started_at',
+            u'title',
+            u'resource_uri',
+        ]
+
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+
+class CommentRestAPITest(WebTest):
+    
+    @_patch_userrequestcontextfinder_settings_setup
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username,
+                                                self.user.api_key.key)
+        self.ticket = articletrack_modelfactories.TicketFactory.create()
+        self.author = modelfactories.UserFactory(is_active=True)
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        
+        perm = _makePermission(perm='add_comment', model='comment', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {
+            u'author': u'/api/v1/users/%s/' % self.author.pk,
+            u'message': u'message of the comment',
+            u'ticket': u'/api/v1/tickets/%s/' % self.ticket.pk,
+        }
+        
+        response = self.app.post_json('/api/v1/comments/',
+                                      att,
+                                      extra_environ=self.extra_environ,
+                                      status=201)
+
+        # 201 stands for CREATED Http status
+        self.assertEqual(response.status_code, 201)
+
+    def test_put_data(self):
+        from articletrack import models
+
+        perm = _makePermission(perm='add_comment', model='comment', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+        perm = _makePermission(perm='change_comment', model='comment', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        att = {u'message': u'new message',}
+
+        comment = articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
+        response = self.app.put_json('/api/v1/comments/%s/' % comment.pk,
+	                                att,
+	                                extra_environ=self.extra_environ,
+	                                status=204)
+
+        self.assertEqual(response.status_code, 204)
+        comment_check = models.Comment.objects.get(pk=comment.pk)
+        self.assertEqual(comment_check.message, u'new message')
+
+    def test_del_data(self):
+        response = self.app.delete('/api/v1/comments/',
+            extra_environ=self.extra_environ, status=405)
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get('/api/v1/comments/', status=401)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_checkin_index(self):
+        articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
+        response = self.app.get('/api/v1/comments/',
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v1_data_checkin(self):
+        comment = articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
+        response = self.app.get('/api/v1/comments/%s/' % comment.pk,
+            extra_environ=self.extra_environ)
+
+        expected_keys = [
+            u'author',
+            u'date',
+            u'id',
+            u'message',
+            u'ticket',
+            u'resource_uri',
+        ]
+
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 

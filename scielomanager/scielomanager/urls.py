@@ -25,6 +25,9 @@ v1_api_resources = [
     resources.CheckinResource(),
     resources.CheckinNoticeResource(),
     resources.ArticleResource(),
+    resources.CheckinArticleResource(),
+    resources.TicketResource(),
+    resources.CommentResource()
 ]
 
 for res in v1_api_resources:

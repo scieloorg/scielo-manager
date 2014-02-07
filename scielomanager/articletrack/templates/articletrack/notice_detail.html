@@ -61,6 +61,6 @@
 {% trans 'Go to' %}:
 
 <a href="{% url checkin_index %}">{% trans "List of check ins" %}</a> |
-<a href="{% url checkin_history checkin.articlepkg_ref %}">{% trans "Package history" %}</a>
+<a href="{% url checkin_history checkin.article.articlepkg_ref %}">{% trans "Package history" %}</a>
 
 {% endblock %}
