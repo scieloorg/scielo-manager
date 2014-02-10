@@ -37,7 +37,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
     uploaded_at = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    article = models.ForeignKey('Article', related_name='checkins')
+    article = models.ForeignKey('Article', related_name='checkins', null=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -73,7 +73,7 @@ class Ticket(caching.base.CachingMixin, models.Model):
 
     started_at = models.DateTimeField(_("Started at"), auto_now=True)
     finished_at = models.DateTimeField(_("Finished at"), null=True, blank=True)
-    author = models.ForeignKey(User, related_name='tickets') 
+    author = models.ForeignKey(User, related_name='tickets')
     title = models.CharField(_("Title"), max_length=256)
     message = models.TextField(_("Message"))
     article = models.ForeignKey(Article, related_name='articles')

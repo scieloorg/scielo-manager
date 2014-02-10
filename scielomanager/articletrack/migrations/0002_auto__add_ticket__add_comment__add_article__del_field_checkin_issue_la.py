@@ -23,7 +23,7 @@ class Migration(SchemaMigration):
         # Adding model 'Comment'
         db.create_table('articletrack_comment', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('date', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('author', self.gf('django.db.models.fields.related.ForeignKey')(related_name='comments_author', to=orm['auth.User'])),
             ('ticket', self.gf('django.db.models.fields.related.ForeignKey')(related_name='comments', to=orm['articletrack.Ticket'])),
             ('message', self.gf('django.db.models.fields.TextField')()),
@@ -33,7 +33,6 @@ class Migration(SchemaMigration):
         # Adding model 'Article'
         db.create_table('articletrack_article', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('checkin', self.gf('django.db.models.fields.related.ForeignKey')(related_name='articles_checkin', to=orm['articletrack.Checkin'])),
             ('article_title', self.gf('django.db.models.fields.CharField')(max_length=512)),
             ('articlepkg_ref', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('journal_title', self.gf('django.db.models.fields.CharField')(max_length=256)),
@@ -70,6 +69,11 @@ class Migration(SchemaMigration):
         # Deleting field 'Checkin.articlepkg_ref'
         db.delete_column('articletrack_checkin', 'articlepkg_ref')
 
+        # Adding field 'Checkin.article'
+        db.add_column('articletrack_checkin', 'article',
+                      self.gf('django.db.models.fields.related.ForeignKey')(related_name='checkins', null=True, to=orm['articletrack.Article']),
+                      keep_default=False)
+
         # Removing M2M table for field journals on 'Checkin'
         db.delete_table(db.shorten_name('articletrack_checkin_journals'))
 
@@ -87,14 +91,22 @@ class Migration(SchemaMigration):
         # Removing M2M table for field journals on 'Article'
         db.delete_table(db.shorten_name('articletrack_article_journals'))
 
-        # Adding field 'Checkin.issue_label'
+
+        # User chose to not deal with backwards NULL issues for 'Checkin.issue_label'
+        raise RuntimeError("Cannot reverse this migration. 'Checkin.issue_label' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration        # Adding field 'Checkin.issue_label'
         db.add_column('articletrack_checkin', 'issue_label',
-                      self.gf('django.db.models.fields.CharField')(default=None, max_length=64),
+                      self.gf('django.db.models.fields.CharField')(max_length=64),
                       keep_default=False)
 
-        # Adding field 'Checkin.journal_title'
+
+        # User chose to not deal with backwards NULL issues for 'Checkin.journal_title'
+        raise RuntimeError("Cannot reverse this migration. 'Checkin.journal_title' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration        # Adding field 'Checkin.journal_title'
         db.add_column('articletrack_checkin', 'journal_title',
-                      self.gf('django.db.models.fields.CharField')(default=None, max_length=256),
+                      self.gf('django.db.models.fields.CharField')(max_length=256),
                       keep_default=False)
 
         # Adding field 'Checkin.pissn'
@@ -107,15 +119,26 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(default='', max_length=9),
                       keep_default=False)
 
-        # Adding field 'Checkin.article_title'
+
+        # User chose to not deal with backwards NULL issues for 'Checkin.article_title'
+        raise RuntimeError("Cannot reverse this migration. 'Checkin.article_title' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration        # Adding field 'Checkin.article_title'
         db.add_column('articletrack_checkin', 'article_title',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=512),
+                      self.gf('django.db.models.fields.CharField')(max_length=512),
                       keep_default=False)
 
-        # Adding field 'Checkin.articlepkg_ref'
+
+        # User chose to not deal with backwards NULL issues for 'Checkin.articlepkg_ref'
+        raise RuntimeError("Cannot reverse this migration. 'Checkin.articlepkg_ref' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration        # Adding field 'Checkin.articlepkg_ref'
         db.add_column('articletrack_checkin', 'articlepkg_ref',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=32),
+                      self.gf('django.db.models.fields.CharField')(max_length=32),
                       keep_default=False)
+
+        # Deleting field 'Checkin.article'
+        db.delete_column('articletrack_checkin', 'article_id')
 
         # Adding M2M table for field journals on 'Checkin'
         m2m_table_name = db.shorten_name('articletrack_checkin_journals')
@@ -132,7 +155,6 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Article'},
             'article_title': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
             'articlepkg_ref': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'articles_checkin'", 'to': "orm['articletrack.Checkin']"}),
             'eissn': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '9'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'issue_label': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
@@ -142,6 +164,7 @@ class Migration(SchemaMigration):
         },
         'articletrack.checkin': {
             'Meta': {'ordering': "['-created_at']", 'object_name': 'Checkin'},
+            'article': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkins'", 'null': 'True', 'to': "orm['articletrack.Article']"}),
             'attempt_ref': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -151,7 +174,7 @@ class Migration(SchemaMigration):
         'articletrack.comment': {
             'Meta': {'ordering': "['-date']", 'object_name': 'Comment'},
             'author': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'comments_author'", 'to': "orm['auth.User']"}),
-            'date': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'message': ('django.db.models.fields.TextField', [], {}),
             'ticket': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'comments'", 'to': "orm['articletrack.Ticket']"})
