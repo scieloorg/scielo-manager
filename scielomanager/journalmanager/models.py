@@ -1102,6 +1102,7 @@ class Article(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
+    issue = models.ForeignKey(Issue, related_name='issue_article')
     front = jsonfield.JSONField()
     xml_url = models.CharField(_('XML URL'), max_length=256)
     pdf_url = models.CharField(_('PDF URL'), max_length=256)

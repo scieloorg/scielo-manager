@@ -1,3 +1,5 @@
+# coding: utf-8
+
 import os
 import sys
 
@@ -27,7 +29,7 @@ collectionname = sys.argv[1]
 collectionurl = sys.argv[2]
 
 
-print 'Checking if Collection %s exists at JournalManager Database' % collectionname
+print u'Checking if Collection %s exists at JournalManager Database' % collectionname
 
 try:
     collection = Collection.objects.get(name=collectionname)
