@@ -1,6 +1,5 @@
 # coding: utf-8
 from django.test import TestCase
-# from django_factory_boy import auth
 
 from articletrack import (
     models,
