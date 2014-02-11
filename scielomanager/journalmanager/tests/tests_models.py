@@ -857,7 +857,7 @@ class ArticleTests(TestCase):
         article.save()
 
         myarticle = models.Article.objects.all()[0]
-        self.assertEqual(myarticle.issue.volume, u'74')
+        self.assertEqual(myarticle.issue.publication_year, 2012)
 
     def test_article_front_field(self):
         from journalmanager import models
