@@ -3,6 +3,7 @@ from django.test import TestCase
 from mocker import MockerTestCase
 from django.utils import unittest
 from django_factory_boy import auth
+from django.db import IntegrityError
 
 from .modelfactories import (
     IssueFactory,
@@ -815,5 +816,167 @@ class JournalManagerTests(TestCase):
         journal = JournalFactory.create(print_issn='2398-8734')
         journal2 = JournalFactory.create()
 
-        self.assertEqual(models.Journal.objects.by_issn('2398-8734')[0], journal)
+        self.assertEqual(
+            models.Journal.objects.by_issn('2398-8734')[0],
+            journal
+        )
 
+class ArticleTests(TestCase):
+
+    def setUp(self):
+        self._issue = IssueFactory.create()
+        self._front = {u"title": u"Article Title"}
+
+    def test_add_article(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        article.save()
+
+        myarticle = models.Article.objects.all()
+        self.assertEqual(len(myarticle), 1)
+
+    def test_article_issue_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        article.save()
+
+        myarticle = models.Article.objects.all()[0]
+        self.assertEqual(myarticle.issue.publication_year, 2012)
+
+    def test_article_front_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        article.save()
+
+        myarticle = models.Article.objects.all()[0]
+        self.assertEqual(myarticle.front['title'], u'Article Title')
+
+    def test_article_xml_url_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        article.save()
+
+        myarticle = models.Article.objects.all()[0]
+
+        self.assertEqual(myarticle.xml_url, u'http://xml.url.com')
+
+    def test_article_pdf_url_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        article.save()
+
+        myarticle = models.Article.objects.all()[0]
+
+        self.assertEqual(myarticle.pdf_url, u'http://pdf.url.com')
+
+    def test_article_images_url_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        article.save()
+
+        myarticle = models.Article.objects.all()[0]
+
+        self.assertEqual(myarticle.images_url, u'http://img.url.com')
+
+    def test_article_mandatory_issue_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        with self.assertRaises(IntegrityError):
+            article.save()
+
+    def test_article_mandatory_xml_url_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=None,
+            pdf_url=u'http://pdf.url.com',
+            images_url=u'http://img.url.com'
+        )
+
+        with self.assertRaises(IntegrityError):
+            article.save()
+
+    def test_article_mandatory_pdf_url_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=None,
+            images_url=u'http://img.url.com'
+        )
+
+        with self.assertRaises(IntegrityError):
+            article.save()
+
+    def test_article_mandatory_images_url_field(self):
+        from journalmanager import models
+
+        article = models.Article(
+            issue=self._issue,
+            front=self._front,
+            xml_url=u'http://xml.url.com',
+            pdf_url=u'http://pdf.url.com',
+            images_url=None
+        )
+
+        with self.assertRaises(IntegrityError):
+            article.save()
