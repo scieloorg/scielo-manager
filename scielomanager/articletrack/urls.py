@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = patterns('',
     url(r'^$', views.checkin_index, name="checkin_index"),
-    url(r'^package/(?P<articlepkg>\d+)/$', views.checkin_history, name="checkin_history"),
+    url(r'^package/(?P<article_id>\d+)/$', views.checkin_history, name="checkin_history"),
     url(r'^notice/(?P<checkin_id>\d+)/$', views.notice_detail, name="notice_detail"),
     # TICKETS
     url(r'^ticket/add/(?P<checkin_id>\d+)/$', views.ticket_add, name="ticket_add"),

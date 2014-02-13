@@ -49,7 +49,7 @@
       </td>
       <td>
         <a href="{% url notice_detail checkin.id %}" class="btn btn-mini btn" type="button">{% trans "Details" %}</a>
-        <a href="{% url checkin_history checkin.article.articlepkg_ref %}" class="btn btn-mini btn" type="button">{% trans "History" %}</a>
+        <a href="{% url checkin_history checkin.article.pk %}" class="btn btn-mini btn" type="button">{% trans "History" %}</a>
       </td>
     </tr>
     {% empty %}

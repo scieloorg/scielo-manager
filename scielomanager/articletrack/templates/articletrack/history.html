@@ -12,7 +12,7 @@
 <div class="row-fluid show-grid">
   <div class="span10">
     <h4>{% trans 'Attempts to article: ' %}
-      <span class="muted">{{ checkins.object_list.0.article.article_title|truncatewords:7 }}</span>
+      <span class="muted">{{ first_article.article_title|truncatewords:7 }}</span>
     </h4>
   </div>
   <div class="2" style="text-align:right; margin-bottom:20px;">
@@ -25,7 +25,7 @@
     <tr>
       <th>{% trans "Package" %}</th>
       <th>{% trans "Created" %}</th>
-      <th><a class='btn btn-mini btn-success' href="{% url ticket_add checkins.object_list.0.id %}">Create a ticket</a></th>
+      <th><a class='btn btn-mini btn-success' href="{% url ticket_add first_article.pk %}">{% trans "Create a ticket" %}</a></th>
     </tr>
   </thead>
   <tbody>

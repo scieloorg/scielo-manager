@@ -14,9 +14,9 @@
 <div class="page-header">
   <h1>
     {% if ticket.is_open %}
-      <span class="label label-success">Open</span> 
+      <span class="label label-success">{% trans "Open" %}</span> 
     {% else %}
-      <span class="label label-important">Closed</span> 
+      <span class="label label-important">{% trans "Closed" %}</span> 
     {% endif %}
     {{ ticket.title|title }} <small>#{{ ticket.pk }}</small>
   </h1>

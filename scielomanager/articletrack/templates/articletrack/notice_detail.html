@@ -31,7 +31,7 @@
 
   <div class="row">
     <div class="span12">
-      <a class='btn btn-mini btn-success pull-right' href="{% url ticket_add checkin.id %}">
+      <a class='btn btn-mini btn-success pull-right' href="{% url ticket_add checkin.pk %}">
         {% trans "Create a ticket" %}
       </a>
     </div>
@@ -112,7 +112,7 @@
     <div class="btn-group">
       <a class="btn disabled">{% trans 'Go to' %}:</a>
       <a class="btn" href="{% url checkin_index %}"><i class="icon-arrow-left"></i> {% trans "List of check ins" %}</a>
-      <a class="btn" href="{% url checkin_history checkin.article.articlepkg_ref %}"><i class="icon-time"></i> {% trans "Package history" %}</a>
+      <a class="btn" href="{% url checkin_history checkin.article.pk %}"><i class="icon-time"></i> {% trans "Package history" %}</a>
       <a class="btn" href="{% url ticket_list %}"><i class="icon-exclamation-sign"></i> {% trans "List of Tickets" %}</a>
     </div>
   </div>
