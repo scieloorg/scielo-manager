@@ -1,0 +1,33 @@
+{% load i18n %}
+
+{% if tickets|length > 0 %}
+  <table class="table table-condensed table-hover">
+    <thead>
+      <tr>
+        <th>{% trans "Article" %}:</th>
+        <th>{% trans "Author" %}:</th>
+        <th>{% trans "Title" %}:</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in tickets %}
+        <tr>
+          <td>{{ ticket.article.article_title }}</td>
+          <td>
+            <img style="vertical-align:top;" src="{{ ticket.author.get_profile.avatar_url }}" alt="Gravatar">
+            {{ ticket.author.get_full_name }}
+          </td>
+          <td>{{ ticket.title }}</td>
+          <td>
+            <a href="{% url ticket_detail ticket.id %}" class="btn btn-mini btn" type="button">{% trans "Details" %}</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="alert">
+    <strong>{% trans "No tickets" %}</strong>
+  </div>
+{% endif %}

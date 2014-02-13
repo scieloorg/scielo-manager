@@ -29,3 +29,4 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ('date', 'ticket', 'author')
 
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Notice)

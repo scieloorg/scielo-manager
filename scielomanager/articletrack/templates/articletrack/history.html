@@ -25,7 +25,7 @@
     <tr>
       <th>{% trans "Package" %}</th>
       <th>{% trans "Created" %}</th>
-      <th></th>
+      <th><a class='btn btn-mini btn-success' href="{% url ticket_add checkins.object_list.0.id %}">Create a ticket</a></th>
     </tr>
   </thead>
   <tbody>
@@ -49,8 +49,15 @@
   <tbody>
 </table>
 
-{% trans 'Go to' %}:
+<!-- NAVIGATIONS -->
+<div class="row">
+  <div class="span12">
+    <div class="btn-group">
+      <a class="btn disabled">{% trans 'Go to' %}:</a>
+      <a class="btn" href="{% url checkin_index %}"><i class="icon-arrow-left"></i> {% trans "List of check ins" %}</a>
+    </div>
+  </div>
+</div>
 
-<a href="{% url checkin_index %}">{% trans "List of check ins" %}</a>
 
 {% endblock %}
