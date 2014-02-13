@@ -1,0 +1,32 @@
+{% extends "base_list_lv0.html" %}
+{% load i18n %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "Journals" %}{% endblock %}
+
+{% block content %}
+
+{% journaldash_toolbar 'issue' journal user %}
+
+<h4>{% trans 'Issue'%}: {{ issue }}</h4> 
+<h4>{% trans 'Publication date'%}: {{ issue.publication_date }}</h4>
+
+<h4>{% trans 'Articles' %}</h4>
+<table class="table table-striped _listings">
+  <tbody>
+    {% for article in articles %}
+    <tr>
+      <td>
+        <h4>
+            {{ article.title }}
+        </h4>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">{% trans 'There are no items.' %}</td>
+    </tr>
+    {% endfor %}
+  <tbody>
+</table>
+{% endblock %}
