@@ -41,7 +41,7 @@ def checkin_index(request):
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_history(request, article_id):
     try:
-        article = models.Article.userobjects.active().get(pk=article_id)
+        article = models.Article.userobjects.active().select_related('checkins').get(pk=article_id)
     except models.Article.DoesNotExist:
         raise Http404
 
@@ -61,8 +61,8 @@ def checkin_history(request, article_id):
 @permission_required('articletrack.list_notice', login_url=AUTHZ_REDIRECT_URL)
 def notice_detail(request, checkin_id):
 
-    notices = models.Notice.objects.filter(checkin=checkin_id)
     checkin = models.Checkin.userobjects.active().get(pk=checkin_id)
+    notices = checkin.notices.all()
 
     objects = get_paginated(notices, request.GET.get('page', 1))
 
@@ -88,7 +88,7 @@ def ticket_list(request):
 
     tickets = models.Ticket.userobjects.active()
     objects = get_paginated(tickets, request.GET.get('page', 1))
-    
+
     return render_to_response(
         'articletrack/ticket_list.html',
         {
@@ -169,7 +169,7 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
             ticket.author = request.user
             ticket.article = checkin.article
             ticket.save()
-            
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
 
@@ -183,8 +183,11 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
 @waffle_flag('articletrack')
 @permission_required('articletrack.change_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html'):
+    try:
+        ticket = models.Ticket.userobjects.active().get(pk=ticket_id)
+    except models.Ticket.DoesNotExist:
+        raise Http404
 
-    ticket = models.Ticket.userobjects.active().get(pk=ticket_id)
     if not ticket.is_open:
         messages.info(request, _("Closed ticket can't be edited"))
         return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
@@ -202,13 +205,14 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
         if ticket_form.is_valid():
 
             ticket = ticket_form.save()
-            
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
-        
+
 
     return render_to_response(
         template_name,
         context,
         context_instance=RequestContext(request)
     )
+

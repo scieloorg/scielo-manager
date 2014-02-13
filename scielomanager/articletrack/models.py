@@ -13,7 +13,7 @@ from journalmanager.models import Journal
 
 class Notice(caching.base.CachingMixin, models.Model):
 
-    checkin = models.ForeignKey('Checkin')
+    checkin = models.ForeignKey('Checkin', related_name='notices')
 
     stage = models.CharField(max_length=64)
     checkpoint = models.CharField(max_length=64)
