@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.contrib.auth.decorators import permission_required
 from django.utils.translation import ugettext as _
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
 from . import models
@@ -39,17 +39,19 @@ def checkin_index(request):
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
-def checkin_history(request, articlepkg):
+def checkin_history(request, article_id):
+    try:
+        article = models.Article.userobjects.active().get(pk=article_id)
+    except models.Article.DoesNotExist:
+        raise Http404
 
-    checkins = models.Checkin.userobjects.active().filter(article__articlepkg_ref=articlepkg)
-
-    # import pdb; pdb.set_trace()
-    objects = get_paginated(checkins, request.GET.get('page', 1))
+    objects = get_paginated(article.checkins.all(), request.GET.get('page', 1))
 
     return render_to_response(
         'articletrack/history.html',
         {
             'checkins': objects,
+            'first_article': article,
         },
         context_instance=RequestContext(request)
     )
@@ -60,7 +62,7 @@ def checkin_history(request, articlepkg):
 def notice_detail(request, checkin_id):
 
     notices = models.Notice.objects.filter(checkin=checkin_id)
-    checkin = models.Checkin.userobjects.active().get(id=checkin_id)
+    checkin = models.Checkin.userobjects.active().get(pk=checkin_id)
 
     objects = get_paginated(notices, request.GET.get('page', 1))
 
@@ -150,7 +152,7 @@ def ticket_close(request, ticket_id):
 @permission_required('articletrack.add_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'):
 
-    checkin = models.Checkin.userobjects.active().get(id=checkin_id)
+    checkin = models.Checkin.userobjects.active().get(pk=checkin_id)
     ticket_form = TicketForm()
     context = {
         'checkin': checkin,
@@ -182,10 +184,10 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
 @permission_required('articletrack.change_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html'):
 
-    ticket = models.Ticket.userobjects.active().get(id=ticket_id)
+    ticket = models.Ticket.userobjects.active().get(pk=ticket_id)
     if not ticket.is_open:
         messages.info(request, _("Closed ticket can't be edited"))
-        return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
+        return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
 
     ticket_form = TicketForm(instance=ticket)
     context = {
@@ -202,7 +204,7 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
             ticket = ticket_form.save()
             
             messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
+            return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
         
 
     return render_to_response(
