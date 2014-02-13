@@ -26,6 +26,7 @@ from django import template
 
 register = template.Library()
 
+
 def query_string(request, variables, mode):
     variable_list = variables.split(' ')
     query_string_dict = {}

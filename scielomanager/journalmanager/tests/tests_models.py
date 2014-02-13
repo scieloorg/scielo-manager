@@ -6,6 +6,7 @@ from django_factory_boy import auth
 from django.db import IntegrityError
 
 from .modelfactories import (
+    ArticleFactory,
     IssueFactory,
     UserProfileFactory,
     SectionFactory,
@@ -821,6 +822,7 @@ class JournalManagerTests(TestCase):
             journal
         )
 
+
 class ArticleTests(TestCase):
 
     def setUp(self):
@@ -980,3 +982,57 @@ class ArticleTests(TestCase):
 
         with self.assertRaises(IntegrityError):
             article.save()
+
+    def test_article_title_en(self):
+        from journalmanager import models
+
+        article = ArticleFactory.create(issue=self._issue)
+
+        self.assertEqual(article.title('en'), u'Article Title')
+
+    def test_article_title_pt(self):
+        from journalmanager import models
+
+        article = ArticleFactory.create(issue=self._issue)
+
+        self.assertEqual(article.title('pt'), u'Título do Artigo')
+
+    def test_article_title_any_language(self):
+        from journalmanager import models
+
+        article = ArticleFactory.create(issue=self._issue)
+
+        self.assertEqual(article.title(), u'Article Title')
+
+    def test_article_title_any_language_without_data(self):
+        from journalmanager import models
+
+        article = ArticleFactory.create(issue=self._issue, front={})
+
+        self.assertEqual(article.title(), None)
+
+    def test_aticle_titles(self):
+
+        from journalmanager import models
+
+        article = ArticleFactory.create(issue=self._issue)
+
+        self.assertEqual(article.titles['en'], u'Article Title')
+        self.assertEqual(article.titles['pt'], u'Título do Artigo')
+
+    def test_aticle_titles_without_data(self):
+
+        from journalmanager import models
+
+        article = ArticleFactory.create(issue=self._issue, front={})
+
+        self.assertEqual(article.titles, None)
+
+
+
+
+
+
+
+
+

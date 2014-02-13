@@ -1108,6 +1108,23 @@ class Article(caching.base.CachingMixin, models.Model):
     pdf_url = models.CharField(_('PDF URL'), max_length=256)
     images_url = models.CharField(_('Images URL'), max_length=256)
 
+    def title(self, language=None):
+
+        if not 'title-group' in self.front:
+            return None
+
+        if language in self.front['title-group']:
+            return self.front['title-group'][language]
+
+        return self.front['title-group'].values()[0]
+
+    @property
+    def titles(self):
+
+        if not 'title-group' in self.front:
+            return None
+
+        return self.front['title-group']
 
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.

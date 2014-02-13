@@ -1,8 +1,25 @@
 # coding: utf-8
+
 import factory
 import datetime
 
 from journalmanager import models
+
+
+class ArticleFactory(factory.Factory):
+    FACTORY_FOR = models.Article
+
+    front = {
+        'title-group': {
+            'en': u'Article Title',
+            'pt': u'Título do Artigo',
+        }
+    }
+
+    xml_url = 'http://xml.url/'
+    pdf_url = 'http://pdf.url/'
+    images_url = 'http://img.url/'
+
 
 class UserFactory(factory.Factory):
     FACTORY_FOR = models.User

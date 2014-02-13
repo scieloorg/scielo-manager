@@ -130,6 +130,21 @@ def list_search(request, model, journal_id):
         context_instance=RequestContext(request))
 
 
+def article_index(request, issue_id):
+
+    issue = get_object_or_404(models.Issue, pk=issue_id)
+
+    return render_to_response(
+        'journalmanager/article_list.html',
+        {
+            'journal': issue.journal,
+            'issue': issue,
+            'articles': issue.issue_article.all()
+        },
+        context_instance=RequestContext(request)
+    )
+
+
 @permission_required('journalmanager.list_issue', login_url=AUTHZ_REDIRECT_URL)
 def issue_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
