@@ -12,9 +12,12 @@
 
 <div class="row-fluid show-grid">
   <div class="span10">
+    <h2>{% trans "Notices" %}:</h2>
     <h4>
       {% trans 'List of notices to' %}:
       <span class="muted">{{ checkin.package_name }}</span>
+    </h4>
+    <h4>
       {% trans 'Uploaded at' %}:
       <span class="muted">{{ checkin.created_at|date:"d/m/Y - H:i" }}</span>
     </h4>
@@ -23,6 +26,18 @@
     {% simple_pagination notices %}
   </div>
 </div>
+
+{% if perms.ticket.can_add %}
+
+  <div class="row">
+    <div class="span12">
+      <a class='btn btn-mini btn-success pull-right' href="{% url ticket_add checkin.id %}">
+        {% trans "Create a ticket" %}
+      </a>
+    </div>
+  </div>
+
+{% endif %}
 
 <table class="table">
   <thead>
@@ -58,9 +73,49 @@
   <tbody>
 </table>
 
-{% trans 'Go to' %}:
+<div class="row-fluid show-grid">
+  <div class="span12">
+    <h2>{% trans "Related tickets" %}:</h2>
+    <div class="tabbable"> <!-- Only required for left/right tabs -->
+      <ul class="nav nav-tabs">
+        <li class="active">
+          <a href="#opened" data-toggle="tab">
+            {% trans "Open" %} <span class="badge">{{ opened_tickets|length }}</span>
+          </a>
+        </li>
+        <li>
+          <a href="#closed" data-toggle="tab">
+            {% trans "Closed" %} <span class="badge">{{ closed_tickets|length }}</span>
+          </a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="opened">
+          {% with opened_tickets as tickets %}
+            {% include "articletrack/includes/tickets_list_simple.html" %}
+          {% endwith %}
+        </div>
+        <div class="tab-pane" id="closed">
+          {% with closed_tickets as tickets %}
+            {% include "articletrack/includes/tickets_list_simple.html" %}
+          {% endwith %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<a href="{% url checkin_index %}">{% trans "List of check ins" %}</a> |
-<a href="{% url checkin_history checkin.article.articlepkg_ref %}">{% trans "Package history" %}</a>
+<!-- NAVIGATIONS -->
+<div class="row-fluid show-grid">
+  <div class="span12">
+    <div class="btn-group">
+      <a class="btn disabled">{% trans 'Go to' %}:</a>
+      <a class="btn" href="{% url checkin_index %}"><i class="icon-arrow-left"></i> {% trans "List of check ins" %}</a>
+      <a class="btn" href="{% url checkin_history checkin.article.articlepkg_ref %}"><i class="icon-time"></i> {% trans "Package history" %}</a>
+      <a class="btn" href="{% url ticket_list %}"><i class="icon-exclamation-sign"></i> {% trans "List of Tickets" %}</a>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
