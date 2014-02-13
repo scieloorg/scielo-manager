@@ -3,7 +3,6 @@ import factory
 
 from articletrack import models
 from journalmanager.tests.modelfactories import JournalFactory, UserFactory
-from accounts.tests import HASH_FOR_123
 
 
 class ArticleFactory(factory.Factory):

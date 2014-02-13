@@ -4,7 +4,11 @@ from django_webtest import WebTest
 from django_factory_boy import auth
 from django.core.urlresolvers import reverse
 from . import modelfactories
-
+from journalmanager.tests.helpers import (
+    _makeUserRequestContext,
+    _patch_userrequestcontextfinder_settings_setup,
+    _patch_userrequestcontextfinder_settings_teardown
+    )
 
 def _makePermission(perm, model, app_label='articletrack'):
     """
@@ -20,6 +24,20 @@ def _makePermission(perm, model, app_label='articletrack'):
 
 class CheckinListTests(WebTest):
 
+
+    @_patch_userrequestcontextfinder_settings_setup
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_checkin', model='checkin')
+        self.user.user_permissions.add(perm)
+
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
+
     def _makeOne(self):
         checkin = modelfactories.CheckinFactory.create()
 
@@ -32,10 +50,6 @@ class CheckinListTests(WebTest):
     def _addWaffleFlag(self):
         Flag.objects.create(name='articletrack', authenticated=True)
 
-    def setUp(self):
-        self.user = auth.UserF(is_active=True)
-        perm = _makePermission(perm='list_checkin', model='checkin')
-        self.user.user_permissions.add(perm)
 
     def test_status_code_checkin_list(self):
         self._addWaffleFlag()
@@ -71,14 +85,14 @@ class CheckinListTests(WebTest):
         response = self.app.get('/arttrack/', user=self.user)
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
-        response.mustcontain('href="/arttrack/package/%s/"' % checkin.article.articlepkg_ref)
+        response.mustcontain('href="/arttrack/package/%s/"' % checkin.article.pk)
 
     def test_status_code_package_history(self):
         self._addWaffleFlag()
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.pk]), user=self.user)
+            args=[checkin.article.pk]), user=self.user)
 
         self.assertEqual(response.status_code, 200)
 
@@ -87,7 +101,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.articlepkg_ref]), user=self.user)
+            args=[checkin.article.pk]), user=self.user)
 
         response.mustcontain('20132404.zip')
 
@@ -96,7 +110,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.articlepkg_ref]), user=self.user)
+            args=[checkin.article.pk]), user=self.user)
 
         response.mustcontain('An azafluorenone alkaloid and a megastigmane from ...')
 
@@ -105,15 +119,16 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.pk]), user=self.user)
+            args=[checkin.article.pk]), user=self.user)
 
-        response.mustcontain('<a href="/arttrack/">List of check ins</a>')
+        #response.mustcontain('<a href="/arttrack/">List of check ins</a>')
+        response.mustcontain('<a class="btn" href="/arttrack/"><i class="icon-arrow-left"></i> List of check ins</a>')
 
     def test_package_history_must_have_button_to_detail(self):
         self._addWaffleFlag()
         checkin = self._makeOne()
 
-        response = self.app.get("/arttrack/package/%s/" % checkin.article.articlepkg_ref, user=self.user)
+        response = self.app.get("/arttrack/package/%s/" % checkin.article.pk, user=self.user)
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
 
@@ -170,7 +185,9 @@ class NoticeListTests(WebTest):
         response = self.app.get(reverse('notice_detail',
             args=[notice.checkin.pk]), user=self.user)
 
-        response.mustcontain('<a href="/arttrack/">List of check ins</a>')
+        #response.mustcontain('<a href="/arttrack/">List of check ins</a>')
+        response.mustcontain('<a class="btn" href="/arttrack/"><i class="icon-arrow-left"></i> List of check ins</a>')
+
 
     def test_notice_list_must_have_link_to_package_history(self):
         self._addWaffleFlag()
@@ -178,5 +195,5 @@ class NoticeListTests(WebTest):
 
         response = self.app.get(reverse('notice_detail',
             args=[notice.checkin.pk]), user=self.user)
-        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.article.articlepkg_ref)
+        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.article.pk)
 

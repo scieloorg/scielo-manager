@@ -276,3 +276,8 @@ table._listings h4 {
     border-bottom: solid 1px;
     border-color: #FF9D40;
 }
+
+#add_comment_section_row {padding-bottom: 20px;}
+.hide_row {display: none;}
+
+
