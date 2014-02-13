@@ -40,7 +40,7 @@ urlpatterns = patterns('',
     url(r'^arttrack/', include('articletrack.urls')),
 
     # Article Tools
-    url(r'^issue/(?P<issue_id>\d+)/article/$', views.article_index, name='article.index'),
+    url(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),
     #url(r'^article/(?P<article_id>\d+)/edit/$', views.add_article, name='article.edit'),
 
     # Journal Manager APP
