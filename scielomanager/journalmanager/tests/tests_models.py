@@ -983,33 +983,71 @@ class ArticleTests(TestCase):
         with self.assertRaises(IntegrityError):
             article.save()
 
-    def test_article_title_en(self):
+    def test_article_title_default_language_en(self):
         from journalmanager import models
 
-        article = ArticleFactory.create(issue=self._issue)
+        front = {
+            'default-language': 'en',
+            'title-group': {
+                'en': u'Article Title',
+                'pt': u'Título do Artigo',
+            }
+        }
 
-        self.assertEqual(article.title('en'), u'Article Title')
+        article = ArticleFactory.create(issue=self._issue, front=front)
 
-    def test_article_title_pt(self):
+        self.assertEqual(article.title, u'Article Title')
+
+    def test_article_title_default_language_pt(self):
         from journalmanager import models
 
-        article = ArticleFactory.create(issue=self._issue)
+        front = {
+            'default-language': 'pt',
+            'title-group': {
+                'en': u'Article Title',
+                'pt': u'Título do Artigo',
+            }
+        }
 
-        self.assertEqual(article.title('pt'), u'Título do Artigo')
+        article = ArticleFactory.create(issue=self._issue, front=front)
 
-    def test_article_title_any_language(self):
-        from journalmanager import models
+        self.assertEqual(article.title, u'Título do Artigo')
 
-        article = ArticleFactory.create(issue=self._issue)
-
-        self.assertEqual(article.title(), u'Article Title')
-
-    def test_article_title_any_language_without_data(self):
+    def test_article_title_without_data(self):
         from journalmanager import models
 
         article = ArticleFactory.create(issue=self._issue, front={})
 
-        self.assertEqual(article.title(), None)
+        self.assertEqual(article.title, None)
+
+    def test_article_title_default_language_without_data(self):
+        from journalmanager import models
+
+        front = {
+            'title-group': {
+                'en': u'Article Title',
+                'pt': u'Título do Artigo',
+            }
+        }
+
+        article = ArticleFactory.create(issue=self._issue, front=front)
+
+        self.assertTrue(article.title in [u'Article Title', u'Título do Artigo'])
+
+    def test_article_title_default_language_without_related_title_data(self):
+        from journalmanager import models
+
+        front = {
+            'default-language': 'xx',
+            'title-group': {
+                'en': u'Article Title',
+                'pt': u'Título do Artigo',
+            }
+        }
+
+        article = ArticleFactory.create(issue=self._issue, front=front)
+
+        self.assertTrue(article.title in [u'Article Title', u'Título do Artigo'])
 
     def test_aticle_titles(self):
 

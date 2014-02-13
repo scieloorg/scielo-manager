@@ -10,6 +10,7 @@ class ArticleFactory(factory.Factory):
     FACTORY_FOR = models.Article
 
     front = {
+        'default-language': 'en',
         'title-group': {
             'en': u'Article Title',
             'pt': u'Título do Artigo',
