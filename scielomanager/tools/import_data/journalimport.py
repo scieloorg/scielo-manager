@@ -398,10 +398,7 @@ class JournalImport:
         journal.creator_id = 1
         journal.collection = collection
 
-        try:
-            journal.save(force_insert=True)
-        except:
-            import pdb; pdb.set_trace()
+        journal.save(force_insert=True)
 
         self.charge_summary("journals")
 
