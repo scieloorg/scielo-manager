@@ -132,7 +132,7 @@ def checkin_journals_fetching_post_save(sender, **kwargs):
         eissn = instance.eissn
         pissn = instance.pissn
         instance.journals = Journal.objects.by_issn(eissn) | Journal.objects.by_issn(pissn)
-        if not instance.journals:
+        if not instance.journals.exists():
             message = u"""Could not find the right Journal instance to bind with
                           %s. The Journal instance will stay in an orphan state.""".strip()
             logger.error(message % repr(instance))
