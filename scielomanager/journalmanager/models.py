@@ -35,8 +35,8 @@ import jsonfield
 from scielomanager.utils import base28
 from . import modelmanagers
 
-User.__bases__ = (caching.base.CachingMixin, models.Model)
-User.add_to_class('objects', caching.base.CachingManager())
+#User.__bases__ = (caching.base.CachingMixin, models.Model)
+#User.add_to_class('objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
 
@@ -529,8 +529,8 @@ class Journal(caching.base.CachingMixin, models.Model):
         choices=sorted(choices.PUBLICATION_LEVEL, key=lambda PUBLICATION_LEVEL: PUBLICATION_LEVEL[1]))
     secs_code = models.CharField(_('SECS Code'), max_length=64, null=False, blank=True)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254)
-    url_online_submission = models.CharField(_('URL of online submission'), max_length=64, null=True, blank=True)
-    url_journal = models.CharField(_('URL of the journal'), max_length=64, null=True, blank=True)
+    url_online_submission = models.CharField(_('URL of online submission'), max_length=128, null=True, blank=True)
+    url_journal = models.CharField(_('URL of the journal'), max_length=128, null=True, blank=True)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True)
     cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
