@@ -1,5 +1,6 @@
 import caching.base
 import datetime
+import logging
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -9,6 +10,9 @@ from django.contrib.auth.models import User
 
 from articletrack import modelmanagers
 from journalmanager.models import Journal
+
+
+logger = logging.getLogger(__name__)
 
 
 class Notice(caching.base.CachingMixin, models.Model):
@@ -123,9 +127,16 @@ def checkin_journals_fetching_post_save(sender, **kwargs):
     Binds journals to checkin
     """
     if kwargs['created']:
-        eissn = kwargs['instance'].eissn
-        pissn = kwargs['instance'].pissn
-        kwargs['instance'].journals = Journal.objects.by_issn(eissn) | Journal.objects.by_issn(pissn)
-        kwargs['instance'].save()
+        instance = kwargs['instance']
+
+        eissn = instance.eissn
+        pissn = instance.pissn
+        instance.journals = Journal.objects.by_issn(eissn) | Journal.objects.by_issn(pissn)
+        if not instance.journals:
+            message = u"""Could not find the right Journal instance to bind with
+                          %s. The Journal instance will stay in an orphan state.""".strip()
+            logger.error(message % repr(instance))
+
+        instance.save()
 
 
