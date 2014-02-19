@@ -35,8 +35,8 @@ import jsonfield
 from scielomanager.utils import base28
 from . import modelmanagers
 
-#User.__bases__ = (caching.base.CachingMixin, models.Model)
-#User.add_to_class('objects', caching.base.CachingManager())
+User.__bases__ = (caching.base.CachingMixin, models.Model)
+User.add_to_class('objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
 
