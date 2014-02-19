@@ -397,6 +397,7 @@ class JournalImport:
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
         journal.collection = collection
+
         journal.save(force_insert=True)
 
         self.charge_summary("journals")
