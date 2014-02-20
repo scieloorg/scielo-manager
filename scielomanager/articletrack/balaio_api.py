@@ -20,14 +20,30 @@ class BalaioAPI(object):
         for k in ['PROTOCOL', 'HOST', 'PORT', 'PATH']:
             if k not in settings.API_BALAIO[self.using].keys():
                 raise ImproperlyConfigured('settings.API_BALAIO (using == %s) dont have defined %s' % (self.using, k))
+            else:
+                if not settings.API_BALAIO[self.using][k]:
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have value' % (self.using, k))
+                v = settings.API_BALAIO[self.using][k]
+                if k == 'PROTOCOL' and v not in ('http', 'https'):
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must be: http or https' % (self.using, k))
+                if k == 'HOST' and v == '':
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a valid host' % (self.using, k))
+                if k == 'PORT' and not v.isdigit():
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a valid port' % (self.using, k))
+                if k == 'PATH' and (v == '' or v[0] != '/'):
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a non-empty path and must start with /' % (self.using, k))
         return True
+
 
     def get_hostname(self):
         return '%s://%s:%s/' % (self.conf['PROTOCOL'], self.conf['HOST'], self.conf['PORT'])
 
 
+    def get_basepath(self):
+        return self.conf['PATH']
+
     def get_fullpath(self):
-        return '%s://%s:%s%s' % (self.conf['PROTOCOL'], self.conf['HOST'], self.conf['PORT'], self.conf['PATH'])
+        return '%s%s' % (self.get_hostname(), self.get_basepath()[1:])
 
 
     def is_up(self):
@@ -35,7 +51,7 @@ class BalaioAPI(object):
         try:
             response = urllib2.urlopen(url, timeout=settings.API_BALAIO_DEFAULT_TIMEOUT)
             return response.getcode() == 200
-        except Exception:
+        except urllib2.URLError:
             return False
 
 
@@ -45,6 +61,7 @@ class BalaioAPI(object):
             if header.startswith('Content-Type:') and 'json' in header:
                 return True
         return False
+
 
     def _open(self, url):
         try:
@@ -62,6 +79,7 @@ class BalaioAPI(object):
             else:
                 raise StopIteration()
 
+
     def _process_response_as_json(self, iterable):
 
         try:
@@ -73,18 +91,22 @@ class BalaioAPI(object):
             json_response['error'] = False
         return json_response
 
+
     def list_files_members_by_attempt(self, attempt_id):
         url = self.get_fullpath() + 'files/%s/' % str(attempt_id)
         response = self._open(url)
         return self._process_response_as_json(response)
 
+
     def get_file_member_by_attempt(self, attempt_id, target_name, file_member):
         url = self.get_fullpath() + 'files/%s/%s.zip/?file=%s' % (attempt_id, target_name, file_member)
         return self._open(url)
 
+
     def get_files_members_by_attempt(self, attempt_id, target_name, files_members):
         files_members = '&file='.join(files_members)
         return self.get_file_member_by_attempt(attempt_id, target_name, files_members)
+
 
     def get_full_package(self, attempt_id, target_name):
         url = self.get_fullpath() + 'files/%s/%s.zip/?full=true' % (attempt_id, target_name)

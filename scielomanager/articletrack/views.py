@@ -85,18 +85,17 @@ def notice_detail(request, checkin_id):
 
     balaio = BalaioAPI()
     files_list = []
-    if balaio.is_up():
 
-        try:
+    try:
 
-            files = balaio.list_files_members_by_attempt(checkin.attempt_ref)
-            if files and not files['error']:
-                del files['error']
-                for file_extension in files.keys():
-                    files_list += [{'ext': file_extension, 'name': f} for f in files[file_extension]]
+        files = balaio.list_files_members_by_attempt(checkin.attempt_ref)
+        if files and not files['error']:
+            del files['error']
+            for file_extension in files.keys():
+                files_list += [{'ext': file_extension, 'name': f} for f in files[file_extension]]
 
-        except ValueError:
-            pass
+    except ValueError:
+        pass # Service Unavailable
     
     context['files'] = files_list
 
@@ -251,7 +250,7 @@ def get_balaio_api_is_up(request):
     balaio = BalaioAPI()
     is_up = balaio.is_up()
     context = {
-        'is_up': balaio.is_up(),
+        'is_up': is_up,
     }
 
     if request.is_ajax():
@@ -265,27 +264,30 @@ def get_balaio_api_is_up(request):
 @permission_required('articletrack.list_ticket', login_url=AUTHZ_REDIRECT_URL)
 def get_balaio_api_full_package(request, attempt_id, target_name):
     balaio = BalaioAPI()
-    if balaio.is_up():
+    try:
         balaio_response = balaio.get_full_package(attempt_id, target_name)
+    except ValueError:
+        return HttpResponse(status_code=503)
+    else:
         view_response = HttpResponse(balaio_response, content_type='application/zip')
         view_response['Content-Disposition'] = 'attachment; filename="%s.ZIP"' % target_name
         return view_response
-    else:
-        return HttpResponse(status_code=503)
 
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_ticket', login_url=AUTHZ_REDIRECT_URL)
 def get_balaio_api_files_members(request, attempt_id, target_name):
     balaio = BalaioAPI()
-    if balaio.is_up():
-        qs_files = request.GET.getlist('file')
-        if qs_files:
+
+    qs_files = request.GET.getlist('file')
+    if qs_files:
+        try:
             balaio_response = balaio.get_files_members_by_attempt(attempt_id, target_name, qs_files)
+        except ValueError:
+            return HttpResponse(status_code=503)
+        else:
             view_response = HttpResponse(balaio_response, content_type='application/zip')
             view_response['Content-Disposition'] = 'attachment; filename="%s.ZIP"' % target_name
             return view_response
-        else:
-            return HttpResponseBadRequest()
     else:
-        return HttpResponse(status_code=503)
+        return HttpResponseBadRequest()
