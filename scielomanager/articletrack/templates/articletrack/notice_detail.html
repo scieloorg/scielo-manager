@@ -109,11 +109,8 @@
 
 
 <div class="row-fluid show-grid">
-  <div class="span6">
+  <div class="span12">
     <h2>{% trans 'Files' %}:</h2>
-  </div>
-  <div class="span6">
-    <div id='api_status' class='pull-right'></div>
   </div>
 </div>
 
@@ -167,8 +164,10 @@
     {% empty %}
       <tr>
         <td colspan='3'>
-          <div class="alert alert-info">
-            {% trans 'There are no files.' %}
+         <div id='file_download_msg'>
+            <div class="alert alert-info">
+              {% trans 'There are no files.' %}
+            </div>
           </div>
         </td>
       </tr>
@@ -197,11 +196,11 @@
       $.get('{% url get_balaio_api_is_up %}')
         .done(function( data ) {
           if (!data.is_up) {
-            $('#api_status').addClass('alert alert-error').html(fail_msg);
+            $('#file_download_msg').addClass('alert alert-error').html(fail_msg);
           }
         })
         .fail(function() {
-          $('#api_status').addClass('alert alert-error').html(fail_msg);
+          $('#file_download_msg').addClass('alert alert-error').html(fail_msg);
       });
       
       /* click files select All */
