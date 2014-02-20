@@ -1,0 +1,35 @@
+[env:scielomanager]
+;---- absolute paths only
+PYTHONPATH = /path/completo/ate/dir/do_projeto/
+DJANGO_SETTINGS_MODULE = scielomanager.settings
+virtualenv_path =
+
+
+[circus]
+;---- circus admin dashboard
+statsd = 1
+httpd = 1
+
+
+[watcher:scielomanager]
+copy_path = True
+copy_env = True
+
+cmd = chaussette --fd $(circus.sockets.scielomanager) --backend meinheld wsgi.application
+use_sockets = True
+numprocesses = 2
+
+;---- needed if running outside the app's virtualenv
+;virtualenv = $(circus.env.virtualenv_path)
+
+
+[socket:scielomanager]
+;---- bind a AF_INET socket
+;host = 0.0.0.0
+;port = 8000
+
+;---- bind a UNIX socket
+family = AF_UNIX
+path = scielomanager.sock 
+replace = True
+
