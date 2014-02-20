@@ -53,7 +53,7 @@ class Article(caching.base.CachingMixin, models.Model):
     objects = models.Manager()
     userobjects = modelmanagers.ArticleManager()
 
-    journals = models.ManyToManyField(Journal, null=True, related_name='articles')
+    journals = models.ManyToManyField(Journal, null=True, related_name='checkin_articles')
     article_title = models.CharField(max_length=512)
     articlepkg_ref = models.CharField(max_length=32)
     journal_title = models.CharField(max_length=256)

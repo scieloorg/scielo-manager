@@ -859,6 +859,10 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     order = models.IntegerField(_('Issue Order'), blank=True)
 
+    class Meta:
+        permissions = (("list_issue", "Can list Issues"),
+                      ("reorder_issue", "Can Reorder Issues"))
+
     @property
     def scielo_pid(self):
         """
@@ -934,10 +938,6 @@ class Issue(caching.base.CachingMixin, models.Model):
                 self.order = self._suggest_order(force=True)
 
         super(Issue, self).save(*args, **kwargs)
-
-    class Meta:
-        permissions = (("list_issue", "Can list Issues"),
-                      ("reorder_issue", "Can Reorder Issues"))
 
 
 class IssueTitle(caching.base.CachingMixin, models.Model):
@@ -1102,11 +1102,14 @@ class Article(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
-    issue = models.ForeignKey(Issue, related_name='issue_article')
+    issue = models.ForeignKey(Issue, related_name='articles')
     front = jsonfield.JSONField()
     xml_url = models.CharField(_('XML URL'), max_length=256)
     pdf_url = models.CharField(_('PDF URL'), max_length=256)
     images_url = models.CharField(_('Images URL'), max_length=256)
+
+    class Meta:
+        permissions = (("list_article", "Can list Article"),)
 
     @property
     def title(self):

@@ -130,6 +130,7 @@ def list_search(request, model, journal_id):
         context_instance=RequestContext(request))
 
 
+@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
 def article_index(request, issue_id):
 
     issue = get_object_or_404(models.Issue, pk=issue_id)
@@ -139,7 +140,7 @@ def article_index(request, issue_id):
         {
             'journal': issue.journal,
             'issue': issue,
-            'articles': issue.issue_article.all()
+            'articles': issue.articles.all()
         },
         context_instance=RequestContext(request)
     )
