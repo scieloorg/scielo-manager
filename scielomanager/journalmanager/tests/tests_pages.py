@@ -26,40 +26,36 @@ class ArticleTests(WebTest):
         self.collection.add_user(self.user, is_manager=True)
 
     def test_list_without_articles(self):
+        perm_article_list = _makePermission(perm='list_article',
+                                            model='article',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_article_list)
 
         journal = modelfactories.JournalFactory(collection=self.collection)
         issue = modelfactories.IssueFactory(journal=journal)
-        perm_journal_list = _makePermission(perm='list_pressrelease',
-                                            model='pressrelease',
-                                            app_label='journalmanager')
 
-        self.user.user_permissions.add(perm_journal_list)
-
-        response = self.app.get(reverse('article.index', args=[issue.pk]))
+        response = self.app.get(reverse('article.index', args=[issue.pk]), user=self.user)
 
         self.assertTrue('There are no items.' in response.body)
 
     def test_list_with_articles(self):
+        perm_article_list = _makePermission(perm='list_article',
+                                            model='article',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_article_list)
 
         journal = modelfactories.JournalFactory(collection=self.collection)
         issue = modelfactories.IssueFactory(journal=journal)
-        perm_journal_list = _makePermission(perm='list_pressrelease',
-                                            model='pressrelease',
-                                            app_label='journalmanager')
 
         front = {
             'title-group': {
-                'en': 'Article Title 1',
-                'pt': 'Título do Artigo 1'
+                'en': u'Article Title 1',
+                'pt': u'Título do Artigo 1'
             }
         }
 
         article = modelfactories.ArticleFactory.create(issue=issue, front=front)
-        article.save()
-
-        self.user.user_permissions.add(perm_journal_list)
-
-        response = self.app.get(reverse('article.index', args=[issue.pk]))
+        response = self.app.get(reverse('article.index', args=[issue.pk]), user=self.user)
 
         self.assertTrue('Article Title 1' in response.body)
 
