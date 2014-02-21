@@ -25,7 +25,7 @@
     <tr>
       <th>{% trans "Package" %}</th>
       <th>{% trans "Created" %}</th>
-      <th><a class='btn btn-mini btn-success' href="{% url ticket_add first_article.pk %}">{% trans "Create a ticket" %}</a></th>
+      <th><a class='btn btn-mini btn-success' href="{% url ticket_add checkins.object_list.0.pk %}">{% trans "Create a ticket" %}</a></th>
     </tr>
   </thead>
   <tbody>
