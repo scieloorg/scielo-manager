@@ -86,6 +86,7 @@ class Ticket(caching.base.CachingMixin, models.Model):
         verbose_name = _(u'Ticket')
         verbose_name_plural = _(u'Tickets')
         permissions = (("list_ticket", "Can list Ticket"),)
+        ordering = ['started_at']
 
     def __unicode__(self):
         return u"%s - %s" % (self.pk, self.title)
@@ -111,7 +112,7 @@ class Comment(caching.base.CachingMixin, models.Model):
     class Meta:
         verbose_name = _(u'Comment')
         verbose_name_plural = _(u'Comments')
-        ordering = ['-date']
+        ordering = ['date']
         permissions = (("list_comment", "Can list Comment"),)
 
     def __unicode__(self):
