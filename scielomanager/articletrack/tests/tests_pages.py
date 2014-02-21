@@ -132,6 +132,14 @@ class CheckinListTests(WebTest):
 
         response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
 
+    def test_package_history_can_create_tickets(self):
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+
+        response = self.app.get(reverse('checkin_history',
+            args=[checkin.article.pk]), user=self.user)
+
+        response.mustcontain(reverse('ticket_add', args=[checkin.pk]))
 
 class NoticeListTests(WebTest):
 
