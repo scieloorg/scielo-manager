@@ -36,3 +36,13 @@ CACHES = {
 #
 USERREQUESTCONTEXT_FINDER = 'scielomanager.utils.usercontext.UserRequestContextFinder'
 
+API_BALAIO = {
+    'default': {
+        'PROTOCOL': 'http',
+        'HOST': '127.0.0.1',
+        'PORT': '8888',
+        'PATH': '/api/v1/',
+    }
+}
+API_BALAIO_DEFAULT_TIMEOUT = 2          # in seconds (urllib2.urlopen timeout)
+API_BALAIO_DEFAULT_CHUNK_SIZE = 1024    # in bytes
