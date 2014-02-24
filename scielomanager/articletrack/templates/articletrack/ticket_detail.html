@@ -32,7 +32,7 @@
 
 <div class="row-fluid show-grid">
   <div class="span12">
-    <strong>{% trans "Message" %}:</strong><br>
+    <h4>{% trans "Message" %}:</h4>
     <blockquote>{{ ticket.message|linebreaksbr }}<blockquote>
   </div>
 
@@ -84,7 +84,12 @@
               <small>
                   <img style="vertical-align:top;" src="{{ comment.author.get_profile.avatar_url }}" alt="Gravatar">
                   {{ comment.author.get_full_name }} <i class="icon-time"></i> 
-                  <cite title="">{{ comment.date|date:"d/m/Y - H:i" }}</cite>
+                  <cite title="">
+                    {{ comment.date|date:"d/m/Y - H:i" }}
+                    {% if request.user == comment.author and comment.ticket.is_open %}
+                      <i class="icon-edit"></i> <a href="{% url comment_edit comment.pk %}">{% trans "Edit" %}</a>
+                    {% endif %}
+                  </cite>
               </small>
           </blockquote>
           <hr>

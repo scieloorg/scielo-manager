@@ -241,6 +241,36 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
     )
 
 
+def comment_edit(request, comment_id, template_name='articletrack/comment_edit.html'):
+    try:
+        comment = models.Comment.userobjects.active().get(pk=comment_id)
+    except models.Comment.DoesNotExist:
+        raise Http404
+    
+    if not comment.ticket.is_open:
+        messages.info(request, _("Can't edit a comment of a closed ticket"))
+        return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
+
+    comment_form = CommentMessageForm(instance=comment)
+    context = {
+        'form': comment_form,
+        'comment': comment,
+    }
+
+    if request.method == "POST":
+
+        comment_form = CommentMessageForm(request.POST, instance=comment)
+        if comment_form.is_valid():
+            comment = comment_form.save()
+
+            messages.info(request, MSG_FORM_SAVED)
+            return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
+
+    return render_to_response(
+        template_name,
+        context,
+        context_instance=RequestContext(request)
+    )
 # BALAIO API
 
 @waffle_flag('articletrack')

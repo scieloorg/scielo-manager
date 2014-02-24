@@ -12,6 +12,8 @@ urlpatterns = patterns('',
     url(r'^ticket/(?P<ticket_id>\d+)/close/$', views.ticket_close, name="ticket_close"),
     url(r'^ticket/(?P<ticket_id>\d+)/$', views.ticket_detail, name="ticket_detail"),
     url(r'^ticket/$', views.ticket_list, name="ticket_list"),
+    url(r'^comment/edit/(?P<comment_id>\d+)/$', views.comment_edit, name="comment_edit"),
+    # BALAIO API
     url(r'^balaio_api/is_up/$', views.get_balaio_api_is_up, name="get_balaio_api_is_up"),
     url(r'^balaio_api/full_package/(?P<attempt_id>\d+)/(?P<target_name>.+)/$',
     	views.get_balaio_api_full_package,
