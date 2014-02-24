@@ -147,6 +147,8 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
                 context,
                 context_instance=RequestContext(request)
             )
+        else:
+            context['form'] = comment_form
 
     return render_to_response(
         template_name,
@@ -196,6 +198,8 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
+        else:
+            context['form'] = ticket_form
 
     return render_to_response(
         template_name,
@@ -232,7 +236,8 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
-
+        else:
+            context['form'] = ticket_form
 
     return render_to_response(
         template_name,
@@ -265,6 +270,8 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
+        else:
+            context['form'] = comment_form
 
     return render_to_response(
         template_name,

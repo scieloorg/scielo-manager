@@ -7,16 +7,12 @@
 
 <div class="row-fluid show-grid">
   <div class='row'>
-	  <div class="span10 offset1">
-			<form action='.' method='POST'>
-				{% csrf_token %}
-				{{ form }}
-				<span class="pull-right">
-					<button class='btn btn-primary'>{% trans "Save" %} <i class="icon-arrow-right"></i></button>
-				</span>
-			</form>
-	  </div>
-	</div>
+    <div class="span10 offset1">
+      <form action='.' method='POST'>
+        {% include "articletrack/includes/form_snippet.html" %}
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- NAVIGATIONS -->
