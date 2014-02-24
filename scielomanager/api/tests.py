@@ -1338,7 +1338,8 @@ class CommentRestAPITest(WebTest):
 
         expected_keys = [
             u'author',
-            u'date',
+            u'created_at',
+            u'updated_at',
             u'id',
             u'message',
             u'ticket',
