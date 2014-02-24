@@ -10,7 +10,7 @@ from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 from journalmanager.tests.tests_forms import _makePermission
-from helpers import (
+from scielomanager.utils.modelmanagers.helpers import (
     _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
     _patch_userrequestcontextfinder_settings_teardown

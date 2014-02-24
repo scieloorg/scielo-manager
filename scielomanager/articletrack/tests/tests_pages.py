@@ -3,12 +3,14 @@ from waffle import Flag
 from django_webtest import WebTest
 from django_factory_boy import auth
 from django.core.urlresolvers import reverse
+
 from . import modelfactories
-from journalmanager.tests.helpers import (
+from scielomanager.utils.modelmanagers.helpers import (
     _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
     _patch_userrequestcontextfinder_settings_teardown
     )
+
 
 def _makePermission(perm, model, app_label='articletrack'):
     """
