@@ -7,34 +7,30 @@
 
 <div class="row-fluid show-grid">
   <div class="span12">
-  	<h2>{% trans "Checking" %}:</h2>
-  	<table class="table table-condensed table-hover">
-		<thead>
-			<tr>
-	  			<th>{% trans "Package name" %}:</th>
-	  			<th>{% trans "Attempt ref" %}:</th>
-	  			<th>{% trans "Uploaded at" %}:</th>
-			</tr>
-		</thead>
-  		<tr>
-  			<td>{{ checkin.package_name }}</td>
-  			<td>{{ checkin.attempt_ref }}</td>
-  			<td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
-  		</tr>
-  	</table>
+    <h2>{% trans "Checking" %}:</h2>
+    <table class="table table-condensed table-hover">
+    <thead>
+      <tr>
+          <th>{% trans "Package name" %}:</th>
+          <th>{% trans "Attempt ref" %}:</th>
+          <th>{% trans "Uploaded at" %}:</th>
+      </tr>
+    </thead>
+      <tr>
+        <td>{{ checkin.package_name }}</td>
+        <td>{{ checkin.attempt_ref }}</td>
+        <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
+      </tr>
+    </table>
   </div>
   <h2>{% trans "New Ticket" %}:</h2>
   <div id='add_comment_section_row' class='row'>
-	  <div class="span10 offset1">
-			<form action='.' method='POST'>
-				{% csrf_token %}
-				{{ form }}
-				<span class="pull-right">
-					<button class='btn btn-primary'>{% trans "Save" %} <i class="icon-arrow-right"></i></button>
-				</span>
-			</form>
-	  </div>
-	</div>
+    <div class="span10 offset1">
+      <form action='.' method='POST'>
+        {% include "articletrack/includes/form_snippet.html" %}
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- NAVIGATIONS -->
