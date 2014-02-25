@@ -86,7 +86,10 @@
                   <img style="vertical-align:top;" src="{{ comment.author.get_profile.avatar_url }}" alt="Gravatar">
                   {{ comment.author.get_full_name }} <i class="icon-time"></i> 
                   <cite title="">
-                    {{ comment.date|date:"d/m/Y - H:i" }}
+                    {{ comment.created_at|date:"d/m/Y - H:i" }}
+                    {% if comment.created_at|date:"d/m/Y - H:i" != comment.updated_at|date:"d/m/Y - H:i" %}
+                      <em>({% trans "Updated" %}: {{ comment.updated_at|date:"d/m/Y - H:i" }} )</em>
+                    {% endif %}
                     {% if request.user == comment.author and comment.ticket.is_open %}
                       <i class="icon-edit"></i> <a href="{% url comment_edit comment.pk %}">{% trans "Edit" %}</a>
                     {% endif %}

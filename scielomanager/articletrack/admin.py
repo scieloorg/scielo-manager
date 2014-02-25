@@ -26,7 +26,8 @@ class ArticleAdmin(admin.ModelAdmin):
 admin.site.register(Article, ArticleAdmin)
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('date', 'ticket', 'author')
+    list_display = ('created_at', 'updated_at', 'ticket', 'author')
+    readonly_fields = ('created_at', 'updated_at',)
 
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Notice)
