@@ -1,5 +1,6 @@
 import datetime
 import json
+
 from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
@@ -11,10 +12,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 
-from . import models
 from scielomanager.tools import get_paginated, get_referer_view
-from articletrack.forms import CommentMessageForm, TicketForm
-from articletrack.balaio_api import BalaioAPI
+from . import models
+from .forms import CommentMessageForm, TicketForm
+from .balaio_api import BalaioAPI
+
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 MSG_FORM_SAVED = _('Saved.')
@@ -43,10 +45,9 @@ def checkin_index(request):
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_history(request, article_id):
-    try:
-        article = models.Article.userobjects.active().select_related('checkins').get(pk=article_id)
-    except models.Article.DoesNotExist:
-        raise Http404
+
+    article = get_object_or_404(models.Article.userobjects.active().select_related('checkins'),
+        pk=article_id)
 
     objects = get_paginated(article.checkins.all(), request.GET.get('page', 1))
 
@@ -64,7 +65,7 @@ def checkin_history(request, article_id):
 @permission_required('articletrack.list_notice', login_url=AUTHZ_REDIRECT_URL)
 def notice_detail(request, checkin_id):
 
-    checkin = models.Checkin.userobjects.active().get(pk=checkin_id)
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
     notices = checkin.notices.all()
 
     objects = get_paginated(notices, request.GET.get('page', 1))
@@ -126,7 +127,7 @@ def ticket_list(request):
 @permission_required('articletrack.list_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.html'):
 
-    ticket = models.Ticket.objects.get(pk=ticket_id)
+    ticket = get_object_or_404(models.Ticket.userobjects.active(), pk=ticket_id)
     comment_form = CommentMessageForm()
     context = {
         'ticket': ticket,
@@ -161,7 +162,7 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
 @permission_required('articletrack.change_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_close(request, ticket_id):
 
-    ticket = models.Ticket.objects.get(pk=ticket_id)
+    ticket = get_object_or_404(models.Ticket.userobjects.active(), pk=ticket_id)
     if not ticket.is_open:
         messages.info(request, _("Ticket are already closed"))
         return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
@@ -178,7 +179,7 @@ def ticket_close(request, ticket_id):
 @permission_required('articletrack.add_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'):
 
-    checkin = models.Checkin.userobjects.active().get(pk=checkin_id)
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
     ticket_form = TicketForm()
     context = {
         'checkin': checkin,
@@ -211,10 +212,7 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
 @waffle_flag('articletrack')
 @permission_required('articletrack.change_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html'):
-    try:
-        ticket = models.Ticket.userobjects.active().get(pk=ticket_id)
-    except models.Ticket.DoesNotExist:
-        raise Http404
+    ticket = get_object_or_404(models.Ticket.userobjects.active(), pk=ticket_id)
 
     if not ticket.is_open:
         messages.info(request, _("Closed ticket can't be edited"))
@@ -325,3 +323,4 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
             return view_response
     else:
         return HttpResponseBadRequest()
+
