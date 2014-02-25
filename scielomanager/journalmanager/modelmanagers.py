@@ -32,32 +32,9 @@ Custom instance of ``models.query.QuerySet``
 import caching.base
 
 from scielomanager.utils import usercontext
+from scielomanager.utils.modelmanagers import UserObjectQuerySet, UserObjectManager
 
 user_request_context = usercontext.get_finder()
-
-
-class UserObjectQuerySet(caching.base.CachingQuerySet):
-    """
-    Provides a basic implementation of userobject querysets with
-    caching features.
-    """
-    def available(self):
-        return self
-
-    def unavailable(self):
-        return self.none()
-
-
-class UserObjectManager(caching.base.CachingManager):
-    """
-    Provides a basic implementation of userobject managers with
-    caching features.
-    """
-    def all(self, **kwargs):
-        return self.get_query_set().all(**kwargs)
-
-    def active(self, **kwargs):
-        return self.get_query_set().active(**kwargs)
 
 
 class JournalQuerySet(UserObjectQuerySet):
@@ -183,3 +160,4 @@ class AheadPressReleaseQuerySet(UserObjectQuerySet):
 class AheadPressReleaseManager(UserObjectManager):
     def get_query_set(self):
         return AheadPressReleaseQuerySet(self.model, using=self._db)
+

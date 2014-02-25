@@ -24,7 +24,7 @@ from api.resources import (
     CommentResource,
     )
 
-from journalmanager.tests.helpers import (
+from scielomanager.utils.modelmanagers.helpers import (
     _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
     _patch_userrequestcontextfinder_settings_teardown
@@ -1073,7 +1073,7 @@ class NoticeRestAPITest(WebTest):
 
 
 class CheckinArticleRestAPITest(WebTest):
-    
+
     @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
@@ -1162,10 +1162,10 @@ class CheckinArticleRestAPITest(WebTest):
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
-        
+
 
 class TicketRestAPITest(WebTest):
-    
+
     @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
@@ -1179,7 +1179,7 @@ class TicketRestAPITest(WebTest):
         pass
 
     def test_post_data(self):
-        
+
         perm = _makePermission(perm='add_ticket', model='ticket', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
@@ -1209,7 +1209,7 @@ class TicketRestAPITest(WebTest):
 
         att = {u'finished_at': '2013-11-18 15:23:12',}
         ticket = articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
-        
+
         response = self.app.put_json('/api/v1/tickets/%s/' % ticket.pk,
 	                                att,
 	                                extra_environ=self.extra_environ,
@@ -1260,7 +1260,7 @@ class TicketRestAPITest(WebTest):
 
 
 class CommentRestAPITest(WebTest):
-    
+
     @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
@@ -1274,7 +1274,7 @@ class CommentRestAPITest(WebTest):
         pass
 
     def test_post_data(self):
-        
+
         perm = _makePermission(perm='add_comment', model='comment', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
@@ -1283,7 +1283,7 @@ class CommentRestAPITest(WebTest):
             u'message': u'message of the comment',
             u'ticket': u'/api/v1/tickets/%s/' % self.ticket.pk,
         }
-        
+
         response = self.app.post_json('/api/v1/comments/',
                                       att,
                                       extra_environ=self.extra_environ,

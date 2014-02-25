@@ -1,5 +1,9 @@
 #coding: utf-8
-from journalmanager.modelmanagers import UserObjectQuerySet, UserObjectManager, user_request_context
+from scielomanager.utils import usercontext
+from scielomanager.utils.modelmanagers import UserObjectQuerySet, UserObjectManager
+
+user_request_context = usercontext.get_finder()
+
 
 # CHECKIN
 
@@ -68,3 +72,4 @@ class CommentQuerySet(UserObjectQuerySet):
 class CommentManager(UserObjectManager):
     def get_query_set(self):
         return CommentQuerySet(self.model, using=self._db)
+
