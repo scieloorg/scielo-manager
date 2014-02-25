@@ -1,7 +1,7 @@
 import datetime
 import json
 from waffle.decorators import waffle_flag
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import permission_required
 from django.utils.translation import ugettext as _
@@ -96,7 +96,7 @@ def notice_detail(request, checkin_id):
 
     except ValueError:
         pass # Service Unavailable
-    
+
     context['files'] = files_list
 
     return render_to_response(
@@ -247,11 +247,8 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
 
 def comment_edit(request, comment_id, template_name='articletrack/comment_edit.html'):
-    try:
-        comment = models.Comment.userobjects.active().get(pk=comment_id)
-    except models.Comment.DoesNotExist:
-        raise Http404
-    
+    comment = get_object_or_404(models.Comment.userobjects.active(), pk=comment_id)
+
     if not comment.ticket.is_open:
         messages.info(request, _("Can't edit a comment of a closed ticket"))
         return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
