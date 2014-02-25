@@ -104,7 +104,8 @@ class Comment(caching.base.CachingMixin, models.Model):
     objects = models.Manager()
     userobjects = modelmanagers.CommentManager()
 
-    date = models.DateTimeField(_(u"Creation date"), auto_now=True)
+    created_at = models.DateTimeField(_(u"Creation date"), auto_now_add=True)
+    updated_at = models.DateTimeField(_(u"Updated date"), auto_now=True)
     author = models.ForeignKey(User, related_name='comments_author')
     ticket = models.ForeignKey(Ticket, related_name='comments')
     message = models.TextField(_(u"Message"))
@@ -112,7 +113,7 @@ class Comment(caching.base.CachingMixin, models.Model):
     class Meta:
         verbose_name = _(u'Comment')
         verbose_name_plural = _(u'Comments')
-        ordering = ['date']
+        ordering = ['created_at']
         permissions = (("list_comment", "Can list Comment"),)
 
     def __unicode__(self):

@@ -6,7 +6,7 @@ class CommentTests(TestCase):
 
     def test_comment_ordering(self):
         ordering = models.Comment._meta.ordering
-        self.assertEqual(ordering, ['date'])
+        self.assertEqual(ordering, ['created_at'])
 
 
 class TicketTests(TestCase):
