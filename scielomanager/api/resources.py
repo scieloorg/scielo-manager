@@ -73,6 +73,7 @@ class IssueResource(ModelResource):
             "is_marked_up": ('exact'),
             "volume": ('exact'),
             "number": ('exact'),
+            "publication_year": ('exact'),
             "suppl_number": ('exact'),
             "suppl_volume": ('exact')
         }
@@ -422,6 +423,7 @@ class CommentResource(ModelResource):
 
 
 class ArticleResource(ModelResource):
+    issue = fields.ForeignKey(IssueResource, 'issue')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Article.objects.all()
