@@ -1,5 +1,6 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
+{% load urlize_ticket %}
 
 {% block page_title %}{% trans "Ticket detail" %}{% endblock %}
 
@@ -12,7 +13,7 @@
     {% else %}
       <span class="label label-important">{% trans "Closed" %}</span> 
     {% endif %}
-    {{ ticket.title|title }} <small>#{{ ticket.pk }}</small>
+    {{ ticket.title|capfirst|urlize_ticket_link }} <small>#{{ ticket.pk }}</small>
   </h1>
   <p class='muted'>
     <img style="vertical-align:top;" src="{{ ticket.author.get_profile.avatar_url }}" alt="Gravatar">
@@ -33,7 +34,7 @@
 <div class="row-fluid show-grid">
   <div class="span12">
     <h4>{% trans "Message" %}:</h4>
-    <blockquote>{{ ticket.message|linebreaksbr }}<blockquote>
+    <blockquote>{{ ticket.message|urlize_ticket_link|linebreaksbr  }}<blockquote>
   </div>
 
   {% if ticket.is_open %}
@@ -81,7 +82,7 @@
   <div class="row-fluid show-grid">
       <div class="span12">
           <blockquote>
-              {{ comment.message|linebreaksbr }}
+              {{ comment.message|urlize_ticket_link|linebreaksbr }}
               <small>
                   <img style="vertical-align:top;" src="{{ comment.author.get_profile.avatar_url }}" alt="Gravatar">
                   {{ comment.author.get_full_name }} <i class="icon-time"></i> 
