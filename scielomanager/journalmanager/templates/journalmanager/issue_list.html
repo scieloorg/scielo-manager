@@ -1,6 +1,7 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load static %}
+{% load waffle_tags %}
 {% load scielo_common %}
 {% load inctag_toolbars %}
 
@@ -66,7 +67,12 @@
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
                     <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
                   {% else %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
+                    <li class="ui-state-default" id="num_{{ num.id }}">
+                      <a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a>
+                      {% flag 'articletrack' %}
+                        <a href="{% url article.index num.id %}">article</a>
+                      {% endflag %}
+                    </li>
                   {% endif %}
                 {% endfor %}
               </ul>
