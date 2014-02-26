@@ -180,14 +180,5 @@ class NoticeListTests(WebTest):
             args=[notice.checkin.pk]), user=self.user)
 
         #response.mustcontain('<a href="/arttrack/">List of check ins</a>')
-        response.mustcontain('<a class="btn" href="/arttrack/"><i class="icon-arrow-left"></i> List of check ins</a>')
-
-
-    def test_notice_list_must_have_link_to_package_history(self):
-        self._addWaffleFlag()
-        notice = self._makeOne()
-
-        response = self.app.get(reverse('notice_detail',
-            args=[notice.checkin.pk]), user=self.user)
-        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.article.pk)
+        response.mustcontain('<a href="/arttrack/"><i class="icon-chevron-left"></i> List of Articles in submission</a>')
 
