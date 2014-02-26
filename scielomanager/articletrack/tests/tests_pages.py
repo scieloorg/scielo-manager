@@ -65,13 +65,6 @@ class CheckinListTests(WebTest):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_checkin_list_without_itens(self):
-        self._addWaffleFlag()
-
-        response = self.app.get('/arttrack/', user=self.user)
-
-        response.mustcontain('There are no items.')
-
     def test_checkin_list_with_itens(self):
         self._addWaffleFlag()
         self._makeOne()
@@ -79,15 +72,6 @@ class CheckinListTests(WebTest):
         response = self.app.get('/arttrack/', user=self.user)
 
         response.mustcontain('Journal of the Brazilian Chemical Society')
-
-    def test_checkin_list_display_detail_and_history_button(self):
-        self._addWaffleFlag()
-        checkin = self._makeOne()
-
-        response = self.app.get('/arttrack/', user=self.user)
-
-        response.mustcontain('href="/arttrack/notice/%s/"' % checkin.id)
-        response.mustcontain('href="/arttrack/package/%s/"' % checkin.article.pk)
 
     def test_status_code_package_history(self):
         self._addWaffleFlag()
@@ -196,14 +180,5 @@ class NoticeListTests(WebTest):
             args=[notice.checkin.pk]), user=self.user)
 
         #response.mustcontain('<a href="/arttrack/">List of check ins</a>')
-        response.mustcontain('<a class="btn" href="/arttrack/"><i class="icon-arrow-left"></i> List of check ins</a>')
-
-
-    def test_notice_list_must_have_link_to_package_history(self):
-        self._addWaffleFlag()
-        notice = self._makeOne()
-
-        response = self.app.get(reverse('notice_detail',
-            args=[notice.checkin.pk]), user=self.user)
-        response.mustcontain('href="/arttrack/package/%s/"' % notice.checkin.article.pk)
+        response.mustcontain('<a href="/arttrack/"><i class="icon-chevron-left"></i> List of Articles in submission</a>')
 
