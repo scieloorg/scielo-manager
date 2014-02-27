@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load urlize_ticket %}
 
 {% if tickets|length > 0 %}
   <table class="table table-condensed table-hover">
@@ -16,7 +17,7 @@
             <img style="vertical-align:top;" src="{{ ticket.author.get_profile.avatar_url }}" alt="Gravatar">
             {{ ticket.author.get_full_name }}
           </td>
-          <td>{{ ticket.title }}</td>
+          <td>{{ ticket.title|capfirst|urlize_ticket_link }}</td>
           <td>
             {% if ticket.is_open %}
               <a href="#" class="close_ticket btn btn-mini btn-warning" type="button" data-ticket-id='{{ ticket.pk }}'>
