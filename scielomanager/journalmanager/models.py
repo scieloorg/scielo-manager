@@ -1109,6 +1109,9 @@ class Article(caching.base.CachingMixin, models.Model):
     pdf_url = models.CharField(_('PDF URL'), max_length=256)
     images_url = models.CharField(_('Images URL'), max_length=256)
 
+    def __unicode__(self):
+        return u' - '.join([self.title, str(self.issue)])
+
     class Meta:
         permissions = (("list_article", "Can list Article"),)
 
