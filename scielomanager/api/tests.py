@@ -1088,13 +1088,37 @@ class CheckinArticleRestAPITest(WebTest):
         perm = _makePermission(perm='add_article', model='article', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
+        journal = modelfactories.JournalFactory.create()
+
         att = {
                 u'articlepkg_ref': 1,
                 u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
                 u'journal_title': u'Journal of the Brazilian Chemical Society',
                 u'issue_label': u'2013 v.24 n.4',
-                u'eissn': u'111',
-                u'pissn': u'',
+                u'eissn': u'',
+                u'pissn': u'1234-0002', # matching with JournalFactory.print_issn
+        }
+        response = self.app.post_json('/api/v1/checkins_articles/',
+                                      att,
+                                      extra_environ=self.extra_environ,
+                                      status=201)
+
+        # 201 stands for CREATED Http status
+        self.assertEqual(response.status_code, 201)
+
+    def test_post_data_invalid_journal(self):
+        perm = _makePermission(perm='add_article', model='article', app_label='articletrack')
+        self.user.user_permissions.add(perm)
+
+        journal = modelfactories.JournalFactory.create()
+
+        att = {
+                u'articlepkg_ref': 1,
+                u'article_title': u'An azafluorenone alkaloid and a megastigmane from Unonopsis lindmanii (Annonaceae)',
+                u'journal_title': u'Journal of the Brazilian Chemical Society',
+                u'issue_label': u'2013 v.24 n.4',
+                u'eissn': u'',
+                u'pissn': u'xxx', # matching with JournalFactory.print_issn
         }
         response = self.app.post_json('/api/v1/checkins_articles/',
                                       att,
