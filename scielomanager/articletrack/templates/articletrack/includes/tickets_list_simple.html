@@ -1,37 +1,40 @@
 {% load i18n %}
 {% load urlize_ticket %}
+{% load user_avatar %}
 
-{% if tickets|length > 0 %}
-  <table class="table table-condensed table-hover">
-    <thead>
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th class='span2'>{% trans "Author" %}:</th>
+      <th>{% trans "Title" %}:</th>
+      <th class='span2'></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ticket in tickets %}
       <tr>
-        <th class='span2'>{% trans "Author" %}:</th>
-        <th>{% trans "Title" %}:</th>
-        <th class='span2'></th>
+        <td>
+          <img class="img-rounded" src="{% user_avatar_url ticket.author 'small' %}" alt="Gravatar">
+          {{ ticket.author.get_full_name }}
+        </td>
+        <td>{{ ticket.title|capfirst|urlize_ticket_link }}</td>
+        <td>
+          {% if ticket.is_open %}
+            <a href="#" class="close_ticket btn btn-mini btn-warning" type="button" data-ticket-id='{{ ticket.pk }}'>
+              <i class="icon-remove-circle"></i> {% trans "Close" %}
+            </a>
+          {% endif %}
+          <a href="{% url ticket_detail ticket.id %}" class="btn btn-mini btn pull-right" type="button">{% trans "Details" %}</a>
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% for ticket in tickets %}
-        <tr>
-          <td>
-            <img style="vertical-align:top;" src="{{ ticket.author.get_profile.avatar_url }}" alt="Gravatar">
-            {{ ticket.author.get_full_name }}
-          </td>
-          <td>{{ ticket.title|capfirst|urlize_ticket_link }}</td>
-          <td>
-            {% if ticket.is_open %}
-              <a href="#" class="close_ticket btn btn-mini btn-warning" type="button" data-ticket-id='{{ ticket.pk }}'>
-                <i class="icon-remove-circle"></i> {% trans "Close" %}
-              </a>
-            {% endif %}
-            <a href="{% url ticket_detail ticket.id %}" class="btn btn-mini btn pull-right" type="button">{% trans "Details" %}</a>
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-{% else %}
-  <div class="alert">
-    <strong>{% trans "No tickets" %}</strong>
-  </div>
-{% endif %}
+    {% empty %}
+      <tr>
+        <td colspan='3'>
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i> {% trans "No tickets" %}
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
