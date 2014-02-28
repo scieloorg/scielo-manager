@@ -1106,6 +1106,11 @@ class CheckinArticleRestAPITest(WebTest):
         # 201 stands for CREATED Http status
         self.assertEqual(response.status_code, 201)
 
+        # assert the related journal was found and bound.
+        from articletrack import models
+        article_id = response.location.rsplit('/', 2)[-2]
+        self.assertTrue(journal in models.Article.objects.get(pk=article_id).journals.all())
+
     def test_post_data_invalid_journal(self):
         perm = _makePermission(perm='add_article', model='article', app_label='articletrack')
         self.user.user_permissions.add(perm)
