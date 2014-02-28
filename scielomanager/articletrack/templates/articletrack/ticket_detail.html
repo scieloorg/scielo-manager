@@ -38,7 +38,7 @@
     {% if not ticket.is_open %}
       <div class="alert alert-info">
         <strong>
-          <i class="icon-ban-circle"></i> {% trans "The ticket was closed on" %}:
+          <i class="icon-ban-circle"></i> {% trans "The ticket was closed" %}
         </strong>
         <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ ticket.finished_at }}'>{{ ticket.finished_at|timesince }} {% trans "ago" %}</a>
       </div>
@@ -50,7 +50,7 @@
       <p class='muted'>
         <img  class="img-rounded" src="{% user_avatar_url ticket.author 'medium' %}" alt="Gravatar">
         {{ ticket.author.get_full_name }} 
-        {% trans "created this ticket on" %}:
+        {% trans "created this ticket" %}
         <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ ticket.started_at }}'>{{ ticket.started_at|timesince }} {% trans "ago" %}</a>
         <span class='pull-right'>
           {{ ticket.comments.all|length }} {% trans "comments" %}
@@ -64,22 +64,17 @@
     {% if ticket.is_open %}
     
       <div id='action_buttons_row'>
-        
-        {% if perms.comment.can_add or perms.ticket.can_add %}
-          <a id='add_comment' href="#" class="btn btn-success" type="button">
-            <i class="icon-plus-sign"></i> {% trans "Add Comment" %}
-          </a>
-        {% endif %}
-        
+                
         {% if perms.ticket.can_change %}
 
-          <a href="{% url ticket_edit ticket.pk %}" class='btn btn-primary'>
-            <i class="icon-pencil"></i> {% trans "Edit" %}
-          </a>
-
-          <a id='close_ticket' href="#" class="btn btn-warning pull-right" type="button">
-            <i class="icon-remove-circle"></i> {% trans "Close" %}
-          </a>
+          <div class="btn-group pull-right">
+            <a href="{% url ticket_edit ticket.pk %}" class='btn btn-primary'>
+              <i class="icon-pencil"></i> {% trans "Edit" %}
+            </a>
+            <a id='close_ticket' href="#" class="btn btn-warning" type="button">
+              <i class="icon-remove-circle"></i> {% trans "Close" %}
+            </a>
+          </div>
 
         {% endif %}
       </div>
@@ -96,16 +91,31 @@
           {% csrf_token %}
           <div id='form_error_msg' class="alert alert-error" style='display:none;'></div>
           {{ form }}
+          {% include "articletrack/includes/help_text_ticket_link.html" %}
           <input type='button' id='discard_comment' class='btn btn-danger pull-left' value='{% trans "Discard" %}'/>
           <input type='submit' class='btn btn-primary pull-right' value='{% trans "Save" %}'/>
         </form>
       </div>
     </div>
   {% endif %}
-
+  <hr>
   <!-- COMMENTS -->
+  
   <a name="comments"></a><br><br>
-  <h4>{% trans "Comments" %}:</h4>
+  <div class="row-fluid show-grid">
+    <div class="span10">
+      <h4>{% trans "Comments" %}:</h4>
+    </div>
+    <div class="span2">
+
+        {% if perms.comment.can_add or perms.ticket.can_add %}
+          <a id='add_comment' href="#" class="btn btn-success pull-right" type="button">
+            <i class="icon-plus-sign"></i> {% trans "Add Comment" %}
+          </a>
+        {% endif %}
+
+    </div>
+  </div>
 
   {% for comment in ticket.comments.all %}
 
@@ -127,7 +137,7 @@
             {% endif %}
             {% if request.user == comment.author and comment.ticket.is_open %}
               <span class='pull-right'>
-                <a href="{% url comment_edit comment.pk %}"><i class="icon-pencil"></i> {% trans "Edit" %}</a>
+                <a href="{% url comment_edit comment.pk %}" class='btn btn-mini'><i class="icon-pencil"></i> {% trans "Edit" %}</a>
               </span>
             {% endif %}
           </small>
@@ -155,6 +165,7 @@
         $('#action_buttons_row').hide();
         $('#add_comment_section_row').show();
         $('#id_message').focus();
+        $(this).addClass('disabled');
       });
       $('#discard_comment').click(function(event){
         if (confirm('{% trans "The message of the comment will be unsaved, are you sure?" %}')) {
