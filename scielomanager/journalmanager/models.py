@@ -125,7 +125,9 @@ class JournalCustomManager(AppCustomManager):
             return Journal.objects.none()
 
         journals = Journal.objects.filter(
-            models.Q(print_issn=issn) | models.Q(eletronic_issn=issn))
+            models.Q(print_issn=issn) | models.Q(eletronic_issn=issn)
+        )
+
         return journals
 
 

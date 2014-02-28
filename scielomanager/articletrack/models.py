@@ -11,7 +11,6 @@ from django.contrib.auth.models import User
 from articletrack import modelmanagers
 from journalmanager.models import Journal
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -118,27 +117,3 @@ class Comment(caching.base.CachingMixin, models.Model):
 
     def __unicode__(self):
         return u"%s (ticket: %s)" % (self.pk, self.ticket)
-
-
-####
-# Signals
-####
-@receiver(post_save, sender=Article, dispatch_uid='articletrack.models.journal_pub_status_post_save')
-def checkin_journals_fetching_post_save(sender, **kwargs):
-    """
-    Binds journals to checkin
-    """
-    if kwargs['created']:
-        instance = kwargs['instance']
-
-        eissn = instance.eissn
-        pissn = instance.pissn
-        instance.journals = Journal.objects.by_issn(eissn) | Journal.objects.by_issn(pissn)
-        if not instance.journals.exists():
-            message = u"""Could not find the right Journal instance to bind with
-                          %s. The Journal instance will stay in an orphan state.""".strip()
-            logger.error(message % repr(instance))
-
-        instance.save()
-
-

@@ -1,5 +1,9 @@
 # coding: utf-8
+import logging
+
+from django.db.models import Q
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from tastypie.resources import ModelResource, Resource
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
@@ -30,6 +34,7 @@ from articletrack.models import (
     Comment
 )
 
+logger = logging.getLogger(__name__)
 
 class ApiKeyAuthMeta:
     authentication = ApiKeyAuthentication()
@@ -399,6 +404,24 @@ class CheckinArticleResource(ModelResource):
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']
 
+    def obj_create(self, bundle, **kwargs):
+        bundle = super(CheckinArticleResource, self).obj_create(bundle, **kwargs)
+
+        pissn = bundle.data.get('pissn', '')
+        eissn = bundle.data.get('eissn', '')
+
+        try:
+            journal = Journal.objects.get(
+                Q(print_issn=pissn) | Q(eletronic_issn=eissn)
+            )
+        except ObjectDoesNotExist.DoesNotExist:
+            message = u"""Could not find the right Journal instance to bind with
+                          %s. The Journal instance will stay in an orphan state.""".strip()
+            logger.error(message % repr(bundle.obj))
+        else:
+            bundle.obj.journals.add(journal)
+
+        return bundle
 
 class TicketResource(ModelResource):
     author = fields.ForeignKey(UserResource, 'author')
