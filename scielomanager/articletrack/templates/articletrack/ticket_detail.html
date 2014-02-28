@@ -108,7 +108,7 @@
     </div>
     <div class="span2">
 
-        {% if perms.comment.can_add or perms.ticket.can_add %}
+        {% if ticket.is_open and perms.comment.can_add %}
           <a id='add_comment' href="#" class="btn btn-success pull-right" type="button">
             <i class="icon-plus-sign"></i> {% trans "Add Comment" %}
           </a>
