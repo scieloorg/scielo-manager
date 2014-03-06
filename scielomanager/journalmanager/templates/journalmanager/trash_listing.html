@@ -8,7 +8,10 @@
 
 {% block content %}
 <div class="row-fluid show-grid">
-  <div class="span6" style="text-align:right">
+  <div class="span6">
+    <h2>{% trans "My trash" %}:</h2>
+  </div>
+  <div class="span6" class="pull-right">
     {% simple_pagination trashed_docs %}
   </div>
 </div>
@@ -36,10 +39,10 @@
       </a>
     </li>
 
-    <li class="dropdown" id="menu1">
+    <li class="dropdown pull-right" id="menu1">
       <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-      {% trans "Actions" %}
-      <b class="caret"></b>
+        {% trans "Actions" %}
+        <b class="caret"></b>
       </a>
       <ul class="dropdown-menu">
         <li>
@@ -57,7 +60,7 @@
               {% endif %}
             {% endif %}
           {% endif %}
-             href="javascript:void(0)">{% trans "Restore" %}</a>
+             href="javascript:void(0)"><i class="icon-share"></i> {% trans "Restore" %}</a>
         </li>
       </ul>
     </li>
@@ -69,23 +72,28 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th><input id="check_all" type="checkbox" name="check_all" value=""/></th>
+        <th class="checkbox_column"><input id="check_all" type="checkbox" name="check_all" value=""/></th>
         <th>{% trans "Title" %}</th>
       </tr>
     </thead>
     <tbody>
       {% for doc in trashed_docs.object_list %}
-      <tr id="{{ doc.pk }}">
-        <td>
-          <input type="checkbox" name="action" value="{{ doc.id }}"/>
-        </td>
-        <td>
-          <h4>{{ doc }}</h4>
-        </td>
-      </tr>
+        <tr id="{{ doc.pk }}">
+          <td>
+            <input type="checkbox" name="action" value="{{ doc.id }}"/>
+          </td>
+          <td>
+            {{ doc }}
+          </td>
+        </tr>
       {% empty %}
       <tr>
-        <td colspan="2">{% trans 'There are no items.' %}</td>
+        <td colspan="2">
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans 'There are no items.' %}
+          </div>
+        </td>
       </tr>
       {% endfor %}
     <tbody>

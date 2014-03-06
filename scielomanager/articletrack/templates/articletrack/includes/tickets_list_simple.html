@@ -20,7 +20,7 @@
         <td>{{ ticket.title|capfirst|urlize_ticket_link }}</td>
         <td>
           {% if ticket.is_open %}
-            <a href="#" class="close_ticket btn btn-mini btn-warning" type="button" data-ticket-id='{{ ticket.pk }}'>
+            <a href="#" class="close_ticket btn btn-mini btn-danger" type="button" data-ticket-id='{{ ticket.pk }}'>
               <i class="icon-remove-circle"></i> {% trans "Close" %}
             </a>
           {% endif %}

@@ -9,21 +9,14 @@
 
 {% block content %}
 <div class="row-fluid show-grid">
-  <div class="span2" style="padding:0 0 10px 0">
-    {% if perms.journalmanager.add_journal %}
-      <a class="btn btn-primary" href="{% url journal.add %}">
-        {% trans 'New' %}
-      </a>
-    {% endif %}
-  </div>
-  <div class="span8">
+  <div class="span10">
       {% if request.GET.letter %}
         {% named_pagination letters request.GET.letter %}
       {% else %}
         {% named_pagination letters 'All' %}
       {% endif %}
   </div>
-  <div class="span2" style="text-align:right">
+  <div class="span2" class="pull-right">
       {% simple_pagination objects_journal %}
   </div>
 </div>
@@ -31,6 +24,15 @@
 <div class="row-fluid">
 
     <ul class="nav nav-tabs">
+      {% if perms.journalmanager.add_journal %}
+        <li>
+          <div class="btn-group first-tab-btn-group">
+            <a class="btn btn-primary" href="{% url journal.add %}">
+              {% trans 'New' %}
+            </a>
+          </div>
+        </li>
+      {% endif %}
       <li class="{% if not request.GET.jstatus %} active {% endif %}">
         <a href="{% query_string request "q" "include_ampersand" %}">{% trans "All" %}</a>
       </li>
@@ -48,10 +50,10 @@
       </li>
 
       {% if perms.journalmanager.change_journal %}
-        <li class="dropdown" id="menu1">
+        <li class="dropdown pull-right" id="menu1">
           <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-          {% trans "Actions" %}
-          <b class="caret"></b>
+            {% trans "Actions" %}
+            <b class="caret"></b>
           </a>
           <ul class="dropdown-menu">
             {% if perms.journalmanager.delete_journal %}
@@ -59,7 +61,7 @@
               <li>
                 <a id="bulk_action_enable"
                    rel="{% url trash.bulk_action 'journal' 'is_available' '0' %}"
-                   href="javascript:void(0)">{% trans "Move to trash" %}</a>
+                   href="javascript:void(0)"><i class="icon-trash"></i> {% trans "Move to trash" %}</a>
               </li>
               {% endif %}
             {% endif %}
@@ -74,7 +76,7 @@
   <table class="table table-striped _listings">
   <thead>
     <tr>
-      <th><input id="check_all" type="checkbox" name="check_all" value=""></th>
+      <th class="checkbox_column"><input id="check_all" type="checkbox" name="check_all" value=""></th>
       <th>{% trans "Journal Title" %}</th>
       <th>{% trans "Print ISSN" %}</th>
       <th>{% trans "Electronic ISSN" %}</th>
@@ -87,28 +89,31 @@
         <input type="checkbox" name="action" value="{{ journal.id }}">
       </td>
       <td>
-        <h4>
-          <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
-                data-original-title="{{ journal.pub_status|capfirst }}"
-                rel="tooltip"></span>
-            {% if perms.journalmanager.list_journal %}
-              <a href="{% url journal.dash journal.pk %}"
-                 class="tip-bottom"
-                 data-original-title="{{ journal.title }}"
-                 rel="tooltip">
-                {{ journal.title_iso }}
-              </a>
-            {% else %}
-              {{ journal.title }}
-            {% endif %}
-        </h4>
+        <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
+              data-original-title="{{ journal.pub_status|capfirst }}"
+              rel="tooltip"></span>
+        {% if perms.journalmanager.list_journal %}
+          <a href="{% url journal.dash journal.pk %}"
+             class="tip-bottom"
+             data-original-title="{{ journal.title }}"
+             rel="tooltip">
+            {{ journal.title_iso }}
+          </a>
+        {% else %}
+          {{ journal.title }}
+        {% endif %}
       </td>
       <td>{{ journal.print_issn|default:"n.a." }}</td>
       <td>{{ journal.eletronic_issn|default:"n.a." }}</td>
     </tr>
     {% empty %}
     <tr>
-      <td colspan="5">{% trans 'There are no items.' %}</td>
+      <td colspan="5">
+        <div class="alert alert-info">
+          <i class="icon-info-sign"></i>
+          {% trans 'There are no items.' %}
+        </div>
+      </td>
     </tr>
     {% endfor %}
   <tbody>

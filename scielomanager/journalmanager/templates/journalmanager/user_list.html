@@ -3,6 +3,7 @@
 {% load static %}
 {% load scielo_common %}
 {% load inctag_toolbars %}
+{% load user_avatar %}
 
 {% block page_title %}{% trans "Users" %}{% endblock %}
 
@@ -31,12 +32,11 @@
     {% for user in users.object_list %}
     <tr id="{{ user.pk }}">
       <td>
-        <h4>
-          <a {% if not user.is_active %}class="strikethrough"{% endif %}
-             href="{% url user.edit user.pk %}">
-             {{ user.username }}
-          </a>
-        </h4>
+        <a {% if not user.is_active %}class="strikethrough"{% endif %}
+           href="{% url user.edit user.pk %}">
+           <img class="img-rounded" src="{% user_avatar_url user 'small' %}" alt="Gravatar">
+           {{ user.username }}
+        </a>
       </td>
       <td>
         <a href="mailto:{{ user.get_profile.email }}">

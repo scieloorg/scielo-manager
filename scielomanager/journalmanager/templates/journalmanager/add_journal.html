@@ -66,7 +66,7 @@
   {% endif %}
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>
-  <span class="label"><a name="title"></a>{% trans "Titles" %}</span>
+  <h2><a name="title"></a>{% trans "Titles" %}:</h2>
   <div class="well">
 
     <div class="control-group {% if add_form.title.errors %}error{% endif %}">
@@ -140,7 +140,7 @@
 
   </div>
 
-  <span class="label"><a name="other_title"></a>{% trans "Other Titles" %}</span>
+  <h2><a name="other_title"></a>{% trans "Other Titles" %}:</h2>
   <div class="well">
     <table id="titleformset" class="table table-bordered table-striped">
     <thead>
@@ -167,7 +167,7 @@
     </p>
   </div>
 
-  <span class="label"><a name="issn"></a>{% trans "ISSN" %}</span>
+  <h2><a name="issn"></a>{% trans "ISSN" %}:</h2>
   <div class="well">
     <span class="help-inline">
       {% for error in add_form.scielo_issn.errors %}
@@ -222,7 +222,7 @@
   </div>
 
   {% if user_collections.count > 1 %}
-    <span class="label"><a name="journal_collection"></a>{% trans "Journal Collections" %}</span>
+    <h2><a name="journal_collection"></a>{% trans "Journal Collections" %}:</h2>
     <div class="well">
       <div class="control-group {% if add_form.collection.errors %}error{% endif %}">
         <label for="{{ add_form.collection.auto_id }}">
@@ -240,7 +240,7 @@
       <input type="hidden" name="journal-collection" value="{{ user_collections.0.pk }}"/>
   {% endif %}
 
-  <span class="label"><a name="subject"></a>{% trans "Subject" %}</span>
+  <h2><a name="subject"></a>{% trans "Subject" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.study_areas.errors %}error{% endif %}">
       <label for="{{ add_form.study_areas.auto_id }}">
@@ -277,7 +277,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="mission"></a>{% trans "Mission" %}</span>
+  <h2><a name="mission"></a>{% trans "Mission" %}:</h2>
   <div class="well">
     <table id="missionformset" class="table table-bordered table-striped">
       <thead>
@@ -315,7 +315,7 @@
     </p>
   </div>
 
-  <span class="label"><a name="languages"></a>{% trans "Languages" %}</span>
+  <h2><a name="languages"></a>{% trans "Languages" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.languages.errors %}error{% endif %}">
       <label for="{{ add_form.languages.auto_id }}">
@@ -339,7 +339,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="system_information"></a>{% trans "System Information" %}</span>
+  <h2><a name="system_information"></a>{% trans "System Information" %}:</h2>
   <div class="well">
 
     <div class="control-group {% if add_form.national_code.errors %}error{% endif %}">
@@ -434,7 +434,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="web_of_science"></a>{% trans "Web of Science" %}</span>
+  <h2><a name="web_of_science"></a>{% trans "Web of Science" %}:</h2>
   <div class="well">
       <label>{% trans "Indexed at:" %}</label>
       <label class="checkbox inline">
@@ -455,7 +455,7 @@
       </div>
   </div>
 
-  <span class="label"><a name="license"></a>{% trans "Licenses" %}</span>
+  <h2><a name="license"></a>{% trans "Licenses" %}:</h2>
   <div class="well">
 
     <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
@@ -483,9 +483,9 @@
     </div>
   </div>
 
-  <span class="label"><a name="formal_information"></a>{% trans "Formal Information" %}</span>
+  <h2><a name="formal_information"></a>{% trans "Formal Information" %}:</h2>
   <div class="well">
-    <table class="table table-bordered table-striped" sstyle="width:100%">
+    <table class="table table-bordered table-striped">
       <thead>
         <tr>
           <td>
@@ -617,7 +617,7 @@
     </table>
   </div>
 
-  <span class="label"><a name="publisher"></a>{% trans "Publisher" %}</span>
+  <h2><a name="publisher"></a>{% trans "Publisher" %}:</h2>
   <div class="well">
 
     <div class="control-group {% if add_form.publisher_name.errors %}error{% endif %}">
@@ -665,7 +665,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="sponsors"></a>{% trans "Sponsors" %}</span>
+  <h2><a name="sponsors"></a>{% trans "Sponsors" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.sponsor.errors %}error{% endif %}">
       <label for="{{ add_form.sponsor.auto_id }}">
@@ -686,7 +686,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="editor"></a>{% trans "Editor" %}</span>
+  <h2><a name="editor"></a>{% trans "Editor" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.editor_name.errors %}error{% endif %}">
       <label for="{{ add_form.editor_name.auto_id }}">
@@ -788,7 +788,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="social_network"></a>{% trans "Social Network" %}</span>
+  <h2><a name="social_network"></a>{% trans "Social Network" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.twitter_user.errors %}error{% endif %}">
       <label for="{{ add_form.twitter_user.auto_id }}">
@@ -803,7 +803,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="further_information"></a>{% trans "Further Information" %}</span>
+  <h2><a name="further_information"></a>{% trans "Further Information" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.notes.errors %}error{% endif %}">
       <label for="{{ add_form.notes.auto_id }}">
@@ -818,7 +818,7 @@
     </div>
   </div>
 
-  <span class="label"><a name="images"></a>{% trans "Journal Images" %}</span>
+  <h2><a name="images"></a>{% trans "Journal Images" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.cover.errors %}error{% endif %}">
       <label for="{{ add_form.cover.auto_id }}">
@@ -847,7 +847,10 @@
           {% if has_cover_url %}
             <img src="{{ has_cover_url }}" />
           {% else %}
-            {% trans "This journal does not have a cover" %}
+            <div class="alert alert-info">
+              <i class="icon-info-sign"></i>
+              {% trans "This journal does not have a cover" %}
+            </div>
           {% endif %}
       </div>
     </div>
@@ -878,7 +881,10 @@
           {% if has_logo_url %}
             <img src="{{ has_logo_url }}" />
           {% else %}
-            {% trans "This journal does not have a logomarca" %}
+            <div class="alert alert-info">
+              <i class="icon-info-sign"></i>
+              {% trans "This journal does not have a logomarca" %}
+            </div>
           {% endif %}
       </div>
     </div>
@@ -886,18 +892,18 @@
 
   <div class="row-fluid">
       <input
-        class="btn btn-primary"
+        class="btn btn-success pull-right"
         name="submit"
         type="submit"
         value="{% trans "save" %}" />
       <input
-        class="btn btn-warning"
+        class="btn btn-danger"
         type="reset"
         value="{% trans "cancel" %}"
         onclick="javascript: window.history.back()" />
       {% if is_new %}
       <input
-        class="btn btn-large btn-primary"
+        class="btn btn-large btn-success"
         name="pend"
         style="line-height: 1; position: fixed; bottom: 10px; right: 19px;"
         type="submit"
