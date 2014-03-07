@@ -42,7 +42,10 @@
     {% empty %}
     <tr>
       <td colspan="4">
-        {% trans 'There are no editors to manage this journal' %}
+        <div class="alert alert-info">
+          <i class="icon-info-sign"></i>
+          {% trans 'There are no editors to manage this journal' %}
+        </div>
       </td>
     </tr>
     {% endfor %}

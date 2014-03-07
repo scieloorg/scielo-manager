@@ -89,7 +89,7 @@
             <div class="input-append">
               <form id="search-form" action="" method="get">
                 <div class="btn-group">
-                  <input id="search_input" type="text" class="span3" placeholder="{% trans 'Search' %}" name="q" value="{{request.GET.q}}">
+                  <input id="search_input" type="text" class="span2" placeholder="{% trans 'Search' %}" name="q" value="{{request.GET.q}}">
 
                   <button class="btn dropdown-toggle" data-toggle="dropdown">
                     <i class="icon-search"></i>
@@ -116,24 +116,28 @@
           <!-- COLLECTION -->
           {% if perms.journalmanager.list_collection and user.get_profile %}
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-active-collection="{{ user.get_profile.get_default_collection.name }}">
                 {{ user.get_profile.get_default_collection }}
                 <b class="caret"></b>
               </a>
               <ul class="dropdown-menu">
                 <li class="active">
-                  <a href="{% url collection.edit user.get_profile.get_default_collection.pk %}">
+                  <a href="{% url collection.edit user.get_profile.get_default_collection.pk %}" data-edit-collection="{{ user.get_profile.get_default_collection.name }}">
                     <i class="icon-pencil"></i> {% trans "Edit" %}
                   </a>
                 </li>
-                <li class="divider"></li>
-                {% for coll in user_collections %}
-                  {% if user.get_profile.get_default_collection.pk != coll.pk %}
-                    <li>
-                      <a href="{% url usercollection.toggle_active user.pk coll.pk %}">{{ coll }}</a>
-                    </li>
-                  {% endif %}
-                {% endfor %}
+                {% if user_collections|length > 1 %}
+                  <li class="divider"></li>
+                  {% for coll in user_collections %}
+                    {% if user.get_profile.get_default_collection.pk != coll.pk %}
+                      <li>
+                        <a href="{% url usercollection.toggle_active user.pk coll.pk %}" data-activate-collection="{{ user.get_profile.get_default_collection.name }}">
+                          {{ coll.name }}
+                        </a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
               </ul>
             </li>
           {% endif %}
@@ -153,7 +157,7 @@
               {% if perms.journalmanager.list_collection %}
                 {% if perms.auth %}
                 <li>
-                  <a href="{% url trash.listing %}">
+                  <a href="{% url trash.listing %}?show=journal">
                     <i class="icon-trash"></i> {% trans 'My Trash' %}
                   </a>
                 </li>
@@ -173,15 +177,6 @@
       </div>
     </div>
   </div>
-  <!--
-  <div class="span6">
-    <ul id="user-collections" class="nav nav-pills" style="margin-bottom: -4px;">
-      {% if perms.journalmanager.list_collection %}
-        {% user_collections_dashboard user_collections user %}
-      {% endif %}
-    </ul>
-  </div>
-  -->
   <div id="main-nav" class="subnav" style="margin-top: 50px;">
       {% block journaltitle %}
         {% if journal.pk %}

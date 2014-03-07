@@ -13,7 +13,8 @@ from journalmanager.tests.tests_forms import _makePermission
 from scielomanager.utils.modelmanagers.helpers import (
     _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
-    _patch_userrequestcontextfinder_settings_teardown
+    _patch_userrequestcontextfinder_settings_teardown,
+    _makeUserProfile,
     )
 
 
@@ -67,6 +68,8 @@ class UserCollectionsSelectorTests(WebTest):
         perm = _makePermission(perm='list_collection', model='collection')
         user.user_permissions.add(perm)
 
+        _makeUserProfile(user)
+
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
 
@@ -74,21 +77,24 @@ class UserCollectionsSelectorTests(WebTest):
         self.assertTrue(collection.name in page)
         # TODO: Test if the collection if marked as active
 
-    def test_toggle_active_collection_unavailable_for_users_with_a_single_collection(self):
+    def test_active_collection_for_user_with_a_single_collection(self):
         user = auth.UserF(is_active=True)
         perm = _makePermission(perm='list_collection', model='collection')
         user.user_permissions.add(perm)
+        _makeUserProfile(user)
 
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
 
         page = self.app.get(reverse('index'), user=user)
-        self.assertIn('<li class="disabled" id="edit-brasil">', page)
+        self.assertIn('data-active-collection="%s"' % collection.name, page)
 
-    def test_toggle_active_collection_available_for_users_with_many_collections(self):
+    def test_link_to_activate_collection_available_for_users_with_many_collections(self):
         user = auth.UserF(is_active=True)
         perm = _makePermission(perm='list_collection', model='collection')
         user.user_permissions.add(perm)
+
+        _makeUserProfile(user)
 
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.make_default_to_user(user)
@@ -96,8 +102,7 @@ class UserCollectionsSelectorTests(WebTest):
         collection2.add_user(user)
 
         page = self.app.get(reverse('index'), user=user)
-
-        self.assertIn('activate-chile', page)
+        self.assertIn('/toggle_active_collection/%s' % collection2.pk, page)
 
 
 class UserAreasSelectorTests(WebTest):

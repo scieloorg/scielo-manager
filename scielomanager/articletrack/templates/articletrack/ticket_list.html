@@ -8,7 +8,7 @@
 
 <div class="row-fluid show-grid">
   <div class="span10">
-    <h4>{% trans 'List of Tickets' %}</h4>
+    <h4>{% trans 'List of Tickets' %}:</h4>
   </div>
   <div class="2" style="text-align:right; margin-bottom:20px;">
     {% simple_pagination tickets %}
@@ -54,9 +54,14 @@
       </td>
     </tr>
     {% empty %}
-    <tr>
-      <td colspan="5">{% trans 'There are no items.' %}</td>
-    </tr>
+      <tr>
+        <td colspan="5">
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans 'There are no items.' %}
+          </div>
+        </td>
+      </tr>
     {% endfor %}
   <tbody>
 </table>

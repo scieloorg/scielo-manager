@@ -20,7 +20,7 @@
         {% endif %}
         {% if perms.journalmanager.list_pressrelease %}
         <li {% if page == 'press_release' %}class="active activedash" {% endif %}>
-          <a href="{% url prelease.index journal_id %}">Press Releases</a>
+          <a href="{% url prelease.index journal_id %}">{% trans "Press Releases" %}</a>
         </li>
         {% endif %}
         {% if perms.journalmanager.change_journalpublicationevents %}

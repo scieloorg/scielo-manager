@@ -70,7 +70,7 @@
                     <li class="ui-state-default" id="num_{{ num.id }}">
                       <a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a>
                       {% flag 'articletrack' %}
-                        <a href="{% url article.index num.id %}">article</a>
+                        <a href="{% url article.index num.id %}">{% trans "article" %}</a>
                       {% endflag %}
                     </li>
                   {% endif %}

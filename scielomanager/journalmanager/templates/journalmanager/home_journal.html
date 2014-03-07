@@ -9,7 +9,7 @@
 {% block content %}
 {{block.super}}
   {% if perms.journalmanager.change_pendedform %}
-    <div class="span4 well">
+    <div class="span6 well">
       <table id="drafts" class="table table-condensed">
         <thead>
           <th>{% trans 'Drafts' %}<th>
@@ -34,7 +34,14 @@
             </td>
           <tr>
           {% empty %}
-          <tr><td>{% trans 'There are no items.' %}</td></tr>
+          <tr>
+            <td>
+              <div class="alert alert-info">
+                <i class="icon-info-sign"></i>
+                {% trans 'There are no items.' %}
+              </div>
+            </td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
@@ -66,7 +73,12 @@
         </tr>
         {% empty %}
         <tr>
-          <td>{% trans 'There are no items.' %}</td>
+          <td>
+            <div class="alert alert-info">
+              <i class="icon-info-sign"></i>
+              {% trans 'There are no items.' %}
+            </div>            
+          </td>
         </tr>
         {% endfor %}
       </tbody>

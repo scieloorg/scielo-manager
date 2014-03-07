@@ -21,9 +21,14 @@
       </td>
     </tr>
     {% empty %}
-    <tr>
-      <td colspan="5">{% trans 'There are no items.' %}</td>
-    </tr>
+      <tr>
+        <td colspan="5">
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans 'There are no items.' %}
+          </div>
+        </td>
+      </tr>
     {% endfor %}
   <tbody>
 </table>

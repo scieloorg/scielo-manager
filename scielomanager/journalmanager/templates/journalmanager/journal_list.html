@@ -84,37 +84,37 @@
   </thead>
   <tbody>
     {% for journal in objects_journal.object_list %}
-    <tr id="{{ journal.pk }}">
-      <td>
-        <input type="checkbox" name="action" value="{{ journal.id }}">
-      </td>
-      <td>
-        <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
-              data-original-title="{{ journal.pub_status|capfirst }}"
-              rel="tooltip"></span>
-        {% if perms.journalmanager.list_journal %}
-          <a href="{% url journal.dash journal.pk %}"
-             class="tip-bottom"
-             data-original-title="{{ journal.title }}"
-             rel="tooltip">
-            {{ journal.title_iso }}
-          </a>
-        {% else %}
-          {{ journal.title }}
-        {% endif %}
-      </td>
-      <td>{{ journal.print_issn|default:"n.a." }}</td>
-      <td>{{ journal.eletronic_issn|default:"n.a." }}</td>
-    </tr>
+      <tr id="{{ journal.pk }}">
+        <td>
+          <input type="checkbox" name="action" value="{{ journal.id }}">
+        </td>
+        <td>
+          <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
+                data-original-title="{{ journal.pub_status|capfirst }}"
+                rel="tooltip"></span>
+          {% if perms.journalmanager.list_journal %}
+            <a href="{% url journal.dash journal.pk %}"
+               class="tip-bottom"
+               data-original-title="{{ journal.title }}"
+               rel="tooltip">
+              {{ journal.title_iso }}
+            </a>
+          {% else %}
+            {{ journal.title }}
+          {% endif %}
+        </td>
+        <td>{{ journal.print_issn|default:"n.a." }}</td>
+        <td>{{ journal.eletronic_issn|default:"n.a." }}</td>
+      </tr>
     {% empty %}
-    <tr>
-      <td colspan="5">
-        <div class="alert alert-info">
-          <i class="icon-info-sign"></i>
-          {% trans 'There are no items.' %}
-        </div>
-      </td>
-    </tr>
+      <tr>
+        <td colspan="5">
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans 'There are no items.' %}
+          </div>
+        </td>
+      </tr>
     {% endfor %}
   <tbody>
   </table>
