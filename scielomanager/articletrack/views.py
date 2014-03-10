@@ -70,7 +70,7 @@ def notice_detail(request, checkin_id):
 
     objects = get_paginated(notices, request.GET.get('page', 1))
 
-    tickets = models.Ticket.userobjects.active()
+    tickets = checkin.article.tickets.all()
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
 
