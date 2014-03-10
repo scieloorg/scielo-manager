@@ -79,7 +79,7 @@ class Ticket(caching.base.CachingMixin, models.Model):
     author = models.ForeignKey(User, related_name='tickets')
     title = models.CharField(_("Title"), max_length=256)
     message = models.TextField(_("Message"))
-    article = models.ForeignKey(Article, related_name='articles')
+    article = models.ForeignKey(Article, related_name='tickets')
 
     class Meta:
         verbose_name = _(u'Ticket')
