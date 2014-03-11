@@ -29,6 +29,7 @@
       <li><a href="#notices" role="menuitem"><i class="icon-volume-up"></i> {% trans "Notices" %}</a></li>
       <li><a href="#tickets" role="menuitem"><i class="icon-list"></i> {% trans "Related tickets" %}</a></li>
       <li><a href="#files" role="menuitem"><i class="icon-file"></i> {% trans "Files" %}</a></li>
+      <li><a href="#previous" role="menuitem"><i class="icon-backward"></i> {% trans "Previous Attempts" %}</a></li>
     </ul>
   </div>
 </div>
@@ -38,6 +39,7 @@
 
     <div class="page-header">
       <h2><small>{% trans "Article" %}:</small> {{ checkin.article.article_title }}</h2>
+      <h2><small>{% trans "Package" %}:</small> {{ checkin.package_name }}</h2>
     </div>
     <div class="row-fluid show-grid">
       <div class="span6 well">
@@ -95,7 +97,9 @@
         {{ notice.stage }}
       </td>
       <td>
-        {{ notice.status }}
+        <span class="label label-{% trans_status notice.status to_label=True%}">
+          {{ notice.status }}
+        </span>
       </td>
       <td>
         {{ notice.message }}
@@ -224,6 +228,47 @@
     {% endfor %}
   <tbody>
 </table>
+
+<div class="row-fluid show-grid">
+  <div class="span12">
+    <a name="previous"><!-- ANCHOR FROM MENU --></a><br>
+    <h3>{% trans 'Previous attempts' %}:</h3>
+  </div>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>{% trans "Uploaded at" %}:</th>
+      <th>{% trans "Error Level" %}:</th>
+      <th class="span1">&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for check in checkin.article.checkins.all|dictsort:"uploaded_at" %}
+      <tr {% if check.pk == checkin.pk %}class="current_attempt"{% endif %}>
+        <td>{{ forloop.revcounter }}</td>
+        <td>
+          {{ check.created_at|date:"d/m/Y - H:i"  }}
+          {% if check.pk == checkin.pk %}
+            <span class="label">{% trans "current" %}</span>
+          {% endif %}
+        </td>
+        <td>
+          <span class="label label-{% trans_status check.get_error_level to_label=True %}">
+            {{ check.get_error_level }}
+          </span>
+        </td>
+        <td>
+          <a href="{% url notice_detail check.pk %}" class="btn btn-mini btn">{% trans "Details" %}</a>
+        </td>
+      </tr>
+    {% endfor %}
+  <tbody>
+</table>
+
+
+
 {% endblock %}
 
 {% block extrafooter %}

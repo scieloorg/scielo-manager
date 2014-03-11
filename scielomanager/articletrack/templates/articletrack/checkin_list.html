@@ -1,6 +1,7 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load scielo_common %}
+{% load trans_status %}
 
 {% block page_title %}{% trans "List of Article Check ins" %}{% endblock %}
 
@@ -8,7 +9,7 @@
 
 <div class="row-fluid show-grid">
   <div class="span10">
-    <h3>{% trans 'List of Check-ins by Article' %}</h3>
+    <h3>{% trans 'List of Check-ins by Article' %}:</h3>
   </div>
   <div class="2" style="text-align:right; margin-bottom:20px;">
     {% simple_pagination checkins %}
@@ -19,121 +20,36 @@
 <table class="table table-striped table-condensed">
   <thead>
     <tr>
-      <th class='span1'>&nbsp;</th>
-      <th>{% trans "Article Name" %}:</th>
-      <th>{% trans "Journal Name" %}:</th>
-      <th>{% trans "Issue Label" %}:</th>
+      <th>{% trans "Package" %}</th>
+      <th>{% trans "Article" %}:</th>
+      <th>{% trans "Journal" %}:</th>
+      <th>{% trans "Issue label" %}:</th>
+      <th>{% trans "Most recent upload" %}:</th>
+      <th>{% trans "Error Level" %}:</th>
+      <th class="span1">&nbsp;</th>
     </tr>
   </thead>
   <tbody>
-    
     {% for article in article_list %}
-      
-      {% with article.grouper  as article_obj %}
-        <tr id="primary_row_{{ forloop.counter}}" class="primary_row">
-          <td>
-            <a href="#" class="btn btn-mini show_checkins" data-target-row="{{ forloop.counter }}">
-              <i id='indicator_{{ forloop.counter }}' class="icon-plus"></i>
-            </a>
-          </td>
-          <td>
-            {{ article_obj.article_title|truncatewords:5 }}
-          </td>
-          <td>
-            {{ article_obj.journal_title }}
-          </td>
-          <td>
-            {{ article_obj.issue_label }}
-          </td>
-        </tr>
-        <!-- ROW WITH CHECKIN INFORMATION -->
-        <tr id="secondary_row_{{ forloop.counter }}" class="secondary_row" style='display: none;'>
-          <td>&nbsp;</td>
-          <td colspan='3'>
-            <br>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th class='span1'>{% trans "Id" %}:</th>
-                  <th>{% trans "Package Name" %}:</th>
-                  <th class='span2'>{% trans "Uploaded at" %}:</th>
-                  <th class='span1'>&nbsp;</th>
-                </tr>
-              </thead>
-              <tbody>
-
-                <!-- MOST RECENT ATTEMPT -->
-                <tr class='info'>
-                  <td colspan='4'>
-                    <span class="label label-info">{% trans "Most recent attempt" %}</span>
-                  </td>
-                </tr>
-                <tr class='info'>
-                  {% with article.list|first as checkin %}
-                      
-                    <td>
-                      <a href="{% url notice_detail checkin.pk %}">{{ checkin.pk }}</a>
-                    </td>
-                    <td>{{ checkin.package_name }}</td>
-                    <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
-                    <td>
-                      <a href="{% url notice_detail checkin.pk %}" class="btn btn-mini btn">{% trans "Details" %}</a>
-                    </td>
-
-                  {% endwith %}
-                </tr>
-
-                {% if article.list|slice:"2:"|length > 0 %}
-                  
-                  <!-- PREVIOUS CHECKINS -->
-                  <tr>
-                    <td colspan='4'>
-                      <span class="label">{% trans "Previous attempts" %}</span>
-                    </td>
-                  </tr>
-                  {% for checkin in article.list|slice:"1:" %}
-                    <tr>
-                      <td>
-                        <a href="{% url notice_detail checkin.pk %}">{{ checkin.pk }}</a>
-                      </td>
-                      <td>{{ checkin.package_name }}</td>
-                      <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
-                      <td>
-                        <a href="{% url notice_detail checkin.pk %}" class="btn btn-mini btn">{% trans "Details" %}</a>
-                      </td>
-                    </tr>
-                  {% empty %}
-                    <tr>
-                      <td colspan='4'>
-                        <em>{% trans "There are no previous attempts" %}</em>
-                      </td>
-                    </tr>
-                  {% endfor %}
-                {% endif %}
-              </tbody>
-            </table>
-
-          </td>
-        </tr>
+      {% with article.list|first as checkin %}
+      <tr>
+        <td>{{ checkin.package_name }}</td>
+        <td>{{ checkin.article.article_title|truncatewords:5 }}</td>
+        <td>{{ checkin.article.journal_title }}</td>
+        <td>{{ checkin.article.issue_label }}</td>
+        <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
+        <td>
+          <span class="label label-{% trans_status checkin.get_error_level to_label=True %}">
+            {{ checkin.get_error_level }}
+          </span>
+        </td>
+        <td>
+          <a href="{% url notice_detail checkin.pk %}" class="btn btn-mini btn">{% trans "Details" %}</a>
+        </td>
+      </tr>
       {% endwith %}
-
     {% endfor %}
-
   </tbody>
 </table>
 
 {% endblock %}
-
-{% block extrafooter %}
-  <script type="text/javascript">
-      $(document).ready(function(){
-        $('a.show_checkins','.primary_row').click(function (event) {
-          event.preventDefault();
-          var row_number = $(this).data('target-row');
-          $('#indicator_' + row_number).toggleClass("icon-plus icon-minus");
-          $('#secondary_row_' + row_number).toggle();
-        });
-      });
-  </script>
-{% endblock %}
-

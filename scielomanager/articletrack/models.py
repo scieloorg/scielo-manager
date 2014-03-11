@@ -46,6 +46,15 @@ class Checkin(caching.base.CachingMixin, models.Model):
         ordering = ['-created_at']
         permissions = (("list_checkin", "Can list Checkin"),)
 
+    @property
+    def get_error_level(self):
+        if self.notices.filter(status__iexact="error").count() > 0:
+            return "error"
+        elif self.notices.filter(status__iexact="warning").count() > 0:
+            return "warning"
+        else:
+            return "ok"
+
 
 class Article(caching.base.CachingMixin, models.Model):
     # Custom Managers

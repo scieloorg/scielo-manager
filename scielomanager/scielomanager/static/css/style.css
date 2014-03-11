@@ -324,4 +324,4 @@ table._listings h4 {
   border: 2px solid #DDD;
   border-top: none;
 }
-
+.current_attempt { border: 2px solid #CCCCCC;}
