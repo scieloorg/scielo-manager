@@ -17,7 +17,7 @@
 
 <form id="issue-form" method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
-  <span class="label">{% trans "Issue Information" %}</span>
+  <h2>{% trans "Issue Information" %}:</h2>
   <div class="well">
     <table id="titleformset" class="table table-bordered table-striped">
       <tbody>
@@ -234,28 +234,32 @@
 
   </div>
 
-  <span class="label">{% trans "Issue Cover" %}</span>
+  <h2>{% trans "Issue Cover" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.cover.errors %}error{% endif %}">
       <div class="controls">
         {{ add_form.cover }}
       </div>
       <div align="center">
-          {% if has_cover_url %}
-            <img src="{{ has_cover_url }}" />
-          {% else %}
+        {% if has_cover_url %}
+          <img src="{{ has_cover_url }}" />
+        {% else %}
+          <br>
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
             {% trans "This issue does not have a cover, it will use the default journal cover" %}
-          {% endif %}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
   <input
-    class="btn btn-primary"
+    class="btn btn-success pull-right"
     name="submit"
     type="submit"
     value="{% trans 'save' %}" />
   <input
-    class="btn btn-warning"
+    class="btn btn-danger"
     name="reset"
     type="reset"
     value="{% trans 'cancel' %}"

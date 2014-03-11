@@ -9,6 +9,7 @@
 {% block content %}
 {% journaldash_toolbar 'editors' journal user %}
 <div class="alert alert-info">
+  <i class="icon-info-sign"></i>
   {% trans 'The users above are allowed to manage some information about the journal, like: highlights, institucional pages, news, mission, address, etc.'%}
 </div>
 <table class="table table-condensed _listings">
@@ -41,7 +42,10 @@
     {% empty %}
     <tr>
       <td colspan="4">
-        {% trans 'There are no editors to manage this journal' %}
+        <div class="alert alert-info">
+          <i class="icon-info-sign"></i>
+          {% trans 'There are no editors to manage this journal' %}
+        </div>
       </td>
     </tr>
     {% endfor %}

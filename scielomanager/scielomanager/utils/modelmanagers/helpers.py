@@ -61,3 +61,11 @@ def _patch_userrequestcontextfinder_settings_teardown(func):
 
     return wrapper
 
+def _makeUserProfile(user):
+    """
+    Create a UserProfile for the ``user``
+    """
+    from journalmanager.models import UserProfile
+
+    profile = UserProfile(user=user, email=user.email)
+    profile.save()

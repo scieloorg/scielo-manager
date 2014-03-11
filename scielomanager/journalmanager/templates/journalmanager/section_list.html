@@ -50,27 +50,34 @@
       <td>
         <ul class="_actions">
           <li>
-          {% if not item.is_used %}
-            <a href="{% url section.del item.journal.pk item.pk %}"
-               class="btn btn-mini btn-danger">
-          {% else %}
-            <a href="#"
-               class="btn btn-mini btn-danger disabled">
-          {% endif %}
-            {% trans 'Delete' %}</a>
+            {% if not item.is_used %}
+              <a href="{% url section.del item.journal.pk item.pk %}"
+                 class="btn btn-mini btn-danger">
+            {% else %}
+              <a href="#"
+                 class="btn btn-mini btn-danger disabled">
+            {% endif %}
+              {% trans 'Delete' %}
+            </a>
           </li>
         </ul>
       </td>
     </tr>
    {% empty %}
     <tr>
-      <td colspan="2">{% trans 'There are no items.' %}</td>
+      <td colspan="2">
+        <div class="alert alert-info">
+          <i class="icon-info-sign"></i>
+          {% trans 'There are no items.' %}
+        </div>
+      </td>
     </tr>
     {% endfor %}
   <tbody>
 </table>
 <div class="alert alert-info">
   <p>
+    <i class="icon-info-sign"></i>
     {% trans 'Hey, you can not remove the sections that are being used by at least one issue of this journal.' %}
   </p>
 </div>

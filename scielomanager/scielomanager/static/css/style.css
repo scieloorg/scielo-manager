@@ -324,4 +324,9 @@ table._listings h4 {
   border: 2px solid #DDD;
   border-top: none;
 }
-
+.checkbox_column {
+    width: 20px;
+}
+.first-tab-btn-group {
+    margin-right: 10px
+}

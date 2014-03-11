@@ -3,6 +3,8 @@
 {% load static %}
 {% load user_collections_dashboard %}
 {% load waffle_tags %}
+{% load menu_active %}
+{% load user_avatar %}
 
 {% block base_struture %}
 <div class="container-fluid">
@@ -19,38 +21,38 @@
       <div id="global-nav" class="nav-collapse collapse">
         <ul id="site-areas" class="nav">
           {% if perms.journalmanager.list_journal %}
-          <li id="journals-link">
-            <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
-          </li>
+            <li id="journals-link" class="{% active '/journal/$' %}">
+              <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
+            </li>
           {% endif %}
           {% flag 'articletrack' %}
-          <li id="articletrack-link">
-            <a href="{% url checkin_index %}">{% trans 'Articles in submission' %}</a>
-          </li>
+            <li id="articletrack-link" class="{% active '/arttrack/' %}">
+              <a href="{% url checkin_index %}">{% trans 'Articles in submission' %}</a>
+            </li>
           {% endflag %}
           {% if perms.journalmanager.list_sponsor %}
-          <li id="sponsors-link">
-            <a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
-          </li>
+            <li id="sponsors-link" class="{% active '/journal/sponsor/' %}">
+              <a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
+            </li>
           {% endif %}
           {% if is_manager_of_default_collection %}
             {% if perms.auth.change_user %}
-            <li id="users-link">
-              <a href="{% url user.index %}">{% trans 'Users' %}</a>
-            </li>
+              <li id="users-link" class="{% active '/journal/user/' %}">
+                <a href="{% url user.index %}">{% trans 'Users' %}</a>
+              </li>
             {% endif %}
           {% endif %}
           {% flag 'editor_manager' %}
             {% if perms.journalmanager.list_editor_journal %}
-              <li id="myjournals-link">
+              <li id="myjournals-link" class="{% active 'editor_journal.index' %}">
                 <a href="{% url editor_journal.index %}">{% trans 'My Journals' %}</a>
               </li>
             {% endif %}
           {% endflag %}
           {% if perms.journalmanager.list_journal and perms.journalmanager.list_issue %}
-            <li id="downloads-link" class="dropdown">
+            <li id="downloads-link" class="dropdown {% active '/export/' %}">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                Downloads
+                {% trans "Download" %}
                 <b class="caret"></b>
               </a>
               <ul class="dropdown-menu">
@@ -81,25 +83,92 @@
             {% endif %}
           {% endif %}
         </ul>
+
+        {% if perms.journalmanager.list_journal or perms.journalmanager.list_sponsor %}
+          <div class="span" style="margin: 0;">
+            <div class="input-append">
+              <form id="search-form" action="" method="get">
+                <div class="btn-group">
+                  <input id="search_input" type="text" class="span2" placeholder="{% trans 'Search' %}" name="q" value="{{request.GET.q}}">
+
+                  <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <i class="icon-search"></i>
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu pull-right">
+                    {% if perms.journalmanager.list_journal %}
+                      <li>
+                        <a class="search_filter" href="{% url journal.index %}">{% trans 'Journals' %}</a>
+                      </li>
+                    {% endif %}
+                    {% if perms.journalmanager.list_sponsor %}
+                      <li>
+                        <a class="search_filter" href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </form>
+            </div>
+          </div>
+        {% endif %}
         <ul class="nav pull-right">
+          <!-- COLLECTION -->
+          {% if perms.journalmanager.list_collection and user.get_profile %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-active-collection="{{ user.get_profile.get_default_collection.name }}">
+                {{ user.get_profile.get_default_collection }}
+                <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu">
+                <li class="active">
+                  <a href="{% url collection.edit user.get_profile.get_default_collection.pk %}" data-edit-collection="{{ user.get_profile.get_default_collection.name }}">
+                    <i class="icon-pencil"></i> {% trans "Edit" %}
+                  </a>
+                </li>
+                {% if user_collections|length > 1 %}
+                  <li class="divider"></li>
+                  {% for coll in user_collections %}
+                    {% if user.get_profile.get_default_collection.pk != coll.pk %}
+                      <li>
+                        <a href="{% url usercollection.toggle_active user.pk coll.pk %}" data-activate-collection="{{ user.get_profile.get_default_collection.name }}">
+                          {{ coll.name }}
+                        </a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            </li>
+          {% endif %}
+          <!-- COLLECTION -->
           <li id="nav-user" class="dropdown">
             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-              <img style="vertical-align:top;" src="{{user.get_profile.avatar_url}}" alt="Gravatar">
-                {{user.email}}
+              <img class="img-rounded" src="{% user_avatar_url user 'small' %}" alt="Gravatar">
               <b class="caret"></b>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" role="menu">
               <li>
                 <a href="{% url journalmanager.my_account %}">
-                  <i class="icon-edit"></i>
-                    {% trans 'user settings' %}
+                  <i class="icon-user"></i> {{user.email}}
                 </a>
               </li>
+              <!-- TRASH CAN -->
+              {% if perms.journalmanager.list_collection %}
+                {% if perms.auth %}
+                <li>
+                  <a href="{% url trash.listing %}?show=journal">
+                    <i class="icon-trash"></i> {% trans 'My Trash' %}
+                  </a>
+                </li>
+                {% endif %}
+              {% endif %}
+              <!-- /TRASH CAN -->
               <li class="divider"></li>
               <li>
                 <a href="{% url journalmanager.user_logout %}">
                   <i class="icon-off"></i>
-                    {% trans 'logout' %}
+                  {% trans 'Logout' %}
                 </a>
               </li>
             </ul>
@@ -108,56 +177,7 @@
       </div>
     </div>
   </div>
-
   <div id="main-nav" class="subnav" style="margin-top: 50px;">
-    <ul id="user-collections" class="nav nav-pills" style="margin-bottom: -4px;">
-      {% if perms.journalmanager.list_collection %}
-        {% user_collections_dashboard user_collections user %}
-        {% if perms.auth %}
-        <li>
-          <a href="{% url trash.listing %}"
-             class="btn tip-bottom"
-             rel="tooltip"
-             data-original-title="{% trans 'Trashed items' %}">
-          <i class="icon-trash"></i>
-          {% trans 'Trash' %}
-          </a>
-        </li>
-        {% endif %}
-      {% endif %}
-      {% if perms.journalmanager.list_journal or perms.journalmanager.list_sponsor %}
-        <li class="pull-right">
-          <form id="search-form" action="" method="get">
-            <select id="list_model" class="list-model" name="list_model">
-              {% if perms.journalmanager.list_journal %}
-                <option {% if 'journal' in request.path %}selected{% endif %}
-                        value="{% url journal.index %}">
-                  {% trans 'Journals' %}
-                </option>
-              {% endif %}
-              {% if perms.journalmanager.list_sponsor %}
-                <option {% if 'sponsor' in request.path %}selected{% endif %}
-                        value="{% url sponsor.index %}">
-                  {% trans 'Sponsors' %}
-                </option>
-              {% endif %}
-            </select>
-            <input class="input-search"
-               placeholder="Search"
-               name="q"
-               value="{{request.GET.q}}"/>
-            <button class="btn"
-                style="vertical-align: 4px;"
-                type="submit">
-            <i class="icon-search icon-black"></i>
-            {% trans 'Search' %}
-            </button>
-          </form>
-        </li>
-        {% endif %}
-    </ul>
-  </div>
-  <div class="span6">
       {% block journaltitle %}
         {% if journal.pk %}
         <h3>{{ journal.collection }}:

@@ -294,6 +294,13 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL',
             'https://secure.gravatar.com'), self.gravatar_id, params)
 
+    @property
+    def get_default_collection(self):
+        """
+            Return the default collection for this user
+        """
+        return Collection.objects.get_default_by_user(self.user)
+
     def save(self, force_insert=False, force_update=False):
         self.user.email = self.email
         self.user.save()

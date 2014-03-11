@@ -5,48 +5,46 @@
 {% block content %}
 
 {% if blocking_users_system_note.title %}
-<div class="alert alert-error">
-  <h4>{% trans 'We are under maintenance!' %}</h4>
-  <p>{{ blocking_users_system_note.title }}: {{ blocking_users_system_note.description }}</p>
-  {% trans 'We expect to be back at' %} <strong>{{ blocking_users_system_note.end_at }}</strong>
-</div>
-{% else %}
-<div class="login">
-
-  {% if form.errors %}
-    <div class="alert alert-danger">
-      {% trans "Sorry, that's not a valid username or password" %}
-    </div>
-  {% endif %}
-  <legend>{% trans 'Sign in' %}</legend>
-  <form action="" method="post" style="margin: 0 0 3px;">
-    <fieldset>
-      <input type="hidden" value="{{ next|escape }}" name="next" />
-      {% csrf_token %}
-      <div class="control-group">
-        <label class="control-label"
-               for="{{ form.username.auto_id }}">{% trans 'Username or email' %}</label>
-          <div class="controls">
-            {{ form.username|attr:"class:span4"|attr:"maxlength:75" }}
-          </div>
-      </div>
-     <div class="control-group">
-     <label class="control-label"
-            for="{{ form.password.auto_id }}">{% trans form.password.label %}</label>
-        <div class="controls">
-            {{ form.password|attr:"class:span4" }}
-        </div>
-      </div>
-      <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />
-    </fieldset>
-  </form>
-
-  <div style="text-align: right;">
-    <a href="{% url registration.password_reset %}"
-       title="{% trans 'Forgot your password?' %}">
-      {% trans 'Forgot your password?' %}
-    </a>
+  <div class="alert alert-error">
+    <h4>{% trans 'We are under maintenance!' %}</h4>
+    <p>{{ blocking_users_system_note.title }}: {{ blocking_users_system_note.description }}</p>
+    {% trans 'We expect to be back at' %} <strong>{{ blocking_users_system_note.end_at }}</strong>
   </div>
-</div>
+{% else %}
+  <div class="login">
+
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        {% trans "Sorry, that's not a valid username or password" %}
+      </div>
+    {% endif %}
+    <legend>{% trans 'Sign in' %}</legend>
+    <form action="" method="post" style="margin: 0 0 3px;">
+      <fieldset>
+        <input type="hidden" value="{{ next|escape }}" name="next" />
+        {% csrf_token %}
+        <div class="control-group">
+          <label class="control-label"
+                 for="{{ form.username.auto_id }}">{% trans 'Username or email' %}</label>
+            <div class="controls">
+              {{ form.username|attr:"class:span4"|attr:"maxlength:75" }}
+            </div>
+        </div>
+       <div class="control-group">
+       <label class="control-label"
+              for="{{ form.password.auto_id }}">{% trans form.password.label %}</label>
+          <div class="controls">
+              {{ form.password|attr:"class:span4" }}
+          </div>
+        </div>
+        <input class="btn btn-primary" type="submit" value="{% trans 'Log in' %}" />
+        <a class="pull-right" href="{% url registration.password_reset %}"
+           title="{% trans 'Forgot your password?' %}">
+          {% trans 'Forgot your password?' %}
+        </a>
+      </fieldset>
+    </form>
+
+  </div>
 {% endif %}
 {% endblock %}
