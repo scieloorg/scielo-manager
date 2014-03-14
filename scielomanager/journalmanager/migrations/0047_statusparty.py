@@ -18,8 +18,6 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
 
-        import pdb; pdb.set_trace()
-
         for jpe in orm.JournalPublicationEvents.objects.all():
             jpe.journal = orm.StatusParty.objects.get(publication_status=jpe.pk).journal
 
@@ -28,8 +26,6 @@ class Migration(SchemaMigration):
                 journal.collection = orm.StatusParty.objects.filter(journal=journal.pk)[0].collection
             except:
                 print u"WARNING: Journal, {0}, without collection!".format(journal.title)
-
-        orm.StatusParty.objects.all().delete()
 
     models = {
         'auth.group': {
