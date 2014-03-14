@@ -473,6 +473,12 @@ class StudyArea(caching.base.CachingMixin, models.Model):
         return self.study_area
 
 
+class StatusParty(caching.base.CachingMixin, models.Model):
+    publication_status = models.ForeignKey('JournalPublicationEvents', related_name='statusparty_publication_status')
+    collection = models.ForeignKey(Collection, related_name='statusparty_collection')
+    journal = models.ForeignKey('Journal', related_name='statusparty_journal')
+
+
 class Journal(caching.base.CachingMixin, models.Model):
     """
     Represents a Journal that is managed by one SciELO Collection.
@@ -493,7 +499,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
     use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
-    collection = models.ForeignKey('Collection', verbose_name=_('Collection'), related_name='journals')
+    collection = models.ManyToManyField(Collection, related_name='journal_collection', through='StatusParty', null=True, blank=True, )
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=64, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
@@ -671,7 +677,6 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
-    journal = models.ForeignKey(Journal, editable=False, related_name='status_history')
     status = models.CharField(_('Journal Status'), max_length=16,)
     reason = models.TextField(_('Reason'), blank=True, default="",)
     created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
