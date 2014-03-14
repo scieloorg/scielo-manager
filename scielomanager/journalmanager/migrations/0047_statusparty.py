@@ -17,15 +17,7 @@ class Migration(SchemaMigration):
             statusparty.save()
 
     def backwards(self, orm):
-
-        for jpe in orm.JournalPublicationEvents.objects.all():
-            jpe.journal = orm.StatusParty.objects.get(publication_status=jpe.pk).journal
-
-        for journal in orm.Journal.objects.all():
-            try:
-                journal.collection = orm.StatusParty.objects.filter(journal=journal.pk)[0].collection
-            except:
-                print u"WARNING: Journal, {0}, without collection!".format(journal.title)
+        pass
 
     models = {
         'auth.group': {
