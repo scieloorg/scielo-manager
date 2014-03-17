@@ -333,8 +333,8 @@ def ajx_set_attempt_proceed_to_checkout(request, attempt_id):
     View function responsible for mark an attempt to checkout process
     """
 
-    # if not request.is_ajax():
-    #     return HttpResponse(status=400)
+    if not request.is_ajax():
+        return HttpResponse(status=400)
 
     balaio_rcp = BalaioRPC()
 
