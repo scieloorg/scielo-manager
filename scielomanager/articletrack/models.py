@@ -57,6 +57,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
 
 class Article(caching.base.CachingMixin, models.Model):
+
     # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.ArticleManager()
@@ -79,6 +80,7 @@ class Article(caching.base.CachingMixin, models.Model):
 
 
 class Ticket(caching.base.CachingMixin, models.Model):
+
     # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.TicketManager()

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 import urllib2
 import json
 from django.conf import settings
@@ -65,7 +65,7 @@ class BalaioAPI(object):
 
     def _open(self, url):
         try:
-            response = urllib2.urlopen(url, timeout=settings.API_BALAIO_DEFAULT_TIMEOUT)        
+            response = urllib2.urlopen(url, timeout=settings.API_BALAIO_DEFAULT_TIMEOUT)
         except urllib2.URLError as e:
             raise ValueError(e)
 
