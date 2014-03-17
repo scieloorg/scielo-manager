@@ -307,8 +307,7 @@
       $.get('{% url ajx.ajx_verify_status_rpc %}')
         .done(function(data){
           if (!data.rpc_status){
-            $('#attempt_scheduled').css('display', 'block');
-            $('#attempt_scheduled').addClass('alert alert-error').html('<i class="icon-warning-sign"></i> {% trans "Service to accept attempt is unavalable" %}')
+            $('#attempt_scheduled').css('display', 'block').addClass('alert alert-error').html('<i class="icon-warning-sign"></i> {% trans "Service to accept attempt is unavalable. Please try again later." %}')
             $('#button_accept').css('display', 'none');
           }
         });
@@ -317,16 +316,13 @@
         $.get('{% url ajx.ajx_set_attempt_proceed_to_checkout checkin.pk %}')
           .done(function(data){
             if (!data){
-              $('#attempt_scheduled').css('display', 'block');
-              $('#attempt_scheduled').addClass('alert alert-warning').html('<i class="icon-warning-sign"></i> {% trans "This attempt connot be set to checkout" %}')
+              $('#attempt_scheduled').css('display', 'block').addClass('alert alert-warning').html('<i class="icon-warning-sign"></i> {% trans "This attempt connot be set to checkout" %}')
             }else{
-              $('#attempt_scheduled').css('display', 'block');
-              $('#attempt_scheduled').addClass('alert alert-info').html('<i class="icon-info-sign"></i> {% trans "Attempt scheduled to checkout" %}')
+              $('#attempt_scheduled').css('display', 'block').addClass('alert alert-info').html('<i class="icon-info-sign"></i> {% trans "Attempt scheduled to checkout" %}')
             }
           })
           .fail(function(){
-            $('#attempt_scheduled').css('display', 'block');
-            $('#attempt_scheduled').addClass('alert alert-error').html('<i class="icon-error-sign"></i> {% trans "An unexpected error, this attempt connot set to checkout" %}')
+            $('#attempt_scheduled').css('display', 'block').addClass('alert alert-error').html('<i class="icon-exclamation-sign"></i> {% trans "An unexpected error, this attempt connot set to checkout. Please try again later." %}')
           });
       });
 
