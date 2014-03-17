@@ -307,7 +307,7 @@
       $.get('{% url ajx.ajx_verify_status_rpc %}')
         .done(function(data){
           if (!data.rpc_status){
-            $('#attempt_scheduled').css('display', 'block').addClass('alert alert-error').html('<i class="icon-warning-sign"></i> {% trans "Service to accept attempt is unavalable. Please try again later." %}')
+            $('#attempt_scheduled').css('display', 'block').addClass('alert alert-error').html('<i class="icon-warning-sign"></i> {% trans "Service to accept attempts is unavailable. Please try again later." %}')
             $('#button_accept').css('display', 'none');
           }
         });
