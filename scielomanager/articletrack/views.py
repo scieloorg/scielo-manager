@@ -16,8 +16,7 @@ from django.template.defaultfilters import slugify
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
 from .forms import CommentMessageForm, TicketForm
-from .balaio_api import BalaioAPI
-from .balaio_rpc import BalaioRPC
+from .balaio import BalaioAPI, BalaioRPC
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
