@@ -313,7 +313,7 @@
         });
 
       $('#button_accept').click(function(event){
-        $.get('{% url ajx.ajx_set_attempt_proceed_to_checkout checkin.pk %}')
+        $.get('{% url ajx.ajx_set_attempt_proceed_to_checkout checkin.attempt_ref checkin.pk %}')
           .done(function(data){
             if (!data){
               $('#attempt_scheduled').css('display', 'block').addClass('alert alert-warning').html('<i class="icon-warning-sign"></i> {% trans "This attempt connot be set to checkout" %}')

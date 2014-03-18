@@ -328,7 +328,7 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
 
 
 @login_required
-def ajx_set_attempt_proceed_to_checkout(request, attempt_id):
+def ajx_set_attempt_proceed_to_checkout(request, attempt_id, checkin_id):
     """
     View function responsible for mark an attempt to checkout process
     """
@@ -340,6 +340,14 @@ def ajx_set_attempt_proceed_to_checkout(request, attempt_id):
 
     rpc_response = balaio_rcp.send_request('_rpc/proceed_to_checkout/',
         'proceed_to_checkout', [attempt_id,])
+
+    #if the xmlrpc response is positive, we should store the user who performed
+    #the operation date/time
+    if rpc_response:
+        checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+        checkin.user_accepted_to_checkout = request.user
+        checkin.accepted_at = datetime.datetime.now()
+        checkin.save()
 
     return HttpResponse(json.dumps(rpc_response), mimetype="application/json")
 

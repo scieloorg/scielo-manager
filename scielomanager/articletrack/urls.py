@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     ),
 
     #AJAX
-   url(r'^ajx/ajx1/(?P<attempt_id>\d+)/$', views.ajx_set_attempt_proceed_to_checkout,
+   url(r'^ajx/ajx1/(?P<attempt_id>\d+)/(?P<checkin_id>\d+)/$', views.ajx_set_attempt_proceed_to_checkout,
         name="ajx.ajx_set_attempt_proceed_to_checkout"),
    url(r'^ajx/ajx2/$', views.ajx_verify_status_rpc,
         name="ajx.ajx_verify_status_rpc"),
