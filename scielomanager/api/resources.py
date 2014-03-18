@@ -161,7 +161,7 @@ class JournalResource(ModelResource):
     languages = fields.CharField(readonly=True)
     use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
-    collections = fields.ForeignKey(CollectionResource, 'collection')
+    collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
     pub_status_history = fields.ListField(readonly=True)
