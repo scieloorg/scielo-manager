@@ -273,6 +273,7 @@ class IssueTests(TestCase):
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 2)
 
+
 class LanguageTests(TestCase):
 
     def test_the_unicode_repr_must_be_in_current_language(self):
@@ -286,6 +287,7 @@ class JournalTests(TestCase):
 
     def test_valid_is_editors(self):
         user = auth.UserF()
+
         journal = JournalFactory.create()
 
         journal.editors.add(user)

@@ -89,7 +89,7 @@ class JournalCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         objects_all = self.available(is_available).filter(
-            collection=default_collection).distinct()
+            collections=default_collection).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -104,13 +104,13 @@ class JournalCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         recents = self.filter(
-            collection=default_collection).distinct().order_by('-updated')[:5]
+            collections=default_collection).distinct().order_by('-updated')[:5]
 
         return recents
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            collection=collection)
+            collections=collection)
         return objects_all
 
     def by_issn(self, issn):
@@ -499,10 +499,11 @@ class Journal(caching.base.CachingMixin, models.Model):
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
     use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
-    collection = models.ManyToManyField(Collection, related_name='journal_collection', through='StatusParty', null=True, blank=True, )
-    languages = models.ManyToManyField('Language',)
+    collections = models.ManyToManyField(Collection, related_name='journal_collection', through='StatusParty', null=True, blank=True)
+    statuses = models.ManyToManyField('JournalPublicationEvents', related_name='journal_status', through='StatusParty', null=True, blank=True)
+    languages = models.ManyToManyField('Language')
     national_code = models.CharField(_('National Code'), max_length=64, null=True, blank=True)
-    abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
+    abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages")
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
     editors = models.ManyToManyField(User, related_name='user_editors', null=True, blank=True)
@@ -677,6 +678,7 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
+    #journal = models.ManyToManyField(Journal, related_name='status_journal', through='StatusParty', null=True, blank=True)
     status = models.CharField(_('Journal Status'), max_length=16,)
     reason = models.TextField(_('Reason'), blank=True, default="",)
     created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
@@ -1152,7 +1154,7 @@ class Article(caching.base.CachingMixin, models.Model):
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-@receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
+#@receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
 def journal_pub_status_pre_save(sender, **kwargs):
     """
     Fetch the `pub_status` value from the db before the data is modified.
@@ -1163,7 +1165,7 @@ def journal_pub_status_pre_save(sender, **kwargs):
         return None
 
 
-@receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
+#@receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
 def journal_pub_status_post_save(sender, instance, created, **kwargs):
     """
     Check if the `pub_status` value is new or has been modified.
