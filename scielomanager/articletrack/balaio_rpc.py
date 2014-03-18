@@ -16,12 +16,10 @@ class BalaioRPC(object):
 
         try:
             s.status()
-            _return = True
+            return True
         except socket.error:
             # socket error which mean that services is unavailable
-            _return = False
-
-        return _return
+            return False
 
     def make_connection(self, uri):
         return xmlrpclib.ServerProxy(uri)
