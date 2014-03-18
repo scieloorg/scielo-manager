@@ -22,7 +22,7 @@ from scielomanager.utils.modelmanagers.helpers import (
 class ArticleTests(WebTest):
 
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
@@ -80,7 +80,7 @@ class ArticleTests(WebTest):
 class UserCollectionsSelectorTests(WebTest):
 
     def test_auto_define_a_collection_as_default_when_it_is_the_unique(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
         perm = _makePermission(perm='list_collection', model='collection')
         user.user_permissions.add(perm)
 
@@ -94,7 +94,7 @@ class UserCollectionsSelectorTests(WebTest):
         # TODO: Test if the collection if marked as active
 
     def test_active_collection_for_user_with_a_single_collection(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
         perm = _makePermission(perm='list_collection', model='collection')
         user.user_permissions.add(perm)
         _makeUserProfile(user)
@@ -106,7 +106,7 @@ class UserCollectionsSelectorTests(WebTest):
         self.assertIn('data-active-collection="%s"' % collection.name, page)
 
     def test_link_to_activate_collection_available_for_users_with_many_collections(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
         perm = _makePermission(perm='list_collection', model='collection')
         user.user_permissions.add(perm)
 
@@ -124,7 +124,7 @@ class UserCollectionsSelectorTests(WebTest):
 class UserAreasSelectorTests(WebTest):
 
     def test_logout_button(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
         perm = _makePermission(perm='list_journal', model='journal')
         user.user_permissions.add(perm)
 
@@ -142,7 +142,7 @@ class UserAreasSelectorTests(WebTest):
 class RecentActivitiesTests(WebTest):
 
     def test_mailto_the_user_responsible_for_the_activity(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
         journal = modelfactories.JournalFactory(creator=user)
@@ -160,7 +160,7 @@ class RecentActivitiesTests(WebTest):
 
     @unittest.skip('StatusPary')
     def test_expected_table_row(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
 
@@ -441,7 +441,7 @@ class IndexPageTests(WebTest):
 class UserIndexPageTests(WebTest):
 
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
@@ -459,7 +459,7 @@ class UserIndexPageTests(WebTest):
         self.assertTemplateUsed(response, 'journalmanager/user_list.html')
 
     def test_logged_user_access_users_not_being_manager_of_the_collection(self):
-        user = auth.UserF(is_active=True)
+        user = modelfactories.UserFactory(is_active=True)
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
@@ -474,7 +474,7 @@ class UserIndexPageTests(WebTest):
 class SponsorsListTests(WebTest):
 
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
@@ -493,7 +493,7 @@ class SponsorsListTests(WebTest):
 class IssuesListTests(WebTest):
 
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)

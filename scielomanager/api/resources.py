@@ -192,7 +192,7 @@ class JournalResource(ModelResource):
 
         if 'collection' in filters:
             journals = Journal.objects.filter(
-                collection__name_slug=filters['collection'])
+                collections__name_slug=filters['collection'])
             orm_filters['pk__in'] = journals
 
         if 'pubstatus' in filters:
@@ -224,7 +224,7 @@ class JournalResource(ModelResource):
     def dehydrate_pub_status_history(self, bundle):
         return [{'date': event.created_at,
                 'status': event.status}
-            for event in bundle.obj.status_history.order_by('-created_at').all()]
+            for event in bundle.obj.statuses.order_by('-created_at').all()]
 
     def dehydrate_study_areas(self, bundle):
         return [area.study_area
