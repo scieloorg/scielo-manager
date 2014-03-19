@@ -54,24 +54,24 @@
       <i class="icon-info-sign"></i>
       {% trans 'Be aware of this modification, once it could not be undone.' %}
     </div>
-    <div class="control-group {% if add_form.pub_status.errors %}error{% endif %}">
-      <label for="{{ add_form.pub_status.auto_id }}">
-        <span {% if add_form.pub_status.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.pub_status.label %}
+    <div class="control-group {% if add_form.status.errors %}error{% endif %}">
+      <label for="{{ add_form.status.auto_id }}">
+        <span {% if add_form.status.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.status.label %}
         </span>
       </label>
       <div class="controls">
-        {{ add_form.pub_status }}
+        {{ add_form.status }}
       </div>
     </div>
-    <div class="control-group {% if add_form.pub_status_reason.errors %}error{% endif %}">
-      <label for="{{ add_form.pub_status_reason.auto_id }}">
-        <span {% if add_form.pub_status_reason.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.pub_status_reason.label %}
+    <div class="control-group {% if add_form.reason.errors %}error{% endif %}">
+      <label for="{{ add_form.reason.auto_id }}">
+        <span {% if add_form.reason.field.required %}class="req-field"{% endif %}>
+          {% trans add_form.reason.label %}
         </span>
       </label>
       <div class="controls">
-        {{ add_form.pub_status_reason }}
+        {{ add_form.reason }}
       </div>
     </div>
   </div>

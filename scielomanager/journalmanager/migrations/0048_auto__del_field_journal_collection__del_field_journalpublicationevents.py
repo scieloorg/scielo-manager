@@ -15,6 +15,7 @@ class Migration(SchemaMigration):
         db.delete_column('journalmanager_journalpublicationevents', 'journal_id')
 
     def backwards(self, orm):
+
         pass
 
     models = {
@@ -154,7 +155,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "['title']", 'object_name': 'Journal'},
             'abstract_keyword_languages': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'abstract_keyword_languages'", 'symmetrical': 'False', 'to': "orm['journalmanager.Language']"}),
             'acronym': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
-            'collection': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'journal_collection'", 'to': "orm['journalmanager.Collection']", 'through': "orm['journalmanager.StatusParty']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
+            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'journal_collection'", 'to': "orm['journalmanager.Collection']", 'through': "orm['journalmanager.StatusParty']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
             'copyrighter': ('django.db.models.fields.CharField', [], {'max_length': '254'}),
             'cover': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -208,6 +209,7 @@ class Migration(SchemaMigration):
             'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             'short_title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'db_index': 'True'}),
             'sponsor': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'journal_sponsor'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['journalmanager.Sponsor']"}),
+            'statuses': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'journal_status'", 'to': "orm['journalmanager.JournalPublicationEvents']", 'through': "orm['journalmanager.StatusParty']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
             'study_areas': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'journals_migration_tmp'", 'null': 'True', 'to': "orm['journalmanager.StudyArea']"}),
             'subject_categories': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'journals'", 'null': 'True', 'to': "orm['journalmanager.SubjectCategory']"}),
             'subject_descriptors': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
@@ -231,7 +233,7 @@ class Migration(SchemaMigration):
             'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'reason': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
+            'reason': ('django.db.models.fields.TextField', [], {}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
         },
         'journalmanager.journaltitle': {

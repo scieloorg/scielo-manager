@@ -1,6 +1,5 @@
 # coding: utf-8
 from django.test import TestCase
-from mocker import MockerTestCase
 from django.utils import unittest
 from django_factory_boy import auth
 from django.db import IntegrityError
@@ -15,7 +14,12 @@ from .modelfactories import (
     JournalFactory,
     CollectionFactory,
     RegularPressReleaseFactory,
+    StatusPartyFactory,
+    JournalPublicationEventsFactory,
+    UserFactory
 )
+
+from mocker import MockerTestCase
 
 
 class SectionTests(MockerTestCase):
@@ -285,6 +289,52 @@ class LanguageTests(TestCase):
 
 class JournalTests(TestCase):
 
+    def test_pub_status(self):
+        user = UserFactory(is_active=True)
+        collection = CollectionFactory.create()
+        collection.add_user(user, is_manager=True)
+        journal = JournalFactory()
+        status1 = JournalPublicationEventsFactory.create(status='current')
+        status2 = JournalPublicationEventsFactory.create(status='deceased')
+
+        StatusPartyFactory.create(
+            collection=collection,
+            journal=journal,
+            publication_status=status1
+        )
+
+        StatusPartyFactory.create(
+            collection=collection,
+            journal=journal,
+            publication_status=status2
+        )
+
+        self.assertEqual(journal.pub_status, u'deceased')
+
+    def test_pub_reason(self):
+        user = UserFactory(is_active=True)
+        collection = CollectionFactory.create()
+        collection.add_user(user, is_manager=True)
+        journal = JournalFactory()
+        status1 = JournalPublicationEventsFactory.create(status='current',
+            reason='porque sim 1')
+        status2 = JournalPublicationEventsFactory.create(status='deceased',
+            reason='porque sim 2')
+
+        StatusPartyFactory.create(
+            collection=collection,
+            journal=journal,
+            publication_status=status1
+        )
+
+        StatusPartyFactory.create(
+            collection=collection,
+            journal=journal,
+            publication_status=status2
+        )
+
+        self.assertEqual(journal.pub_status_reason, u'porque sim 2')
+
     def test_valid_is_editors(self):
         user = auth.UserF()
 
@@ -299,16 +349,6 @@ class JournalTests(TestCase):
         journal = JournalFactory.create()
 
         self.assertFalse(journal.is_editor(user))
-
-    def test_changing_publication_status(self):
-        user = auth.UserF()
-        journal = JournalFactory.create()
-        journal.change_publication_status(status=u'deceased',
-            reason=u'baz', changed_by=user)
-
-        self.assertEqual(journal.pub_status, u'deceased')
-        self.assertEqual(journal.pub_status_reason, u'baz')
-        self.assertEqual(journal.pub_status_changed_by, user)
 
     def test_issues_grid_with_numerical_issue_numbers(self):
         journal = JournalFactory.create()
