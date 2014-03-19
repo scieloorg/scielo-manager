@@ -258,10 +258,6 @@ class UserForm(ModelForm):
             self.save_m2m()
         return user
 
-# class EventJournalForm(forms.Form):
-#     pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
-#     pub_status_reason = forms.CharField(widget=forms.Textarea)
-
 
 class JournalPublicationEventsForm(ModelForm):
 
