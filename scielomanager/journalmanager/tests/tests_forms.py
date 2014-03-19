@@ -1310,6 +1310,278 @@ class RegularIssueFormClassTests(unittest.TestCase):
         self.assertTrue(issue_form.is_valid())
 
 
+class SupplementIssueFormClassTests(unittest.TestCase):
+    
+    def test_journal_kwargs_is_required(self):
+        self.assertRaises(TypeError, lambda: forms.SupplementIssueForm())
+
+    def test_inheritance(self):
+        # By checking the inheritance, we assume that all base fields are present.
+        self.assertTrue(issubclass(forms.SupplementIssueForm, forms.IssueBaseForm))
+
+    def test_basic_structure(self):
+        from django import forms as dj_forms
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.SupplementIssueForm(params={'journal': journal})
+        self.assertEqual(dj_forms.CharField, type(issue_form.fields['number']))
+        self.assertEqual(dj_forms.ChoiceField, type(issue_form.fields['suppl_type']))
+
+    def test_clean_for_volume_type(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'volume',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_for_type_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_with_both_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '1',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_with_both_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'volume',
+            'volume': '1',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_without_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_without_number_and_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_without_number_and_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'volume',
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
 ####
 # Integration tests on forms
 ####
