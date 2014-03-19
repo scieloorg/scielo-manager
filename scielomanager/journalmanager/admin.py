@@ -132,16 +132,23 @@ class TranslatedDataAdmin(admin.ModelAdmin):
 admin.site.register(TranslatedData)
 
 
-# class JournalPublicationEventsAdmin(admin.ModelAdmin):
+class JournalPublicationEventsAdmin(admin.ModelAdmin):
 
-#     def queryset(self, request):
-#         return JournalPublicationEvents.nocacheobjects
+    def queryset(self, request):
+        return JournalPublicationEvents.nocacheobjects
 
-#     list_display = ['journal', 'status', 'created_at']
-#     list_filter = ['status']
-#     search_fields = ['journal']
+    list_display = ['reason', 'status', 'changed_by', 'created_at']
+    list_filter = ['status']
 
-# admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
+admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
+
+
+class StatusPartyAdmin(admin.ModelAdmin):
+
+    list_display = ['journal', 'collection', 'publication_status']
+    list_filter = ['journal', 'collection']
+
+admin.site.register(StatusParty, StatusPartyAdmin)
 
 
 class PressReleaseAdmin(admin.ModelAdmin):

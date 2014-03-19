@@ -35,8 +35,8 @@ import jsonfield
 from scielomanager.utils import base28
 from . import modelmanagers
 
-# User.__bases__ = (caching.base.CachingMixin, models.Model)
-# User.add_to_class('objects', caching.base.CachingManager())
+User.__bases__ = (caching.base.CachingMixin, models.Model)
+User.add_to_class('objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
 
@@ -662,14 +662,6 @@ class Journal(caching.base.CachingMixin, models.Model):
 
         attr = u'print_issn' if self.scielo_issn == u'print' else u'eletronic_issn'
         return getattr(self, attr)
-
-    @property
-    def last_pub_status(self):
-        return self.statuses.all().order_by('-created_at')[0].status
-
-    @property
-    def last_pub_reason(self):
-        return self.statuses.all().order_by('-created_at')[0].reason
 
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
