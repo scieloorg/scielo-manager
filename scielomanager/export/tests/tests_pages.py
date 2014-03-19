@@ -3,19 +3,33 @@ import json
 
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
-from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 
 
 class DownloadMarkupFilesTests(WebTest):
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
+
         self.collection.add_user(self.user, is_manager=False)
-        self.journal = modelfactories.JournalFactory(
-            collection=self.collection)
+        self.journal = self._makeJournal()
+
+    def _makeJournal(self):
+
+        journal = modelfactories.JournalFactory.create()
+
+        status = modelfactories.JournalPublicationEventsFactory.create()
+
+        modelfactories.StatusPartyFactory.create(
+            collection=self.collection,
+            journal=journal,
+            publication_status=status
+        )
+
+        return journal
+
 
     def test_non_authenticated_users_are_redirected_to_login_page(self):
         response = self.app.get(
@@ -38,14 +52,27 @@ class ListIssuesForMarkupFilesTests(WebTest):
     """
     Tests ajax interactions
     """
-
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
+
         self.collection.add_user(self.user, is_manager=False)
-        self.journal = modelfactories.JournalFactory(
-            collection=self.collection)
+        self.journal = self._makeJournal()
+
+    def _makeJournal(self):
+
+        journal = modelfactories.JournalFactory.create()
+
+        status = modelfactories.JournalPublicationEventsFactory.create()
+
+        modelfactories.StatusPartyFactory.create(
+            collection=self.collection,
+            journal=journal,
+            publication_status=status
+        )
+
+        return journal
 
     def test_get_issues_pending_for_markup(self):
         """
