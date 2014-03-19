@@ -8,8 +8,8 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Checkin.user_accepted_to_checkout'
-        db.add_column('articletrack_checkin', 'user_accepted_to_checkout',
+        # Adding field 'Checkin.accepted_by'
+        db.add_column('articletrack_checkin', 'accepted_by',
                       self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True),
                       keep_default=False)
 
@@ -20,8 +20,8 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Deleting field 'Checkin.user_accepted_to_checkout'
-        db.delete_column('articletrack_checkin', 'user_accepted_to_checkout_id')
+        # Deleting field 'Checkin.accepted_by'
+        db.delete_column('articletrack_checkin', 'accepted_by_id')
 
         # Deleting field 'Checkin.accepted_at'
         db.delete_column('articletrack_checkin', 'accepted_at')
@@ -42,13 +42,13 @@ class Migration(SchemaMigration):
         'articletrack.checkin': {
             'Meta': {'ordering': "['-created_at']", 'object_name': 'Checkin'},
             'accepted_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'accepted_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'}),
             'article': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkins'", 'null': 'True', 'to': "orm['articletrack.Article']"}),
             'attempt_ref': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'package_name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'uploaded_at': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_accepted_to_checkout': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
+            'uploaded_at': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'articletrack.comment': {
             'Meta': {'ordering': "['created_at']", 'object_name': 'Comment'},
