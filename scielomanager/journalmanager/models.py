@@ -679,7 +679,7 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     #journal = models.ManyToManyField(Journal, related_name='status_journal', through='StatusParty', null=True, blank=True)
-    status = models.CharField(_('Journal Status'), max_length=16,)
+    status = models.CharField(_('Status'), max_length=16,)
     reason = models.TextField(_('Reason'), blank=True, default="",)
     created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
     changed_by = models.ForeignKey(User, editable=False)
