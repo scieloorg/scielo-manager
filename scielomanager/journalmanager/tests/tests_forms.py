@@ -1310,6 +1310,98 @@ class RegularIssueFormClassTests(unittest.TestCase):
         self.assertTrue(issue_form.is_valid())
 
 
+class SpecialIssueFormClassTests(unittest.TestCase):
+
+    def test_journal_kwargs_is_required(self):
+        self.assertRaises(TypeError, lambda: forms.SpecialIssueForm())
+
+    def test_inheritance(self):
+        # By checking the inheritance, we assume that all base fields are present.
+        self.assertTrue(issubclass(forms.SpecialIssueForm, forms.RegularIssueForm))
+
+    def test_basic_structure(self):
+        from django import forms as dj_forms
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.SpecialIssueForm(params={'journal': journal})
+        self.assertEqual(dj_forms.CharField, type(issue_form.fields['number']))
+
+    def test_mandatory_number_value(self):
+        from django import forms as dj_forms
+        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.SpecialIssueForm(params={'journal': journal})
+        self.assertEqual(issue_form['number'].value(), SPECIAL_ISSUE_FORM_FIELD_NUMBER)
+
+    def test_clean(self):
+        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
+
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '',
+            'number': SPECIAL_ISSUE_FORM_FIELD_NUMBER,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_regular_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+        self.assertTrue(issue_regular_form.is_valid())
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_with_any_number_value(self):
+        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
+
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+        self.assertEqual(issue_form.cleaned_data['number'], SPECIAL_ISSUE_FORM_FIELD_NUMBER)
+
 ####
 # Integration tests on forms
 ####
