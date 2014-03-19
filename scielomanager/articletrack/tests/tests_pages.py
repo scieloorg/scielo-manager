@@ -44,7 +44,7 @@ class CheckinListTests(WebTest):
         checkin = modelfactories.CheckinFactory.create()
 
         #Get only the first collection and set to the user
-        collection = checkin.article.journals.all()[0].collection
+        collection = checkin.article.journals.all()[0].collections.all()[0]
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return checkin
@@ -133,7 +133,7 @@ class NoticeListTests(WebTest):
         notice = modelfactories.NoticeFactory.create()
 
         #Get only the first collection and set to the user
-        collection = notice.checkin.article.journals.all()[0].collection
+        collection = notice.checkin.article.journals.all()[0].collections.all()[0]
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return notice

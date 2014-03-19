@@ -121,7 +121,7 @@ class JournalFactory(factory.Factory):
     creator = factory.SubFactory(UserFactory)
     pub_status_changed_by = factory.SubFactory(UserFactory)
     use_license = factory.SubFactory(UseLicenseFactory)
-    collection = factory.SubFactory(CollectionFactory)
+    #collection = factory.SubFactory(CollectionFactory)
 
 
 class SectionFactory(factory.Factory):
@@ -224,3 +224,19 @@ class PressReleaseArticleFactory(factory.Factory):
 
     press_release = factory.SubFactory(RegularPressReleaseFactory)
     article_pid = factory.Sequence(lambda n: 'S0102-311X201300030000%s' % n)
+
+
+class JournalPublicationEventsFactory(factory.Factory):
+    FACTORY_FOR = models.JournalPublicationEvents
+
+    status = u'current'
+    reason = u'reason for changing status'
+    changed_by = factory.SubFactory(UserFactory)
+
+
+class StatusPartyFactory(factory.Factory):
+    FACTORY_FOR = models.StatusParty
+
+    collection = factory.SubFactory(CollectionFactory)
+    journal = factory.SubFactory(JournalFactory)
+    publication_status = factory.SubFactory(JournalPublicationEventsFactory)

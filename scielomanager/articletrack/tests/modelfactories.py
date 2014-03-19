@@ -2,7 +2,26 @@
 import factory
 
 from articletrack import models
-from journalmanager.tests.modelfactories import JournalFactory, UserFactory
+from journalmanager.tests.modelfactories import (JournalFactory,
+                                                UserFactory,
+                                                CollectionFactory,
+                                                JournalPublicationEventsFactory,
+                                                StatusPartyFactory)
+def makeJournal():
+
+    collection = CollectionFactory.create()
+
+    journal = JournalFactory.create()
+
+    status = JournalPublicationEventsFactory.create()
+
+    StatusPartyFactory.create(
+        collection=collection,
+        journal=journal,
+        publication_status=status
+    )
+
+    return journal
 
 
 class ArticleFactory(factory.Factory):
@@ -18,7 +37,8 @@ class ArticleFactory(factory.Factory):
 
     @classmethod
     def _prepare(cls, create, **kwargs):
-        journal = JournalFactory()
+
+        journal = makeJournal()
         article = super(ArticleFactory, cls)._prepare(create, **kwargs)
         article.journals.add(journal)
         return article
