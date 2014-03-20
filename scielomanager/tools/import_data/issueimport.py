@@ -50,7 +50,7 @@ class IssueImport:
         asign the correct section id to an issue. This must be done to avoid mistakes because Journal
         Manager handle same journals for different collections.
         """
-        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collection=self._collection.id)]
+        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collections__in=[self._collection.id]).distinct()]
         self._sections = {}
         for journal in journals_sections:
             for section in journal:
@@ -123,19 +123,14 @@ class IssueImport:
         """
 
         issue = Issue()
-        error = False
 
-        try:
-            journal = Journal.objects.get(print_issn=record['35'][0], collection=self._collection.id)
-        except ObjectDoesNotExist:
-            try:
-                journal = Journal.objects.get(eletronic_issn=record['35'][0], collection=self._collection.id)
-            except ObjectDoesNotExist:
-                print u"Inconsistência de dados tentando encontrar periódico com ISSN: %s" % record['35'][0]
-                error = True
+        journal_list = Journal.objects.filter(print_issn=record['35'][0], collections__in=[self._collection.id]).distinct()
 
-        if error:
+        if not journal_list:
+            print u"Inconsistência de dados tentando encontrar periódico com ISSN: %s" % record['35'][0]
             return False
+        else:
+            journal = journal_list[0]
 
         if '32' in record:
             issue.number = record['32'][0]

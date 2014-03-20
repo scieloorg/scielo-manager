@@ -54,15 +54,13 @@ class SectionImport:
         return self._summary
 
     def load_journal(self, issn, collection):
-        try:
-            journal = Journal.objects.get(eletronic_issn=issn, collection=collection.id)
-        except ObjectDoesNotExist:
-            try:
-                journal = Journal.objects.get(print_issn=issn, collection=collection.id)
-            except ObjectDoesNotExist:
-                return None
 
-        return journal
+        journal = Journal.objects.filter(eletronic_issn=issn, collections__in=[collection.id]).distinct()
+
+        if journal:
+            return journal[0]
+        else:
+            return None
 
     def load_section(self, record, collection):
         section = ""
