@@ -906,6 +906,13 @@ class Issue(caching.base.CachingMixin, models.Model):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
                                         self.publication_end_month,
                                         self.publication_year)
+    @property
+    def suppl_type(self):
+        if self.number != '' and self.volume == '':
+            return 'number' 
+        elif self.number == '' and self.volume != '':
+            return 'volume'
+        return None
 
     def _suggest_order(self, force=False):
         """

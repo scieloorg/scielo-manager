@@ -365,14 +365,34 @@ class SupplementIssueForm(IssueBaseForm):
         super(SupplementIssueForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        volume = self.cleaned_data.get('volume')
-        number = self.cleaned_data.get('number')
+        volume = self.cleaned_data.get('volume', '')
+        number = self.cleaned_data.get('number', '')
         suppl_type = self.cleaned_data.get('suppl_type')
+        publication_year = self.cleaned_data.get('publication_year')
 
         if suppl_type == 'volume' and (volume == '' or number != ''):
-            raise forms.ValidationError(_('You must complete the volume filed.'))
-        if suppl_type == 'number' and (number == '' or volume != ''):
-            raise forms.ValidationError(_('You must complete the number filed.'))
+            raise forms.ValidationError(_('You must complete the volume filed. Number field must be empty.'))
+        elif suppl_type == 'number' and (number == '' or volume != ''):
+            raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.')) 
+        else:
+            try:
+                issue = models.Issue.objects.get(volume=volume,
+                                                 number=number,
+                                                 publication_year=publication_year,
+                                                 journal__pk=self.journal.pk)
+            except models.Issue.DoesNotExist:
+                # Perfect! A brand new issue!
+                pass
+            except MultipleObjectsReturned as e:
+                logger.error('''
+                    Multiple issues returned for the same number, volume and year for one journal.
+                    Traceback: %s'''.strip() % e.message)
+                raise forms.ValidationError({NON_FIELD_ERRORS: _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+            else:
+                # Issue already exists (handling updates).
+                if self.instance is None or (self.instance.pk != issue.pk):
+                    raise forms.ValidationError({NON_FIELD_ERRORS:\
+                        _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
 
         return self.cleaned_data
 
