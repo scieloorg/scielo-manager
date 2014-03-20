@@ -3,6 +3,7 @@
 import json
 import os
 import subfield
+import datetime
 from datetime import date
 
 from django.core.management import setup_environ
@@ -157,7 +158,7 @@ class JournalImport:
             journal.missions.add(mission)
             self.charge_summary("mission")
 
-    def load_historic(self, journal, historicals):
+    def load_historic(self, collection, journal, historicals):
 
         lifecycles = {}
 
@@ -177,17 +178,30 @@ class JournalImport:
         for cyclekey, cyclevalue in iter(sorted(lifecycles.iteritems())):
             try:
                 journalhist = JournalPublicationEvents()
-                journalhist.created_at = cyclekey
+
+                # If journal doesnt have history set ''inprogress''
                 journalhist.status = self.trans_pub_status.get(cyclevalue.lower(), 'inprogress')
-                journalhist.journal = journal
+
                 journalhist.changed_by_id = 1
                 journalhist.save()
+
                 journalhist.created_at = cyclekey
-                journalhist.save()  # Updating to real date, once when saving the model is given a automatica value
+                journalhist.save()
+
                 self.charge_summary("publication_events")
             except exceptions.ValidationError:
-                self.charge_summary("publications_events_error_data")
-                return False
+                # If date is invalid: set the ``created_at`` to now and promove the journal to ``inprogress`` status
+                journalhist.status = 'inprogress'
+                journalhist.created_at = datetime.datetime.now()
+            finally:
+                journalhist.save()  # Updating to real date, once when saving the model is given a automatica value
+
+                # Create a third entity StatusParty
+                sparty = StatusParty()
+                sparty.publication_status = journalhist
+                sparty.collection = collection
+                sparty.journal = journal
+                sparty.save()
 
         return True
 
@@ -396,7 +410,6 @@ class JournalImport:
 
         journal.pub_status_changed_by_id = 1
         journal.creator_id = 1
-        journal.collection = collection
 
         journal.save(force_insert=True)
 
@@ -430,7 +443,7 @@ class JournalImport:
 
         # historic - JournalPublicationEvents
         if '51' in record:
-            self.load_historic(journal, record['51'])
+            self.load_historic(collection, journal, record['51'])
 
         # titles
         if '421' in record:
@@ -454,13 +467,15 @@ class JournalImport:
         """
         for record in json_file:
             if '710' in record:
-                try:
-                    previous_journal = Journal.objects.get(title__exact=record['100'][0],
-                                                           collection=collection)
-                    next_journal = Journal.objects.filter(title__exact=record['710'][0],
-                                                          collection=collection).update(previous_title=previous_journal.id)
-                except Journal.DoesNotExist:
-                    print "Not possible to update the previous title of the journal: " + next_journal.title
+
+                previous_journal = Journal.objects.filter(title__exact=record['100'][0],
+                                                          collections__in=[collection]).distinct()
+                if previous_journal:
+                    Journal.objects.filter(title__exact=record['710'][0],
+                                           collections__in=[collection]).distinct().update(
+                                           previous_title=previous_journal[0].id)
+                else:
+                    print "Not possible to update the previous title of the journal"
 
     def run_import(self, json_file, collection):
         """
