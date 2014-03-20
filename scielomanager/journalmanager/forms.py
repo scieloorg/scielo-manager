@@ -352,7 +352,7 @@ class RegularIssueForm(IssueBaseForm):
 class SupplementIssueForm(IssueBaseForm):
     suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE)
     number = forms.CharField(required=False)
-    suppl_text = forms.CharField(widget=forms.Textarea)
+    suppl_text = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         params = kwargs.pop('params', {})
