@@ -6,6 +6,7 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
+from django.forms.models import save_instance
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
@@ -304,6 +305,13 @@ class IssueBaseForm(forms.Form):
             for qset in querysets:
                 self.fields[qset].queryset = querysets[qset]
 
+    def save(self, commit=True):
+        instance = self.instance or models.Issue()
+        if self.is_valid():
+            return save_instance(self, instance, commit=commit)
+        else:
+            return None
+
 
 class RegularIssueForm(IssueBaseForm):
     number = forms.CharField(required=False)
@@ -374,7 +382,7 @@ class SupplementIssueForm(IssueBaseForm):
         if suppl_type == 'volume' and (volume == '' or number != ''):
             raise forms.ValidationError(_('You must complete the volume filed. Number field must be empty.'))
         elif suppl_type == 'number' and (number == '' or volume != ''):
-            raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.')) 
+            raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.'))
         else:
             try:
                 issue = models.Issue.objects.get(volume=volume,
