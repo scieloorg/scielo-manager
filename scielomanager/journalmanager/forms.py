@@ -19,6 +19,7 @@ from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
+SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
 
 
 class UserCollectionContext(ModelForm):
@@ -395,6 +396,26 @@ class SupplementIssueForm(IssueBaseForm):
                         _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
 
         return self.cleaned_data
+
+
+class SpecialIssueForm(RegularIssueForm):
+    number = forms.CharField(required=True, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    def __init__(self, *args, **kwargs):
+        # RegularIssueForm expects 'params' is present in kwargs
+        params = kwargs.get('params', {})
+
+        if 'journal' not in params:
+            raise TypeError('SpecialIssueForm() takes journal in params keyword argument. e.g: params={"journal":<journal>')
+        else:
+            self.journal = params['journal']
+
+        super(SpecialIssueForm, self).__init__(*args, **kwargs)
+
+
+    def clean_number(self):
+        # override the number value
+        return SPECIAL_ISSUE_FORM_FIELD_NUMBER
 
 
 class IssueForm(ModelForm):
