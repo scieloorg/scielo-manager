@@ -19,6 +19,7 @@ from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
+SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
 
 
 class UserCollectionContext(ModelForm):
@@ -370,11 +371,31 @@ class SupplementIssueForm(IssueBaseForm):
         suppl_type = self.cleaned_data.get('suppl_type')
 
         if suppl_type == 'volume' and (volume == '' or number != ''):
-            raise forms.ValidationError(_('You must complete the volume filed.'))
+            raise forms.ValidationError(_('You must fill the volume field.'))
         if suppl_type == 'number' and (number == '' or volume != ''):
-            raise forms.ValidationError(_('You must complete the number filed.'))
+            raise forms.ValidationError(_('You must fill the number field.'))
 
         return self.cleaned_data
+
+
+class SpecialIssueForm(RegularIssueForm):
+    number = forms.CharField(required=True, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    def __init__(self, *args, **kwargs):
+        # RegularIssueForm expects 'params' is present in kwargs
+        params = kwargs.get('params', {})
+
+        if 'journal' not in params:
+            raise TypeError('SpecialIssueForm() takes journal in params keyword argument. e.g: params={"journal":<journal>')
+        else:
+            self.journal = params['journal']
+
+        super(SpecialIssueForm, self).__init__(*args, **kwargs)
+
+
+    def clean_number(self):
+        # override the number value
+        return SPECIAL_ISSUE_FORM_FIELD_NUMBER
 
 
 class IssueForm(ModelForm):
