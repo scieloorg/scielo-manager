@@ -396,20 +396,18 @@ def add_user(request, user_id=None):
 def edit_journal_status(request, journal_id=None):
     """
     Handles Journal Status.
-
     Allow user just to update the status history of a specific journal.
     """
     # Always a new event. Considering that events must not be deleted or changed.
-    journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
+    journal_history = models.JournalPublicationEvents.objects.filter(
+        journal_status=journal_id).order_by('-created_at')
     journal = get_object_or_404(models.Journal, id=journal_id)
 
     if request.method == "POST":
-        journaleventform = EventJournalForm(request.POST)
+        journalpublicationeventform = JournalPublicationEventsForm(request.POST)
 
-        if journaleventform.is_valid():
-            cleaned_data = journaleventform.cleaned_data
-            journal.change_publication_status(cleaned_data["pub_status"],
-                cleaned_data["pub_status_reason"], request.user)
+        if journalpublicationeventform.is_valid():
+            journalpublicationeventform.save_all(request.user, journal)
 
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse(
@@ -417,10 +415,10 @@ def edit_journal_status(request, journal_id=None):
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
-        journaleventform = EventJournalForm()
+        journalpublicationeventform = JournalPublicationEventsForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
-                              'add_form': journaleventform,
+                              'add_form': journalpublicationeventform,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))

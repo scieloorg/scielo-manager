@@ -121,7 +121,6 @@ class JournalFactory(factory.Factory):
     creator = factory.SubFactory(UserFactory)
     pub_status_changed_by = factory.SubFactory(UserFactory)
     use_license = factory.SubFactory(UseLicenseFactory)
-    #collection = factory.SubFactory(CollectionFactory)
 
 
 class SectionFactory(factory.Factory):

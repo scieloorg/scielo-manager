@@ -533,9 +533,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
-    pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
-        choices=choices.JOURNAL_PUBLICATION_STATUS)
-    pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
+    pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress")
+    pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="")
     pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]))
@@ -678,9 +677,8 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
-    #journal = models.ManyToManyField(Journal, related_name='status_journal', through='StatusParty', null=True, blank=True)
-    status = models.CharField(_('Journal Status'), max_length=16,)
-    reason = models.TextField(_('Reason'), blank=True, default="",)
+    status = models.CharField(_('Journal Status'), max_length=16, choices=choices.JOURNAL_PUBLICATION_STATUS, null=False)
+    reason = models.TextField(_('Reason'), null=False)
     created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
     changed_by = models.ForeignKey(User, editable=False)
 
@@ -1151,29 +1149,13 @@ class Article(caching.base.CachingMixin, models.Model):
 
         return self.front['title-group']
 
-####
-# Pre and Post save to handle `Journal.pub_status` data modification.
-####
-#@receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
-def journal_pub_status_pre_save(sender, **kwargs):
-    """
-    Fetch the `pub_status` value from the db before the data is modified.
-    """
-    try:
-        kwargs['instance']._pub_status = Journal.nocacheobjects.get(pk=kwargs['instance'].pk).pub_status
-    except Journal.DoesNotExist:
-        return None
 
-
-#@receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
-def journal_pub_status_post_save(sender, instance, created, **kwargs):
+@receiver(post_save, sender=StatusParty, dispatch_uid='journalmanager.models.statusparty_post_save')
+def statusparty_post_save(sender, instance, created, **kwargs):
     """
-    Check if the `pub_status` value is new or has been modified.
+    Include the last changes to the journal.
     """
-    if getattr(instance, '_pub_status', None) and instance.pub_status == instance._pub_status:
-        return None
-
-    JournalPublicationEvents.objects.create(journal=instance,
-        status=instance.pub_status, changed_by=instance.pub_status_changed_by, reason=instance.pub_status_reason)
+    instance.journal.pub_status = instance.publication_status.status
+    instance.journal.pub_status_reason = instance.publication_status.reason
 
 models.signals.post_save.connect(create_api_key, sender=User)

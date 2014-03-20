@@ -259,10 +259,26 @@ class UserForm(ModelForm):
         return user
 
 
-class EventJournalForm(forms.Form):
-    pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
-    pub_status_reason = forms.CharField(widget=forms.Textarea)
+class JournalPublicationEventsForm(ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(JournalPublicationEventsForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = models.JournalPublicationEvents
+        exclude = ('created_at', 'changed_by')
+
+    def save_all(self, creator, journal):
+        jpe = self.save(commit=False)
+        collection = creator.user_collection.get(
+            usercollections__is_default=True)
+        jpe.changed_by = creator
+        jpe.save()
+        statusparty = models.StatusParty()
+        statusparty.journal = journal
+        statusparty.collection = collection
+        statusparty.publication_status = jpe
+        statusparty.save()
 
 class IssueBaseForm(forms.Form):
     section = forms.ModelMultipleChoiceField(
