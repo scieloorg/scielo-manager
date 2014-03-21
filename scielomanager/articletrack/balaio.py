@@ -1,6 +1,9 @@
-# -*- coding: utf-8 -*-
-import urllib2
+# coding: utf-8
 import json
+import socket
+import urllib2
+import xmlrpclib
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -65,7 +68,7 @@ class BalaioAPI(object):
 
     def _open(self, url):
         try:
-            response = urllib2.urlopen(url, timeout=settings.API_BALAIO_DEFAULT_TIMEOUT)        
+            response = urllib2.urlopen(url, timeout=settings.API_BALAIO_DEFAULT_TIMEOUT)
         except urllib2.URLError as e:
             raise ValueError(e)
 
@@ -111,3 +114,47 @@ class BalaioAPI(object):
     def get_full_package(self, attempt_id, target_name):
         url = self.get_fullpath() + 'files/%s/%s.zip/?full=true' % (attempt_id, target_name)
         return self._open(url)
+
+
+class BalaioRPC(object):
+
+    def __init__(self, using='default'):
+        self.conf =  settings.API_BALAIO[using]
+
+    def connection_status(self):
+        """
+        Verify the xmlrpc connection
+        """
+        s = xmlrpclib.ServerProxy(self.get_fullpath() + '_rpc/status/')
+
+        try:
+            s.status()
+            return True
+        except socket.error:
+            # socket error which mean that services is unavailable
+            return False
+
+    def make_connection(self, uri):
+        return xmlrpclib.ServerProxy(uri)
+
+    def get_hostname(self):
+        return '%s://%s:%s/' % (self.conf['PROTOCOL'], self.conf['HOST'], self.conf['PORT'])
+
+    def get_basepath(self):
+        return self.conf['PATH']
+
+    def get_fullpath(self):
+        return '%s%s' % (self.get_hostname(), self.get_basepath()[1:])
+
+    def send_request(self, path_info, method, *params):
+        """
+        Method responsable to send request to XML-RPC ServerProxy
+        ::param path_info: specifies a path to be interpreted in RPC server
+        ::param method: name of remote RCP method
+        ::param *params: params tho the RPC method
+        """
+        uri = self.get_fullpath() + path_info
+
+        conn = self.make_connection(uri)
+
+        return getattr(conn, method)(*params)

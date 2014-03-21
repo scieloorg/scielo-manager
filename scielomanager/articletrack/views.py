@@ -4,6 +4,7 @@ import json
 from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.utils.translation import ugettext as _
 from django.contrib import messages
@@ -15,7 +16,7 @@ from django.template.defaultfilters import slugify
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
 from .forms import CommentMessageForm, TicketForm
-from .balaio_api import BalaioAPI
+from .balaio import BalaioAPI, BalaioRPC
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -324,3 +325,43 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
     else:
         return HttpResponseBadRequest()
 
+
+@login_required
+def ajx_set_attempt_proceed_to_checkout(request, attempt_id, checkin_id):
+    """
+    View function responsible for mark an attempt to checkout process
+    """
+
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    balaio_rcp = BalaioRPC()
+
+    rpc_response = balaio_rcp.send_request('_rpc/proceed_to_checkout/',
+        'proceed_to_checkout', [attempt_id,])
+
+    #if the xmlrpc response is positive, we should store the user who performed
+    #the operation date/time
+    if rpc_response:
+        checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+        checkin.user_accepted_to_checkout = request.user
+        checkin.accepted_at = datetime.datetime.now()
+        checkin.save()
+
+    return HttpResponse(json.dumps(rpc_response), mimetype="application/json")
+
+
+@login_required
+def ajx_verify_status_rpc(request):
+    """
+    View function responsible to check the XML-RPC status
+    """
+
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    balaio_rcp = BalaioRPC()
+
+    rpc_response = balaio_rcp.connection_status()
+
+    return HttpResponse(json.dumps({'rpc_status': rpc_response}), mimetype="application/json")

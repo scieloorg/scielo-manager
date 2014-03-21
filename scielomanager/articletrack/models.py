@@ -40,6 +40,9 @@ class Checkin(caching.base.CachingMixin, models.Model):
     uploaded_at = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    accepted_by = models.ForeignKey(User, null=True)
+    accepted_at = models.DateTimeField(null=True)
+
     article = models.ForeignKey('Article', related_name='checkins', null=True)
 
     class Meta:
@@ -57,6 +60,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
 
 class Article(caching.base.CachingMixin, models.Model):
+
     # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.ArticleManager()
@@ -79,6 +83,7 @@ class Article(caching.base.CachingMixin, models.Model):
 
 
 class Ticket(caching.base.CachingMixin, models.Model):
+
     # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.TicketManager()
