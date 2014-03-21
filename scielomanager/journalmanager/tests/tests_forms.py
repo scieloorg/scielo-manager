@@ -1076,6 +1076,81 @@ class IssueBaseFormClassTests(unittest.TestCase):
             {fname: type(field) for fname, field in issue_form.fields.items()}
         )
 
+    def test_save_commit_eq_False(self):
+        from journalmanager import models
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+        issue_model = issue_form.save(commit=False)
+        issue_model.journal = journal
+        issue_model.save()
+        issue_form.save_m2m()
+
+        self.assertIsInstance(issue_model, models.Issue)
+        self.assertTrue(section in issue_model.section.all())
+        self.assertEqual(issue_model.volume, u'1')
+        self.assertEqual(issue_model.publication_start_month, u'1')
+        self.assertEqual(issue_model.publication_end_month, u'2')
+        self.assertEqual(issue_model.publication_year, 2014)
+        self.assertEqual(issue_model.is_marked_up, True)
+        self.assertEqual(issue_model.use_license, use_license)
+        self.assertEqual(issue_model.total_documents, 10)
+        self.assertEqual(issue_model.ctrl_vocabulary, u'nd')
+        self.assertEqual(issue_model.editorial_standard, u'iso690')
+        self.assertEqual(issue_model.cover, None)
+
+    def test_save_m2m_while_commit_eq_False(self):
+        from journalmanager import models
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+        issue_model = issue_form.save(commit=False)
+        self.assertTrue(hasattr(issue_form, 'save_m2m'))
+
 
 class RegularIssueFormClassTests(unittest.TestCase):
     def test_journal_kwargs_is_required(self):
@@ -1311,7 +1386,7 @@ class RegularIssueFormClassTests(unittest.TestCase):
 
 
 class SupplementIssueFormClassTests(unittest.TestCase):
-    
+
     def test_journal_kwargs_is_required(self):
         self.assertRaises(TypeError, lambda: forms.SupplementIssueForm())
 
