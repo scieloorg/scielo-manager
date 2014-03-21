@@ -8,11 +8,26 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+
         # Deleting field 'Journal.collection'
         db.delete_column('journalmanager_journal', 'collection_id')
 
         # Deleting field 'JournalPublicationEvents.journal'
         db.delete_column('journalmanager_journalpublicationevents', 'journal_id')
+
+        # Deleting field 'Journal.pub_status_changed_by'
+        db.delete_column('journalmanager_journal', 'pub_status_changed_by_id')
+
+        # Deleting field 'Journal.pub_status'
+        db.delete_column('journalmanager_journal', 'pub_status')
+
+        # Deleting field 'Journal.pub_status_reason'
+        db.delete_column('journalmanager_journal', 'pub_status_reason')
+
+        # Adding field 'JournalPublicationEvents.last_status'
+        db.add_column('journalmanager_journalpublicationevents', 'last_status',
+                      self.gf('django.db.models.fields.BooleanField')(default=True),
+                      keep_default=False)
 
     def backwards(self, orm):
 

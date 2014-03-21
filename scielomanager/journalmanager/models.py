@@ -533,9 +533,6 @@ class Journal(caching.base.CachingMixin, models.Model):
     medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
-    pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress")
-    pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="")
-    pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]))
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -677,10 +674,13 @@ class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
+    collections = models.ManyToManyField('Collection', through='StatusParty')
+    journals = models.ManyToManyField('Journal', through='StatusParty')
     status = models.CharField(_('Journal Status'), max_length=16, choices=choices.JOURNAL_PUBLICATION_STATUS, null=False)
     reason = models.TextField(_('Reason'), null=False)
     created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
     changed_by = models.ForeignKey(User, editable=False)
+    last_status = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.status
@@ -1150,12 +1150,14 @@ class Article(caching.base.CachingMixin, models.Model):
         return self.front['title-group']
 
 
-@receiver(post_save, sender=StatusParty, dispatch_uid='journalmanager.models.statusparty_post_save')
-def statusparty_post_save(sender, instance, created, **kwargs):
-    """
-    Include the last changes to the journal.
-    """
-    instance.journal.pub_status = instance.publication_status.status
-    instance.journal.pub_status_reason = instance.publication_status.reason
+# @receiver(pre_save, sender=JournalPublicationEvents, dispatch_uid='journalmanager.models.jpe_pre_save')
+# def statusparty_pre_save(sender, instance, **kwargs):
+#     """
+#     Include the last changes to the journal.
+#     """
+#     JournalPublicationEvents.objects.filter(last_status=False,
+#                                             collections__in=[collection1],
+#                                             journals__in=[journal1]).update(last_status=False)
+
 
 models.signals.post_save.connect(create_api_key, sender=User)

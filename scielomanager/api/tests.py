@@ -55,12 +55,12 @@ class JournalRestAPITest(WebTest):
         self.extra_environ = _make_auth_environ(self.user.username,
             self.user.api_key.key)
 
-    def _makeJournal(self, **kwargs):
+    def _makeJournal(self, status='current', **kwargs):
         collection = modelfactories.CollectionFactory()
 
         journal = modelfactories.JournalFactory(**kwargs)
 
-        status = modelfactories.JournalPublicationEventsFactory.create()
+        status = modelfactories.JournalPublicationEventsFactory.create(status=status)
 
         modelfactories.StatusPartyFactory.create(
             collection=collection,
@@ -198,8 +198,6 @@ class JournalRestAPITest(WebTest):
             u'print_issn',
             u'editor_address_zip',
             u'contact',
-            u'pub_status',
-            u'pub_status_reason',
             u'title_iso',
             u'notes',
             u'resource_uri',
@@ -226,8 +224,9 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(response.status_code, 401)
 
     def test_filter_by_pubstatus(self):
-        journal = self._makeJournal(pub_status='current')
-        journal2 = self._makeJournal(pub_status='deceased')
+        self._makeJournal(status='current')
+        self._makeJournal(status='deceased')
+
         response = self.app.get('/api/v1/journals/?pubstatus=current',
             extra_environ=self.extra_environ)
 
@@ -235,8 +234,8 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
 
     def test_filter_by_pubstatus_many_values(self):
-        journal = self._makeJournal(pub_status='current')
-        journal2 = self._makeJournal(pub_status='deceased')
+        self._makeJournal(status='current')
+        self._makeJournal(status='deceased')
         response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased',
             extra_environ=self.extra_environ)
 
@@ -244,19 +243,30 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(len(json.loads(response.content)['objects']), 2)
 
     def test_filter_by_pubstatus_many_values_filtering_by_collection(self):
-        journal = self._makeJournal(pub_status='current')
-        journal2 = self._makeJournal(pub_status='deceased')
-        collection_name = journal.collections.get().name
+        journal1 = self._makeJournal(status='current')
+        journal2 = self._makeJournal(status='current')
 
-        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % collection_name,
+        self._makeJournal(status='deceased')
+        self._makeJournal(status='suspended')
+
+        collection_name1 = journal1.collections.get().name
+        collection_name2 = journal2.collections.get().name
+
+        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % collection_name1,
+            extra_environ=self.extra_environ)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.content)['objects']), 1)
+
+        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % collection_name2,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
 
     def test_filter_print_issn(self):
-        journal = self._makeJournal(print_issn='1234-1234')
-        journal2 = self._makeJournal(print_issn='4321-4321')
+        self._makeJournal(print_issn='1234-1234')
+        self._makeJournal(print_issn='4321-4321')
         response = self.app.get('/api/v1/journals/?print_issn=1234-1234',
             extra_environ=self.extra_environ)
 
@@ -265,8 +275,8 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(json.loads(response.content)['objects'][0]['print_issn'], '1234-1234')
 
     def test_filter_eletronic_issn(self):
-        journal = self._makeJournal(eletronic_issn='1234-1234')
-        journal2 = self._makeJournal(eletronic_issn='4321-4321')
+        self._makeJournal(eletronic_issn='1234-1234')
+        self._makeJournal(eletronic_issn='4321-4321')
         response = self.app.get('/api/v1/journals/?eletronic_issn=1234-1234',
             extra_environ=self.extra_environ)
 

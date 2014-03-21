@@ -266,12 +266,16 @@ class JournalPublicationEventsForm(ModelForm):
 
     class Meta:
         model = models.JournalPublicationEvents
-        exclude = ('created_at', 'changed_by')
+        exclude = ('created_at', 'changed_by', 'last_status', 'collections', 'journals')
 
     def save_all(self, creator, journal):
-        jpe = self.save(commit=False)
         collection = creator.user_collection.get(
             usercollections__is_default=True)
+        models.JournalPublicationEvents.objects.filter(last_status=True,
+                                        collections__in=[collection],
+                                        journals__in=[journal]).update(last_status=False)
+
+        jpe = self.save(commit=False)
         jpe.changed_by = creator
         jpe.save()
         statusparty = models.StatusParty()
@@ -279,6 +283,7 @@ class JournalPublicationEventsForm(ModelForm):
         statusparty.collection = collection
         statusparty.publication_status = jpe
         statusparty.save()
+
 
 class IssueBaseForm(forms.Form):
     section = forms.ModelMultipleChoiceField(

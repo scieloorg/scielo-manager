@@ -198,13 +198,12 @@ class JournalResource(ModelResource):
         if 'pubstatus' in filters:
             # keep the previous filtering
             try:
-                j = orm_filters['pk__in']
+                journal = orm_filters['pk__in']
             except KeyError:
-                j = Journal.objects
+                journal = Journal.objects
 
             statuses = filters.getlist('pubstatus')
-            journals = j.filter(
-                pub_status__in=statuses)
+            journals = journal.filter(statuses__status__in=statuses).distinct()
             orm_filters['pk__in'] = journals
 
         return orm_filters
