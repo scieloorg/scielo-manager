@@ -1829,57 +1829,57 @@ class StatusFormTests(WebTest):
 
         def submitForm(user, journal, status, reason):
 
-        user = modelfactories.UserFactory(is_active=True)
+            user = modelfactories.UserFactory(is_active=True)
 
-        collection1 = modelfactories.CollectionFactory.create(name="Collection1")
-        collection2 = modelfactories.CollectionFactory.create(name="Collection2")        
-        collection1.add_user(user, is_manager=True)
-        collection2.add_user(user, is_manager=True)
+            collection1 = modelfactories.CollectionFactory.create(name="Collection1")
+            collection2 = modelfactories.CollectionFactory.create(name="Collection2")
+            collection1.add_user(user, is_manager=True)
+            collection2.add_user(user, is_manager=True)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
-        journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
+            journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
+            journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
 
-        status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
-        status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
-        status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=True)
-        status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
-        status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=True)
+            status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
+            status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+            status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=True)
+            status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+            status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=True)
 
-        #Colombia
-        makeStatusParty(collection1, journal1, status1)
-        makeStatusParty(collection1, journal2, status2)
-        makeStatusParty(collection1, journal2, status3)
+            #Colombia
+            makeStatusParty(collection1, journal1, status1)
+            makeStatusParty(collection1, journal2, status2)
+            makeStatusParty(collection1, journal2, status3)
 
-        #Brasil
-        makeStatusParty(collection2, journal2, status4)
-        makeStatusParty(collection2, journal2, status5)
+            #Brasil
+            makeStatusParty(collection2, journal2, status4)
+            makeStatusParty(collection2, journal2, status5)
 
-        #Journal1 - must be with last status ``deceased`` for collection1
-        submitForm(user, journal1, u'deceased', u'porque não gostei!')
-        self.assertTrue(
-            models.JournalPublicationEvents.objects.get(last_status=True,
-                                                 collections__in=[collection1],
-                                                 journals__in=[journal1]),
-                                                 u'deceased'
-        )
+            #Journal1 - must be with last status ``deceased`` for collection1
+            submitForm(user, journal1, u'deceased', u'porque não gostei!')
+            self.assertTrue(
+                models.JournalPublicationEvents.objects.get(last_status=True,
+                                                     collections__in=[collection1],
+                                                     journals__in=[journal1]),
+                                                     u'deceased'
+            )
 
-        #Journal2 - must be with last status ``suspended`` and for collection1
-        submitForm(user, journal2, u'suspended', u'porque não gostei!')
-        self.assertTrue(
-            models.JournalPublicationEvents.objects.get(last_status=True,
-                                                 collections__in=[collection1],
-                                                 journals__in=[journal2]),
-                                                 u'suspended'
-        )
+            #Journal2 - must be with last status ``suspended`` and for collection1
+            submitForm(user, journal2, u'suspended', u'porque não gostei!')
+            self.assertTrue(
+                models.JournalPublicationEvents.objects.get(last_status=True,
+                                                     collections__in=[collection1],
+                                                     journals__in=[journal2]),
+                                                     u'suspended'
+            )
 
-        #Journal2 - must be with last status ``inprogress`` for collection2
-        submitForm(user, journal2, u'inprogress', u'')
-        self.assertTrue(
-            models.JournalPublicationEvents.objects.get(last_status=True,
-                                                 collections__in=[collection2],
-                                                 journals__in=[journal2]),
-                                                 u'inprogress'
-        )
+            #Journal2 - must be with last status ``inprogress`` for collection2
+            submitForm(user, journal2, u'inprogress', u'')
+            self.assertTrue(
+                models.JournalPublicationEvents.objects.get(last_status=True,
+                                                     collections__in=[collection2],
+                                                     journals__in=[journal2]),
+                                                     u'inprogress'
+            )
 
 
 class SearchFormTests(WebTest):
