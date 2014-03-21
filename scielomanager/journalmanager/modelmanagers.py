@@ -57,16 +57,16 @@ class JournalQuerySet(UserObjectQuerySet):
         return self.filter(is_trashed=True)
 
     def current(self):
-        return self.filter(pub_status='current')
+        return self.filter(statuses__last_status__in=[True], statuses__status__in=['current']).distinct()
 
     def suspended(self):
-        return self.filter(pub_status='suspended')
+        return self.filter(statuses__last_status__in=[True], statuses__status__in=['suspended']).distinct()
 
     def deceased(self):
-        return self.filter(pub_status='deceased')
+        return self.filter(statuses__last_status__in=[True], statuses__status__in=['deceased']).distinct()
 
     def inprogress(self):
-        return self.filter(pub_status='inprogress')
+        return self.filter(statuses__last_status__in=[True], statuses__status__in=['inprogress']).distinct()
 
 
 class JournalManager(UserObjectManager):

@@ -1678,133 +1678,208 @@ class IssueFormTests(WebTest):
         self.assertIn('Saved.', response.body)
 
 
-# class StatusFormTests(WebTest):
+class StatusFormTests(WebTest):
 
-#     def setUp(self):
-#         self.user = auth.UserF(is_active=True)
+    def setUp(self):
+        self.user = modelfactories.UserFactory(is_active=True)
 
-#         self.collection = modelfactories.CollectionFactory.create()
-#         self.collection.add_user(self.user, is_manager=True)
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=True)
 
-#         self.journal = modelfactories.JournalFactory(collection=self.collection)
+    def _makeJournal(self):
+        journal = modelfactories.JournalFactory()
 
-#     def test_basic_struture(self):
-#         """
-#         Just to make sure that the required hidden fields are all
-#         present.
+        status = modelfactories.JournalPublicationEventsFactory.create()
 
-#         All the management fields from inlineformsets used in this
-#         form should be part of this test.
-#         """
-#         perm = _makePermission(perm='list_publication_events',
-#             model='journalpublicationevents', app_label='journalmanager')
-#         self.user.user_permissions.add(perm)
+        modelfactories.StatusPartyFactory.create(
+            collection=self.collection,
+            journal=journal,
+            publication_status=status
+        )
 
-#         page = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user)
+        return journal
 
-#         page.mustcontain('pub_status', 'pub_status_reason')
-#         self.assertTemplateUsed(page, 'journalmanager/edit_journal_status.html')
+    def test_basic_struture(self):
+        """
+        Just to make sure that the required hidden fields are all
+        present.
 
-#     def test_access_without_permission(self):
-#         """
-#         Asserts that authenticated users without the required permissions
-#         are unable to access the form. They must be redirected to a page
-#         with informations about their lack of permissions.
-#         """
-#         page = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user).follow()
+        All the management fields from inlineformsets used in this
+        form should be part of this test.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
 
-#         self.assertTemplateUsed(page, 'accounts/unauthorized.html')
-#         page.mustcontain('not authorized to access')
+        page = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user)
 
-#     def test_POST_workflow_with_valid_formdata(self):
-#         """
-#         When a valid form is submited, the user is redirected to
-#         the status page and the new status must be part
-#         of the list.
+        page.mustcontain('status', 'reason')
+        self.assertTemplateUsed(page, 'journalmanager/edit_journal_status.html')
 
-#         In order to take this action, the user needs the following
-#         permissions: ``journalmanager.list_publication_events``.
-#         """
-#         perm = _makePermission(perm='list_publication_events',
-#             model='journalpublicationevents', app_label='journalmanager')
-#         self.user.user_permissions.add(perm)
+    def test_access_without_permission(self):
+        """
+        Asserts that authenticated users without the required permissions
+        are unable to access the form. They must be redirected to a page
+        with informations about their lack of permissions.
+        """
+        page = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user).follow()
 
-#         form = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
+        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+        page.mustcontain('not authorized to access')
 
-#         form.set('pub_status', 'deceased')
-#         form['pub_status_reason'] = 'Motivo 1'
+    def test_POST_workflow_with_valid_formdata(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the status page and the new status must be part
+        of the list.
 
-#         response = form.submit().follow()
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.list_publication_events``.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
 
-#         self.assertTrue('Saved.' in response.body)
-#         self.assertTemplateUsed(response,
-#             'journalmanager/edit_journal_status.html')
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user).forms['journal-status-form']
 
-#     def test_POST_workflow_with_invalid_formdata(self):
-#         """
-#         When an invalid form is submited, no action is taken, the
-#         form is rendered again and an alert is shown with the message
-#         ``There are some errors or missing data``.
-#         """
-#         perm = _makePermission(perm='list_publication_events',
-#             model='journalpublicationevents', app_label='journalmanager')
-#         self.user.user_permissions.add(perm)
+        form.set('status', 'deceased')
+        form['reason'] = 'Motivo 1'
 
-#         form = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
-#         form.set('pub_status', 'deceased')
+        response = form.submit().follow()
 
-#         response = form.submit()
+        self.assertTrue('Saved.' in response.body)
+        self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
 
-#         self.assertIn('There are some errors or missing data', response.body)
-#         self.assertTemplateUsed(response,
-#             'journalmanager/edit_journal_status.html')
+    def test_POST_workflow_with_invalid_formdata(self):
+        """
+        When an invalid form is submited, no action is taken, the
+        form is rendered again and an alert is shown with the message
+        ``There are some errors or missing data``.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
 
-#     def test_form_enctype_must_be_urlencoded(self):
-#         """
-#         Asserts that the enctype attribute of the status form is
-#         ``application/x-www-form-urlencoded``
-#         """
-#         perm = _makePermission(perm='list_publication_events',
-#             model='journalpublicationevents', app_label='journalmanager')
-#         self.user.user_permissions.add(perm)
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user).forms['journal-status-form']
+        form.set('status', 'deceased')
 
-#         form = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
+        response = form.submit()
 
-#         self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
+        self.assertIn('There are some errors or missing data', response.body)
+        self.assertTemplateUsed(response, 'journalmanager/edit_journal_status.html')
 
-#     def test_form_action_must_be_empty(self):
-#         """
-#         Asserts that the action attribute of the status form is
-#         empty. This is needed because the same form is used to add
-#         a new or edit an existing entry.
-#         """
-#         perm = _makePermission(perm='list_publication_events',
-#             model='journalpublicationevents', app_label='journalmanager')
-#         self.user.user_permissions.add(perm)
+    def test_form_enctype_must_be_urlencoded(self):
+        """
+        Asserts that the enctype attribute of the status form is
+        ``application/x-www-form-urlencoded``
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
 
-#         form = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user).forms['journal-status-form']
 
-#         self.assertEqual(form.action, '')
+        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
 
-#     def test_form_method_must_be_post(self):
-#         """
-#         Asserts that the method attribute of the status form is
-#         ``POST``.
-#         """
-#         perm = _makePermission(perm='list_publication_events',
-#             model='journalpublicationevents', app_label='journalmanager')
-#         self.user.user_permissions.add(perm)
+    def test_form_action_must_be_empty(self):
+        """
+        Asserts that the action attribute of the status form is
+        empty. This is needed because the same form is used to add
+        a new or edit an existing entry.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
 
-#         form = self.app.get(reverse('journal_status.edit',
-#             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user).forms['journal-status-form']
 
-#         self.assertEqual(form.method.lower(), 'post')
+        self.assertEqual(form.action, '')
+
+    def test_form_method_must_be_post(self):
+        """
+        Asserts that the method attribute of the status form is
+        ``POST``.
+        """
+        perm = _makePermission(perm='list_publication_events',
+            model='journalpublicationevents', app_label='journalmanager')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('journal_status.edit',
+            args=[self._makeJournal().pk]), user=self.user).forms['journal-status-form']
+
+        self.assertEqual(form.method.lower(), 'post')
+
+    def test_save_form_and_verify_last_status(self):
+        """
+        """
+
+        def makeStatusParty(collection, journal, status):
+
+            return modelfactories.StatusPartyFactory.create(
+                collection=collection,
+                journal=journal,
+                publication_status=status
+            )
+
+        def submitForm(user, journal, status, reason):
+
+        user = modelfactories.UserFactory(is_active=True)
+
+        collection1 = modelfactories.CollectionFactory.create(name="Collection1")
+        collection2 = modelfactories.CollectionFactory.create(name="Collection2")        
+        collection1.add_user(user, is_manager=True)
+        collection2.add_user(user, is_manager=True)
+
+        journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
+        journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
+
+        status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
+        status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=True)
+        status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=True)
+
+        #Colombia
+        makeStatusParty(collection1, journal1, status1)
+        makeStatusParty(collection1, journal2, status2)
+        makeStatusParty(collection1, journal2, status3)
+
+        #Brasil
+        makeStatusParty(collection2, journal2, status4)
+        makeStatusParty(collection2, journal2, status5)
+
+        #Journal1 - must be with last status ``deceased`` for collection1
+        submitForm(user, journal1, u'deceased', u'porque não gostei!')
+        self.assertTrue(
+            models.JournalPublicationEvents.objects.get(last_status=True,
+                                                 collections__in=[collection1],
+                                                 journals__in=[journal1]),
+                                                 u'deceased'
+        )
+
+        #Journal2 - must be with last status ``suspended`` and for collection1
+        submitForm(user, journal2, u'suspended', u'porque não gostei!')
+        self.assertTrue(
+            models.JournalPublicationEvents.objects.get(last_status=True,
+                                                 collections__in=[collection1],
+                                                 journals__in=[journal2]),
+                                                 u'suspended'
+        )
+
+        #Journal2 - must be with last status ``inprogress`` for collection2
+        submitForm(user, journal2, u'inprogress', u'')
+        self.assertTrue(
+            models.JournalPublicationEvents.objects.get(last_status=True,
+                                                 collections__in=[collection2],
+                                                 journals__in=[journal2]),
+                                                 u'inprogress'
+        )
 
 
 class SearchFormTests(WebTest):

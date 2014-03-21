@@ -289,52 +289,6 @@ class LanguageTests(TestCase):
 
 class JournalTests(TestCase):
 
-    def test_pub_status(self):
-        user = UserFactory(is_active=True)
-        collection = CollectionFactory.create()
-        collection.add_user(user, is_manager=True)
-        journal = JournalFactory()
-        status1 = JournalPublicationEventsFactory.create(status='current')
-        status2 = JournalPublicationEventsFactory.create(status='deceased')
-
-        StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status1
-        )
-
-        StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status2
-        )
-
-        self.assertEqual(journal.pub_status, u'deceased')
-
-    def test_pub_reason(self):
-        user = UserFactory(is_active=True)
-        collection = CollectionFactory.create()
-        collection.add_user(user, is_manager=True)
-        journal = JournalFactory()
-        status1 = JournalPublicationEventsFactory.create(status='current',
-            reason='porque sim 1')
-        status2 = JournalPublicationEventsFactory.create(status='deceased',
-            reason='porque sim 2')
-
-        StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status1
-        )
-
-        StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status2
-        )
-
-        self.assertEqual(journal.pub_status_reason, u'porque sim 2')
-
     def test_valid_is_editors(self):
         user = auth.UserF()
 

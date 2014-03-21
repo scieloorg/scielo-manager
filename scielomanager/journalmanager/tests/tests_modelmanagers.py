@@ -426,104 +426,221 @@ class JournalManagerTests(TestCase):
         self.assertEqual(user_journals.count(), 0)
 
     def test_current(self):
-        collection = modelfactories.CollectionFactory.create()
+        def makeStatusParty(collection, journal, status):
 
-        user = self._make_user(collection)
+            return modelfactories.StatusPartyFactory.create(
+                collection=collection,
+                journal=journal,
+                publication_status=status
+            )
 
-        journal = modelfactories.JournalFactory.create(pub_status='current')
+        user = modelfactories.UserFactory(is_active=True)
 
-        status = modelfactories.JournalPublicationEventsFactory.create()
+        collection1 = modelfactories.CollectionFactory.create(name="Collection1")
+        collection2 = modelfactories.CollectionFactory.create(name="Collection2")        
+        collection1.add_user(user, is_manager=True)
+        collection2.add_user(user, is_manager=True)
 
-        modelfactories.StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status
-        )
+        journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
+        journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
+        journal3 = modelfactories.JournalFactory.create(title=u'Journal 3')
+
+        status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
+
+        status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=False)
+        status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', reason='gostei!', last_status=True)
+
+        status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status6 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=True)
+
+        status7 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status8 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', last_status=True)
+
+        #Colombia
+        makeStatusParty(collection1, journal1, status1)
+        makeStatusParty(collection1, journal2, status2)
+        makeStatusParty(collection1, journal2, status3)
+
+        #Brasil
+        makeStatusParty(collection2, journal2, status4)
+        makeStatusParty(collection2, journal2, status5)
+        makeStatusParty(collection2, journal2, status6)
+        makeStatusParty(collection2, journal3, status7)
+        makeStatusParty(collection2, journal3, status8)
 
         def get_user_collections():
             return user.user_collection.all()
-
         user_journals = models.Journal.userobjects.all(
             get_all_collections=get_user_collections).current()
 
         self.assertEqual(user_journals.count(), 1)
-        for j in user_journals:
-            self.assertEqual(j.pub_status, 'current')
 
     def test_suspended(self):
-        collection = modelfactories.CollectionFactory.create()
 
-        user = self._make_user(collection)
+        def makeStatusParty(collection, journal, status):
 
-        journal = modelfactories.JournalFactory.create(pub_status='suspended')
+            return modelfactories.StatusPartyFactory.create(
+                collection=collection,
+                journal=journal,
+                publication_status=status
+            )
 
-        status = modelfactories.JournalPublicationEventsFactory.create()
+        user = modelfactories.UserFactory(is_active=True)
 
-        modelfactories.StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status
-        )
+        collection1 = modelfactories.CollectionFactory.create(name="Collection1")
+        collection2 = modelfactories.CollectionFactory.create(name="Collection2")        
+        collection1.add_user(user, is_manager=True)
+        collection2.add_user(user, is_manager=True)
+
+        journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
+        journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
+        journal3 = modelfactories.JournalFactory.create(title=u'Journal 3')
+
+        status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
+
+        status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=False)
+        status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', reason='gostei!', last_status=True)
+
+        status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status6 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=True)
+
+        status7 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status8 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', last_status=True)
+
+        #Colombia
+        makeStatusParty(collection1, journal1, status1)
+        makeStatusParty(collection1, journal2, status2)
+        makeStatusParty(collection1, journal2, status3)
+
+        #Brasil
+        makeStatusParty(collection2, journal2, status4)
+        makeStatusParty(collection2, journal2, status5)
+        makeStatusParty(collection2, journal2, status6)
+        makeStatusParty(collection2, journal3, status7)
+        makeStatusParty(collection2, journal3, status8)
 
         def get_user_collections():
             return user.user_collection.all()
-
         user_journals = models.Journal.userobjects.all(
             get_all_collections=get_user_collections).suspended()
 
-        self.assertEqual(user_journals.count(), 1)
-        for j in user_journals:
-            self.assertEqual(j.pub_status, 'suspended')
+        self.assertEqual(user_journals.count(), 2)
 
     def test_deceased(self):
-        collection = modelfactories.CollectionFactory.create()
+        def makeStatusParty(collection, journal, status):
 
-        user = self._make_user(collection)
+            return modelfactories.StatusPartyFactory.create(
+                collection=collection,
+                journal=journal,
+                publication_status=status
+            )
 
-        journal = modelfactories.JournalFactory.create(pub_status='deceased')
+        user = modelfactories.UserFactory(is_active=True)
 
-        status = modelfactories.JournalPublicationEventsFactory.create()
+        collection1 = modelfactories.CollectionFactory.create(name="Collection1")
+        collection2 = modelfactories.CollectionFactory.create(name="Collection2")        
+        collection1.add_user(user, is_manager=True)
+        collection2.add_user(user, is_manager=True)
 
-        modelfactories.StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status
-        )
+        journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
+        journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
+        journal3 = modelfactories.JournalFactory.create(title=u'Journal 3')
+
+        status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
+
+        status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=True)
+
+        status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=False)
+        status6 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', reason='não gostei!', last_status=False)
+        status7 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='ta lindo de novo!', last_status=False)
+        status8 = modelfactories.JournalPublicationEventsFactory.create(status=u'deceased', reason='que pena!', last_status=False)
+        status9 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='eu voltei!', last_status=False)
+        status10 = modelfactories.JournalPublicationEventsFactory.create(status=u'deceased', reason='ja era! .', last_status=True)
+
+        status11 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status12 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=False)
+        status13 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', last_status=False)
+        status14 = modelfactories.JournalPublicationEventsFactory.create(status=u'deceased', last_status=True)
+
+        makeStatusParty(collection1, journal1, status1)
+
+        makeStatusParty(collection1, journal2, status2)
+        makeStatusParty(collection1, journal2, status3)
+
+        makeStatusParty(collection2, journal2, status4)
+        makeStatusParty(collection2, journal2, status5)
+        makeStatusParty(collection2, journal2, status6)
+        makeStatusParty(collection2, journal2, status7)
+        makeStatusParty(collection2, journal2, status8)
+        makeStatusParty(collection2, journal2, status9)
+        makeStatusParty(collection2, journal2, status10)
+
+        makeStatusParty(collection2, journal3, status11)
+        makeStatusParty(collection2, journal3, status12)
+        makeStatusParty(collection2, journal3, status13)
+        makeStatusParty(collection2, journal3, status14)
 
         def get_user_collections():
             return user.user_collection.all()
-
         user_journals = models.Journal.userobjects.all(
             get_all_collections=get_user_collections).deceased()
 
-        self.assertEqual(user_journals.count(), 1)
-        for j in user_journals:
-            self.assertEqual(j.pub_status, 'deceased')
+        self.assertEqual(user_journals.count(), 2)
 
     def test_inprogress(self):
-        collection = modelfactories.CollectionFactory.create()
+        def makeStatusParty(collection, journal, status):
 
-        user = self._make_user(collection)
+            return modelfactories.StatusPartyFactory.create(
+                collection=collection,
+                journal=journal,
+                publication_status=status
+            )
 
-        journal = modelfactories.JournalFactory.create(pub_status='inprogress')
+        user = modelfactories.UserFactory(is_active=True)
 
-        status = modelfactories.JournalPublicationEventsFactory.create()
+        collection1 = modelfactories.CollectionFactory.create(name="Collection1")
+        collection2 = modelfactories.CollectionFactory.create(name="Collection2")        
+        collection1.add_user(user, is_manager=True)
+        collection2.add_user(user, is_manager=True)
 
-        modelfactories.StatusPartyFactory.create(
-            collection=collection,
-            journal=journal,
-            publication_status=status
-        )
+        journal1 = modelfactories.JournalFactory.create(title=u'Journal 1')
+        journal2 = modelfactories.JournalFactory.create(title=u'Journal 2')
+        journal3 = modelfactories.JournalFactory.create(title=u'Journal 3')
+
+        status1 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=True)
+
+        status2 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status3 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', reason='gostei!', last_status=False)
+        status4 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', reason='gostei!', last_status=True)
+
+        status5 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status6 = modelfactories.JournalPublicationEventsFactory.create(status=u'current', last_status=True)
+
+        status7 = modelfactories.JournalPublicationEventsFactory.create(status=u'inprogress', last_status=False)
+        status8 = modelfactories.JournalPublicationEventsFactory.create(status=u'suspended', last_status=True)
+
+        #Colombia
+        makeStatusParty(collection1, journal1, status1)
+        makeStatusParty(collection1, journal2, status2)
+        makeStatusParty(collection1, journal2, status3)
+
+        #Brasil
+        makeStatusParty(collection2, journal2, status4)
+        makeStatusParty(collection2, journal2, status5)
+        makeStatusParty(collection2, journal2, status6)
+        makeStatusParty(collection2, journal3, status7)
+        makeStatusParty(collection2, journal3, status8)
 
         def get_user_collections():
             return user.user_collection.all()
-
         user_journals = models.Journal.userobjects.all(
             get_all_collections=get_user_collections).inprogress()
 
         self.assertEqual(user_journals.count(), 1)
-        for j in user_journals:
-            self.assertEqual(j.pub_status, 'inprogress')
 
 
 class SectionManagerTests(TestCase):
