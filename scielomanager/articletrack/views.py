@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 
 from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response, get_object_or_404
@@ -24,6 +25,9 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+
+logger = logging.getLogger(__name__)
 
 
 @waffle_flag('articletrack')
@@ -326,42 +330,40 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
         return HttpResponseBadRequest()
 
 
+@waffle_flag('articletrack')
 @login_required
 def ajx_set_attempt_proceed_to_checkout(request, attempt_id, checkin_id):
     """
     View function responsible for mark an attempt to checkout process
     """
-
     if not request.is_ajax():
         return HttpResponse(status=400)
 
-    balaio_rcp = BalaioRPC()
+    rpc_client = BalaioRPC()
+    rpc_response = rpc_client.call('proceed_to_checkout', [attempt_id,])
 
-    rpc_response = balaio_rcp.send_request('_rpc/proceed_to_checkout/',
-        'proceed_to_checkout', [attempt_id,])
-
-    #if the xmlrpc response is positive, we should store the user who performed
-    #the operation date/time
+    #if the response is True, the checkin must be marked as accepted
     if rpc_response:
         checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
-        checkin.user_accepted_to_checkout = request.user
-        checkin.accepted_at = datetime.datetime.now()
-        checkin.save()
+        try:
+            checkin.accept(request.user)
+        except ValueError as e:
+            logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
+            rpc_response = False
 
     return HttpResponse(json.dumps(rpc_response), mimetype="application/json")
 
 
+@waffle_flag('articletrack')
 @login_required
 def ajx_verify_status_rpc(request):
     """
     View function responsible to check the XML-RPC status
     """
-
     if not request.is_ajax():
         return HttpResponse(status=400)
 
-    balaio_rcp = BalaioRPC()
+    rpc_client = BalaioRPC()
+    return HttpResponse(json.dumps({'rpc_status': rpc_client.is_up()}),
+        mimetype="application/json")
 
-    rpc_response = balaio_rcp.connection_status()
-
-    return HttpResponse(json.dumps({'rpc_status': rpc_response}), mimetype="application/json")

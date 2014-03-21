@@ -7,47 +7,45 @@ import xmlrpclib
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-class BalaioAPI(object):
 
-
-    def __init__(self, using='default'):
-        self.using = using
-        self.validate_settings()
-        self.conf =  settings.API_BALAIO[self.using]
-
-
-    def validate_settings(self):
-        if not self.using in settings.API_BALAIO.keys():
-            raise ImproperlyConfigured("settings.API_BALAIO don't have using == %s" % self.using)
+class SettingsMixin(object):
+    def validate_settings(self, using):
+        if not using in settings.API_BALAIO.keys():
+            raise ImproperlyConfigured("settings.API_BALAIO don't have using == %s" % using)
 
         for k in ['PROTOCOL', 'HOST', 'PORT', 'PATH']:
-            if k not in settings.API_BALAIO[self.using].keys():
-                raise ImproperlyConfigured('settings.API_BALAIO (using == %s) dont have defined %s' % (self.using, k))
+            if k not in settings.API_BALAIO[using].keys():
+                raise ImproperlyConfigured('settings.API_BALAIO (using == %s) dont have defined %s' % (using, k))
             else:
-                if not settings.API_BALAIO[self.using][k]:
-                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have value' % (self.using, k))
-                v = settings.API_BALAIO[self.using][k]
+                if not settings.API_BALAIO[using][k]:
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have value' % (using, k))
+                v = settings.API_BALAIO[using][k]
                 if k == 'PROTOCOL' and v not in ('http', 'https'):
-                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must be: http or https' % (self.using, k))
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must be: http or https' % (using, k))
                 if k == 'HOST' and v == '':
-                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a valid host' % (self.using, k))
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a valid host' % (using, k))
                 if k == 'PORT' and not v.isdigit():
-                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a valid port' % (self.using, k))
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a valid port' % (using, k))
                 if k == 'PATH' and (v == '' or v[0] != '/'):
-                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a non-empty path and must start with /' % (self.using, k))
+                    raise ImproperlyConfigured('settings.API_BALAIO[%s][%s] must have a non-empty path and must start with /' % (using, k))
         return True
 
 
+class BalaioAPI(SettingsMixin):
+
+    def __init__(self, using='default'):
+        self.using = using
+        self.validate_settings(self.using)
+        self.conf =  settings.API_BALAIO[self.using]
+
     def get_hostname(self):
         return '%s://%s:%s/' % (self.conf['PROTOCOL'], self.conf['HOST'], self.conf['PORT'])
-
 
     def get_basepath(self):
         return self.conf['PATH']
 
     def get_fullpath(self):
         return '%s%s' % (self.get_hostname(), self.get_basepath()[1:])
-
 
     def is_up(self):
         url = self.get_hostname() + 'status/'
@@ -57,14 +55,12 @@ class BalaioAPI(object):
         except urllib2.URLError:
             return False
 
-
     def _response_is_json(response):
         response_headers = response.info()
         for header in response_headers:
             if header.startswith('Content-Type:') and 'json' in header:
                 return True
         return False
-
 
     def _open(self, url):
         try:
@@ -82,7 +78,6 @@ class BalaioAPI(object):
             else:
                 raise StopIteration()
 
-
     def _process_response_as_json(self, iterable):
 
         try:
@@ -94,67 +89,57 @@ class BalaioAPI(object):
             json_response['error'] = False
         return json_response
 
-
     def list_files_members_by_attempt(self, attempt_id):
         url = self.get_fullpath() + 'files/%s/' % str(attempt_id)
         response = self._open(url)
         return self._process_response_as_json(response)
 
-
     def get_file_member_by_attempt(self, attempt_id, target_name, file_member):
         url = self.get_fullpath() + 'files/%s/%s.zip/?file=%s' % (attempt_id, target_name, file_member)
         return self._open(url)
 
-
     def get_files_members_by_attempt(self, attempt_id, target_name, files_members):
         files_members = '&file='.join(files_members)
         return self.get_file_member_by_attempt(attempt_id, target_name, files_members)
-
 
     def get_full_package(self, attempt_id, target_name):
         url = self.get_fullpath() + 'files/%s/%s.zip/?full=true' % (attempt_id, target_name)
         return self._open(url)
 
 
-class BalaioRPC(object):
+class BalaioRPC(SettingsMixin):
+    _xmlrpclib = xmlrpclib
 
     def __init__(self, using='default'):
+        self.validate_settings(using)
         self.conf =  settings.API_BALAIO[using]
+        self.server_path = self._fullpath()
 
-    def connection_status(self):
+    def is_up(self):
         """
-        Verify the xmlrpc connection
+        Check if the RPC server is available.
         """
-        s = xmlrpclib.ServerProxy(self.get_fullpath() + '_rpc/status/')
-
         try:
-            s.status()
-            return True
-        except socket.error:
-            # socket error which mean that services is unavailable
+            return self.call('status')
+        except xmlrpclib.Error:
             return False
 
-    def make_connection(self, uri):
-        return xmlrpclib.ServerProxy(uri)
+    def get_server(self, uri):
+        return self._xmlrpclib.ServerProxy(uri)
 
-    def get_hostname(self):
-        return '%s://%s:%s/' % (self.conf['PROTOCOL'], self.conf['HOST'], self.conf['PORT'])
+    def _fullpath(self):
+        return '%s://%s:%s/%s/_rpc/' % (self.conf['PROTOCOL'], self.conf['HOST'].strip('/'),
+            self.conf['PORT'], self.conf['PATH'].strip('/'))
 
-    def get_basepath(self):
-        return self.conf['PATH']
-
-    def get_fullpath(self):
-        return '%s%s' % (self.get_hostname(), self.get_basepath()[1:])
-
-    def send_request(self, path_info, method, *params):
+    def call(self, method, args=()):
         """
-        Method responsable to send request to XML-RPC ServerProxy
-        ::param path_info: specifies a path to be interpreted in RPC server
-        ::param method: name of remote RCP method
-        ::param *params: params tho the RPC method
+        Call the remote procedure.
+
+        ::param method: name of remote procedure
+        ::param args: (optional) collection of arguments
         """
-        uri = self.get_fullpath() + path_info
+        uri = '%s/%s/' % (self.server_path.strip('/'), method)
+        rpc_server = self.get_server(uri)
 
-        conn = self.make_connection(uri)
+        return getattr(rpc_server, method)(*args)
 
-        return getattr(conn, method)(*params)
