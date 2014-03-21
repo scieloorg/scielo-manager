@@ -965,14 +965,15 @@ class CheckinRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'article',
-            u'attempt_ref',
-            u'created_at',
-            u'id',
-            u'package_name',
-            u'resource_uri',
-            u'uploaded_at',
-        ]
+                u'accepted_at',
+                u'article',
+                u'attempt_ref',
+                u'created_at',
+                u'id',
+                u'package_name',
+                u'resource_uri',
+                u'uploaded_at'
+            ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 

@@ -1,9 +1,11 @@
 import datetime
 import json
+import logging
 
 from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.utils.translation import ugettext as _
 from django.contrib import messages
@@ -15,7 +17,7 @@ from django.template.defaultfilters import slugify
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
 from .forms import CommentMessageForm, TicketForm
-from .balaio_api import BalaioAPI
+from .balaio import BalaioAPI, BalaioRPC
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -23,6 +25,9 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+
+logger = logging.getLogger(__name__)
 
 
 @waffle_flag('articletrack')
@@ -323,4 +328,42 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
             return view_response
     else:
         return HttpResponseBadRequest()
+
+
+@waffle_flag('articletrack')
+@login_required
+def ajx_set_attempt_proceed_to_checkout(request, attempt_id, checkin_id):
+    """
+    View function responsible for mark an attempt to checkout process
+    """
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    rpc_client = BalaioRPC()
+    rpc_response = rpc_client.call('proceed_to_checkout', [attempt_id,])
+
+    #if the response is True, the checkin must be marked as accepted
+    if rpc_response:
+        checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+        try:
+            checkin.accept(request.user)
+        except ValueError as e:
+            logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
+            rpc_response = False
+
+    return HttpResponse(json.dumps(rpc_response), mimetype="application/json")
+
+
+@waffle_flag('articletrack')
+@login_required
+def ajx_verify_status_rpc(request):
+    """
+    View function responsible to check the XML-RPC status
+    """
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    rpc_client = BalaioRPC()
+    return HttpResponse(json.dumps({'rpc_status': rpc_client.is_up()}),
+        mimetype="application/json")
 
