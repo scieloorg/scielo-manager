@@ -89,7 +89,7 @@ class JournalCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         objects_all = self.available(is_available).filter(
-            collection=default_collection).distinct()
+            collections=default_collection).distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -104,13 +104,13 @@ class JournalCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         recents = self.filter(
-            collection=default_collection).distinct().order_by('-updated')[:5]
+            collections=default_collection).distinct().order_by('-updated')[:5]
 
         return recents
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            collection=collection)
+            collections=collection)
         return objects_all
 
     def by_issn(self, issn):
@@ -137,7 +137,7 @@ class SectionCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         objects_all = self.available(is_available).filter(
-            journal__collection=default_collection).distinct()
+            journal__collections=default_collection).distinct()
 
         return objects_all
 
@@ -146,7 +146,7 @@ class IssueCustomManager(AppCustomManager):
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            journal__collection=collection)
+            journal__collections=collection)
 
         return objects_all
 
@@ -651,7 +651,7 @@ class Journal(caching.base.CachingMixin, models.Model):
         Membership.objects.create(journal=self,
                                   collection=collection,
                                   created_by=responsible,
-                                  publication_status='inprogress')
+                                  status='inprogress')
 
     def membership_info(self, collection, attribute=None):
         """Retrieve info about the relation of this journal with a
