@@ -493,7 +493,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
     use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
-    collection = models.ForeignKey('Collection', verbose_name=_('Collection'), related_name='journals')
+    collections = models.ManyToManyField('Collection', through='Membership')
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=64, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
@@ -526,10 +526,6 @@ class Journal(caching.base.CachingMixin, models.Model):
     medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
-    pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
-        choices=choices.JOURNAL_PUBLICATION_STATUS)
-    pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
-    pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]))
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -570,15 +566,6 @@ class Journal(caching.base.CachingMixin, models.Model):
         ordering = ['title']
         permissions = (("list_journal", "Can list Journals"),
                        ("list_editor_journal", "Can list editor Journals"))
-
-    def change_publication_status(self, status, reason, changed_by):
-        """
-        Syntatic suggar for changing publication status.
-        """
-        self.pub_status = status
-        self.pub_status_reason = reason
-        self.pub_status_changed_by = changed_by
-        self.save()
 
     def issues_as_grid(self, is_available=True):
         objects_all = self.issue_set.available(is_available).order_by(
@@ -656,6 +643,75 @@ class Journal(caching.base.CachingMixin, models.Model):
 
         attr = u'print_issn' if self.scielo_issn == u'print' else u'eletronic_issn'
         return getattr(self, attr)
+
+    def join(self, collection, responsible):
+        """Make this journal part of the collection.
+        """
+
+        Membership.objects.create(journal=self,
+                                  collection=collection,
+                                  created_by=responsible,
+                                  publication_status='inprogress')
+
+    def membership_info(self, collection, attribute=None):
+        """Retrieve info about the relation of this journal with a
+        given collection.
+        """
+        rel = self.membership_set.get(collection=collection)
+        if attribute:
+            return getattr(rel, attribute)
+        else:
+            return rel
+
+    def change_status(self, collection, new_status, reason, responsible):
+        rel = self.membership_info(collection)
+        rel.publication_status = new_status
+        rel.reason = reason
+        rel.created_by = responsible
+        rel.save()
+
+
+class Membership(models.Model):
+    """
+    Represents the many-to-many relation
+    between Journal and Collection.
+    """
+    journal = models.ForeignKey('Journal')
+    collection = models.ForeignKey('Collection')
+    status = models.CharField(max_length=16, default="inprogress",
+        choices=choices.JOURNAL_PUBLICATION_STATUS)
+    since = models.DateTimeField(auto_now=True)
+    reason = models.TextField(_('Why are you changing the publication status?'),
+        blank=True, default="")
+    created_by = models.ForeignKey(User, editable=False)
+
+    def save(self, *args, **kwargs):
+        """
+        Always save a copy at JournalTimeline
+        """
+        super(Membership, self).save(*args, **kwargs)
+        JournalTimeline.objects.create(journal=self.journal,
+                                       collection=self.collection,
+                                       status=self.status,
+                                       reason=self.reason,
+                                       created_by=self.created_by,
+                                       since=self.since)
+
+    class Meta():
+        unique_together = ("journal", "collection")
+
+
+class JournalTimeline(models.Model):
+    """
+    Represents the status history of a journal.
+    """
+    journal = models.ForeignKey('Journal', related_name='statuses')
+    collection = models.ForeignKey('Collection')
+    status = models.CharField(max_length=16,
+        choices=choices.JOURNAL_PUBLICATION_STATUS)
+    since = models.DateTimeField()
+    reason = models.TextField(default="")
+    created_by = models.ForeignKey(User)
 
 
 class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
@@ -1147,26 +1203,26 @@ class Article(caching.base.CachingMixin, models.Model):
 ####
 # Pre and Post save to handle `Journal.pub_status` data modification.
 ####
-@receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
-def journal_pub_status_pre_save(sender, **kwargs):
-    """
-    Fetch the `pub_status` value from the db before the data is modified.
-    """
-    try:
-        kwargs['instance']._pub_status = Journal.nocacheobjects.get(pk=kwargs['instance'].pk).pub_status
-    except Journal.DoesNotExist:
-        return None
+# @receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
+# def journal_pub_status_pre_save(sender, **kwargs):
+#     """
+#     Fetch the `pub_status` value from the db before the data is modified.
+#     """
+#     try:
+#         kwargs['instance']._pub_status = Journal.nocacheobjects.get(pk=kwargs['instance'].pk).pub_status
+#     except Journal.DoesNotExist:
+#         return None
 
 
-@receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
-def journal_pub_status_post_save(sender, instance, created, **kwargs):
-    """
-    Check if the `pub_status` value is new or has been modified.
-    """
-    if getattr(instance, '_pub_status', None) and instance.pub_status == instance._pub_status:
-        return None
+# @receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
+# def journal_pub_status_post_save(sender, instance, created, **kwargs):
+#     """
+#     Check if the `pub_status` value is new or has been modified.
+#     """
+#     if getattr(instance, '_pub_status', None) and instance.pub_status == instance._pub_status:
+#         return None
 
-    JournalPublicationEvents.objects.create(journal=instance,
-        status=instance.pub_status, changed_by=instance.pub_status_changed_by, reason=instance.pub_status_reason)
+#     JournalPublicationEvents.objects.create(journal=instance,
+#         status=instance.pub_status, changed_by=instance.pub_status_changed_by, reason=instance.pub_status_reason)
 
 models.signals.post_save.connect(create_api_key, sender=User)
