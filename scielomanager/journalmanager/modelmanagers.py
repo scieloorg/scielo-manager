@@ -39,10 +39,10 @@ user_request_context = usercontext.get_finder()
 
 class JournalQuerySet(UserObjectQuerySet):
     def all(self, get_all_collections=user_request_context.get_current_user_collections):
-        return self.filter(collection__in=get_all_collections())
+        return self.filter(collections__in=get_all_collections())
 
     def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
-        return self.filter(collection=get_active_collection())
+        return self.filter(collections=get_active_collection())
 
     def startswith(self, char):
         return self.filter(title__istartswith=unicode(char))
@@ -57,16 +57,16 @@ class JournalQuerySet(UserObjectQuerySet):
         return self.filter(is_trashed=True)
 
     def current(self):
-        return self.filter(pub_status='current')
+        return self.filter(membership__status='current')
 
     def suspended(self):
-        return self.filter(pub_status='suspended')
+        return self.filter(membership__status='suspended')
 
     def deceased(self):
-        return self.filter(pub_status='deceased')
+        return self.filter(membership__status='deceased')
 
     def inprogress(self):
-        return self.filter(pub_status='inprogress')
+        return self.filter(membership__status='inprogress')
 
 
 class JournalManager(UserObjectManager):
