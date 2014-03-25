@@ -3,6 +3,8 @@
 Use this module to write functional tests for the view-functions, only!
 """
 import os
+import unittest
+
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -748,6 +750,7 @@ class JournalFormTests(WebTest):
         self.assertIn('There are some errors or missing data', response.body)
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
+    @unittest.skip('datamodel-ovehaul-v2')
     def test_user_add_journal_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
