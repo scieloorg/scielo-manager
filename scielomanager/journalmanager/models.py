@@ -666,7 +666,6 @@ class Journal(caching.base.CachingMixin, models.Model):
     def change_status(self, collection, new_status, reason, responsible):
         rel = self.membership_info(collection)
         rel.status = new_status
-        rel.created_by = responsible
         rel.reason = reason
         rel.save()
 
