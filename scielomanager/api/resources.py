@@ -161,12 +161,14 @@ class JournalResource(ModelResource):
     languages = fields.CharField(readonly=True)
     use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
-    collections = fields.ForeignKey(CollectionResource, 'collection')
+    collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
     pub_status_history = fields.ListField(readonly=True)
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
+    pub_status = fields.CharField(readonly=True)
+    pub_status_reason = fields.CharField(readonly=True)
 
     #recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
@@ -192,7 +194,7 @@ class JournalResource(ModelResource):
 
         if 'collection' in filters:
             journals = Journal.objects.filter(
-                collection__name_slug=filters['collection'])
+                collections__name_slug=filters['collection'])
             orm_filters['pk__in'] = journals
 
         if 'pubstatus' in filters:
@@ -204,7 +206,7 @@ class JournalResource(ModelResource):
 
             statuses = filters.getlist('pubstatus')
             journals = j.filter(
-                pub_status__in=statuses)
+                membership__status__in=statuses)
             orm_filters['pk__in'] = journals
 
         return orm_filters
@@ -222,13 +224,29 @@ class JournalResource(ModelResource):
             for language in bundle.obj.languages.all()]
 
     def dehydrate_pub_status_history(self, bundle):
-        return [{'date': event.created_at,
+        return [{'date': event.since,
                 'status': event.status}
-            for event in bundle.obj.status_history.order_by('-created_at').all()]
+            for event in bundle.obj.statuses.order_by('-since').all()]
 
     def dehydrate_study_areas(self, bundle):
         return [area.study_area
             for area in bundle.obj.study_areas.all()]
+
+    def dehydrate_collections(self, bundle):
+        """Only works com v1, without multiple collections per journal.
+        """
+        try:
+            return bundle.data['collections'][0]
+        except IndexError:
+            return ''
+
+    def dehydrate_pub_status(self, bundle):
+        col = bundle.obj.collections.get()
+        return bundle.obj.membership_info(col, 'status')
+
+    def dehydrate_pub_status_reason(self, bundle):
+        col = bundle.obj.collections.get()
+        return bundle.obj.membership_info(col, 'reason')
 
 
 class DataChangeEventResource(ModelResource):

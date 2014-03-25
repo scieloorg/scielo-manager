@@ -71,7 +71,8 @@ class JournalForm(ModelForm):
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
         required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
-    collection = forms.ModelChoiceField(models.Collection.objects.none(),
+    collections = forms.ModelMultipleChoiceField(models.Collection.objects.none(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
         required=True)
 
     def __init__(self, *args, **kwargs):
@@ -79,7 +80,7 @@ class JournalForm(ModelForm):
         super(JournalForm, self).__init__(*args, **kwargs)
 
         if collections_qset is not None:
-            self.fields['collection'].queryset = models.Collection.objects.filter(
+            self.fields['collections'].queryset = models.Collection.objects.filter(
                 pk__in=(collection.collection.pk for collection in collections_qset))
 
     def save_all(self, creator):
@@ -87,9 +88,6 @@ class JournalForm(ModelForm):
 
         if self.instance.pk is None:
             journal.creator = creator
-
-        if not journal.pub_status_changed_by_id:
-            journal.pub_status_changed_by = creator
 
         journal.save()
         self.save_m2m()
@@ -172,7 +170,6 @@ class JournalForm(ModelForm):
     class Meta:
 
         model = models.Journal
-        exclude = ('pub_status', 'pub_status_changed_by')
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class': 'span9'}),
@@ -254,10 +251,20 @@ class UserForm(ModelForm):
         return user
 
 
-class EventJournalForm(forms.Form):
-    pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
-    pub_status_reason = forms.CharField(widget=forms.Textarea)
+class MembershipForm(ModelForm):
+    status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
+    reason = forms.CharField(widget=forms.Textarea)
 
+    class Meta():
+        model = models.Membership
+        exclude = ('journal', 'collection', 'since', 'created_by')
+
+    def save_all(self, user, journal, collection):
+        membership = self.save(commit=False)
+        membership.journal = journal
+        membership.collection = collection
+        membership.created_by = user
+        membership.save()
 
 class IssueForm(ModelForm):
     section = forms.ModelMultipleChoiceField(models.Section.objects.none(),

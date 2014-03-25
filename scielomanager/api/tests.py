@@ -69,7 +69,10 @@ class JournalRestAPITest(WebTest):
             self.assertTrue(fltr in resource_filters.filtering)
 
     def test_journal_getone(self):
+        col = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+
         response = self.app.get('/api/v1/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
@@ -109,15 +112,20 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(response.status_code, 405)
 
     def test_list_all_by_collection(self):
+        collection = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create()
-        collection_name = journal.collection.name
+        journal.join(collection, self.user)
+        collection_name = collection.name
         response = self.app.get('/api/v1/journals/?collection=%s' % collection_name,
             extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
     def test_api_v1_datamodel(self):
+        col = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+
         response = self.app.get('/api/v1/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ)
 
@@ -211,8 +219,16 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(response.status_code, 401)
 
     def test_filter_by_pubstatus(self):
-        journal = modelfactories.JournalFactory.create(pub_status='current')
-        journal2 = modelfactories.JournalFactory.create(pub_status='deceased')
+        col = modelfactories.CollectionFactory()
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+        journal.change_status(col, 'current', 'testing', self.user)
+
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(col, self.user)
+        journal2.change_status(col, 'deceased', 'testing', self.user)
+
         response = self.app.get('/api/v1/journals/?pubstatus=current',
             extra_environ=self.extra_environ)
 
@@ -220,8 +236,16 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
 
     def test_filter_by_pubstatus_many_values(self):
-        journal = modelfactories.JournalFactory.create(pub_status='current')
-        journal2 = modelfactories.JournalFactory.create(pub_status='deceased')
+        col = modelfactories.CollectionFactory()
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+        journal.change_status(col, 'current', 'testing', self.user)
+
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(col, self.user)
+        journal2.change_status(col, 'deceased', 'testing', self.user)
+
         response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased',
             extra_environ=self.extra_environ)
 
@@ -229,19 +253,29 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(len(json.loads(response.content)['objects']), 2)
 
     def test_filter_by_pubstatus_many_values_filtering_by_collection(self):
-        journal = modelfactories.JournalFactory.create(pub_status='current')
-        journal2 = modelfactories.JournalFactory.create(pub_status='deceased')
-        collection_name = journal.collection.name
+        col = modelfactories.CollectionFactory()
+        col2 = modelfactories.CollectionFactory()
 
-        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % collection_name,
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+        journal.change_status(col, 'current', 'testing', self.user)
+
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(col2, self.user)
+        journal2.change_status(col2, 'deceased', 'testing', self.user)
+
+        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % col.name,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
 
     def test_filter_print_issn(self):
+        col = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create(print_issn='1234-1234')
+        journal.join(col, self.user)
         journal2 = modelfactories.JournalFactory.create(print_issn='4321-4321')
+        journal2.join(col, self.user)
         response = self.app.get('/api/v1/journals/?print_issn=1234-1234',
             extra_environ=self.extra_environ)
 
@@ -250,8 +284,11 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(json.loads(response.content)['objects'][0]['print_issn'], '1234-1234')
 
     def test_filter_eletronic_issn(self):
+        col = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create(eletronic_issn='1234-1234')
+        journal.join(col, self.user)
         journal2 = modelfactories.JournalFactory.create(eletronic_issn='4321-4321')
+        journal2.join(col, self.user)
         response = self.app.get('/api/v1/journals/?eletronic_issn=1234-1234',
             extra_environ=self.extra_environ)
 
