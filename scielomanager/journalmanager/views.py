@@ -32,6 +32,7 @@ from django.conf import settings
 from . import models
 from .forms import *
 from scielomanager.utils.pendingform import PendingPostData
+from scielomanager.utils import usercontext
 from scielomanager.tools import (
     get_paginated,
     get_referer_view,
@@ -46,6 +47,8 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+user_request_context = usercontext.get_finder()
 
 
 def get_first_letter(objects_all):
@@ -400,27 +403,27 @@ def edit_journal_status(request, journal_id=None):
     Allow user just to update the status history of a specific journal.
     """
     # Always a new event. Considering that events must not be deleted or changed.
-    journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
+    journal_history = models.JournalTimeline.objects.filter(journal=journal_id).order_by('-since')
     journal = get_object_or_404(models.Journal, id=journal_id)
 
+    current_user_collection = user_request_context.get_current_user_collections()[0]
+
     if request.method == "POST":
-        journaleventform = EventJournalForm(request.POST)
+        membership = models.Membership.objects.get(journal=journal, collection=current_user_collection)
+        membershipform = MembershipForm(request.POST, instance=membership)
 
-        if journaleventform.is_valid():
-            cleaned_data = journaleventform.cleaned_data
-            journal.change_publication_status(cleaned_data["pub_status"],
-                cleaned_data["pub_status_reason"], request.user)
-
+        if membershipform.is_valid():
+            membershipform.save_all(request.user, journal, current_user_collection)
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse(
                 'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
-    else:
-        journaleventform = EventJournalForm()
+
+    membershipform = MembershipForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
-                              'add_form': journaleventform,
+                              'add_form': membershipform,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))

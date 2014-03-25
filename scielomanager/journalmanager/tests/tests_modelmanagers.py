@@ -293,14 +293,14 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 0)
 
-    @unittest.skip('datamodel-overhaul-v2')
     def test_current(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='current')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+        journal.change_status(collection, 'current', 'reason', user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -310,16 +310,16 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'current')
+            self.assertEqual(j.membership_info(collection).status, 'current')
 
-    @unittest.skip('datamodel-overhaul-v2')
     def test_suspended(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='suspended')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+        journal.change_status(collection, 'suspended', 'reason', user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -329,16 +329,16 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'suspended')
+            self.assertEqual(j.membership_info(collection).status, 'suspended')
 
-    @unittest.skip('datamodel-overhaul-v2')
     def test_deceased(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='deceased')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+        journal.change_status(collection, 'deceased', 'reason', user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -348,16 +348,15 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'deceased')
+            self.assertEqual(j.membership_info(collection).status, 'deceased')
 
-    @unittest.skip('datamodel-overhaul-v2')
     def test_inprogress(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='inprogress')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -367,7 +366,7 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'inprogress')
+            self.assertEqual(j.membership_info(collection).status, 'inprogress')
 
 
 class SectionManagerTests(TestCase):

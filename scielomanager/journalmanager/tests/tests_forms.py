@@ -807,7 +807,7 @@ class JournalFormTests(WebTest):
         form['journal-editor_phone2'] = '(11) 3289-0741'
         form['journal-editor_email'] = 'cbcd@cbcd.org.br'
         form['journal-use_license'] = use_license.pk
-        form['journal-collection'] = str(self.collection.pk)
+        form.set('journal-collections', str(self.collection.pk))
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
         form.set('journal-subject_categories', str(subject_category.pk))
@@ -899,7 +899,7 @@ class JournalFormTests(WebTest):
         form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
 
         self.assertRaises(ValueError,
-            lambda: form.set('journal-collection', collection3.pk))
+            lambda: form.set('journal-collections', [str(collection3.pk)]))
 
 
 class SponsorFormTests(WebTest):
@@ -1422,7 +1422,7 @@ class StatusFormTests(WebTest):
         page = self.app.get(reverse('journal_status.edit',
             args=[self.journal.pk]), user=self.user)
 
-        page.mustcontain('pub_status', 'pub_status_reason')
+        page.mustcontain('status', 'reason')
         self.assertTemplateUsed(page, 'journalmanager/edit_journal_status.html')
 
     def test_access_without_permission(self):
@@ -1453,8 +1453,8 @@ class StatusFormTests(WebTest):
         form = self.app.get(reverse('journal_status.edit',
             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
 
-        form.set('pub_status', 'deceased')
-        form['pub_status_reason'] = 'Motivo 1'
+        form.set('status', 'deceased')
+        form['reason'] = 'Motivo 1'
 
         response = form.submit().follow()
 
@@ -1474,7 +1474,7 @@ class StatusFormTests(WebTest):
 
         form = self.app.get(reverse('journal_status.edit',
             args=[self.journal.pk]), user=self.user).forms['journal-status-form']
-        form.set('pub_status', 'deceased')
+        form.set('status', 'deceased')
 
         response = form.submit()
 

@@ -25,6 +25,8 @@ class Migration(DataMigration):
             ms.status = jpe.status
             ms.reason = jpe.reason
             ms.created_by = jpe.changed_by
+            ms.save()
+            # updating with the correct date.
             ms.since = jpe.created_at
             ms.save()
 

@@ -142,7 +142,6 @@ class RecentActivitiesTests(WebTest):
         page = self.app.get(reverse('index'), user=user)
         page.mustcontain('href="mailto:%s"' % user.email)
 
-    @unittest.skip('datamodel-overhaul-v2')
     def test_expected_table_row(self):
         user = auth.UserF(is_active=True)
         collection = modelfactories.CollectionFactory.create(name='Brasil')
