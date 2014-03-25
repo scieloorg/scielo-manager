@@ -62,7 +62,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         Checks if this checkin has been accepted
         """
-        return self.accepted_by and self.accepted_at
+        return bool(self.accepted_by and self.accepted_at)
 
     def accept(self, responsible):
         """
