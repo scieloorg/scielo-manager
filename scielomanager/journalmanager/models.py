@@ -713,35 +713,6 @@ class JournalTimeline(models.Model):
     created_by = models.ForeignKey(User)
 
 
-class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
-    """
-    Records the status changes for a given Journal.
-
-    Known status:
-    * Current
-    * Deceased
-    * Suspended
-    * In progress
-    """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
-    journal = models.ForeignKey(Journal, editable=False, related_name='status_history')
-    status = models.CharField(_('Journal Status'), max_length=16,)
-    reason = models.TextField(_('Reason'), blank=True, default="",)
-    created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
-    changed_by = models.ForeignKey(User, editable=False)
-
-    def __unicode__(self):
-        return self.status
-
-    class Meta:
-        verbose_name = 'journal publication event'
-        verbose_name_plural = 'Journal Publication Events'
-        ordering = ['created_at']
-        permissions = (("list_publication_events", "Can list Publication Events"),)
-
-
 class JournalTitle(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
