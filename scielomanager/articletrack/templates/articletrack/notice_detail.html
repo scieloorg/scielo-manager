@@ -326,17 +326,17 @@
         });
 
       $('#button_accept').click(function(event){
-          $.get('{% url ajx.ajx_set_attempt_proceed_to_checkout checkin.attempt_ref checkin.pk %}')
-            .done(function(data){
-              if (!data){
-                $('#attempt_scheduled').css('display', 'block').addClass('alert alert-warning').html('<i class="icon-warning-sign"></i> {% trans "This attempt connot be set to checkout" %}')
-              }else{
-                $('#attempt_scheduled').css('display', 'block').addClass('alert alert-info').html('<i class="icon-info-sign"></i> {% trans "Attempt scheduled to checkout" %}')
-              }
-            })
-            .fail(function(){
-              $('#attempt_scheduled').css('display', 'block').addClass('alert alert-error').html('<i class="icon-exclamation-sign"></i> {% trans "An unexpected error, this attempt connot set to checkout. Please try again later." %}')
-            });
+        $.get('{% url ajx.ajx_set_attempt_proceed_to_checkout checkin.attempt_ref checkin.pk %}')
+          .done(function(data){
+            if (!data){
+              $('#attempt_scheduled').css('display', 'block').addClass('alert alert-warning').html('<i class="icon-warning-sign"></i> {% trans "This attempt connot be set to checkout" %}')
+            }else{
+              $('#attempt_scheduled').css('display', 'block').addClass('alert alert-info').html('<i class="icon-info-sign"></i> {% trans "Attempt scheduled to checkout" %}')
+            }
+          })
+          .fail(function(){
+            $('#attempt_scheduled').css('display', 'block').addClass('alert alert-error').html('<i class="icon-exclamation-sign"></i> {% trans "An unexpected error, this attempt connot set to checkout. Please try again later." %}')
+          });
       });
 
       $('#files_select_checkbox').click(function(){
