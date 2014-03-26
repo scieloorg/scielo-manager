@@ -20,11 +20,14 @@ class Migration(SchemaMigration):
         # Deleting field 'Journal.pub_status_reason'
         db.delete_column('journalmanager_journal', 'pub_status_reason')
 
+        # Deleting model 'JournalPublicationEvents'
+        db.delete_table('journalmanager_journalpublicationevents')
+
     def backwards(self, orm):
 
         # User chose to not deal with backwards NULL issues for 'Journal.pub_status_changed_by'
         raise RuntimeError("Cannot reverse this migration. 'Journal.pub_status_changed_by' and its values cannot be restored.")
-        
+
         # The following code is provided here to aid in writing a correct migration        # Adding field 'Journal.pub_status_changed_by'
         db.add_column('journalmanager_journal', 'pub_status_changed_by',
                       self.gf('django.db.models.fields.related.ForeignKey')(related_name='pub_status_changed_by', to=orm['auth.User']),
@@ -33,7 +36,7 @@ class Migration(SchemaMigration):
 
         # User chose to not deal with backwards NULL issues for 'Journal.collection'
         raise RuntimeError("Cannot reverse this migration. 'Journal.collection' and its values cannot be restored.")
-        
+
         # The following code is provided here to aid in writing a correct migration        # Adding field 'Journal.collection'
         db.add_column('journalmanager_journal', 'collection',
                       self.gf('django.db.models.fields.related.ForeignKey')(related_name='journals', to=orm['journalmanager.Collection']),
@@ -48,6 +51,17 @@ class Migration(SchemaMigration):
         db.add_column('journalmanager_journal', 'pub_status_reason',
                       self.gf('django.db.models.fields.TextField')(default='', blank=True),
                       keep_default=False)
+
+        # Adding model 'JournalPublicationEvents'
+        db.create_table('journalmanager_journalpublicationevents', (
+            ('status', self.gf('django.db.models.fields.CharField')(max_length=16)),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='status_history', to=orm['journalmanager.Journal'])),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('reason', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
+            ('changed_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+        ))
+        db.send_create_signal('journalmanager', ['JournalPublicationEvents'])
 
 
     models = {
@@ -255,15 +269,6 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'missions'", 'to': "orm['journalmanager.Journal']"}),
             'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True'})
-        },
-        'journalmanager.journalpublicationevents': {
-            'Meta': {'ordering': "['created_at']", 'object_name': 'JournalPublicationEvents'},
-            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'status_history'", 'to': "orm['journalmanager.Journal']"}),
-            'reason': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
         },
         'journalmanager.journaltimeline': {
             'Meta': {'object_name': 'JournalTimeline'},
