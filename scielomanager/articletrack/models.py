@@ -58,6 +58,12 @@ class Checkin(caching.base.CachingMixin, models.Model):
         else:
             return "ok"
 
+    def is_accepted(self):
+        """
+        Checks if this checkin has been accepted
+        """
+        return bool(self.accepted_by and self.accepted_at)
+
     def accept(self, responsible):
         """
         Accept the checkin as ready to be part of the collection.
@@ -69,9 +75,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         if not responsible.is_active:
             raise ValueError('User must be active')
 
-        is_accepted = self.article.checkins.exclude(accepted_by=None).exists()
-
-        if is_accepted:
+        if self.article.is_accepted():
             raise ValueError('Cannot accept more than one checkin per article')
         else:
             self.accepted_by = responsible
@@ -97,6 +101,13 @@ class Article(caching.base.CachingMixin, models.Model):
         verbose_name = _('Article')
         verbose_name_plural = _('Articles')
         permissions = (("list_article", "Can list Article"),)
+
+
+    def is_accepted(self):
+        """
+        Checks if there is any checkin accepted for this article.
+        """
+        return self.checkins.exclude(accepted_by=None).exists()
 
     def __unicode__(self):
         return "%s (ref: %s)" % (self.article_title, self.articlepkg_ref)

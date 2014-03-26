@@ -103,7 +103,7 @@ def list_search(request, model, journal_id):
 
         #filtering by pub_status is only available to Journal instances.
         if model is models.Journal and request.GET.get('jstatus'):
-            objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
+            objects_all = objects_all.filter(membership__status=request.GET['jstatus'])
 
         if request.GET.get('letter'):
             if issubclass(model, models.Institution):
