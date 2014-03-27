@@ -180,16 +180,16 @@
   <div id="main-nav" class="subnav" style="margin-top: 50px;">
       {% block journaltitle %}
         {% if journal.pk %}
-        <h3>{{ journal.collection }}:
-          <span style="margin-left: 10px; color: #909090">
-            {{ journal.short_title }}
-            {% if perms.journalmanager.change_journal %}
-              <a href="{% url journal.edit journal.pk %}" class="btn btn-mini">
-                <i class="icon-pencil icon-black"></i> {% trans 'edit' %}
-              </a>
-            {% endif %}
-          </span>
-        </h3>
+          <h3>
+            <span style="margin-left: 10px; color: #909090">
+              {{ journal.short_title }}
+              {% if perms.journalmanager.change_journal %}
+                <a href="{% url journal.edit journal.pk %}" class="btn btn-mini">
+                  <i class="icon-pencil icon-black"></i> {% trans 'edit' %}
+                </a>
+              {% endif %}
+            </span>
+          </h3>
         {% endif %}
       {% endblock %}
   </div>
