@@ -30,11 +30,12 @@ class JournalImport:
         self._publishers_pool = []
         self._sponsors_pool = []
         self._summary = {}
-        self.trans_pub_status = {'c': 'current',
+        self.trans_pub_status = {
+            'c': 'current',
             'd': 'deceased',
             's': 'suspended',
             '?': 'inprogress',
-            }
+        }
 
     def iso_format(self, dates, string='-'):
         day = dates[6:8]
@@ -54,7 +55,7 @@ class JournalImport:
         Function: charge_summary
         Carrega com +1 cada atributo passado para o metodo, se o attributo nao existir ele e criado.
         """
-        if not self._summary.has_key(attribute):
+        if not attribute in self._summary:
             self._summary[attribute] = 0
 
         self._summary[attribute] += 1
@@ -90,19 +91,16 @@ class JournalImport:
         sponsor = Sponsor()
 
         # Sponsors Import
-        if not record.has_key('140'):
+        if not '140' in record:
             return []
 
         sponsor.name = record['140'][0]
+        match_string = sponsor.name.strip()
+        similar_key = self.have_similar_sponsors(match_string)
+        loaded_sponsor = ""
 
-        match_string=sponsor.name.strip()
-
-        similar_key =  self.have_similar_sponsors(match_string)
-
-        loaded_sponsor=""
-
-        if similar_key != False:
-            similar_sponsor=Sponsor.objects.get(id=similar_key)
+        if similar_key is not False:
+            similar_sponsor = Sponsor.objects.get(id=similar_key)
             self.charge_summary("sponsors_duplication_fix")
             loaded_sponsor = similar_sponsor
         else:
@@ -112,7 +110,7 @@ class JournalImport:
             loaded_sponsor = sponsor
             self._sponsors_pool.append(dict({"id":sponsor.id,"match_string":match_string.strip()}))
 
-        return [loaded_sponsor,]
+        return [loaded_sponsor]
 
     def load_studyarea(self, journal, areas):
 
@@ -128,7 +126,9 @@ class JournalImport:
 
         from sectionimport import LANG_DICT as lang_dict
         for i in langs:
-            language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
+            language = Language.objects.get_or_create(
+                iso_code=i,
+                name=lang_dict.get(i, '###NOT FOUND###'))[0]
 
             journal.languages.add(language)
             self.charge_summary("language_%s" % i)
@@ -137,7 +137,9 @@ class JournalImport:
 
         from sectionimport import LANG_DICT as lang_dict
         for i in langs:
-            language = Language.objects.get_or_create(iso_code = i, name = lang_dict.get(i, '###NOT FOUND###'))[0]
+            language = Language.objects.get_or_create(
+                iso_code=i,
+                name=lang_dict.get(i, '###NOT FOUND###'))[0]
 
             journal.abstract_keyword_languages.add(language)
             self.charge_summary("language_%s" % i)
@@ -149,7 +151,9 @@ class JournalImport:
             parsed_subfields = subfield.CompositeField(subfield.expand(i))
             mission = JournalMission()
             try:
-                language = Language.objects.get_or_create(iso_code = parsed_subfields['l'], name = lang_dict.get(parsed_subfields['l'], '###NOT FOUND###'))[0]
+                language = Language.objects.get_or_create(
+                    iso_code=parsed_subfields['l'],
+                    name=lang_dict.get(parsed_subfields['l'], '###NOT FOUND###'))[0]
                 mission.language = language
             except:
                 pass
@@ -157,7 +161,7 @@ class JournalImport:
             journal.missions.add(mission)
             self.charge_summary("mission")
 
-    def load_historic(self, journal, historicals):
+    def load_historic(self, collection, journal, user, historicals):
 
         lifecycles = {}
 
@@ -174,27 +178,37 @@ class JournalImport:
             except KeyError:
                 self.charge_summary("history_error_field")
 
-        for cyclekey, cyclevalue in iter(sorted(lifecycles.iteritems())):
+        for cycledate, cyclestatus in iter(sorted(lifecycles.iteritems())):
+            defaults = {
+                'created_by': user,
+                'since': cycledate,
+                'status': self.trans_pub_status.get(
+                    cyclestatus.lower(),
+                    'inprogress'
+                )
+            }
             try:
-                journalhist = JournalPublicationEvents()
-                journalhist.created_at = cyclekey
-                journalhist.status = self.trans_pub_status.get(cyclevalue.lower(), 'inprogress')
-                journalhist.journal = journal
-                journalhist.changed_by_id = 1
-                journalhist.save()
-                journalhist.created_at = cyclekey
-                journalhist.save()  # Updating to real date, once when saving the model is given a automatica value
-                self.charge_summary("publication_events")
+                timeline = JournalTimeline.objects.get_or_create(
+                    journal=journal,
+                    collection=collection,
+                    defaults=defaults)[0]
+                self.charge_summary("timeline")
             except exceptions.ValidationError:
-                self.charge_summary("publications_events_error_data")
-                return False
+                self.charge_summary("timeline_invalid_date")
+
+        try:
+            membership = Membership.objects.get_or_create(
+                journal=journal,
+                collection=collection,
+                defaults=defaults
+            )
+        except:
+            self.charge_summary("timeline_invalid_date")
 
         return True
 
     def get_last_status(self, historicals):
-
         lifecycles = {}
-
         for i in historicals:
             expanded = subfield.expand(i)
             parsed_subfields = dict(expanded)
@@ -202,7 +216,6 @@ class JournalImport:
                 lifecycles[self.iso_format(parsed_subfields['a'])] = parsed_subfields['b']
             except KeyError:
                 self.charge_summary("history_error_field")
-
             try:
                 lifecycles[self.iso_format(parsed_subfields['c'])] = parsed_subfields['d']
             except KeyError:
@@ -233,7 +246,7 @@ class JournalImport:
 
         return use_license
 
-    def load_journal(self, collection, loaded_sponsor, record):
+    def load_journal(self, collection, user, loaded_sponsor, record):
         """
         Function: load_journal
         Retorna um objeto journal() caso a gravação do mesmo em banco de dados for concluida
@@ -394,8 +407,7 @@ class JournalImport:
         if '64' in record:
             journal.editor_email = record['64'][0]
 
-        journal.pub_status_changed_by_id = 1
-        journal.creator_id = 1
+        journal.creator_id = user.pk
         journal.collection = collection
 
         journal.save(force_insert=True)
@@ -428,9 +440,9 @@ class JournalImport:
         if '901' in record:
             self.load_mission(journal, record['901'])
 
-        # historic - JournalPublicationEvents
+        # historic - Membership/JournalTimeline
         if '51' in record:
-            self.load_historic(journal, record['51'])
+            self.load_historic(collection, journal, user, record['51'])
 
         # titles
         if '421' in record:
@@ -456,13 +468,13 @@ class JournalImport:
             if '710' in record:
                 try:
                     previous_journal = Journal.objects.get(title__exact=record['100'][0],
-                                                           collection=collection)
+                                                           collections=collection)
                     next_journal = Journal.objects.filter(title__exact=record['710'][0],
-                                                          collection=collection).update(previous_title=previous_journal.id)
+                                                          collections=collection).update(previous_title=previous_journal.id)
                 except Journal.DoesNotExist:
                     print "Not possible to update the previous title of the journal: " + next_journal.title
 
-    def run_import(self, json_file, collection):
+    def run_import(self, json_file, collection, user):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -474,13 +486,13 @@ class JournalImport:
 
         for record in json_parsed:
             loaded_sponsor = self.load_sponsor(collection, record)
-            self.load_journal(collection, loaded_sponsor, record)
+            self.load_journal(collection, user, loaded_sponsor, record)
 
         # Try to update the previous title
         self.try_update_previous_title(json_parsed, collection)
 
         # Cleaning data
-        JournalPublicationEvents.objects.filter(created_at__month=date.today().month, created_at__year=date.today().year).delete()
+        JournalTimeline.objects.filter(since__month=date.today().month, since__year=date.today().year).delete()
 
     def get_summary(self):
         """
