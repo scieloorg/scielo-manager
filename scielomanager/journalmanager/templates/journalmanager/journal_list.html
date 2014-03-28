@@ -4,6 +4,7 @@
 {% load scielo_common %}
 {% load query_string %}
 {% load inctag_toolbars %}
+{% load get_journal_status %}
 
 {% block page_title %}{% trans "Journals" %}{% endblock %}
 
@@ -89,8 +90,8 @@
         <input type="checkbox" name="action" value="{{ journal.id }}">
       </td>
       <td>
-        <span class="_icon _icon-{{ journal.pub_status }} tip-bottom"
-                data-original-title="{{ journal.pub_status|capfirst }}"
+        <span class="_icon _icon-{% get_journal_status journal default_collection %} tip-bottom"
+                data-original-title="{% get_journal_status journal default_collection %}"
                 rel="tooltip"></span>
       </td>
       <td>
