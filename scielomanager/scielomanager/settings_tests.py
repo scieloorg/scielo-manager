@@ -21,3 +21,4 @@ INSTALLED_APPS += (
 )
 
 ALLOWED_HOSTS = ['*']
+API_BALAIO_DEFAULT_TIMEOUT = 20 # in seconds

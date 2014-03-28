@@ -1,0 +1,52 @@
+{% load i18n %}
+<h4>{% trans "Titulos" %}:</h4>
+<div class="well">
+	<table id="titleformset" class="table table-striped">
+		<thead>
+		  <tr>
+		    <th class='span7'>{% trans "Thematic Title" %}</th>
+		    <th class='span3'>{% trans "Language" %}</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  {% for form in titleformset.forms %}
+		    {% if form.non_field_errors %}
+		      <div class="alert alert-block alert-error">
+		        {{ form.non_field_errors }}
+		      </div> 
+		    {% endif %}
+		    <tr id="{{ form.prefix }}-row">
+		      <td>
+		        <span class="control-group {% if form.title.errors %}error{% endif %}">
+		          {% for field in form.hidden_fields %}
+		            {{ field }}
+		          {% endfor %}
+		          {% if form.instance.pk %}
+		            {{ form.DELETE }}
+		          {% endif %}
+		        </span>
+		        {{ form.title }}
+		        {% if form.title.errors %}
+		          <div class="alert alert-error">
+		            {{ form.title.errors }}
+		          </div>
+		        {% endif %}
+		      </td>
+		      <td>
+		        <span class="control-group pull-left {% if form.language.errors %}error{% endif %}">
+		          {{ form.language }}
+		        </span>
+		        {% if form.language.errors %}
+		          <div class="alert alert-error">
+		            {{ form.language.errors }}
+		          </div>
+		        {% endif %}
+		      </td>
+		    </tr>
+		  {% endfor %}
+		</tbody>
+	</table>
+	<p>
+	{{ titleformset.management_form }}
+	</p>
+</div>

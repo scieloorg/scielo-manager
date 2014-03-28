@@ -31,6 +31,11 @@ def _makePermission(perm, model, app_label='journalmanager'):
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
 
+def _makeUseLicense():
+    ul = models.UseLicense(license_code='TEST')
+    ul.save()
+
+
 class CollectionFormTests(WebTest):
 
     def setUp(self):
@@ -646,6 +651,7 @@ class JournalFormTests(WebTest):
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+        _makeUseLicense()
 
     def test_access_without_permission(self):
         """
@@ -1287,7 +1293,7 @@ class RegularIssueFormClassTests(unittest.TestCase):
         self.assertFalse(issue_form.is_valid())
 
     def test_clean_fails_if_issue_is_duplicated(self):
-        issue = modelfactories.IssueFactory()
+        issue = modelfactories.IssueFactory(type='regular')
         journal = issue.journal
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -1319,9 +1325,9 @@ class RegularIssueFormClassTests(unittest.TestCase):
 
     def test_clean_fails_if_duplicated_issue(self):
         journal = modelfactories.JournalFactory()
-        issue = modelfactories.IssueFactory(volume='1',
+        issue = modelfactories.IssueFactory(type='regular', volume='1',
             number='2', publication_year=2013, journal=journal)
-        issue2 = modelfactories.IssueFactory(volume='1',
+        issue2 = modelfactories.IssueFactory(type='regular', volume='1',
             number='2', publication_year=2013, journal=journal)
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -1353,7 +1359,7 @@ class RegularIssueFormClassTests(unittest.TestCase):
 
     def test_clean_on_edit(self):
         journal = modelfactories.JournalFactory()
-        issue = modelfactories.IssueFactory(volume='1',
+        issue = modelfactories.IssueFactory(type='regular', volume='1',
             number='2', publication_year=2013, journal=journal)
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -1662,11 +1668,13 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         issue = modelfactories.IssueFactory(volume='',
                                             number='1',
                                             publication_year=2013,
-                                            journal=journal)
+                                            journal=journal,
+                                            type='supplement')
         issue2 = modelfactories.IssueFactory(volume='',
                                             number='1',
                                             publication_year=2013,
-                                            journal=journal)
+                                            journal=journal,
+                                            type='supplement')
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -1701,11 +1709,13 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         issue = modelfactories.IssueFactory(volume='1',
                                             number='',
                                             publication_year=2013,
-                                            journal=journal)
+                                            journal=journal,
+                                            type='supplement')
         issue2 = modelfactories.IssueFactory(volume='1',
                                             number='',
                                             publication_year=2013,
-                                            journal=journal)
+                                            journal=journal,
+                                            type='supplement')
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -1737,7 +1747,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
 
     def test_clean_fails_for_type_number_if_issue_already_exist(self):
-        issue = modelfactories.IssueFactory(number='1', volume='')
+        issue = modelfactories.IssueFactory(number='1', volume='', type='supplement')
         journal = issue.journal
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -1771,7 +1781,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
 
     def test_clean_fails_for_type_volume_if_issue_already_exist(self):
-        issue = modelfactories.IssueFactory(number='', volume='1')
+        issue = modelfactories.IssueFactory(number='', volume='1', type='supplement')
         journal = issue.journal
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -1809,7 +1819,8 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         issue = modelfactories.IssueFactory(volume='',
                                             number='2',
                                             publication_year=2013,
-                                            journal=journal)
+                                            journal=journal,
+                                            type='supplement')
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -1846,7 +1857,8 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         issue = modelfactories.IssueFactory(volume='2',
                                             number='',
                                             publication_year=2013,
-                                            journal=journal)
+                                            journal=journal,
+                                            type='supplement')
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -1974,6 +1986,7 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 ####
 # Integration tests on forms
 ####
+
 class IssueFormTests(WebTest):
 
     def setUp(self):
@@ -1996,17 +2009,15 @@ class IssueFormTests(WebTest):
             model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
-        page = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user)
-
-        page.mustcontain('number', 'cover',
-                         'title-0-title',
-                         'title-0-language',
-                         'title-TOTAL_FORMS',
-                         'title-INITIAL_FORMS',
-                         'title-MAX_NUM_FORMS')
-
-        self.assertTemplateUsed(page, 'journalmanager/add_issue.html')
+        for t in ['regular', 'supplement', 'special']:
+            page = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user)
+            page.mustcontain('number', 'cover',
+                             'title-0-title',
+                             'title-0-language',
+                             'title-TOTAL_FORMS',
+                             'title-INITIAL_FORMS',
+                             'title-MAX_NUM_FORMS')
+            self.assertTemplateUsed(page, 'journalmanager/add_issue_%s.html' % t)
 
     def test_access_without_permission(self):
         """
@@ -2014,11 +2025,11 @@ class IssueFormTests(WebTest):
         are unable to access the form. They must be redirected to a page
         with informations about their lack of permissions.
         """
-        page = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).follow()
 
-        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
-        page.mustcontain('not authorized to access')
+        for t in ['regular', 'supplement', 'special']:
+            page = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).follow()
+            self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+            page.mustcontain('not authorized to access')
 
     def test_POST_workflow_with_valid_formdata(self):
         """
@@ -2037,24 +2048,33 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = '3'
-        form['volume'] = '29'
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2012'
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
 
-        response = form.submit().follow()
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
 
-        self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
+
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_POST_workflow_without_volume_and_number_formdata(self):
         """
@@ -2068,24 +2088,29 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = ''
-        form['volume'] = ''
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2012'
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+            form['number'] = ''
+            form['volume'] = ''
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
 
-        response = form.submit()
-
-        self.assertIn('You must complete at least one of two fields volume or number.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+            response = form.submit()
+            if t == 'supplement':
+                self.assertIn('There are some errors or missing data.', response.body)
+            elif t == 'special':
+                # for t=='special' -> number field will be overwrited it 'spe' text
+                pass
+            else: # regular
+                 self.assertIn('You must complete at least one of two fields volume or number.', response.body)
+            
+            self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
 
     def test_POST_workflow_with_invalid_formdata(self):
         """
@@ -2100,25 +2125,20 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = '3'
-        form['editorial_standard'] = ''
-        form['volume'] = ''
-        form['publication_start_month'] = ''
-        form['publication_end_month'] = ''
-        form['publication_year'] = ''
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+            form['number'] = '3'
+            form['volume'] = ''
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
 
-        response = form.submit()
+            response = form.submit()
 
-        self.assertTrue('alert alert-error' in response.body)
-        self.assertIn('There are some errors or missing data', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+            self.assertIn('There are some errors or missing data.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
 
     def test_POST_workflow_with_exist_year_number_volume_on_the_same_journal(self):
         """
@@ -2133,33 +2153,32 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        issue = modelfactories.IssueFactory(journal=self.journal,
-            suppl_volume='', suppl_number='')
+        for t in ['regular', 'supplement', 'special']:
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_volume='', suppl_number='', type=t)
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+            form['number'] = str(issue.number)
+            form['volume'] = str(issue.volume)
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = str(issue.publication_year)
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+            response = form.submit()
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = str(issue.number)
-        form['volume'] = str(issue.volume)
-        form['suppl_volume'] = ''
-        form['suppl_number'] = ''
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = str(issue.publication_year)
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-
-        response = form.submit()
-
-        self.assertTrue('alert alert-error' in response.body)
-        self.assertIn('There are some errors or missing data', response.body)
-        self.assertTrue('Issue with this Year and (Volume or Number) already exists for this Journal.' \
-            in response.body)
-
-        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+            if t in ('regular', 'supplement',):
+                # for t == 'special' number field will be overwrited in clean_number method,
+                # so will be a redirecto (http 302) because save was succesfully.
+                # for other types, will raise a validations error
+                self.assertIn('There are some errors or missing data.', response.body)
+                self.assertIn('Issue with this Year and (Volume or Number) already exists for this Journal', response.body)
+                self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
+            else:
+                self.assertEqual(302, response.status_code)
+                self.assertIn(reverse('issue.index', args=[issue.journal.pk]), response.location)
+                self.assertEqual('', response.body)
 
     def test_issues_can_be_edited(self):
         perm_issue_change = _makePermission(perm='add_issue',
@@ -2169,31 +2188,20 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        issue1 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29')
+        for t in ['regular', 'supplement', 'special']:
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_volume='', suppl_number='', type=t)
+            form = self.app.get(reverse('issue.edit', args=[self.journal.pk, issue.pk]), user=self.user).forms['issue-form']
+            
+            form['total_documents'] = '99'
+            if t == 'supplement':
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.XX'
+                form['volume'] = '99'
+                form['number'] = ''
+            response = form.submit().follow()
 
-        issue2 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29')
-
-        form = self.app.get(reverse('issue.edit',
-            args=[self.journal.pk, issue1.pk]), user=self.user).forms['issue-form']
-
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = str(issue1.number)
-        form['volume'] = str(issue1.volume)
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = str(issue1.publication_year)
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-        form.set('use_license', str(issue1.journal.use_license.pk))
-
-        response = form.submit().follow()
-
-        self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
@@ -2207,10 +2215,11 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertEqual(form.enctype, 'multipart/form-data')
+            self.assertEqual(form.enctype, 'multipart/form-data')
 
     def test_form_action_must_be_empty(self):
         """
@@ -2225,10 +2234,11 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertEqual(form.action, '')
+            self.assertEqual(form.action, '')
 
     def test_form_method_must_be_post(self):
         """
@@ -2242,10 +2252,11 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertEqual(form.method.lower(), 'post')
+            self.assertEqual(form.method.lower(), 'post')
 
     def test_sections_must_not_be_trashed(self):
         """
@@ -2262,44 +2273,12 @@ class IssueFormTests(WebTest):
         trashed_section = modelfactories.SectionFactory.create(
             journal=self.journal, is_trashed=True)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertRaises(ValueError,
-            lambda: form.set('section', str(trashed_section.pk)))
-
-    def test_more_than_one_volume_supplement(self):
-        perm_issue_change = _makePermission(perm='add_issue',
-            model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm_issue_change)
-        self.user.user_permissions.add(perm_issue_list)
-
-        issue1 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29', publication_year='2013')
-
-        issue2 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29', number='', suppl_volume='1', publication_year='2013')
-
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk,]), user=self.user).forms['issue-form']
-
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['volume'] = '29'
-        form['number'] = ''
-        form['suppl_volume'] = '2'
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2013'
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-        form.set('use_license', str(issue1.journal.use_license.pk))
-
-        response = form.submit().follow()
-        self.assertIn('Saved.', response.body)
+            self.assertRaises(ValueError,
+                lambda: form.set('section', str(trashed_section.pk)))
 
 
 class StatusFormTests(WebTest):
