@@ -18,6 +18,13 @@ class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
 
+class StudyAreaAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return StudyArea.nocacheobjects
+
+admin.site.register(StudyArea, StudyAreaAdmin)
+
 class CollectionAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
@@ -130,18 +137,6 @@ class TranslatedDataAdmin(admin.ModelAdmin):
         return TranslatedData.nocacheobjects
 
 admin.site.register(TranslatedData)
-
-
-class JournalPublicationEventsAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return JournalPublicationEvents.nocacheobjects
-
-    list_display = ['journal', 'status', 'created_at']
-    list_filter = ['status']
-    search_fields = ['journal']
-
-admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
 
 
 class PressReleaseAdmin(admin.ModelAdmin):

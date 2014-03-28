@@ -298,16 +298,6 @@ class JournalTests(TestCase):
 
         self.assertFalse(journal.is_editor(user))
 
-    def test_changing_publication_status(self):
-        user = auth.UserF()
-        journal = JournalFactory.create()
-        journal.change_publication_status(status=u'deceased',
-            reason=u'baz', changed_by=user)
-
-        self.assertEqual(journal.pub_status, u'deceased')
-        self.assertEqual(journal.pub_status_reason, u'baz')
-        self.assertEqual(journal.pub_status_changed_by, user)
-
     def test_issues_grid_with_numerical_issue_numbers(self):
         journal = JournalFactory.create()
         for i in range(5):
