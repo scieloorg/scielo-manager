@@ -40,11 +40,15 @@ class JournalImport:
         }
 
     def _journal_already_exists(self, journal):
+        issns = []
+        issns.append(journal['400'][0])
+        title = journal['100'][0]
+
+        if '935' in journal:
+            issns.append(journal['935'][0])
+
         try:
-            issn1 = journal['400'][0]
-            issn2 = journal['935'][0]
-            title = journal['100'][0]
-            return Journal.objects.get(Q(print_issn__in=[issn1, issn2]) | Q(eletronic_issn__in=[issn1, issn2]) | Q(title=title))
+            return Journal.objects.get(Q(print_issn__in=issns) | Q(eletronic_issn__in=issns) | Q(title=title))
         except exceptions.ObjectDoesNotExist:
             return None
 
@@ -499,7 +503,10 @@ class JournalImport:
             journal = self._journal_already_exists(record)
             if journal:
                 self._conflicted_journals.append(record['400'][0])
-                self._conflicted_journals.append(record['935'][0])
+
+                if '935' in record:
+                    self._conflicted_journals.append(record['935'][0])
+
                 if '51' in record:
                     self.load_historic(collection, journal, user, record['51'])
                 continue
@@ -510,7 +517,12 @@ class JournalImport:
         # Try to update the previous title
         self.try_update_previous_title(json_parsed, collection)
 
-        # Cleaning data
+        """
+        models.Membership sempre replica o registro salvo para o
+        JournalTimeline. No momento da importação esse comportamento é
+        indesejado, para contorná-lo é realizada a exclusão dos registros
+        inseridos verificando a data da execução da importação
+        """
         JournalTimeline.objects.filter(since__month=date.today().month, since__year=date.today().year).delete()
 
     def get_summary(self):
