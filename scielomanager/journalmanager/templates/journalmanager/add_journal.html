@@ -14,7 +14,6 @@
     <li><a href="#title">{% trans 'Title' %}</a></li>
     <li><a href="#other_title">{% trans 'Other Titles' %}</a></li>
     <li><a href="#issn">{% trans 'ISSN' %}</a></li>
-    <li><a href="#journal_collection">{% trans 'Journal Collections' %}</a></li>
     <li><a href="#subject">{% trans 'Subjects' %}</a></li>
     <li><a href="#mission">{% trans 'Mission' %}</a></li>
     <li><a href="#languages">{% trans 'Languages' %}</a></li>
@@ -220,25 +219,6 @@
       </div>
     </div>
   </div>
-
-  {% if user_collections.count > 1 %}
-    <h2><a name="journal_collection"></a>{% trans "Journal Collections" %}:</h2>
-    <div class="well">
-      <div class="control-group {% if add_form.collections.errors %}error{% endif %}">
-        <label for="{{ add_form.collections.auto_id }}">
-          <span {% if add_form.collections.field.required %}class="req-field"{% endif %}>
-            {% trans add_form.collections.label %}
-          </span>
-        </label>
-        <div class="controls">
-          {{ add_form.collections }}
-          {% field_help add_form.collections.label add_form.collections.help_text term-collections %}
-        </div>
-      </div>
-    </div>
-    {% else %}
-      <input type="hidden" name="journal-collections" value="{{ user_collections.0.pk }}"/>
-  {% endif %}
 
   <h2><a name="subject"></a>{% trans "Subject" %}:</h2>
   <div class="well">

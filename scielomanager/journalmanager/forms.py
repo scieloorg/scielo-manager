@@ -71,17 +71,6 @@ class JournalForm(ModelForm):
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
         required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
-    collections = forms.ModelMultipleChoiceField(models.Collection.objects.none(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
-        required=True)
-
-    def __init__(self, *args, **kwargs):
-        collections_qset = kwargs.pop('collections_qset', None)
-        super(JournalForm, self).__init__(*args, **kwargs)
-
-        if collections_qset is not None:
-            self.fields['collections'].queryset = models.Collection.objects.filter(
-                pk__in=(collection.collection.pk for collection in collections_qset))
 
     def save_all(self, creator):
         journal = self.save(commit=False)
@@ -170,6 +159,7 @@ class JournalForm(ModelForm):
     class Meta:
 
         model = models.Journal
+        exclude = ('collections', )
         #Overriding the default field types or widgets
         widgets = {
            'title': forms.TextInput(attrs={'class': 'span9'}),
@@ -196,6 +186,7 @@ class JournalForm(ModelForm):
            'editor_address': forms.TextInput(attrs={'class': 'span9'}),
            'publisher_name': forms.TextInput(attrs={'class': 'span9'}),
         }
+
 
 
 class CollectionForm(ModelForm):
