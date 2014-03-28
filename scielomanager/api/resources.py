@@ -414,7 +414,7 @@ class CheckinArticleResource(ModelResource):
             journal = Journal.objects.get(
                 Q(print_issn=pissn) | Q(eletronic_issn=eissn)
             )
-        except ObjectDoesNotExist.DoesNotExist:
+        except ObjectDoesNotExist:
             message = u"""Could not find the right Journal instance to bind with
                           %s. The Journal instance will stay in an orphan state.""".strip()
             logger.error(message % repr(bundle.obj))

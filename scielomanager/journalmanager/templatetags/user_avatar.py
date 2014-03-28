@@ -11,10 +11,10 @@
 # size of the result avatar (size_in_px x size_in_px)
 #
 # Examples:
-# {% query_string request.user "18" %}
-# {% query_string request.user "small" %}
-# {% query_string request.user "medium" %}
-# {% query_string request.user "large" %}
+# {% user_avatar_url request.user "18" %}
+# {% user_avatar_url request.user "small" %}
+# {% user_avatar_url request.user "medium" %}
+# {% user_avatar_url request.user "large" %}
 
 import urllib
 from django import template
@@ -38,7 +38,7 @@ def user_avatar_url(user, size):
         size = int(size)
     else:
         return '' # unknow size, no photo
-    
+
     try:
         user_gravatar_id = user.get_profile().gravatar_id
     except UserProfile.DoesNotExist:
