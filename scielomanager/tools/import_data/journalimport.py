@@ -21,6 +21,7 @@ except ImportError:
 
 setup_environ(settings)
 
+from django.db.models import Q
 from journalmanager.models import *
 
 
@@ -30,12 +31,22 @@ class JournalImport:
         self._publishers_pool = []
         self._sponsors_pool = []
         self._summary = {}
+        self._conflicted_journals = []
         self.trans_pub_status = {
             'c': 'current',
             'd': 'deceased',
             's': 'suspended',
             '?': 'inprogress',
         }
+
+    def _journal_already_exists(self, journal):
+        try:
+            issn1 = journal['400'][0]
+            issn2 = journal['935'][0]
+            title = journal['100'][0]
+            return Journal.objects.get(Q(print_issn__in=[issn1, issn2]) | Q(eletronic_issn__in=[issn1, issn2]) | Q(title=title))
+        except exceptions.ObjectDoesNotExist:
+            return None
 
     def iso_format(self, dates, string='-'):
         day = dates[6:8]
@@ -485,6 +496,14 @@ class JournalImport:
         json_parsed = json.loads(json_file.read())
 
         for record in json_parsed:
+            journal = self._journal_already_exists(record)
+            if journal:
+                self._conflicted_journals.append(record['400'][0])
+                self._conflicted_journals.append(record['935'][0])
+                if '51' in record:
+                    self.load_historic(collection, journal, user, record['51'])
+                continue
+
             loaded_sponsor = self.load_sponsor(collection, record)
             self.load_journal(collection, user, loaded_sponsor, record)
 
@@ -500,3 +519,9 @@ class JournalImport:
         Retorna o resumo de carga de registros
         """
         return self._summary
+
+    def get_conflicted_journals(self):
+        """
+        Retorna a lista de revistas que já fazem parte do SciELO Manager e não puderam ser importadas.
+        """
+        return self._conflicted_journals

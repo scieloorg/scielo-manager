@@ -403,10 +403,9 @@ def edit_journal_status(request, journal_id=None):
     Allow user just to update the status history of a specific journal.
     """
     # Always a new event. Considering that events must not be deleted or changed.
-    journal_history = models.JournalTimeline.objects.filter(journal=journal_id).order_by('-since')
+    current_user_collection = user_request_context.get_current_user_active_collection()
+    journal_history = models.JournalTimeline.objects.filter(journal=journal_id, collection=current_user_collection).order_by('-since')
     journal = get_object_or_404(models.Journal, id=journal_id)
-
-    current_user_collection = user_request_context.get_current_user_collections()[0]
 
     if request.method == "POST":
         membership = models.Membership.objects.get(journal=journal, collection=current_user_collection)

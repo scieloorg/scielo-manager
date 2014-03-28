@@ -286,7 +286,7 @@ class IssueImport:
                 if '935' in record:
                     self._journals[record['935'][0]]['use_license'] = False
 
-    def run_import(self, json_file):
+    def run_import(self, json_file, conflicted_journals):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -296,4 +296,6 @@ class IssueImport:
         issue_json_parsed = json.loads(issue_json_file.read())
 
         for record in issue_json_parsed:
+            if record['35'][0] in conflicted_journals:
+                continue
             self.load_issue(record)

@@ -26,7 +26,7 @@ setup_environ(settings)
 from django.contrib.auth.models import User
 from journalmanager.models import Collection
 
-collectionname = sys.argv[1]
+collectionname = unicode(sys.argv[1], 'utf-8')
 collectionurl = sys.argv[2]
 
 user = User.objects.get(pk=1)
@@ -39,15 +39,16 @@ collectionname = collection.name
 print u'Importing Journals and Institutions from SciELO %s' % (collectionname)
 import_journal = journalimport.JournalImport()
 import_result = import_journal.run_import('journal.json', collection, user)
+conflicted_journals = import_journal.get_conflicted_journals()
 print import_journal.get_summary()
+print {'conflicted_journals': conflicted_journals}
 
-print u'Importing Sections from SciELO %s' % (collection.name)
 print u'Importing sectionimportSections from SciELO %s' % (collectionname)
 import_section = sectionimport.SectionImport()
-import_result = import_section.run_import('section.json', collection)
+import_result = import_section.run_import('section.json', collection, conflicted_journals)
 print import_section.get_summary()
 
 print u'Importing Issues from SciELO %s' % (collectionname)
-import_issue = issueimport.IssueImport(collection)
-import_result = import_issue.run_import('issue.json')
+import_issue = issueimport.IssueImport(collection, )
+import_result = import_issue.run_import('issue.json', conflicted_journals)
 print import_issue.get_summary()
