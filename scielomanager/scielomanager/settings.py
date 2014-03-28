@@ -128,6 +128,7 @@ MIDDLEWARE_CLASSES = (
     'maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'waffle.middleware.WaffleMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 )
 

@@ -40,6 +40,9 @@ class Checkin(caching.base.CachingMixin, models.Model):
     uploaded_at = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    accepted_by = models.ForeignKey(User, null=True)
+    accepted_at = models.DateTimeField(null=True)
+
     article = models.ForeignKey('Article', related_name='checkins', null=True)
 
     class Meta:
@@ -55,8 +58,29 @@ class Checkin(caching.base.CachingMixin, models.Model):
         else:
             return "ok"
 
+    def accept(self, responsible):
+        """
+        Accept the checkin as ready to be part of the collection.
+
+        Raises ValueError if self relates to an already accepted article or
+        if the user `responsible` is not active.
+        :param responsible: instance of django.contrib.auth.User
+        """
+        if not responsible.is_active:
+            raise ValueError('User must be active')
+
+        is_accepted = self.article.checkins.exclude(accepted_by=None).exists()
+
+        if is_accepted:
+            raise ValueError('Cannot accept more than one checkin per article')
+        else:
+            self.accepted_by = responsible
+            self.accepted_at = datetime.datetime.now()
+            self.save()
+
 
 class Article(caching.base.CachingMixin, models.Model):
+
     # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.ArticleManager()
@@ -79,6 +103,7 @@ class Article(caching.base.CachingMixin, models.Model):
 
 
 class Ticket(caching.base.CachingMixin, models.Model):
+
     # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.TicketManager()

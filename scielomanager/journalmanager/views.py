@@ -701,10 +701,132 @@ def add_collection(request, collection_id):
 
 
 @permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
-def add_issue(request, journal_id, issue_id=None):
+def edit_issue(request, journal_id, issue_id=None):
+    """
+    Handles edition of existing issues
+    """
+
+    def get_issue_form_by_type(issue_type, request, journal, instance):
+        """
+            This method is useful to get the correct IssueForm based on issue_type.
+        """
+        form_kwargs = {
+            'params' : {
+                'journal': journal,
+            },
+            'querysets' : {
+                'section': journal.section_set.all(),
+                'use_license': models.UseLicense.objects.all(),
+            },
+            'instance' : instance,
+        }
+        
+        form_args = []
+        if request.method == 'POST':
+            form_args.append(request.POST)
+            form_args.append(request.FILES)
+        else:
+            initial = issue.__dict__
+            initial['suppl_type'] = issue.suppl_type if issue.type == 'supplement' else None
+            initial['use_license'] = issue.use_license
+            initial['section'] = issue.section.all()
+            initial['journal'] = issue.journal
+            form_kwargs['initial'] = initial
+
+        if issue_type == 'supplement':
+            return SupplementIssueForm(*form_args, **form_kwargs)
+        elif issue_type == 'special':
+            return SpecialIssueForm(*form_args, **form_kwargs)
+        else: # issue_type == 'regular':
+            return RegularIssueForm(*form_args, **form_kwargs)
+
+    issue = models.Issue.objects.get(pk=issue_id)
+
+    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
+                                              form=IssueTitleForm, extra=1, can_delete=True)
+
+    if request.method == 'POST':
+        form = get_issue_form_by_type(issue.type, request, issue.journal, issue)
+        titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
+
+        if form.is_valid():
+            saved_issue = form.save(commit=False)
+            saved_issue.journal = issue.journal
+            saved_issue.save()
+            form.save_m2m()
+
+            if titleformset.is_valid():
+                titleformset.save()
+
+            messages.info(request, MSG_FORM_SAVED)
+
+            # record the event
+            models.DataChangeEvent.objects.create(
+                user=request.user,
+                content_object=saved_issue,
+                collection=models.Collection.objects.get_default_by_user(request.user),
+                event_type='updated'
+            )
+
+            return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        form = get_issue_form_by_type(issue.type, request, issue.journal, issue)
+        titleformset = IssueTitleFormSet(instance=issue, prefix='title')
+
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = issue.cover.url
+    except ValueError:
+        has_cover_url = False
+
+    # variable names are add_form, and add_issue_xxx is that way to re-use the template
+    return render_to_response('journalmanager/add_issue_%s.html' % issue.type, {
+                              'add_form': form,
+                              'issue_type': issue.type,
+                              'journal': issue.journal,
+                              'titleformset': titleformset,
+                              'user_name': request.user.pk,
+                              'has_cover_url': has_cover_url,
+                              },
+                              context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+def add_issue(request, issue_type, journal_id, issue_id=None):
     """
     Handles new and existing issues
     """
+
+    def get_issue_form_by_type(issue_type, request, journal, instance=None, initial=None):
+        """
+            This method is useful to get the correct IssueForm based on issue_type.
+            if initial == None then the request.POST and request.FILES is used to fill the form.
+            if initial != None then the form is used in a GET request.
+        """
+        form_kwargs = {
+            'params' : {
+                'journal': journal,
+            },
+            'querysets' : {
+                'section': journal.section_set.all(),
+                'use_license': models.UseLicense.objects.all(),
+            },
+            'instance' : instance,
+            'initial' : initial,
+        }
+        form_args = []
+        if initial is None:
+            form_args.append(request.POST)
+            form_args.append(request.FILES)
+        if issue_type == 'supplement':
+            return SupplementIssueForm(*form_args, **form_kwargs)
+        elif issue_type == 'special':
+            return SpecialIssueForm(*form_args, **form_kwargs)
+        else: # issue_type == 'regular':
+            return RegularIssueForm(*form_args, **form_kwargs)
+
     journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
 
     if issue_id is None:
@@ -717,14 +839,18 @@ def add_issue(request, journal_id, issue_id=None):
         issue = models.Issue.objects.get(pk=issue_id)
 
     IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
-        form=IssueTitleForm, extra=1, can_delete=True)
+                                              form=IssueTitleForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
-        add_form = IssueForm(request.POST, request.FILES, journal_id=journal.pk, instance=issue)
+        add_form = get_issue_form_by_type(issue_type, request, journal, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
         if add_form.is_valid():
-            saved_issue = add_form.save_all(journal)
+            saved_issue = add_form.save(commit=False)
+            saved_issue.journal = journal
+            saved_issue.type = issue_type
+            saved_issue.save()
+            add_form.save_m2m()
             # the backward relation is created only
             # if title is given.
             if titleformset.is_valid():
@@ -737,14 +863,14 @@ def add_issue(request, journal_id, issue_id=None):
                 user=request.user,
                 content_object=saved_issue,
                 collection=models.Collection.objects.get_default_by_user(request.user),
-                event_type='updated' if issue_id else 'added'
+                event_type='added'
             )
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
-        add_form = IssueForm(journal_id=journal.pk, instance=issue, initial=data_dict)
+        add_form = get_issue_form_by_type(issue_type, request, journal, instance=issue, initial=data_dict)
         titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
     # Recovering Journal Cover url.
@@ -752,9 +878,9 @@ def add_issue(request, journal_id, issue_id=None):
         has_cover_url = issue.cover.url
     except ValueError:
         has_cover_url = False
-
-    return render_to_response('journalmanager/add_issue.html', {
+    return render_to_response('journalmanager/add_issue_%s.html' % issue_type, {
                               'add_form': add_form,
+                              'issue_type': issue_type,
                               'journal': journal,
                               'titleformset': titleformset,
                               'user_name': request.user.pk,
