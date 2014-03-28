@@ -59,6 +59,7 @@ class AheadForm(ModelForm):
            'current_ahead_documents': forms.TextInput(attrs={'class': 'input-small'}),
            }
 
+
 class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
@@ -277,7 +278,7 @@ class IssueBaseForm(forms.Form):
     publication_year = forms.IntegerField()
     is_marked_up = forms.BooleanField(required=False)
     use_license = forms.ModelChoiceField(
-        queryset=models.UseLicense.objects.none())
+        queryset=models.UseLicense.objects.none(), required=False, help_text=models.ISSUE_DEFAULT_LICENSE_HELP_TEXT)
     total_documents = forms.IntegerField()
     ctrl_vocabulary = forms.ChoiceField(
         choices=sorted(choices.CTRL_VOCABULARY, key=lambda vocab: vocab[1]),
@@ -359,7 +360,7 @@ class RegularIssueForm(IssueBaseForm):
 
 
 class SupplementIssueForm(IssueBaseForm):
-    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE)
+    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE, widget=forms.RadioSelect)
     number = forms.CharField(required=False)
     suppl_text = forms.CharField()
 
@@ -771,7 +772,7 @@ class IssueTitleForm(ModelForm):
     class Meta:
         model = models.IssueTitle
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'span6'}),
+            'title': forms.TextInput(attrs={'class': 'span12'}),
         }
 
 

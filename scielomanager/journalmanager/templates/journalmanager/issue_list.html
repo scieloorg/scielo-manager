@@ -10,8 +10,16 @@
 {% block content %}
 {% journaldash_toolbar 'issue' journal user %}
 <div class="row-fluid show-grid">
-  <div class="span1">
-    <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
+  <div class="btn-group span1">
+    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+      {% trans 'New' %}
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li><a href="{% url issue.add_regular journal.id %}">{% trans "Regular Issue" %}</a></li>
+      <li><a href="{% url issue.add_special journal.id %}">{% trans "Special Issue" %}</a></li>
+      <li><a href="{% url issue.add_supplement journal.id %}">{% trans "Supplement Issue" %}</a></li>
+    </ul>
   </div>
   {% if perms.journalmanager.change_issue %}
   <div class="span11">
@@ -49,7 +57,7 @@
       <th>{% trans 'Numbers' %}
         {% if perms.journalmanager.can_reorder_issues %}
           <a id="issue_locked_unlocked" href="javascript:void(0)">
-            <img id="issue_locked_unlocked_img" class="img_lock" src="/static/img/lock.png" >
+            <img id="issue_locked_unlocked_img" class="img_lock btn btn-mini" src="/static/img/lock.png" >
           </a>
         {% endif %}
       </th>
@@ -65,10 +73,12 @@
               <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
                 {% for num in nums %}
                   {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
+                    <li class="ui-state-default" id="num_{{ num.id }}">
+                      <a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a>
+                    </li>
                   {% else %}
                     <li class="ui-state-default" id="num_{{ num.id }}">
-                      <a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a>
+                      <a class="btn btn-mini" href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a>
                       {% flag 'articletrack' %}
                         <a href="{% url article.index num.id %}">{% trans "article" %}</a>
                       {% endflag %}
