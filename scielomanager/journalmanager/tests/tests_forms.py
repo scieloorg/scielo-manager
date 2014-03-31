@@ -879,31 +879,6 @@ class JournalFormTests(WebTest):
 
         self.assertEqual(form.method.lower(), 'post')
 
-    def test_collections_field_must_only_display_collections_bound_to_the_user(self):
-        """
-        Asserts that the user cannot add a sponsor to a collection
-        that he is not related to.
-        """
-        perm_journal_change = _makePermission(perm='change_journal',
-            model='journal', app_label='journalmanager')
-        perm_journal_list = _makePermission(perm='list_journal',
-            model='journal', app_label='journalmanager')
-        self.user.user_permissions.add(perm_journal_change)
-        self.user.user_permissions.add(perm_journal_list)
-
-        sponsor = modelfactories.SponsorFactory.create()
-        use_license = modelfactories.UseLicenseFactory.create()
-        language = modelfactories.LanguageFactory.create()
-
-        collection2 = modelfactories.CollectionFactory.create()
-        collection2.add_user(self.user)
-        collection3 = modelfactories.CollectionFactory.create()
-
-        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
-
-        self.assertRaises(ValueError,
-            lambda: form.set('journal-collections', [str(collection3.pk)]))
-
 
 class SponsorFormTests(WebTest):
 
