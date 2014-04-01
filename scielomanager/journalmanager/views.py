@@ -539,8 +539,6 @@ def add_journal(request, journal_id=None):
     Handles new and existing journals
     """
 
-    user_collections = models.get_user_collections(request.user.id)
-
     if journal_id is None:
         journal = models.Journal()
     else:
@@ -552,7 +550,7 @@ def add_journal(request, journal_id=None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
-        journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+        journalform = JournalForm(request.POST, request.FILES, instance=journal, prefix='journal')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
@@ -564,6 +562,10 @@ def add_journal(request, journal_id=None):
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
                 saved_journal = journalform.save_all(creator=request.user)
+
+                if not journal_id:
+                    saved_journal.join(user_request_context.get_current_user_active_collection(), request.user)
+
                 titleformset.save()
                 missionformset.save()
                 messages.info(request, MSG_FORM_SAVED)
@@ -586,11 +588,11 @@ def add_journal(request, journal_id=None):
         if request.GET.get('resume', None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
 
-            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
         else:
-            journalform = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 

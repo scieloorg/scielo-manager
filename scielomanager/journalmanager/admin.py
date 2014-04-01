@@ -18,6 +18,13 @@ class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
 
+class StudyAreaAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return StudyArea.nocacheobjects
+
+admin.site.register(StudyArea, StudyAreaAdmin)
+
 class CollectionAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
