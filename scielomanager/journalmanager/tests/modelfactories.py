@@ -160,6 +160,7 @@ class IssueFactory(factory.Factory):
     publication_end_month = 11
     publication_year = 2012
     is_marked_up = False
+    suppl_text = '1'
 
     journal = factory.SubFactory(JournalFactory)
 

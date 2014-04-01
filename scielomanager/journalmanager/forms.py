@@ -1,19 +1,26 @@
 # coding: utf-8
 import re
+import logging
+
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
+from django.forms.models import save_instance
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
-from django.core.exceptions import NON_FIELD_ERRORS
+from django.core.exceptions import NON_FIELD_ERRORS, MultipleObjectsReturned
 
 from journalmanager import models
 from journalmanager import choices
 from scielo_extensions import formfields as fields
 from django.conf import settings
+
+
+logger = logging.getLogger(__name__)
+SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
 
 
 class UserCollectionContext(ModelForm):
@@ -51,6 +58,7 @@ class AheadForm(ModelForm):
            'previous_ahead_documents': forms.TextInput(attrs={'class': 'input-small'}),
            'current_ahead_documents': forms.TextInput(attrs={'class': 'input-small'}),
            }
+
 
 class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
@@ -259,67 +267,166 @@ class EventJournalForm(forms.Form):
     pub_status_reason = forms.CharField(widget=forms.Textarea)
 
 
-class IssueForm(ModelForm):
-    section = forms.ModelMultipleChoiceField(models.Section.objects.none(),
-         widget=forms.SelectMultiple(attrs={'title': _('Select one or more section')}),
-         required=False)
-
-    widgets = {
-        'section': forms.Select(attrs={'class': 'span3'}),
-    }
+class IssueBaseForm(forms.Form):
+    section = forms.ModelMultipleChoiceField(
+        models.Section.objects.none(),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sections')}),
+        required=False)
+    volume = forms.CharField(required=False)
+    publication_start_month = forms.ChoiceField(choices=choices.MONTHS, required=False)
+    publication_end_month = forms.ChoiceField(choices=choices.MONTHS, required=False)
+    publication_year = forms.IntegerField()
+    is_marked_up = forms.BooleanField(required=False)
+    use_license = forms.ModelChoiceField(
+        queryset=models.UseLicense.objects.none(), required=False, help_text=models.ISSUE_DEFAULT_LICENSE_HELP_TEXT)
+    total_documents = forms.IntegerField()
+    ctrl_vocabulary = forms.ChoiceField(
+        choices=sorted(choices.CTRL_VOCABULARY, key=lambda vocab: vocab[1]),
+        required=False)
+    editorial_standard = forms.ChoiceField(choices=sorted(
+        choices.STANDARD, key=lambda std: std[1]))
+    cover = forms.ImageField(required=False)
 
     def __init__(self, *args, **kwargs):
         """
-        Section field queryset is overridden to display only
-        sections related to a given journal.
+        Base class for all Issue kinds of forms.
 
-        ``journal_id`` should not be passed to the superclass
-        ``__init__`` method.
+        :param querysets: (kwarg) a dict relating a field and a queryset.
+        :param params: (kwarg) a dict of arbitrary params, relevant to
+        subclasses only.
         """
-        self.journal_id = kwargs.pop('journal_id', None)
-        super(IssueForm, self).__init__(*args, **kwargs)
-        if self.journal_id is not None:
-            self.fields['section'].queryset = models.Section.objects.available(
-                True).filter(journal=self.journal_id)
+        # discarting optional params, if present.
+        params = kwargs.pop('params', None)
+        querysets = kwargs.pop('querysets', None)
+        self.instance = kwargs.pop('instance', None)
 
-    def save_all(self, journal):
-        issue = self.save(commit=False)
-        issue.journal = journal
-        issue.save()
-        self.save_m2m()
+        super(IssueBaseForm, self).__init__(*args, **kwargs)
 
-        return issue
+        if querysets:
+            for qset in querysets:
+                self.fields[qset].queryset = querysets[qset]
+
+    def save(self, commit=True):
+        instance = self.instance or models.Issue()
+        if self.is_valid():
+            return save_instance(self, instance, commit=commit)
+        else:
+            return None
+
+
+class RegularIssueForm(IssueBaseForm):
+    number = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        params = kwargs.pop('params', {})
+
+        if 'journal' not in params:
+            raise TypeError('RegularIssueForm() takes journal in params keyword argument. e.g: params={"journal":<journal>')
+        else:
+            self.journal = params['journal']
+
+        super(RegularIssueForm, self).__init__(*args, **kwargs)
+
 
     def clean(self):
         volume = self.cleaned_data.get('volume')
         number = self.cleaned_data.get('number')
-        suppl_volume = self.cleaned_data.get('suppl_volume')
-        suppl_number = self.cleaned_data.get('suppl_number')
         publication_year = self.cleaned_data.get('publication_year')
 
-        if volume or number:
-            issue = models.Issue.objects.filter(number=number,
-                                                volume=volume,
-                                                suppl_volume=suppl_volume,
-                                                suppl_number=suppl_number,
-                                                publication_year=publication_year,
-                                                journal=self.journal_id)
+        if not (volume or number):
+            raise forms.ValidationError(
+                _('You must complete at least one of two fields volume or number.'))
 
-            if issue:
-                if self.instance.id != issue[0].id:
-                    raise forms.ValidationError({NON_FIELD_ERRORS:\
-                        _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+        try:
+            issue = models.Issue.objects.get(number=number,
+                                             volume=volume,
+                                             publication_year=publication_year,
+                                             journal=self.journal.pk)
+        except models.Issue.DoesNotExist:
+            # Perfect! A brand new issue!
+            pass
+        except MultipleObjectsReturned as e:
+            logger.error('''
+                Multiple issues returned for the same number, volume and year for one journal.
+                Traceback: %s'''.strip() % e.message)
+            raise forms.ValidationError({NON_FIELD_ERRORS: _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
         else:
-            raise forms.ValidationError(_('You must complete at least one of two fields volume or number.'))
+            # Issue already exists (handling updates).
+            if self.instance is None or (self.instance.pk != issue.pk):
+                raise forms.ValidationError({NON_FIELD_ERRORS:\
+                    _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
 
         return self.cleaned_data
 
-    class Meta:
-        model = models.Issue
-        exclude = ('collection', 'journal', 'created', 'updated', 'order')
-        widgets = {
-            'publication_date': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker'}),
-        }
+
+class SupplementIssueForm(IssueBaseForm):
+    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE, widget=forms.RadioSelect)
+    number = forms.CharField(required=False)
+    suppl_text = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        params = kwargs.pop('params', {})
+
+        if 'journal' not in params:
+            raise TypeError('SupplementIssueForm() takes journal in params keyword argument. e.g: params={"journal":<journal>')
+        else:
+            self.journal = params['journal']
+
+        super(SupplementIssueForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        volume = self.cleaned_data.get('volume', '')
+        number = self.cleaned_data.get('number', '')
+        suppl_type = self.cleaned_data.get('suppl_type')
+        publication_year = self.cleaned_data.get('publication_year')
+        suppl_text = self.cleaned_data.get('suppl_text')
+
+        if suppl_type == 'volume' and (volume == '' or number != ''):
+            raise forms.ValidationError(_('You must complete the volume filed. Number field must be empty.'))
+        elif suppl_type == 'number' and (number == '' or volume != ''):
+            raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.'))
+        else:
+            try:
+                issue = models.Issue.objects.get(volume=volume,
+                                                 number=number,
+                                                 publication_year=publication_year,
+                                                 suppl_text=suppl_text,
+                                                 journal=self.journal)
+            except models.Issue.DoesNotExist:
+                # Perfect! A brand new issue!
+                pass
+            except MultipleObjectsReturned as e:
+                logger.error('''
+                    Multiple issues returned for the same number, volume and year for one journal.
+                    Traceback: %s'''.strip() % e.message)
+                raise forms.ValidationError({NON_FIELD_ERRORS: _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+            else:
+                # Issue already exists (handling updates).
+                if self.instance is None or (self.instance.pk != issue.pk):
+                    raise forms.ValidationError({NON_FIELD_ERRORS:\
+                        _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+
+        return self.cleaned_data
+
+
+class SpecialIssueForm(RegularIssueForm):
+    number = forms.CharField(required=True, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    def __init__(self, *args, **kwargs):
+        # RegularIssueForm expects 'params' is present in kwargs
+        params = kwargs.get('params', {})
+
+        if 'journal' not in params:
+            raise TypeError('SpecialIssueForm() takes journal in params keyword argument. e.g: params={"journal":<journal>')
+        else:
+            self.journal = params['journal']
+
+        super(SpecialIssueForm, self).__init__(*args, **kwargs)
+
+
+    def clean_number(self):
+        # override the number value
+        return SPECIAL_ISSUE_FORM_FIELD_NUMBER
 
 
 ###########################################
@@ -604,7 +711,7 @@ class IssueTitleForm(ModelForm):
     class Meta:
         model = models.IssueTitle
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'span6'}),
+            'title': forms.TextInput(attrs={'class': 'span12'}),
         }
 
 

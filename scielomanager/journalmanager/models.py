@@ -28,6 +28,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ImproperlyConfigured
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 import jsonfield
@@ -41,6 +42,8 @@ User.add_to_class('objects', caching.base.CachingManager())
 logger = logging.getLogger(__name__)
 
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
+ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If not defined, will be applied the related journal's use license. \
+The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.")
 
 
 def get_user_collections(user_id):
@@ -52,6 +55,20 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
+
+
+def get_journals_default_use_license():
+    """
+    Returns the default use license for all new Journals.
+
+    This callable is passed as the default value on Journal.use_license field.
+    The default use license is the one defined on SciELO criteria, and at
+    the time is BY-NC. See http://ref.scielo.org/jf5ndd for more information.
+    """
+    try:
+        return UseLicense.objects.get(is_default=True)
+    except UseLicense.DoesNotExist:
+        raise ImproperlyConfigured("There is no UseLicense set as default")
 
 
 class AppCustomManager(caching.base.CachingManager):
@@ -492,7 +509,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
-    use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
+    use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'), default=get_journals_default_use_license)
     collection = models.ForeignKey('Collection', verbose_name=_('Collection'), related_name='journals')
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=64, null=True, blank=True)
@@ -710,6 +727,7 @@ class UseLicense(caching.base.CachingMixin, models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
     disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
+    is_default = models.BooleanField(_('Is Default?'), default=False)
 
     def __unicode__(self):
         return self.license_code
@@ -717,6 +735,26 @@ class UseLicense(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ['license_code']
 
+    def save(self, *args, **kwargs):
+        """
+        Only one UseLicense must be the default (is_default==True).
+        If already have one, these will be unset as default (is_default==False)
+        If None is already setted, this instance been saved, will be the default.
+        If the only one is unsetted as default, then will be foreced to be the default anyway,
+        to allways get one license setted as default
+        """
+        qs = UseLicense.objects.filter(is_default=True)
+        if (qs.count() == 0 ) or (self in qs):
+            # no other was default, or ``self`` is the current default one,
+            # so ``self`` will be set as default
+            self.is_default = True
+
+        if self.is_default:
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            if qs.count() != 0:
+                qs.update(is_default=False)
+        super(UseLicense, self).save(*args, **kwargs)
 
 class TranslatedData(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
@@ -848,15 +886,13 @@ class Issue(caching.base.CachingMixin, models.Model):
     journal = models.ForeignKey(Journal)
     volume = models.CharField(_('Volume'), blank=True, max_length=16)
     number = models.CharField(_('Number'), blank=True, max_length=16)
-    suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16)
-    suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     publication_start_month = models.IntegerField(_('Start Month'), blank=True, null=True, choices=choices.MONTHS)
     publication_end_month = models.IntegerField(_('End Month'), blank=True, null=True, choices=choices.MONTHS)
     publication_year = models.IntegerField(_('Year'))
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True)
-    use_license = models.ForeignKey(UseLicense, null=True)
+    use_license = models.ForeignKey(UseLicense, null=True, help_text=ISSUE_DEFAULT_LICENSE_HELP_TEXT)
     total_documents = models.IntegerField(_('Total of Documents'), default=0)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=sorted(choices.CTRL_VOCABULARY, key=lambda CTRL_VOCABULARY: CTRL_VOCABULARY[1]), null=False, blank=True)
@@ -867,6 +903,9 @@ class Issue(caching.base.CachingMixin, models.Model):
     label = models.CharField(db_index=True, blank=True, null=True, max_length=64)
 
     order = models.IntegerField(_('Issue Order'), blank=True)
+
+    type = models.CharField(_('Type'),  max_length=15, choices=choices.ISSUE_TYPES, default='regular', editable=False)
+    suppl_text = models.CharField(_('Suppl Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
         permissions = (("list_issue", "Can list Issues"),
@@ -889,10 +928,9 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     @property
     def identification(self):
-        suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
-        suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
-
-        values = [self.number, suppl_volume, suppl_number]
+        values = [self.number]
+        if self.type == 'supplement':
+            values.append('suppl.%s' % self.suppl_text)
 
         return ' '.join([val for val in values if val]).strip().replace(
                 'spe', 'special').replace('ahead', 'ahead of print')
@@ -906,6 +944,18 @@ class Issue(caching.base.CachingMixin, models.Model):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
                                         self.publication_end_month,
                                         self.publication_year)
+    @property
+    def suppl_type(self):
+        if self.type == 'supplement':
+
+            if self.number != '' and self.volume == '':
+                return 'number'
+            elif self.number == '' and self.volume != '':
+                return 'volume'
+
+        else:
+            raise AttributeError('Issues of type %s do not have an attribute named: suppl_type' % self.get_type_display())
+
 
     def _suggest_order(self, force=False):
         """
@@ -935,8 +985,14 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         return next_order
 
+    def _get_default_use_license(self):
+        return self.journal.use_license
+
     def save(self, *args, **kwargs):
         self.label = unicode(self)
+
+        if self.use_license is None and self.journal:
+            self.use_license = self._get_default_use_license()
 
         if not self.pk:
             self.order = self._suggest_order()

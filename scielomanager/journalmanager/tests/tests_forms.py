@@ -3,6 +3,8 @@
 Use this module to write functional tests for the view-functions, only!
 """
 import os
+import unittest
+
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -12,7 +14,10 @@ from django.test import TestCase
 from journalmanager.tests import modelfactories
 from journalmanager import forms
 from journalmanager import models
-
+from scielomanager.utils.modelmanagers.helpers import (
+    _patch_userrequestcontextfinder_settings_setup,
+    _patch_userrequestcontextfinder_settings_teardown,
+    )
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
@@ -27,6 +32,11 @@ def _makePermission(perm, model, app_label='journalmanager'):
     ct = models.ContentType.objects.get(model=model,
                                         app_label=app_label)
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
+
+
+def _makeUseLicense():
+    ul = models.UseLicense(license_code='TEST')
+    ul.save()
 
 
 class CollectionFormTests(WebTest):
@@ -644,6 +654,7 @@ class JournalFormTests(WebTest):
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+        _makeUseLicense()
 
     def test_access_without_permission(self):
         """
@@ -1049,15 +1060,957 @@ class SponsorFormTests(WebTest):
             lambda: form.set('sponsor-collections', [another_collection.pk]))
 
 
+class IssueBaseFormClassTests(unittest.TestCase):
+    def test_basic_structure(self):
+        issue_form = forms.IssueBaseForm()
+
+        from django import forms as dj_forms
+        expected = {'section': dj_forms.ModelMultipleChoiceField,
+                    'volume': dj_forms.CharField,
+                    'publication_start_month': dj_forms.ChoiceField,
+                    'publication_end_month': dj_forms.ChoiceField,
+                    'publication_year': dj_forms.IntegerField,
+                    'is_marked_up': dj_forms.BooleanField,
+                    'use_license': dj_forms.ModelChoiceField,
+                    'total_documents': dj_forms.IntegerField,
+                    'ctrl_vocabulary': dj_forms.ChoiceField,
+                    'editorial_standard': dj_forms.ChoiceField,
+                    'cover': dj_forms.ImageField,
+                    }
+
+        self.assertEqual(len(expected.keys()), len(issue_form.fields.keys()))
+        self.assertEqual(sorted(expected.keys()), sorted(issue_form.fields.keys()))
+        self.assertEqual(
+            expected,
+            {fname: type(field) for fname, field in issue_form.fields.items()}
+        )
+
+    def test_save_commit_eq_False(self):
+        from journalmanager import models
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+        issue_model = issue_form.save(commit=False)
+        issue_model.journal = journal
+        issue_model.save()
+        issue_form.save_m2m()
+
+        self.assertIsInstance(issue_model, models.Issue)
+        self.assertTrue(section in issue_model.section.all())
+        self.assertEqual(issue_model.volume, u'1')
+        self.assertEqual(issue_model.publication_start_month, u'1')
+        self.assertEqual(issue_model.publication_end_month, u'2')
+        self.assertEqual(issue_model.publication_year, 2014)
+        self.assertEqual(issue_model.is_marked_up, True)
+        self.assertEqual(issue_model.use_license, use_license)
+        self.assertEqual(issue_model.total_documents, 10)
+        self.assertEqual(issue_model.ctrl_vocabulary, u'nd')
+        self.assertEqual(issue_model.editorial_standard, u'iso690')
+        self.assertEqual(issue_model.cover, None)
+
+    def test_save_m2m_while_commit_eq_False(self):
+        from journalmanager import models
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+        issue_model = issue_form.save(commit=False)
+        self.assertTrue(hasattr(issue_form, 'save_m2m'))
+
+
+class RegularIssueFormClassTests(unittest.TestCase):
+    def test_journal_kwargs_is_required(self):
+        self.assertRaises(TypeError, lambda: forms.RegularIssueForm())
+
+    def test_inheritance(self):
+        # By checking the inheritance, we assume that all base fields are present.
+        self.assertTrue(issubclass(forms.RegularIssueForm, forms.IssueBaseForm))
+
+    def test_basic_structure(self):
+        from django import forms as dj_forms
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.RegularIssueForm(params={'journal': journal})
+        self.assertEqual(dj_forms.CharField, type(issue_form.fields['number']))
+
+    def test_clean(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '1',
+            'number': '2',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_volume_only(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_number_only(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_fails_if_missing_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_if_issue_is_duplicated(self):
+        issue = modelfactories.IssueFactory(type='regular')
+        journal = issue.journal
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_if_duplicated_issue(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(type='regular', volume='1',
+            number='2', publication_year=2013, journal=journal)
+        issue2 = modelfactories.IssueFactory(type='regular', volume='1',
+            number='2', publication_year=2013, journal=journal)
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_on_edit(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(type='regular', volume='1',
+            number='2', publication_year=2013, journal=journal)
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'publication_start_month': '2',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.RegularIssueForm(POST,
+                                            instance=issue,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+
+class SupplementIssueFormClassTests(unittest.TestCase):
+
+    def test_journal_kwargs_is_required(self):
+        self.assertRaises(TypeError, lambda: forms.SupplementIssueForm())
+
+    def test_inheritance(self):
+        # By checking the inheritance, we assume that all base fields are present.
+        self.assertTrue(issubclass(forms.SupplementIssueForm, forms.IssueBaseForm))
+
+    def test_basic_structure(self):
+        from django import forms as dj_forms
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.SupplementIssueForm(params={'journal': journal})
+        self.assertEqual(dj_forms.CharField, type(issue_form.fields['number']))
+        self.assertEqual(dj_forms.ChoiceField, type(issue_form.fields['suppl_type']))
+
+    def test_clean_for_volume_type(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'volume',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_for_type_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_with_both_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '1',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_with_both_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'volume',
+            'volume': '1',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_without_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_without_number_and_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'number',
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_without_number_and_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_type' : 'volume',
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_for_type_number_if_duplicated_issue(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(volume='',
+                                            number='1',
+                                            suppl_text='1',
+                                            publication_year=2013,
+                                            journal=journal,
+                                            type='supplement')
+        issue2 = modelfactories.IssueFactory(volume='',
+                                             number='1',
+                                             suppl_text='1',
+                                             publication_year=2013,
+                                             journal=journal,
+                                             type='supplement')
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_type':'number',
+            'suppl_text': issue.suppl_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_for_type_volume_if_duplicated_issue(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(volume='1',
+                                            number='',
+                                            suppl_text='1',
+                                            publication_year=2013,
+                                            journal=journal,
+                                            type='supplement')
+        issue2 = modelfactories.IssueFactory(volume='1',
+                                            number='',
+                                            suppl_text='1',
+                                            publication_year=2013,
+                                            journal=journal,
+                                            type='supplement')
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_type':'volume',
+            'suppl_text': issue.suppl_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+
+    def test_clean_fails_for_type_number_if_issue_already_exist(self):
+        issue = modelfactories.IssueFactory(number='1', volume='', type='supplement')
+        journal = issue.journal
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_type':issue.suppl_type,
+            'suppl_text': issue.suppl_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+
+    def test_clean_fails_for_type_volume_if_issue_already_exist(self):
+        issue = modelfactories.IssueFactory(number='', volume='1', type='supplement')
+        journal = issue.journal
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_type':issue.suppl_type,
+            'suppl_text': issue.suppl_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+
+    def test_clean_for_type_number_on_edit(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(volume='',
+                                            number='2',
+                                            suppl_text='1',
+                                            publication_year=2013,
+                                            journal=journal,
+                                            type='supplement')
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_type':issue.suppl_type,
+            'suppl_text': issue.suppl_text,
+            'publication_start_month': '2',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                                instance=issue,
+                                                params={'journal': journal},
+                                                querysets={
+                                                    'section': journal.section_set.all(),
+                                                    'use_license': models.UseLicense.objects.all(),
+                                                })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_for_type_volume_on_edit(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(volume='2',
+                                            number='',
+                                            suppl_text='1',
+                                            publication_year=2013,
+                                            journal=journal,
+                                            type='supplement')
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'suppl_type':issue.suppl_type,
+            'suppl_text': issue.suppl_text,
+            'publication_start_month': '2',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SupplementIssueForm(POST,
+                                                instance=issue,
+                                                params={'journal': journal},
+                                                querysets={
+                                                    'section': journal.section_set.all(),
+                                                    'use_license': models.UseLicense.objects.all(),
+                                                })
+
+        self.assertTrue(issue_form.is_valid())
+
+
+class SpecialIssueFormClassTests(unittest.TestCase):
+
+    def test_journal_kwargs_is_required(self):
+        self.assertRaises(TypeError, lambda: forms.SpecialIssueForm())
+
+    def test_inheritance(self):
+        # By checking the inheritance, we assume that all base fields are present.
+        self.assertTrue(issubclass(forms.SpecialIssueForm, forms.RegularIssueForm))
+
+    def test_basic_structure(self):
+        from django import forms as dj_forms
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.SpecialIssueForm(params={'journal': journal})
+        self.assertEqual(dj_forms.CharField, type(issue_form.fields['number']))
+
+    def test_mandatory_number_value(self):
+        from django import forms as dj_forms
+        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
+        journal = modelfactories.JournalFactory()
+        issue_form = forms.SpecialIssueForm(params={'journal': journal})
+        self.assertEqual(issue_form['number'].value(), SPECIAL_ISSUE_FORM_FIELD_NUMBER)
+
+    def test_clean(self):
+        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
+
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '',
+            'number': SPECIAL_ISSUE_FORM_FIELD_NUMBER,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_regular_form = forms.RegularIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+        self.assertTrue(issue_regular_form.is_valid())
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_with_any_number_value(self):
+        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
+
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': '',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+        self.assertEqual(issue_form.cleaned_data['number'], SPECIAL_ISSUE_FORM_FIELD_NUMBER)
+
+
+####
+# Integration tests on forms
+####
+
 class IssueFormTests(WebTest):
 
+    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+        self.collection.make_default_to_user(self.user)
 
         self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        pass
 
     def test_basic_struture(self):
         """
@@ -1071,17 +2024,15 @@ class IssueFormTests(WebTest):
             model='issue', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
-        page = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user)
-
-        page.mustcontain('number', 'cover',
-                         'title-0-title',
-                         'title-0-language',
-                         'title-TOTAL_FORMS',
-                         'title-INITIAL_FORMS',
-                         'title-MAX_NUM_FORMS')
-
-        self.assertTemplateUsed(page, 'journalmanager/add_issue.html')
+        for t in ['regular', 'supplement', 'special']:
+            page = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user)
+            page.mustcontain('number', 'cover',
+                             'title-0-title',
+                             'title-0-language',
+                             'title-TOTAL_FORMS',
+                             'title-INITIAL_FORMS',
+                             'title-MAX_NUM_FORMS')
+            self.assertTemplateUsed(page, 'journalmanager/add_issue_%s.html' % t)
 
     def test_access_without_permission(self):
         """
@@ -1089,11 +2040,11 @@ class IssueFormTests(WebTest):
         are unable to access the form. They must be redirected to a page
         with informations about their lack of permissions.
         """
-        page = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).follow()
 
-        self.assertTemplateUsed(page, 'accounts/unauthorized.html')
-        page.mustcontain('not authorized to access')
+        for t in ['regular', 'supplement', 'special']:
+            page = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).follow()
+            self.assertTemplateUsed(page, 'accounts/unauthorized.html')
+            page.mustcontain('not authorized to access')
 
     def test_POST_workflow_with_valid_formdata(self):
         """
@@ -1112,24 +2063,33 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = '3'
-        form['volume'] = '29'
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2012'
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
 
-        response = form.submit().follow()
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
 
-        self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
+
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_POST_workflow_without_volume_and_number_formdata(self):
         """
@@ -1143,24 +2103,29 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = ''
-        form['volume'] = ''
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2012'
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+            form['number'] = ''
+            form['volume'] = ''
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
 
-        response = form.submit()
+            response = form.submit()
+            if t == 'supplement':
+                self.assertIn('There are some errors or missing data.', response.body)
+            elif t == 'special':
+                # for t=='special' -> number field will be overwrited it 'spe' text
+                pass
+            else: # regular
+                 self.assertIn('You must complete at least one of two fields volume or number.', response.body)
 
-        self.assertIn('You must complete at least one of two fields volume or number.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+            self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
 
     def test_POST_workflow_with_invalid_formdata(self):
         """
@@ -1175,29 +2140,24 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = '3'
-        form['editorial_standard'] = ''
-        form['volume'] = ''
-        form['publication_start_month'] = ''
-        form['publication_end_month'] = ''
-        form['publication_year'] = ''
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+            form['number'] = '3'
+            form['volume'] = ''
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
 
-        response = form.submit()
+            response = form.submit()
 
-        self.assertTrue('alert alert-error' in response.body)
-        self.assertIn('There are some errors or missing data', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+            self.assertIn('There are some errors or missing data.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
 
     def test_POST_workflow_with_exist_year_number_volume_on_the_same_journal(self):
         """
-        Asserts if any message error display when try to insert a duplicate
+        Asserts if any message error is displayed while trying to insert a duplicate
         Year, Number and Volume issue object from a specific Journal
         """
 
@@ -1208,33 +2168,64 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        issue = modelfactories.IssueFactory(journal=self.journal,
-            suppl_volume='', suppl_number='')
+        for t in ['regular', 'special']:
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+            form['number'] = str(issue.number)
+            form['volume'] = str(issue.volume)
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = str(issue.publication_year)
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+            response = form.submit()
+
+            if t in ('regular',):
+                # for t == 'special' number field will be overwrited in clean_number method,
+                # so will be a redirecto (http 302) because save was succesfully.
+                # for other types, will raise a validations error
+                self.assertIn('There are some errors or missing data.', response.body)
+                self.assertIn('Issue with this Year and (Volume or Number) already exists for this Journal', response.body)
+                self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
+            else:
+                self.assertEqual(302, response.status_code)
+                self.assertIn(reverse('issue.index', args=[issue.journal.pk]), response.location)
+                self.assertEqual('', response.body)
+
+    def test_POST_workflow_with_exist_year_number_volume_suppl_text_on_the_same_journal(self):
+        """
+        Asserts if any message error is displayed while trying to insert a duplicate
+        Year, Number and Volume issue object from a specific Journal
+        """
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='1', volume='1', number='', type='supplement')
+        form = self.app.get(reverse('issue.add_supplement', args=[self.journal.pk]), user=self.user).forms['issue-form']
 
         form['total_documents'] = '16'
         form.set('ctrl_vocabulary', 'decs')
         form['number'] = str(issue.number)
         form['volume'] = str(issue.volume)
-        form['suppl_volume'] = ''
-        form['suppl_number'] = ''
-        form['editorial_standard'] = ''
+        form['suppl_text'] = issue.suppl_text
         form['publication_start_month'] = '9'
         form['publication_end_month'] = '11'
         form['publication_year'] = str(issue.publication_year)
         form['is_marked_up'] = False
         form['editorial_standard'] = 'other'
-
         response = form.submit()
 
-        self.assertTrue('alert alert-error' in response.body)
-        self.assertIn('There are some errors or missing data', response.body)
-        self.assertTrue('Issue with this Year and (Volume or Number) already exists for this Journal.' \
-            in response.body)
-
-        self.assertTemplateUsed(response, 'journalmanager/add_issue.html')
+        self.assertIn('There are some errors or missing data.', response.body)
+        self.assertIn('Issue with this Year and (Volume or Number) already exists for this Journal', response.body)
+        self.assertTemplateUsed(response, 'journalmanager/add_issue_supplement.html')
 
     def test_issues_can_be_edited(self):
         perm_issue_change = _makePermission(perm='add_issue',
@@ -1244,31 +2235,20 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        issue1 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29')
+        for t in ['regular', 'supplement', 'special']:
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
+            form = self.app.get(reverse('issue.edit', args=[self.journal.pk, issue.pk]), user=self.user).forms['issue-form']
 
-        issue2 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29')
+            form['total_documents'] = '99'
+            if t == 'supplement':
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.XX'
+                form['volume'] = '99'
+                form['number'] = ''
+            response = form.submit().follow()
 
-        form = self.app.get(reverse('issue.edit',
-            args=[self.journal.pk, issue1.pk]), user=self.user).forms['issue-form']
-
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['number'] = str(issue1.number)
-        form['volume'] = str(issue1.volume)
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = str(issue1.publication_year)
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-        form.set('use_license', str(issue1.journal.use_license.pk))
-
-        response = form.submit().follow()
-
-        self.assertIn('Saved.', response.body)
-        self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
@@ -1282,10 +2262,11 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertEqual(form.enctype, 'multipart/form-data')
+            self.assertEqual(form.enctype, 'multipart/form-data')
 
     def test_form_action_must_be_empty(self):
         """
@@ -1300,10 +2281,11 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertEqual(form.action, '')
+            self.assertEqual(form.action, '')
 
     def test_form_method_must_be_post(self):
         """
@@ -1317,10 +2299,11 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertEqual(form.method.lower(), 'post')
+            self.assertEqual(form.method.lower(), 'post')
 
     def test_sections_must_not_be_trashed(self):
         """
@@ -1337,44 +2320,12 @@ class IssueFormTests(WebTest):
         trashed_section = modelfactories.SectionFactory.create(
             journal=self.journal, is_trashed=True)
 
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk]), user=self.user).forms['issue-form']
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
 
-        self.assertRaises(ValueError,
-            lambda: form.set('section', str(trashed_section.pk)))
-
-    def test_more_than_one_volume_supplement(self):
-        perm_issue_change = _makePermission(perm='add_issue',
-            model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm_issue_change)
-        self.user.user_permissions.add(perm_issue_list)
-
-        issue1 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29', publication_year='2013')
-
-        issue2 = modelfactories.IssueFactory(journal=self.journal,
-            volume='29', number='', suppl_volume='1', publication_year='2013')
-
-        form = self.app.get(reverse('issue.add',
-            args=[self.journal.pk,]), user=self.user).forms['issue-form']
-
-        form['total_documents'] = '16'
-        form.set('ctrl_vocabulary', 'decs')
-        form['volume'] = '29'
-        form['number'] = ''
-        form['suppl_volume'] = '2'
-        form['editorial_standard'] = ''
-        form['publication_start_month'] = '9'
-        form['publication_end_month'] = '11'
-        form['publication_year'] = '2013'
-        form['is_marked_up'] = False
-        form['editorial_standard'] = 'other'
-        form.set('use_license', str(issue1.journal.use_license.pk))
-
-        response = form.submit().follow()
-        self.assertIn('Saved.', response.body)
+            self.assertRaises(ValueError,
+                lambda: form.set('section', str(trashed_section.pk)))
 
 
 class StatusFormTests(WebTest):

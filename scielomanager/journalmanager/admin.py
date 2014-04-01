@@ -109,7 +109,7 @@ admin.site.register(Sponsor, SponsorAdmin)
 
 
 class UseLicenseAdmin(admin.ModelAdmin):
-
+    list_display = ('license_code', 'is_default', )
     def queryset(self, request):
         return UseLicense.nocacheobjects
 

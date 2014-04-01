@@ -1,0 +1,35 @@
+{% load scielo_common %}
+{% load i18n %}
+<div class="well">
+  {% for field in form %}
+    {% if field.name != "cover" %} <!-- Cover field is listed bellow -->
+      <div id='row_{{ field.name }}' class="control-group {% if field.errors %}error{% endif %}">
+        <label class="control-label" for="id_{{ field.name }}">
+          {% if field.field.required %}
+            <strong>{{ field.label }}:</strong>
+          {% else %}
+            {{ field.label }}:
+          {% endif %}
+          {% if field.name == 'section' %}
+            <a class="popup" href="{% url section.add journal.id %}?popup=1">
+              <img alt="{% trans 'Add new' %}" src="/static/images/icon_addlink.gif">
+            </a>
+          {% endif %}
+        </label>
+        <div class="controls">
+          {{ field }}
+          {% if field.help_text %}
+            <span class="help-inline">
+              {% with term="term-issue-"|add:field.name|slugify %}
+                {% field_help field.label field.help_text term %}
+              {% endwith %}
+            </span>
+          {% endif %}
+          {% if field.errors %}
+            <span class="help-inline danger">{{ field.errors }}</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

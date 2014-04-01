@@ -97,8 +97,8 @@ class UserProfileTests(TestCase):
 
 class IssueTests(TestCase):
 
-    def test_identification_for_suppl_volume(self):
-        issue = IssueFactory.create(number='1', suppl_volume='2')
+    def test_identification_for_suppl_text(self):
+        issue = IssueFactory.create(number='1', suppl_text='2', type='supplement')
         expected = u'1 suppl.2'
 
         self.assertEqual(issue.identification, expected)
@@ -115,8 +115,8 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue.identification, expected)
 
-    def test_identification_for_suppl_number(self):
-        issue = IssueFactory.create(number='1', suppl_number='2')
+    def test_identification_for_suppl_text(self):
+        issue = IssueFactory.create(number='1', suppl_text='2', type='supplement')
         expected = u'1 suppl.2'
 
         self.assertEqual(issue.identification, expected)
@@ -134,7 +134,7 @@ class IssueTests(TestCase):
         self.assertEqual(issue.identification, expected)
 
     def test_unicode_representation(self):
-        issue = IssueFactory.create(volume='2', number='1', suppl_number='2')
+        issue = IssueFactory.create(volume='2', number='1', suppl_text='2', type='supplement')
         expected = u'2 (1 suppl.2)'
 
         self.assertEqual(unicode(issue), expected)
@@ -272,6 +272,12 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 2)
+
+    def test_get_default_use_license(self):
+        from journalmanager.models import UseLicense
+        issue = IssueFactory.create()
+        default_use_license = UseLicense.objects.get(is_default=True)
+        self.assertEqual(issue.use_license, default_use_license)
 
 class LanguageTests(TestCase):
 
@@ -491,6 +497,12 @@ class JournalTests(TestCase):
                                         print_issn='1234-4321',
                                         eletronic_issn='4321-1234')
         self.assertEqual(journal.scielo_pid, '4321-1234')
+
+    def test_get_default_use_license(self):
+        from journalmanager.models import UseLicense
+        journal = JournalFactory.create()
+        default_use_license = UseLicense.objects.get(is_default=True)
+        self.assertEqual(journal.use_license, default_use_license)
 
 
 class CollectionTests(TestCase):
@@ -1066,6 +1078,46 @@ class ArticleTests(TestCase):
 
         self.assertEqual(article.titles, None)
 
+
+class UseLicenseTests(TestCase):
+
+    def test_create_license_and_set_as_default(self):
+        from journalmanager import models
+
+        license1 = models.UseLicense(license_code='XXX')
+        license2 = models.UseLicense(license_code='YYY', is_default=False)
+        license3 = models.UseLicense(license_code='ZZZ', is_default=True)
+
+        license1.save()
+        self.assertTrue(license1.is_default)
+
+        license2.save()
+        # created as not default, and already have one as default
+        self.assertFalse(license2.is_default)
+
+        license3.save()
+        self.assertTrue(license3.is_default)
+
+    def test_edit_license_and_change_default(self):
+        from journalmanager import models
+
+        license = models.UseLicense(license_code='XXX')
+
+        license.save()
+        self.assertTrue(license.is_default)
+
+        license.is_default = False
+        license.save()
+        # no other default, so this one will be set as default (forced!)
+        self.assertTrue(license.is_default)
+
+        # create a new one as new default
+        license2 = models.UseLicense(license_code='YYY', is_default=True)
+        license2.save()
+        self.assertTrue(license2.is_default)
+        #  and then license.is_default must be False
+        license = models.UseLicense.objects.get(license_code='XXX')
+        self.assertFalse(license.is_default)
 
 
 
