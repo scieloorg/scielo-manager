@@ -9,9 +9,9 @@ class Migration(DataMigration):
     def forwards(self, orm):
 
         def define_issue_type(issue):
-            if (issue.number != '' and issue.volume == '') or (issue.number == '' and issue.volume !=''):
+            if issue.suppl_volume or issue.suppl_number:
                 return 'supplement'
-            elif issue.number.lower() == 'spe':
+            elif 'spe' in issue.number.lower():
                 return 'special'
             else:
                 return 'regular'
