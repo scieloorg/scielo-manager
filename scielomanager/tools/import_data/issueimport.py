@@ -50,7 +50,7 @@ class IssueImport:
         asign the correct section id to an issue. This must be done to avoid mistakes because Journal
         Manager handle same journals for different collections.
         """
-        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collection=self._collection.id)]
+        journals_sections = [i.section_set.all() for i in Journal.objects.filter(collections=self._collection)]
         self._sections = {}
         for journal in journals_sections:
             for section in journal:
@@ -126,10 +126,10 @@ class IssueImport:
         error = False
 
         try:
-            journal = Journal.objects.get(print_issn=record['35'][0], collection=self._collection.id)
+            journal = Journal.objects.get(print_issn=record['35'][0], collections=self._collection.id)
         except ObjectDoesNotExist:
             try:
-                journal = Journal.objects.get(eletronic_issn=record['35'][0], collection=self._collection.id)
+                journal = Journal.objects.get(eletronic_issn=record['35'][0], collections=self._collection.id)
             except ObjectDoesNotExist:
                 print u"Inconsistência de dados tentando encontrar periódico com ISSN: %s" % record['35'][0]
                 error = True
@@ -286,7 +286,7 @@ class IssueImport:
                 if '935' in record:
                     self._journals[record['935'][0]]['use_license'] = False
 
-    def run_import(self, json_file):
+    def run_import(self, json_file, conflicted_journals):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -296,4 +296,6 @@ class IssueImport:
         issue_json_parsed = json.loads(issue_json_file.read())
 
         for record in issue_json_parsed:
+            if record['35'][0] in conflicted_journals:
+                continue
             self.load_issue(record)

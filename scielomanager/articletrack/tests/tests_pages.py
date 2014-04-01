@@ -5,6 +5,8 @@ from django_factory_boy import auth
 from django.core.urlresolvers import reverse
 
 from . import modelfactories
+from journalmanager.tests.modelfactories import UserFactory
+
 from scielomanager.utils.modelmanagers.helpers import (
     _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
@@ -44,7 +46,7 @@ class CheckinListTests(WebTest):
         checkin = modelfactories.CheckinFactory.create()
 
         #Get only the first collection and set to the user
-        collection = checkin.article.journals.all()[0].collection
+        collection = checkin.article.journals.all()[0].collections.all()[0]
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return checkin
@@ -133,7 +135,7 @@ class NoticeListTests(WebTest):
         notice = modelfactories.NoticeFactory.create()
 
         #Get only the first collection and set to the user
-        collection = notice.checkin.article.journals.all()[0].collection
+        collection = notice.checkin.article.journals.all()[0].collections.all()[0]
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return notice
@@ -142,7 +144,7 @@ class NoticeListTests(WebTest):
         Flag.objects.create(name='articletrack', authenticated=True)
 
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = UserFactory(is_active=True)
         perm = _makePermission(perm='list_notice', model='notice')
         self.user.user_permissions.add(perm)
 
