@@ -715,12 +715,12 @@ def edit_issue(request, journal_id, issue_id=None):
                 'journal': journal,
             },
             'querysets' : {
-                'section': journal.section_set.all(),
+                'section': journal.section_set.filter(is_trashed=False),
                 'use_license': models.UseLicense.objects.all(),
             },
             'instance' : instance,
         }
-        
+
         form_args = []
         if request.method == 'POST':
             form_args.append(request.POST)
@@ -810,7 +810,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                 'journal': journal,
             },
             'querysets' : {
-                'section': journal.section_set.all(),
+                'section': journal.section_set.filter(is_trashed=False),
                 'use_license': models.UseLicense.objects.all(),
             },
             'instance' : instance,
@@ -827,7 +827,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
         else: # issue_type == 'regular':
             return RegularIssueForm(*form_args, **form_kwargs)
 
-    journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
 
     if issue_id is None:
         data_dict = {'use_license': journal.use_license.id,

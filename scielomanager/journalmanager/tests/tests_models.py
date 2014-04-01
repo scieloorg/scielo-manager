@@ -97,8 +97,8 @@ class UserProfileTests(TestCase):
 
 class IssueTests(TestCase):
 
-    def test_identification_for_suppl_volume(self):
-        issue = IssueFactory.create(number='1', suppl_volume='2')
+    def test_identification_for_suppl_text(self):
+        issue = IssueFactory.create(number='1', suppl_text='2', type='supplement')
         expected = u'1 suppl.2'
 
         self.assertEqual(issue.identification, expected)
@@ -115,8 +115,8 @@ class IssueTests(TestCase):
 
         self.assertEqual(issue.identification, expected)
 
-    def test_identification_for_suppl_number(self):
-        issue = IssueFactory.create(number='1', suppl_number='2')
+    def test_identification_for_suppl_text(self):
+        issue = IssueFactory.create(number='1', suppl_text='2', type='supplement')
         expected = u'1 suppl.2'
 
         self.assertEqual(issue.identification, expected)
@@ -134,7 +134,7 @@ class IssueTests(TestCase):
         self.assertEqual(issue.identification, expected)
 
     def test_unicode_representation(self):
-        issue = IssueFactory.create(volume='2', number='1', suppl_number='2')
+        issue = IssueFactory.create(volume='2', number='1', suppl_text='2', type='supplement')
         expected = u'2 (1 suppl.2)'
 
         self.assertEqual(unicode(issue), expected)
@@ -273,7 +273,7 @@ class IssueTests(TestCase):
         self.assertEqual(issue1._suggest_order(), 1)
         self.assertEqual(issue2._suggest_order(), 2)
 
-    def test_get_default_use_license(self):    
+    def test_get_default_use_license(self):
         from journalmanager.models import UseLicense
         issue = IssueFactory.create()
         default_use_license = UseLicense.objects.get(is_default=True)
@@ -1102,7 +1102,7 @@ class UseLicenseTests(TestCase):
         from journalmanager import models
 
         license = models.UseLicense(license_code='XXX')
-        
+
         license.save()
         self.assertTrue(license.is_default)
 

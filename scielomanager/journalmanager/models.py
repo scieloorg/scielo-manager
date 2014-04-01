@@ -42,7 +42,9 @@ User.add_to_class('objects', caching.base.CachingManager())
 logger = logging.getLogger(__name__)
 
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
-ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If no defined, will be applied the related journal's use license. The SciELO default use license is BY-NC. Please visit: http://www.scielo.org/php/level.php?lang=pt&component=56&item=2 (5.2.11. Política de direitos autorais) for more details.")
+ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If not defined, will be applied the related journal's use license. \
+The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.")
+
 
 def get_user_collections(user_id):
     """
@@ -56,10 +58,17 @@ def get_user_collections(user_id):
 
 
 def get_journals_default_use_license():
+    """
+    Returns the default use license for all new Journals.
+
+    This callable is passed as the default value on Journal.use_license field.
+    The default use license is the one defined on SciELO criteria, and at
+    the time is BY-NC. See http://ref.scielo.org/jf5ndd for more information.
+    """
     try:
         return UseLicense.objects.get(is_default=True)
     except UseLicense.DoesNotExist:
-        raise ImproperlyConfigured("There is no UseLicense setted as default")
+        raise ImproperlyConfigured("There is no UseLicense set as default")
 
 
 class AppCustomManager(caching.base.CachingManager):
@@ -877,8 +886,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     journal = models.ForeignKey(Journal)
     volume = models.CharField(_('Volume'), blank=True, max_length=16)
     number = models.CharField(_('Number'), blank=True, max_length=16)
-    suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16)
-    suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     publication_start_month = models.IntegerField(_('Start Month'), blank=True, null=True, choices=choices.MONTHS)
@@ -921,10 +928,9 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     @property
     def identification(self):
-        suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
-        suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
-
-        values = [self.number, suppl_volume, suppl_number]
+        values = [self.number]
+        if self.type == 'supplement':
+            values.append('suppl.%s' % self.suppl_text)
 
         return ' '.join([val for val in values if val]).strip().replace(
                 'spe', 'special').replace('ahead', 'ahead of print')
@@ -941,12 +947,12 @@ class Issue(caching.base.CachingMixin, models.Model):
     @property
     def suppl_type(self):
         if self.type == 'supplement':
-            
+
             if self.number != '' and self.volume == '':
-                return 'number' 
+                return 'number'
             elif self.number == '' and self.volume != '':
                 return 'volume'
-        
+
         else:
             raise AttributeError('Issues of type %s do not have an attribute named: suppl_type' % self.get_type_display())
 

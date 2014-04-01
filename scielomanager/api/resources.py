@@ -68,6 +68,8 @@ class IssueResource(ModelResource):
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
     is_press_release = fields.BooleanField(readonly=True)
+    suppl_volume = fields.CharField(readonly=True)
+    suppl_number = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
@@ -115,6 +117,18 @@ class IssueResource(ModelResource):
 
     def dehydrate_is_press_release(self, bundle):
         return False
+
+    def dehydrate_suppl_volume(self, bundle):
+        if bundle.obj.type == 'supplement':
+            return bundle.obj.suppl_text if bundle.obj.volume else ''
+        else:
+            return ''
+
+    def dehydrate_suppl_number(self, bundle):
+        if bundle.obj.type == 'supplement':
+            return bundle.obj.suppl_text if bundle.obj.number else ''
+        else:
+            return ''
 
 
 class CollectionResource(ModelResource):
@@ -327,8 +341,8 @@ class PressReleaseResource(ModelResource):
             'short_title': issue.journal.short_title,
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_volume': issue.suppl_volume,
-            'suppl_number': issue.suppl_number,
+            'suppl_volume': issue.suppl_text if issue.type == 'supplement' and issue.volume else '',
+            'suppl_number': issue.suppl_text if issue.type == 'supplement' and issue.number else '',
             'publication_start_month': issue.publication_start_month,
             'publication_end_month': issue.publication_end_month,
             'publication_city': issue.journal.publication_city,

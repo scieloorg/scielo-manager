@@ -14,7 +14,10 @@ from django.test import TestCase
 from journalmanager.tests import modelfactories
 from journalmanager import forms
 from journalmanager import models
-
+from scielomanager.utils.modelmanagers.helpers import (
+    _patch_userrequestcontextfinder_settings_setup,
+    _patch_userrequestcontextfinder_settings_teardown,
+    )
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
@@ -1667,14 +1670,16 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         journal = modelfactories.JournalFactory()
         issue = modelfactories.IssueFactory(volume='',
                                             number='1',
+                                            suppl_text='1',
                                             publication_year=2013,
                                             journal=journal,
                                             type='supplement')
         issue2 = modelfactories.IssueFactory(volume='',
-                                            number='1',
-                                            publication_year=2013,
-                                            journal=journal,
-                                            type='supplement')
+                                             number='1',
+                                             suppl_text='1',
+                                             publication_year=2013,
+                                             journal=journal,
+                                             type='supplement')
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -1683,7 +1688,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'volume': issue.volume,
             'number': issue.number,
             'suppl_type':'number',
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
             'publication_year': issue.publication_year,
@@ -1708,11 +1713,13 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         journal = modelfactories.JournalFactory()
         issue = modelfactories.IssueFactory(volume='1',
                                             number='',
+                                            suppl_text='1',
                                             publication_year=2013,
                                             journal=journal,
                                             type='supplement')
         issue2 = modelfactories.IssueFactory(volume='1',
                                             number='',
+                                            suppl_text='1',
                                             publication_year=2013,
                                             journal=journal,
                                             type='supplement')
@@ -1724,7 +1731,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'volume': issue.volume,
             'number': issue.number,
             'suppl_type':'volume',
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
             'publication_year': issue.publication_year,
@@ -1757,7 +1764,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'volume': issue.volume,
             'number': issue.number,
             'suppl_type':issue.suppl_type,
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
             'publication_year': issue.publication_year,
@@ -1791,7 +1798,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'volume': issue.volume,
             'number': issue.number,
             'suppl_type':issue.suppl_type,
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
             'publication_year': issue.publication_year,
@@ -1818,6 +1825,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         journal = modelfactories.JournalFactory()
         issue = modelfactories.IssueFactory(volume='',
                                             number='2',
+                                            suppl_text='1',
                                             publication_year=2013,
                                             journal=journal,
                                             type='supplement')
@@ -1829,7 +1837,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'volume': issue.volume,
             'number': issue.number,
             'suppl_type':issue.suppl_type,
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': issue.suppl_text,
             'publication_start_month': '2',
             'publication_end_month': '2',
             'publication_year': issue.publication_year,
@@ -1856,6 +1864,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         journal = modelfactories.JournalFactory()
         issue = modelfactories.IssueFactory(volume='2',
                                             number='',
+                                            suppl_text='1',
                                             publication_year=2013,
                                             journal=journal,
                                             type='supplement')
@@ -1867,7 +1876,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'volume': issue.volume,
             'number': issue.number,
             'suppl_type':issue.suppl_type,
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': issue.suppl_text,
             'publication_start_month': '2',
             'publication_end_month': '2',
             'publication_year': issue.publication_year,
@@ -1989,13 +1998,19 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 
 class IssueFormTests(WebTest):
 
+    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+        self.collection.make_default_to_user(self.user)
 
         self.journal = modelfactories.JournalFactory(collection=self.collection)
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        pass
 
     def test_basic_struture(self):
         """
@@ -2109,7 +2124,7 @@ class IssueFormTests(WebTest):
                 pass
             else: # regular
                  self.assertIn('You must complete at least one of two fields volume or number.', response.body)
-            
+
             self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
 
     def test_POST_workflow_with_invalid_formdata(self):
@@ -2142,7 +2157,7 @@ class IssueFormTests(WebTest):
 
     def test_POST_workflow_with_exist_year_number_volume_on_the_same_journal(self):
         """
-        Asserts if any message error display when try to insert a duplicate
+        Asserts if any message error is displayed while trying to insert a duplicate
         Year, Number and Volume issue object from a specific Journal
         """
 
@@ -2153,8 +2168,8 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        for t in ['regular', 'supplement', 'special']:
-            issue = modelfactories.IssueFactory(journal=self.journal, suppl_volume='', suppl_number='', type=t)
+        for t in ['regular', 'special']:
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
             form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
             form['total_documents'] = '16'
@@ -2168,7 +2183,7 @@ class IssueFormTests(WebTest):
             form['editorial_standard'] = 'other'
             response = form.submit()
 
-            if t in ('regular', 'supplement',):
+            if t in ('regular',):
                 # for t == 'special' number field will be overwrited in clean_number method,
                 # so will be a redirecto (http 302) because save was succesfully.
                 # for other types, will raise a validations error
@@ -2180,6 +2195,38 @@ class IssueFormTests(WebTest):
                 self.assertIn(reverse('issue.index', args=[issue.journal.pk]), response.location)
                 self.assertEqual('', response.body)
 
+    def test_POST_workflow_with_exist_year_number_volume_suppl_text_on_the_same_journal(self):
+        """
+        Asserts if any message error is displayed while trying to insert a duplicate
+        Year, Number and Volume issue object from a specific Journal
+        """
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='1', volume='1', number='', type='supplement')
+        form = self.app.get(reverse('issue.add_supplement', args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+        form['total_documents'] = '16'
+        form.set('ctrl_vocabulary', 'decs')
+        form['number'] = str(issue.number)
+        form['volume'] = str(issue.volume)
+        form['suppl_text'] = issue.suppl_text
+        form['publication_start_month'] = '9'
+        form['publication_end_month'] = '11'
+        form['publication_year'] = str(issue.publication_year)
+        form['is_marked_up'] = False
+        form['editorial_standard'] = 'other'
+        response = form.submit()
+
+        self.assertIn('There are some errors or missing data.', response.body)
+        self.assertIn('Issue with this Year and (Volume or Number) already exists for this Journal', response.body)
+        self.assertTemplateUsed(response, 'journalmanager/add_issue_supplement.html')
+
     def test_issues_can_be_edited(self):
         perm_issue_change = _makePermission(perm='add_issue',
             model='issue', app_label='journalmanager')
@@ -2189,9 +2236,9 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_list)
 
         for t in ['regular', 'supplement', 'special']:
-            issue = modelfactories.IssueFactory(journal=self.journal, suppl_volume='', suppl_number='', type=t)
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
             form = self.app.get(reverse('issue.edit', args=[self.journal.pk, issue.pk]), user=self.user).forms['issue-form']
-            
+
             form['total_documents'] = '99'
             if t == 'supplement':
                 form['suppl_type'] = 'volume'
