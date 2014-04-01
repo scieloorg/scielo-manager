@@ -36,12 +36,14 @@ def checkin_index(request):
 
     checkins = models.Checkin.userobjects.active()
 
-    objects = get_paginated(checkins, request.GET.get('page', 1))
+    objects_pending = get_paginated(checkins.pending(), request.GET.get('pending_page', 1))
+    objects_accepted = get_paginated(checkins.accepted(), request.GET.get('accepted_page', 1))
 
     return render_to_response(
         'articletrack/checkin_list.html',
         {
-            'checkins': objects,
+            'checkins_pending': objects_pending,
+            'checkins_accepted': objects_accepted,
         },
         context_instance=RequestContext(request)
     )
