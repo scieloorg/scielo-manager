@@ -48,12 +48,19 @@ def _makePermission(perm, model, app_label='journalmanager'):
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
 
+def _makeUseLicense():
+    from journalmanager.models import UseLicense
+    ul = UseLicense(license_code='TEST')
+    ul.save()
+
+
 class JournalRestAPITest(WebTest):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
         self.extra_environ = _make_auth_environ(self.user.username,
             self.user.api_key.key)
+        _makeUseLicense()
 
     def test_journal_index(self):
         response = self.app.get('/api/v1/journals/',
@@ -439,6 +446,8 @@ class IssuesRestAPITest(WebTest):
             u'order',
             u'resource_uri',
             u'thematic_titles',
+            u'suppl_text',
+            u'type',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

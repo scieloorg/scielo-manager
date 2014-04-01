@@ -10,6 +10,8 @@ $(document).ready(function() {
         animate: true,
         addItemTarget: 'bottom',
         hideWhenAdded: true,
+        removeClass: 'btn btn-mini btn-danger pull-right',
+        listItemLabelClass: 'asmselect-listitem-label'
     });
 });
 

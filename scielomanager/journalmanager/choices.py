@@ -78,3 +78,10 @@ ISSUE_SUPPL_TYPE = [
     ('volume', 'Volume'),
     ('number', 'Number'),
 ]
+
+ISSUE_TYPES = (
+    ('regular', 'Regular'),
+    ('special', 'Special'),
+    ('supplement', 'Supplement'),
+)
+

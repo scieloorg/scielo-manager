@@ -59,6 +59,7 @@ class AheadForm(ModelForm):
            'current_ahead_documents': forms.TextInput(attrs={'class': 'input-small'}),
            }
 
+
 class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
@@ -277,7 +278,7 @@ class IssueBaseForm(forms.Form):
     publication_year = forms.IntegerField()
     is_marked_up = forms.BooleanField(required=False)
     use_license = forms.ModelChoiceField(
-        queryset=models.UseLicense.objects.none())
+        queryset=models.UseLicense.objects.none(), required=False, help_text=models.ISSUE_DEFAULT_LICENSE_HELP_TEXT)
     total_documents = forms.IntegerField()
     ctrl_vocabulary = forms.ChoiceField(
         choices=sorted(choices.CTRL_VOCABULARY, key=lambda vocab: vocab[1]),
@@ -359,7 +360,7 @@ class RegularIssueForm(IssueBaseForm):
 
 
 class SupplementIssueForm(IssueBaseForm):
-    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE)
+    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE, widget=forms.RadioSelect)
     number = forms.CharField(required=False)
     suppl_text = forms.CharField()
 
@@ -378,6 +379,7 @@ class SupplementIssueForm(IssueBaseForm):
         number = self.cleaned_data.get('number', '')
         suppl_type = self.cleaned_data.get('suppl_type')
         publication_year = self.cleaned_data.get('publication_year')
+        suppl_text = self.cleaned_data.get('suppl_text')
 
         if suppl_type == 'volume' and (volume == '' or number != ''):
             raise forms.ValidationError(_('You must complete the volume filed. Number field must be empty.'))
@@ -388,7 +390,8 @@ class SupplementIssueForm(IssueBaseForm):
                 issue = models.Issue.objects.get(volume=volume,
                                                  number=number,
                                                  publication_year=publication_year,
-                                                 journal__pk=self.journal.pk)
+                                                 suppl_text=suppl_text,
+                                                 journal=self.journal)
             except models.Issue.DoesNotExist:
                 # Perfect! A brand new issue!
                 pass
@@ -424,69 +427,6 @@ class SpecialIssueForm(RegularIssueForm):
     def clean_number(self):
         # override the number value
         return SPECIAL_ISSUE_FORM_FIELD_NUMBER
-
-
-class IssueForm(ModelForm):
-    section = forms.ModelMultipleChoiceField(models.Section.objects.none(),
-         widget=forms.SelectMultiple(attrs={'title': _('Select one or more section')}),
-         required=False)
-
-    widgets = {
-        'section': forms.Select(attrs={'class': 'span3'}),
-    }
-
-    def __init__(self, *args, **kwargs):
-        """
-        Section field queryset is overridden to display only
-        sections related to a given journal.
-
-        ``journal_id`` should not be passed to the superclass
-        ``__init__`` method.
-        """
-        self.journal_id = kwargs.pop('journal_id', None)
-        super(IssueForm, self).__init__(*args, **kwargs)
-        if self.journal_id is not None:
-            self.fields['section'].queryset = models.Section.objects.available(
-                True).filter(journal=self.journal_id)
-
-    def save_all(self, journal):
-        issue = self.save(commit=False)
-        issue.journal = journal
-        issue.save()
-        self.save_m2m()
-
-        return issue
-
-    def clean(self):
-        volume = self.cleaned_data.get('volume')
-        number = self.cleaned_data.get('number')
-        suppl_volume = self.cleaned_data.get('suppl_volume')
-        suppl_number = self.cleaned_data.get('suppl_number')
-        publication_year = self.cleaned_data.get('publication_year')
-
-        if volume or number:
-            issue = models.Issue.objects.filter(number=number,
-                                                volume=volume,
-                                                suppl_volume=suppl_volume,
-                                                suppl_number=suppl_number,
-                                                publication_year=publication_year,
-                                                journal=self.journal_id)
-
-            if issue:
-                if self.instance.id != issue[0].id:
-                    raise forms.ValidationError({NON_FIELD_ERRORS:\
-                        _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
-        else:
-            raise forms.ValidationError(_('You must complete at least one of two fields volume or number.'))
-
-        return self.cleaned_data
-
-    class Meta:
-        model = models.Issue
-        exclude = ('collection', 'journal', 'created', 'updated', 'order')
-        widgets = {
-            'publication_date': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker'}),
-        }
 
 
 ###########################################
@@ -771,7 +711,7 @@ class IssueTitleForm(ModelForm):
     class Meta:
         model = models.IssueTitle
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'span6'}),
+            'title': forms.TextInput(attrs={'class': 'span12'}),
         }
 
 
