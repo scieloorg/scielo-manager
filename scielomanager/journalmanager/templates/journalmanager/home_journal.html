@@ -62,7 +62,9 @@
         </tr>
         {% for activity in recent_activities %}
         <tr>
-          <td>{{ activity.collection }}</td>
+          <td>
+            {{ activity.collections.all|join:', ' }}
+          </td>
           <td><a href="mailto:{{ activity.creator.email }}">{{ activity.creator.username }}</a></td>
           <td><a href="{% url journal.edit activity.pk %}"
                  class="tip-bottom"

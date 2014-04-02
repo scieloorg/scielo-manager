@@ -7,7 +7,7 @@ from articletrack import (
 )
 
 from articletrack.tests import modelfactories
-from journalmanager.tests.modelfactories import UserFactory
+from journalmanager.tests.modelfactories import UserFactory, CollectionFactory, JournalFactory
 
 
 class ArticleManagerTests(TestCase):
@@ -38,8 +38,8 @@ class ArticleManagerTests(TestCase):
         article1 = modelfactories.ArticleFactory.create()
         article2 = modelfactories.ArticleFactory.create()
 
-        collection1 = article1.journals.all()[0].collection
-        collection2 = article2.journals.all()[0].collection
+        collection1 = article1.journals.all()[0].collections.all()[0]
+        collection2 = article2.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -59,8 +59,8 @@ class ArticleManagerTests(TestCase):
         article1 = modelfactories.ArticleFactory.create()
         article2 = modelfactories.ArticleFactory.create()
 
-        collection1 = article1.journals.all()[0].collection
-        collection2 = article2.journals.all()[0].collection
+        collection1 = article1.journals.all()[0].collections.all()[0]
+        collection2 = article2.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -103,8 +103,8 @@ class CheckinManagerTests(TestCase):
         checkin1 = modelfactories.CheckinFactory.create()
         checkin2 = modelfactories.CheckinFactory.create()
 
-        collection1 = checkin1.article.journals.all()[0].collection
-        collection2 = checkin2.article.journals.all()[0].collection
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -124,8 +124,8 @@ class CheckinManagerTests(TestCase):
         checkin1 = modelfactories.CheckinFactory.create()
         checkin2 = modelfactories.CheckinFactory.create()
 
-        collection1 = checkin1.article.journals.all()[0].collection
-        collection2 = checkin2.article.journals.all()[0].collection
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -168,8 +168,8 @@ class TicketManagerTests(TestCase):
         ticket1 = modelfactories.TicketFactory.create()
         ticket2 = modelfactories.TicketFactory.create()
 
-        collection1 = ticket1.article.journals.all()[0].collection
-        collection2 = ticket2.article.journals.all()[0].collection
+        collection1 = ticket1.article.journals.all()[0].collections.all()[0]
+        collection2 = ticket2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -189,8 +189,8 @@ class TicketManagerTests(TestCase):
         ticket1 = modelfactories.TicketFactory.create()
         ticket2 = modelfactories.TicketFactory.create()
 
-        collection1 = ticket1.article.journals.all()[0].collection
-        collection2 = ticket2.article.journals.all()[0].collection
+        collection1 = ticket1.article.journals.all()[0].collections.all()[0]
+        collection2 = ticket2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -233,8 +233,8 @@ class CommentManagerTests(TestCase):
         comment1 = modelfactories.CommentFactory.create()
         comment2 = modelfactories.CommentFactory.create()
 
-        collection1 = comment1.ticket.article.journals.all()[0].collection
-        collection2 = comment2.ticket.article.journals.all()[0].collection
+        collection1 = comment1.ticket.article.journals.all()[0].collections.all()[0]
+        collection2 = comment2.ticket.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -254,8 +254,8 @@ class CommentManagerTests(TestCase):
         comment1 = modelfactories.CommentFactory.create()
         comment2 = modelfactories.CommentFactory.create()
 
-        collection1 = comment1.ticket.article.journals.all()[0].collection
-        collection2 = comment2.ticket.article.journals.all()[0].collection
+        collection1 = comment1.ticket.article.journals.all()[0].collections.all()[0]
+        collection2 = comment2.ticket.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)

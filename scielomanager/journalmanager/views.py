@@ -32,6 +32,7 @@ from django.conf import settings
 from . import models
 from .forms import *
 from scielomanager.utils.pendingform import PendingPostData
+from scielomanager.utils import usercontext
 from scielomanager.tools import (
     get_paginated,
     get_referer_view,
@@ -46,6 +47,8 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+user_request_context = usercontext.get_finder()
 
 
 def get_first_letter(objects_all):
@@ -100,7 +103,7 @@ def list_search(request, model, journal_id):
 
         #filtering by pub_status is only available to Journal instances.
         if model is models.Journal and request.GET.get('jstatus'):
-            objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
+            objects_all = objects_all.filter(membership__status=request.GET['jstatus'])
 
         if request.GET.get('letter'):
             if issubclass(model, models.Institution):
@@ -400,27 +403,26 @@ def edit_journal_status(request, journal_id=None):
     Allow user just to update the status history of a specific journal.
     """
     # Always a new event. Considering that events must not be deleted or changed.
-    journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
-    journal = get_object_or_404(models.Journal, id=journal_id)
+    current_user_collection = user_request_context.get_current_user_active_collection()
+    journal_history = journal.statuses.filter(collection=current_user_collection)
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
 
     if request.method == "POST":
-        journaleventform = EventJournalForm(request.POST)
+        membership = journal.membership_info(current_user_collection)
+        membershipform = MembershipForm(request.POST, instance=membership)
 
-        if journaleventform.is_valid():
-            cleaned_data = journaleventform.cleaned_data
-            journal.change_publication_status(cleaned_data["pub_status"],
-                cleaned_data["pub_status_reason"], request.user)
-
+        if membershipform.is_valid():
+            membershipform.save_all(request.user, journal, current_user_collection)
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse(
                 'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
-    else:
-        journaleventform = EventJournalForm()
+
+    membershipform = MembershipForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
-                              'add_form': journaleventform,
+                              'add_form': membershipform,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))
@@ -537,8 +539,6 @@ def add_journal(request, journal_id=None):
     Handles new and existing journals
     """
 
-    user_collections = models.get_user_collections(request.user.id)
-
     if journal_id is None:
         journal = models.Journal()
     else:
@@ -550,7 +550,7 @@ def add_journal(request, journal_id=None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
-        journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+        journalform = JournalForm(request.POST, request.FILES, instance=journal, prefix='journal')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
@@ -562,6 +562,10 @@ def add_journal(request, journal_id=None):
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
                 saved_journal = journalform.save_all(creator=request.user)
+
+                if not journal_id:
+                    saved_journal.join(user_request_context.get_current_user_active_collection(), request.user)
+
                 titleformset.save()
                 missionformset.save()
                 messages.info(request, MSG_FORM_SAVED)
@@ -584,11 +588,11 @@ def add_journal(request, journal_id=None):
         if request.GET.get('resume', None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
 
-            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
         else:
-            journalform = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 
