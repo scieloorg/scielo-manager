@@ -82,11 +82,11 @@
                         </a> 
                         <span class="label pull-right">{{ num.articles.all|length }} {% trans "articles" %}</span>
                       </td>
-                      <td>
-                        {% flag 'articletrack' %}
+                      {% flag 'articletrack' %}
+                        <td>
                           <a  class='btn btn-mini' href="{% url article.index num.id %}">{% trans "view articles" %}</a>
-                        {% endflag %}
-                      </td>
+                        </td>
+                      {% endflag %}
                       <td>
                         <span class="badge {% if num.total_documents == num.articles.all|length %} badge-success {% endif %}">
                           {{ num.total_documents }}
