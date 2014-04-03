@@ -74,9 +74,6 @@ def notice_detail(request, checkin_id):
 
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
     notices = checkin.notices.all()
-
-    objects = get_paginated(notices, request.GET.get('page', 1))
-
     tickets = checkin.article.tickets.all()
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
@@ -84,7 +81,7 @@ def notice_detail(request, checkin_id):
     zip_filename =  "%s_%s"% (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
 
     context = {
-        'notices': objects,
+        'notices': notices,
         'checkin': checkin,
         'opened_tickets': opened_tickets,
         'closed_tickets': closed_tickets,
