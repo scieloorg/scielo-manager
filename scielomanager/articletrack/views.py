@@ -36,12 +36,14 @@ def checkin_index(request):
 
     checkins = models.Checkin.userobjects.active()
 
-    objects = get_paginated(checkins, request.GET.get('page', 1))
+    objects_pending = get_paginated(checkins.pending(), request.GET.get('pending_page', 1))
+    objects_accepted = get_paginated(checkins.accepted(), request.GET.get('accepted_page', 1))
 
     return render_to_response(
         'articletrack/checkin_list.html',
         {
-            'checkins': objects,
+            'checkins_pending': objects_pending,
+            'checkins_accepted': objects_accepted,
         },
         context_instance=RequestContext(request)
     )
@@ -72,9 +74,6 @@ def notice_detail(request, checkin_id):
 
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
     notices = checkin.notices.all()
-
-    objects = get_paginated(notices, request.GET.get('page', 1))
-
     tickets = checkin.article.tickets.all()
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
@@ -82,7 +81,7 @@ def notice_detail(request, checkin_id):
     zip_filename =  "%s_%s"% (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
 
     context = {
-        'notices': objects,
+        'notices': notices,
         'checkin': checkin,
         'opened_tickets': opened_tickets,
         'closed_tickets': closed_tickets,

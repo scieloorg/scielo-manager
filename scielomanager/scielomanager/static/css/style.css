@@ -377,6 +377,7 @@ table._listings h4 {
 .current_attempt { 
   border: 2px solid #CCCCCC;
 }
+
 .controls > ul {
   list-style: none outside none;
 }
@@ -409,3 +410,8 @@ table._listings h4 {
   border-radius: 4px;
   margin-bottom: 2px; 
 }
+
+.current_attempt { border: 2px solid #CCCCCC;}
+
+.pager > li { margin: 0 5px; }
+
