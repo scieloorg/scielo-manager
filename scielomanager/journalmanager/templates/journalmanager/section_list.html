@@ -1,6 +1,6 @@
 {% extends "base_lv1.html" %}
 {% load i18n %}
-{% load scielo_common %}
+{% load pagination_tags %}
 {% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Sections" %} - {{journal.title}}{% endblock %}
@@ -8,11 +8,13 @@
 {% block content %}
 {% journaldash_toolbar 'section' journal user %}
 <div class="row-fluid show-grid">
-  <div class="span10">
+  <div class="span9">
    <a class="btn btn-primary" href="{% url section.add journal.id %}">{% trans 'New' %}</a>
   </div>
-  <div class="span2">
-    {% simple_pagination objects_section %}
+  <div class="span3">
+    <div class="pull-right">
+      {% simple_pagination objects_section %}
+    </div>
   </div>
 </div>
 

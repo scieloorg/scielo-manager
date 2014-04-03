@@ -17,6 +17,12 @@ class CheckinQuerySet(UserObjectQuerySet):
         return self.filter(
             article__journals__collection=get_active_collection()).distinct()
 
+    def accepted(self):
+        return self.filter(accepted_by__isnull=False)
+
+    def pending(self):
+        return self.filter(accepted_by__isnull=True)
+
 
 class CheckinManager(UserObjectManager):
 
