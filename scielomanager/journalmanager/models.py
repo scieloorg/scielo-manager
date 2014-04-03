@@ -1226,3 +1226,5 @@ class Article(caching.base.CachingMixin, models.Model):
             return None
 
         return self.front['title-group']
+
+models.signals.post_save.connect(create_api_key, sender=User)
