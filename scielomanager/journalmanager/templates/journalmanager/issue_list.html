@@ -74,10 +74,10 @@
                   <tr>
                       <td>
                         <a href="{% url issue.edit journal.pk num.id %}">
-                          {% if num.number %}
-                            {{ num.number }}
+                          {% if num.type == 'regular' and not num.number %}
+                            {% trans 'volume issue' %}
                           {% else %}
-                            {% trans 'volume issue' %}</a> 
+                            {{ num.identification }} 
                           {% endif %}
                         </a> 
                         <span class="label pull-right">{{ num.articles.all|length }} {% trans "articles" %}</span>

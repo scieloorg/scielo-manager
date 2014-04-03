@@ -1,7 +1,10 @@
 {% load scielo_common %}
 {% load i18n %}
 <div class="well">
-  {% for field in form %}
+  {% for field in form.hidden_fields %}
+    {{ field }}
+  {% endfor %}  
+  {% for field in form.visible_fields %}
     {% if field.name != "cover" %} <!-- Cover field is listed bellow -->
       <div id='row_{{ field.name }}' class="control-group {% if field.errors %}error{% endif %}">
         <label class="control-label" for="id_{{ field.name }}">
