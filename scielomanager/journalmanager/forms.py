@@ -6,7 +6,6 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
-from django.forms.models import save_instance
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
@@ -267,25 +266,18 @@ class EventJournalForm(forms.Form):
     pub_status_reason = forms.CharField(widget=forms.Textarea)
 
 
-class IssueBaseForm(forms.Form):
+class IssueBaseForm(forms.ModelForm):
     section = forms.ModelMultipleChoiceField(
         models.Section.objects.none(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more sections')}),
         required=False)
-    volume = forms.CharField(required=False)
-    publication_start_month = forms.ChoiceField(choices=choices.MONTHS, required=False)
-    publication_end_month = forms.ChoiceField(choices=choices.MONTHS, required=False)
-    publication_year = forms.IntegerField()
-    is_marked_up = forms.BooleanField(required=False)
-    use_license = forms.ModelChoiceField(
-        queryset=models.UseLicense.objects.none(), required=False, help_text=models.ISSUE_DEFAULT_LICENSE_HELP_TEXT)
-    total_documents = forms.IntegerField()
-    ctrl_vocabulary = forms.ChoiceField(
-        choices=sorted(choices.CTRL_VOCABULARY, key=lambda vocab: vocab[1]),
-        required=False)
-    editorial_standard = forms.ChoiceField(choices=sorted(
-        choices.STANDARD, key=lambda std: std[1]))
-    cover = forms.ImageField(required=False)
+
+    class Meta:
+        model = models.Issue
+        fields = ('section', 'volume', 'publication_start_month',
+            'publication_end_month', 'publication_year', 'is_marked_up',
+            'use_license', 'total_documents', 'ctrl_vocabulary',
+            'editorial_standard', 'cover')
 
     def __init__(self, *args, **kwargs):
         """
@@ -298,7 +290,6 @@ class IssueBaseForm(forms.Form):
         # discarting optional params, if present.
         params = kwargs.pop('params', None)
         querysets = kwargs.pop('querysets', None)
-        self.instance = kwargs.pop('instance', None)
 
         super(IssueBaseForm, self).__init__(*args, **kwargs)
 
@@ -306,16 +297,13 @@ class IssueBaseForm(forms.Form):
             for qset in querysets:
                 self.fields[qset].queryset = querysets[qset]
 
-    def save(self, commit=True):
-        instance = self.instance or models.Issue()
-        if self.is_valid():
-            return save_instance(self, instance, commit=commit)
-        else:
-            return None
-
 
 class RegularIssueForm(IssueBaseForm):
-    number = forms.CharField(required=False)
+
+    class Meta(IssueBaseForm.Meta):
+        fields = ('publication_year', 'volume', 'number', 'publication_start_month',
+            'publication_end_month', 'is_marked_up', 'use_license', 'total_documents',
+            'ctrl_vocabulary', 'editorial_standard', 'section', 'cover',)
 
     def __init__(self, *args, **kwargs):
         params = kwargs.pop('params', {})
@@ -360,9 +348,13 @@ class RegularIssueForm(IssueBaseForm):
 
 
 class SupplementIssueForm(IssueBaseForm):
-    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE, widget=forms.RadioSelect)
-    number = forms.CharField(required=False)
-    suppl_text = forms.CharField()
+    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE, widget=forms.RadioSelect, initial='volume')
+
+    class Meta(IssueBaseForm.Meta):
+        fields = ('publication_year', 'suppl_type', 'volume', 'number', 'suppl_text',
+            'publication_start_month', 'publication_end_month', 'is_marked_up',
+            'use_license', 'total_documents', 'ctrl_vocabulary', 'editorial_standard',
+            'section', 'cover',)
 
     def __init__(self, *args, **kwargs):
         params = kwargs.pop('params', {})
@@ -383,7 +375,7 @@ class SupplementIssueForm(IssueBaseForm):
 
         if suppl_type == 'volume' and (volume == '' or number != ''):
             raise forms.ValidationError(_('You must complete the volume filed. Number field must be empty.'))
-        elif suppl_type == 'number' and (number == '' or volume != ''):
+        elif suppl_type == 'number' and (number == ''):
             raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.'))
         else:
             try:
@@ -411,6 +403,9 @@ class SupplementIssueForm(IssueBaseForm):
 
 class SpecialIssueForm(RegularIssueForm):
     number = forms.CharField(required=True, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.TextInput(attrs={'readonly':'readonly'}))
+
+    class Meta(RegularIssueForm.Meta):
+        exclude = ('number',)
 
     def __init__(self, *args, **kwargs):
         # RegularIssueForm expects 'params' is present in kwargs
