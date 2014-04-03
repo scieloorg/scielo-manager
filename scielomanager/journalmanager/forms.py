@@ -402,10 +402,7 @@ class SupplementIssueForm(IssueBaseForm):
 
 
 class SpecialIssueForm(RegularIssueForm):
-    number = forms.CharField(required=True, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.TextInput(attrs={'readonly':'readonly'}))
-
-    class Meta(RegularIssueForm.Meta):
-        exclude = ('number',)
+    number = forms.CharField(required=False, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.HiddenInput(attrs={'readonly':'readonly'}))
 
     def __init__(self, *args, **kwargs):
         # RegularIssueForm expects 'params' is present in kwargs

@@ -377,6 +377,7 @@ table._listings h4 {
 .current_attempt { 
   border: 2px solid #CCCCCC;
 }
+
 .controls > ul {
   list-style: none outside none;
 }
@@ -385,3 +386,32 @@ table._listings h4 {
   display: inline-block;
   padding: 5px;
 }
+
+#accordion-issues .accordion-heading {
+  background-color: #F5F5F5;
+  border: 1px solid #DDDDDD;
+  margin-top: 1px;
+}
+
+#accordion-issues .accordion-heading a {
+  text-decoration: none;
+  color:#333;
+  font-weight: bold;
+}
+
+#accordion-issues .accordion-body.collapse.in {
+  border-bottom: 1px solid #DDDDDD;
+  margin-bottom: 10px;
+}
+
+#accordion-issues .accordion-group {
+  border-left: 1px solid #E5E5E5;
+  border-right: 1px solid #E5E5E5;
+  border-radius: 4px;
+  margin-bottom: 2px; 
+}
+
+.current_attempt { border: 2px solid #CCCCCC;}
+
+.pager > li { margin: 0 5px; }
+
