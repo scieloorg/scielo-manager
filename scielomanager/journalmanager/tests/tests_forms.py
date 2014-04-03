@@ -1067,14 +1067,14 @@ class IssueBaseFormClassTests(unittest.TestCase):
         from django import forms as dj_forms
         expected = {'section': dj_forms.ModelMultipleChoiceField,
                     'volume': dj_forms.CharField,
-                    'publication_start_month': dj_forms.ChoiceField,
-                    'publication_end_month': dj_forms.ChoiceField,
+                    'publication_start_month': dj_forms.TypedChoiceField,
+                    'publication_end_month': dj_forms.TypedChoiceField,
                     'publication_year': dj_forms.IntegerField,
                     'is_marked_up': dj_forms.BooleanField,
                     'use_license': dj_forms.ModelChoiceField,
                     'total_documents': dj_forms.IntegerField,
-                    'ctrl_vocabulary': dj_forms.ChoiceField,
-                    'editorial_standard': dj_forms.ChoiceField,
+                    'ctrl_vocabulary': dj_forms.TypedChoiceField,
+                    'editorial_standard': dj_forms.TypedChoiceField,
                     'cover': dj_forms.ImageField,
                     }
 
@@ -1120,8 +1120,8 @@ class IssueBaseFormClassTests(unittest.TestCase):
         self.assertIsInstance(issue_model, models.Issue)
         self.assertTrue(section in issue_model.section.all())
         self.assertEqual(issue_model.volume, u'1')
-        self.assertEqual(issue_model.publication_start_month, u'1')
-        self.assertEqual(issue_model.publication_end_month, u'2')
+        self.assertEqual(issue_model.publication_start_month, 1)
+        self.assertEqual(issue_model.publication_end_month, 2)
         self.assertEqual(issue_model.publication_year, 2014)
         self.assertEqual(issue_model.is_marked_up, True)
         self.assertEqual(issue_model.use_license, use_license)
@@ -1417,7 +1417,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
         POST = {
             'section': [section.pk],
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': 'Lorem ipsum',
             'suppl_type' : 'volume',
             'volume': '1',
             'number': '',
@@ -1449,7 +1449,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
         POST = {
             'section': [section.pk],
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': 'Lorem ipsum',
             'suppl_type' : 'number',
             'volume': '',
             'number': '1',
@@ -1474,14 +1474,14 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
         self.assertTrue(issue_form.is_valid())
 
-    def test_clean_fail_for_type_number_with_both_volume_and_number(self):
+    def test_clean_valid_for_type_number_with_both_volume_and_number(self):
         journal = modelfactories.JournalFactory()
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
         POST = {
             'section': [section.pk],
-            'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'suppl_text': 'Lorem ipsum',
             'suppl_type' : 'number',
             'volume': '1',
             'number': '1',
@@ -1504,7 +1504,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
                                                 'use_license': models.UseLicense.objects.all(),
                                             })
 
-        self.assertFalse(issue_form.is_valid())
+        self.assertTrue(issue_form.is_valid())
 
     def test_clean_fail_for_type_volume_with_both_volume_and_number(self):
         journal = modelfactories.JournalFactory()
@@ -2240,10 +2240,11 @@ class IssueFormTests(WebTest):
             form = self.app.get(reverse('issue.edit', args=[self.journal.pk, issue.pk]), user=self.user).forms['issue-form']
 
             form['total_documents'] = '99'
+            form['editorial_standard'] = 'apa'
+            form['volume'] = '99'
             if t == 'supplement':
                 form['suppl_type'] = 'volume'
                 form['suppl_text'] = 'suppl.XX'
-                form['volume'] = '99'
                 form['number'] = ''
             response = form.submit().follow()
 
