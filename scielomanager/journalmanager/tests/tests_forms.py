@@ -2122,9 +2122,19 @@ class IssueFormTests(WebTest):
             elif t == 'special':
                 # for t=='special' -> number field will be overwrited it 'spe' text
                 pass
-            else: # regular
-                 self.assertIn('You must complete at least one of two fields volume or number.', response.body)
+            else:  # regular
+                self.assertIn('You must complete at least one of two fields volume or number.', response.body)
 
+    def test_templates_used(self):
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        for t in ['regular', 'supplement', 'special']:
+            response = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user)
             self.assertTemplateUsed(response, 'journalmanager/add_issue_%s.html' % t)
 
     def test_POST_workflow_with_invalid_formdata(self):
