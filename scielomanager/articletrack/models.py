@@ -31,7 +31,7 @@ class Notice(caching.base.CachingMixin, models.Model):
 
 class Checkin(caching.base.CachingMixin, models.Model):
 
-    #Custom Managers
+    # Custom Managers
     objects = models.Manager()
     userobjects = modelmanagers.CheckinManager()
 
@@ -82,6 +82,15 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.accepted_at = datetime.datetime.now()
             self.save()
 
+    @property
+    def get_newest_checkin(self):
+        newest = self.article.checkins.order_by('uploaded_at')[0]
+        return newest
+
+    @property
+    def is_newest_checkin(self):
+        return self.pk == self.get_newest_checkin.pk
+
 
 class Article(caching.base.CachingMixin, models.Model):
 
@@ -101,7 +110,6 @@ class Article(caching.base.CachingMixin, models.Model):
         verbose_name = _('Article')
         verbose_name_plural = _('Articles')
         permissions = (("list_article", "Can list Article"),)
-
 
     def is_accepted(self):
         """
