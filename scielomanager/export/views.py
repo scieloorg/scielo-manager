@@ -20,7 +20,7 @@ def markup_files(request):
 
             if form.is_valid():
                 bundle_url = markupfile.generate(form.cleaned_data['journal'],
-                                                form.cleaned_data['issue'])
+                                                 form.cleaned_data['issue'])
                 return redirect(bundle_url)
 
     form = forms.MarkupFilesForm(user=request.user)

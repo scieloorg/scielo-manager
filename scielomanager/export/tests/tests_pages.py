@@ -33,6 +33,22 @@ class DownloadMarkupFilesTests(WebTest):
 
         self.assertTemplateUsed(response, 'export/markup_files.html')
 
+    def test_post_to_download_file(self):
+        issue = modelfactories.IssueFactory(
+            journal=self.journal, is_marked_up=False)
+        issue2 = modelfactories.IssueFactory(
+            journal=self.journal, is_marked_up=True)
+
+        form = self.app.get(reverse('export.markupfiles'),
+                            user=self.user).forms[0]
+
+        form.set('journal', self.journal.pk)
+        form['issue'].force_value(issue.pk)
+        response = form.submit()
+        # TODO: Improve the test, I've tried using .follow(), but throws a 404 error, and I can't get why,
+        # because the response.headers['Location'] is a valid link, and I can open it in the browser.
+        self.assertEqual(302, response.status_code)
+
 
 class ListIssuesForMarkupFilesTests(WebTest):
     """

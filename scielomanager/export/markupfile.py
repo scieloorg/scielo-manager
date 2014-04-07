@@ -3,8 +3,8 @@ from django.conf import settings
 
 from . import bundle
 
-MEDIA_ROOT = settings.MEDIA_ROOT + '/export/'
-MEDIA_URL = settings.MEDIA_URL + '/export/'
+MEDIA_ROOT = settings.MEDIA_ROOT + 'export/'
+MEDIA_URL = settings.MEDIA_URL + 'export/'
 
 standards = {
     'iso690': ('icitat', 'iso', u'iso 690/87 - international standard organization'),
@@ -14,9 +14,11 @@ standards = {
     'apa': ('pcitat', 'apa', u'American Psychological Association'),
 }
 
-L10ISSUEMGS = {'en': (u'No section title', u'No Descriptor', u'Health Sciences Descriptors'),
-        'es': (u'Sín título de sección', u'Ningun Descriptor', u'Descriptores en Ciencia de la Salud'),
-        'pt': (u'Sem título de seção', u'Nenhum Descritor', u'Descritores em Ciência da Saúde')}
+L10ISSUEMGS = {
+    'en': (u'No section title', u'No Descriptor', u'Health Sciences Descriptors'),
+    'es': (u'Sín título de sección', u'Ningun Descriptor', u'Descriptores en Ciencia de la Salud'),
+    'pt': (u'Sem título de seção', u'Nenhum Descritor', u'Descritores em Ciência da Saúde')
+}
 
 issns = {
     'print': 'print_issn',
@@ -84,14 +86,14 @@ class Automata(object):
         return self._journal.acronym.lower()
 
     def __unicode__(self):
-        return '{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
-            self.citat, self.acron, self.norma_acron)
+        return '{0};{1};{2}.amd;tg{3}.amd'.format(self.issn, self.citat,
+                                                  self.acron, self.norma_acron)
 
 
 class Issue(object):
 
     MONTHS = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
-        7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+              7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
 
     def __init__(self, issue):
         self._issue = issue
@@ -99,8 +101,8 @@ class Issue(object):
     @property
     def legend(self):
         return u'{0} v.{1} n.{2}'.format(self._issue.journal.title_iso,
-                                unicode(self._issue.volume),
-                                unicode(self._issue.identification))
+                                         unicode(self._issue.volume),
+                                         unicode(self._issue.identification))
 
     @property
     def period(self):
@@ -109,7 +111,7 @@ class Issue(object):
         EX.: Apr/Jun ou Apr/ ou /Jun
         '''
         return '%s/%s' % (self.MONTHS.get(self._issue.publication_start_month, ''),
-             self.MONTHS.get(self._issue.publication_end_month, ''))
+                          self.MONTHS.get(self._issue.publication_end_month, ''))
 
     @property
     def order(self):
@@ -149,16 +151,6 @@ class L10nIssue(Automata, Issue):
         return unicode(v) if v else u''
 
     @property
-    def suppl_volume(self):
-        v = self._issue.suppl_volume
-        return unicode(v) if v else u''
-
-    @property
-    def suppl_number(self):
-        v = self._issue.suppl_number
-        return unicode(v) if v else u''
-
-    @property
     def date_iso(self):
         try:
             month = u'%02d' % self._issue.publication_end_month
@@ -181,9 +173,7 @@ class L10nIssue(Automata, Issue):
         return u';'.join([
             self.short_title,
             self.volume,
-            self.suppl_volume,
             self.number,
-            self.suppl_number,
             self.date_iso,
             self.issn,
             self.status,

@@ -709,64 +709,6 @@ class L10nIssueTests(MockerTestCase):
         number = l10nissue.number
         self.assertIsInstance(number, unicode)
 
-    def test_suppl_volume(self):
-        dummy_journal = self.mocker.mock()
-        dummy_issue = self.mocker.mock()
-
-        dummy_issue.suppl_volume
-        self.mocker.result('foo')
-
-        self.mocker.replay()
-
-        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-
-        suppl_volume = l10nissue.suppl_volume
-        self.assertEqual(suppl_volume, u'foo')
-        self.assertIsInstance(suppl_volume, unicode)
-
-    def test_suppl_volume_must_return_unicode_even_when_empty(self):
-        dummy_journal = self.mocker.mock()
-        dummy_issue = self.mocker.mock()
-
-        dummy_issue.suppl_volume
-        self.mocker.result(None)
-
-        self.mocker.replay()
-
-        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-
-        suppl_volume = l10nissue.suppl_volume
-        self.assertIsInstance(suppl_volume, unicode)
-
-    def test_suppl_number(self):
-        dummy_journal = self.mocker.mock()
-        dummy_issue = self.mocker.mock()
-
-        dummy_issue.suppl_number
-        self.mocker.result('foo')
-
-        self.mocker.replay()
-
-        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-
-        suppl_number = l10nissue.suppl_number
-        self.assertEqual(suppl_number, u'foo')
-        self.assertIsInstance(suppl_number, unicode)
-
-    def test_suppl_number_must_return_unicode_even_when_empty(self):
-        dummy_journal = self.mocker.mock()
-        dummy_issue = self.mocker.mock()
-
-        dummy_issue.suppl_number
-        self.mocker.result(None)
-
-        self.mocker.replay()
-
-        l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-
-        suppl_number = l10nissue.suppl_number
-        self.assertIsInstance(suppl_number, unicode)
-
     def test_date_iso(self):
         dummy_journal = self.mocker.mock()
         dummy_issue = self.mocker.mock()
@@ -827,14 +769,8 @@ class L10nIssueTests(MockerTestCase):
         dummy_issue.volume
         self.mocker.result('7')
 
-        dummy_issue.suppl_volume
-        self.mocker.result('foo')
-
         dummy_issue.number
         self.mocker.result('4')
-
-        dummy_issue.suppl_number
-        self.mocker.result('bar')
 
         dummy_issue.publication_end_month
         self.mocker.result(00)
@@ -851,7 +787,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        expected_issue_meta = u'blitz;7;foo;4;bar;baz0000;1234-1234;1'
+        expected_issue_meta = u'blitz;7;4;baz0000;1234-1234;1'
         self.assertEqual(l10nissue.issue_meta, expected_issue_meta)
 
     def test_issue_meta_must_return_unicode(self):
@@ -867,14 +803,14 @@ class L10nIssueTests(MockerTestCase):
         dummy_issue.volume
         self.mocker.result('7')
 
-        dummy_issue.suppl_volume
-        self.mocker.result('foo')
+        # dummy_issue.suppl_volume
+        # self.mocker.result('foo')
 
         dummy_issue.number
         self.mocker.result('4')
 
-        dummy_issue.suppl_number
-        self.mocker.result('bar')
+        # dummy_issue.suppl_number
+        # self.mocker.result('bar')
 
         dummy_issue.publication_end_month
         self.mocker.result(00)
@@ -1123,7 +1059,6 @@ class L10nAheadTests(MockerTestCase):
 
         date_iso = l10nahead.date_iso
         self.assertIsInstance(date_iso, unicode)
-
 
     def test_status_must_return_always_1(self):
         dummy_journal = self.mocker.mock()
