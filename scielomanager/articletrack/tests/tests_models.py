@@ -1,9 +1,11 @@
 # coding: utf-8
+import datetime
 from django.test import TestCase
 from django_factory_boy import auth
 
 from articletrack import models
 from . import modelfactories
+
 
 class CommentTests(TestCase):
 
@@ -32,10 +34,9 @@ class CheckinTests(TestCase):
         self.assertIsNotNone(checkin.accepted_at)
 
     def test_accept_raises_ValueError_when_already_accepted(self):
-        import datetime
         user = auth.UserF(is_active=True)
         checkin = modelfactories.CheckinFactory(accepted_by=user,
-            accepted_at=datetime.datetime.now())
+                                                accepted_at=datetime.datetime.now())
 
         self.assertRaises(ValueError, lambda: checkin.accept(user))
 
@@ -46,10 +47,9 @@ class CheckinTests(TestCase):
         self.assertRaises(ValueError, lambda: checkin.accept(user))
 
     def test_is_accepted_method_with_accepted_checkin(self):
-        import datetime
         user = auth.UserF(is_active=True)
         checkin = modelfactories.CheckinFactory(accepted_by=user,
-            accepted_at=datetime.datetime.now())
+                                                accepted_at=datetime.datetime.now())
 
         self.assertTrue(checkin.is_accepted())
 
@@ -60,16 +60,42 @@ class CheckinTests(TestCase):
 
         self.assertFalse(checkin.is_accepted())
 
+    def test_get_newest_checkin(self):
+        user = auth.UserF(is_active=True)
+        checkin1 = modelfactories.CheckinFactory()
+
+        self.assertEqual(checkin1.get_newest_checkin,
+                         checkin1.article.checkins.order_by('uploaded_at')[0])
+
+        checkin2 = modelfactories.CheckinFactory(accepted_by=user,
+                                                 accepted_at=datetime.datetime.now())
+        self.assertEqual(checkin2.get_newest_checkin,
+                         checkin2.article.checkins.order_by('uploaded_at')[0])
+
+    def test_is_newest_checkin(self):
+        user = auth.UserF(is_active=True)
+        checkin1 = modelfactories.CheckinFactory()
+        article = checkin1.article
+
+        self.assertTrue(checkin1.is_newest_checkin)
+
+        checkin2 = modelfactories.CheckinFactory(accepted_by=user,
+                                                 accepted_at=datetime.datetime.now(),
+                                                 article=article)
+        self.assertTrue(checkin2.is_newest_checkin)
+        self.assertFalse(checkin1.is_newest_checkin)
+
 
 class ArticleTests(TestCase):
 
     def test_is_accepted_method_with_accepted_checkins(self):
-        import datetime
+
         user = auth.UserF(is_active=True)
 
         article = modelfactories.ArticleFactory()
         modelfactories.CheckinFactory(accepted_by=user,
-            accepted_at=datetime.datetime.now(), article=article)
+                                      accepted_at=datetime.datetime.now(),
+                                      article=article)
 
         self.assertTrue(article.is_accepted())
 
@@ -80,4 +106,3 @@ class ArticleTests(TestCase):
         modelfactories.CheckinFactory(article=article)
 
         self.assertFalse(article.is_accepted())
-
