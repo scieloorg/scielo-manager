@@ -1,0 +1,20 @@
+{% load i18n %}
+<div class="row-fluid show-grid">
+  <div class="span12 well">
+    <form id='filter_{{ form.prefix }}' action='' method='GET'>
+      {% for field in form  %}
+        <div class="span3">
+          <label for='id_{{ field.html_name }}'>
+            {{ field.label }}: {{ field }}
+          </label>
+        </div>
+      {% endfor %}
+      <div>
+        <div class="btn-group pull-right">
+          <button class='btn btn-danger' type='reset'>{% trans "Reset filters" %}</button>
+          <button class='btn btn-primary' type='submit'>{% trans "Filter" %}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
