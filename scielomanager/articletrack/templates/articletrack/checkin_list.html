@@ -147,3 +147,22 @@
 </table>
 
 {% endblock %}
+{% block extrafooter %}
+  {{ block.super }}
+  <script>
+    $(function () {
+      $('.hide-form').click(function(event) {
+        var form = $(this).parents('form');
+        form.find('.filter-action').hide();
+        form.find('.filter-fields').slideUp();
+      });
+      $('.show-form').click(function(event) {
+        var form = $(this).parents('form');
+        form.find('.filter-action').show();
+        form.find('.filter-fields').slideDown();
+      });
+      $('.hide-form').click();
+    });
+  </script>
+
+{% endblock extrafooter %}
