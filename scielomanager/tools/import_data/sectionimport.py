@@ -55,10 +55,10 @@ class SectionImport:
 
     def load_journal(self, issn, collection):
         try:
-            journal = Journal.objects.get(eletronic_issn=issn, collection=collection.id)
+            journal = Journal.objects.get(eletronic_issn=issn, collections=collection)
         except ObjectDoesNotExist:
             try:
-                journal = Journal.objects.get(print_issn=issn, collection=collection.id)
+                journal = Journal.objects.get(print_issn=issn, collections=collection)
             except ObjectDoesNotExist:
                 return None
 
@@ -116,7 +116,7 @@ class SectionImport:
 
         return section
 
-    def run_import(self, json_file, collection):
+    def run_import(self, json_file, collection, conflicted_journals):
         """
         Function: run_import
         Dispara processo de importacao de dados
@@ -125,4 +125,6 @@ class SectionImport:
         section_json_parsed = json.loads(section_json_file.read())
 
         for record in section_json_parsed:
+            if record['35'][0] in conflicted_journals:
+                continue
             loaded_section = self.load_section(record, collection)
