@@ -908,6 +908,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     suppl_text = models.CharField(_('Suppl Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
+        ordering = ('created', )
         permissions = (("list_issue", "Can list Issues"),
                       ("reorder_issue", "Can Reorder Issues"))
 
