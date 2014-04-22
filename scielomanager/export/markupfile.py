@@ -150,13 +150,17 @@ class L10nIssue(Automata, Issue):
 
     @property
     def suppl_volume(self):
-        v = self._issue.suppl_volume
-        return unicode(v) if v else u''
+        if self._issue.type == 'supplement' and not self._issue.number:
+            return unicode(self._issue.suppl_text)
+        else:
+            return u''
 
     @property
     def suppl_number(self):
-        v = self._issue.suppl_number
-        return unicode(v) if v else u''
+        if self._issue.type == 'supplement' and self._issue.number:
+            return unicode(self._issue.suppl_text)
+        else:
+            return u''
 
     @property
     def date_iso(self):
