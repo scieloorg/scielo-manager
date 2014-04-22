@@ -415,3 +415,12 @@ table._listings h4 {
 
 .pager > li { margin: 0 5px; }
 
+.cover-block input[type="checkbox"],
+.logo-block input[type="checkbox"] {
+  float: left;
+  margin-right: 5px;
+}
+.cover-block a.btn,
+.logo-block a.btn {
+  display: block;
+}

@@ -34,6 +34,7 @@ from tastypie.models import create_api_key
 import jsonfield
 
 from scielomanager.utils import base28
+from scielomanager.custom_fields import ContentTypeRestrictedFileField
 from . import modelmanagers
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
@@ -542,25 +543,27 @@ class Journal(caching.base.CachingMixin, models.Model):
     medline_title = models.CharField(_('Medline Title'), max_length=256, null=True, blank=True)
     medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
-        choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
+                                 choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
     pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
-        choices=choices.JOURNAL_PUBLICATION_STATUS)
+                                  choices=choices.JOURNAL_PUBLICATION_STATUS)
     pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
     pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
-        choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]))
+                                          choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]))
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
-        choices=choices.CTRL_VOCABULARY)
+                                       choices=choices.CTRL_VOCABULARY)
     pub_level = models.CharField(_('Publication Level'), max_length=64,
-        choices=sorted(choices.PUBLICATION_LEVEL, key=lambda PUBLICATION_LEVEL: PUBLICATION_LEVEL[1]))
+                                 choices=sorted(choices.PUBLICATION_LEVEL, key=lambda PUBLICATION_LEVEL: PUBLICATION_LEVEL[1]))
     secs_code = models.CharField(_('SECS Code'), max_length=64, null=False, blank=True)
     copyrighter = models.CharField(_('Copyrighter'), max_length=254)
     url_online_submission = models.CharField(_('URL of online submission'), max_length=128, null=True, blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=128, null=True, blank=True)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True)
-    cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
-    logo = models.ImageField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True)
+    cover = ContentTypeRestrictedFileField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True,
+                                           content_types=settings.IMAGE_CONTENT_TYPE, max_upload_size=settings.JOURNAL_COVER_MAX_SIZE)
+    logo = ContentTypeRestrictedFileField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True,
+                                          content_types=settings.IMAGE_CONTENT_TYPE, max_upload_size=settings.JOURNAL_LOGO_MAX_SIZE)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True)
     editor_name = models.CharField(_('Editor Names'), max_length=512)
