@@ -40,26 +40,22 @@ def _addWaffleFlag():
     Flag.objects.create(name='articletrack', authenticated=True)
 
 
-def _extract_results_from_body(response_body, extract_accepted=False):
+def _extract_results_from_body(response, extract_accepted=False):
     """
-    Simplest way to extract a substring of the  response_body's HTML
+    Slice the html of response.body to extract the tables with the results of
+    applied filters.
     If extract_accepted:
-        looks for a table with 'id="accepted_results"' until  the next </table>
+        looks for a table with id="accepted_results"
     else:
-        looks for a table with 'id="pending_results"' until the next </table>
-
+        looks for a table with id="pending_results"
     """
-    pending_table_start = response_body.find('<table id="pending_results"')
-    pending_table_end = response_body.find('</table>')
-    pending_table_html = response_body[pending_table_start:pending_table_end]
-
+    results = response.lxml.xpath('//table[@id="pending_results"]')
     if extract_accepted:
-        html_partial = response_body[pending_table_end + 10:]
-        accepted_table_start = html_partial.find('<table id="accepted_results"')
-        accepted_table_end = html_partial.find('</table>')
-        accepted_table = html_partial[accepted_table_start:accepted_table_end]
-        return accepted_table
-    return pending_table_html
+        results = response.lxml.xpath('//table[@id="accepted_results"]')
+    if len(results) > 0 :
+        return results[0].text_content()
+    else:
+        return ''
 
 
 class CheckinListFilterFormTests(WebTest):
@@ -84,12 +80,11 @@ class CheckinListFilterFormTests(WebTest):
         checkins = []
         for x in xrange(start, end):
 
-            # I want to get unique package_name
-            package_name = u'201404%s.zip' % x
-            new_checkin = modelfactories.CheckinFactory.create(package_name=package_name)
+            new_checkin = modelfactories.CheckinFactory.create()
 
             # Override the issue_label to get uniques one
             new_checkin.article.issue_label = u'%s%s' % (new_checkin.article.issue_label[:-1], unicode(x))
+            new_checkin.article.article_title = u'%s%s' % (new_checkin.article.article_title[:-1], unicode(x))
             new_checkin.article.save()
 
             # associate the self.collection with the journal to be part of the checkin list
@@ -117,7 +112,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_pending']
         form['pending-package_name'] = target_checkin.package_name
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -137,7 +132,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_pending']
         form['pending-journal_title'] = target_checkin.article.pk
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -157,7 +152,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_pending']
         form['pending-article'] = target_checkin.article.pk
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -177,7 +172,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-issue_label'] = target_checkin.article.issue_label
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -198,7 +193,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-package_name'] = target_checkin.package_name
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body, extract_accepted=True)
+        response_partial = _extract_results_from_body(response, extract_accepted=True)
         context_checkins = response.context['checkins_accepted'].object_list
 
         self.assertTrue(len(context_checkins) >= 1)
@@ -218,7 +213,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-journal_title'] = target_checkin.article.pk
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body, extract_accepted=True)
+        response_partial = _extract_results_from_body(response, extract_accepted=True)
         context_checkins = response.context['checkins_accepted'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -238,7 +233,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-article'] = target_checkin.article.pk
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body, extract_accepted=True)
+        response_partial = _extract_results_from_body(response, extract_accepted=True)
         context_checkins = response.context['checkins_accepted'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -258,7 +253,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-issue_label'] = target_checkin.article.issue_label
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body, extract_accepted=True)
+        response_partial = _extract_results_from_body(response, extract_accepted=True)
         context_checkins = response.context['checkins_accepted'].object_list
 
         self.assertEqual(len(context_checkins), 1)
@@ -280,7 +275,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_pending']
         form['pending-package_name'] = target_package_name
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
         self.assertEqual(len(context_checkins), 0)
@@ -297,7 +292,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_pending']
         form['pending-issue_label'] = target_issue_label
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
     # accepted:
@@ -313,7 +308,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-package_name'] = target_package_name
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_accepted'].object_list
 
         self.assertEqual(len(context_checkins), 0)
@@ -330,7 +325,7 @@ class CheckinListFilterFormTests(WebTest):
         form = page.forms['filter_accepted']
         form['accepted-issue_label'] = target_issue_label
         response = form.submit()
-        response_partial = _extract_results_from_body(response.body)
+        response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_accepted'].object_list
 
         self.assertEqual(len(context_checkins), 0)

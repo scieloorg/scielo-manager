@@ -86,7 +86,7 @@ class CheckinListTests(WebTest):
         response = self.app.get(reverse('checkin_history',
                                         args=[checkin.article.pk]), user=self.user)
 
-        response.mustcontain('20132404.zip')
+        response.mustcontain(str(checkin.package_name))
 
     def test_package_history_index_have_article_title(self):
         self._addWaffleFlag()
