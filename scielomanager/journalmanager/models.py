@@ -680,6 +680,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         else:
             return rel
 
+    def is_member(self, collection):
+        """
+        Returns a boolean indicating whether or not a member of a specific collection
+        """
+        return self.membership_set.filter(collection=collection).exists()
+
     def change_status(self, collection, new_status, reason, responsible):
         rel = self.membership_info(collection)
         rel.status = new_status
@@ -935,7 +941,6 @@ class Issue(caching.base.CachingMixin, models.Model):
     suppl_text = models.CharField(_('Suppl Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
-        ordering = ('created', )
         permissions = (("list_issue", "Can list Issues"),
                       ("reorder_issue", "Can Reorder Issues"))
 
