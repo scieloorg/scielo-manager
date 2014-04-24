@@ -540,17 +540,23 @@ def add_journal(request, journal_id=None):
     user_collections = models.get_user_collections(request.user.id)
     previous_journal_cover = None
     previous_journal_logo = None
+
     if journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)
         # preserve the cover and logo urls before save in case of error when updating these fields
+
         try:
             previous_journal_cover = journal.cover.url
-            previous_journal_logo = journal.logo.url
         except ValueError:
             previous_journal_cover = None
+
+        try:
+            previous_journal_logo = journal.logo.url
+        except ValueError:
             previous_journal_logo = None
+
     form_hash = None
 
     JournalTitleFormSet = inlineformset_factory(models.Journal, models.JournalTitle, form=JournalTitleForm, extra=1, can_delete=True)
