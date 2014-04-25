@@ -680,6 +680,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         else:
             return rel
 
+    def is_member(self, collection):
+        """
+        Returns a boolean indicating whether or not a member of a specific collection
+        """
+        return self.membership_set.filter(collection=collection).exists()
+
     def change_status(self, collection, new_status, reason, responsible):
         rel = self.membership_info(collection)
         rel.status = new_status

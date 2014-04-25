@@ -4,7 +4,7 @@
 
 from django_assets import Bundle, register
 
-base_bundle = Bundle('../static/js/jquery/jquery-1.7.1.js',
+base_bundle = Bundle('../static/js/jquery/jquery-1.8.3.js',
                      '../static/js/jquery/jquery-ui.js')
 
 minify_bundle = Bundle('../static/js/angular/angular.min.js')
@@ -14,7 +14,8 @@ plugins_bundle = Bundle('../static/js/jquery/datepicker.js',
                         '../static/js/jquery/jquery.tabslideout-1.3.js',
                         '../static/js/jquery/jquery.popupwindow.js',
                         '../static/js/jquery/jquery.formset.js',
-                        '../static/js/angular/ui-bootstrap-tpls-0.4.0.js')
+                        '../static/js/angular/ui-bootstrap-tpls-0.4.0.js',
+                        '../static/js/jquery/select2.js')
 
 app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/languages.js',
@@ -34,6 +35,7 @@ css = Bundle('../static/css/bootstrap.css',
             '../static/css/jquery.asmselect.css',
             '../static/css/jquery-ui.css',
             '../static/css/jquery.asmselect.css',
+            '../static/css/select2.css',
             '../static/css/style.css', filters='yui_css', output='bundle.min.css')
 
 register('css', css)
