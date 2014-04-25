@@ -34,6 +34,7 @@ from tastypie.models import create_api_key
 import jsonfield
 
 from scielomanager.utils import base28
+from scielomanager.custom_fields import ContentTypeRestrictedFileField
 from . import modelmanagers
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
@@ -555,8 +556,10 @@ class Journal(caching.base.CachingMixin, models.Model):
     url_journal = models.CharField(_('URL of the journal'), max_length=128, null=True, blank=True)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True)
-    cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
-    logo = models.ImageField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True)
+    cover = ContentTypeRestrictedFileField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True,
+                                           content_types=settings.IMAGE_CONTENT_TYPE, max_upload_size=settings.JOURNAL_COVER_MAX_SIZE)
+    logo = ContentTypeRestrictedFileField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True,
+                                          content_types=settings.IMAGE_CONTENT_TYPE, max_upload_size=settings.JOURNAL_LOGO_MAX_SIZE)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True)
     editor_name = models.CharField(_('Editor Names'), max_length=512)

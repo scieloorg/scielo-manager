@@ -540,10 +540,25 @@ def add_journal(request, journal_id=None):
     Handles new and existing journals
     """
 
+    user_collections = models.get_user_collections(request.user.id)
+    previous_journal_cover = None
+    previous_journal_logo = None
+
     if journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)
+        # preserve the cover and logo urls before save in case of error when updating these fields
+
+        try:
+            previous_journal_cover = journal.cover.url
+        except ValueError:
+            previous_journal_cover = None
+
+        try:
+            previous_journal_logo = journal.logo.url
+        except ValueError:
+            previous_journal_logo = None
 
     form_hash = None
 
@@ -585,6 +600,19 @@ def add_journal(request, journal_id=None):
             else:
                 messages.error(request, MSG_FORM_MISSING)
 
+                # if conver or logo fail in validation, then override the has_xxx_url with
+                # the value stored previously, or false if none
+
+                if 'cover' in journalform.errors.keys():
+                    has_cover_url = previous_journal_cover if previous_journal_cover else False
+                else:
+                    has_cover_url = journal.cover.url if hasattr(journal, 'cover') and hasattr(journal.cover, 'url') else False
+
+                if 'logo' in journalform.errors.keys():
+                    has_logo_url = previous_journal_logo if previous_journal_logo else False
+                else:
+                    has_logo_url = journal.logo.url if hasattr(journal, 'logo') and hasattr(journal.logo, 'url') else False
+
     else:
         if request.GET.get('resume', None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
@@ -597,17 +625,17 @@ def add_journal(request, journal_id=None):
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 
-    # Recovering Journal Cover url.
-    try:
-        has_cover_url = journal.cover.url
-    except ValueError:
-        has_cover_url = False
+        # Recovering Journal Cover url.
+        try:
+            has_cover_url = journal.cover.url
+        except ValueError:
+            has_cover_url = False
 
-    # Recovering Journal Logo url.
-    try:
-        has_logo_url = journal.logo.url
-    except ValueError:
-        has_logo_url = False
+        # Recovering Journal Logo url.
+        try:
+            has_logo_url = journal.logo.url
+        except ValueError:
+            has_logo_url = False
 
     return render_to_response('journalmanager/add_journal.html', {
                               'journal': journal,
