@@ -419,3 +419,12 @@ table._listings h4 {
 
 .pagination a, .pagination span { padding-left: 10px; padding-right: 10px; }
 
+.cover-block input[type="checkbox"],
+.logo-block input[type="checkbox"] {
+  float: left;
+  margin-right: 5px;
+}
+.cover-block a.btn,
+.logo-block a.btn {
+  display: block;
+}

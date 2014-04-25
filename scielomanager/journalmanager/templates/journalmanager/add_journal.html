@@ -35,7 +35,7 @@
 {% block messages %}
   {% if add_form.errors or add_form.non_field_errors %}
   <div class="alert alert-error">
-    <button class="close" data-dismiss="alert" type="button">×</button>
+    <button class="close" data-dismiss="alert" type="button">&times;</button>
     <ul>
       {% for field in add_form %}
         {% if field.errors %}
@@ -56,96 +56,49 @@
     <form id="journal-form"
           method="post"
           action="{% url journal.add %}"
-          enctype="multipart/form-data">
+          enctype="multipart/form-data"
+          class="form-horizontal">
   {% else %}
     <form id="journal-form"
           method="post"
           action=""
-          enctype="multipart/form-data">
+          enctype="multipart/form-data"
+          class="form-horizontal">
   {% endif %}
   {% csrf_token %}
   <input type="hidden" name="form_hash" value="{{form_hash}}"/>
   <h2><a name="title"></a>{% trans "Titles" %}:</h2>
   <div class="well">
 
-    <div class="control-group {% if add_form.title.errors %}error{% endif %}">
-      <label for="{{ add_form.title.auto_id }}">
-        <span {% if add_form.title.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.title.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.title }}
-        {% field_help add_form.title.label add_form.title.help_text term-journal-title %}
-      </div>
-    </div>
+    {% with add_form.title as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.title_iso.errors %}error{% endif %}">
-      <label for="{{ add_form.title_iso.auto_id }}">
-        <span {% if add_form.title_iso.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.title_iso.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.title_iso }}
-      </div>
-    </div>
+    {% with add_form.title_iso as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.short_title.errors %}error{% endif %}">
-      <label for="{{ add_form.short_title.auto_id }}">
-        <span {% if add_form.short_title.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.short_title.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.short_title }}
-      </div>
-    </div>
+    {% with add_form.short_title as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.medline_title.errors %}error{% endif %}">
-      <label for="{{ add_form.medline_title.auto_id }}">
-        <span {% if add_form.medline_title.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.medline_title.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.medline_title }}
-      </div>
-    </div>
+    {% with add_form.medline_title as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.previous_title.errors %}error{% endif %}">
-      <label for="{{ add_form.previous_title.auto_id }}">
-        <span {% if add_form.previous_title.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.previous_title.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.previous_title }}
-        {% field_help add_form.previous_title.label add_form.previous_title.help_text term-previous-title %}
-      </div>
-    </div>
-
-    <div id="other_previous_title" class="control-group {% if add_form.other_previous_title.errors %}error{% endif %}">
-      <label for="{{ add_form.other_previous_title.auto_id }}">
-        <span {% if add_form.other_previous_title.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.other_previous_title.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.other_previous_title }}
-        {% field_help add_form.other_previous_title.label add_form.other_previous_title.help_text term-previous-title %}
-      </div>
-    </div>
+    {% with add_form.previous_title as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
   </div>
 
   <h2><a name="other_title"></a>{% trans "Other Titles" %}:</h2>
   <div class="well">
-    <table id="titleformset" class="table table-bordered table-striped">
+    <table id="titleformset" class="table table-striped">
     <thead>
       <tr>
-        <td>{% trans "Other Titles" %}</td>
-        <td>{% trans "Category" %}</td>
+        <th>{% trans "Other Titles" %}</th>
+        <th>{% trans "Category" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -155,8 +108,16 @@
           {% for field in form.hidden_fields %}{{ field }}{% endfor %}
           {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
           {{ form.title }}
+          {% if form.title.errors %}
+            <span class="help-inline danger">{{ form.title.errors }}</span>
+          {% endif %}
         </td>
-        <td>{{ form.category }}</td>
+        <td>
+          {{ form.category }}
+          {% if form.category.errors %}
+            <span class="help-inline danger">{{ form.category.errors }}</span>
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
@@ -174,119 +135,71 @@
       {% endfor %}
     </span>
 
-    <div class="control-group {% if add_form.print_issn.errors %}error{% endif %}">
-      <label for="{{ add_form.print_issn.auto_id }}">
-        <span {% if add_form.print_issn.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.print_issn.label %}
-        </span>
-      </label>
-      <div class="controls">
-      	 {{ add_form.print_issn }}
-         {% field_help add_form.print_issn.label add_form.print_issn.help_text term-print-issn %}
-        <span class="help-inline">
-          {% for error in add_form.print_issn.errors %}
-            {{ error }}
-          {% endfor %}
-        </span>
-      </div>
-    </div>
+    {% with add_form.print_issn as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.eletronic_issn.errors %}error{% endif %}">
-      <label for="{{ add_form.eletronic_issn.auto_id }}">
-        <span {% if add_form.eletronic_issn.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.eletronic_issn.label %}
-        </span>
-      </label>
-      <div class="controls">
-        <span class="help-inline">
-          {{ add_form.eletronic_issn }}
-          {% for error in add_form.eletronic_issn.errors %}
-            {{ error }}
-          {% endfor %}
-        </span>
-      </div>
-    </div>
+    {% with add_form.eletronic_issn as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group">
-      <label for="{{ add_form.scielo_issn.auto_id }}">
-        <span {% if add_form.scielo_issn.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.scielo_issn.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.scielo_issn }}
-        {% field_help add_form.scielo_issn.label add_form.scielo_issn.help_text term-scielo-issn %}
-      </div>
-    </div>
+    {% with add_form.scielo_issn as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
   </div>
 
   <h2><a name="subject"></a>{% trans "Subject" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.study_areas.errors %}error{% endif %}">
-      <label for="{{ add_form.study_areas.auto_id }}">
-        <span {% if add_form.study_areas.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.study_areas.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.study_areas }}
-        {% field_help add_form.study_areas.label add_form.study_areas.help_text term-study_areas %}
-      </div>
-    </div>
-    <div class="control-group {% if add_form.subject_categories.errors %}error{% endif %}">
-      <label for="{{ add_form.subject_categories.auto_id }}">
-        <span {% if add_form.subject_categories.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.subject_categories.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.subject_categories }}
-        {% field_help add_form.subject_categories.label add_form.subject_categories.help_text term-subject_categories %}
-      </div>
-    </div>
-    <div class="control-group {% if add_form.subject_descriptors.errors %}error{% endif %}">
-      <label for="{{ add_form.subject_descriptors.auto_id }}">
-        <span {% if add_form.subject_descriptors.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.subject_descriptors.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {% field_help add_form.subject_descriptors.label add_form.subject_descriptors.help_text term-subject-descriptors %}
-        {{ add_form.subject_descriptors }}
-      </div>
-    </div>
+
+    {% with add_form.study_areas as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
+    {% with add_form.subject_categories as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
+    {% with add_form.subject_descriptors as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
   </div>
 
   <h2><a name="mission"></a>{% trans "Mission" %}:</h2>
   <div class="well">
-    <table id="missionformset" class="table table-bordered table-striped">
+    <table id="missionformset" class="table table-striped">
       <thead>
         <tr>
-          <td>
-            {% trans "Description" %}
+          <th>
+            {% trans "Description" %}:
             {% field_help missionformset.forms.0.description.label missionformset.forms.0.description.help_text term-mission %}
-          </td>
-          <td>
-            {% trans "Language" %}
-          </td>
+          </th>
+          <th>
+            {% trans "Language" %}:
+          </th>
         </tr>
       </thead>
       <tbody>
         {% for form in missionformset.forms %}
-        <tr id="{{ form.prefix }}-row">
-          <td>
-            <div class="control-group {% if form.errors %}error{% endif %}">
-              {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-              {{ form.description }}
-            </div>
-          </td>
-          <td>
-            <div class="control-group {% if form.errors %}error{% endif %}">
-              {{ form.language }}
-            </div>
-          </td>
-        </tr>
+          <tr id="{{ form.prefix }}-row">
+            <td>
+              <div class="control-group {% if form.errors %}error{% endif %}">
+                {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                {{ form.description }}
+                {% if form.description.errors %}
+                  <span class="help-inline danger">{{ form.description.errors }}</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <div class="control-group {% if form.errors %}error{% endif %}">
+                {{ form.language }}
+                {% if form.language.errors %}
+                  <span class="help-inline danger">{{ form.language.errors }}</span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -297,302 +210,201 @@
 
   <h2><a name="languages"></a>{% trans "Languages" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.languages.errors %}error{% endif %}">
-      <label for="{{ add_form.languages.auto_id }}">
-        <span {% if add_form.languages.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.languages.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.languages }}
-      </div>
-    </div>
-    <div class="control-group {% if add_form.abstract_keyword_languages.errors %}error{% endif %}">
-      <label for="{{ add_form.abstract_keyword_languages.auto_id }}">
-        <span {% if add_form.abstract_keyword_languages.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.abstract_keyword_languages.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.abstract_keyword_languages }}
-      </div>
-    </div>
+
+    {% with add_form.languages as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
+    {% with add_form.abstract_keyword_languages as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
   </div>
 
   <h2><a name="system_information"></a>{% trans "System Information" %}:</h2>
   <div class="well">
 
-    <div class="control-group {% if add_form.national_code.errors %}error{% endif %}">
-      <label for="{{ add_form.national_code.auto_id }}">
-        <span {% if add_form.national_code.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.national_code.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.national_code }}
-        {% field_help add_form.national_code.label add_form.national_code.help_text term-national_code %}
-      </div>
-    </div>
+    {% with add_form.national_code as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.acronym.errors %}error{% endif %}">
-      <label for="{{ add_form.acronym.auto_id }}">
-        <span {% if add_form.acronym.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.acronym.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.acronym }}
-        {% field_help add_form.acronym.label add_form.acronym.help_text term-acronym %}
-      </div>
-    </div>
+    {% with add_form.acronym as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.url_online_submission.errors %}error{% endif %}">
-      <label for="{{ add_form.url_online_submission.auto_id }}">
-        <span {% if add_form.url_online_submission.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.url_online_submission.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.url_online_submission }}
-        {% field_help add_form.url_online_submission.label add_form.url_online_submission.help_text term-url-of-online-submission %}
-      </div>
-    </div>
+    {% with add_form.url_online_submission as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.url_journal.errors %}error{% endif %}">
-      <label for="{{ add_form.url_journal.auto_id }}">
-        <span {% if add_form.url_journal.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.url_journal.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.url_journal }}
-        {% field_help add_form.url_journal.label add_form.url_journal.help_text term-url-of-the-journal %}
-      </div>
-    </div>
+    {% with add_form.url_journal as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
-      <label for="{{ add_form.editorial_standard.auto_id }}">
-        <span {% if add_form.editorial_standard.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editorial_standard.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editorial_standard }}
-        {% field_help add_form.editorial_standard.label add_form.editorial_standard.help_text term-editorial-standard %}
-      </div>
-    </div>
+    {% with add_form.editorial_standard as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
-      <label for="{{ add_form.ctrl_vocabulary.auto_id }}">
-        <span {% if add_form.ctrl_vocabulary.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.ctrl_vocabulary.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.ctrl_vocabulary }}
-        {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
-      </div>
-    </div>
+    {% with add_form.ctrl_vocabulary as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.index_coverage.errors %}error{% endif %}">
-      <label class="control-label" for="index_coverage">{% trans add_form.index_coverage.label_tag %}</label>
-      <div class="controls">
-        {% field_help add_form.index_coverage.label add_form.index_coverage.help_text term-subject-descriptors %}
-        {{ add_form.index_coverage }}
-      </div>
-    </div>
+    {% with add_form.index_coverage as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.medline_code.errors %}error{% endif %}">
-      <label for="{{ add_form.medline_code.auto_id }}">
-        <span {% if add_form.medline_code.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.medline_code.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.medline_code }}
-      </div>
-    </div>
+    {% with add_form.medline_code as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
   </div>
 
   <h2><a name="web_of_science"></a>{% trans "Web of Science" %}:</h2>
   <div class="well">
-      <label>{% trans "Indexed at:" %}</label>
-      <label class="checkbox inline">
-        {{ add_form.is_indexed_scie }} {{add_form.is_indexed_scie.label}}
-      </label>
-      <label class="checkbox inline">
-        {{ add_form.is_indexed_ssci }} {{add_form.is_indexed_ssci.label}}
-      </label>
-      <label class="checkbox inline">
-        {{ add_form.is_indexed_aehci }} {{add_form.is_indexed_aehci.label}}
-      </label>
-      <div>
-        <ul>
-          <li class="muted inline"><small>SCIE - Science Citation Index</small></li>
-          <li class="muted"><small>SSCI - Social Science Citation</small></li>
-          <li class="muted"><small>A&HCI - Arts & Humanities Citation</small></li>
-        </ul>
-      </div>
+    <h4>{% trans "Indexed at:" %}</h4>
+    {% with add_form.is_indexed_scie as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+    
+    {% with add_form.is_indexed_ssci as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+    
+    {% with add_form.is_indexed_aehci as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
   </div>
 
   <h2><a name="license"></a>{% trans "Licenses" %}:</h2>
   <div class="well">
+    {% with add_form.use_license as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
-      <label for="{{ add_form.use_license.auto_id }}">
-        <span {% if add_form.use_license.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.use_license.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.use_license }}
-        {% field_help add_form.use_license.label add_form.use_license.help_text term-use-licence %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.copyrighter.errors %}error{% endif %}">
-      <label for="{{ add_form.copyrighter.auto_id }}">
-        <span {% if add_form.copyrighter.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.copyrighter.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.copyrighter }}
-        {% field_help add_form.copyrighter.label add_form.copyrighter.help_text term-copyrighter %}
-      </div>
-    </div>
+    {% with add_form.copyrighter as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
   </div>
 
   <h2><a name="formal_information"></a>{% trans "Formal Information" %}:</h2>
   <div class="well">
-    <table class="table table-bordered table-striped">
+    <table class="table table-striped">
       <thead>
         <tr>
-          <td>
-            <label for="{{ add_form.init_year.auto_id }}">
-              <span {% if add_form.init_year.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.init_year.label %}
-              </span>
+          <th>
+            <label for="{{ add_form.init_year.auto_id }}" {% if add_form.init_year.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.init_year.label %}
             </label>
-          </td>
-          <td>
-            <label for="{{ add_form.init_vol.auto_id }}">
-              <span {% if add_form.init_vol.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.init_vol.label %}
-              </span>
+          </th>
+          <th>
+            <label for="{{ add_form.init_vol.auto_id }}" {% if add_form.init_vol.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.init_vol.label %}
             </label>
-          </td>
-          <td>
-            <label for="{{ add_form.init_num.auto_id }}">
-              <span {% if add_form.init_num.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.init_num.label %}
-              </span>
+          </th>
+          <th>
+            <label for="{{ add_form.init_num.auto_id }}" {% if add_form.init_num.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.init_num.label %}
             </label>
-          </td>
+          </th>
         </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>
-          <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
-            {{ add_form.init_year|attr:"placeholder:YYYY" }}
-            {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
-          </div>
-        </td>
-        <td>
-          <div class="control-group {% if add_form.init_vol.errors %}error{% endif %}">
-            {{ add_form.init_vol }}
-            {% field_help add_form.init_vol.label add_form.init_vol.help_text term-initial-volume %}
-          </div>
-        </td>
-        <td>
-          <div class="control-group {% if add_form.init_num.errors %}error{% endif %}">
-            {{ add_form.init_num }}
-            {% field_help add_form.init_num.label add_form.init_num.help_text term-initial-number %}
-          </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <table class="table table-bordered table-striped" style="width:100%">
-      <thead>
         <tr>
           <td>
-            <label for="{{ add_form.final_year.auto_id }}">
-              <span {% if add_form.final_year.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.final_year.label %}
-              </span>
+            <div class="control-group {% if add_form.init_year.errors %}error{% endif %}">
+              {{ add_form.init_year|attr:"placeholder:YYYY" }}
+              {% field_help add_form.init_year.label add_form.init_year.help_text term-initial-date %}
+              {% if add_form.init_year.errors %}
+                <span class="help-inline danger">{{ add_form.init_year.errors }}</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="control-group {% if add_form.init_vol.errors %}error{% endif %}">
+              {{ add_form.init_vol }}
+              {% field_help add_form.init_vol.label add_form.init_vol.help_text term-initial-volume %}
+              {% if add_form.init_vol.errors %}
+                <span class="help-inline danger">{{ add_form.init_vol.errors }}</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="control-group {% if add_form.init_num.errors %}error{% endif %}">
+              {{ add_form.init_num }}
+              {% field_help add_form.init_num.label add_form.init_num.help_text term-initial-number %}
+              {% if add_form.init_num.errors %}
+                <span class="help-inline danger">{{ add_form.init_num.errors }}</span>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="{{ add_form.final_year.auto_id }}" {% if add_form.final_year.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.final_year.label %}
             </label>
           </td>
           <td>
-            <label for="{{ add_form.final_vol.auto_id }}">
-              <span {% if add_form.final_vol.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.final_vol.label %}
-              </span>
+            <label for="{{ add_form.final_vol.auto_id }}" {% if add_form.final_vol.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.final_vol.label %}
             </label>
           </td>
           <td>
-            <label for="{{ add_form.final_num.auto_id }}">
-              <span {% if add_form.final_num.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.final_num.label %}
-              </span>
+            <label for="{{ add_form.final_num.auto_id }}" {% if add_form.final_num.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.final_num.label %}
             </label>
           </td>
         </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>
-          <div class="control-group {% if add_form.final_year.errors %}error{% endif %}">
-            {{ add_form.final_year|attr:"placeholder:YYYY" }}
-            {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
-          </div>
-        </td>
-        <td>
-         {{ add_form.final_vol }}
-         {% field_help add_form.final_vol.label add_form.final_vol.help_text term-final-volume %}
-        </td>
-        <td>
-          {{ add_form.final_num }}
-          {% field_help add_form.final_num.label add_form.final_num.help_text term-final-number %}
-        </td>
-      </tr>
-      </tbody>
-    </table>
-    <table class="table table-bordered table-striped">
-      <thead>
         <tr>
           <td>
-            <label for="{{ add_form.frequency.auto_id }}">
-              <span {% if add_form.frequency.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.frequency.label %}
-              </span>
-            </label>
+            <div class="control-group {% if add_form.final_year.errors %}error{% endif %}">
+              {{ add_form.final_year|attr:"placeholder:YYYY" }}
+              {% field_help add_form.final_year.label add_form.final_year.help_text term-final-date %}
+              {% if add_form.final_year.errors %}
+                <span class="help-inline danger">{{ add_form.final_year.errors }}</span>
+              {% endif %}
+            </div>
           </td>
           <td>
-            <label for="{{ add_form.pub_level.auto_id }}">
-              <span {% if add_form.pub_level.field.required %}class="req-field"{% endif %}>
-                {% trans add_form.pub_level.label %}
-              </span>
+            {{ add_form.final_vol }}
+            {% field_help add_form.final_vol.label add_form.final_vol.help_text term-final-volume %}
+            {% if add_form.final_vol.errors %}
+              <span class="help-inline danger">{{ add_form.final_vol.errors }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {{ add_form.final_num }}
+            {% field_help add_form.final_num.label add_form.final_num.help_text term-final-number %}
+            {% if add_form.final_num.errors %}
+              <span class="help-inline danger">{{ add_form.final_num.errors }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="{{ add_form.frequency.auto_id }}" {% if add_form.frequency.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.frequency.label %}
+            </label>
+          </td>
+          <td colspan="2">
+            <label for="{{ add_form.pub_level.auto_id }}" {% if add_form.pub_level.field.required %}class="req-field"{% endif %}>
+              {% trans add_form.pub_level.label %}
             </label>
           </td>
         </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>
-          <div class="control-group {% if add_form.frequency.errors %}error{% endif %}">
-            {{ add_form.frequency }}
-            {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
-          </div>
-        </td>
-        <td>
-          <div class="control-group {% if add_form.pub_level.errors %}error{% endif %}">
-            {{ add_form.pub_level }}
-            {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
-          </div>
-        </td>
-      </tr>
+        <tr>
+          <td>
+            <div class="control-group {% if add_form.frequency.errors %}error{% endif %}">
+              {{ add_form.frequency }}
+              {% field_help add_form.frequency.label add_form.frequency.help_text term-frequency %}
+            </div>
+          </td>
+          <td colspan="2">
+            <div class="control-group {% if add_form.pub_level.errors %}error{% endif %}">
+              {{ add_form.pub_level }}
+              {% field_help add_form.pub_level.label add_form.pub_level.help_text term-publicaton-level %}
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -600,272 +412,149 @@
   <h2><a name="publisher"></a>{% trans "Publisher" %}:</h2>
   <div class="well">
 
-    <div class="control-group {% if add_form.publisher_name.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_name.auto_id }}">
-        <span {% if add_form.publisher_name.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_name.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_name }}
-      </div>
-    </div>
+    {% with add_form.publisher_name as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.publisher_state.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_state.auto_id }}">
-        <span {% if add_form.publisher_state.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_state.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_state }}
-      </div>
-    </div>
+    {% with add_form.publisher_state as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.publisher_country.errors %}error{% endif %}">
-      <label for="{{ add_form.publisher_country.auto_id }}">
-        <span {% if add_form.publisher_country.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publisher_country.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publisher_country }}
-      </div>
-    </div>
+    {% with add_form.publisher_country as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.publication_city.errors %}error{% endif %}">
-      <label for="{{ add_form.publication_city.auto_id }}">
-        <span {% if add_form.publication_city.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publication_city.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publication_city }}
-      </div>
-    </div>
+    {% with add_form.publication_city as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
   </div>
 
   <h2><a name="sponsors"></a>{% trans "Sponsors" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.sponsor.errors %}error{% endif %}">
-      <label for="{{ add_form.sponsor.auto_id }}">
-        <span {% if add_form.sponsor.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.sponsor.label %}
-          <a class="popup" href="{% url sponsor.add %}?popup=1">
-            <img width="10"
-                 height="10"
-                 alt="{% trans 'Add new' %}"
-                 src="/static/images/icon_addlink.gif"/>
-          </a>
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.sponsor }}
-        {% field_help add_form.sponsor.label add_form.sponsor.help_text term-sponsor %}
-      </div>
-    </div>
+
+    {% with add_form.sponsor as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
   </div>
 
   <h2><a name="editor"></a>{% trans "Editor" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.editor_name.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_name.auto_id }}">
-        <span {% if add_form.editor_name.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_name.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_name }}
-      </div>
-    </div>
 
-    <div class="control-group {% if add_form.editor_address.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_address.auto_id }}">
-        <span {% if add_form.editor_address.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_address.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_address }}
-      </div>
-    </div>
+    {% with add_form.editor_name as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_address_city.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_address_city.auto_id }}">
-        <span {% if add_form.editor_address_city.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_address_city.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_address_city }}
-      </div>
-    </div>
+    {% with add_form.editor_address as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_address_state.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_address_state.auto_id }}">
-        <span {% if add_form.editor_address_state.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_address_state.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_address_state }}
-      </div>
-    </div>
+    {% with add_form.editor_address_city as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_address_zip.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_address_zip.auto_id }}">
-        <span {% if add_form.editor_address_zip.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_address_zip.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_address_zip }}
-      </div>
-    </div>
+    {% with add_form.editor_address_state as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_address_country.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_address_country.auto_id }}">
-        <span {% if add_form.editor_address_country.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_address_country.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_address_country }}
-      </div>
-    </div>
+    {% with add_form.editor_address_zip as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_phone1.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_phone1.auto_id }}">
-        <span {% if add_form.editor_phone1.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_phone1.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_phone1 }}
-      </div>
-    </div>
+    {% with add_form.editor_address_country as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_phone2.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_phone2.auto_id }}">
-        <span {% if add_form.editor_phone2.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_phone2.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_phone2 }}
-      </div>
-    </div>
+    {% with add_form.editor_phone1 as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
 
-    <div class="control-group {% if add_form.editor_email.errors %}error{% endif %}">
-      <label for="{{ add_form.editor_email.auto_id }}">
-        <span {% if add_form.editor_email.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editor_email.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editor_email }}
-      </div>
-    </div>
+    {% with add_form.editor_phone2 as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
+    {% with add_form.editor_email as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
   </div>
 
   <h2><a name="social_network"></a>{% trans "Social Network" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.twitter_user.errors %}error{% endif %}">
-      <label for="{{ add_form.twitter_user.auto_id }}">
-        <span {% if add_form.twitter_user.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.twitter_user.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.twitter_user }}
-        {% field_help add_form.twitter_user.label add_form.twitter_user.help_text term-twitter_user %}
-      </div>
-    </div>
+
+    {% with add_form.twitter_user as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
   </div>
 
   <h2><a name="further_information"></a>{% trans "Further Information" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.notes.errors %}error{% endif %}">
-      <label for="{{ add_form.notes.auto_id }}">
-        <span {% if add_form.notes.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.notes.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.notes }}
-        {% field_help add_form.notes.label add_form.notes.help_text term-notes %}
-      </div>
-    </div>
+
+    {% with add_form.notes as field %}
+      {% include "journalmanager/includes/form_field_row.html" %}
+    {% endwith %}
+
   </div>
 
   <h2><a name="images"></a>{% trans "Journal Images" %}:</h2>
   <div class="well">
-    <div class="control-group {% if add_form.cover.errors %}error{% endif %}">
-      <label for="{{ add_form.cover.auto_id }}">
-        <span {% if add_form.cover.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.cover.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.cover }}
+    <div class="row-fluid">
+      <div class="span6 cover-block">
+        <h4>{% trans "Cover" %}:</h4>
+        {% with add_form.cover as field %}
+          {% include "journalmanager/includes/form_field_row.html" %}
+          <div id="cover_js_validation_error_msg"></div>
+          <div class="alert">
+            <strong>{% trans "Max upload file size" %}:</strong>
+            <span class="label">{{ SETTINGS.JOURNAL_COVER_MAX_SIZE|filesizeformat }}</span><br>
+            <strong>{% trans 'Image Size' %}:</strong>
+            <span class="label">{{ SETTINGS.IMAGE_DIMENSIONS.height_cover }}px</span> &times; 
+            <span class="label">{{ SETTINGS.IMAGE_DIMENSIONS.width_cover }}px</span><br>
+            <strong>{% trans 'Image Extensions' %}:</strong>
+            {% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
+              <span class="label">.{{type|cut:"image/"}}</span>
+            {% endfor %}
+          </div>
+          <div>
+              {% if has_cover_url %}
+                <img src="{{ has_cover_url }}" />
+              {% else %}
+                <div class="alert alert-info">
+                  <i class="icon-info-sign"></i>
+                  {% trans "This journal does not have a cover" %}
+                </div>
+              {% endif %}
+          </div>
+        {% endwith %}
       </div>
-      <div>
-        <b>{% trans 'Image Size' %}:</b>({{ SETTINGS.IMAGE_DIMENSIONS.height_cover }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_cover }}px)
-        <span class="muted">
-          {% trans 'height' %} X {% trans 'width' %}
-        </span>
-      </div>
-      <div>
-        <b>{% trans 'Image Extensions' %}:</b>
-        <span>
-          ({% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
-            .{{type|cut:"image/"}}
-          {% endfor %})
-        </span>
-      </div>
-      <div align="center">
-          {% if has_cover_url %}
-            <img src="{{ has_cover_url }}" />
-          {% else %}
-            <div class="alert alert-info">
-              <i class="icon-info-sign"></i>
-              {% trans "This journal does not have a cover" %}
-            </div>
-          {% endif %}
-      </div>
-    </div>
-    <div class="control-group {% if add_form.logo.errors %}error{% endif %}">
-      <label for="{{ add_form.logo.auto_id }}">
-        <span {% if add_form.logo.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.logo.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.logo }}
-      </div>
-      <div>
-        <b>{% trans 'Image Size' %}:</b>({{ SETTINGS.IMAGE_DIMENSIONS.height_logo }}px X {{ SETTINGS.IMAGE_DIMENSIONS.width_logo }}px)
-        <span class="muted">
-          {% trans 'height' %} X {% trans 'width' %}
-        </span>
-      </div>
-      <div>
-        <b>{% trans 'Image Extensions' %}:</b>
-        <span>
-          ({% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
-            .{{type|cut:"image/"}}
-          {% endfor %})
-        </span>
-      </div>
-      <div align="center">
-          {% if has_logo_url %}
-            <img src="{{ has_logo_url }}" />
-          {% else %}
-            <div class="alert alert-info">
-              <i class="icon-info-sign"></i>
-              {% trans "This journal does not have a logomarca" %}
-            </div>
-          {% endif %}
+      <div class="span6 logo-block">
+        <h4>{% trans "Logo" %}:</h4>
+        {% with add_form.logo as field %}
+          {% include "journalmanager/includes/form_field_row.html" %}
+          <div id="logo_js_validation_error_msg"></div>
+          <div class="alert">
+            <strong>{% trans "Max upload file size" %}:</strong>
+            <span class="label">{{ SETTINGS.JOURNAL_LOGO_MAX_SIZE|filesizeformat }}</span><br>
+            <strong>{% trans 'Image Size' %}:</strong>
+            <span class="label">{{ SETTINGS.IMAGE_DIMENSIONS.height_logo }}px</span> &times; 
+            <span class="label">{{ SETTINGS.IMAGE_DIMENSIONS.width_logo }}px</span><br>
+            <strong>{% trans 'Image Extensions' %}:</strong>
+            {% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
+              <span class="label">.{{type|cut:"image/"}}</span>
+            {% endfor %}
+          </div>
+          <div>
+              {% if has_logo_url %}
+                <img src="{{ has_logo_url }}" />
+              {% else %}
+                <div class="alert alert-info">
+                  <i class="icon-info-sign"></i>
+                  {% trans "This journal does not have a logo" %}
+                </div>
+              {% endif %}
+          </div>
+        {% endwith %}
       </div>
     </div>
   </div>
@@ -928,6 +617,69 @@
         $('#other_previous_title').css("display", "none");
         $('#id_journal-other_previous_title').val('')
       }
+    });
+
+    function display_error(msg_type){
+      console.log(msg_type);
+      var mainContent = $('.mainContent');
+      var sys_msgs = mainContent.find('.sys-msgs');
+      var msg = {
+        "cover_max_size": "{% trans 'Journal cover image file size is too large! Please select another file.' %}",
+        "logo_max_size": "{% trans 'Journal logo image file size is too large! Please select another file.' %}",
+        "cover_content_type": "{% trans 'Journal cover image extension is not allowed! Please select another file.' %}",
+        "logo_content_type": "{% trans 'Journal logo image extension is not allowed! Please select another file.' %}",
+      }
+      var msg_html ='<div class="sys-msgs-wrapper">' +
+                      '<div class="alert alert-error">' +
+                        '<button type="button" data-dismiss="alert" class="close">×</button>' +
+                        msg[msg_type] +
+                      '</div>' +
+                    '</div>';
+      
+      if (sys_msgs.size() > 0) {
+        sys_msgs.append(msg_html).slideDown();
+      } else {
+        msg_html = '<div class="sys-msgs">' + msg_html +'</div>';
+        mainContent.prepend(msg_html).slideDown();
+      }
+      
+
+    }
+    $('.cover-block,.logo-block,').find('a').addClass('btn')
+    $('form').submit(function(event) {
+      var cover_file_input = $('#id_journal-cover');
+      var cover_file_obj = cover_file_input[0].files[0];
+      var logo_file_input = $('#id_journal-logo');
+      var logo_file_obj = logo_file_input[0].files[0];
+      var allowed_content_types = ['{{ SETTINGS.IMAGE_CONTENT_TYPE|join:"', '"|stringformat:"s"  }}'];
+
+      if (cover_file_obj != undefined) {
+        /* Check COVER file size */
+        if (cover_file_obj.size > {{ SETTINGS.JOURNAL_COVER_MAX_SIZE }}) {
+          display_error('cover_max_size');
+          return false;
+        }
+        /* Check COVER content type */
+        if ($.inArray(cover_file_obj.type, allowed_content_types) < 0) {
+          display_error('cover_content_type');
+          return false;
+        }
+      }
+
+      if (logo_file_obj != undefined) {
+        /* Check LOGO file size */
+        if (logo_file_obj.size > {{ SETTINGS.JOURNAL_LOGO_MAX_SIZE }}) {
+          display_error('logo_max_size');
+          return false;
+        }
+        /* Check LOGO content type */
+        if ($.inArray(logo_file_obj.type, allowed_content_types) < 0) {
+          display_error('logo_content_type');
+          return false;
+        }
+      }
+
+      return true;
     });
   });
 </script>
