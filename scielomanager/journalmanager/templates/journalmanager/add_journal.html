@@ -7,29 +7,31 @@
 
 {% block page_title %}{% trans "Journal" %}{% endblock %}
 
+{% block extrahead %}
+   <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/sidebar.css"/>
+{% endblock %}
+
+
 {% block shortaccess %}
-<div class="slide-out-div">
-  <a class="handle" href="#">{% trans 'Access' %}</a>
-  <ul class="nav nav-list">
-    <li><a href="#title">{% trans 'Title' %}</a></li>
+<ul id="slide-out-div" >
+  <li><a href="#title">{% trans 'Title' %}</a></li>
     <li><a href="#other_title">{% trans 'Other Titles' %}</a></li>
     <li><a href="#issn">{% trans 'ISSN' %}</a></li>
     <li><a href="#subject">{% trans 'Subjects' %}</a></li>
     <li><a href="#mission">{% trans 'Mission' %}</a></li>
     <li><a href="#languages">{% trans 'Languages' %}</a></li>
     <li><a href="#system_information">{% trans 'System Information' %}</a></li>
-    <li><a href="#publisher_and_sponsor">{% trans 'Publisher and Sponsor' %}</a></li>
     <li><a href="#web_of_science">{% trans 'Web of Science' %}</a></li>
     <li><a href="#license">{% trans 'Licenses' %}</a></li>
     <li><a href="#formal_information">{% trans 'Formal Information' %}</a></li>
     <li><a href="#publisher">{% trans "Publisher" %}</a></li>
     <li><a href="#sponsors">{% trans "Sponsors" %}</a></li>
-    <li><a href="#editor">{% trans "Editors" %}</a></li>
+    <li><a href="#editor">{% trans "Editor" %}</a></li>
     <li><a href="#social_network">{% trans "Social Network" %}</a></li>
     <li><a href="#further_information">{% trans 'Further Information' %}</a></li>
     <li><a href="#images">{% trans 'Images' %}</a></li>
-  </ul>
-</div>
+</ul>
+
 {% endblock %}
 
 {% block messages %}
@@ -583,10 +585,16 @@
 {% endblock %}
 
 {% block extrafooter %}
+
+ <script type="text/javascript" src="{% get_static_prefix %}js/jquery/jquery-ui.js"></script>
+ <script type="text/javascript" src="{% get_static_prefix %}js/jquery.sidebar.js"></script>
+
 {{ block.super }}
  <script>
   $(document).ready(function() {
-    $('#well-rezi-fixed').draggable();
+
+    $("ul#slide-out-div").sidebar();
+
     $(".help-text").popover('hide');
     //multiple-formsets
     $('#titleformset tbody tr').formset({

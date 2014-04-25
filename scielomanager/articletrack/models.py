@@ -84,8 +84,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
     @property
     def get_newest_checkin(self):
-        newest = self.article.checkins.order_by('uploaded_at')[0]
-        return newest
+        return self.article.checkins.order_by('-uploaded_at')[0]
 
     @property
     def is_newest_checkin(self):
