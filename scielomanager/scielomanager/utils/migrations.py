@@ -3,7 +3,7 @@ from django.db.models import DateTimeField
 
 def safe_autodatetime(modelname):
     """
-    Decorator to be used in migrations. This decorator monkeypath a given
+    Decorator to be used in migrations. This decorator monkeypatch a given
     model to avoid the datetimefield to override the current dates
     priviously registered in the database.
     """
