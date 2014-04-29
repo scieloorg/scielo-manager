@@ -419,3 +419,14 @@ table._listings h4 {
 
 .pagination a, .pagination span { padding-left: 10px; padding-right: 10px; }
 
+.message-info {
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  margin-left: -210px;
+  width: 400px;
+  z-index: 9999;
+  border: 1px solid;
+}
+
