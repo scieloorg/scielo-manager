@@ -505,7 +505,7 @@
       <div class="span6 cover-block">
         <h4>{% trans "Cover" %}:</h4>
         {% with add_form.cover as field %}
-          {% include "journalmanager/includes/form_field_row.html" %}
+          {% include "journalmanager/includes/form_image_field_row.html" %}
           <div id="cover_js_validation_error_msg"></div>
           <div class="alert">
             <strong>{% trans "Max upload file size" %}:</strong>
@@ -518,22 +518,12 @@
               <span class="label">.{{type|cut:"image/"}}</span>
             {% endfor %}
           </div>
-          <div>
-              {% if has_cover_url %}
-                <img src="{{ has_cover_url }}" />
-              {% else %}
-                <div class="alert alert-info">
-                  <i class="icon-info-sign"></i>
-                  {% trans "This journal does not have a cover" %}
-                </div>
-              {% endif %}
-          </div>
         {% endwith %}
       </div>
       <div class="span6 logo-block">
         <h4>{% trans "Logo" %}:</h4>
         {% with add_form.logo as field %}
-          {% include "journalmanager/includes/form_field_row.html" %}
+          {% include "journalmanager/includes/form_image_field_row.html" %}
           <div id="logo_js_validation_error_msg"></div>
           <div class="alert">
             <strong>{% trans "Max upload file size" %}:</strong>
@@ -545,16 +535,6 @@
             {% for type in SETTINGS.IMAGE_CONTENT_TYPE %}
               <span class="label">.{{type|cut:"image/"}}</span>
             {% endfor %}
-          </div>
-          <div>
-              {% if has_logo_url %}
-                <img src="{{ has_logo_url }}" />
-              {% else %}
-                <div class="alert alert-info">
-                  <i class="icon-info-sign"></i>
-                  {% trans "This journal does not have a logo" %}
-                </div>
-              {% endif %}
           </div>
         {% endwith %}
       </div>
@@ -587,7 +567,7 @@
 {% block extrafooter %}
 
  <script type="text/javascript" src="{% get_static_prefix %}js/jquery/jquery-ui.js"></script>
- <script type="text/javascript" src="{% get_static_prefix %}js/jquery.sidebar.js"></script>
+ <script type="text/javascript" src="{% get_static_prefix %}js/jquery/jquery.sidebar.js"></script>
 
 {{ block.super }}
  <script>
@@ -653,7 +633,8 @@
       
 
     }
-    $('.cover-block,.logo-block,').find('a').addClass('btn')
+    $('a[target!="_blank"]', '.cover-block').addClass('btn').attr('target', '_blank');
+    $('a[target!="_blank"]', '.logo-block').addClass('btn').attr('target', '_blank');
     $('form').submit(function(event) {
       var cover_file_input = $('#id_journal-cover');
       var cover_file_obj = cover_file_input[0].files[0];

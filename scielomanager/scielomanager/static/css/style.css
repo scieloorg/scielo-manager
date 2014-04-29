@@ -412,11 +412,10 @@ table._listings h4 {
 
 .filter-form { margin-bottom: 0; }
 
-.cover-block input[type="checkbox"],
-.logo-block input[type="checkbox"] {
-  float: left;
-  margin-right: 5px;
+.controls #journal-cover-clear_id,
+.controls #journal-logo-clear_id {
+  vertical-align: top;
 }
-.cover-block a.btn,
-.logo-block a.btn {
-  display: block;
+.controls .img-thumb {
+  margin: 10px 0;
+}
