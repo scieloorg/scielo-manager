@@ -1,4 +1,3 @@
-
 /*Toggle action list visibility on mouse over a table row*/
 
 .table-issue th {
@@ -173,22 +172,6 @@ button.ui-button-icon-only {
     font-weight: bold;
 }
 
-/* Tab Slide Out */
-.slide-out-div {
-    padding: 10px;
-    width: 150px;
-    border: 1px solid #E5E5E5;
-    background: #CCCCCC;
-}
-
-._icon {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    background-repeat: no-repeat;
-    vertical-align: bottom;
-}
-
 ._icon-current {
     background-image: url("img/current.png");
 }
@@ -300,12 +283,12 @@ table._listings h4 {
 }
 
 .message_top_arror_box:after,
-.message_top_arror_box:before { 
+.message_top_arror_box:before {
     bottom: 100%;
     left: 5%;
     border: solid transparent;
     content: " ";
-    height: 0; 
+    height: 0;
     width: 0;
     position: absolute;
     pointer-events: none;
@@ -347,7 +330,7 @@ table._listings h4 {
 .comment_left_arrow_box:after {
   border-color: rgba(247, 247, 247, 0);
   border-right-color: #F7F7F7;
-  border-width: 10px; 
+  border-width: 10px;
   margin-top: -10px;
 }
 
@@ -361,7 +344,7 @@ table._listings h4 {
 .comment_message_box {
   padding:10px;
   margin-bottom: 10px;
-  border-radius:  0 0 5px 5px; 
+  border-radius:  0 0 5px 5px;
   border: 2px solid #DDD;
   border-top: none;
 }
@@ -374,7 +357,7 @@ table._listings h4 {
   margin-right: 10px
 }
 
-.current_attempt { 
+.current_attempt {
   border: 2px solid #CCCCCC;
 }
 
@@ -408,7 +391,7 @@ table._listings h4 {
   border-left: 1px solid #E5E5E5;
   border-right: 1px solid #E5E5E5;
   border-radius: 4px;
-  margin-bottom: 2px; 
+  margin-bottom: 2px;
 }
 
 .current_attempt { border: 2px solid #CCCCCC;}
@@ -419,3 +402,13 @@ table._listings h4 {
 
 .pagination a, .pagination span { padding-left: 10px; padding-right: 10px; }
 
+.filter-form { margin-bottom: 0; }
+
+.cover-block input[type="checkbox"],
+.logo-block input[type="checkbox"] {
+  float: left;
+  margin-right: 5px;
+}
+.cover-block a.btn,
+.logo-block a.btn {
+  display: block;

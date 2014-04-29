@@ -62,13 +62,14 @@ class CheckinTests(TestCase):
 
     def test_get_newest_checkin(self):
         user = auth.UserF(is_active=True)
-        checkin1 = modelfactories.CheckinFactory()
+        checkin1 = modelfactories.CheckinFactory(uploaded_at=datetime.datetime.now())
 
         self.assertEqual(checkin1.get_newest_checkin,
                          checkin1.article.checkins.order_by('uploaded_at')[0])
 
         checkin2 = modelfactories.CheckinFactory(accepted_by=user,
-                                                 accepted_at=datetime.datetime.now())
+                                                 accepted_at=datetime.datetime.now(),
+                                                 uploaded_at=datetime.datetime.now())
         self.assertEqual(checkin2.get_newest_checkin,
                          checkin2.article.checkins.order_by('uploaded_at')[0])
 
@@ -78,10 +79,11 @@ class CheckinTests(TestCase):
         article = checkin1.article
 
         self.assertTrue(checkin1.is_newest_checkin)
-
         checkin2 = modelfactories.CheckinFactory(accepted_by=user,
                                                  accepted_at=datetime.datetime.now(),
-                                                 article=article)
+                                                 article=article,
+                                                 uploaded_at=datetime.datetime.now())
+
         self.assertTrue(checkin2.is_newest_checkin)
         self.assertFalse(checkin1.is_newest_checkin)
 

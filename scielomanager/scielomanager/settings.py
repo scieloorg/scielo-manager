@@ -250,7 +250,10 @@ IMAGE_DIMENSIONS = {
     'width_cover': 150,
 }
 
-IMAGE_SIZE = 300 * 1014
+IMAGE_SIZE = 300 * 1024
+IMAGE_MAX_UPLOAD_SIZE = 5242880  # must be an integer of bytes allowed, see comment on custom_fields.ContentTypeRestrictedFileField for reference
+JOURNAL_COVER_MAX_SIZE = IMAGE_MAX_UPLOAD_SIZE
+JOURNAL_LOGO_MAX_SIZE = IMAGE_MAX_UPLOAD_SIZE
 
 FILE_UPLOAD_HANDLERS = (
     "django.core.files.uploadhandler.MemoryFileUploadHandler",

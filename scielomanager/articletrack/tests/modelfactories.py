@@ -32,7 +32,7 @@ class CheckinFactory(factory.Factory):
     FACTORY_FOR = models.Checkin
 
     attempt_ref = 1
-    package_name = u'20132404.zip'
+    package_name = factory.Sequence(lambda n: u"201404%s" % n)  # I want to get unique package_name
     uploaded_at = '2013-11-13 15:23:12.286068-02'
     created_at = '2013-11-13 15:23:18.286068-02'
 
