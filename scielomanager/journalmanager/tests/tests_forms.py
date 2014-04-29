@@ -718,7 +718,8 @@ class JournalFormTests(WebTest):
         form is rendered again and an alert is shown with the message
         ``There are some errors or missing data``.
         """
-        perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
+        perm = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         sponsor = modelfactories.SponsorFactory.create()
@@ -1324,8 +1325,10 @@ class JournalFormTests(WebTest):
         permissions: ``journalmanager.change_journal`` and
         ``journalmanager.list_journal``.
         """
-        perm_journal_change = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
-        perm_journal_list = _makePermission(perm='list_journal', model='journal', app_label='journalmanager')
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_change)
         self.user.user_permissions.add(perm_journal_list)
 
@@ -1373,7 +1376,7 @@ class JournalFormTests(WebTest):
         form['journal-use_license'] = use_license.pk
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
-        form.set('journal-subject_categories', str(subject_category.pk))
+        form.set('journal-subject_categories', [subject_category.pk])
         form['journal-is_indexed_scie'] = True
         form['journal-is_indexed_ssci'] = False
         form['journal-is_indexed_aehci'] = True
@@ -1386,8 +1389,81 @@ class JournalFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertIn('ABCD.(São Paulo)', response.body)
+        self.assertIn('ABCD.(São Paulo)',
+            response.body)
         self.assertTemplateUsed(response, 'journalmanager/journal_dash.html')
+
+    def test_user_add_journal_but_this_journal_already_exists(self):
+        """
+        Try to submit a journal but this journal already exists
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        sponsor = modelfactories.SponsorFactory.create()
+        use_license = modelfactories.UseLicenseFactory.create()
+        language = modelfactories.LanguageFactory.create()
+        subject_category = modelfactories.SubjectCategoryFactory.create()
+        study_area = modelfactories.StudyAreaFactory.create()
+        journal = modelfactories.JournalFactory.create()
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        form['journal-sponsor'] = [sponsor.pk]
+        form['journal-study_areas'] = [study_area.pk]
+        form['journal-ctrl_vocabulary'] = 'decs'
+        form['journal-frequency'] = 'Q'
+        form['journal-final_num'] = ''
+        form['journal-eletronic_issn'] = journal.eletronic_issn
+        form['journal-init_vol'] = '1'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-editorial_standard'] = 'vancouv'
+        form['journal-scielo_issn'] = 'print'
+        form['journal-init_year'] = '1986'
+        form['journal-acronym'] = 'ABCD'
+        form['journal-pub_level'] = 'CT'
+        form['journal-init_num'] = '1'
+        form['journal-final_vol'] = ''
+        form['journal-subject_descriptors'] = 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA'
+        form['journal-print_issn'] = journal.print_issn
+        form['journal-copyrighter'] = 'Texto do copyrighter'
+        form['journal-publisher_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-publisher_country'] = 'BR'
+        form['journal-publisher_state'] = 'SP'
+        form['journal-publication_city'] = 'São Paulo'
+        form['journal-editor_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11'
+        form['journal-editor_address_city'] = 'São Paulo'
+        form['journal-editor_address_state'] = 'SP'
+        form['journal-editor_address_zip'] = '01318-901'
+        form['journal-editor_address_country'] = 'BR'
+        form['journal-editor_phone1'] = '(11) 3288-8174'
+        form['journal-editor_phone2'] = '(11) 3289-0741'
+        form['journal-editor_email'] = 'cbcd@cbcd.org.br'
+        form['journal-use_license'] = use_license.pk
+        form['journal-languages'] = [language.pk]
+        form['journal-abstract_keyword_languages'] = [language.pk]
+        form.set('journal-subject_categories', str(subject_category.pk))
+        form['journal-is_indexed_scie'] = True
+        form['journal-is_indexed_ssci'] = False
+        form['journal-is_indexed_aehci'] = True
+
+        upload_cover_name = os.path.dirname(__file__) + '/image_test/cover.gif'
+        uploaded_cover_contents = open(upload_cover_name, "rb").read()
+
+        form.set('journal-cover', (upload_cover_name, uploaded_cover_contents))
+
+        response = form.submit()
+
+        self.assertIn('This Journal already exists, please search the journal in the previous step', response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """

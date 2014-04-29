@@ -28,6 +28,7 @@ from django.utils.functional import curry
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.conf import settings
+from django.db.models import Q
 
 from . import models
 from .forms import *
@@ -543,6 +544,7 @@ def add_journal(request, journal_id=None):
     user_collections = models.get_user_collections(request.user.id)
     previous_journal_cover = None
     previous_journal_logo = None
+    has_cover_url = has_logo_url = False
 
     if journal_id is None:
         journal = models.Journal()
@@ -577,26 +579,31 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                saved_journal = journalform.save_all(creator=request.user)
+                #Ensuring that the journal doesnt exists
+                if models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
+                                                 Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
+                    messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
+                else:
+                    saved_journal = journalform.save_all(creator=request.user)
 
-                if not journal_id:
-                    saved_journal.join(user_request_context.get_current_user_active_collection(), request.user)
+                    if not journal_id:
+                        saved_journal.join(user_request_context.get_current_user_active_collection(), request.user)
 
-                titleformset.save()
-                missionformset.save()
-                messages.info(request, MSG_FORM_SAVED)
+                    titleformset.save()
+                    missionformset.save()
+                    messages.info(request, MSG_FORM_SAVED)
 
-                if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
-                    models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+                    if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
+                        models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
 
-                # record the event
-                models.DataChangeEvent.objects.create(
-                    user=request.user,
-                    content_object=saved_journal,
-                    collection=models.Collection.objects.get_default_by_user(request.user),
-                    event_type='updated' if journal_id else 'added'
-                )
-                return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
+                    # record the event
+                    models.DataChangeEvent.objects.create(
+                        user=request.user,
+                        content_object=saved_journal,
+                        collection=models.Collection.objects.get_default_by_user(request.user),
+                        event_type='updated' if journal_id else 'added'
+                    )
+                    return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
             else:
                 messages.error(request, MSG_FORM_MISSING)
 
