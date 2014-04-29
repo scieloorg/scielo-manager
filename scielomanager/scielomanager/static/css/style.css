@@ -188,6 +188,14 @@ button.ui-button-icon-only {
     background-image: url("img/inprogress.png");
 }
 
+._icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-repeat: no-repeat;
+    vertical-align: bottom;
+}
+
 table._listings td {
     vertical-align: middle;
 }
