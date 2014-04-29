@@ -864,13 +864,13 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = journal.eletronic_issn
         form['journal-init_vol'] = '1'
-        form['journal-title'] = journal.title
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
         form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
         form['journal-short_title'] = u'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
-        form['journal-acronym'] = journal.acronym
+        form['journal-acronym'] = 'ABCD'
         form['journal-pub_level'] = 'CT'
         form['journal-init_num'] = '1'
         form['journal-final_vol'] = ''
