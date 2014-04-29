@@ -16,7 +16,7 @@ from django.conf import settings
 from journalmanager import models
 from journalmanager import choices
 from scielo_extensions import formfields as fields
-from scielomanager.widgets import AdminImageWidget
+from scielomanager.widgets import CustomImageWidget
 
 logger = logging.getLogger(__name__)
 SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
@@ -190,8 +190,8 @@ class JournalForm(ModelForm):
             'other_previous_title': forms.TextInput(attrs={'class': 'span9'}),
             'editor_address': forms.TextInput(attrs={'class': 'span9'}),
             'publisher_name': forms.TextInput(attrs={'class': 'span9'}),
-            'cover': AdminImageWidget(),
-            'logo': AdminImageWidget(),
+            'cover': CustomImageWidget(),
+            'logo': CustomImageWidget(),
         }
 
 
