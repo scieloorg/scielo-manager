@@ -173,19 +173,19 @@ button.ui-button-icon-only {
 }
 
 ._icon-current {
-    background-image: url("img/current.png");
+    background-image: url("/static/img/current.png");
 }
 
 ._icon-deceased {
-    background-image: url("img/deceased.png");
+    background-image: url("/static/img/deceased.png");
 }
 
 ._icon-suspended {
-    background-image: url("img/suspended.png");
+    background-image: url("/static/img/suspended.png");
 }
 
 ._icon-inprogress {
-    background-image: url("img/inprogress.png");
+    background-image: url("/static/img/inprogress.png");
 }
 
 ._icon {
