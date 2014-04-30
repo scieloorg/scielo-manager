@@ -14,7 +14,6 @@ plugins_bundle = Bundle('../static/js/jquery/datepicker.js',
                         '../static/js/jquery/jquery.asmselect.js',
                         '../static/js/jquery/jquery.popupwindow.js',
                         '../static/js/jquery/jquery.formset.js',
-                        '../static/js/jquery/jquery.sidebar.js',
                         '../static/js/angular/ui-bootstrap-tpls-0.4.0.js')
 
 app_bundle = Bundle('../static/js/bulk_actions.js',
@@ -33,7 +32,6 @@ css = Bundle('../static/css/bootstrap.css',
              '../static/css/jquery.asmselect.css',
              '../static/css/jquery-ui.css',
              '../static/css/jquery.asmselect.css',
-             '../static/css/sidebar.css',
              '../static/css/style.css', filters='yui_css', output='bundle.min.css')
 
 register('css', css)
