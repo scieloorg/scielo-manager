@@ -57,9 +57,9 @@
                     // last child element of the form's container:
                     row.append('<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
                 }
-                // Changed the line 61 from `` row.find('a.' + options.deleteCssClass).click(function() {```
-                // to: row.find('a.' + options.deleteCssClass.split(' ')[0]).click(function() {
-                // We are using some CSS class, so we split this classes and get one of then to get the HTML element
+                // Changed the line 61 from ``row.find('a.' + options.deleteCssClass).click(function() {``
+                // to: ``row.find('a.' + options.deleteCssClass.split(' ')[0]).click(function() {``
+                // We are using some CSS class on delete action, so we split this classes and get one of then to take do JQuery selector
                 row.find('a.' + options.deleteCssClass.split(' ')[0]).click(function() {
                     var row = $(this).parents('.' + options.formCssClass),
                         del = row.find('input:hidden[id $= "-DELETE"]'),
