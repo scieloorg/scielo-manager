@@ -37,6 +37,12 @@
         var qs = "?q=" + $("#search_input").val();
         window.location.href = $(this).attr("href") + encodeURI(qs);
       });
+
+      $(":file").filestyle({
+        buttonText: '{% trans "Browse" %}',
+        classButton: 'btn btn-primary'
+      });
+
     });
   </script>  
   {% block extrafooter %}{% endblock %}

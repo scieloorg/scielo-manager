@@ -1,4 +1,5 @@
 # coding: utf-8
+import unittest
 from django.test import TestCase
 from django_factory_boy import auth
 
@@ -39,9 +40,10 @@ class JournalManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal1 = modelfactories.JournalFactory.create(collection=collection1)
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
-        modelfactories.JournalFactory.create()
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -60,8 +62,11 @@ class JournalManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        modelfactories.JournalFactory.create(collection=collection1)
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
+
         modelfactories.JournalFactory.create()
 
         def get_active_collection():
@@ -78,10 +83,10 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(
-            title=u'ABC', collection=collection)
-        journal2 = modelfactories.JournalFactory.create(
-            title=u'XYZ', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1.join(collection, user)
+        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -97,10 +102,10 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(
-            title=u'ABC', collection=collection)
-        journal2 = modelfactories.JournalFactory.create(
-            title=u'XYZ', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1.join(collection, user)
+        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -121,8 +126,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            title=u'ABC', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -137,8 +142,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            title=u'7ABC', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'7ABC')
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -153,10 +158,10 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(
-            title=u'ABC 123', collection=collection)
-        journal2 = modelfactories.JournalFactory.create(
-            title=u'XYZ', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'ABC 123')
+        journal1.join(collection, user)
+        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -172,10 +177,10 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(
-            title=u'ABC BAZ', collection=collection)
-        journal2 = modelfactories.JournalFactory.create(
-            title=u'XYZ', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'ABC BAZ')
+        journal1.join(collection, user)
+        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -196,8 +201,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            title=u'ABC', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -212,8 +217,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            title=u'7 ABC', collection=collection)
+        journal1 = modelfactories.JournalFactory.create(title=u'7 ABC')
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -228,8 +233,9 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, is_trashed=False)
+        journal1 = modelfactories.JournalFactory.create(is_trashed=False)
+        journal1.join(collection, user)
+
 
         def get_user_collections():
             return user.user_collection.all()
@@ -244,8 +250,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, is_trashed=True)
+        journal1 = modelfactories.JournalFactory.create(is_trashed=True)
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -260,8 +266,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, is_trashed=True)
+        journal1 = modelfactories.JournalFactory.create(is_trashed=True)
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -276,8 +282,8 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, is_trashed=False)
+        journal1 = modelfactories.JournalFactory.create(is_trashed=False)
+        journal1.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -292,8 +298,9 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='current')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+        journal.change_status(collection, 'current', 'reason', user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -303,15 +310,16 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'current')
+            self.assertEqual(j.membership_info(collection).status, 'current')
 
     def test_suspended(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='suspended')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+        journal.change_status(collection, 'suspended', 'reason', user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -321,15 +329,16 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'suspended')
+            self.assertEqual(j.membership_info(collection).status, 'suspended')
 
     def test_deceased(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='deceased')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+        journal.change_status(collection, 'deceased', 'reason', user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -339,15 +348,15 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'deceased')
+            self.assertEqual(j.membership_info(collection).status, 'deceased')
 
     def test_inprogress(self):
         collection = modelfactories.CollectionFactory.create()
 
         user = self._make_user(collection)
 
-        modelfactories.JournalFactory.create(
-            collection=collection, pub_status='inprogress')
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
 
         def get_user_collections():
             return user.user_collection.all()
@@ -357,7 +366,7 @@ class JournalManagerTests(TestCase):
 
         self.assertEqual(user_journals.count(), 1)
         for j in user_journals:
-            self.assertEqual(j.pub_status, 'inprogress')
+            self.assertEqual(j.membership_info(collection).status, 'inprogress')
 
 
 class SectionManagerTests(TestCase):
@@ -390,10 +399,12 @@ class SectionManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal1 = modelfactories.JournalFactory.create(collection=collection1)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
         section1 = modelfactories.SectionFactory.create(journal=journal1)
 
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
         section2 = modelfactories.SectionFactory.create(journal=journal2)
 
         def get_user_collections():
@@ -413,10 +424,12 @@ class SectionManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal1 = modelfactories.JournalFactory.create(collection=collection1)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
         section1 = modelfactories.SectionFactory.create(journal=journal1)
 
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
         section2 = modelfactories.SectionFactory.create(journal=journal2)
 
         def get_active_collection():
@@ -433,8 +446,9 @@ class SectionManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal = modelfactories.JournalFactory.create(
-            collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+
         modelfactories.SectionFactory.create(
             journal=journal, is_trashed=False)
 
@@ -451,8 +465,9 @@ class SectionManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal = modelfactories.JournalFactory.create(
-            collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+
         modelfactories.SectionFactory.create(
             journal=journal, is_trashed=True)
 
@@ -469,8 +484,9 @@ class SectionManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal = modelfactories.JournalFactory.create(
-            collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+
         modelfactories.SectionFactory.create(
             journal=journal, is_trashed=True)
 
@@ -487,8 +503,9 @@ class SectionManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal = modelfactories.JournalFactory.create(
-            collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
+
         modelfactories.SectionFactory.create(
             journal=journal, is_trashed=False)
 
@@ -845,12 +862,14 @@ class RegularPressReleaseManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection1)
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
-        issue = modelfactories.IssueFactory.create(journal=journal)
-        issue2 = modelfactories.IssueFactory.create(journal=journal2)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        issue1 = modelfactories.IssueFactory.create(journal=journal1)
+        pr1 = modelfactories.RegularPressReleaseFactory.create(issue=issue1)
 
-        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
+        issue2 = modelfactories.IssueFactory.create(journal=journal2)
         pr2 = modelfactories.RegularPressReleaseFactory.create(issue=issue2)
 
         def get_user_collections():
@@ -860,7 +879,7 @@ class RegularPressReleaseManagerTests(TestCase):
             get_all_collections=get_user_collections)
 
         self.assertEqual(user_prs.count(), 2)
-        self.assertIn(pr, user_prs)
+        self.assertIn(pr1, user_prs)
         self.assertIn(pr2, user_prs)
 
     def test_active_returns_user_objects_bound_to_the_active_context(self):
@@ -870,12 +889,14 @@ class RegularPressReleaseManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection1)
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
-        issue = modelfactories.IssueFactory.create(journal=journal)
-        issue2 = modelfactories.IssueFactory.create(journal=journal2)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        issue1 = modelfactories.IssueFactory.create(journal=journal1)
+        pr1 = modelfactories.RegularPressReleaseFactory.create(issue=issue1)
 
-        pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
+        issue2 = modelfactories.IssueFactory.create(journal=journal2)
         pr2 = modelfactories.RegularPressReleaseFactory.create(issue=issue2)
 
         def get_active_collection():
@@ -893,7 +914,8 @@ class RegularPressReleaseManagerTests(TestCase):
         user = self._make_user(collection)
         collection.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
         issue = modelfactories.IssueFactory.create(journal=journal)
 
         pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
@@ -913,7 +935,8 @@ class RegularPressReleaseManagerTests(TestCase):
         user = self._make_user(collection)
         collection.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
         issue = modelfactories.IssueFactory.create(journal=journal)
 
         pr = modelfactories.RegularPressReleaseFactory.create(issue=issue)
@@ -958,10 +981,12 @@ class AheadPressReleaseManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection1)
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        pr1 = modelfactories.AheadPressReleaseFactory.create(journal=journal1)
 
-        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
         pr2 = modelfactories.AheadPressReleaseFactory.create(journal=journal2)
 
         def get_user_collections():
@@ -971,7 +996,7 @@ class AheadPressReleaseManagerTests(TestCase):
             get_all_collections=get_user_collections)
 
         self.assertEqual(user_prs.count(), 2)
-        self.assertIn(pr, user_prs)
+        self.assertIn(pr1, user_prs)
         self.assertIn(pr2, user_prs)
 
     def test_active_returns_user_objects_bound_to_the_active_context(self):
@@ -981,10 +1006,12 @@ class AheadPressReleaseManagerTests(TestCase):
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection1)
-        journal2 = modelfactories.JournalFactory.create(collection=collection2)
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        pr1 = modelfactories.AheadPressReleaseFactory.create(journal=journal1)
 
-        pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
         pr2 = modelfactories.AheadPressReleaseFactory.create(journal=journal2)
 
         def get_active_collection():
@@ -1002,7 +1029,8 @@ class AheadPressReleaseManagerTests(TestCase):
         user = self._make_user(collection)
         collection.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
 
         pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
 
@@ -1021,7 +1049,8 @@ class AheadPressReleaseManagerTests(TestCase):
         user = self._make_user(collection)
         collection.make_default_to_user(user)
 
-        journal = modelfactories.JournalFactory.create(collection=collection)
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, user)
 
         pr = modelfactories.AheadPressReleaseFactory.create(journal=journal)
 

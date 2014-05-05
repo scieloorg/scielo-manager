@@ -10,11 +10,13 @@
 {% block content %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
-  <div class="span10">
+  <div class="span9">
     <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
   </div>
-  <div class="span2">
-    {% simple_pagination users %}
+  <div class="span3">
+    <div class="pull-right">
+      {% simple_pagination users %}
+    </div>
   </div>
 </div>
 {% endif %}

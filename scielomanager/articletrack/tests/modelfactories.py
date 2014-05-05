@@ -2,7 +2,7 @@
 import factory
 
 from articletrack import models
-from journalmanager.tests.modelfactories import JournalFactory, UserFactory
+from journalmanager.tests.modelfactories import JournalFactory, UserFactory, CollectionFactory
 
 
 class ArticleFactory(factory.Factory):
@@ -18,7 +18,11 @@ class ArticleFactory(factory.Factory):
 
     @classmethod
     def _prepare(cls, create, **kwargs):
+        user = UserFactory(is_active=True)
+        collection = CollectionFactory.create()
+        collection.add_user(user, is_manager=True)
         journal = JournalFactory()
+        journal.join(collection, user)
         article = super(ArticleFactory, cls)._prepare(create, **kwargs)
         article.journals.add(journal)
         return article
@@ -28,7 +32,7 @@ class CheckinFactory(factory.Factory):
     FACTORY_FOR = models.Checkin
 
     attempt_ref = 1
-    package_name = u'20132404.zip'
+    package_name = factory.Sequence(lambda n: u"201404%s" % n)  # I want to get unique package_name
     uploaded_at = '2013-11-13 15:23:12.286068-02'
     created_at = '2013-11-13 15:23:18.286068-02'
 

@@ -28,10 +28,12 @@ from django.utils.functional import curry
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.conf import settings
+from django.db.models import Q
 
 from . import models
 from .forms import *
 from scielomanager.utils.pendingform import PendingPostData
+from scielomanager.utils import usercontext
 from scielomanager.tools import (
     get_paginated,
     get_referer_view,
@@ -46,6 +48,8 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+user_request_context = usercontext.get_finder()
 
 
 def get_first_letter(objects_all):
@@ -100,7 +104,7 @@ def list_search(request, model, journal_id):
 
         #filtering by pub_status is only available to Journal instances.
         if model is models.Journal and request.GET.get('jstatus'):
-            objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
+            objects_all = objects_all.filter(membership__status=request.GET['jstatus'])
 
         if request.GET.get('letter'):
             if issubclass(model, models.Institution):
@@ -399,28 +403,28 @@ def edit_journal_status(request, journal_id=None):
 
     Allow user just to update the status history of a specific journal.
     """
-    # Always a new event. Considering that events must not be deleted or changed.
-    journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
-    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
+
+    current_user_collection = user_request_context.get_current_user_active_collection()
+    journal_history = journal.statuses.filter(collection=current_user_collection)
 
     if request.method == "POST":
-        journaleventform = EventJournalForm(request.POST)
+        membership = journal.membership_info(current_user_collection)
+        membershipform = MembershipForm(request.POST, instance=membership)
 
-        if journaleventform.is_valid():
-            cleaned_data = journaleventform.cleaned_data
-            journal.change_publication_status(cleaned_data["pub_status"],
-                cleaned_data["pub_status_reason"], request.user)
-
+        if membershipform.is_valid():
+            membershipform.save_all(request.user, journal, current_user_collection)
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse(
                 'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
-    else:
-        journaleventform = EventJournalForm()
+
+    membershipform = MembershipForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
-                              'add_form': journaleventform,
+                              'add_form': membershipform,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))
@@ -538,11 +542,25 @@ def add_journal(request, journal_id=None):
     """
 
     user_collections = models.get_user_collections(request.user.id)
+    previous_journal_cover = None
+    previous_journal_logo = None
+    has_cover_url = has_logo_url = False
 
     if journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)
+        # preserve the cover and logo urls before save in case of error when updating these fields
+
+        try:
+            previous_journal_cover = journal.cover.url
+        except ValueError:
+            previous_journal_cover = None
+
+        try:
+            previous_journal_logo = journal.logo.url
+        except ValueError:
+            previous_journal_logo = None
 
     form_hash = None
 
@@ -550,7 +568,7 @@ def add_journal(request, journal_id=None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
-        journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+        journalform = JournalForm(request.POST, request.FILES, instance=journal, prefix='journal')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
@@ -561,48 +579,70 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                saved_journal = journalform.save_all(creator=request.user)
-                titleformset.save()
-                missionformset.save()
-                messages.info(request, MSG_FORM_SAVED)
+                #Ensuring that the journal doesnt exists
+                if models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
+                                                 Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
+                    messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
+                else:
+                    saved_journal = journalform.save_all(creator=request.user)
 
-                if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
-                    models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+                    if not journal_id:
+                        saved_journal.join(user_request_context.get_current_user_active_collection(), request.user)
 
-                # record the event
-                models.DataChangeEvent.objects.create(
-                    user=request.user,
-                    content_object=saved_journal,
-                    collection=models.Collection.objects.get_default_by_user(request.user),
-                    event_type='updated' if journal_id else 'added'
-                )
-                return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
+                    titleformset.save()
+                    missionformset.save()
+                    messages.info(request, MSG_FORM_SAVED)
+
+                    if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
+                        models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+
+                    # record the event
+                    models.DataChangeEvent.objects.create(
+                        user=request.user,
+                        content_object=saved_journal,
+                        collection=models.Collection.objects.get_default_by_user(request.user),
+                        event_type='updated' if journal_id else 'added'
+                    )
+                    return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
             else:
                 messages.error(request, MSG_FORM_MISSING)
+
+                # if conver or logo fail in validation, then override the has_xxx_url with
+                # the value stored previously, or false if none
+
+                if 'cover' in journalform.errors.keys():
+                    has_cover_url = previous_journal_cover if previous_journal_cover else False
+                else:
+                    has_cover_url = journal.cover.url if hasattr(journal, 'cover') and hasattr(journal.cover, 'url') else False
+
+                if 'logo' in journalform.errors.keys():
+                    has_logo_url = previous_journal_logo if previous_journal_logo else False
+                else:
+                    has_logo_url = journal.logo.url if hasattr(journal, 'logo') and hasattr(journal.logo, 'url') else False
 
     else:
         if request.GET.get('resume', None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
 
-            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
         else:
-            journalform = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 
-    # Recovering Journal Cover url.
-    try:
-        has_cover_url = journal.cover.url
-    except ValueError:
-        has_cover_url = False
+        # Recovering Journal Cover url.
+        try:
+            has_cover_url = journal.cover.url
+        except ValueError:
+            has_cover_url = False
 
-    # Recovering Journal Logo url.
-    try:
-        has_logo_url = journal.logo.url
-    except ValueError:
-        has_logo_url = False
+        # Recovering Journal Logo url.
+        try:
+            has_logo_url = journal.logo.url
+        except ValueError:
+            has_logo_url = False
 
     return render_to_response('journalmanager/add_journal.html', {
                               'journal': journal,

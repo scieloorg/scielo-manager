@@ -16,7 +16,7 @@ from django.template.defaultfilters import slugify
 
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
-from .forms import CommentMessageForm, TicketForm
+from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm
 from .balaio import BalaioAPI, BalaioRPC
 
 
@@ -34,16 +34,50 @@ logger = logging.getLogger(__name__)
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_index(request):
 
-    checkins = models.Checkin.userobjects.active()
+    def filter_queryset_by_form_fields(queryset, form):
+        """
+        Shortcut function to filter the queryset in both filter-forms: pending and accepted listings
+        And assume that both forms have the same fields, because is allways a CheckinListFilterForm
+        with different prefix.
+        Returns: a filtered queryset.
+        """
+        if form.is_valid():
+            package_name = form.cleaned_data.get('package_name', None)
+            journal_title = form.cleaned_data.get('journal_title', None)
+            article = form.cleaned_data.get('article', None)
+            issue_label = form.cleaned_data.get('issue_label', None)
 
-    objects_pending = get_paginated(checkins.pending(), request.GET.get('pending_page', 1))
-    objects_accepted = get_paginated(checkins.accepted(), request.GET.get('accepted_page', 1))
+            if package_name:
+                queryset = queryset.filter(package_name__icontains=package_name)
+            if journal_title:
+                # journal_title contains the pk of articletrack.Article with that ok.
+                queryset = queryset.filter(article__pk=journal_title)
+            if article:
+                queryset = queryset.filter(article=article)
+            if issue_label:
+                queryset = queryset.filter(article__issue_label__icontains=issue_label)
+
+        return queryset
+
+    pending_filter_form = CheckinListFilterForm(request.GET, prefix="pending")
+    accepted_filter_form = CheckinListFilterForm(request.GET, prefix="accepted")
+
+    checkins_pending = models.Checkin.userobjects.active().pending()
+    checkins_accepted = models.Checkin.userobjects.active().accepted()
+
+    checkins_pending = filter_queryset_by_form_fields(checkins_pending, pending_filter_form)
+    checkins_accepted = filter_queryset_by_form_fields(checkins_accepted, accepted_filter_form)
+
+    objects_pending = get_paginated(checkins_pending, request.GET.get('pending_page', 1))
+    objects_accepted = get_paginated(checkins_accepted, request.GET.get('accepted_page', 1))
 
     return render_to_response(
         'articletrack/checkin_list.html',
         {
             'checkins_pending': objects_pending,
             'checkins_accepted': objects_accepted,
+            'pending_filter_form': pending_filter_form,
+            'accepted_filter_form': accepted_filter_form,
         },
         context_instance=RequestContext(request)
     )

@@ -109,8 +109,6 @@ class JournalFactory(factory.Factory):
         CIRURGIA
         GASTROENTEROLOGIA
         GASTROENTEROLOGIA""".strip()
-    pub_status = u'current'
-    pub_status_reason = u'Motivo da mudança é...'
     publisher_name = u'Colégio Brasileiro de Cirurgia Digestiva'
     publisher_country = u'BR'
     publisher_state = u'SP'
@@ -119,9 +117,8 @@ class JournalFactory(factory.Factory):
     editor_email = u'cbcd@cbcd.org.br'
 
     creator = factory.SubFactory(UserFactory)
-    pub_status_changed_by = factory.SubFactory(UserFactory)
     use_license = factory.SubFactory(UseLicenseFactory)
-    collection = factory.SubFactory(CollectionFactory)
+    #collections = factory.SubFactory(CollectionFactory)
 
 
 class SectionFactory(factory.Factory):

@@ -11,12 +11,12 @@ from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group
 from django.core.exceptions import NON_FIELD_ERRORS, MultipleObjectsReturned
+from django.conf import settings
 
 from journalmanager import models
 from journalmanager import choices
 from scielo_extensions import formfields as fields
-from django.conf import settings
-
+from scielomanager.widgets import CustomImageWidget
 
 logger = logging.getLogger(__name__)
 SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
@@ -78,25 +78,12 @@ class JournalForm(ModelForm):
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
         required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
-    collection = forms.ModelChoiceField(models.Collection.objects.none(),
-        required=True)
-
-    def __init__(self, *args, **kwargs):
-        collections_qset = kwargs.pop('collections_qset', None)
-        super(JournalForm, self).__init__(*args, **kwargs)
-
-        if collections_qset is not None:
-            self.fields['collection'].queryset = models.Collection.objects.filter(
-                pk__in=(collection.collection.pk for collection in collections_qset))
 
     def save_all(self, creator):
         journal = self.save(commit=False)
 
         if self.instance.pk is None:
             journal.creator = creator
-
-        if not journal.pub_status_changed_by_id:
-            journal.pub_status_changed_by = creator
 
         journal.save()
         self.save_m2m()
@@ -137,74 +124,74 @@ class JournalForm(ModelForm):
         return self.cleaned_data["final_year"]
 
     def clean_cover(self):
+        cover = self.cleaned_data['cover']
+        if cover:
+            if not cover.name:
+                if cover.content_type not in settings.IMAGE_CONTENT_TYPE:
+                    raise forms.ValidationError(_(u"Journal cover image extension is not allowed! Please select another file."))
 
-        if self.cleaned_data['cover']:
+            if cover.size > settings.JOURNAL_COVER_MAX_SIZE:
+                raise forms.ValidationError(_(u"Journal cover image file size is too large! Please select another file."))
 
-            if not self.cleaned_data['cover'].name:
-                if not self.cleaned_data['cover'].content_type in settings.IMAGE_CONTENT_TYPE:
-                    raise forms.ValidationError(u'File type is not supported')
-
-            if self.cleaned_data['cover'].size > settings.IMAGE_SIZE:
-                raise forms.ValidationError(u'File size not allowed')
-
-            w, h = get_image_dimensions(self.cleaned_data['cover'])
+            w, h = get_image_dimensions(cover)
 
             if w != settings.IMAGE_DIMENSIONS['width_cover']:
-                raise forms.ValidationError("The image is %ipx pixel wide. It's supposed to be %spx" % (w, settings.IMAGE_DIMENSIONS['width_cover']))
+                raise forms.ValidationError(_(u"The image is %ipx pixel wide. It's supposed to be %spx") % (w, settings.IMAGE_DIMENSIONS['width_cover']))
             if h != settings.IMAGE_DIMENSIONS['height_cover']:
                 raise forms.ValidationError("The image is %ipx pixel high. It's supposed to be %spx" % (h, settings.IMAGE_DIMENSIONS['height_cover']))
 
-        return self.cleaned_data['cover']
+        return cover
 
     def clean_logo(self):
+        logo = self.cleaned_data['logo']
+        if logo:
+            if not logo.name:
+                if logo.content_type not in settings.IMAGE_CONTENT_TYPE:
+                    raise forms.ValidationError(_(u"Journal logo image extension is not allowed! Please select another file."))
 
-        if self.cleaned_data['logo']:
+            if logo.size > settings.JOURNAL_LOGO_MAX_SIZE:
+                raise forms.ValidationError(_(u"Journal logo image file size is too large! Please select another file."))
 
-            if not self.cleaned_data['logo'].name:
-                if not self.cleaned_data['logo'].content_type in settings.IMAGE_CONTENT_TYPE:
-                    raise forms.ValidationError(u'File type is not supported')
-
-            if self.cleaned_data['logo'].size > settings.IMAGE_SIZE:
-                raise forms.ValidationError(u'File size not allowed')
-
-            w, h = get_image_dimensions(self.cleaned_data['logo'])
+            w, h = get_image_dimensions(logo)
 
             if w != settings.IMAGE_DIMENSIONS['width_logo']:
-                raise forms.ValidationError("The image is %ipx pixel wide. It's supposed to be %spx" % (w, settings.IMAGE_DIMENSIONS['width_logo']))
+                raise forms.ValidationError(_("The image is %ipx pixel wide. It's supposed to be %spx") % (w, settings.IMAGE_DIMENSIONS['width_logo']))
             if h != settings.IMAGE_DIMENSIONS['height_logo']:
-                raise forms.ValidationError("The image is %ipx pixel high. It's supposed to be %spx" % (h, settings.IMAGE_DIMENSIONS['height_logo']))
+                raise forms.ValidationError(_("The image is %ipx pixel high. It's supposed to be %spx") % (h, settings.IMAGE_DIMENSIONS['height_logo']))
 
-        return self.cleaned_data['logo']
+        return logo
 
     class Meta:
 
         model = models.Journal
-        exclude = ('pub_status', 'pub_status_changed_by')
-        #Overriding the default field types or widgets
+        exclude = ('collections')
+        # Overriding the default field types or widgets
         widgets = {
-           'title': forms.TextInput(attrs={'class': 'span9'}),
-           'title_iso': forms.TextInput(attrs={'class': 'span9'}),
-           'short_title': forms.TextInput(attrs={'class': 'span9'}),
-           'previous_title': forms.Select(attrs={'class': 'span9'}),
-           'acronym': forms.TextInput(attrs={'class': 'span2'}),
-           'scielo_issn': forms.Select(attrs={'class': 'span3'}),
-           'subject_descriptors': forms.Textarea(attrs={'class': 'span9'}),
-           'init_year': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker0'}),
-           'init_vol': forms.TextInput(attrs={'class': 'span2'}),
-           'init_num': forms.TextInput(attrs={'class': 'span2'}),
-           'final_year': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker1'}),
-           'final_vol': forms.TextInput(attrs={'class': 'span2'}),
-           'final_num': forms.TextInput(attrs={'class': 'span2'}),
-           'url_main_collection': forms.TextInput(attrs={'class': 'span9'}),
-           'url_online_submission': forms.TextInput(attrs={'class': 'span9'}),
-           'url_journal': forms.TextInput(attrs={'class': 'span9'}),
-           'notes': forms.Textarea(attrs={'class': 'span9'}),
-           'editorial_standard': forms.Select(attrs={'class': 'span3'}),
-           'copyrighter': forms.TextInput(attrs={'class': 'span8'}),
-           'index_coverage': forms.Textarea(attrs={'class': 'span9'}),
-           'other_previous_title': forms.TextInput(attrs={'class': 'span9'}),
-           'editor_address': forms.TextInput(attrs={'class': 'span9'}),
-           'publisher_name': forms.TextInput(attrs={'class': 'span9'}),
+            'title': forms.TextInput(attrs={'class': 'span9'}),
+            'title_iso': forms.TextInput(attrs={'class': 'span9'}),
+            'short_title': forms.TextInput(attrs={'class': 'span9'}),
+            'previous_title': forms.Select(attrs={'class': 'span9'}),
+            'acronym': forms.TextInput(attrs={'class': 'span2'}),
+            'scielo_issn': forms.Select(attrs={'class': 'span3'}),
+            'subject_descriptors': forms.Textarea(attrs={'class': 'span9'}),
+            'init_year': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker0'}),
+            'init_vol': forms.TextInput(attrs={'class': 'span2'}),
+            'init_num': forms.TextInput(attrs={'class': 'span2'}),
+            'final_year': forms.TextInput(attrs={'class': 'datepicker', 'id': 'datepicker1'}),
+            'final_vol': forms.TextInput(attrs={'class': 'span2'}),
+            'final_num': forms.TextInput(attrs={'class': 'span2'}),
+            'url_main_collection': forms.TextInput(attrs={'class': 'span9'}),
+            'url_online_submission': forms.TextInput(attrs={'class': 'span9'}),
+            'url_journal': forms.TextInput(attrs={'class': 'span9'}),
+            'notes': forms.Textarea(attrs={'class': 'span9'}),
+            'editorial_standard': forms.Select(attrs={'class': 'span3'}),
+            'copyrighter': forms.TextInput(attrs={'class': 'span8'}),
+            'index_coverage': forms.Textarea(attrs={'class': 'span9'}),
+            'other_previous_title': forms.TextInput(attrs={'class': 'span9'}),
+            'editor_address': forms.TextInput(attrs={'class': 'span9'}),
+            'publisher_name': forms.TextInput(attrs={'class': 'span9'}),
+            'cover': CustomImageWidget(),
+            'logo': CustomImageWidget(),
         }
 
 
@@ -261,10 +248,20 @@ class UserForm(ModelForm):
         return user
 
 
-class EventJournalForm(forms.Form):
-    pub_status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
-    pub_status_reason = forms.CharField(widget=forms.Textarea)
+class MembershipForm(ModelForm):
+    status = forms.ChoiceField(widget=forms.Select, choices=choices.JOURNAL_PUBLICATION_STATUS)
+    reason = forms.CharField(widget=forms.Textarea)
 
+    class Meta():
+        model = models.Membership
+        exclude = ('journal', 'collection', 'since', 'created_by')
+
+    def save_all(self, user, journal, collection):
+        membership = self.save(commit=False)
+        membership.journal = journal
+        membership.collection = collection
+        membership.created_by = user
+        membership.save()
 
 class IssueBaseForm(forms.ModelForm):
     section = forms.ModelMultipleChoiceField(
@@ -687,7 +684,7 @@ class JournalMissionForm(ModelForm):
     class Meta:
         model = models.JournalMission
         widgets = {
-            'description': forms.Textarea(attrs={'class': 'span6', 'rows': '3'}),
+            'description': forms.Textarea(attrs={'class': 'span12', 'rows': '3'}),
         }
 
 
@@ -695,7 +692,7 @@ class JournalTitleForm(ModelForm):
     class Meta:
         model = models.JournalTitle
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'span6'}),
+            'title': forms.TextInput(attrs={'class': 'span12'}),
         }
 
 

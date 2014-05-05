@@ -1,10 +1,12 @@
-#coding: utf-8
+# coding: utf-8
 from waffle import Flag
 from django_webtest import WebTest
 from django_factory_boy import auth
 from django.core.urlresolvers import reverse
 
 from . import modelfactories
+from journalmanager.tests.modelfactories import UserFactory
+
 from scielomanager.utils.modelmanagers.helpers import (
     _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
@@ -26,13 +28,11 @@ def _makePermission(perm, model, app_label='articletrack'):
 
 class CheckinListTests(WebTest):
 
-
     @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
         perm = _makePermission(perm='list_checkin', model='checkin')
         self.user.user_permissions.add(perm)
-
 
     @_patch_userrequestcontextfinder_settings_teardown
     def tearDown(self):
@@ -44,14 +44,13 @@ class CheckinListTests(WebTest):
         checkin = modelfactories.CheckinFactory.create()
 
         #Get only the first collection and set to the user
-        collection = checkin.article.journals.all()[0].collection
+        collection = checkin.article.journals.all()[0].collections.all()[0]
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return checkin
 
     def _addWaffleFlag(self):
         Flag.objects.create(name='articletrack', authenticated=True)
-
 
     def test_status_code_checkin_list(self):
         self._addWaffleFlag()
@@ -78,7 +77,7 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.pk]), user=self.user)
+                                        args=[checkin.article.pk]), user=self.user)
 
         self.assertEqual(response.status_code, 200)
 
@@ -87,16 +86,16 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.pk]), user=self.user)
+                                        args=[checkin.article.pk]), user=self.user)
 
-        response.mustcontain('20132404.zip')
+        response.mustcontain(str(checkin.package_name))
 
     def test_package_history_index_have_article_title(self):
         self._addWaffleFlag()
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.pk]), user=self.user)
+                                        args=[checkin.article.pk]), user=self.user)
 
         response.mustcontain('An azafluorenone alkaloid and a megastigmane from ...')
 
@@ -105,9 +104,8 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.pk]), user=self.user)
+                                        args=[checkin.article.pk]), user=self.user)
 
-        #response.mustcontain('<a href="/arttrack/">List of check ins</a>')
         response.mustcontain('<a class="btn" href="/arttrack/"><i class="icon-arrow-left"></i> List of check ins</a>')
 
     def test_package_history_must_have_button_to_detail(self):
@@ -123,9 +121,10 @@ class CheckinListTests(WebTest):
         checkin = self._makeOne()
 
         response = self.app.get(reverse('checkin_history',
-            args=[checkin.article.pk]), user=self.user)
+                                        args=[checkin.article.pk]), user=self.user)
 
         response.mustcontain(reverse('ticket_add', args=[checkin.pk]))
+
 
 class NoticeListTests(WebTest):
 
@@ -133,7 +132,7 @@ class NoticeListTests(WebTest):
         notice = modelfactories.NoticeFactory.create()
 
         #Get only the first collection and set to the user
-        collection = notice.checkin.article.journals.all()[0].collection
+        collection = notice.checkin.article.journals.all()[0].collections.all()[0]
         collection.add_user(self.user, is_manager=True, is_default=True)
 
         return notice
@@ -142,7 +141,7 @@ class NoticeListTests(WebTest):
         Flag.objects.create(name='articletrack', authenticated=True)
 
     def setUp(self):
-        self.user = auth.UserF(is_active=True)
+        self.user = UserFactory(is_active=True)
         perm = _makePermission(perm='list_notice', model='notice')
         self.user.user_permissions.add(perm)
 
@@ -151,15 +150,15 @@ class NoticeListTests(WebTest):
         notice = self._makeOne()
 
         response = self.app.get(reverse('notice_detail',
-            args=[notice.checkin.pk]), user=self.user)
+                                        args=[notice.checkin.pk]), user=self.user)
 
         self.assertEqual(response.status_code, 200)
 
     def test_status_code_notice_list_without_waflle_flag(self):
         notice = self._makeOne()
 
-        response = self.app.get(reverse('notice_detail',
-            args=[notice.checkin.pk]), user=self.user, expect_errors=True)
+        response = self.app.get(reverse('notice_detail', args=[notice.checkin.pk]),
+                                user=self.user, expect_errors=True)
 
         self.assertEqual(response.status_code, 404)
 
@@ -168,7 +167,7 @@ class NoticeListTests(WebTest):
         notice = self._makeOne()
 
         response = self.app.get(reverse('notice_detail',
-            args=[notice.checkin.pk]), user=self.user)
+                                        args=[notice.checkin.pk]), user=self.user)
 
         response.mustcontain('The reference xyz is not ok')
 
@@ -177,8 +176,7 @@ class NoticeListTests(WebTest):
         notice = self._makeOne()
 
         response = self.app.get(reverse('notice_detail',
-            args=[notice.checkin.pk]), user=self.user)
+                                        args=[notice.checkin.pk]), user=self.user)
 
-        #response.mustcontain('<a href="/arttrack/">List of check ins</a>')
+        # response.mustcontain('<a href="/arttrack/">List of check ins</a>')
         response.mustcontain('<a href="/arttrack/"><i class="icon-chevron-left"></i> List of Articles in submission</a>')
-
