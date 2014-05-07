@@ -1017,7 +1017,11 @@ class CheckinRestAPITest(WebTest):
                 u'created_at',
                 u'id',
                 u'package_name',
+                u'rejected_at',
+                u'rejected_cause',
+                u'reviewed_at',
                 u'resource_uri',
+                u'status',
                 u'uploaded_at'
             ]
 

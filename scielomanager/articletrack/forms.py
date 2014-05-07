@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput
+from django.utils.translation import ugettext_lazy as _
 from articletrack import models
 from journalmanager.models import Journal
 
@@ -35,3 +36,11 @@ class CheckinListFilterForm(forms.Form):
         qs_articles_with_checkins = models.Article.userobjects.filter(checkins__isnull=False).distinct()
         self.fields['journal_title'].choices = [('', '---------'), ] + [(article.pk, article.journal_title) for article in qs_articles_with_checkins]
         self.fields['article'].queryset = qs_articles_with_checkins
+
+
+class CheckinRejectForm(ModelForm):
+    rejected_cause = forms.CharField(label=_(u'Cause of Rejection'), max_length=128, required=True, widget=Textarea(attrs={'class': 'span12'}))
+
+    class Meta:
+        model = models.Checkin
+        fields = ('rejected_cause', )

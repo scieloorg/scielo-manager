@@ -16,7 +16,7 @@ from django.template.defaultfilters import slugify
 
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
-from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm
+from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
 
 
@@ -60,27 +60,166 @@ def checkin_index(request):
         return queryset
 
     pending_filter_form = CheckinListFilterForm(request.GET, prefix="pending")
+    rejected_filter_form = CheckinListFilterForm(request.GET, prefix="rejected")
+    review_filter_form = CheckinListFilterForm(request.GET, prefix="review")
     accepted_filter_form = CheckinListFilterForm(request.GET, prefix="accepted")
 
+    # get records from db
     checkins_pending = models.Checkin.userobjects.active().pending()
+    checkins_rejected = models.Checkin.userobjects.active().rejected()
+    checkins_review = models.Checkin.userobjects.active().review()
     checkins_accepted = models.Checkin.userobjects.active().accepted()
 
+    # apply filters from form fields
     checkins_pending = filter_queryset_by_form_fields(checkins_pending, pending_filter_form)
+    checkins_rejected = filter_queryset_by_form_fields(checkins_rejected, rejected_filter_form)
+    checkins_review = filter_queryset_by_form_fields(checkins_review, review_filter_form)
     checkins_accepted = filter_queryset_by_form_fields(checkins_accepted, accepted_filter_form)
 
+    # paginate resutls
     objects_pending = get_paginated(checkins_pending, request.GET.get('pending_page', 1))
+    objects_rejected = get_paginated(checkins_rejected, request.GET.get('rejected_page', 1))
+    objects_review = get_paginated(checkins_review, request.GET.get('review_page', 1))
     objects_accepted = get_paginated(checkins_accepted, request.GET.get('accepted_page', 1))
 
     return render_to_response(
         'articletrack/checkin_list.html',
         {
             'checkins_pending': objects_pending,
+            'checkins_rejected': objects_rejected,
+            'checkins_review': objects_review,
             'checkins_accepted': objects_accepted,
             'pending_filter_form': pending_filter_form,
+            'rejected_filter_form': rejected_filter_form,
+            'review_filter_form': review_filter_form,
             'accepted_filter_form': accepted_filter_form,
         },
         context_instance=RequestContext(request)
     )
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_reject(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_rejected:
+        if request.method == 'POST':
+            form = CheckinRejectForm(request.POST)
+            if form.is_valid():
+                rejected_cause = form.cleaned_data['rejected_cause']
+                try:
+                    checkin.do_reject(request.user, rejected_cause)
+                    messages.info(request, MSG_FORM_SAVED)
+                except ValueError as e:
+                    error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
+                    messages.error(request, error_msg)
+            else:
+                form_errors = u", ".join([u"%s %s" % (field, error[0]) for field, error in form.errors.items()])
+                error_msg = "%s %s" % (MSG_FORM_MISSING, form_errors)
+                messages.error(request, error_msg)
+    else:
+        error_msg = "%s This checkin cannot be rejected" % MSG_FORM_MISSING
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_review(request, checkin_id):
+    """
+    Excecute checkin.do_review, and if checkin can be accepted and Balaio RPC API
+    is up, try to proceed to checkout.
+    """
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_reviewed:
+        try:
+            checkin.do_review(request.user)
+            msg = "%s - Checkin reviewed succesfully." % MSG_FORM_SAVED
+            messages.info(request, msg)
+        except ValueError as e:
+            error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
+            messages.error(request, error_msg)
+            #return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+        # if Balaio RPC API is up, then try to proceed to Checkout and marked as accepted
+        rpc_client = BalaioRPC()
+        if checkin.can_be_accepted and rpc_client.is_up():
+            rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
+            if rpc_response:
+                try:
+                    checkin.accept(request.user)
+                    msg = "%s - Checkin accepted succesfully." % MSG_FORM_SAVED
+                    messages.info(request, msg)
+                except ValueError as e:
+                    logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
+                    error_msg = "%s - Unable to proceed to checkout -  %s" % (MSG_FORM_MISSING, e.message)
+                    messages.error(request, error_msg)
+    else:
+        error_msg = "%s This checkin cannot be reviewed" % MSG_FORM_MISSING
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_accept(request, checkin_id):
+    """
+    Excecute checkin.accept, if checkin can be accepted and Balaio RPC API
+    is up, try to proceed to checkout.
+    """
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    rpc_client = BalaioRPC()
+    if checkin.can_be_accepted and rpc_client.is_up():
+        rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
+        if rpc_response:
+            try:
+                checkin.accept(request.user)
+                messages.info(request, MSG_FORM_SAVED)
+            except ValueError as e:
+                logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
+                error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
+                messages.error(request, error_msg)
+        else:
+            error_msg = "%s - The API response was unsuccessful" % MSG_FORM_MISSING
+            messages.error(request, error_msg)
+    else:
+        error_msg = "%s This checkin cannot be accepted or the API is down." % MSG_FORM_MISSING
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_send_to_pending(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_send_to_pending:
+        try:
+            checkin.send_to_pending(request.user)
+            messages.info(request, MSG_FORM_SAVED)
+        except ValueError as e:
+            error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
+            messages.error(request, error_msg)
+    else:
+        error_msg = "%s This checkin cannot be Send to Pending state" % MSG_FORM_MISSING
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_send_to_review(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_send_to_review:
+        try:
+            checkin.send_to_review(request.user)
+            messages.info(request, MSG_FORM_SAVED)
+        except ValueError as e:
+            error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
+            messages.error(request, error_msg)
+    else:
+        error_msg = "%s This checkin cannot be Reviewed" % MSG_FORM_MISSING
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 
 @waffle_flag('articletrack')
@@ -113,13 +252,14 @@ def notice_detail(request, checkin_id):
     closed_tickets = tickets.filter(finished_at__isnull=False)
 
     zip_filename =  "%s_%s"% (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
-
+    reject_form = CheckinRejectForm()
     context = {
         'notices': notices,
         'checkin': checkin,
         'opened_tickets': opened_tickets,
         'closed_tickets': closed_tickets,
         'zip_filename': zip_filename,
+        'reject_form': reject_form,
     }
 
     balaio = BalaioAPI()
@@ -361,42 +501,4 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
             return view_response
     else:
         return HttpResponseBadRequest()
-
-
-@waffle_flag('articletrack')
-@login_required
-def ajx_set_attempt_proceed_to_checkout(request, attempt_id, checkin_id):
-    """
-    View function responsible for mark an attempt to checkout process
-    """
-    if not request.is_ajax():
-        return HttpResponse(status=400)
-
-    rpc_client = BalaioRPC()
-    rpc_response = rpc_client.call('proceed_to_checkout', [attempt_id,])
-
-    #if the response is True, the checkin must be marked as accepted
-    if rpc_response:
-        checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
-        try:
-            checkin.accept(request.user)
-        except ValueError as e:
-            logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
-            rpc_response = False
-
-    return HttpResponse(json.dumps(rpc_response), mimetype="application/json")
-
-
-@waffle_flag('articletrack')
-@login_required
-def ajx_verify_status_rpc(request):
-    """
-    View function responsible to check the XML-RPC status
-    """
-    if not request.is_ajax():
-        return HttpResponse(status=400)
-
-    rpc_client = BalaioRPC()
-    return HttpResponse(json.dumps({'rpc_status': rpc_client.is_up()}),
-        mimetype="application/json")
 
