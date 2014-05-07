@@ -515,6 +515,18 @@ class IssuesRestAPITest(WebTest):
         self.assertIsInstance(content.get('thematic_titles', None),
             dict)
 
+    def test_list_all_by_collection(self):
+        collection = modelfactories.CollectionFactory()
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, self.user)
+        issue = modelfactories.IssueFactory.create(journal=journal)
+        collection_name = collection.name
+
+        response = self.app.get('/api/v1/issues/?collection=%s' % collection_name,
+            extra_environ=self.extra_environ)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
 
 class SectionsRestAPITest(WebTest):
 

@@ -96,7 +96,7 @@ class IssueResource(ModelResource):
 
         if 'collection' in filters:
             issues = Issue.objects.filter(
-                journal__collection__name_slug=filters['collection'])
+                journal__collections__name_slug=filters['collection'])
             orm_filters['pk__in'] = issues
 
         if 'eletronic_issn' in filters:
