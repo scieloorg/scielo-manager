@@ -23,7 +23,7 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/bootstrap.js')
 
 
-js = Bundle(base_bundle, minify_bundle, plugins_bundle, app_bundle, filters='yui_js', output='bundle.min.js')
+js = Bundle(base_bundle, minify_bundle, plugins_bundle, app_bundle, filters='yui_js', output='js/bundle.min.js')
 
 register('js', js)
 
@@ -32,6 +32,7 @@ css = Bundle('../static/css/bootstrap.css',
              '../static/css/jquery.asmselect.css',
              '../static/css/jquery-ui.css',
              '../static/css/jquery.asmselect.css',
-             '../static/css/style.css', filters='yui_css', output='bundle.min.css')
+             '../static/css/sidebar.css',
+             '../static/css/style.css', filters='yui_css', output='css/bundle.min.css')
 
 register('css', css)
