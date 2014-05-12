@@ -429,3 +429,14 @@ table._listings h4 {
 .controls .img-thumb {
   margin: 10px 0;
 }
+
+.message-info {
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  margin-left: -210px;
+  width: 400px;
+  z-index: 9999;
+  border: 1px solid;
+}
