@@ -120,6 +120,7 @@ class UserAreasSelectorTests(WebTest):
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
+        collection.make_default_to_user(user)
 
         page = self.app.get(reverse('journal.index'), user=user)
 
@@ -166,7 +167,7 @@ class SectionsListTests(WebTest):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
     def test_sections_list_without_itens(self):
         """
@@ -262,7 +263,7 @@ class JournalsListTests(WebTest):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
     def test_journals_list_without_itens(self):
         """
@@ -425,7 +426,7 @@ class SponsorsListTests(WebTest):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
     def test_user_access_journals_list_without_itens(self):
         perm_sponsor_list = _makePermission(perm='list_sponsor',
@@ -444,7 +445,7 @@ class IssuesListTests(WebTest):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
         self.journal = modelfactories.JournalFactory()
         self.journal.join(self.collection, self.user)

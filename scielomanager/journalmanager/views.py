@@ -86,73 +86,49 @@ def index(request):
         context, context_instance=RequestContext(request))
 
 
-def list_search(request, model, journal_id):
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+def journal_index(request):
     """
-    Generic list and search
+    Journal list by active collection
     """
-    if journal_id:
-        journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.filter(journal=journal_id)
-
-        if model is models.Section:
-            # order by a non persistent property
-            objects_all = model.objects.filter(journal=journal_id, is_trashed=False)
-            objects_all = sorted(objects_all, key=lambda x: unicode(x))
-    else:
-        journal = None
-        objects_all = model.objects.all_by_user(request.user)
-
-        #filtering by pub_status is only available to Journal instances.
-        if model is models.Journal and request.GET.get('jstatus'):
-            objects_all = objects_all.filter(membership__status=request.GET['jstatus'])
-
-        if request.GET.get('letter'):
-            if issubclass(model, models.Institution):
-                objects_all = objects_all.filter(name__startswith=request.GET.get('letter'))
-            else:
-                objects_all = objects_all.filter(title__startswith=request.GET.get('letter'))
+    filters = {}
 
     if request.GET.get('q'):
-        objects_all = model.objects.all_by_user(request.user)
+        filters['title__icontains'] = request.GET.get('q')
 
-        if issubclass(model, models.Institution):
-            objects_all = objects_all.filter(
-                name__icontains=request.REQUEST['q']).order_by('name')
-        else:
-            objects_all = objects_all.filter(
-                title__icontains=request.REQUEST['q']).order_by('title')
+    if request.GET.get('letter'):
+        filters['title__istartswith'] = request.GET.get('letter')
 
-    objects = get_paginated(objects_all, request.GET.get('page', 1))
-    template_name = 'journalmanager/%s_list.html' % model.__name__.lower()
+    if request.GET.get('jstatus'):
+        filters['membership__status'] = request.GET.get('jstatus')
 
-    return render_to_response(
-        template_name, {
-           'objects_%s' % model.__name__.lower(): objects,
-           'journal': journal,
-           'letters': get_first_letter(objects_all),
+    journals = models.Journal.userobjects.active().filter(**filters)
+
+    objects = get_paginated(journals, request.GET.get('page', 1))
+
+    return render_to_response('journalmanager/journal_list.html', {
+           'objects_journal': objects,
+           'letters': get_first_letter(journals),
         },
         context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
-def article_index(request, issue_id):
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+def dash_journal(request, journal_id=None):
+    """
+    Handles new and existing journals
+    """
 
-    issue = get_object_or_404(models.Issue, pk=issue_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
 
-    return render_to_response(
-        'journalmanager/article_list.html',
-        {
-            'journal': issue.journal,
-            'issue': issue,
-            'articles': issue.articles.all()
-        },
-        context_instance=RequestContext(request)
-    )
+    return render_to_response('journalmanager/journal_dash.html', {
+                              'journal': journal,
+                              }, context_instance=RequestContext(request))
 
 
 @permission_required('journalmanager.list_issue', login_url=AUTHZ_REDIRECT_URL)
 def issue_index(request, journal_id):
-    journal = get_object_or_404(models.Journal, pk=journal_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
 
     current_year = datetime.now().year
     previous_year = current_year - 1
@@ -181,36 +157,61 @@ def issue_index(request, journal_id):
     )
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_index(request, model, journal_id=None):
+@permission_required('journalmanager.list_section', login_url=AUTHZ_REDIRECT_URL)
+def section_index(request, journal_id=None):
     """
-    Journal list and search
+    Section list by active collection
     """
-    return list_search(request, model, journal_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
+
+    sections = models.Section.userobjects.active().filter(journal=journal)
+    sections = sorted(sections, key=lambda x: unicode(x))
+
+    objects = get_paginated(sections, request.GET.get('page', 1))
+
+    return render_to_response('journalmanager/section_list.html', {
+           'objects_section': objects,
+           'journal': journal },
+           context_instance=RequestContext(request))
 
 
 @permission_required('journalmanager.list_sponsor', login_url=AUTHZ_REDIRECT_URL)
-def sponsor_index(request, model, journal_id=None):
+def sponsor_index(request, journal_id=None):
     """
-    Sponsor list and search
+    Sponsor list by active collection
     """
-    return list_search(request, model, journal_id)
+    filters = {}
+
+    if request.GET.get('q'):
+        filters['name__icontains'] = request.GET.get('q')
+
+    if request.GET.get('letter'):
+        filters['name__istartswith'] = request.GET.get('letter')
+
+    sponsors = models.Sponsor.userobjects.active().filter(**filters)
+
+    objects = get_paginated(sponsors, request.GET.get('page', 1))
+
+    return render_to_response('journalmanager/sponsor_list.html', {
+           'objects_sponsor': objects,
+           'letters': get_first_letter(sponsors)},
+           context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_section', login_url=AUTHZ_REDIRECT_URL)
-def section_index(request, model, journal_id=None):
-    """
-    Section list and search
-    """
-    return list_search(request, model, journal_id)
+@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
+def article_index(request, issue_id):
 
+    issue = get_object_or_404(models.Issue, pk=issue_id)
 
-@permission_required('journalmanager.list_collection', login_url=AUTHZ_REDIRECT_URL)
-def collection_index(request, model, journal_id=None):
-    """
-    Collection list and search
-    """
-    return list_search(request, model, journal_id)
+    return render_to_response(
+        'journalmanager/article_list.html',
+        {
+            'journal': issue.journal,
+            'issue': issue,
+            'articles': issue.articles.all()
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 @permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
@@ -262,9 +263,7 @@ def toggle_active_collection(request, user_id, collection_id):
     collection = get_object_or_404(models.Collection, pk=collection_id)
     collection.make_default_to_user(request.user)
 
-    referer = get_referer_view(request)
-
-    return HttpResponseRedirect(referer)
+    return HttpResponseRedirect('/')
 
 
 @login_required
@@ -522,19 +521,6 @@ def dash_editor_journal(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
-def dash_journal(request, journal_id=None):
-    """
-    Handles new and existing journals
-    """
-
-    journal = get_object_or_404(models.Journal, id=journal_id)
-
-    return render_to_response('journalmanager/journal_dash.html', {
-                              'journal': journal,
-                              }, context_instance=RequestContext(request))
-
-
 @permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def add_journal(request, journal_id=None):
     """
@@ -579,8 +565,8 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                #Ensuring that the journal doesnt exists
-                if models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
+                #Ensuring that journal doesnt exists on created journal form, so journal_id must be None
+                if journal_id is None and models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
                                                  Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
                     messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
                 else:

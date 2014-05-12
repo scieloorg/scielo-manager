@@ -7,7 +7,7 @@ from . import views, models
 urlpatterns = patterns('',
 
     # Journal Tools
-    url(r'^$', views.journal_index, {'model': models.Journal}, name="journal.index"),
+    url(r'^$', views.journal_index, name="journal.index"),
     url(r'^new/$', views.add_journal, name='journal.add'),
     url(r'^(?P<journal_id>\d+)/dash/$', views.dash_journal, name='journal.dash'),
     url(r'^(?P<journal_id>\d+)/edit/$', views.add_journal, name='journal.edit'),
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'ej/$', views.editor_journal, name='editor_journal.index'),
 
     # Sponsor Tools
-    url(r'^sponsor/$', views.sponsor_index, {'model': models.Sponsor}, name='sponsor.index'),
+    url(r'^sponsor/$', views.sponsor_index, name='sponsor.index'),
     url(r'^sponsor/new/$', views.add_sponsor, name='sponsor.add'),
     url(r'^sponsor/(?P<sponsor_id>\d+)/edit/$', views.add_sponsor, name='sponsor.edit'),
     url(r'^sponsor/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
@@ -33,7 +33,7 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/editors/(?P<user_id>\d+)/remove/$', views.journal_editors_remove,  name='journal_editors.remove'),
 
     # Section Tools
-    url(r'^(?P<journal_id>\d+)/section/$', views.section_index, {'model': models.Section}, name='section.index'),
+    url(r'^(?P<journal_id>\d+)/section/$', views.section_index, name='section.index'),
     url(r'^(?P<journal_id>\d+)/section/new/$', views.add_section, name='section.add'),
     url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/edit/$', views.add_section, name='section.edit'),
     url(r'^(?P<journal_id>\d+)/section/(?P<section_id>\d+)/del/$', views.del_section, name='section.del'),

@@ -671,7 +671,7 @@ class JournalFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
         _makeUseLicense()
 
     def test_access_without_permission(self):
@@ -2623,7 +2623,7 @@ class IssueFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
         self.collection.make_default_to_user(self.user)
 
         self.journal = modelfactories.JournalFactory.create()
@@ -2969,7 +2969,7 @@ class SearchFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
     def test_basic_struture(self):
         """
@@ -3207,7 +3207,7 @@ class AheadFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
@@ -3283,7 +3283,7 @@ class PressReleaseFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
@@ -3557,7 +3557,7 @@ class AheadPressReleaseFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
         self.journal = modelfactories.JournalFactory()
         self.journal.join(self.collection, self.user)
