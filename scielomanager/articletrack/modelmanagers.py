@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from scielomanager.utils import usercontext
 from scielomanager.utils.modelmanagers import UserObjectQuerySet, UserObjectManager
 
@@ -18,10 +18,16 @@ class CheckinQuerySet(UserObjectQuerySet):
             article__journals__collections=get_active_collection()).distinct()
 
     def accepted(self):
-        return self.filter(accepted_by__isnull=False)
+        return self.filter(status='accepted')
 
     def pending(self):
-        return self.filter(accepted_by__isnull=True)
+        return self.filter(status='pending')
+
+    def rejected(self):
+        return self.filter(status='rejected')
+
+    def review(self):
+        return self.filter(status='review')
 
 
 class CheckinManager(UserObjectManager):
