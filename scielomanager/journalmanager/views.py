@@ -579,8 +579,8 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                #Ensuring that the journal doesnt exists
-                if models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
+                #Ensuring that journal doesnt exists on created journal form, so journal_id must be None
+                if journal_id is None and models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
                                                  Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
                     messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
                 else:
