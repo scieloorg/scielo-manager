@@ -1,4 +1,5 @@
 # coding: utf-8
+import datetime
 from django.test import TestCase
 
 from articletrack import (
@@ -134,9 +135,112 @@ class CheckinManagerTests(TestCase):
             return user.user_collection.get(usercollections__is_default=True)
 
         user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection).pending()
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_pending_checkins_return_active_collection_checkins(self):
+        checkin1 = modelfactories.CheckinFactory.create(status='pending')
+        checkin2 = modelfactories.CheckinFactory.create(status='pending')
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
             get_active_collection=get_active_collection)
 
         self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'pending')
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_rejected_checkins_return_active_collection_checkins(self):
+        user_reject = UserFactory(is_active=True)
+        checkin1 = modelfactories.CheckinFactory.create(
+            status='rejected',
+            rejected_by=user_reject,
+            rejected_at=datetime.datetime.now(),
+            rejected_cause='your checkin is bad, and you should feel bad!')
+        checkin2 = modelfactories.CheckinFactory.create(
+            status='rejected',
+            rejected_by=user_reject,
+            rejected_at=datetime.datetime.now(),
+            rejected_cause='your checkin is bad, and you should feel bad!')
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'rejected')
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_reviewed_checkins_return_active_collection_checkins(self):
+        user_review = UserFactory(is_active=True)
+        checkin1 = modelfactories.CheckinFactory.create(
+            status='review',
+            reviewed_by=user_review,
+            reviewed_at=datetime.datetime.now())
+        checkin2 = modelfactories.CheckinFactory.create(
+            status='review',
+            reviewed_by=user_review,
+            reviewed_at=datetime.datetime.now())
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'review')
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_accepted_checkins_return_active_collection_checkins(self):
+        user_accepted = UserFactory(is_active=True)
+        checkin1 = modelfactories.CheckinFactory.create(
+            status='accepted',
+            accepted_by=user_accepted,
+            accepted_at=datetime.datetime.now())
+        checkin2 = modelfactories.CheckinFactory.create(
+            status='accepted',
+            accepted_by=user_accepted,
+            accepted_at=datetime.datetime.now())
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'accepted')
         self.assertIn(checkin2, user_checkins)
 
 
