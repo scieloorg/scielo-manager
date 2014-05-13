@@ -128,7 +128,7 @@ button.ui-button-icon-only {
 .banner{
     text-align: right;
     padding: 82px 29px 11px 0;
-    background-image: url('/static/images/logo.png');
+    background-image: url('../img/images/logo.png');
     background-repeat: no-repeat;
     width: 260px;
 }
@@ -173,19 +173,19 @@ button.ui-button-icon-only {
 }
 
 ._icon-current {
-    background-image: url("img/current.png");
+    background-image: url("../img/current.png");
 }
 
 ._icon-deceased {
-    background-image: url("img/deceased.png");
+    background-image: url("../img/deceased.png");
 }
 
 ._icon-suspended {
-    background-image: url("img/suspended.png");
+    background-image: url("../img/suspended.png");
 }
 
 ._icon-inprogress {
-    background-image: url("img/inprogress.png");
+    background-image: url("../img/inprogress.png");
 }
 
 ._icon {
@@ -402,15 +402,25 @@ table._listings h4 {
   margin-bottom: 2px;
 }
 
-.current_attempt { border: 2px solid #CCCCCC;}
+.current_attempt {
+  border: 2px solid #CCCCCC;
+}
 
-.pager > li { margin: 0 5px; }
+.pager > li {
+  margin: 0 5px;
+}
 
-.pager { margin: 0;}
+.pager {
+  margin: 0;
+}
 
-.pagination a, .pagination span { padding-left: 10px; padding-right: 10px; }
+.pagination a, .pagination span {
+  padding-left: 10px; padding-right: 10px;
+}
 
-.filter-form { margin-bottom: 0; }
+.filter-form {
+  margin-bottom: 0;
+}
 
 .controls #journal-cover-clear_id,
 .controls #journal-logo-clear_id {
@@ -418,4 +428,15 @@ table._listings h4 {
 }
 .controls .img-thumb {
   margin: 10px 0;
+}
+
+.message-info {
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  margin-left: -210px;
+  width: 400px;
+  z-index: 9999;
+  border: 1px solid;
 }

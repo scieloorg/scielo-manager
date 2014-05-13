@@ -6,7 +6,7 @@
     <div class="navbar-inner">
       <ul class="nav">
         <li {% if page == 'dashboard' %}class="active activedash" {% endif %}>
-          <a href="{% url journal.dash journal_id %}">{% trans 'Dashboard' %}</a>
+          <a href="{% url journal.dash journal_id %}">{% trans 'About' %}</a>
         </li>
         {% if perms.journalmanager.list_issue %}
         <li {% if page == 'issue' %}class="active activedash" {% endif %}>

@@ -8,21 +8,26 @@
 
 {% block page_title %}{% trans "Journals" %}{% endblock %}
 
+{% block extrahead %}
+  <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/jquery-ui.css"/>
+  <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}css/select2.css"/>
+{% endblock %}
+
 {% block content %}
 <div class="row-fluid show-grid">
   <div class="span9">
-      <div class="pagination-centered">
-        {% if request.GET.letter %}
-          {% named_pagination letters request.GET.letter %}
-        {% else %}
-          {% named_pagination letters 'All' %}
-        {% endif %}
-      </div>
+     <div class="pagination-centered">
+       {% if request.GET.letter %}
+         {% named_pagination letters request.GET.letter %}
+       {% else %}
+         {% named_pagination letters 'All' %}
+       {% endif %}
+     </div>
   </div>
   <div class="span3">
-    <div class="pull-right">
+     <div class="pull-right">
       {% simple_pagination objects_journal %}
-    </div>
+     </div>
   </div>
 </div>
 
@@ -32,7 +37,7 @@
       {% if perms.journalmanager.add_journal %}
         <li>
           <div class="btn-group first-tab-btn-group">
-            <a class="btn btn-primary" href="{% url journal.add %}">
+            <a id="new-journal" class="btn btn-primary" href="#">
               {% trans 'New' %}
             </a>
           </div>
@@ -128,4 +133,156 @@
   <tbody>
   </table>
 </form>
+
+<!-- Modal -->
+  <div class="modal hide fade" id="journal-check">
+
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="journal-check">{% trans 'Check if journal already exists' %}</h3>
+  </div>
+
+  <div class="modal-body" style="height:250px;">
+
+    <div id="check-message-info" class="alert alert-warning message-info" >
+      <a class="close" data-dismiss="alert" href="#">&times;</a>
+      <h4 class="alert-heading"><p>{% trans 'Adding journal to my collection' %}</p></h4>
+      <p id="alert-message-info"></p>
+      <p class="pull-right">
+        <a id="btn-alert-info" class="btn" href="#">OK</a>
+      </p>
+    </div>
+
+    <div class="alert alert-info">
+      <i class="icon-info-sign"></i> {% trans "To insert a journal, you need to check whether the journal exists. If it exists just add to your collection!" %} :-)
+    </div>
+
+    <!-- Verification form -->
+    <form>
+
+      <div class="control-group" style="margin-bottom: 50px;">
+          <label>
+              {% trans 'Search journal' %}:
+          </label>
+          <div class="controls">
+            <input type="hidden" class="select2-chosen span12" id="id-journal-check" name="journal-input-check">
+          </div>
+      </div>
+
+      <div class="control-group" style="margin-bottom: 50px;">
+          <div class="controls">
+            <a id="btn-add-collection" class="btn btn-success span12" disabled href="#">{% trans 'Add this journal to my current collection' %}</a>
+          </div>
+      </div>
+
+    </form>
+    <!-- Verification form -->
+
+  </div>
+
+  <div class="modal-footer">
+    <a id="btn-add-new-journal" class="btn btn-danger span12" href="{% url journal.add %}">{% trans 'I understand the consequences, add new journal' %}</a>
+  </div>
+
+ </div>
+<!-- Modal -->
+
+{% endblock %}
+
+{% block extrafooter %}
+  <script type="text/javascript" src="{% get_static_prefix %}js/jquery/select2.js"></script>
+
+  <script>
+
+     $('#new-journal').click(function(){
+        $('#journal-check').modal();
+     });
+
+     $('#journal-check').on('hidden', function(){
+        window.location.reload(true);
+     });
+
+     $('#btn-alert-info').click(function(){
+        $("#check-message-info").css('display', 'none');
+     });
+
+    function result(data){
+        return "<b>" + data.title + "</b> - " + data.short_title
+               + "</br><b>{% trans 'Print ISSN' %}: </b>" + data.print_issn
+               + "</br><b>{% trans 'Eletronic ISSN' %}: </b>" + data.eletronic_issn
+               + "</br><b>{% trans 'Acronym' %}: </b>" + data.acronym
+               + "</br><b>{% trans 'Coleções' %}: </b>" + data.collections
+      }
+
+    function selection(data){
+        return '<b>' + data.title + '</b> - '
+               + data.short_title + ' '
+               + data.print_issn + ' '
+               + data.eletronic_issn + ' '
+               + data.acronym
+    }
+
+    function nomatches(term){
+        return "{% trans 'No journal(s) found to the term: ' %}" + term
+    }
+
+    $("#id-journal-check").on('select2-selecting', function(e){
+                              $("#btn-add-collection").attr("disabled", false);
+                              $("#btn-add-new-journal").attr("disabled", true);
+                            });
+
+    $("#id-journal-check").on('select2-removed', function(e){
+                              $("#btn-add-collection").attr("disabled", true);
+                              $("#btn-add-new-journal").attr("disabled", false);
+                            });
+
+    $("#id-journal-check").select2({
+        placeholder: '{% trans "Search by: title, abbreviated title, acronym and ISSN(s)" %}',
+        minimumInputLength: 3,
+        allowClear: true,
+        ajax: {
+            url: "{% url ajx.ajx_search_journal %}",
+            dataType: 'json',
+            data: function (term, page) {
+                return {
+                    q: term,
+                    page_limit: 10,
+                };
+            },
+            results: function (data, page) {
+                return {results: data.data};
+            }
+        },
+        formatResult: result,
+        formatSelection: selection,
+        formatNoMatches: nomatches,
+        dropdownCssClass: "bigdrop",
+        sescapeMarkup: function (m) { return m; }
+    });
+
+    $("#btn-add-collection").click(function(){
+      $.ajax({
+        url: "ajx/ajx4/" + $("#id-journal-check")[0].value,
+        dataType: 'json',
+        type: "GET",
+        success: function(data){
+            if (!data.assignment){
+              $('#alert-message-info').html("<b>" + data.journal
+                                            + "</b> {% trans 'is already member of collection' %}: "
+                                            + "<b>" + data.collection + "</b>")
+              $('#check-message-info').toggle()
+            }else{
+              $('#journal-check').modal('hide');
+            }
+
+          },
+        fail: function(){
+            alert('{% trans "An unexpected error. Please try again later." %}')
+          },
+      });
+
+    });
+
+  </script>
+
 {% endblock %}
