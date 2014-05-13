@@ -209,7 +209,7 @@ class ArticleTests(TestCase):
         self.assertFalse(article.is_accepted())
 
 
-class CheckinWorflowLogTests(TestCase):
+class CheckinWorkflowLogTests(TestCase):
     """
     Every change of Checkin's status will generate a record with info about the current status of the checkin
     This way is possible to audit the actions made with the related checkin
@@ -219,7 +219,7 @@ class CheckinWorflowLogTests(TestCase):
         generate a new checkin, must not generate any log
         """
         checkin = modelfactories.CheckinFactory()
-        logs = models.CheckinWorflowLog.objects.filter(checkin=checkin)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin)
         self.assertEqual(logs.count(), 0)
 
     def test_checkin_send_to_review_log(self):
@@ -230,7 +230,7 @@ class CheckinWorflowLogTests(TestCase):
         self.assertTrue(checkin.can_be_send_to_review())
         checkin.send_to_review(user)
 
-        logs = models.CheckinWorflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user)
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user)
@@ -249,7 +249,7 @@ class CheckinWorflowLogTests(TestCase):
         self.assertTrue(checkin.can_be_reviewed())
         checkin.do_review(user_review)
 
-        logs = models.CheckinWorflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_review)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_review)
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user_review)
@@ -273,7 +273,7 @@ class CheckinWorflowLogTests(TestCase):
         self.assertTrue(checkin.can_be_accepted())
         checkin.accept(user_accept)
 
-        logs = models.CheckinWorflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_accept)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_accept)
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user_accept)
@@ -293,7 +293,7 @@ class CheckinWorflowLogTests(TestCase):
         self.assertTrue(checkin.can_be_rejected())
         checkin.do_reject(user_reject, rejection_text)
 
-        logs = models.CheckinWorflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_reject)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_reject)
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user_reject)
@@ -319,7 +319,7 @@ class CheckinWorflowLogTests(TestCase):
         self.assertTrue(checkin.can_be_send_to_pending())
         checkin.send_to_pending(user2_send_to_review)
 
-        logs = models.CheckinWorflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user2_send_to_review)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user2_send_to_review)
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user2_send_to_review)
