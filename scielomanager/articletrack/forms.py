@@ -39,7 +39,7 @@ class CheckinListFilterForm(forms.Form):
 
 
 class CheckinRejectForm(ModelForm):
-    rejected_cause = forms.CharField(label=_(u'Cause of Rejection'), max_length=128, required=True, widget=Textarea(attrs={'class': 'span12'}))
+    rejected_cause = forms.CharField(label=_(u'Reason'), max_length=128, required=True, widget=Textarea(attrs={'class': 'span12'}))
 
     class Meta:
         model = models.Checkin

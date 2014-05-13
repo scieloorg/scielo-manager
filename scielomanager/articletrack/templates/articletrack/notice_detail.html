@@ -383,15 +383,15 @@
       {# ERROR MSG #}
       <div id="reject_modal_error_msg" style="display: none;">
         <div class="alert alert-error">
-          <p>{% trans "This Field is required" %}</p>
+          {% trans "Field reason is required" %}
         </div>
       </div>
       {# /ERROR MSG #}
     </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <a id="checkin_reject_form_confirm" href="#" class="btn btn-primary">Confirm</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans 'Close' %}</button>
+    <a id="checkin_reject_form_confirm" href="#" class="btn btn-primary">{% trans 'Confirm' %}</a>
   </div>
 </div>
 {# /MODAL REJECT #}
@@ -467,6 +467,7 @@
 
         }
       });
+
       $('#checkin_reject_form').submit(function(event) {
         var cause = $("#id_rejected_cause").val();
         if ($.trim(cause) === "") {
@@ -475,10 +476,16 @@
         }
         return true;
       });
+
       $('#checkin_reject_form_confirm').click(function(event){
         event.preventDefault();
         $('#checkin_reject_form').submit();
       });
+
+      $('#reject_modal').on('show', function(){
+         $("#reject_modal_error_msg").hide();
+     });
+
     });
   </script>
 {% endblock %}
