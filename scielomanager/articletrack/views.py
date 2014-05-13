@@ -110,15 +110,14 @@ def checkin_reject(request, checkin_id):
                 try:
                     checkin.do_reject(request.user, rejected_cause)
                     messages.info(request, MSG_FORM_SAVED)
-                except ValueError as e:
-                    error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
-                    messages.error(request, error_msg)
+                except ValueError:
+                    messages.error(request, MSG_FORM_MISSING)
             else:
                 form_errors = u", ".join([u"%s %s" % (field, error[0]) for field, error in form.errors.items()])
                 error_msg = "%s %s" % (MSG_FORM_MISSING, form_errors)
                 messages.error(request, error_msg)
     else:
-        error_msg = "%s This checkin cannot be rejected" % MSG_FORM_MISSING
+        error_msg = _("This checkin cannot be rejected")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
@@ -134,12 +133,10 @@ def checkin_review(request, checkin_id):
     if checkin.can_be_reviewed:
         try:
             checkin.do_review(request.user)
-            msg = "%s - Checkin reviewed succesfully." % MSG_FORM_SAVED
+            msg = _("Checkin reviewed succesfully.")
             messages.info(request, msg)
-        except ValueError as e:
-            error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
-            messages.error(request, error_msg)
-            #return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+        except ValueError:
+            messages.error(request, MSG_FORM_MISSING)
 
         # if Balaio RPC API is up, then try to proceed to Checkout and marked as accepted
         rpc_client = BalaioRPC()
@@ -148,15 +145,16 @@ def checkin_review(request, checkin_id):
             if rpc_response:
                 try:
                     checkin.accept(request.user)
-                    msg = "%s - Checkin accepted succesfully." % MSG_FORM_SAVED
+                    msg = _("Checkin accepted succesfully.")
                     messages.info(request, msg)
                 except ValueError as e:
-                    logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
-                    error_msg = "%s - Unable to proceed to checkout -  %s" % (MSG_FORM_MISSING, e.message)
+                    logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
+                    error_msg = _("An unexpected error, this attempt connot set to checkout. Please try again later.")
                     messages.error(request, error_msg)
     else:
-        error_msg = "%s This checkin cannot be reviewed" % MSG_FORM_MISSING
+        error_msg = _("This checkin cannot be reviewed")
         messages.error(request, error_msg)
+
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 
@@ -176,14 +174,13 @@ def checkin_accept(request, checkin_id):
                 checkin.accept(request.user)
                 messages.info(request, MSG_FORM_SAVED)
             except ValueError as e:
-                logger.info('Could not mark %s as accepted. Traceback: %s' % (checkin, e))
-                error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
-                messages.error(request, error_msg)
+                logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
+                messages.error(request, MSG_FORM_MISSING)
         else:
-            error_msg = "%s - The API response was unsuccessful" % MSG_FORM_MISSING
+            error_msg = _("The API response was unsuccessful")
             messages.error(request, error_msg)
     else:
-        error_msg = "%s This checkin cannot be accepted or the API is down." % MSG_FORM_MISSING
+        error_msg = _("This checkin cannot be accepted or the API is down.")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
@@ -196,11 +193,10 @@ def checkin_send_to_pending(request, checkin_id):
         try:
             checkin.send_to_pending(request.user)
             messages.info(request, MSG_FORM_SAVED)
-        except ValueError as e:
-            error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
-            messages.error(request, error_msg)
+        except ValueError:
+            messages.error(request, MSG_FORM_MISSING)
     else:
-        error_msg = "%s This checkin cannot be Send to Pending state" % MSG_FORM_MISSING
+        error_msg = _("This checkin cannot be send to Pending")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
@@ -213,11 +209,10 @@ def checkin_send_to_review(request, checkin_id):
         try:
             checkin.send_to_review(request.user)
             messages.info(request, MSG_FORM_SAVED)
-        except ValueError as e:
-            error_msg = "%s %s" % (MSG_FORM_MISSING, e.message)
-            messages.error(request, error_msg)
+        except ValueError:
+            messages.error(request, MSG_FORM_MISSING)
     else:
-        error_msg = "%s This checkin cannot be Reviewed" % MSG_FORM_MISSING
+        error_msg = _("This checkin cannot be Reviewed")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
