@@ -20,55 +20,57 @@
         <a href="{% url checkin_index %}"><i class="icon-chevron-left"></i> {% trans "List of Articles in submission" %}</a>
       </li>
       <li class="divider-vertical"></li>
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-          <strong>{% trans "Actions" %}:</strong>
-          <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-          {% if checkin.can_be_rejected %}
-            <li>
-              <a href="#reject_modal" data-toggle="modal">
-                <i class='icon-eye-close'></i>  <span class="label label-important">{% trans "Reject" %}</span>
-              </a>
-            </li>
-          {% endif %}
-          
-          {% if checkin.can_be_send_to_pending %}
-            <li>
-              <a href="{% url checkin_send_to_pending checkin.pk %}">
-                <i class='icon-time'></i> {% trans "Send to" %}: <strong>{% trans "Pending" %}</strong>
-              </a>
-            </li>
-          {% endif %}
+      {% if not checkin.is_accepted %}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <strong>{% trans "Actions" %}:</strong>
+            <b class="caret"></b>
+          </a>
 
-          {% if checkin.can_be_send_to_review %}
-            {# SEND TO REVIEW #}
-            <li>
-              <a href="{% url checkin_send_to_review checkin.pk %}">
-                <i class='icon-eye-open'></i> {% trans "Send to" %}: <strong>{% trans "Review" %}</strong>
-              </a>
-            </li>
-          {% endif %}
-          
-          {% if checkin.can_be_reviewed and not checkin.is_reviewed %}
-            {# DO REVIEW #}
-            <li>
-              <a href="{% url checkin_review checkin.pk %}">
-                <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Review & Accept!" %}</span>
-              </a>
-            </li>
-          {% elif checkin.can_be_accepted %}
-            {# DO REVIEW #}
-            <li>
-              <a href="{% url checkin_accept checkin.pk %}">
-                <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Accept!" %}</span>
-              </a>
-            </li>
-          {% endif %}
+          <ul class="dropdown-menu">
+            {% if checkin.can_be_rejected %}
+              <li>
+                <a href="#reject_modal" data-toggle="modal">
+                  <i class='icon-eye-close'></i>  <span class="label label-important">{% trans "Reject" %}</span>
+                </a>
+              </li>
+            {% endif %}
 
-        </ul>
-      </li>
+            {% if checkin.can_be_send_to_pending %}
+              <li>
+                <a href="{% url checkin_send_to_pending checkin.pk %}">
+                  <i class='icon-time'></i> {% trans "Send to" %}: <strong>{% trans "Pending" %}</strong>
+                </a>
+              </li>
+            {% endif %}
+
+            {% if checkin.can_be_send_to_review %}
+              {# SEND TO REVIEW #}
+              <li>
+                <a href="{% url checkin_send_to_review checkin.pk %}">
+                  <i class='icon-eye-open'></i> {% trans "Send to" %}: <strong>{% trans "Review" %}</strong>
+                </a>
+              </li>
+            {% endif %}
+
+            {% if checkin.can_be_reviewed and not checkin.is_reviewed %}
+              {# DO REVIEW #}
+              <li>
+                <a href="{% url checkin_review checkin.pk %}">
+                  <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Review &amp; Accept!" %}</span>
+                </a>
+              </li>
+            {% elif checkin.can_be_accepted %}
+              {# DO REVIEW #}
+              <li>
+                <a href="{% url checkin_accept checkin.pk %}">
+                  <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Accept!" %}</span>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </li>
+      {% endif %}
     </ul>
     <ul class="nav pull-right">
       <li class="divider-vertical"></li>
@@ -121,15 +123,15 @@
           <dt>{% trans "Status" %}:</dt>
           <dd>
             {% if checkin.status == 'pending' %}
-              <i class='icon-time'></i> 
+              <i class='icon-time'></i>
             {% elif checkin.status == 'review' %}
-              <i class='icon-eye-open'></i> 
+              <i class='icon-eye-open'></i>
             {% elif checkin.status == 'rejected' %}
-              <i class='icon-eye-close'></i> 
+              <i class='icon-eye-close'></i>
             {% elif checkin.status == 'accepted' %}
-              <i class='icon-ok-circle'></i> 
+              <i class='icon-ok-circle'></i>
             {% else %}
-              <i class='icon-question-sign'></i> 
+              <i class='icon-question-sign'></i>
             {% endif %}
             {{ checkin.get_status_display }}
           </dd>
@@ -142,27 +144,27 @@
 
             {%if checkin.reviewed_by %}
               <dt>{% trans "Reviewed by" %}:</dt>
-              <dd>{{ checkin.reviewed_by.get_full_name }}</dd>
+              <dd>{{ checkin.reviewed_by.get_full_name|default:checkin.rejected_by }}</dd>
               <dt>{% trans "Reviewed at" %}:</dt>
               <dd>{{ checkin.reviewed_at|date:"d/m/Y - H:i" }}</dd>
-            {% endif %} 
+            {% endif %}
 
           {% endif %}
 
           {% if checkin.is_accepted %}
               <dt>{% trans "Accepted by" %}:</dt>
-              <dd>{{ checkin.accepted_by.get_full_name }}</dd>
+              <dd>{{ checkin.accepted_by.get_full_name|default:checkin.rejected_by }}</dd>
               <dt>{% trans "Acccepted at" %}:</dt>
               <dd>{{ checkin.accepted_at|date:"d/m/Y - H:i" }}</dd>
-          
+
           {% elif checkin.is_rejected %}
-          
+
               <dt>{% trans "Rejected by" %}:</dt>
-              <dd>{{ checkin.rejected_by.get_full_name }}</dd>
+              <dd>{{ checkin.rejected_by.get_full_name|default:checkin.rejected_by }}</dd>
               <dt>{% trans "Rejected at" %}:</dt>
               <dd>{{ checkin.rejected_at|date:"d/m/Y - H:i" }}</dd>
-              <dt>{% trans "Rejected cause" %}:</dt>
-              <dd>{{ checkin.rejected_cause|title }}</dd>
+              <dt>{% trans "Rejected reason" %}:</dt>
+              <dd>{{ checkin.rejected_cause }}</dd>
 
           {% endif %}
 
@@ -471,7 +473,7 @@
           $("#reject_modal_error_msg").show();
           return false;
         }
-        return true; 
+        return true;
       });
       $('#checkin_reject_form_confirm').click(function(event){
         event.preventDefault();

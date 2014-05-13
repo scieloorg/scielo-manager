@@ -8,8 +8,8 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'CheckinWorflowLog'
-        db.create_table('articletrack_checkinworflowlog', (
+        # Adding model 'CheckinWorkflowLog'
+        db.create_table('articletrack_checkinworkflowlog', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='checkin_log_responsible', null=True, to=orm['auth.User'])),
@@ -17,12 +17,12 @@ class Migration(SchemaMigration):
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('checkin', self.gf('django.db.models.fields.related.ForeignKey')(related_name='checkin_worflow_logs', to=orm['articletrack.Checkin'])),
         ))
-        db.send_create_signal('articletrack', ['CheckinWorflowLog'])
+        db.send_create_signal('articletrack', ['CheckinWorkflowLog'])
 
 
     def backwards(self, orm):
-        # Deleting model 'CheckinWorflowLog'
-        db.delete_table('articletrack_checkinworflowlog')
+        # Deleting model 'CheckinWorkflowLog'
+        db.delete_table('articletrack_checkinworKflowlog')
 
 
     models = {
@@ -55,7 +55,7 @@ class Migration(SchemaMigration):
             'uploaded_at': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'articletrack.checkinworflowlog': {
-            'Meta': {'object_name': 'CheckinWorflowLog'},
+            'Meta': {'object_name': 'CheckinWorkflowLog'},
             'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkin_worflow_logs'", 'to': "orm['articletrack.Checkin']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),

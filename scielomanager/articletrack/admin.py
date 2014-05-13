@@ -36,11 +36,16 @@ class CommentAdmin(admin.ModelAdmin):
 admin.site.register(models.Comment, CommentAdmin)
 
 
-class CheckinWorflowLogAdmin(admin.ModelAdmin):
+class CheckinWorkflowLogAdmin(admin.ModelAdmin):
     list_display = ('created_at', 'checkin', 'user', 'status', 'description')
     readonly_fields = ('created_at', 'checkin', 'user', 'status', 'description')
 
+admin.site.register(models.CheckinWorkflowLog, CheckinWorkflowLogAdmin)
 
-admin.site.register(models.CheckinWorflowLog, CheckinWorflowLogAdmin)
 
-admin.site.register(models.Notice)
+class NoticeAdmin(admin.ModelAdmin):
+    search_fields = ('message',)
+    list_filter = ('status', 'checkpoint')
+    list_display = ('checkin', 'stage', 'checkpoint', 'message', 'status')
+
+admin.site.register(models.Notice, NoticeAdmin)

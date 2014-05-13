@@ -1,3 +1,4 @@
+#coding: utf-8
 import caching.base
 import datetime
 import logging
@@ -85,27 +86,41 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
     @property
     def get_newest_checkin(self):
+        """
+        Get the newest checkin of article
+        """
         return self.article.checkins.order_by('-uploaded_at')[0]
 
     @property
     def is_newest_checkin(self):
+        """
+        Checks if instance is the newest checkin
+        """
         return self.pk == self.get_newest_checkin.pk
 
     def is_accepted(self):
         """
         Checks if this checkin has been accepted
+
+        The condicional is ``status = accepted`` and has been accepted_by and
+        has any date in accepted_at
         """
         return self.status == 'accepted' and bool(self.accepted_by and self.accepted_at)
 
     def is_reviewed(self):
         """
         Checks if this checkin has been reviewed
+
+        The condicional is ``status = review`` and has been reviewed_by and
+        has any date in reviewed_at
         """
         return self.status == 'review' and bool(self.reviewed_by and self.reviewed_at)
 
     def is_rejected(self):
         """
         Checks if this checkin has been rejected
+
+        The condicional is ``status = rejected``
         """
         return self.status == 'rejected'
 
@@ -168,7 +183,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.status = 'accepted'
             self.save()
             # log data for history
-            log = CheckinWorflowLog()
+            log = CheckinWorkflowLog()
             log.checkin = self
             log.status = self.status
             log.created_at = self.accepted_at
@@ -196,7 +211,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.status = 'pending'
             self.save()
             # log data for history
-            log = CheckinWorflowLog()
+            log = CheckinWorkflowLog()
             log.checkin = self
             log.status = self.status
             log.created_at = datetime.datetime.now()
@@ -224,7 +239,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.status = 'review'
             self.save()
             # log data for history
-            log = CheckinWorflowLog()
+            log = CheckinWorkflowLog()
             log.checkin = self
             log.status = self.status
             log.created_at = datetime.datetime.now()
@@ -253,7 +268,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.reviewed_at = datetime.datetime.now()
             self.save()
             # log data for history
-            log = CheckinWorflowLog()
+            log = CheckinWorkflowLog()
             log.checkin = self
             log.status = self.status
             log.created_at = self.reviewed_at
@@ -284,7 +299,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.rejected_cause = cause
             self.save()
             # log data for history
-            log = CheckinWorflowLog()
+            log = CheckinWorkflowLog()
             log.checkin = self
             log.status = self.status
             log.created_at = self.rejected_at
@@ -337,9 +352,10 @@ class Checkin(caching.base.CachingMixin, models.Model):
         return u'%s [attept ref: %s]' % (self.package_name, self.attempt_ref)
 
 
-class CheckinWorflowLog(caching.base.CachingMixin, models.Model):
+class CheckinWorkflowLog(caching.base.CachingMixin, models.Model):
     created_at = models.DateTimeField(_(u'Created at'), default=datetime.datetime.now)
-    user = models.ForeignKey(User, related_name='checkin_log_responsible', null=True, blank=True)  # nullable in caso of (Celery's task) processing
+    # nullable in case of (Celery's task) processing
+    user = models.ForeignKey(User, related_name='checkin_log_responsible', null=True, blank=True)
     status = models.CharField(_(u'Status'), choices=CHECKIN_STATUS_CHOICES, max_length=10, default='pending')
     description = models.TextField(_(u'Description'), null=True, blank=True)
     checkin = models.ForeignKey(Checkin, related_name='checkin_worflow_logs')
@@ -403,7 +419,7 @@ class Ticket(caching.base.CachingMixin, models.Model):
 
 class Comment(caching.base.CachingMixin, models.Model):
     """
-        Represents a comment related to a Ticket
+    Represents a comment related to a Ticket
     """
     # Custom Managers
     objects = models.Manager()
