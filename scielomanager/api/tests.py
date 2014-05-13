@@ -395,13 +395,11 @@ class IssuesRestAPITest(WebTest):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
-        self.extra_environ = _make_auth_environ(self.user.username,
-            self.user.api_key.key)
+        self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
 
     def test_issue_index(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/',
-            extra_environ=self.extra_environ)
+        response = self.app.get('/api/v1/issues/', extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -413,51 +411,43 @@ class IssuesRestAPITest(WebTest):
 
     def test_post_data(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.post('/api/v1/issues/',
-            extra_environ=self.extra_environ, status=405)
+        response = self.app.post('/api/v1/issues/', extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.put('/api/v1/issues/',
-            extra_environ=self.extra_environ, status=405)
+        response = self.app.put('/api/v1/issues/', extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.delete('/api/v1/issues/',
-            extra_environ=self.extra_environ, status=405)
+        response = self.app.delete('/api/v1/issues/', extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_issue_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ)
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('number' in response.content)
 
     def test_post_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.post('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ, status=405)
+        response = self.app.post('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.put('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ, status=405)
+        response = self.app.put('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.delete('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ, status=405)
+        response = self.app.delete('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_api_v1_datamodel(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ)
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         expected_keys = [
             u'is_press_release',
@@ -498,22 +488,18 @@ class IssuesRestAPITest(WebTest):
         issue = modelfactories.IssueFactory.create()
         issue_title = modelfactories.IssueTitleFactory.create(issue=issue)
 
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ)
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         content = json.loads(response.content)
-        self.assertEqual(content.get('thematic_titles', None),
-            {'pt': 'Bla'})
+        self.assertEqual(content.get('thematic_titles', None), {'pt': 'Bla'})
 
     def test_thematic_titles_must_be_dict_even_if_empty(self):
         issue = modelfactories.IssueFactory.create()
 
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk,
-            extra_environ=self.extra_environ)
+        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         content = json.loads(response.content)
-        self.assertIsInstance(content.get('thematic_titles', None),
-            dict)
+        self.assertIsInstance(content.get('thematic_titles', None), dict)
 
     def test_list_all_by_collection(self):
         collection = modelfactories.CollectionFactory()
@@ -522,10 +508,80 @@ class IssuesRestAPITest(WebTest):
         issue = modelfactories.IssueFactory.create(journal=journal)
         collection_name = collection.name
 
-        response = self.app.get('/api/v1/issues/?collection=%s' % collection_name,
-            extra_environ=self.extra_environ)
+        response = self.app.get('/api/v1/issues/?collection=%s' % collection_name, extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
+
+    def test_suppl_number_filter_without_volume(self):
+        """
+        test that create a supplement issue, with ``number``, ``suppl_text`` and empty ``volume`` fields.
+        then request the API, with filter ``suppl_number`` and should return the previous issue, with the correct
+        ``suppl_number`` (= ``suppl_text``) and ``suppl_volume`` (empty).
+        """
+        issue = modelfactories.IssueFactory.create(number='999', suppl_text='2', volume='', type='supplement')
+        response = self.app.get('/api/v1/issues/?suppl_number=%s' % issue.number, extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        content = content['objects'][0]
+        self.assertEqual(content.get('suppl_number', None), issue.suppl_text)
+        self.assertEqual(content.get('suppl_volume', None), '')
+        self.assertEqual(content.get('number', None), issue.number)
+        self.assertEqual(content.get('volume', None), issue.volume)
+
+    def test_suppl_number_filter_with_volume(self):
+        """
+        test that create a supplement issue, with ``number``, ``suppl_text`` and *NON* empty ``volume`` fields.
+        then request the API, with filter ``suppl_number`` and should return the previous issue, with the correct
+        ``suppl_number`` (= ``suppl_text``) and ``suppl_volume`` (= ``suppl_text``).
+        """
+        issue = modelfactories.IssueFactory.create(number='999', suppl_text='2', volume='1', type='supplement')
+        response = self.app.get('/api/v1/issues/?suppl_number=%s' % issue.number, extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(content['objects']), 1)
+        content = content['objects'][0]
+        self.assertEqual(content.get('suppl_number', None), issue.suppl_text)
+        self.assertEqual(content.get('suppl_volume', None), issue.suppl_text)
+        self.assertEqual(content.get('number', None), issue.number)
+        self.assertEqual(content.get('volume', None), issue.volume)
+
+    def test_suppl_volume_filter_without_number(self):
+        """
+        test that create a supplement issue, with ``volume``, ``suppl_text`` and empty ``number`` fields.
+        then request the API, with filter ``suppl_number`` and should return the previous issue, with the correct
+        ``suppl_volume`` (= ``suppl_text``) and ``suppl_number`` (empty).
+        """
+        issue = modelfactories.IssueFactory.create(volume='999', suppl_text='2', number='', type='supplement')
+        response = self.app.get('/api/v1/issues/?suppl_volume=%s' % issue.volume, extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+        self.assertEqual(len(content['objects']), 1)
+        content = content['objects'][0]
+        self.assertEqual(content.get('suppl_volume', None), issue.suppl_text)
+        self.assertEqual(content.get('suppl_number', None), '')
+        self.assertEqual(content.get('number', None), issue.number)
+        self.assertEqual(content.get('volume', None), issue.volume)
+
+    def test_suppl_volume_filter_with_number(self):
+        """
+        test that create a supplement issue, with ``volume``, ``suppl_text`` and *NON* empty ``number`` fields.
+        then request the API, with filter ``suppl_volume`` and should return an empty list.
+        Because, the ``suppl_volume`` filter will apply always with ``number=''`` condition.
+        """
+        issue = modelfactories.IssueFactory.create(number='999', suppl_text='2', volume='777', type='supplement')
+        response = self.app.get('/api/v1/issues/?suppl_volume=%s' % issue.volume, extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+        self.assertEqual(len(content['objects']), 0)
 
 
 class SectionsRestAPITest(WebTest):
