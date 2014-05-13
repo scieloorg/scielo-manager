@@ -5,7 +5,6 @@ import logging
 from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.utils.translation import ugettext as _
 from django.contrib import messages
