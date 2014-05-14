@@ -68,8 +68,8 @@ class IssueResource(ModelResource):
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
     is_press_release = fields.BooleanField(readonly=True)
-    suppl_volume = fields.CharField(readonly=True)
-    suppl_number = fields.CharField(readonly=True)
+    suppl_volume = fields.CharField(attribute='volume', readonly=True)
+    suppl_number = fields.CharField(attribute='number', readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
@@ -91,7 +91,6 @@ class IssueResource(ModelResource):
         """
         if filters is None:
             filters = {}
-
         orm_filters = super(IssueResource, self).build_filters(filters)
 
         if 'collection' in filters:
@@ -107,6 +106,14 @@ class IssueResource(ModelResource):
         if 'print_issn' in filters:
             issues = Issue.objects.filter(
                 journal__print_issn=filters['print_issn'])
+            orm_filters['pk__in'] = issues
+
+        if 'suppl_number' in filters:
+            issues = Issue.objects.filter(type='supplement', number=filters['suppl_number'])
+            orm_filters['pk__in'] = issues
+
+        if 'suppl_volume' in filters:
+            issues = Issue.objects.filter(type='supplement', number='', volume=filters['suppl_volume'])
             orm_filters['pk__in'] = issues
 
         return orm_filters
