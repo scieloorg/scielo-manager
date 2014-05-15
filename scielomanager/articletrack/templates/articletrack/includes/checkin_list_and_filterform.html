@@ -37,7 +37,7 @@
         <th>{% trans "Rejected by" %}:</th>
         <th>{% trans "Rejected at" %}:</th>
       {% endif %}
-      <th class="span1">&nbsp;</th>
+      <th>&nbsp;</th>
     </tr>
   </thead>
   <tbody>
@@ -64,7 +64,10 @@
           <td>{{ checkin.rejected_at|date:"d/m/Y - H:i"|default:"--" }}</td>
         {% endif %}
         <td>
-          <a href="{% url notice_detail checkin.pk %}" class="btn btn-mini btn">{% trans "Details" %}</a>
+          <div class="btn-group">
+            <a href="{% url checkin_history checkin.pk %}" class="btn btn-mini btn"><i class="icon-time"></i></a>
+            <a href="{% url notice_detail checkin.pk %}" class="btn btn-mini btn">{% trans "Details" %}</a>
+          </div>
         </td>
       </tr>
     {% empty %}

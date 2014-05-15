@@ -214,6 +214,11 @@ class CheckinWorkflowLogTests(TestCase):
     Every change of Checkin's status will generate a record with info about the current status of the checkin
     This way is possible to audit the actions made with the related checkin
     """
+
+    def test_checkinworkflowlog_ordering(self):
+        ordering = models.CheckinWorkflowLog._meta.ordering
+        self.assertEqual(ordering, ['created_at'])
+
     def test_new_checkin_no_log(self):
         """
         generate a new checkin, must not generate any log

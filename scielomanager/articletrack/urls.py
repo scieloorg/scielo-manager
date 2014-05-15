@@ -5,7 +5,7 @@ from . import views
 urlpatterns = patterns(
     '',
     url(r'^$', views.checkin_index, name="checkin_index"),
-    url(r'^package/(?P<article_id>\d+)/$', views.checkin_history, name="checkin_history"),
+    # url(r'^package/(?P<article_id>\d+)/$', views.checkin_history, name="checkin_history"),
     # notice:
     url(r'^notice/(?P<checkin_id>\d+)/$', views.notice_detail, name="notice_detail"),
     url(r'^checkin/(?P<checkin_id>\d+)/reject/$', views.checkin_reject, name="checkin_reject"),
@@ -13,6 +13,7 @@ urlpatterns = patterns(
     url(r'^checkin/(?P<checkin_id>\d+)/accept/$', views.checkin_accept, name="checkin_accept"),
     url(r'^checkin/(?P<checkin_id>\d+)/send_to/pending/$', views.checkin_send_to_pending, name="checkin_send_to_pending"),
     url(r'^checkin/(?P<checkin_id>\d+)/send_to/review/$', views.checkin_send_to_review, name="checkin_send_to_review"),
+    url(r'^checkin/(?P<checkin_id>\d+)/history/$', views.checkin_history, name="checkin_history"),
 
     # TICKETS
     url(r'^ticket/add/(?P<checkin_id>\d+)/$', views.ticket_add, name="ticket_add"),

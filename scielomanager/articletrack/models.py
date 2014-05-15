@@ -360,6 +360,14 @@ class CheckinWorkflowLog(caching.base.CachingMixin, models.Model):
     description = models.TextField(_(u'Description'), null=True, blank=True)
     checkin = models.ForeignKey(Checkin, related_name='checkin_worflow_logs')
 
+    def __unicode__(self):
+        return "%s - %s (%s)" % (self.checkin, self.status, self.user)
+
+    class Meta:
+        verbose_name = _(u'Checkin workflow Log')
+        verbose_name_plural = _(u'Checkin workflow Logs')
+        ordering = ['created_at']
+
 
 class Article(caching.base.CachingMixin, models.Model):
 
