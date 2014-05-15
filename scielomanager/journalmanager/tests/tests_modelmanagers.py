@@ -1062,3 +1062,77 @@ class AheadPressReleaseManagerTests(TestCase):
 
         self.assertEqual(user_prs.count(), 1)
         self.assertIn(pr, user_prs)
+
+
+
+class IssueManagerTests(TestCase):
+
+    def _make_user(self, *collection):
+        user = auth.UserF(is_active=True)
+        for coll in collection:
+            coll.add_user(user, is_manager=True)
+
+        return user
+
+    def test_manager_base_interface(self):
+        mandatory_attrs = ['all', 'active']
+
+        for attr in mandatory_attrs:
+            self.assertTrue(hasattr(models.Issue.userobjects, attr))
+
+    def test_queryset_base_interface(self):
+        mandatory_attrs = ['all', 'active',]
+
+        mm = modelmanagers.IssueQuerySet()
+
+        for attr in mandatory_attrs:
+            self.assertTrue(hasattr(mm, attr))
+
+    def test_all_returns_user_objects_no_matter_the_active_context(self):
+        collection1 = modelfactories.CollectionFactory.create()
+        collection2 = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        issue1 = modelfactories.IssueFactory.create(journal=journal1)
+
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
+        issue2 = modelfactories.IssueFactory.create(journal=journal2)
+
+        def get_user_collections():
+            return user.user_collection.all()
+
+        user_sections = models.Issue.userobjects.all(
+            get_all_collections=get_user_collections)
+
+        self.assertEqual(user_sections.count(), 2)
+        self.assertIn(issue1, user_sections)
+        self.assertIn(issue2, user_sections)
+
+    def test_active_returns_user_objects_bound_to_the_active_context(self):
+        collection1 = modelfactories.CollectionFactory.create()
+        collection2 = modelfactories.CollectionFactory.create()
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        journal1 = modelfactories.JournalFactory.create()
+        journal1.join(collection1, user)
+        issue1 = modelfactories.IssueFactory.create(journal=journal1)
+
+        journal2 = modelfactories.JournalFactory.create()
+        journal2.join(collection2, user)
+        issue2 = modelfactories.IssueFactory.create(journal=journal2)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_sections = models.Issue.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_sections.count(), 1)
+        self.assertIn(issue2, user_sections)

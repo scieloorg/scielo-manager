@@ -26,7 +26,7 @@ class ArticleTests(WebTest):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True, is_default=True)
 
     def test_list_without_articles(self):
         perm_article_list = _makePermission(perm='list_article',

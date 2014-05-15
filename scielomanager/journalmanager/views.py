@@ -201,7 +201,7 @@ def sponsor_index(request, journal_id=None):
 @permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
 def article_index(request, issue_id):
 
-    issue = get_object_or_404(models.Issue, pk=issue_id)
+    issue = get_object_or_404(models.Issue.userobjects.active(), pk=issue_id)
 
     return render_to_response(
         'journalmanager/article_list.html',
@@ -238,7 +238,7 @@ def generic_toggle_availability(request, object_id, model):
 
     if request.is_ajax():
 
-        model = get_object_or_404(model, pk=object_id)
+        model = get_object_or_404(model.userobjects.active(), pk=object_id)
         model.is_trashed = not model.is_trashed
         model.save()
 
