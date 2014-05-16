@@ -218,18 +218,13 @@ def checkin_send_to_review(request, checkin_id):
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
-def checkin_history(request, article_id):
-
-    article = get_object_or_404(models.Article.userobjects.active().select_related('checkins'),
-        pk=article_id)
-
-    objects = get_paginated(article.checkins.all(), request.GET.get('page', 1))
+def checkin_history(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
 
     return render_to_response(
-        'articletrack/history.html',
+        'articletrack/checkin_history.html',
         {
-            'checkins': objects,
-            'first_article': article,
+            'checkin': checkin,
         },
         context_instance=RequestContext(request)
     )
@@ -245,7 +240,7 @@ def notice_detail(request, checkin_id):
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
 
-    zip_filename =  "%s_%s"% (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
+    zip_filename = "%s_%s" % (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
     reject_form = CheckinRejectForm()
     context = {
         'notices': notices,
