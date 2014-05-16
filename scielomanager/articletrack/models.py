@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 MSG_WORKFLOW_ACCEPTED = 'Checkin Accepted'
 MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
 MSG_WORKFLOW_REVIEWED = 'Checkin Reviewed'
-MSG_WORKFLOW_SENT_TO_PENDIG = 'Checkin Sent to Pending'
+MSG_WORKFLOW_SENT_TO_PENDING = 'Checkin Sent to Pending'
 MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 
 
@@ -204,7 +204,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         else:
             raise ValueError('This checkin does not comply with the conditions to be accepted')
 
-    @log_workflow_status(MSG_WORKFLOW_SENT_TO_PENDIG)
+    @log_workflow_status(MSG_WORKFLOW_SENT_TO_PENDING)
     def send_to_pending(self, responsible):
         """
         Send to pending list: change the status to 'pending' if self.can_be_send_to_pending == True else raise

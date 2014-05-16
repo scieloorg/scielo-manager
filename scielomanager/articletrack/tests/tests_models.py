@@ -323,4 +323,4 @@ class CheckinWorkflowLogTests(TestCase):
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user2_send_to_review)
-        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDIG)
+        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDING)
