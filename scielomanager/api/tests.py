@@ -583,6 +583,93 @@ class IssuesRestAPITest(WebTest):
 
         self.assertEqual(len(content['objects']), 0)
 
+    def test_if_the_returned_list_are_from_correct_collection(self):
+        """
+        test if the API is considering the colletion on filter
+        """
+        collection1 = modelfactories.CollectionFactory()
+        collection2 = modelfactories.CollectionFactory()
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection1, self.user)
+
+        modelfactories.IssueFactory.create(journal=journal)
+
+        #test if return one issue from collecion1
+        response1 = self.app.get('/api/v1/issues/?collection=%s&print_issn=%s' % (collection1.name, journal.print_issn) , extra_environ=self.extra_environ)
+        content1 = json.loads(response1.content)
+
+        self.assertEqual(response1.status_code, 200)
+        self.assertTrue('objects' in response1.content)
+
+        self.assertEqual(len(content1['objects']), 1)
+
+        #test if return nothing issue from collecion2
+        response2 = self.app.get('/api/v1/issues/?collection=%s&print_issn=%s' % (collection2.name, journal.print_issn) , extra_environ=self.extra_environ)
+        content2 = json.loads(response2.content)
+
+        self.assertEqual(response2.status_code, 200)
+        self.assertTrue('objects' in response2.content)
+
+        self.assertEqual(len(content2['objects']), 0)
+
+
+    def test_number_of_itens_when_change_filters(self):
+        """
+        test if number of itens changes when change params
+        """
+        collection = modelfactories.CollectionFactory()
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(collection, self.user)
+
+        modelfactories.IssueFactory.create(journal=journal)
+        modelfactories.IssueFactory.create(journal=journal, number='999', type='supplement',)
+        modelfactories.IssueFactory.create(journal=journal, number='999', type='supplement',)
+        modelfactories.IssueFactory.create(journal=journal, number='999', type='supplement',)
+        modelfactories.IssueFactory.create(journal=journal, number='999', volume='2', type='supplement', )
+        modelfactories.IssueFactory.create(journal=journal, number='999', volume='3', type='supplement', )
+        modelfactories.IssueFactory.create(journal=journal, number='999', volume='5', type='supplement', )
+        modelfactories.IssueFactory.create(journal=journal, number='', volume='2', type='supplement', )
+        modelfactories.IssueFactory.create(journal=journal, number='', volume='2', type='supplement', )
+        modelfactories.IssueFactory.create(journal=journal, number='', volume='2', type='supplement', )
+
+        #test with param number
+        response = self.app.get('/api/v1/issues/?suppl_number=999', extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+        self.assertEqual(len(content['objects']), 6)
+
+        #test with param number and suppl_volume
+        response = self.app.get('/api/v1/issues/?suppl_volume=2', extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+        self.assertEqual(len(content['objects']), 3)
+
+        #test with param number and suppl_number and suppl_volume, must return empty list
+        response = self.app.get('/api/v1/issues/?suppl_volume=2&suppl_number=999', extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+        self.assertEqual(len(content['objects']), 0)
+
+        #test with param number and suppl_number and suppl_volume, change sequence of params
+        response = self.app.get('/api/v1/issues/?suppl_number=999&suppl_volume=2', extra_environ=self.extra_environ)
+        content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+        self.assertEqual(len(content['objects']), 0)
+
 
 class SectionsRestAPITest(WebTest):
 

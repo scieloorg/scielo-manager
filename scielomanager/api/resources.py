@@ -93,28 +93,29 @@ class IssueResource(ModelResource):
             filters = {}
         orm_filters = super(IssueResource, self).build_filters(filters)
 
+        param_filters = {}
+
         if 'collection' in filters:
-            issues = Issue.objects.filter(
-                journal__collections__name_slug=filters['collection'])
-            orm_filters['pk__in'] = issues
+            param_filters['journal__collections__name_slug'] = filters['collection']
 
         if 'eletronic_issn' in filters:
-            issues = Issue.objects.filter(
-                journal__eletronic_issn=filters['eletronic_issn'])
-            orm_filters['pk__in'] = issues
+            param_filters['journal__eletronic_issn'] = filters['eletronic_issn']
 
         if 'print_issn' in filters:
-            issues = Issue.objects.filter(
-                journal__print_issn=filters['print_issn'])
-            orm_filters['pk__in'] = issues
+            param_filters['journal__print_issn'] = filters['print_issn']
 
         if 'suppl_number' in filters:
-            issues = Issue.objects.filter(type='supplement', number=filters['suppl_number'])
-            orm_filters['pk__in'] = issues
+            param_filters['type'] = 'supplement'
+            param_filters['number'] = filters['suppl_number']
 
         if 'suppl_volume' in filters:
-            issues = Issue.objects.filter(type='supplement', number='', volume=filters['suppl_volume'])
-            orm_filters['pk__in'] = issues
+            param_filters['type'] = 'supplement'
+            param_filters['number'] = ''
+            param_filters['volume'] = filters['suppl_volume']
+
+        issues = Issue.objects.filter(**param_filters)
+
+        orm_filters['pk__in'] = issues
 
         return orm_filters
 
