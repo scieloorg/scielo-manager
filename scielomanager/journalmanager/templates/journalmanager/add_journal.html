@@ -626,10 +626,9 @@
       if (sys_msgs.size() > 0) {
         sys_msgs.append(msg_html).slideDown();
       } else {
-        msg_html = '<div class="sys-msgs">' + msg_html +'</div>';
+        msg_html = '<div class="sys-msgs">' + msg_html + '</div>';
         mainContent.prepend(msg_html).slideDown();
       }
-
 
     }
     $('a[target!="_blank"]', '.cover-block').addClass('btn').attr('target', '_blank');

@@ -90,6 +90,7 @@ class LoginForm(WebTest):
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
+        collection.make_default_to_user(user)
 
         page = self.app.get(reverse('journal.index'), user=user)
 

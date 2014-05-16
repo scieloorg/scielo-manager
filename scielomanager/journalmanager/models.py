@@ -917,6 +917,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     #Custom manager
     objects = IssueCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.IssueManager()
 
     section = models.ManyToManyField(Section, blank=True)
     journal = models.ForeignKey(Journal)
