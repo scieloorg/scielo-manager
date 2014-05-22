@@ -302,7 +302,7 @@ class CheckinWorkflowLogTests(TestCase):
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user_reject)
-        expected_description = "%s. Rejected cause: %s" % (models.MSG_WORKFLOW_REJECTED, checkin.rejected_cause)
+        expected_description = "%s - Reason: %s" % (models.MSG_WORKFLOW_REJECTED, checkin.rejected_cause)
         self.assertEqual(logs[0].description, expected_description)
 
     def test_checkin_send_to_pending_log(self):
@@ -328,4 +328,4 @@ class CheckinWorkflowLogTests(TestCase):
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user2_send_to_review)
-        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDIG)
+        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDING)

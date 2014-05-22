@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 MSG_WORKFLOW_ACCEPTED = 'Checkin Accepted'
 MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
 MSG_WORKFLOW_REVIEWED = 'Checkin Reviewed'
-MSG_WORKFLOW_SENT_TO_PENDIG = 'Checkin Sent to Pending'
+MSG_WORKFLOW_SENT_TO_PENDING = 'Checkin Sent to Pending'
 MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 
 
@@ -46,6 +46,24 @@ CHECKIN_STATUS_CHOICES = (
     ('accepted', _('Accepted')),
     ('rejected', _('Rejected')),
 )
+
+
+def log_workflow_status(message):
+    def decorator(f):
+        def decorated(*args, **kwargs):
+            ret = f(*args, **kwargs)
+
+            log = CheckinWorkflowLog()
+            log.checkin = args[0]
+            log.status = args[0].status
+            log.created_at = datetime.datetime.now()
+            log.user = args[1]
+            log.description = message + (" - Reason: %s" % args[0].rejected_cause if getattr(args[0], 'rejected_cause') else '')
+            log.save()
+
+            return ret
+        return decorated
+    return decorator
 
 
 class Checkin(caching.base.CachingMixin, models.Model):
@@ -163,6 +181,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'review'
 
+    @log_workflow_status(MSG_WORKFLOW_ACCEPTED)
     def accept(self, responsible):
         """
         Accept the checkin as ready to be part of the collection.
@@ -182,17 +201,10 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.accepted_at = datetime.datetime.now()
             self.status = 'accepted'
             self.save()
-            # log data for history
-            log = CheckinWorkflowLog()
-            log.checkin = self
-            log.status = self.status
-            log.created_at = self.accepted_at
-            log.user = responsible
-            log.description = MSG_WORKFLOW_ACCEPTED
-            log.save()
         else:
             raise ValueError('This checkin does not comply with the conditions to be accepted')
 
+    @log_workflow_status(MSG_WORKFLOW_SENT_TO_PENDING)
     def send_to_pending(self, responsible):
         """
         Send to pending list: change the status to 'pending' if self.can_be_send_to_pending == True else raise
@@ -210,17 +222,10 @@ class Checkin(caching.base.CachingMixin, models.Model):
         elif self.can_be_send_to_pending:
             self.status = 'pending'
             self.save()
-            # log data for history
-            log = CheckinWorkflowLog()
-            log.checkin = self
-            log.status = self.status
-            log.created_at = datetime.datetime.now()
-            log.user = responsible
-            log.description = MSG_WORKFLOW_SENT_TO_PENDIG
-            log.save()
         else:
             raise ValueError('This checkin does not comply with the conditions to change status to "review"')
 
+    @log_workflow_status(MSG_WORKFLOW_SENT_TO_REVIEW)
     def send_to_review(self, responsible):
         """
         Send to review list: change the status to review if self.can_be_send_to_review == True else raise
@@ -238,17 +243,10 @@ class Checkin(caching.base.CachingMixin, models.Model):
         elif self.can_be_send_to_review:
             self.status = 'review'
             self.save()
-            # log data for history
-            log = CheckinWorkflowLog()
-            log.checkin = self
-            log.status = self.status
-            log.created_at = datetime.datetime.now()
-            log.user = responsible
-            log.description = MSG_WORKFLOW_SENT_TO_REVIEW
-            log.save()
         else:
             raise ValueError('This checkin does not comply with the conditions to change status to "review"')
 
+    @log_workflow_status(MSG_WORKFLOW_REVIEWED)
     def do_review(self, responsible):
         """
         Checkin with status review, are filled with review information (saves reviewer and revisition data)
@@ -267,21 +265,15 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.reviewed_by = responsible
             self.reviewed_at = datetime.datetime.now()
             self.save()
-            # log data for history
-            log = CheckinWorkflowLog()
-            log.checkin = self
-            log.status = self.status
-            log.created_at = self.reviewed_at
-            log.user = responsible
-            log.description = MSG_WORKFLOW_REVIEWED
-            log.save()
         else:
             raise ValueError('This checkin does not comply with the conditions to be reviewed')
 
-    def do_reject(self, responsible, cause):
+
+    @log_workflow_status(MSG_WORKFLOW_REJECTED)
+    def do_reject(self, responsible, reason):
         """
         Checkins that can_be_rejected == True, is changed to status == 'rejected'
-        Must be saved the date, the responsible of the action and a cause of rejection.
+        Must be saved the date, the responsible of the action and a reason of rejection.
 
         Raises ValueError if self relates to an already accepted article or
         if the user `responsible` is not active or if exist any accepted article already.
@@ -296,16 +288,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.status = 'rejected'
             self.rejected_by = responsible
             self.rejected_at = datetime.datetime.now()
-            self.rejected_cause = cause
+            self.rejected_cause = reason
             self.save()
-            # log data for history
-            log = CheckinWorkflowLog()
-            log.checkin = self
-            log.status = self.status
-            log.created_at = self.rejected_at
-            log.user = responsible
-            log.description = "%s. Rejected cause: %s" % (MSG_WORKFLOW_REJECTED, self.rejected_cause)
-            log.save()
         else:
             raise ValueError('This checkin does not comply with the conditions to change status to "rejected"')
 
