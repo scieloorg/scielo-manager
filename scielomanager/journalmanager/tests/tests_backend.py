@@ -17,7 +17,8 @@ class ModelBackendTest(TestCase):
                                password=HASH_FOR_123,
                                email='foo@bar.org',
                                is_active=True)
-        self.profile = modelfactories.UserProfileFactory.build(user=self.user,
+        self.profile = modelfactories.UserProfileFactory.build(
+            user=self.user,
             email=self.user.email).save()
 
     def test_right_username_and_right_password(self):

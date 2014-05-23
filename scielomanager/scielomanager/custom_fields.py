@@ -24,8 +24,8 @@ class ContentTypeRestrictedFileField(FileField):
     """
 
     def __init__(self, *args, **kwargs):
-        self.content_types = kwargs.pop("content_types")
-        self.max_upload_size = kwargs.pop("max_upload_size")
+        self.content_types = kwargs.pop("content_types", None)
+        self.max_upload_size = kwargs.pop("max_upload_size", None)
 
         super(ContentTypeRestrictedFileField, self).__init__(*args, **kwargs)
 
@@ -47,3 +47,6 @@ class ContentTypeRestrictedFileField(FileField):
             pass
 
         return data
+
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^scielomanager\.custom_fields\.ContentTypeRestrictedFileField"])

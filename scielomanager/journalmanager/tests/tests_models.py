@@ -16,6 +16,12 @@ from .modelfactories import (
     CollectionFactory,
     RegularPressReleaseFactory,
 )
+from journalmanager import models
+from scielomanager.utils.modelmanagers.helpers import (
+    _makeUserProfile,
+    _makeUserRequestContext,
+)
+HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
 
 class SectionTests(MockerTestCase):
@@ -76,8 +82,7 @@ class SectionTests(MockerTestCase):
         section = SectionFactory.create()
         expected_code = '{0}-{1}'.format(section.journal.acronym, 'XYZW')
 
-        self.assertEqual(section._suggest_code(rand_generator=gen),
-            expected_code)
+        self.assertEqual(section._suggest_code(rand_generator=gen), expected_code)
 
 
 class UserProfileTests(TestCase):
@@ -279,6 +284,7 @@ class IssueTests(TestCase):
         default_use_license = UseLicense.objects.get(is_default=True)
         self.assertEqual(issue.use_license, default_use_license)
 
+
 class LanguageTests(TestCase):
 
     def test_the_unicode_repr_must_be_in_current_language(self):
@@ -289,6 +295,15 @@ class LanguageTests(TestCase):
 
 
 class JournalTests(TestCase):
+    def setUp(self):
+        self.user = auth.UserF(username='foo', password=HASH_FOR_123, is_active=True)
+        self.collection = CollectionFactory.create()
+        _makeUserProfile(self.user)
+
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
 
     def test_valid_is_editors(self):
         user = auth.UserF()
@@ -307,8 +322,7 @@ class JournalTests(TestCase):
     def test_issues_grid_with_numerical_issue_numbers(self):
         journal = JournalFactory.create()
         for i in range(5):
-            journal.issue_set.add(IssueFactory.create(volume=9,
-                publication_year=2012))
+            journal.issue_set.add(IssueFactory.create(volume=9, publication_year=2012))
 
         grid = journal.issues_as_grid()
 
@@ -335,8 +349,7 @@ class JournalTests(TestCase):
     def test_issues_grid_with_unavailable_issues(self):
         journal = JournalFactory.create()
         for i in range(5):
-            journal.issue_set.add(IssueFactory.create(volume=9,
-                publication_year=2012))
+            journal.issue_set.add(IssueFactory.create(volume=9, publication_year=2012))
 
         grid = journal.issues_as_grid(is_available=False)
 
@@ -346,8 +359,7 @@ class JournalTests(TestCase):
         journal = JournalFactory.create()
         for i in range(5):
             year = 2012 - i
-            journal.issue_set.add(IssueFactory.create(volume=9,
-                publication_year=year))
+            journal.issue_set.add(IssueFactory.create(volume=9, publication_year=year))
 
         grid = journal.issues_as_grid()
         expected = [2012, 2011, 2010, 2009, 2008]
@@ -383,17 +395,13 @@ class JournalTests(TestCase):
     def test_issues_grid_must_be_ordered_by_volume_in_the_same_year(self):
         journal = JournalFactory.create()
 
-        journal.issue_set.add(IssueFactory.create(volume='27',
-            publication_year='2014'))
+        journal.issue_set.add(IssueFactory.create(volume='27', publication_year='2014'))
 
-        journal.issue_set.add(IssueFactory.create(volume='10',
-            publication_year='2014'))
+        journal.issue_set.add(IssueFactory.create(volume='10', publication_year='2014'))
 
-        journal.issue_set.add(IssueFactory.create(volume='9',
-            publication_year='2014'))
+        journal.issue_set.add(IssueFactory.create(volume='9', publication_year='2014'))
 
-        journal.issue_set.add(IssueFactory.create(volume='2',
-            publication_year='2014'))
+        journal.issue_set.add(IssueFactory.create(volume='2', publication_year='2014'))
 
         grid = journal.issues_as_grid()
         expected = [u'27', u'10', u'9', u'2']
@@ -471,7 +479,8 @@ class JournalTests(TestCase):
 
         expected_order = [1, 2, 4]
 
-        self.assertRaises(ValueError,
+        self.assertRaises(
+            ValueError,
             lambda: journal.reorder_issues(expected_order,
                                            volume=9,
                                            publication_year=2012))
@@ -496,114 +505,123 @@ class JournalTests(TestCase):
 
 
 class CollectionTests(TestCase):
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.collection = CollectionFactory.create()
+        _makeUserProfile(self.user)
+
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
 
     def test_collection_as_default_to_user(self):
-        collection = CollectionFactory.create()
-        collection.make_default_to_user(auth.UserF())
+        self.collection.make_default_to_user(self.user)
 
-        from journalmanager import models
-        collection_ = models.UserCollections.objects.get(is_default=True).collection
-        self.assertEqual(collection_, collection)
+        collection = models.UserCollections.objects.get(is_default=True).collection
+        self.assertEqual(collection, self.collection)
 
     def test_collection_is_not_default_to_user(self):
         collection = CollectionFactory.create()
         user = auth.UserF()
-
+        _makeUserProfile(user)
         self.assertFalse(collection.is_default_to_user(user))
 
     def test_collection_is_default_to_user(self):
-        user = auth.UserF()
-        collection = CollectionFactory.create()
-        collection.make_default_to_user(user)
+        self.collection.make_default_to_user(self.user)
 
-        self.assertTrue(collection.is_default_to_user(user))
+        self.assertTrue(self.collection.is_default_to_user(self.user))
 
     def test_add_user(self):
-        user = auth.UserF()
         collection = CollectionFactory.create()
-        collection.add_user(user)
+        collection.add_user(self.user)
 
-        from journalmanager import models
-        self.assertTrue(models.UserCollections.objects.get(user=user,
-            collection=collection))
+        self.assertTrue(models.UserCollections.objects.get(user=self.user, collection=collection))
 
     def test_remove_user(self):
-        user = auth.UserF()
-        collection = CollectionFactory.create()
-        collection.add_user(user)
+        self.collection.add_user(self.user)
 
-        collection.remove_user(user)
+        self.collection.remove_user(self.user)
 
-        from journalmanager import models
-        self.assertRaises(models.UserCollections.DoesNotExist,
-            lambda: models.UserCollections.objects.get(user=user,
-                                                       collection=collection)
+        self.assertRaises(
+            models.UserCollections.DoesNotExist,
+            lambda: models.UserCollections.objects.get(user=self.user,
+                                                       collection=self.collection)
             )
 
     def test_remove_user_that_is_not_related_to_the_collection(self):
         user = auth.UserF()
-        collection = CollectionFactory.create()
+        _makeUserProfile(user)
+        self.collection.remove_user(user)
 
-        collection.remove_user(user)
-
-        from journalmanager import models
-        self.assertRaises(models.UserCollections.DoesNotExist,
+        self.assertRaises(
+            models.UserCollections.DoesNotExist,
             lambda: models.UserCollections.objects.get(user=user,
-                                                       collection=collection)
+                                                       collection=self.collection)
             )
 
     def test_collection_is_managed_by_user(self):
-        user = auth.UserF()
-        collection = CollectionFactory.create()
-        collection.add_user(user, is_manager=True)
+        self.collection.add_user(self.user, is_manager=True)
 
-        self.assertTrue(collection.is_managed_by_user(user))
+        self.assertTrue(self.collection.is_managed_by_user(self.user))
 
 
 class CollectionManagerTests(TestCase):
+    def setUp(self):
+        self.user = auth.UserF()
+        _makeUserProfile(self.user)
+        _makeUserRequestContext(self.user)
+        self.collection = CollectionFactory.create()
+
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
 
     def test_get_all_by_user(self):
-        user = auth.UserF()
-
         for i in range(5):
             if i % 2:
                 CollectionFactory.create()
             else:
                 col = CollectionFactory.create()
-                col.add_user(user)
+                col.add_user(self.user)
 
-        from journalmanager import models
-        collections = models.Collection.objects.all_by_user(user)
+        def get_user_collections():
+            return self.user.user_collection.all()
+
+        collections = models.Collection.userobjects.all(
+            get_all_collections=get_user_collections
+        )
 
         self.assertEqual(collections.count(), 3)
 
     def test_get_default_by_user(self):
-        user = auth.UserF()
-
         col1 = CollectionFactory.create()
-        col1.make_default_to_user(user)
+        col1.make_default_to_user(self.user)
         col2 = CollectionFactory.create()
-        col2.add_user(user)
-
-        from journalmanager import models
-        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+        col2.add_user(self.user)
+        self.assertEqual(
+            self.user.get_profile().get_default_collection,
             col1)
 
     def test_get_default_by_user_second_collection(self):
-        user = auth.UserF()
-
         col1 = CollectionFactory.create()
-        col1.make_default_to_user(user)
+        col1.make_default_to_user(self.user)
         col2 = CollectionFactory.create()
-        col2.make_default_to_user(user)
+        col2.make_default_to_user(self.user)
 
-        from journalmanager import models
-        self.assertEqual(models.Collection.objects.get_default_by_user(user),
+        def get_user_active_collection():
+            return col2
+
+        self.assertEqual(
+            models.Collection.userobjects.active(get_active_collection=get_user_active_collection),
             col2)
 
     def test_get_default_by_user_with_two_users(self):
         user1 = auth.UserF()
         user2 = auth.UserF()
+        _makeUserProfile(user1)
+        _makeUserProfile(user2)
 
         col1 = CollectionFactory.create()
         col1.make_default_to_user(user1)
@@ -611,33 +629,18 @@ class CollectionManagerTests(TestCase):
         col2 = CollectionFactory.create()
         col2.add_user(user1)
         col2.make_default_to_user(user2)
-
-        from journalmanager import models
-        self.assertEqual(models.Collection.objects.get_default_by_user(user1),
-            col1)
-        self.assertEqual(models.Collection.objects.get_default_by_user(user2),
-            col2)
-
-    def test_get_first_alphabeticaly_when_default_is_not_set(self):
-        user = auth.UserF()
-
-        col1 = CollectionFactory.create()
-        col1.add_user(user)
-        col2 = CollectionFactory.create()
-        col2.add_user(user)
-
-        from journalmanager import models
-        self.assertEqual(models.Collection.objects.get_default_by_user(user),
-            col1)
+        self.assertEqual(user1.get_profile().get_default_collection, col1)
+        self.assertEqual(user2.get_profile().get_default_collection, col2)
 
     def test_get_default_by_user_must_raise_doesnotexist_if_the_user_has_no_collections(self):
-        user = auth.UserF()
-
         col1 = CollectionFactory.create()
 
-        from journalmanager import models
-        self.assertRaises(models.Collection.DoesNotExist,
-            lambda: models.Collection.objects.get_default_by_user(user))
+        def get_user_collections():
+            raise RuntimeError()
+
+        self.assertRaises(
+            models.Collection.DoesNotExist,
+            lambda: models.Collection.userobjects.active(get_active_collection=get_user_collections))
 
 
 class PressReleaseTests(TestCase):
@@ -648,7 +651,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertEqual(pr.translations.all().count(), 1)
         self.assertEqual(pr.translations.all()[0].title, 'Breaking news!')
@@ -660,7 +663,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertEqual(pr.translations.all().count(), 1)
 
@@ -673,7 +676,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertEqual(pr.translations.all().count(), 1)
 
@@ -686,7 +689,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertEqual(pr.translations.all().count(), 1)
 
@@ -699,7 +702,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertEqual(pr.translations.all().count(), 1)
 
@@ -714,7 +717,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertIsInstance(pr.get_trans('en'), PressReleaseTranslation)
 
@@ -726,7 +729,7 @@ class PressReleaseTests(TestCase):
         pr = RegularPressReleaseFactory.create(issue=issue)
         pr.add_translation('Breaking news!',
                            'This issue is awesome!',
-                            language)
+                           language)
 
         self.assertRaises(PressReleaseTranslation.DoesNotExist,
                           lambda: pr.get_trans('jp'))
@@ -815,7 +818,6 @@ class PressReleaseManagerTests(TestCase):
 
 class JournalManagerTests(TestCase):
     def test_by_issn(self):
-        from journalmanager import models
         journal = JournalFactory.create(print_issn='2398-8734')
         journal2 = JournalFactory.create()
 
@@ -832,8 +834,6 @@ class ArticleTests(TestCase):
         self._front = {u"title": u"Article Title"}
 
     def test_add_article(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -848,8 +848,6 @@ class ArticleTests(TestCase):
         self.assertEqual(len(myarticle), 1)
 
     def test_article_issue_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -864,8 +862,6 @@ class ArticleTests(TestCase):
         self.assertEqual(myarticle.issue.publication_year, 2012)
 
     def test_article_front_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -880,8 +876,6 @@ class ArticleTests(TestCase):
         self.assertEqual(myarticle.front['title'], u'Article Title')
 
     def test_article_xml_url_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -897,8 +891,6 @@ class ArticleTests(TestCase):
         self.assertEqual(myarticle.xml_url, u'http://xml.url.com')
 
     def test_article_pdf_url_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -914,8 +906,6 @@ class ArticleTests(TestCase):
         self.assertEqual(myarticle.pdf_url, u'http://pdf.url.com')
 
     def test_article_images_url_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -931,8 +921,6 @@ class ArticleTests(TestCase):
         self.assertEqual(myarticle.images_url, u'http://img.url.com')
 
     def test_article_mandatory_issue_field(self):
-        from journalmanager import models
-
         article = models.Article(
             front=self._front,
             xml_url=u'http://xml.url.com',
@@ -944,8 +932,6 @@ class ArticleTests(TestCase):
             article.save()
 
     def test_article_mandatory_xml_url_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -958,8 +944,6 @@ class ArticleTests(TestCase):
             article.save()
 
     def test_article_mandatory_pdf_url_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -972,8 +956,6 @@ class ArticleTests(TestCase):
             article.save()
 
     def test_article_mandatory_images_url_field(self):
-        from journalmanager import models
-
         article = models.Article(
             issue=self._issue,
             front=self._front,
@@ -986,8 +968,6 @@ class ArticleTests(TestCase):
             article.save()
 
     def test_article_title_default_language_en(self):
-        from journalmanager import models
-
         front = {
             'default-language': 'en',
             'title-group': {
@@ -1001,8 +981,6 @@ class ArticleTests(TestCase):
         self.assertEqual(article.title, u'Article Title')
 
     def test_article_title_default_language_pt(self):
-        from journalmanager import models
-
         front = {
             'default-language': 'pt',
             'title-group': {
@@ -1016,15 +994,11 @@ class ArticleTests(TestCase):
         self.assertEqual(article.title, u'Título do Artigo')
 
     def test_article_title_without_data(self):
-        from journalmanager import models
-
         article = ArticleFactory.create(issue=self._issue, front={})
 
         self.assertEqual(article.title, None)
 
     def test_article_title_default_language_without_data(self):
-        from journalmanager import models
-
         front = {
             'title-group': {
                 'en': u'Article Title',
@@ -1037,8 +1011,6 @@ class ArticleTests(TestCase):
         self.assertTrue(article.title in [u'Article Title', u'Título do Artigo'])
 
     def test_article_title_default_language_without_related_title_data(self):
-        from journalmanager import models
-
         front = {
             'default-language': 'xx',
             'title-group': {
@@ -1053,16 +1025,12 @@ class ArticleTests(TestCase):
 
     def test_aticle_titles(self):
 
-        from journalmanager import models
-
         article = ArticleFactory.create(issue=self._issue)
 
         self.assertEqual(article.titles['en'], u'Article Title')
         self.assertEqual(article.titles['pt'], u'Título do Artigo')
 
     def test_aticle_titles_without_data(self):
-
-        from journalmanager import models
 
         article = ArticleFactory.create(issue=self._issue, front={})
 
@@ -1072,8 +1040,6 @@ class ArticleTests(TestCase):
 class UseLicenseTests(TestCase):
 
     def test_create_license_and_set_as_default(self):
-        from journalmanager import models
-
         license1 = models.UseLicense(license_code='XXX')
         license2 = models.UseLicense(license_code='YYY', is_default=False)
         license3 = models.UseLicense(license_code='ZZZ', is_default=True)
@@ -1089,8 +1055,6 @@ class UseLicenseTests(TestCase):
         self.assertTrue(license3.is_default)
 
     def test_edit_license_and_change_default(self):
-        from journalmanager import models
-
         license = models.UseLicense(license_code='XXX')
 
         license.save()
@@ -1108,11 +1072,3 @@ class UseLicenseTests(TestCase):
         #  and then license.is_default must be False
         license = models.UseLicense.objects.get(license_code='XXX')
         self.assertFalse(license.is_default)
-
-
-
-
-
-
-
-

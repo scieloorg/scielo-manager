@@ -54,4 +54,3 @@ class UserObjectManager(caching.base.CachingManager):
 
     def active(self, **kwargs):
         return self.get_query_set().active(**kwargs)
-

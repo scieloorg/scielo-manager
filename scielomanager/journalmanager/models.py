@@ -104,10 +104,11 @@ class JournalCustomManager(AppCustomManager):
         Retrieves all the user's journals, contextualized by
         their default collection.
         """
-        default_collection = Collection.objects.get_default_by_user(user)
-
-        objects_all = self.available(is_available).filter(
-            collections=default_collection).distinct()
+        objects_all = Journal.userobjects.all()
+        if is_available:
+            objects_all = objects_all.available().distinct()
+        else:
+            objects_all = objects_all.unavailable().distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -119,7 +120,7 @@ class JournalCustomManager(AppCustomManager):
         """
         Retrieves the recently modified objects related to the given user.
         """
-        default_collection = Collection.objects.get_default_by_user(user)
+        default_collection = Collection.userobjects.active()
 
         recents = self.filter(
             collections=default_collection).distinct().order_by('-updated')[:5]
@@ -205,7 +206,8 @@ class CollectionCustomManager(AppCustomManager):
         `get_default_by_user` raises DoesNotExist if there is no
         result for the given parameter.
         """
-        collections = self.filter(usercollections__user=user,
+        collections = self.filter(
+            usercollections__user=user,
             usercollections__is_default=True).order_by('name')
 
         if not collections.count():
@@ -223,7 +225,8 @@ class CollectionCustomManager(AppCustomManager):
         """
         Returns all collections managed by a given user.
         """
-        collections = self.filter(usercollections__user=user,
+        collections = self.filter(
+            usercollections__user=user,
             usercollections__is_manager=True).order_by('name')
 
         return collections
@@ -286,6 +289,7 @@ class Language(caching.base.CachingMixin, models.Model):
     """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+
     iso_code = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     name = models.CharField(_('Language Name (in English)'), max_length=64)
 
@@ -299,6 +303,7 @@ class Language(caching.base.CachingMixin, models.Model):
 class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+
     user = models.OneToOneField(User)
     email = models.EmailField(_('E-mail'), blank=False, unique=True, null=False)
 
@@ -309,15 +314,16 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     @property
     def avatar_url(self):
         params = urllib.urlencode({'s': 18, 'd': 'mm'})
-        return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL',
-            'https://secure.gravatar.com'), self.gravatar_id, params)
+        return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL', 'https://secure.gravatar.com'), self.gravatar_id, params)
 
     @property
     def get_default_collection(self):
         """
-            Return the default collection for this user
+        Return the default collection for this user
         """
-        return Collection.objects.get_default_by_user(self.user)
+        # return Collection.objects.filter.active()
+        uc = UserCollections.objects.get(user=self.user, is_default=True)
+        return uc.collection
 
     def save(self, force_insert=False, force_update=False):
         self.user.email = self.email
@@ -326,10 +332,14 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
 
 class Collection(caching.base.CachingMixin, models.Model):
-    objects = CollectionCustomManager()
+    # objects = CollectionCustomManager()
+    # nocacheobjects = models.Manager()
+    # Custom manager
+    objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    collection = models.ManyToManyField(User, related_name='user_collection',
-        through='UserCollections', null=True, blank=True, )
+    userobjects = modelmanagers.CollectionManager()
+
+    collection = models.ManyToManyField(User, related_name='user_collection', through='UserCollections', null=True, blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
     name_slug = models.SlugField(unique=True, db_index=True, blank=True, null=True)
     url = models.URLField(_('Instance URL'), )
@@ -357,14 +367,21 @@ class Collection(caching.base.CachingMixin, models.Model):
         self.name_slug = slugify(self.name)
         super(Collection, self).save(*args, **kwargs)
 
-    def add_user(self, user, is_default=False, is_manager=False):
+    def add_user(self, user, is_manager=False):
         """
         Add the user to the current collection.
+        If user have not a default collection, then ``self``
+        will be the default one
         """
         UserCollections.objects.create(collection=self,
                                        user=user,
-                                       is_default=is_default,
+                                       is_default=False,
                                        is_manager=is_manager)
+
+        # if user do not have a default collections, make this the default one
+        user_has_default_collection = UserCollections.objects.filter(is_default=True, user=user).exists()
+        if not user_has_default_collection:
+            self.make_default_to_user(user)
 
     def remove_user(self, user):
         """
@@ -415,11 +432,12 @@ class Collection(caching.base.CachingMixin, models.Model):
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.UserCollectionsManager()
+
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
-    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False,
-        blank=False)
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=False)
 
     class Meta:
         unique_together = ("user", "collection", )
@@ -427,9 +445,10 @@ class UserCollections(caching.base.CachingMixin, models.Model):
 
 class Institution(caching.base.CachingMixin, models.Model):
 
-    #Custom manager
-    objects = AppCustomManager()
+    # Custom manager
+    objects = models.Manager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.InstitutionManager()
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -457,7 +476,8 @@ class Institution(caching.base.CachingMixin, models.Model):
 
 
 class Sponsor(Institution):
-    objects = InstitutionCustomManager()
+    # Custom manager
+    objects = models.Manager()
     nocacheobjects = models.Manager()
     userobjects = modelmanagers.SponsorManager()
 
@@ -469,7 +489,7 @@ class Sponsor(Institution):
 
 class SubjectCategory(caching.base.CachingMixin, models.Model):
 
-    #Custom manager
+    # Custom manager
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
 
@@ -485,7 +505,7 @@ class StudyArea(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     study_area = models.CharField(_('Study Area'), max_length=256,
-        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
+                                  choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
 
     def __unicode__(self):
         return self.study_area
@@ -501,12 +521,12 @@ class Journal(caching.base.CachingMixin, models.Model):
     for the Journal.
     """
 
-    #Custom manager
+    # Custom manager
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
     userobjects = modelmanagers.JournalManager()
 
-    #Relation fields
+    # Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
@@ -519,7 +539,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
     editors = models.ManyToManyField(User, related_name='user_editors', null=True, blank=True)
 
-    #Fields
+    # Fields
     current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)
     previous_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the previous year'), max_length=3, default=0, blank=True, null=True)
     twitter_user = models.CharField(_('Twitter User'), max_length=128, null=True, blank=True)
@@ -683,6 +703,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         else:
             return rel
 
+    def is_member(self, collection):
+        """
+        Returns a boolean indicating whether or not a member of a specific collection
+        """
+        return self.membership_set.filter(collection=collection).exists()
+
     def change_status(self, collection, new_status, reason, responsible):
         rel = self.membership_info(collection)
         rel.status = new_status
@@ -786,6 +812,7 @@ class UseLicense(caching.base.CachingMixin, models.Model):
                 qs.update(is_default=False)
         super(UseLicense, self).save(*args, **kwargs)
 
+
 class TranslatedData(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
@@ -819,7 +846,7 @@ class Section(caching.base.CachingMixin, models.Model):
     title manager. We've decided to store this value just by
     historical reasons, and we don't know if it will last forever.
     """
-    #Custom manager
+    # Custom manager
     objects = SectionCustomManager()
     nocacheobjects = models.Manager()
     userobjects = modelmanagers.SectionManager()
@@ -854,8 +881,7 @@ class Section(caching.base.CachingMixin, models.Model):
 
         A Language instance must be passed as the language argument.
         """
-        SectionTitle.objects.create(section=self,
-            title=title, language=language)
+        SectionTitle.objects.create(section=self, title=title, language=language)
 
     def _suggest_code(self, rand_generator=base28.genbase):
         """
@@ -908,9 +934,10 @@ class Section(caching.base.CachingMixin, models.Model):
 
 class Issue(caching.base.CachingMixin, models.Model):
 
-    #Custom manager
+    # Custom manager
     objects = IssueCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.IssueManager()
 
     section = models.ManyToManyField(Section, blank=True)
     journal = models.ForeignKey(Journal)
@@ -975,6 +1002,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
                                         self.publication_end_month,
                                         self.publication_year)
+
     @property
     def suppl_type(self):
         if self.type == 'supplement':
@@ -986,7 +1014,6 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         else:
             raise AttributeError('Issues of type %s do not have an attribute named: suppl_type' % self.get_type_display())
-
 
     def _suggest_order(self, force=False):
         """

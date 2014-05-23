@@ -204,7 +204,7 @@
           <div class="sys-msgs">
             <div class="sys-msgs-wrapper">
               {% for message in messages %}
-              <div class="alert">
+              <div class="alert {{ message.tags }}">
                 <button class="close" data-dismiss="alert" type="button">×</button>
                 {{ message }}
               </div>

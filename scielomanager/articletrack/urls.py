@@ -2,11 +2,18 @@
 from django.conf.urls.defaults import *
 from . import views
 
-urlpatterns = patterns('',
-
+urlpatterns = patterns(
+    '',
     url(r'^$', views.checkin_index, name="checkin_index"),
-    url(r'^package/(?P<article_id>\d+)/$', views.checkin_history, name="checkin_history"),
+    # url(r'^package/(?P<article_id>\d+)/$', views.checkin_history, name="checkin_history"),
+    # notice:
     url(r'^notice/(?P<checkin_id>\d+)/$', views.notice_detail, name="notice_detail"),
+    url(r'^checkin/(?P<checkin_id>\d+)/reject/$', views.checkin_reject, name="checkin_reject"),
+    url(r'^checkin/(?P<checkin_id>\d+)/review/$', views.checkin_review, name="checkin_review"),
+    url(r'^checkin/(?P<checkin_id>\d+)/accept/$', views.checkin_accept, name="checkin_accept"),
+    url(r'^checkin/(?P<checkin_id>\d+)/send_to/pending/$', views.checkin_send_to_pending, name="checkin_send_to_pending"),
+    url(r'^checkin/(?P<checkin_id>\d+)/send_to/review/$', views.checkin_send_to_review, name="checkin_send_to_review"),
+    url(r'^checkin/(?P<checkin_id>\d+)/history/$', views.checkin_history, name="checkin_history"),
 
     # TICKETS
     url(r'^ticket/add/(?P<checkin_id>\d+)/$', views.ticket_add, name="ticket_add"),
@@ -19,17 +26,9 @@ urlpatterns = patterns('',
     # BALAIO API
     url(r'^balaio_api/is_up/$', views.get_balaio_api_is_up, name="get_balaio_api_is_up"),
     url(r'^balaio_api/full_package/(?P<attempt_id>\d+)/(?P<target_name>.+)/$',
-    	views.get_balaio_api_full_package,
-    	name="get_balaio_api_full_package"
-    ),
+        views.get_balaio_api_full_package,
+        name="get_balaio_api_full_package"),
     url(r'^balaio_api/files_members/(?P<attempt_id>\d+)/(?P<target_name>.+)/$',
         views.get_balaio_api_files_members,
-        name="get_balaio_api_files_members"
-    ),
-
-    #AJAX
-   url(r'^ajx/ajx1/(?P<attempt_id>\d+)/(?P<checkin_id>\d+)/$', views.ajx_set_attempt_proceed_to_checkout,
-        name="ajx.ajx_set_attempt_proceed_to_checkout"),
-   url(r'^ajx/ajx2/$', views.ajx_verify_status_rpc,
-        name="ajx.ajx_verify_status_rpc"),
+        name="get_balaio_api_files_members"),
 )

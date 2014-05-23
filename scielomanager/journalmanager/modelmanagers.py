@@ -30,11 +30,79 @@ Custom instance of ``models.query.QuerySet``
 
 """
 import caching.base
-
+import models
 from scielomanager.utils import usercontext
 from scielomanager.utils.modelmanagers import UserObjectQuerySet, UserObjectManager
 
 user_request_context = usercontext.get_finder()
+
+
+class CollectionQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        try:
+            return get_all_collections()
+        except RuntimeError as e:
+            raise models.Collection.DoesNotExist(e.message)
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        try:
+            return get_active_collection()
+        except RuntimeError as e:
+            raise models.Collection.DoesNotExist(e.message)
+
+    def get_managed_by_user(self, user):
+        """
+        Returns all collections managed by a given user.
+        """
+        return self.filter(
+            usercollections__user=user,
+            usercollections__is_manager=True).order_by('name')
+
+    def get_default_by_user(self, user):
+        """
+        Returns the Collection marked as default by the given user.
+        If none satisfies this condition, the first
+        instance is then returned.
+
+        Like any manager method that does not return Querysets,
+        `get_default_by_user` raises DoesNotExist if there is no
+        result for the given parameter.
+        """
+        collections = self.filter(
+            usercollections__user=user,
+            usercollections__is_default=True).order_by('name')
+
+        if not collections.count():
+            try:
+                collection = self.all()[0]
+            except IndexError:
+                raise Collection.DoesNotExist()
+            else:
+                collection.make_default_to_user(user)
+                return collection
+
+        return collections[0]
+
+
+class CollectionManager(UserObjectManager):
+    def get_query_set(self):
+        return CollectionQuerySet(self.model, using=self._db)
+
+
+class UserCollectionsQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        return self.filter(collection__in=get_all_collections())
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        return self.filter(collection=get_active_collection())
+
+    def by_user(self, user):
+        return self.filter(user=user).order_by('collection__name')
+
+
+class UserCollectionsManager(UserObjectManager):
+    def get_query_set(self):
+        return UserCollectionsQuerySet(self.model, using=self._db)
 
 
 class JournalQuerySet(UserObjectQuerySet):
@@ -93,6 +161,42 @@ class SectionQuerySet(UserObjectQuerySet):
 class SectionManager(UserObjectManager):
     def get_query_set(self):
         return SectionQuerySet(self.model, using=self._db)
+
+
+class IssueQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        return self.filter(
+            journal__collections__in=get_all_collections())
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        return self.filter(
+            journal__collections=get_active_collection())
+
+
+class IssueManager(UserObjectManager):
+    def get_query_set(self):
+        return IssueQuerySet(self.model, using=self._db)
+
+
+class InstitutionQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        return self.filter(
+            collections__in=get_all_collections())
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        return self.filter(
+            collections__in=get_active_collection())
+
+    def available(self):
+        return self.filter(is_trashed=False)
+
+    def unavailable(self):
+        return self.filter(is_trashed=True)
+
+
+class InstitutionManager(UserObjectManager):
+    def get_query_set(self):
+        return InstitutionQuerySet(self.model, using=self._db)
 
 
 class SponsorQuerySet(UserObjectQuerySet):
@@ -160,4 +264,3 @@ class AheadPressReleaseQuerySet(UserObjectQuerySet):
 class AheadPressReleaseManager(UserObjectManager):
     def get_query_set(self):
         return AheadPressReleaseQuerySet(self.model, using=self._db)
-

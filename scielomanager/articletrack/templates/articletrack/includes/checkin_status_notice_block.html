@@ -1,0 +1,36 @@
+{% load i18n %}
+{% if checkin.is_rejected %}
+
+  <div class="row-fluid show-grid">
+    <div class="span12">
+      <div class="alert alert-error alert-block">
+        <h4><i class="icon-warning-sign"></i> {% trans "REJECTED" %}:</h4>
+        <p>
+          {% trans "This checkin is rejected by" %} 
+          {% with checkin.rejected_by as user %}
+            {% include "articletrack/includes/gravatar_tooltip.html" %}  
+          {% endwith %} 
+          {% trans "at" %} {{ checkin.rejected_at|date:"d/m/Y - H:i" }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% elif checkin.is_accepted %}
+
+  <div class="row-fluid show-grid">
+    <div class="span12">
+      <div class="alert alert-success alert-block">
+        <h4><i class="icon-ok-circle"></i> {% trans "ACCEPTED" %}:</h4>
+        <p>
+          {% trans "This checkin is accepted by" %} 
+          {% with checkin.accepted_by as user %}
+            {% include "articletrack/includes/gravatar_tooltip.html" %}  
+          {% endwith %} 
+          {% trans "at" %} {{ checkin.accepted_at|date:"d/m/Y - H:i" }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% endif %}
