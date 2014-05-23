@@ -13,10 +13,7 @@ from django.test import TestCase
 from journalmanager.tests import modelfactories
 from journalmanager import forms
 from journalmanager import models
-from scielomanager.utils.modelmanagers.helpers import (
-    _patch_userrequestcontextfinder_settings_setup,
-    _patch_userrequestcontextfinder_settings_teardown,
-    )
+
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
@@ -45,6 +42,11 @@ class CollectionFormTests(WebTest):
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
 
     def test_access_without_permission(self):
         """
@@ -170,7 +172,8 @@ class SectionFormTests(WebTest):
         journal = modelfactories.JournalFactory.create()
         journal.join(self.collection, self.user)
 
-        response = self.app.get(reverse('section.add', args=[journal.pk]),
+        response = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).follow()
 
         response.mustcontain('not authorized to access')
@@ -189,16 +192,18 @@ class SectionFormTests(WebTest):
 
         journal = modelfactories.JournalFactory.create()
         journal.join(self.collection, self.user)
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user)
 
         self.assertTemplateUsed(form, 'journalmanager/add_section.html')
-        form.mustcontain('section-form',
-                         'csrfmiddlewaretoken',
-                         'titles-TOTAL_FORMS',
-                         'titles-INITIAL_FORMS',
-                         'titles-MAX_NUM_FORMS',
-                        )
+        form.mustcontain(
+            'section-form',
+            'csrfmiddlewaretoken',
+            'titles-TOTAL_FORMS',
+            'titles-INITIAL_FORMS',
+            'titles-MAX_NUM_FORMS',
+        )
 
     def test_POST_workflow_with_valid_formdata(self):
         """
@@ -222,7 +227,8 @@ class SectionFormTests(WebTest):
                                                          name='english')
         journal.languages.add(language)
 
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
         form['titles-0-title'] = 'Original Article'
@@ -230,8 +236,7 @@ class SectionFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response,
-            'journalmanager/section_list.html')
+        self.assertTemplateUsed(response, 'journalmanager/section_list.html')
         response.mustcontain('Original Article')
 
     def test_POST_workflow_with_invalid_formdata(self):
@@ -250,7 +255,8 @@ class SectionFormTests(WebTest):
                                                          name='english')
         journal.languages.add(language)
 
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
         response = form.submit()
@@ -276,15 +282,15 @@ class SectionFormTests(WebTest):
         section = modelfactories.SectionFactory(journal=journal)
         section.add_title('Original Article', language=language)
 
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
         form['titles-0-title'] = 'Original Article'
         form.set('titles-0-language', language.pk)
 
         response = form.submit().follow()
-        self.assertTemplateUsed(response,
-            'journalmanager/section_list.html')
+        self.assertTemplateUsed(response, 'journalmanager/section_list.html')
 
     def test_section_must_allow_new_title_translations(self):
         """
@@ -302,23 +308,23 @@ class SectionFormTests(WebTest):
         language = modelfactories.LanguageFactory.create(iso_code='en',
                                                          name='english')
         language2 = modelfactories.LanguageFactory.create(iso_code='pt',
-                                                         name='portuguese')
+                                                          name='portuguese')
         journal.languages.add(language)
         journal.languages.add(language2)
 
         section = modelfactories.SectionFactory(journal=journal)
         section.add_title('Original Article', language=language)
 
-        form = self.app.get(reverse('section.edit',
-            args=[journal.pk, section.pk]), user=self.user).forms['section-form']
+        form = self.app.get(
+            reverse('section.edit', args=[journal.pk, section.pk]),
+            user=self.user).forms['section-form']
 
         form['titles-1-title'] = 'Artigo Original'
         form.set('titles-1-language', language2.pk)
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response,
-            'journalmanager/section_list.html')
+        self.assertTemplateUsed(response, 'journalmanager/section_list.html')
         response.mustcontain('Artigo Original')
         response.mustcontain('Original Article')
 
@@ -339,11 +345,12 @@ class SectionFormTests(WebTest):
         language = modelfactories.LanguageFactory.create(iso_code='en',
                                                          name='english')
         language2 = modelfactories.LanguageFactory.create(iso_code='pt',
-                                                         name='portuguese')
+                                                          name='portuguese')
         journal.languages.add(language)
 
-        form = self.app.get(reverse('section.add',
-            args=[journal.pk]), user=self.user).forms['section-form']
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
+            user=self.user).forms['section-form']
 
         form['titles-0-title'] = 'Artigo Original'
 
@@ -360,7 +367,8 @@ class SectionFormTests(WebTest):
         journal = modelfactories.JournalFactory.create()
         journal.join(self.collection, self.user)
 
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
         self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
@@ -377,7 +385,8 @@ class SectionFormTests(WebTest):
         journal = modelfactories.JournalFactory.create()
         journal.join(self.collection, self.user)
 
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
         self.assertEqual(form.action, '')
@@ -393,7 +402,8 @@ class SectionFormTests(WebTest):
         journal = modelfactories.JournalFactory.create()
         journal.join(self.collection, self.user)
 
-        form = self.app.get(reverse('section.add', args=[journal.pk]),
+        form = self.app.get(
+            reverse('section.add', args=[journal.pk]),
             user=self.user).forms['section-form']
 
         self.assertEqual(form.method.lower(), 'post')
@@ -413,7 +423,8 @@ class UserFormTests(WebTest):
         are unable to access the form. They must be redirected to a page
         with informations about their lack of permissions.
         """
-        response = self.app.get(reverse('user.add'),
+        response = self.app.get(
+            reverse('user.add'),
             user=self.user).follow()
 
         response.mustcontain('not authorized to access')
@@ -425,8 +436,7 @@ class UserFormTests(WebTest):
         collection are unable to access the form. They must be redirected
         to a page with informations about their lack of permissions.
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
         # adding another collection the user lacks manager privileges
@@ -434,8 +444,9 @@ class UserFormTests(WebTest):
         other_collection.add_user(self.user, is_manager=False)
         other_collection.make_default_to_user(self.user)
 
-        response = self.app.get(reverse('user.add'),
-                                user=self.user).follow()
+        response = self.app.get(
+            reverse('user.add'),
+            user=self.user).follow()
 
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
@@ -455,12 +466,13 @@ class UserFormTests(WebTest):
         page = self.app.get(reverse('user.add'), user=self.user)
 
         self.assertTemplateUsed(page, 'journalmanager/add_user.html')
-        page.mustcontain('user-form',
-                         'csrfmiddlewaretoken',
-                         'usercollections-TOTAL_FORMS',
-                         'usercollections-INITIAL_FORMS',
-                         'usercollections-MAX_NUM_FORMS',
-                        )
+        page.mustcontain(
+            'user-form',
+            'csrfmiddlewaretoken',
+            'usercollections-TOTAL_FORMS',
+            'usercollections-INITIAL_FORMS',
+            'usercollections-MAX_NUM_FORMS',
+        )
 
     def test_POST_workflow_with_valid_formdata(self):
         """
@@ -473,12 +485,10 @@ class UserFormTests(WebTest):
         In order to take this action, the user needs the following
         permissions: ``journalmanager.change_user``.
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'),
-            user=self.user).forms['user-form']
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
 
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
@@ -517,11 +527,11 @@ class UserFormTests(WebTest):
         self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
 
     def test_emails_are_not_sent_when_users_data_are_modified(self):
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.edit', args=[self.user.pk]),
+        form = self.app.get(
+            reverse('user.edit', args=[self.user.pk]),
             user=self.user).forms['user-form']
 
         form['user-username'] = 'bazz'
@@ -541,12 +551,10 @@ class UserFormTests(WebTest):
         form is rendered again and an alert is shown with the message
         ``There are some errors or missing data``.
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'),
-            user=self.user).forms['user-form']
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
 
         response = form.submit()
 
@@ -587,14 +595,15 @@ class UserFormTests(WebTest):
                                model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.edit', args=[self.user.pk]),
-                            user=self.user).forms['user-form']
+        form = self.app.get(
+            reverse('user.edit', args=[self.user.pk]),
+            user=self.user).forms['user-form']
 
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
         form['userprofile-0-email'] = 'bazz@spam.org'
-        #Remove the collection
+        # Remove the collection
         form.set('usercollections-0-collection', '')
 
         response = form.submit()
@@ -607,11 +616,11 @@ class UserFormTests(WebTest):
         Asserts that the enctype attribute of the user form is
         ``application/x-www-form-urlencoded``
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'),
+        form = self.app.get(
+            reverse('user.add'),
             user=self.user).forms['user-form']
 
         self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
@@ -622,12 +631,10 @@ class UserFormTests(WebTest):
         empty. This is needed because the same form is used to add
         a new or edit an existing entry.
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'),
-            user=self.user).forms['user-form']
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
 
         self.assertEqual(form.action, '')
 
@@ -636,11 +643,11 @@ class UserFormTests(WebTest):
         Asserts that the method attribute of the user form is
         ``POST``.
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
-        form = self.app.get(reverse('user.add'),
+        form = self.app.get(
+            reverse('user.add'),
             user=self.user).forms['user-form']
 
         self.assertEqual(form.method.lower(), 'post')
@@ -652,14 +659,14 @@ class UserFormTests(WebTest):
         In order to take this action, the user needs the following
         permissions: ``journalmanager.change_user``.
         """
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
         other_collection = modelfactories.CollectionFactory.create()
         other_collection.add_user(self.user)
 
-        form = self.app.get(reverse('user.add'),
+        form = self.app.get(
+            reverse('user.add'),
             user=self.user).forms['user-form']
 
         self.assertRaises(ValueError, lambda: form.set('usercollections-0-collection', other_collection.pk))
@@ -671,8 +678,13 @@ class JournalFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
         _makeUseLicense()
+
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
 
     def test_access_without_permission(self):
         """
@@ -2618,18 +2630,16 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 
 class IssueFormTests(WebTest):
 
-    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
         self.collection.make_default_to_user(self.user)
 
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
 
-    @_patch_userrequestcontextfinder_settings_teardown
     def tearDown(self):
         pass
 
@@ -2969,7 +2979,7 @@ class SearchFormTests(WebTest):
         self.user.user_permissions.add(perm)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
 
     def test_basic_struture(self):
         """
@@ -3207,7 +3217,7 @@ class AheadFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
 
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
@@ -3283,7 +3293,7 @@ class PressReleaseFormTests(WebTest):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
 
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
@@ -3551,13 +3561,14 @@ class PressReleaseFormTests(WebTest):
         self.assertRaises(ValueError,
             lambda: form.set('issue', str(trashed_issue.pk)))
 
+
 class AheadPressReleaseFormTests(WebTest):
 
     def setUp(self):
         self.user = modelfactories.UserFactory(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
 
         self.journal = modelfactories.JournalFactory()
         self.journal.join(self.collection, self.user)

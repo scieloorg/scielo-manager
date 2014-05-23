@@ -236,7 +236,6 @@ class JournalManagerTests(TestCase):
         journal1 = modelfactories.JournalFactory.create(is_trashed=False)
         journal1.join(collection, user)
 
-
         def get_user_collections():
             return user.user_collection.all()
 
@@ -1064,7 +1063,6 @@ class AheadPressReleaseManagerTests(TestCase):
         self.assertIn(pr, user_prs)
 
 
-
 class IssueManagerTests(TestCase):
 
     def _make_user(self, *collection):
@@ -1081,7 +1079,7 @@ class IssueManagerTests(TestCase):
             self.assertTrue(hasattr(models.Issue.userobjects, attr))
 
     def test_queryset_base_interface(self):
-        mandatory_attrs = ['all', 'active',]
+        mandatory_attrs = ['all', 'active', ]
 
         mm = modelmanagers.IssueQuerySet()
 

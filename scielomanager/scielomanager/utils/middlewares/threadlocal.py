@@ -8,6 +8,7 @@ import threading
 #
 th_localstore = threading.local()
 
+
 class ThreadLocalMiddleware(object):
     """
     Makes the request object visible system-wide in a thread local
@@ -40,5 +41,3 @@ def get_current_user():
 
     if req:
         return getattr(req, 'user', None)
-
-

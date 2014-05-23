@@ -670,7 +670,14 @@ class UserCollectionsForm(ModelForm):
         self._user = kwargs.pop('user', None)
         super(UserCollectionsForm, self).__init__(*args, **kwargs)
         if self._user:
-            self.fields['collection'].queryset = models.Collection.objects.get_managed_by_user(self._user)
+            managed_collections = models.Collection.userobjects.get_query_set().get_managed_by_user(self._user)
+            # Need to override both attr (queryset, and choices) because they not sync if
+            # only queryset is overridden, same behavior with the next line:
+            # self.fields['collection'] = forms.ModelChoiceField(queryset=managed_collections)
+            # this wierd behavior will cause to input unmanaged collections by the request.user
+            # allowing other users be added in any other (unmanaged collection)
+            self.fields['collection'].queryset = managed_collections
+            self.fields['collection'].choices = [(mc.pk, mc.name) for mc in managed_collections] + [(u'', u'---------'), ]
 
     class Meta:
         model = models.UserCollections

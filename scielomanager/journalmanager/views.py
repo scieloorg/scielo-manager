@@ -176,7 +176,7 @@ def section_index(request, journal_id=None):
 
 
 @permission_required('journalmanager.list_sponsor', login_url=AUTHZ_REDIRECT_URL)
-def sponsor_index(request, journal_id=None):
+def sponsor_index(request):
     """
     Sponsor list by active collection
     """
@@ -308,7 +308,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
 @permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
 def user_index(request):
 
-    collection = models.Collection.objects.get_default_by_user(request.user)
+    collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
@@ -330,12 +330,12 @@ def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
-    collection = models.Collection.objects.get_default_by_user(request.user)
+    collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
 
-    if user_id == None:
+    if user_id is None:
         user = User()
     else:
         user = get_object_or_404(User, id=user_id)
@@ -565,9 +565,10 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                #Ensuring that journal doesnt exists on created journal form, so journal_id must be None
-                if journal_id is None and models.Journal.objects.filter(Q(print_issn__icontains=request.POST.get('journal-print_issn'))|
-                                                 Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
+                # Ensuring that journal doesnt exists on created journal form, so journal_id must be None
+                if journal_id is None and models.Journal.objects.filter(
+                   Q(print_issn__icontains=request.POST.get('journal-print_issn')) |
+                   Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
                     messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
                 else:
                     saved_journal = journalform.save_all(creator=request.user)
@@ -586,7 +587,7 @@ def add_journal(request, journal_id=None):
                     models.DataChangeEvent.objects.create(
                         user=request.user,
                         content_object=saved_journal,
-                        collection=models.Collection.objects.get_default_by_user(request.user),
+                        collection=models.Collection.userobjects.active(),
                         event_type='updated' if journal_id else 'added'
                     )
                     return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
@@ -659,7 +660,7 @@ def add_sponsor(request, sponsor_id=None):
     if  sponsor_id is None:
         sponsor = models.Sponsor()
     else:
-        sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
+        sponsor = get_object_or_404(models.Sponsor.userobjects.active(), id=sponsor_id)
 
     user_collections = models.get_user_collections(request.user.id)
 
@@ -763,7 +764,7 @@ def edit_issue(request, journal_id, issue_id=None):
             return SupplementIssueForm(*form_args, **form_kwargs)
         elif issue_type == 'special':
             return SpecialIssueForm(*form_args, **form_kwargs)
-        else: # issue_type == 'regular':
+        else:  # issue_type == 'regular':
             return RegularIssueForm(*form_args, **form_kwargs)
 
     issue = models.Issue.objects.get(pk=issue_id)
@@ -790,7 +791,7 @@ def edit_issue(request, journal_id, issue_id=None):
             models.DataChangeEvent.objects.create(
                 user=request.user,
                 content_object=saved_issue,
-                collection=models.Collection.objects.get_default_by_user(request.user),
+                collection=models.Collection.userobjects.get_query_set().get_default_by_user(request.user),
                 event_type='updated'
             )
 
@@ -832,15 +833,15 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             if initial != None then the form is used in a GET request.
         """
         form_kwargs = {
-            'params' : {
+            'params': {
                 'journal': journal,
             },
-            'querysets' : {
+            'querysets': {
                 'section': journal.section_set.filter(is_trashed=False),
                 'use_license': models.UseLicense.objects.all(),
             },
-            'instance' : instance,
-            'initial' : initial,
+            'instance': instance,
+            'initial': initial,
         }
         form_args = []
         if initial is None:
@@ -850,7 +851,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             return SupplementIssueForm(*form_args, **form_kwargs)
         elif issue_type == 'special':
             return SpecialIssueForm(*form_args, **form_kwargs)
-        else: # issue_type == 'regular':
+        else:  # issue_type == 'regular':
             return RegularIssueForm(*form_args, **form_kwargs)
 
     journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
@@ -888,7 +889,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             models.DataChangeEvent.objects.create(
                 user=request.user,
                 content_object=saved_issue,
-                collection=models.Collection.objects.get_default_by_user(request.user),
+                collection=models.Collection.userobjects.active(),
                 event_type='added'
             )
 

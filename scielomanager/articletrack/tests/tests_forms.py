@@ -15,10 +15,6 @@ from journalmanager.tests.modelfactories import CollectionFactory
 from articletrack.tests import modelfactories
 from articletrack import forms
 from articletrack import models
-from scielomanager.utils.modelmanagers.helpers import (
-    _patch_userrequestcontextfinder_settings_setup,
-    _patch_userrequestcontextfinder_settings_teardown,
-    )
 
 
 MAX_CHOICES_QTY = 10
@@ -58,7 +54,6 @@ def _extract_results_from_body(response, extract_section='pending'):
 
 class CheckinListFilterFormTests(WebTest):
 
-    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         _addWaffleFlag()
         self.user = auth.UserF(is_active=True)
@@ -66,9 +61,7 @@ class CheckinListFilterFormTests(WebTest):
         self.user.user_permissions.add(perm)
         self.collection = CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
-        self.collection.make_default_to_user(self.user)
 
-    @_patch_userrequestcontextfinder_settings_teardown
     def tearDown(self):
         """
         Restore the default values.
