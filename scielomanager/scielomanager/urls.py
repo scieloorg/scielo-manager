@@ -49,8 +49,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # Collection Tools
-    url(r'^collection/$', views.collection_index, {'model': models.Collection}, name='collection.index'),
-    url(r'^collection/new/$', views.add_collection, name='collection.add'),
     url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
 
     url(r'accounts/', include('accounts.urls')),

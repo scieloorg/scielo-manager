@@ -90,6 +90,7 @@ class LoginForm(WebTest):
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
+        collection.make_default_to_user(user)
 
         page = self.app.get(reverse('journal.index'), user=user)
 
@@ -98,15 +99,17 @@ class LoginForm(WebTest):
 
 class UserMyAccountTests(WebTest):
 
-    def test_logged_user_access_my_account(self):
-        user = auth.UserF(is_active=True)
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user)
 
-        response = self.app.get(reverse('journalmanager.my_account'), user=user)
+    def test_logged_user_access_my_account(self):
+        response = self.app.get(reverse('journalmanager.my_account'), user=self.user)
 
         self.assertTemplateUsed(response, 'accounts/my_account.html')
 
-    def test_not_logged_user_acess_my_account(self):
-
+    def test_not_logged_user_access_my_account(self):
         response = self.app.get(reverse('journalmanager.my_account')).follow()
 
         self.assertTemplateUsed(response, 'registration/login.html')
@@ -114,7 +117,7 @@ class UserMyAccountTests(WebTest):
     def test_logged_user_access_user_configuration(self):
         user = auth.UserF(is_active=True)
 
-        response = self.app.get(reverse('journalmanager.password_change'), user=user)
+        response = self.app.get(reverse('journalmanager.password_change'), user=self.user)
 
         self.assertTemplateUsed(response, 'accounts/password_change.html')
 
@@ -122,6 +125,8 @@ class UserMyAccountTests(WebTest):
         user = auth.UserF(username='foo',
                           password=HASH_FOR_123,
                           is_active=False)
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
 
         form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 123
@@ -136,6 +141,8 @@ class UserMyAccountTests(WebTest):
         user = auth.UserF(username='foo',
                           password=HASH_FOR_123,
                           is_active=False)
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
 
         form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 1234
@@ -150,6 +157,8 @@ class UserMyAccountTests(WebTest):
         user = auth.UserF(username='foo',
                           password=HASH_FOR_123,
                           is_active=False)
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
 
         form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 123
@@ -164,6 +173,8 @@ class UserMyAccountTests(WebTest):
         user = auth.UserF(username='foo',
                           password=HASH_FOR_123,
                           is_active=False)
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(user)
 
         form = self.app.get(reverse('journalmanager.password_change'), user=user).forms['chg_pwd']
         form['password'] = 123

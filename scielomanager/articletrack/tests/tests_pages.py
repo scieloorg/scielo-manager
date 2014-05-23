@@ -7,13 +7,7 @@ from django.template import defaultfilters as filters
 from django.conf import settings
 
 from . import modelfactories
-from journalmanager.tests.modelfactories import UserFactory
-
-from scielomanager.utils.modelmanagers.helpers import (
-    _makeUserRequestContext,
-    _patch_userrequestcontextfinder_settings_setup,
-    _patch_userrequestcontextfinder_settings_teardown
-    )
+from journalmanager.tests.modelfactories import UserFactory, CollectionFactory
 
 
 def _makePermission(perm, model, app_label='articletrack'):
@@ -30,13 +24,14 @@ def _makePermission(perm, model, app_label='articletrack'):
 
 class CheckinListTests(WebTest):
 
-    @_patch_userrequestcontextfinder_settings_setup
     def setUp(self):
         self.user = auth.UserF(is_active=True)
+        self.collection = CollectionFactory.create()
+        self.collection.add_user(self.user)
+        self.collection.make_default_to_user(self.user)
         perm = _makePermission(perm='list_checkin', model='checkin')
         self.user.user_permissions.add(perm)
 
-    @_patch_userrequestcontextfinder_settings_teardown
     def tearDown(self):
         """
         Restore the default values.
@@ -47,7 +42,8 @@ class CheckinListTests(WebTest):
 
         # Get only the first collection and set to the user
         collection = checkin.article.journals.all()[0].collections.all()[0]
-        collection.add_user(self.user, is_manager=True, is_default=True)
+        collection.add_user(self.user, is_manager=True)
+        collection.make_default_to_user(self.user)
 
         return checkin
 
@@ -161,7 +157,7 @@ class NoticeListTests(WebTest):
 
         # Get only the first collection and set to the user
         collection = notice.checkin.article.journals.all()[0].collections.all()[0]
-        collection.add_user(self.user, is_manager=True, is_default=True)
+        collection.add_user(self.user, is_manager=True)
 
         return notice
 

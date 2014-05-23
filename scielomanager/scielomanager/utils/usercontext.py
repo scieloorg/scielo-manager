@@ -25,7 +25,8 @@ class UserRequestContextFinder(object):
         user = threadlocal.get_current_user()
         if user:
             return user.user_collection.all()
-
+        else:
+            raise RuntimeError('The current request doesnt have usercontext')
 
     def get_current_user_active_collection(self):
         """
@@ -34,6 +35,8 @@ class UserRequestContextFinder(object):
         colls = self.get_current_user_collections()
         if colls:
             return colls.get(usercollections__is_default=True)
+        else:
+            raise RuntimeError('The current request doesnt have usercontext')
 
 
 def get_finder():
@@ -66,4 +69,3 @@ def _get_finder(import_path):
                                    'class.' % (module, attr))
     return Finder()
 new_finder = memoize(_get_finder, _finders, 1)
-

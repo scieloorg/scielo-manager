@@ -13,7 +13,6 @@ from django_factory_boy import auth
 from journalmanager.tests import modelfactories
 from journalmanager.tests.tests_forms import _makePermission
 from scielomanager.utils.modelmanagers.helpers import (
-    _makeUserRequestContext,
     _patch_userrequestcontextfinder_settings_setup,
     _patch_userrequestcontextfinder_settings_teardown,
     _makeUserProfile,
@@ -120,6 +119,7 @@ class UserAreasSelectorTests(WebTest):
 
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
+        collection.make_default_to_user(user)
 
         page = self.app.get(reverse('journal.index'), user=user)
 
@@ -269,8 +269,10 @@ class JournalsListTests(WebTest):
         Asserts the message ``'There are no items.`` is shown
         when the journals list is empty.
         """
-        perm_journal_list = _makePermission(perm='list_journal',
-            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(
+            perm='list_journal',
+            model='journal',
+            app_label='journalmanager')
         self.user.user_permissions.add(perm_journal_list)
 
         response = self.app.get(reverse('journal.index'), user=self.user)
@@ -292,7 +294,7 @@ class PressReleasesListTests(WebTest):
         self.user = auth.UserF(is_active=True)
 
         self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True, is_default=True)
+        self.collection.add_user(self.user, is_manager=True)
 
     @_patch_userrequestcontextfinder_settings_teardown
     def tearDown(self):
@@ -370,13 +372,22 @@ class PressReleasesListTests(WebTest):
 
 class IndexPageTests(WebTest):
 
+    @_patch_userrequestcontextfinder_settings_setup
+    def setUp(self):
+        self.user = auth.UserF()
+
+    @_patch_userrequestcontextfinder_settings_teardown
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
+
     def test_logged_user_access_to_index(self):
-        user = auth.UserF(is_active=True)
 
         collection = modelfactories.CollectionFactory.create()
-        collection.add_user(user)
+        collection.add_user(self.user)
 
-        response = self.app.get(reverse('index'), user=user)
+        response = self.app.get(reverse('index'), user=self.user)
 
         self.assertTemplateUsed(response, 'journalmanager/home_journal.html')
 
@@ -395,12 +406,8 @@ class UserIndexPageTests(WebTest):
         self.collection.add_user(self.user, is_manager=True)
 
     def test_logged_user_access(self):
-        perm = _makePermission(perm='change_user',
-            model='user', app_label='auth')
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(self.user, is_manager=True)
 
         response = self.app.get(reverse('user.index'), user=self.user)
 
@@ -408,12 +415,7 @@ class UserIndexPageTests(WebTest):
 
     def test_logged_user_access_users_not_being_manager_of_the_collection(self):
         user = auth.UserF(is_active=True)
-
-        collection = modelfactories.CollectionFactory.create()
-        collection.add_user(user)
-
-        response = self.app.get(reverse('user.index'),
-            user=user).follow()
+        response = self.app.get(reverse('user.index'), user=user).follow()
 
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
         response.mustcontain('not authorized to access')
@@ -428,12 +430,13 @@ class SponsorsListTests(WebTest):
         self.collection.add_user(self.user, is_manager=True)
 
     def test_user_access_journals_list_without_itens(self):
-        perm_sponsor_list = _makePermission(perm='list_sponsor',
-            model='sponsor', app_label='journalmanager')
+        perm_sponsor_list = _makePermission(
+            perm='list_sponsor',
+            model='sponsor',
+            app_label='journalmanager')
         self.user.user_permissions.add(perm_sponsor_list)
 
-        response = self.app.get(reverse('sponsor.index'),
-            user=self.user)
+        response = self.app.get(reverse('sponsor.index'), user=self.user)
 
         self.assertTrue('There are no items.' in response.body)
 
@@ -449,14 +452,14 @@ class IssuesListTests(WebTest):
         self.journal = modelfactories.JournalFactory()
         self.journal.join(self.collection, self.user)
 
-
     def test_user_access_issue_list_without_itens(self):
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(
+            perm='list_issue',
+            model='issue',
+            app_label='journalmanager')
         self.user.user_permissions.add(perm_issue_list)
 
-        response = self.app.get(reverse('issue.index',
-            args=[self.journal.pk]), user=self.user)
+        response = self.app.get(reverse('issue.index', args=[self.journal.pk]), user=self.user)
 
         self.assertTrue('There are no items.' in response.body)
 
@@ -464,12 +467,13 @@ class IssuesListTests(WebTest):
         """
         Asserts that unpriviledged users can't reorder Issues
         """
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(
+            perm='list_issue',
+            model='issue',
+            app_label='journalmanager')
         self.user.user_permissions.add(perm_issue_list)
 
-        response = self.app.get(reverse('issue.reorder.ajax',
-            args=[self.journal.pk]), user=self.user).follow()
+        response = self.app.get(reverse('issue.reorder.ajax', args=[self.journal.pk]), user=self.user).follow()
 
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
@@ -480,10 +484,14 @@ class IssuesListTests(WebTest):
         it is requested to reorder issues that do not match
         the journal.
         """
-        perm1 = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        perm2 = _makePermission(perm='reorder_issue',
-            model='issue', app_label='journalmanager')
+        perm1 = _makePermission(
+            perm='list_issue',
+            model='issue',
+            app_label='journalmanager')
+        perm2 = _makePermission(
+            perm='reorder_issue',
+            model='issue',
+            app_label='journalmanager')
         self.user.user_permissions.add(perm1)
         self.user.user_permissions.add(perm2)
 
@@ -502,10 +510,14 @@ class IssuesListTests(WebTest):
         """
         The server must respond a http 500 code and do nothing.
         """
-        perm1 = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        perm2 = _makePermission(perm='reorder_issue',
-            model='issue', app_label='journalmanager')
+        perm1 = _makePermission(
+            perm='list_issue',
+            model='issue',
+            app_label='journalmanager')
+        perm2 = _makePermission(
+            perm='reorder_issue',
+            model='issue',
+            app_label='journalmanager')
         self.user.user_permissions.add(perm1)
         self.user.user_permissions.add(perm2)
 
@@ -613,4 +625,3 @@ class SectionLookupForTranslationsTests(WebTest):
         response_py = json.loads(response.content)
         self.assertEqual(response_py['exists'], False)
         self.assertEqual(response_py['message'], 'This is a new section.')
-
