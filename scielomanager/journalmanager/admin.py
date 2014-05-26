@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from tastypie.models import ApiAccess
 
 from .models import *
+from .forms import UserChangeForm, UserCreationForm
 
 
 admin.site.register(ApiAccess)
@@ -24,6 +25,7 @@ class StudyAreaAdmin(admin.ModelAdmin):
         return StudyArea.nocacheobjects
 
 admin.site.register(StudyArea, StudyAreaAdmin)
+
 
 class CollectionAdmin(admin.ModelAdmin):
 
@@ -90,6 +92,16 @@ class UserProfileInline(admin.StackedInline):
 
 class UserAdmin(UserAdmin):
     inlines = (UserProfileInline, UserCollectionsInline)
+    form = UserChangeForm
+    add_form = UserCreationForm
+    add_fieldsets = (
+        (
+            None, {
+                'classes': ('wide',),
+                'fields': ('username', 'password1', 'password2', 'email')
+            }
+        ),
+    )
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

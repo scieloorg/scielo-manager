@@ -9,9 +9,10 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import curry
 from django.core.files.images import get_image_dimensions
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import NON_FIELD_ERRORS, MultipleObjectsReturned
 from django.conf import settings
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from journalmanager import models
 from journalmanager import choices
@@ -20,6 +21,36 @@ from scielomanager.widgets import CustomImageWidget
 
 logger = logging.getLogger(__name__)
 SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
+
+USER_EMAIL_ERROR_MESSAGES = _("That e-mail address is associated with another user account.")
+
+
+class UserCreationForm(UserCreationForm):
+    email = forms.EmailField(label=_("E-mail"), max_length=75, required=True)
+
+    def clean_email(self):
+        """
+        Validates that the given email address is not used by another user.
+        """
+        email = self.cleaned_data["email"]
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
+        if len(self.users_cache) > 0:
+            raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
+        return email
+
+
+class UserChangeForm(UserChangeForm):
+    email = forms.EmailField(label=_("E-mail"), max_length=75, required=True)
+
+    def clean_email(self):
+        """
+        Validates that the given email address is not used by another user.
+        """
+        email = self.cleaned_data["email"]
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
+        if len(self.users_cache) > 0:
+            raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
+        return email
 
 
 class UserCollectionContext(ModelForm):
