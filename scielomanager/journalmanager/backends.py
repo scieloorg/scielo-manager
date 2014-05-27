@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 from journalmanager import models
 
+
 class ModelBackend(ModelBackend):
     """
     Authenticate against the DJANGO login or user e-mail
@@ -26,7 +27,6 @@ class ModelBackend(ModelBackend):
                 return None
 
         return None
-
 
     def get_user(self, user_id):
         try:

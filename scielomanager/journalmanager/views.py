@@ -343,7 +343,6 @@ def add_user(request, user_id=None):
     # Getting Collections from the logged user.
     user_collections = models.get_user_collections(request.user.id)
 
-    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
         form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
@@ -352,12 +351,10 @@ def add_user(request, user_id=None):
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')
-        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
 
-        if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
+        if userform.is_valid() and usercollectionsformset.is_valid():
             new_user = userform.save()
-            userprofileformset.save()
 
             # Clear cache when changes in UserCollections
             invalid = [collection for collection in user_collections]
@@ -382,7 +379,6 @@ def add_user(request, user_id=None):
             messages.error(request, MSG_FORM_MISSING)
     else:
         userform = UserForm(instance=user, prefix='user')
-        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
 
     return render_to_response('journalmanager/add_user.html', {
@@ -390,7 +386,6 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
-                              'userprofileformset': userprofileformset
                               },
                               context_instance=RequestContext(request))
 

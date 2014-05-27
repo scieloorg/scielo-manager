@@ -18,7 +18,7 @@ from django.db import (
     DatabaseError,
     )
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
@@ -28,7 +28,6 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from django.core.exceptions import ImproperlyConfigured
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 import jsonfield
@@ -324,11 +323,6 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         # return Collection.objects.filter.active()
         uc = UserCollections.objects.get(user=self.user, is_default=True)
         return uc.collection
-
-    def save(self, force_insert=False, force_update=False):
-        self.user.email = self.email
-        self.user.save()
-        return super(UserProfile, self).save(force_insert, force_update)
 
 
 class Collection(caching.base.CachingMixin, models.Model):
@@ -1258,4 +1252,12 @@ class Article(caching.base.CachingMixin, models.Model):
 
         return self.front['title-group']
 
+# ---- SIGNALS ------
 models.signals.post_save.connect(create_api_key, sender=User)
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if created:
+        profile, new = UserProfile.objects.get_or_create(user=instance, email=instance.email)

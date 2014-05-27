@@ -99,6 +99,11 @@ class UserProfileTests(TestCase):
 
         self.assertEqual(profile.avatar_url, expected_url)
 
+    def test_create_user_must_create_profile(self):
+        user = auth.UserF(username='foo', password=HASH_FOR_123, is_active=True)
+        profile_exists = models.UserProfile.objects.filter(user=user, email=user.email).exists()
+        self.assertTrue(profile_exists)
+
 
 class IssueTests(TestCase):
 
