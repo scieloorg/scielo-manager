@@ -13,6 +13,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 
+from packtools import stylechecker
+
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
@@ -27,6 +29,28 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
 logger = logging.getLogger(__name__)
+
+
+def extract_validation_errors(validation_errors):
+    """
+    Return a "parsed" dict of validation errors returned by stylechecker
+    """
+    # iterate over the errors and get the relevant data
+    results = []
+    error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
+    for error in validation_errors:
+        error_data = {
+            'line': error.line,
+            'column': error.column,
+            'message': error.message,
+            'level': error.level_name,
+        }
+        results.append(error_data)
+        error_lines.append(str(error.line))
+    return {
+        'results': results,
+        'error_lines': ", ".join(error_lines)
+    }
 
 
 @waffle_flag('articletrack')
@@ -253,6 +277,13 @@ def notice_detail(request, checkin_id):
 
     balaio = BalaioAPI()
     files_list = []
+    xml_data = {
+        'file_name': None,
+        'uri': None,
+        'can_be_analyzed': False,
+        'annotations': None,
+        'validation_errors': None,
+    }
 
     try:
 
@@ -262,10 +293,35 @@ def notice_detail(request, checkin_id):
             for file_extension in files.keys():
                 files_list += [{'ext': file_extension, 'name': f} for f in files[file_extension]]
 
+            xml_data['file_name'] = files['xml'][0]  # assume only ONE xml per package
+
     except ValueError:
-        pass # Service Unavailable
+        # Service Unavailable
+        pass
+
+    # get stylechecker annotations
+    try:
+        xml_data['uri'] = balaio.get_xml_uri(checkin.attempt_ref, xml_data['file_name']) if xml_data['file_name'] else None
+    except ValueError:
+        # Service Unavailable
+        xml_data['can_be_analyzed'] = False
+    else:
+        xml_data['can_be_analyzed'] = xml_data['uri'] is not None
+
+    if xml_data['can_be_analyzed']:
+        try:
+            xml_check = stylechecker.XML(xml_data['uri'])
+        except Exception:  # any exception will stop the process
+            xml_data['can_be_analyzed'] = False
+        else:
+            status, errors = xml_check.validate()
+            if not status:  # have errors
+                xml_check.annotate_errors()
+                xml_data['annotations'] = str(xml_check)
+                xml_data['validation_errors'] = extract_validation_errors(errors)
 
     context['files'] = files_list
+    context['xml_data'] = xml_data
 
     return render_to_response(
         'articletrack/notice_detail.html',

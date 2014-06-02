@@ -53,7 +53,6 @@ class BalaioCheckSettingsTests(unittest.TestCase):
         api_settings_netloc = ":".join([api_settings_host, api_settings_port])
         api_settings_path = settings.API_BALAIO['default']['PATH']
 
-
         self.assertTrue(api_fullpath_url.scheme == api_settings_protocol)
         self.assertTrue(api_fullpath_url.netloc == api_settings_netloc)
         self.assertTrue(api_fullpath_url.path == api_settings_path)
@@ -176,8 +175,27 @@ class BalaioRequestsTests(mocker.MockerTestCase):
             expected_json_response
         )
 
+    def test_get_xml_uri(self):
+        balaio_api = BalaioAPI()
+        attempt_id = 25
+        target_name = "1415-4757-gmb-37-0210.xml"
+        expected_json_response = {
+            "filename": "1415-4757-gmb-37-0210.xml",
+            "uri": "file:///Users/juan.funez/Downloads/1415-4757-gmb-37-0210.xml"
+        }
 
-class BalaioAPIRequestsTests(mocker.MockerTestCase):
+        balaio_api_patched = self.mocker.patch(balaio_api)
+        balaio_api_patched.get_xml_uri(attempt_id, target_name)
+        self.mocker.result(expected_json_response['uri'])
+        self.mocker.replay()
+
+        self.assertEqual(
+            balaio_api_patched.get_xml_uri(attempt_id, target_name),
+            expected_json_response['uri']
+        )
+
+
+class BalaioRPCRequestsTests(mocker.MockerTestCase):
     def test_valid_remote_call_without_args(self):
         client = BalaioRPC(using='default')
 
