@@ -16,11 +16,14 @@ from .modelfactories import (
     CollectionFactory,
     RegularPressReleaseFactory,
 )
-from journalmanager import models
+
 from scielomanager.utils.modelmanagers.helpers import (
     _makeUserProfile,
     _makeUserRequestContext,
 )
+
+from journalmanager import models
+
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
 
@@ -564,83 +567,6 @@ class CollectionTests(TestCase):
         self.collection.add_user(self.user, is_manager=True)
 
         self.assertTrue(self.collection.is_managed_by_user(self.user))
-
-
-class CollectionManagerTests(TestCase):
-    def setUp(self):
-        self.user = auth.UserF()
-        _makeUserProfile(self.user)
-        _makeUserRequestContext(self.user)
-        self.collection = CollectionFactory.create()
-
-    def tearDown(self):
-        """
-        Restore the default values.
-        """
-
-    def test_get_all_by_user(self):
-        for i in range(5):
-            if i % 2:
-                CollectionFactory.create()
-            else:
-                col = CollectionFactory.create()
-                col.add_user(self.user)
-
-        def get_user_collections():
-            return self.user.user_collection.all()
-
-        collections = models.Collection.userobjects.all(
-            get_all_collections=get_user_collections
-        )
-
-        self.assertEqual(collections.count(), 3)
-
-    def test_get_default_by_user(self):
-        col1 = CollectionFactory.create()
-        col1.make_default_to_user(self.user)
-        col2 = CollectionFactory.create()
-        col2.add_user(self.user)
-        self.assertEqual(
-            self.user.get_profile().get_default_collection,
-            col1)
-
-    def test_get_default_by_user_second_collection(self):
-        col1 = CollectionFactory.create()
-        col1.make_default_to_user(self.user)
-        col2 = CollectionFactory.create()
-        col2.make_default_to_user(self.user)
-
-        def get_user_active_collection():
-            return col2
-
-        self.assertEqual(
-            models.Collection.userobjects.active(get_active_collection=get_user_active_collection),
-            col2)
-
-    def test_get_default_by_user_with_two_users(self):
-        user1 = auth.UserF()
-        user2 = auth.UserF()
-        _makeUserProfile(user1)
-        _makeUserProfile(user2)
-
-        col1 = CollectionFactory.create()
-        col1.make_default_to_user(user1)
-
-        col2 = CollectionFactory.create()
-        col2.add_user(user1)
-        col2.make_default_to_user(user2)
-        self.assertEqual(user1.get_profile().get_default_collection, col1)
-        self.assertEqual(user2.get_profile().get_default_collection, col2)
-
-    def test_get_default_by_user_must_raise_doesnotexist_if_the_user_has_no_collections(self):
-        col1 = CollectionFactory.create()
-
-        def get_user_collections():
-            raise RuntimeError()
-
-        self.assertRaises(
-            models.Collection.DoesNotExist,
-            lambda: models.Collection.userobjects.active(get_active_collection=get_user_collections))
 
 
 class PressReleaseTests(TestCase):
