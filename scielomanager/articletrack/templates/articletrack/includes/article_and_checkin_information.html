@@ -43,6 +43,8 @@
           <dd>{{ checkin.package_name }}</dd>
           <dt>{% trans "Updated at" %}:</dt>
           <dd>{{ checkin.created_at|date:"d/m/Y - H:i" }}</dd>
+          <dt>{% trans "Submitted by" %}:</dt>
+          <dd>{{ checkin.submitted_by }}</dd>
 
           {% if checkin.status == 'review' or checkin.status == 'accepted' %}
 
