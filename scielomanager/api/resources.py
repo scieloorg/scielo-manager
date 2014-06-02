@@ -479,7 +479,7 @@ class CheckinArticleResource(ModelResource):
         else:
             bundle.obj.journals.add(journal)
 
-
+        return bundle
 
 class TicketResource(ModelResource):
     author = fields.ForeignKey(UserResource, 'author')
