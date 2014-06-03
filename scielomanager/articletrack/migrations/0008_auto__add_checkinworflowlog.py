@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='checkin_log_responsible', null=True, to=orm['auth.User'])),
             ('status', self.gf('django.db.models.fields.CharField')(default='pending', max_length=10)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('checkin', self.gf('django.db.models.fields.related.ForeignKey')(related_name='checkin_workflow_logs', to=orm['articletrack.Checkin'])),
+            ('checkin', self.gf('django.db.models.fields.related.ForeignKey')(related_name='submission_log', to=orm['articletrack.Checkin'])),
         ))
         db.send_create_signal('articletrack', ['CheckinWorkflowLog'])
 
@@ -56,7 +56,7 @@ class Migration(SchemaMigration):
         },
         'articletrack.checkinworkflowlog': {
             'Meta': {'object_name': 'CheckinWorkflowLog'},
-            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkin_workflow_logs'", 'to': "orm['articletrack.Checkin']"}),
+            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'submission_log'", 'to': "orm['articletrack.Checkin']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),

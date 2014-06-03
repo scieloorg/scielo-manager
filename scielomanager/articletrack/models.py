@@ -344,7 +344,7 @@ class CheckinWorkflowLog(caching.base.CachingMixin, models.Model):
     user = models.ForeignKey(User, related_name='checkin_log_responsible', null=True, blank=True)
     status = models.CharField(_(u'Status'), choices=CHECKIN_STATUS_CHOICES, max_length=10, default='pending')
     description = models.TextField(_(u'Description'), null=True, blank=True)
-    checkin = models.ForeignKey(Checkin, related_name='checkin_worflow_logs')
+    checkin = models.ForeignKey(Checkin, related_name='submission_log')
 
     def __unicode__(self):
         return "%s - %s (%s)" % (self.checkin, self.status, self.user)

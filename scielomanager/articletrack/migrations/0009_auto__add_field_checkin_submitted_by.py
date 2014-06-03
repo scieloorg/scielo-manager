@@ -51,7 +51,7 @@ class Migration(SchemaMigration):
         },
         'articletrack.checkinworkflowlog': {
             'Meta': {'ordering': "['created_at']", 'object_name': 'CheckinWorkflowLog'},
-            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkin_worflow_logs'", 'to': "orm['articletrack.Checkin']"}),
+            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkin_workflow_logs'", 'to': "orm['articletrack.Checkin']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),

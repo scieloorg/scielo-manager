@@ -44,13 +44,21 @@
           <dt>{% trans "Updated at" %}:</dt>
           <dd>{{ checkin.created_at|date:"d/m/Y - H:i" }}</dd>
           <dt>{% trans "Submitted by" %}:</dt>
-          <dd>{{ checkin.submitted_by }}</dd>
+          {% if checkin.submitted_by %}
+            <dd>
+            {% with checkin.submitted_by as user %}
+              {% include "articletrack/includes/gravatar_tooltip.html" %}  
+            {% endwith %}
+            </dd>
+          {% else %}
+            <dd>--</dd>
+          {% endif %}
 
           {% if checkin.status == 'review' or checkin.status == 'accepted' %}
 
             {%if checkin.reviewed_by %}
               <dt>{% trans "Reviewed by" %}:</dt>
-              <dd>{{ checkin.reviewed_by.get_full_name|default:checkin.rejected_by }}</dd>
+              <dd>{{ checkin.reviewed_by.get_full_name|default:checkin.reviewed_by }}</dd>
               <dt>{% trans "Reviewed at" %}:</dt>
               <dd>{{ checkin.reviewed_at|date:"d/m/Y - H:i" }}</dd>
             {% endif %}
@@ -59,7 +67,7 @@
 
           {% if checkin.is_accepted %}
               <dt>{% trans "Accepted by" %}:</dt>
-              <dd>{{ checkin.accepted_by.get_full_name|default:checkin.rejected_by }}</dd>
+              <dd>{{ checkin.accepted_by.get_full_name|default:checkin.accepted_by }}</dd>
               <dt>{% trans "Acccepted at" %}:</dt>
               <dd>{{ checkin.accepted_at|date:"d/m/Y - H:i" }}</dd>
 
