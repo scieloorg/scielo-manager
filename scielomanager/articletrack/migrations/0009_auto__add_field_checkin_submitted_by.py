@@ -8,21 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'CheckinWorkflowLog'
-        db.create_table('articletrack_checkinworkflowlog', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='checkin_log_responsible', null=True, to=orm['auth.User'])),
-            ('status', self.gf('django.db.models.fields.CharField')(default='pending', max_length=10)),
-            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('checkin', self.gf('django.db.models.fields.related.ForeignKey')(related_name='checkin_workflow_logs', to=orm['articletrack.Checkin'])),
-        ))
-        db.send_create_signal('articletrack', ['CheckinWorkflowLog'])
+        # Adding field 'Checkin.submitted_by'
+        db.add_column('articletrack_checkin', 'submitted_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='checkins_submitted_by', null=True, to=orm['auth.User']),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting model 'CheckinWorkflowLog'
-        db.delete_table('articletrack_checkinworkflowlog')
+        # Deleting field 'Checkin.submitted_by'
+        db.delete_column('articletrack_checkin', 'submitted_by_id')
 
 
     models = {
@@ -52,11 +46,12 @@ class Migration(SchemaMigration):
             'reviewed_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'reviewed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'checkins_reviewed'", 'null': 'True', 'to': "orm['auth.User']"}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'pending'", 'max_length': '10'}),
+            'submitted_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'checkins_submitted_by'", 'null': 'True', 'to': "orm['auth.User']"}),
             'uploaded_at': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'articletrack.checkinworkflowlog': {
-            'Meta': {'object_name': 'CheckinWorkflowLog'},
-            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkin_workflow_logs'", 'to': "orm['articletrack.Checkin']"}),
+            'Meta': {'ordering': "['created_at']", 'object_name': 'CheckinWorkflowLog'},
+            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkin_worflow_logs'", 'to': "orm['articletrack.Checkin']"}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
