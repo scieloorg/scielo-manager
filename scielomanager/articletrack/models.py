@@ -89,6 +89,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
     rejected_at = models.DateTimeField(null=True, blank=True)
     rejected_cause = models.CharField(_(u'Cause of Rejection'), max_length=128, null=True, blank=True)
 
+    submitted_by = models.ForeignKey(User, related_name='checkins_submitted_by', null=True, blank=True)
+
     class Meta:
         ordering = ['-created_at']
         permissions = (("list_checkin", "Can list Checkin"),)
