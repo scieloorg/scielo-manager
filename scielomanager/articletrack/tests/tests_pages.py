@@ -138,7 +138,7 @@ class CheckinListTests(WebTest):
         checkin.accept(self.user)
 
         response = self.app.get(reverse('checkin_history', args=[checkin.pk]), user=self.user)
-        logs = checkin.checkin_worflow_logs.all()
+        logs = checkin.submission_log.all()
         self.assertEqual(6, len(logs))
 
         for log in logs:
