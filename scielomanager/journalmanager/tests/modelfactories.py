@@ -173,7 +173,6 @@ class UserProfileFactory(factory.Factory):
     FACTORY_FOR = models.UserProfile
 
     user = factory.SubFactory(UserFactory)
-    email = factory.Sequence(lambda n: 'email%s@example.com' % n)
 
 
 class SectionTitleFactory(factory.Factory):

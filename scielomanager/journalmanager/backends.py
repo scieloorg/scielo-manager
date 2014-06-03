@@ -1,9 +1,7 @@
-# -*- encoding: utf-8 -*-
-from django.contrib.auth.backends import ModelBackend
+#coding: utf-8
+from django.db.models import Q
 from django.contrib.auth.models import User
-
-
-from journalmanager import models
+from django.contrib.auth.backends import ModelBackend
 
 
 class ModelBackend(ModelBackend):
@@ -15,18 +13,11 @@ class ModelBackend(ModelBackend):
 
     def authenticate(self, username=None, password=None):
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(Q(username=username)| Q(email=username), is_active=True)
             if user.check_password(password):
                 return user
         except User.DoesNotExist:
-            try:
-                userprofile = models.UserProfile.objects.get(email=username)
-                if userprofile.user.check_password(password):
-                    return userprofile.user
-            except models.UserProfile.DoesNotExist:
-                return None
-
-        return None
+            return None
 
     def get_user(self, user_id):
         try:

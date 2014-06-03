@@ -9,6 +9,7 @@ from .modelfactories import (
     ArticleFactory,
     IssueFactory,
     UserProfileFactory,
+    UserFactory,
     SectionFactory,
     LanguageFactory,
     SectionTitleFactory,
@@ -91,20 +92,22 @@ class SectionTests(MockerTestCase):
 class UserProfileTests(TestCase):
 
     def test_gravatar_id_generation(self):
-        profile = UserProfileFactory.build(email='foo@bar.org')
+        user = UserFactory(username='foo', email='foo@bar.org', password=HASH_FOR_123, is_active=True)
+        profile = UserProfileFactory.build(user=user)
         expected_gravatar_id = '24191827e60cdb49a3d17fb1befe951b'
 
         self.assertEqual(profile.gravatar_id, expected_gravatar_id)
 
     def test_gravatar_url(self):
+        user = UserFactory(username='foo', email='foo@bar.org', password=HASH_FOR_123, is_active=True)
         expected_url = 'https://secure.gravatar.com/avatar/24191827e60cdb49a3d17fb1befe951b?s=18&d=mm'
-        profile = UserProfileFactory.build(email='foo@bar.org')
+        profile = UserProfileFactory.build(user=user)
 
         self.assertEqual(profile.avatar_url, expected_url)
 
     def test_create_user_must_create_profile(self):
-        user = auth.UserF(username='foo', password=HASH_FOR_123, is_active=True)
-        profile_exists = models.UserProfile.objects.filter(user=user, email=user.email).exists()
+        user = UserFactory(username='foo', password=HASH_FOR_123, is_active=True)
+        profile_exists = models.UserProfile.objects.filter(user=user).exists()
         self.assertTrue(profile_exists)
 
 

@@ -68,4 +68,4 @@ def _makeUserProfile(user):
     """
     from journalmanager.models import UserProfile
 
-    profile, created = UserProfile.objects.get_or_create(user=user, email=user.email)
+    profile, created = UserProfile.objects.get_or_create(user=user)

@@ -304,11 +304,10 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     user = models.OneToOneField(User)
-    email = models.EmailField(_('E-mail'), blank=False, unique=True, null=False)
 
     @property
     def gravatar_id(self):
-        return hashlib.md5(self.email.lower().strip()).hexdigest()
+        return hashlib.md5(self.user.email.lower().strip()).hexdigest()
 
     @property
     def avatar_url(self):
@@ -320,7 +319,6 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         """
         Return the default collection for this user
         """
-        # return Collection.objects.filter.active()
         uc = UserCollections.objects.get(user=self.user, is_default=True)
         return uc.collection
 
@@ -1260,4 +1258,4 @@ models.signals.post_save.connect(create_api_key, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     """Create a matching profile whenever a user object is created."""
     if created:
-        profile, new = UserProfile.objects.get_or_create(user=instance, email=instance.email)
+        profile, new = UserProfile.objects.get_or_create(user=instance)

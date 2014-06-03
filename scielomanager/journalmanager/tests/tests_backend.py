@@ -2,10 +2,7 @@
 from django.test import TestCase
 from django_factory_boy import auth
 
-from journalmanager.tests import modelfactories
 from journalmanager.backends import ModelBackend
-from journalmanager.models import UserProfile
-
 
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
@@ -18,7 +15,6 @@ class ModelBackendTest(TestCase):
                                password=HASH_FOR_123,
                                email='foo@bar.org',
                                is_active=True)
-        self.profile = self.user.userprofile
 
     def test_right_username_and_right_password(self):
         mbkend = ModelBackend()
