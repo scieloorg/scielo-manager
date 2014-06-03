@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 from os import path
+from articletrack.balaio import BalaioAPI
 
 
-DEFAULT_XML = "valid.xml"
-TESTS_XMLS_DIRS = path.join(path.dirname(__file__), 'xml_tests_files')
-TEXT_XML_ABS_PATH = path.join(TESTS_XMLS_DIRS, DEFAULT_XML)
-
-
-class BalaioAPIDouble(object):
+class BalaioAPIDouble(BalaioAPI):
 
     def is_up(self):
         return True
@@ -28,4 +24,5 @@ class BalaioAPIDouble(object):
         }
 
     def get_xml_uri(self, attempt_id, target_name):
-        return "file://%s" % TEXT_XML_ABS_PATH
+        tests_xmls_dirs = path.abspath(path.join(path.dirname(__file__), 'xml_tests_files'))
+        return "file://%s" % path.join(tests_xmls_dirs, "valid.xml")

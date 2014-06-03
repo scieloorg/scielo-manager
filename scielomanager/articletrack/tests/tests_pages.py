@@ -171,7 +171,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         return the abs path the xml file which name is: ``xml_file_name``
         located in: ``articletrack/tests/xml_tests_files/<xml_file_name>``
         """
-        tests_xmls_dirs = path.join(path.dirname(__file__), 'xml_tests_files')
+        tests_xmls_dirs = path.abspath(path.join(path.dirname(__file__), 'xml_tests_files'))
         return 'file://%s' % path.join(tests_xmls_dirs, xml_file_name)
 
     def _addWaffleFlag(self):

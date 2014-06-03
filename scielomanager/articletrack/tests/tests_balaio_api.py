@@ -2,6 +2,7 @@
 import unittest
 import json
 import urlparse
+from urllib import urlencode
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -179,19 +180,16 @@ class BalaioRequestsTests(mocker.MockerTestCase):
         balaio_api = BalaioAPI()
         attempt_id = 25
         target_name = "1415-4757-gmb-37-0210.xml"
-        expected_json_response = {
-            "filename": "1415-4757-gmb-37-0210.xml",
-            "uri": "file:///Users/juan.funez/Downloads/1415-4757-gmb-37-0210.xml"
+        qs_parms = {
+            'file': target_name,
+            'raw': True
         }
-
-        balaio_api_patched = self.mocker.patch(balaio_api)
-        balaio_api_patched.get_xml_uri(attempt_id, target_name)
-        self.mocker.result(expected_json_response['uri'])
-        self.mocker.replay()
+        qs = urlencode(qs_parms)
+        expected_xml_uri = balaio_api.get_fullpath() + 'files/%s/get.xml?%s' % (attempt_id, qs)
 
         self.assertEqual(
-            balaio_api_patched.get_xml_uri(attempt_id, target_name),
-            expected_json_response['uri']
+            balaio_api.get_xml_uri(attempt_id, target_name),
+            expected_xml_uri
         )
 
 
@@ -277,4 +275,3 @@ class BalaioRPCRequestsTests(mocker.MockerTestCase):
         self.mocker.replay()
 
         self.assertFalse(client.is_up())
-

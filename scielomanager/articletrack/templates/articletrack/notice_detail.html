@@ -131,16 +131,26 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
       <ul class="nav nav-tabs">
         <li class="active">
           <a href="#automatic_validations" data-toggle="tab">
-            {% trans "Automatic validations" %}
+            {% trans "System logs" %}
           </a>
         </li>
         <li>
           <a href="#annotations" data-toggle="tab">
-            {% trans "XML Annotations" %}
-            {% if xml_data.validation_errors %}
-              <span class="badge badge-important">{{ xml_data.validation_errors.error_lines|length }}</span> 
+            {% trans "Style Checking" %}
+            {% if not xml_data.can_be_analyzed %}
+              {# could not be analyzed #}
+              &nbsp;
+              <span class="badge badge-warning"></span>
+            {% elif not xml_data.annotations %}
+              {# xml without annotations #}
+              &nbsp;
+              <span class="badge badge-success"></span>
             {% else %}
-              <span class="badge badge-success">0</span>
+              {# xml analyzed and with annotations #}
+              &nbsp;
+              <span class="badge badge-important">
+                {{ xml_data.validation_errors.error_lines|length }}
+              </span>
             {% endif %}
           </a>
         </li>
@@ -194,17 +204,17 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
           {% if not xml_data.can_be_analyzed %}
             {# could not be analyzed #}
             <div class="alert alert-warning">
-              {% trans "The XML could not be analyzed" %}
+              <i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}
             </div>
           {% elif not xml_data.annotations %}
             {# xml without annotations #}
             <div class="alert alert-success">
-              {% trans "The XML has no errors to be annotated" %}
+              <i class="icon-ok"></i> {% trans "The XML has no errors" %}
             </div>
           {% else %}
             {# xml analyzed and with annotations #}
             <div class="alert alert-block alert-error">
-              <h4 class="alert-heading">{% trans "The XML was analyzed and have errors" %}:</h4>
+              <h4 class="alert-heading"> {% trans "The XML have some errors" %}:</h4>
             </div>
             {% if xml_data.validation_errors %}
               <table class="table table-striped table-condensed">

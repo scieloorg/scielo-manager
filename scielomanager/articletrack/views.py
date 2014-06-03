@@ -306,7 +306,7 @@ def notice_detail(request, checkin_id):
         # Service Unavailable
         xml_data['can_be_analyzed'] = False
     else:
-        xml_data['can_be_analyzed'] = xml_data['uri'] is not None
+        xml_data['can_be_analyzed'] = bool(xml_data['uri'])
 
     if xml_data['can_be_analyzed']:
         try:

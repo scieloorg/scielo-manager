@@ -2,6 +2,7 @@
 import json
 import socket
 import urllib2
+from urllib import urlencode
 import xmlrpclib
 
 from django.conf import settings
@@ -106,13 +107,12 @@ class BalaioAPI(SettingsMixin):
         return self._open(url)
 
     def get_xml_uri(self, attempt_id, target_name):
-        # return self.get_fullpath() + '%s/%s/' % (attempt_id, target_name)
-        # FAKE RESPONSE :: TO BE REMOVED ::
-        from os import path
-        target_name = 'valid.xml'
-        tests_xmls_dirs = path.join(path.dirname(__file__), 'tests/xml_tests_files')
-        return "file://%s" % path.join(tests_xmls_dirs, target_name)
-        # END FAKE RESPONSE::::
+        qs_parms = {
+            'file': target_name,
+            'raw': True
+        }
+        qs = urlencode(qs_parms)
+        return self.get_fullpath() + 'files/%s/get.xml?%s' % (attempt_id, qs)
 
 
 class BalaioRPC(SettingsMixin):
