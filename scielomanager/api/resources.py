@@ -425,6 +425,24 @@ class CheckinResource(ModelResource):
         allowed_methods = ['get', 'post', 'put']
 
 
+    def obj_create(self, bundle, **kwargs):
+        bundle = super(CheckinResource, self).obj_create(bundle, **kwargs)
+
+        submitted_by = bundle.data.get('submitted_by','')
+
+        try:
+            user = User.objects.get(email=submitted_by)
+        except ObjectDoesNotExist:
+            message = u"""Could not find the right User that submitted this checkin
+                          %s.""".strip()
+            logger.error(message % repr(bundle.obj))
+        else:
+            bundle.obj.submitted_by = user
+            bundle.obj.save()
+
+        return bundle
+
+
 class CheckinNoticeResource(ModelResource):
     checkin = fields.ForeignKey(CheckinResource, 'checkin')
 
