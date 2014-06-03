@@ -17,6 +17,7 @@ from journalmanager import models
 from journalmanager import choices
 from scielo_extensions import formfields as fields
 from scielomanager.widgets import CustomImageWidget
+from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
@@ -229,6 +230,7 @@ class LoginForm(forms.Form):
 
 
 class UserForm(ModelForm):
+    email = forms.EmailField(label=_("E-mail"), max_length=75, required=True)
     groups = forms.ModelMultipleChoiceField(Group.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more groups')}),
         required=False)
@@ -236,11 +238,20 @@ class UserForm(ModelForm):
     class Meta:
         model = models.User
         exclude = ('is_staff', 'is_superuser', 'last_login', 'date_joined',
-                   'user_permissions', 'email', 'password', 'is_active')
+                   'user_permissions', 'password', 'is_active')
+
+    def clean_email(self):
+        """
+        Validates that the given email address is not used by another user.
+        """
+        email = self.cleaned_data["email"]
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
+        if len(self.users_cache) > 0:
+            raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
+        return email
 
     def save(self, commit=True):
         user = super(UserForm, self).save(commit=False)
-        #user.set_password(self.cleaned_data["password"])
 
         if commit:
             user.save()

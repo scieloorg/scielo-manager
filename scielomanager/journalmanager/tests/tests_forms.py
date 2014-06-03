@@ -493,8 +493,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
-        # form.set('asmSelect0', '1')  # groups
+        form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
@@ -517,7 +516,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
@@ -537,7 +536,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
@@ -577,7 +576,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
 
         response = form.submit()
 
@@ -602,7 +601,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
         # Remove the collection
         form.set('usercollections-0-collection', '')
 
