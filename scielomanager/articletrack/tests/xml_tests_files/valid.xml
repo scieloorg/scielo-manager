@@ -1,0 +1,629 @@
+<article article-type="research-article" dtd-version="1.0" xml:lang="en" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://static.scielo.org/sps/schema/SciELO-journalpublishing1.xsd">
+	<front>
+		<journal-meta>
+			<journal-id journal-id-type="publisher">rbca</journal-id>
+			<journal-title-group>
+				<journal-title>Revista Brasileira de Ciência Avícola</journal-title>
+				<abbrev-journal-title>Rev. Bras. Cienc. Avic.</abbrev-journal-title>
+			</journal-title-group>
+			<issn>1516-635X</issn>
+			<publisher>
+				<publisher-name>Fundação APINCO de Ciência e Tecnologia Avícolas</publisher-name>
+				<publisher-loc>Campinas</publisher-loc>
+			</publisher>
+		</journal-meta>
+		<article-meta>
+			<article-id pub-id-type="publisher-id">S1516-635X2014000100012</article-id>
+			<article-id pub-id-type="doi">10.1590/S1516-635X2014000100012</article-id>
+			<article-categories>
+				<subj-group>
+					<subject>AGRICULTURE, DAIRY &amp; ANIMAL SCIENCE</subject>
+					<subject>ORNITHOLOGY</subject>
+				</subj-group>
+			</article-categories>
+			<title-group>
+				<article-title xml:lang="en">Evaluation of different digestible lysine levels for male broilers during the period of 18 to 40 days of age</article-title>
+			</title-group>
+			<contrib-group>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Carlos</surname>
+						<given-names>TCF</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A01"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Marino</surname>
+						<given-names>CT</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A01"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Silva</surname>
+						<given-names>NVP da</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A01"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Barbosa</surname>
+						<given-names>LCGS</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A01"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Reis</surname>
+						<given-names>RN</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A02"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Muramatsu</surname>
+						<given-names>K</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A02"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Araújo</surname>
+						<given-names>CS da S</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A01"/>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Araújo</surname>
+						<given-names>LF</given-names>
+					</name>
+					<role>ND</role>
+					<xref ref-type="aff" rid="A01"/>
+				</contrib>
+			</contrib-group>
+			<aff id="A01">
+				<addr-line>Pirassununga</addr-line>
+				<institution>University of Sao Paulo</institution>
+				<country>Brazil</country>
+			</aff>
+			<aff id="A02">
+				<addr-line>Videira</addr-line>
+				<institution>IBR Foods</institution>
+				<country>Brazil</country>
+			</aff>
+			<pub-date>
+				<month>03</month>
+				<year>2014</year>
+			</pub-date>
+			<volume>16</volume>
+			<issue>1</issue>
+			<fpage>83</fpage>
+			<lpage>87</lpage>
+			<abstract xml:lang="en">
+				<p>A total of 1.500 male Cobb 500 broilers were used to determine the optimal digestible lysine level for 18 to 40-day-old broilers. The experimental period started when broilers were 18 days old and had an initial average weight of 737 ± 20 g. A completely randomized experimental design was applied, with five lysine levels, totaling five treatments with 10 replicates of 30 birds each. The experimental diets contained equal energy and protein levels, and 0.86, 0.95, 1.04, 1.13, and 1.22% digestible lysine. The following parameters were evaluated: average body weight at 40 days of age, daily weight gain, daily feed intake, feed conversion ratio, carcass yield and parts yield, and abdominal fat percentage. There was a quadratic effect (p&lt;0.05) of digestible lysine levels on average body weight at 40 days of age, daily weight gain, and breast yield, and a cubic effect on feed conversion ratio and abdominal fat. There was no influence of lysine levels of daily feed intake, carcass yield, leg, or wing yields. It was concluded that digestible lysine requirements for male broilers during the evaluated period was 1.22% for performance and 1.04% for carcass yield.</p>
+			</abstract>
+			<kwd-group kwd-group-type="author-generated" xml:lang="en">
+				<kwd>Amino acids</kwd>
+				<kwd>poultry production</kwd>
+				<kwd>performance</kwd>
+				<kwd>ideal protein</kwd>
+				<kwd>parts yield</kwd>
+			</kwd-group>
+		</article-meta>
+	</front>
+	<back>
+		<ref-list>
+			<ref id="B1">
+				<element-citation publication-type="article">
+					<article-title>Efeito do nível de lisina da dieta e do sexo sobre o desempenho e rendimento de carcaça de frangos de corte</article-title>
+					<source>Revista Brasileira de Ciência Avícola</source>
+					<fpage>1</fpage>
+					<lpage>8</lpage>
+					<issue>1</issue>
+					<volume>4</volume>
+					<person-group>
+						<name>
+							<surname>Almeida</surname>
+							<given-names>ICL</given-names>
+						</name>
+						<name>
+							<surname>Mendes</surname>
+							<given-names>AA</given-names>
+						</name>
+						<name>
+							<surname>Garcia</surname>
+							<given-names>RG</given-names>
+						</name>
+						<name>
+							<surname>Takita</surname>
+							<given-names>TS</given-names>
+						</name>
+						<name>
+							<surname>Moreira</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Garcia</surname>
+							<given-names>EA</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B2">
+				<element-citation publication-type="article">
+					<article-title>Exigências de lisina e metionina+cistina digestíveis em dietas para frangos de corte na fase de crescimento</article-title>
+					<source>Acta Scientiarum</source>
+					<date>
+						<year>2001</year>
+					</date>
+					<fpage>909</fpage>
+					<lpage>915</lpage>
+					<issue>4</issue>
+					<volume>23</volume>
+					<person-group>
+						<name>
+							<surname>Barbosa</surname>
+							<given-names>MJB</given-names>
+						</name>
+						<name>
+							<surname>Junqueira</surname>
+							<given-names>OM</given-names>
+						</name>
+						<name>
+							<surname>Andreotti</surname>
+							<given-names>MO</given-names>
+						</name>
+						<name>
+							<surname>Cancherini</surname>
+							<given-names>LC</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B3">
+				<element-citation publication-type="article">
+					<article-title>Exigência de lisina, planos nutricionais e modelos matemáticos na determinação de exigências de frangos de corte</article-title>
+					<source>Acta Veterinaria Brasilica</source>
+					<date>
+						<year>2009</year>
+					</date>
+					<fpage>48</fpage>
+					<lpage>61</lpage>
+					<issue>2</issue>
+					<volume>3</volume>
+					<person-group>
+						<name>
+							<surname>Buteri</surname>
+							<given-names>CB</given-names>
+						</name>
+						<name>
+							<surname>Tavernari</surname>
+							<given-names>FC</given-names>
+						</name>
+						<name>
+							<surname>Rostagno</surname>
+							<given-names>HS</given-names>
+						</name>
+						<name>
+							<surname>Albino</surname>
+							<given-names>LFT</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B4">
+				<element-citation publication-type="book">
+					<source>Cobb 500 Suplemento de Crescimento e Nutrição para Frangos de Corte</source>
+					<date>
+						<year>2008</year>
+					</date>
+				</element-citation>
+			</ref>
+			<ref id="B5">
+				<element-citation publication-type="thesis">
+					<date>
+						<year>1998</year>
+					</date>
+				</element-citation>
+			</ref>
+			<ref id="B6">
+				<element-citation publication-type="article">
+					<article-title>Lysine need of heavy broiler males applying the ideal protein concept</article-title>
+					<source>Poultry Science</source>
+					<date>
+						<year>2002</year>
+					</date>
+					<fpage>1863</fpage>
+					<lpage>1868</lpage>
+					<volume>81</volume>
+					<person-group>
+						<name>
+							<surname>Corzo</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Moran Jr</surname>
+							<given-names>ET</given-names>
+						</name>
+						<name>
+							<surname>Hoehler</surname>
+							<given-names>D</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B7">
+				<element-citation publication-type="article">
+					<article-title>Níveis de lisina para frangos de corte nos períodos de 22 a 42 e de 43 a 49 dias de idade</article-title>
+					<source>Ciência e Agrotecnologia</source>
+					<date>
+						<year>2006</year>
+					</date>
+					<fpage>759</fpage>
+					<lpage>766</lpage>
+					<issue>4</issue>
+					<volume>30</volume>
+					<person-group>
+						<name>
+							<surname>Costa</surname>
+							<given-names>FGP</given-names>
+						</name>
+						<name>
+							<surname>Amarante Junior</surname>
+							<given-names>VS</given-names>
+						</name>
+						<name>
+							<surname>Nascimento</surname>
+							<given-names>GAJ</given-names>
+						</name>
+						<name>
+							<surname>Brandão</surname>
+							<given-names>PA</given-names>
+						</name>
+						<name>
+							<surname>Barros</surname>
+							<given-names>LR</given-names>
+						</name>
+						<name>
+							<surname>Silva</surname>
+							<given-names>JHV</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B8">
+				<element-citation publication-type="article">
+					<article-title>Influence on performance of three to six-week old broilers of varying dietary protein contents with supplementation of essencial amino acid requirements</article-title>
+					<source>Poultry Science</source>
+					<date>
+						<year>1989</year>
+					</date>
+					<fpage>113</fpage>
+					<lpage>123</lpage>
+					<volume>68</volume>
+					<person-group>
+						<name>
+							<surname>Fancher</surname>
+							<given-names>B</given-names>
+						</name>
+						<name>
+							<surname>Jensen</surname>
+							<given-names>LS</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B9">
+				<element-citation publication-type="article">
+					<article-title>Exigência de lisina digestível para frangos de corte machos de 1 a 42 dias de idade</article-title>
+					<source>Revista Brasileira de Zootecnia</source>
+					<date>
+						<year>2008</year>
+					</date>
+					<fpage>876</fpage>
+					<lpage>882</lpage>
+					<issue>5</issue>
+					<volume>37</volume>
+					<person-group>
+						<name>
+							<surname>Goulart</surname>
+							<given-names>CC</given-names>
+						</name>
+						<name>
+							<surname>Costa</surname>
+							<given-names>FGP</given-names>
+						</name>
+						<name>
+							<surname>Lima Neto</surname>
+							<given-names>RC</given-names>
+						</name>
+						<name>
+							<surname>Souza</surname>
+							<given-names>JG</given-names>
+						</name>
+						<name>
+							<surname>Silva</surname>
+							<given-names>JHV</given-names>
+						</name>
+						<name>
+							<surname>Givisiez</surname>
+							<given-names>PEN</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B10">
+				<element-citation publication-type="article">
+					<article-title>Lysine and arginine requirements of broiler chickens at two- to three-week intervals to eight weeks of age</article-title>
+					<source>Poultry Science</source>
+					<date>
+						<year>2001</year>
+					</date>
+					<fpage>599</fpage>
+					<lpage>606</lpage>
+					<volume>80</volume>
+					<person-group>
+						<name>
+							<surname>Labadan</surname>
+							<given-names>MC</given-names>
+						</name>
+						<name>
+							<surname>Hsu</surname>
+							<given-names>KN</given-names>
+						</name>
+						<name>
+							<surname>Austic</surname>
+							<given-names>RE</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B11">
+				<element-citation publication-type="article">
+					<article-title>Níveis de lisina digestível em rações para frangos de corte de 22 a 42 dias de idade, mantidos em ambiente de termoneutralidade</article-title>
+					<source>Revista Brasileira de Zootecnia</source>
+					<date>
+						<year>2005</year>
+					</date>
+					<fpage>1624</fpage>
+					<lpage>1632</lpage>
+					<issue>5</issue>
+					<volume>34</volume>
+					<person-group>
+						<name>
+							<surname>Lana</surname>
+							<given-names>SRV</given-names>
+						</name>
+						<name>
+							<surname>Oliveira</surname>
+							<given-names>RFM</given-names>
+						</name>
+						<name>
+							<surname>Donzele</surname>
+							<given-names>JL</given-names>
+						</name>
+						<name>
+							<surname>Albino</surname>
+							<given-names>LFT</given-names>
+						</name>
+						<name>
+							<surname>Gomes</surname>
+							<given-names>PC</given-names>
+						</name>
+						<name>
+							<surname>Vaz</surname>
+							<given-names>RGMV</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B12">
+				<element-citation publication-type="article">
+					<article-title>Specific effects of lysine on broiler production: Comparison with threonine and valine</article-title>
+					<source>Poultry Science</source>
+					<date>
+						<year>1998</year>
+					</date>
+					<fpage>118</fpage>
+					<lpage>123</lpage>
+					<volume>77</volume>
+					<person-group>
+						<name>
+							<surname>Leclercq</surname>
+							<given-names>B</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B13">
+				<element-citation publication-type="article">
+					<article-title>Ideal amino acid profile and dietary lysine specification for broiler chickens of 20 to 40 days of age</article-title>
+					<source>British Poultry Science</source>
+					<date>
+						<year>1999</year>
+					</date>
+					<fpage>257</fpage>
+					<lpage>265</lpage>
+					<volume>40</volume>
+					<person-group>
+						<name>
+							<surname>Mack</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Bercovici</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>De Groote</surname>
+							<given-names>G</given-names>
+						</name>
+						<name>
+							<surname>Leclercq</surname>
+							<given-names>B</given-names>
+						</name>
+						<name>
+							<surname>Lippens</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Pack</surname>
+							<given-names>M</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B14">
+				<element-citation publication-type="book">
+					<source>Tabelas Brasileiras para Aves e Suínos: Composição de alimentos e exigências nutricionais</source>
+					<date>
+						<year>2011</year>
+					</date>
+					<person-group>
+						<name>
+							<surname>Rostagno</surname>
+							<given-names>HS</given-names>
+						</name>
+						<name>
+							<surname>Albino</surname>
+							<given-names>LFT</given-names>
+						</name>
+						<name>
+							<surname>Donzele</surname>
+							<given-names>JL</given-names>
+						</name>
+						<name>
+							<surname>Gomes</surname>
+							<given-names>PC</given-names>
+						</name>
+						<name>
+							<surname>Oliveira</surname>
+							<given-names>RF</given-names>
+						</name>
+						<name>
+							<surname>Lopes</surname>
+							<given-names>DC</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B15">
+				<element-citation publication-type="book">
+					<source>SAS User's Guide: Statistics. Version 9.2 ed</source>
+					<date>
+						<year>2008</year>
+					</date>
+				</element-citation>
+			</ref>
+			<ref id="B16">
+				<element-citation publication-type="book">
+					<source>Nutrition of the chicken</source>
+					<date>
+						<year>1982</year>
+					</date>
+					<person-group>
+						<name>
+							<surname>Scott</surname>
+							<given-names>ML</given-names>
+						</name>
+						<name>
+							<surname>Nesheim</surname>
+							<given-names>MC</given-names>
+						</name>
+						<name>
+							<surname>Young</surname>
+							<given-names>RJ</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B17">
+				<element-citation publication-type="article">
+					<article-title>Níveis de lisina digestível para frangos de corte machos no período de 37 a 49 dias de idade</article-title>
+					<source>Revista Brasileira de Zootecnia</source>
+					<date>
+						<year>2009</year>
+					</date>
+					<fpage>508</fpage>
+					<lpage>514</lpage>
+					<issue>3</issue>
+					<volume>38</volume>
+					<person-group>
+						<name>
+							<surname>Trindade Neto</surname>
+							<given-names>MA</given-names>
+						</name>
+						<name>
+							<surname>Takeara</surname>
+							<given-names>P</given-names>
+						</name>
+						<name>
+							<surname>Toledo</surname>
+							<given-names>AL</given-names>
+						</name>
+						<name>
+							<surname>Kobashigawa</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Albuquerque</surname>
+							<given-names>R</given-names>
+						</name>
+						<name>
+							<surname>Araújo</surname>
+							<given-names>LF</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+			<ref id="B18">
+				<element-citation publication-type="article">
+					<article-title>Desempenho e peso de frações corporais, na suplementação crescente de lisina, dos 19 aos 40 dias de idade em frangos de corte</article-title>
+					<source>Ciência Rural</source>
+					<date>
+						<year>2009</year>
+					</date>
+					<fpage>515</fpage>
+					<lpage>521</lpage>
+					<issue>2</issue>
+					<volume>39</volume>
+					<person-group>
+						<name>
+							<surname>Viola</surname>
+							<given-names>TH</given-names>
+						</name>
+						<name>
+							<surname>Kessler</surname>
+							<given-names>AM</given-names>
+						</name>
+						<name>
+							<surname>Ribeiro</surname>
+							<given-names>AML</given-names>
+						</name>
+						<name>
+							<surname>Viola</surname>
+							<given-names>ES</given-names>
+						</name>
+						<name>
+							<surname>Trevizan</surname>
+							<given-names>L</given-names>
+						</name>
+						<name>
+							<surname>Gonçalves</surname>
+							<given-names>TA</given-names>
+						</name>
+					</person-group>
+				</element-citation>
+			</ref>
+		</ref-list>
+	</back>
+</article>

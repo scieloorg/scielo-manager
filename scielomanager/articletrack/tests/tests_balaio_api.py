@@ -2,6 +2,7 @@
 import unittest
 import json
 import urlparse
+from urllib import urlencode
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -52,7 +53,6 @@ class BalaioCheckSettingsTests(unittest.TestCase):
         api_settings_port = settings.API_BALAIO['default']['PORT']
         api_settings_netloc = ":".join([api_settings_host, api_settings_port])
         api_settings_path = settings.API_BALAIO['default']['PATH']
-
 
         self.assertTrue(api_fullpath_url.scheme == api_settings_protocol)
         self.assertTrue(api_fullpath_url.netloc == api_settings_netloc)
@@ -176,8 +176,24 @@ class BalaioRequestsTests(mocker.MockerTestCase):
             expected_json_response
         )
 
+    def test_get_xml_uri(self):
+        balaio_api = BalaioAPI()
+        attempt_id = 25
+        target_name = "1415-4757-gmb-37-0210.xml"
+        qs_parms = {
+            'file': target_name,
+            'raw': True
+        }
+        qs = urlencode(qs_parms)
+        expected_xml_uri = balaio_api.get_fullpath() + 'files/%s/get.xml?%s' % (attempt_id, qs)
 
-class BalaioAPIRequestsTests(mocker.MockerTestCase):
+        self.assertEqual(
+            balaio_api.get_xml_uri(attempt_id, target_name),
+            expected_xml_uri
+        )
+
+
+class BalaioRPCRequestsTests(mocker.MockerTestCase):
     def test_valid_remote_call_without_args(self):
         client = BalaioRPC(using='default')
 
@@ -259,4 +275,3 @@ class BalaioAPIRequestsTests(mocker.MockerTestCase):
         self.mocker.replay()
 
         self.assertFalse(client.is_up())
-

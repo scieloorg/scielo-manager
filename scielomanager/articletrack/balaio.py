@@ -2,6 +2,7 @@
 import json
 import socket
 import urllib2
+from urllib import urlencode
 import xmlrpclib
 
 from django.conf import settings
@@ -10,7 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 class SettingsMixin(object):
     def validate_settings(self, using):
-        if not using in settings.API_BALAIO.keys():
+        if using not in settings.API_BALAIO.keys():
             raise ImproperlyConfigured("settings.API_BALAIO don't have using == %s" % using)
 
         for k in ['PROTOCOL', 'HOST', 'PORT', 'PATH']:
@@ -36,7 +37,7 @@ class BalaioAPI(SettingsMixin):
     def __init__(self, using='default'):
         self.using = using
         self.validate_settings(self.using)
-        self.conf =  settings.API_BALAIO[self.using]
+        self.conf = settings.API_BALAIO[self.using]
 
     def get_hostname(self):
         return '%s://%s:%s/' % (self.conf['PROTOCOL'], self.conf['HOST'], self.conf['PORT'])
@@ -79,7 +80,6 @@ class BalaioAPI(SettingsMixin):
                 raise StopIteration()
 
     def _process_response_as_json(self, iterable):
-
         try:
             response_data = ''.join(iterable)
         except ValueError as e:
@@ -106,13 +106,21 @@ class BalaioAPI(SettingsMixin):
         url = self.get_fullpath() + 'files/%s/%s.zip/?full=true' % (attempt_id, target_name)
         return self._open(url)
 
+    def get_xml_uri(self, attempt_id, target_name):
+        qs_parms = {
+            'file': target_name,
+            'raw': True
+        }
+        qs = urlencode(qs_parms)
+        return self.get_fullpath() + 'files/%s/get.xml?%s' % (attempt_id, qs)
+
 
 class BalaioRPC(SettingsMixin):
     _xmlrpclib = xmlrpclib
 
     def __init__(self, using='default'):
         self.validate_settings(using)
-        self.conf =  settings.API_BALAIO[using]
+        self.conf = settings.API_BALAIO[using]
         self.server_path = self._fullpath()
 
     def is_up(self):
@@ -128,7 +136,8 @@ class BalaioRPC(SettingsMixin):
         return self._xmlrpclib.ServerProxy(uri)
 
     def _fullpath(self):
-        return '%s://%s:%s/%s/_rpc/' % (self.conf['PROTOCOL'], self.conf['HOST'].strip('/'),
+        return '%s://%s:%s/%s/_rpc/' % (
+            self.conf['PROTOCOL'], self.conf['HOST'].strip('/'),
             self.conf['PORT'], self.conf['PATH'].strip('/'))
 
     def call(self, method, args=()):

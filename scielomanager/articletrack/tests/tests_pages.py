@@ -1,13 +1,18 @@
 # coding: utf-8
 from waffle import Flag
+from os import path
 from django_webtest import WebTest
 from django_factory_boy import auth
 from django.core.urlresolvers import reverse
 from django.template import defaultfilters as filters
 from django.conf import settings
 
+import mocker
+
 from . import modelfactories
 from journalmanager.tests.modelfactories import UserFactory, CollectionFactory
+from articletrack.balaio import BalaioAPI
+from . import doubles
 
 
 def _makePermission(perm, model, app_label='articletrack'):
@@ -150,7 +155,7 @@ class CheckinListTests(WebTest):
             response.mustcontain(log.description)
 
 
-class NoticeListTests(WebTest):
+class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
     def _makeOne(self):
         notice = modelfactories.NoticeFactory.create()
@@ -160,6 +165,14 @@ class NoticeListTests(WebTest):
         collection.add_user(self.user, is_manager=True)
 
         return notice
+
+    def _get_path_of_test_xml(self, xml_file_name):
+        """
+        return the abs path the xml file which name is: ``xml_file_name``
+        located in: ``articletrack/tests/xml_tests_files/<xml_file_name>``
+        """
+        tests_xmls_dirs = path.abspath(path.join(path.dirname(__file__), 'xml_tests_files'))
+        return 'file://%s' % path.join(tests_xmls_dirs, xml_file_name)
 
     def _addWaffleFlag(self):
         Flag.objects.create(name='articletrack', authenticated=True)
@@ -202,6 +215,143 @@ class NoticeListTests(WebTest):
         response = self.app.get(reverse('notice_detail',
                                         args=[notice.checkin.pk]), user=self.user)
 
-        # response.mustcontain('<a href="/arttrack/">List of check ins</a>')
         url_to_checkin_index = reverse('checkin_index')
         response.mustcontain('<a href="%s">' % url_to_checkin_index)
+
+    def test_annotations_ok_if_xml_is_valid(self):
+        self._addWaffleFlag()
+        notice = self._makeOne()
+
+        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
+        target_xml = "valid.xml"
+        expected_response = {
+            "filename": "1415-4757-gmb-37-0210.xml",
+            "uri": self._get_path_of_test_xml(target_xml)
+        }
+
+        class BalaioTest(doubles.BalaioAPIDouble):
+            def get_xml_uri(self, attempt_id, target_name):
+                return expected_response['uri']
+
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(BalaioTest())
+        self.mocker.replay()
+
+        response = self.app.get(
+            reverse('notice_detail', args=[notice.checkin.pk]),
+            user=self.user)
+        xml_data = response.context['xml_data']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(xml_data['can_be_analyzed'])
+        self.assertIsNone(xml_data['annotations'])
+        self.assertEqual(xml_data['uri'], expected_response['uri'])
+        self.assertIsNone(xml_data['validation_errors'])
+        self.assertEqual(xml_data['file_name'], expected_response['filename'])
+
+    def test_annotations_warning_if_balaio_broke(self):
+        self._addWaffleFlag()
+        notice = self._makeOne()
+
+        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
+        target_xml = "error.xml"
+        expected_response = {
+            "filename": "1415-4757-gmb-37-0210.xml",
+            "uri": self._get_path_of_test_xml(target_xml)
+        }
+
+        class BalaioTest(doubles.BalaioAPIDouble):
+            def get_xml_uri(self, attempt_id, target_name):
+                return expected_response['uri']
+
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(BalaioTest())
+        self.mocker.replay()
+
+        response = self.app.get(
+            reverse('notice_detail', args=[notice.checkin.pk]),
+            user=self.user)
+        xml_data = response.context['xml_data']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(xml_data['can_be_analyzed'])
+        self.assertIsNone(xml_data['annotations'])
+        self.assertEqual(xml_data['uri'], expected_response['uri'])
+        self.assertIsNone(xml_data['validation_errors'])
+        self.assertEqual(xml_data['file_name'], expected_response['filename'])
+
+    def test_annotations_of_error(self):
+        self._addWaffleFlag()
+        notice = self._makeOne()
+
+        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
+        target_xml = "to_be_annotated.xml"
+        expected_response = {
+            "filename": "1415-4757-gmb-37-0210.xml",
+            "uri": self._get_path_of_test_xml(target_xml)
+        }
+
+        class BalaioTest(doubles.BalaioAPIDouble):
+            def get_xml_uri(self, attempt_id, target_name):
+                return expected_response['uri']
+
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(BalaioTest())
+        self.mocker.replay()
+
+        response = self.app.get(
+            reverse('notice_detail', args=[notice.checkin.pk]),
+            user=self.user)
+        xml_data = response.context['xml_data']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(xml_data['can_be_analyzed'])
+        self.assertIsNotNone(xml_data['annotations'])
+        self.assertEqual(xml_data['uri'], expected_response['uri'])
+        self.assertEqual(xml_data['file_name'], expected_response['filename'])
+        self.assertIsNotNone(xml_data['validation_errors'])
+        self.assertEqual('7', xml_data['validation_errors']['error_lines'])
+        self.assertEqual(1, len(xml_data['validation_errors']['results']))
+        expected_validation_errors = {
+            'column': 0,
+            'line': 7,
+            'message': u"Element 'article-meta': This element is not expected. Expected is ( journal-meta ).",
+            'level': u'ERROR'
+        }
+        self.assertEqual([expected_validation_errors], xml_data['validation_errors']['results'])
+
+    def test_xml_not_found(self):
+        self._addWaffleFlag()
+        notice = self._makeOne()
+
+        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
+        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
+        target_xml = "blaus.xml"
+        expected_response = {
+            "filename": "1415-4757-gmb-37-0210.xml",
+            "uri": self._get_path_of_test_xml(target_xml)
+        }
+
+        class BalaioTest(doubles.BalaioAPIDouble):
+            def get_xml_uri(self, attempt_id, target_name):
+                return expected_response['uri']
+
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(BalaioTest())
+        self.mocker.replay()
+
+        response = self.app.get(
+            reverse('notice_detail', args=[notice.checkin.pk]),
+            user=self.user)
+        xml_data = response.context['xml_data']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(xml_data['can_be_analyzed'])
+        self.assertIsNone(xml_data['annotations'])
+        self.assertEqual(xml_data['uri'], expected_response['uri'])
+        self.assertEqual(xml_data['file_name'], expected_response['filename'])
+        self.assertIsNone(xml_data['validation_errors'])

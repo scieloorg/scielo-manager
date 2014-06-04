@@ -17,3 +17,4 @@ django-tastypie==0.9.14
 django-waffle==0.9.1
 git+git://github.com/scieloorg/django-htmlmin.git
 git+git://github.com/scieloorg/django-cache-machine.git#egg=django-cache-machine
+git+git://github.com/scieloorg/packtools.git#egg=packtools

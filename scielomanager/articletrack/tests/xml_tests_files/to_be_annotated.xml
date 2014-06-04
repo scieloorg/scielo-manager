@@ -1,0 +1,1872 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article
+  PUBLIC '-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN'
+  'JATS-journalpublishing1.dtd'>
+<article article-type="review-article" xml:lang="en" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<front>
+		<article-meta>
+			<article-id pub-id-type="publisher-id">1415-4757-gmb-37-0210</article-id>
+			<article-categories>
+				<subj-group>
+					<subject>Review Article</subject>
+				</subj-group>
+			</article-categories>
+			<title-group/>
+			<contrib-group>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Nevado</surname>
+						<given-names>Julián</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af2-gmb-37-210">
+						<sup>2</sup>
+					</xref>
+					<xref ref-type="fn" rid="fn1-gmb-37-210">
+						<sup>*</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Mergener</surname>
+						<given-names>Rafaella</given-names>
+					</name>
+					<xref ref-type="aff" rid="af3-gmb-37-210">
+						<sup>3</sup>
+					</xref>
+					<xref ref-type="fn" rid="fn1-gmb-37-210">
+						<sup>*</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Palomares-Bralo</surname>
+						<given-names>María</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af2-gmb-37-210">
+						<sup>2</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Souza</surname>
+						<given-names>Karen Regina</given-names>
+					</name>
+					<xref ref-type="aff" rid="af3-gmb-37-210">
+						<sup>3</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Vallespín</surname>
+						<given-names>Elena</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af2-gmb-37-210">
+						<sup>2</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Mena</surname>
+						<given-names>Rocío</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af2-gmb-37-210">
+						<sup>2</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Martínez-Glez</surname>
+						<given-names>Víctor</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af2-gmb-37-210">
+						<sup>2</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Mori</surname>
+						<given-names>María Ángeles</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af2-gmb-37-210">
+						<sup>2</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Santos</surname>
+						<given-names>Fernando</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af4-gmb-37-210">
+						<sup>4</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>García-Miñaur</surname>
+						<given-names>Sixto</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af4-gmb-37-210">
+						<sup>4</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>García-Santiago</surname>
+						<given-names>Fé</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af5-gmb-37-210">
+						<sup>5</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Mansilla</surname>
+						<given-names>Elena</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af5-gmb-37-210">
+						<sup>5</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Fernández</surname>
+						<given-names>Luis</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af6-gmb-37-210">
+						<sup>6</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>de Torres</surname>
+						<given-names>María Luisa</given-names>
+					</name>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af5-gmb-37-210">
+						<sup>5</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Riegel</surname>
+						<given-names>Mariluce</given-names>
+					</name>
+					<xref ref-type="aff" rid="af3-gmb-37-210">
+						<sup>3</sup>
+					</xref>
+					<xref ref-type="aff" rid="af7-gmb-37-210">
+						<sup>7</sup>
+					</xref>
+					<xref ref-type="fn" rid="fn2-gmb-37-210">
+						<sup>$</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Lapunzina</surname>
+						<given-names>Pablo</given-names>
+					</name>
+					<xref ref-type="corresp" rid="c1-gmb-37-210"/>
+					<xref ref-type="aff" rid="af1-gmb-37-210">
+						<sup>1</sup>
+					</xref>
+					<xref ref-type="aff" rid="af4-gmb-37-210">
+						<sup>4</sup>
+					</xref>
+					<xref ref-type="aff" rid="af8-gmb-37-210">
+						<sup>8</sup>
+					</xref>
+					<xref ref-type="fn" rid="fn2-gmb-37-210">
+						<sup>$</sup>
+					</xref>
+				</contrib>
+			</contrib-group>
+			<aff id="af1-gmb-37-210">
+				<label>1</label>
+				<institution content-type="orgdiv2">Centro de Investigación Biomédica en Red de Enfermedades Raras</institution>, 
+
+				<institution content-type="orgdiv1">Instituto de Salud Carlos III</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Madrid</named-content></addr-line>, 
+
+				<country>Spain</country>
+				.</aff>
+			<aff id="af2-gmb-37-210">
+				<label>2</label>
+				<institution content-type="orgdiv3">Section of Functional and Structural Genomics</institution>, 
+
+				<institution content-type="orgdiv2">Instituto de Genética Médica y Molecular</institution>
+				, 
+
+				<institution content-type="orgdiv1">Hospital Universitario la Paz</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Madrid</named-content></addr-line>, 
+
+				<country>Spain</country>
+				.</aff>
+			<aff id="af3-gmb-37-210">
+				<label>3</label>
+				<institution content-type="orgdiv1">Programa de Pós-graduação em Genética e Biologia Molecular</institution>, 
+
+				<institution content-type="orgname">Universidade Federal do Rio Grande do Sul</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Porto Alegre</named-content>
+					, 
+
+					<named-content content-type="state">RS</named-content></addr-line>, 
+
+				<country>Brazil</country>
+				.</aff>
+			<aff id="af4-gmb-37-210">
+				<label>4</label>
+				<institution content-type="orgdiv3">Section of Clinical Genetics</institution>, 
+
+				<institution content-type="orgdiv2">Instituto de Genética Médica y Molecular</institution>
+				, 
+
+				<institution content-type="orgdiv1">Hospital Universitario la Paz</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Madrid</named-content></addr-line>, 
+
+				<country>Spain</country>
+				.</aff>
+			<aff id="af5-gmb-37-210">
+				<label>5</label>
+				<institution content-type="orgdiv3">Section of Cytogenetics</institution>, 
+
+				<institution content-type="orgdiv2">Instituto de Genética Médica y Molecular</institution>
+				, 
+
+				<institution content-type="orgdiv1">Hospital Universitario la Paz</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Madrid</named-content></addr-line>, 
+
+				<country>Spain</country>
+				.</aff>
+			<aff id="af6-gmb-37-210">
+				<label>6</label>
+				<institution content-type="orgdiv3">Section of Preanalytics</institution>, 
+
+				<institution content-type="orgdiv2">Instituto de Genética Médica y Molecular</institution>
+				, 
+
+				<institution content-type="orgdiv1">Hospital Universitario la Paz</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Madrid</named-content></addr-line>, 
+
+				<country>Spain</country>
+				.</aff>
+			<aff id="af7-gmb-37-210">
+				<label>7</label>
+				<institution content-type="orgdiv2">Serviço de Genética Médica</institution>, 
+
+				<institution content-type="orgdiv1">Hospital de Clínicas de Porto Alegre</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Porto Alegre</named-content>
+					, 
+
+					<named-content content-type="state">RS</named-content></addr-line>, 
+
+				<country>Brazil</country>
+				.</aff>
+			<aff id="af8-gmb-37-210">
+				<label>8</label>
+				<institution content-type="orgdiv4">Section of Molecular Endocrinology</institution>, 
+
+				<institution content-type="orgdiv3">Overgrowth Disordes Laboratory</institution>
+				, 
+
+				<institution content-type="orgdiv2">Instituto de Genética Médica y Molecular</institution>
+				, 
+
+				<institution content-type="orgdiv1">Hospital Universitario la Paz</institution>
+				, 
+
+				<addr-line>
+					<named-content content-type="city">Madrid</named-content></addr-line>, 
+
+				<country>Spain</country>
+				.</aff>
+			<author-notes>
+				<fn fn-type="equal" id="fn1-gmb-37-210">
+					<label>*</label>
+					<p>These authors contributed equally to this work.</p>
+				</fn>
+				<fn fn-type="equal" id="fn2-gmb-37-210">
+					<label>$</label>
+					<p>These authors contributed equally to this work.</p>
+				</fn>
+				<corresp id="c1-gmb-37-210">Send correspondence to Pablo Lapunzina. Instituto de Genética Médica y Molecular, Hospital Universitario la Paz, Paseo de la Castellana 261-28046, Madrid, Spain. E-mail: 
+					<email>plapunzina.hulp@salud.madrid.org</email>
+					.</corresp>
+			</author-notes>
+			<pub-date pub-type="ppub">
+				<month>3</month>
+				<year>2014</year>
+			</pub-date>
+			<pub-date pub-type="epub">
+				<day>20</day>
+				<month>03</month>
+				<year>2013</year>
+			</pub-date>
+			<volume>37</volume>
+			<issue>1 (suppl)</issue>
+			<fpage>210</fpage>
+			<lpage>219</lpage>
+			<permissions>
+				<copyright-statement>Copyright © 2014, Sociedade Brasileira de Genética.</copyright-statement>
+				<copyright-year>2014</copyright-year>
+				<license>
+					<license-p>License information: This is an open-access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p>
+				</license>
+			</permissions>
+			<abstract>
+				<p>Several new microdeletion and microduplication syndromes are emerging as disorders that have been proven to cause multisystem pathologies frequently associated with intellectual disability (ID), multiple congenital anomalies (MCA), autistic spectrum disorders (ASD) and other phenotypic findings. In this paper, we review the “new” and emergent microdeletion and microduplication syndromes that have been described and recognized in recent years with the aim of summarizing their main characteristics and chromosomal regions involved. We decided to group them by genomic region and within these groupings have classified them into those that include ID, MCA, ASD or other findings. This review does not intend to be exhaustive but is rather a quick guide to help pediatricians, clinical geneticists, cytogeneticists and/or molecular geneticists.</p>
+			</abstract>
+			<kwd-group>
+				<kwd>microdeletion</kwd>
+				<kwd>microduplication</kwd>
+				<kwd>chromosome rearrangement</kwd>
+				<kwd>novel deletions</kwd>
+				<kwd>novel duplications</kwd>
+			</kwd-group>
+		</article-meta>
+	</front>
+	<body>
+		<sec sec-type="intro">
+			<title>Introduction</title>
+			<p>Alteration of gene dosage due to gains or deletions of large genomic regions causes many genetic disorders that are frequently associated with intellectual disability (ID), multiple congenital anomalies (MCA), autistic spectrum disorders (ASD) and other phenotypic findings (
+				<xref ref-type="bibr" rid="b7-gmb-37-210">Lupski and Stankiewicz, 2005</xref>
+				) The advances in the use of microarrays for diagnosis and research in genomic disorders has permitted the discovery of infrequent genomic rearrangements in a variety of diseases and the report of several microdeletion and microduplication syndromes (
+				<xref ref-type="bibr" rid="b2-gmb-37-210">
+					Deak 
+					<italic>et al.</italic>
+					, 2011</xref>; 
+				<xref ref-type="bibr" rid="b9-gmb-37-210">
+					Rafati 
+					<italic>et al.</italic>
+					, 2012</xref>; 
+				<xref ref-type="bibr" rid="b14-gmb-37-210">Vissers and Stankiewicz, 2012</xref>
+				;.
+				<xref ref-type="bibr" rid="b15-gmb-37-210">
+					Weise 
+					<italic>et al.</italic>
+					, 2012</xref>).</p>
+			<p>The identification of novel syndromes is based on consistent, clinically recognizable features associated with a common chromosomal region; however, for some copy number variations (CNVs), variability in expression and penetrance of clinical manifestations have complicated the establishment of their clinical significance. Currently, the delineation of novel syndromes may start with the identification of overlapping genotypes, that is, a ‘genotype-first’ approach, in which patients are characterized by a similar genomic aberration before a common clinical presentation is delineated. This is referred to as “reverse genetics”. This approach has proven to be successful considering the growing list of microdeletion/microduplication syndromes that have been described in the past five years. Furthermore, the collection of clinical and genetic information in databases such as DECIPHER, ISCA, ECARUCA and other free databases has been crucial for discriminating between patients with rare aberrations and those with new micro-deletion/duplication syndromes.</p>
+			<p>In this paper, we systematically review the novel microdeletion and microduplication syndromes described in the past five years. We grouped these disorders by chromosome, with the intention of serving as a quick guide for clinicians and researchers.</p>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 1</title>
+			<sec>
+				<title>1p34.2-p34.3 Deletion</title>
+				<p>This deletion is characterized by microcephaly, ID and ASD. The deletion spans approximately 3.3 Mb and involves approximately 43 genes, including RIMS3, which is the main candidate gene for this phenotype.</p>
+			</sec>
+			<sec>
+				<title>1p31.3-p32.2 Deletion</title>
+				<p>There are approximately 7 cases described to date. In five of these cases with an 
+					<italic>NFIA</italic>
+					deletion, the patients show central nervous system (CNS) malformations (hypoplasia of the corpus callosum, macrocephaly, ventriculomegaly) and urinary tract defects.</p>
+			</sec>
+			<sec>
+				<title>1q21.1 Deletion/Duplication</title>
+				<p>Patients have a phenotype similar to 22q11.2 deletion syndrome (velocardio-facial syndrome-like phenotypic findings). They may have congenital heart disease, schizophrenia and ID. The micro-duplication of approximately 212 kb could be responsible for congenital heart disease in at least 2 patients. The phenotype of dup1q21.1 is variable due to incomplete penetrance and variable expression levels. Therefore, this microduplication is also observed in asymptomatic individuals. Patients with deletions (1.4–1.65 Mb) may also have microcephaly, epilepsy, ataxic gait, severe dysmorphic features of the face and ID. This deleted region comprises approximately 30 coding genes, including the cluster of genes encoding the ephrins (
+					<italic>EFNA1, EFNA3</italic>
+					and 
+					<italic>EFNA4</italic>
+					), which are tyrosine kinase receptors.</p>
+			</sec>
+			<sec>
+				<title>1q24-q25 Deletion</title>
+				<p>This deletion is characterized by growth retardation, microcephaly, small hands and feet (with brachydactyly), dysmorphic facies, small ears, micrognathia, short nose with bulbous tip and severe ID. The deleted region is approximately 1.9 Mb (chr1: 170135865-172099327 coordinates hg18) and contains 13 genes including 
+					<italic>DNM3</italic>
+					and 
+					<italic>CENPL</italic>
+					, which encodes a protein essential for centromeric function, mitotic progression and synaptic reaction.</p>
+			</sec>
+			<sec>
+				<title>1q32.2-q32.3 Deletion</title>
+				<p>Patients exhibit dysmorphic features and facial clefts due to deletion of the 
+					<italic>IRF6</italic>
+					gene, which is responsible for the Van der Woude syndrome (VWS). The deletion is approximately 2.98 Mb and includes 25 genes.</p>
+			</sec>
+			<sec>
+				<title>1q41-q42.12 Deletion</title>
+				<p>This deletion is characterized by moderate to severe ID, seizures, Pelger-Huet anomaly (leukocyte alteration), cleft lip and palate and agenesis of the corpus callosum. Patients may also have hypoglycemia, 13 pairs of ribs and a micropenis. 
+					<italic>DISP1</italic>
+					, in the sonic hedgehog pathway, has been proposed as the gene responsible for the alterations of the midline observed in this deletion. The deletions have a size of 777 kb to 6.87 Mb. It has been proposed that this would represent a locus for Fryns syndrome, a Fryns syndrome phenocopy, or congenital diaphragmatic hernia (CDH). It has also been observed in patients with the isolated 1q42 deletion (together with agenesis of the corpus callosum) or within a contiguous deletion, 1q41q42 syndrome (
+					<xref ref-type="bibr" rid="b4-gmb-37-210">
+						Filges 
+						<italic>et al.</italic>
+						, 2010</xref>).</p>
+			</sec>
+			<sec>
+				<title>1q43-q44 Deletion</title>
+				<p>Microcephaly, abnormalities of the corpus callosum, seizures, ID and speech disorder are observed in patients with this deletion. Deletion of the 
+					<italic>AKT3</italic>
+					gene appears to be correlated with microcephaly and alteration of the other 3 genes (
+					<italic>FAM36A, C1ORF199</italic>
+					and 
+					<italic>HNRNPU</italic>
+					) correlates with the epileptic phenotype.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 2</title>
+			<sec>
+				<title>2p14-p15 Deletion</title>
+				<p>This deletion is associated with ID, speech disorder, mild dysmorphic features, hearing loss and relative microcephaly. The deletion is approximately 2.23–2.84 Mb, with a minimal overlapping region of 10 genes.</p>
+			</sec>
+			<sec>
+				<title>2p15-q16.1 Deletion</title>
+				<p>This deletion is associated with ID, ASD and dysmorphic features. Eight patients described by three different groups have this deletion. The 
+					<italic>OTX1</italic>
+					and 
+					<italic>XPO1</italic>
+					genes have been associated with ASD. It has also been observed in patients with prenatal and postnatal growth retardation, ptosis of both eyelids and microcephaly. The deletions range from 2.6 Mb to 3.2 Mb.</p>
+			</sec>
+			<sec>
+				<title>2q13 Deletion</title>
+				<p>Patients with this deletion have CNS disorders and present with cortical disruption and Joubert syndrome. These phenotypes are associated with the deletion of the 
+					<italic>NPHP1</italic>
+					gene.</p>
+			</sec>
+			<sec>
+				<title>2q23.1 Deletion/Duplication</title>
+				<p>Seizures, speech disturbances, ataxia, short stature, ID and dysmorphic features (brachycephaly, proximal implementation of the hair, short nose, hypertelorism, everted lower lip, thick tongue, brachytelephalangy, clinodactyly and hypertrichosis) are observed. This deletion includes the 
+					<italic>MBD5</italic>
+					gene, which is implicated in the pathophysiology of seizures. Stereotyped behaviors are also present and these are similar to Rett syndrome or Angelman syndrome. Microduplications in this region present with ID, hypotonia, ASD and include the following genes: 
+					<italic>MBD5, ACVR2A, ORC4L, EPC2, KIF5C, MIR1978, LYPD6B</italic>
+					and 
+					<italic>LYPD6</italic>
+					. (
+					<xref ref-type="bibr" rid="b5-gmb-37-210">
+						Jaillard 
+						<italic>et al</italic>
+						., 2009</xref>).</p>
+			</sec>
+			<sec>
+				<title>2q31.1-q31.2. Deletion</title>
+				<p>This deletion is characterized by monodctylous hands, ectrodactyly, brachydactyly and clinodactyly with or without duplication of both halluces. This deletion is of the 
+					<italic>HOXD</italic>
+					cluster. Mutations in 
+					<italic>HOXD13</italic>
+					and 
+					<italic>HOXD10</italic>
+					are associated with malformations of the limbs. Some patients may have ID, microcephaly and growth retardation.</p>
+			</sec>
+			<sec>
+				<title>2q32-33.1 Deletion</title>
+				<p>Patients with this deletion have ID, learning disabilities, growth retardation, thin and sparse hair, feeding difficulties, cleft lip/palate and multiple dysmorphic features. 
+					<italic>SATB2</italic>
+					haploinsufficiency has been suggested to be responsible for most of these findings. The deletions are between 35 kb to 10.4 Mb (
+					<xref ref-type="bibr" rid="b10-gmb-37-210">
+						Rosenfeld 
+						<italic>et al.</italic>
+						, 2009</xref>)].</p>
+			</sec>
+			<sec>
+				<title>2q37 Deletion</title>
+				<p>This deletion shows the Albright phenotype (hereditary osteodystrophy; brachydactyly, ID and short stature).</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 3</title>
+			<sec>
+				<title>3p21.31 Deletion</title>
+				<p>Patients present with cortical blindness, CNS abnormalities, cleft lip and ID. The deletions are approximately 3.1 Mb, including approximately 80 genes.</p>
+			</sec>
+			<sec>
+				<title>3p25 interstitial Deletion</title>
+				<p>Patients present with low birth weight, mental retardation, telecanthus, ptosis and micrognathia and congenital heart disease, typically atrioventricular septal defect. 
+					<italic>SRGAP3</italic>
+					is the major determinant of ID.</p>
+			</sec>
+			<sec>
+				<title>3p11.2-p12.1 Deletion</title>
+				<p>This deletion includes 
+					<italic>POU1F1</italic>
+					, 
+					<italic>CHMP2B</italic>
+					and 
+					<italic>VGLL3</italic>
+					. Patients have abnormalities in pituitary hormones similar to the hypothalamic Laron syndrome but are unresponsive to GH treatment.</p>
+			</sec>
+			<sec>
+				<title>3q13.31 Deletion</title>
+				<p>ID, postnatal overgrowth, hypoplastic genitalia (in men) and recognizable facial features (short philtrum and protruding lips) are observed in these patients. The deletion is 580 kb and includes 
+					<italic>DRD3</italic>
+					and 
+					<italic>ZBTB20</italic>
+					as candidate genes.</p>
+			</sec>
+			<sec>
+				<title>3q22.1-q25.2 Deletion</title>
+				<p>Patients with this deletion have multiple congenital anomalies and peculiar facial appearance. In particular, the phenotypes result from the variable combination of three recognizable patterns: Dandy-Walker malformation, BPES syndrome and Wisconsin syndrome.</p>
+			</sec>
+			<sec>
+				<title>3q27.3 Deletion</title>
+				<p>Patients shared a recognizable facial dysmorphism and Marfanoid habitus associated with psychosis and mild to severe ID. Most of these patients have severely impaired adaptive skills.</p>
+			</sec>
+			<sec>
+				<title>3q29 Deletion/Duplication</title>
+				<p>Facial dysmorphism, ASD, psychiatric disorders (bipolar disease), ID and MCA (cleft palate, congenital heart disease) are all associated with deletions in this region. There are reports of patients with deletions and parents with mosaic deletions. The microduplication is characterized by mild ID, microcephaly, dysmorphic features and musculoskeletal abnormalities. The minimum size of the rearrangement is 1.6 Mb (
+					<xref ref-type="fig" rid="f1-gmb-37-210">Figure 1A</xref>
+					).</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 4</title>
+			<sec>
+				<title>4q21 Deletion</title>
+				<p>Growth retardation, ID and absence of language are found in patients with this deletion. The smallest region of overlap in deletions is 1.37 Mb and contains five genes: 
+					<italic>PRKG2, RASGEF1B, HNRNPD, HNRPDL</italic>
+					and 
+					<italic>ENOPH1</italic>
+					. It has been suggested that PRKG2 and RASGEF1B are the genes responsible for this clinical phenotype.</p>
+			</sec>
+			<sec>
+				<title>4q21.3 Deletion</title>
+				<p>Patients present ID, dysmorphic facial features, hypotonia and short stature.</p>
+			</sec>
+			<sec>
+				<title>4q34.1-q35.2 Deletion</title>
+				<p>The phenotype is somewhat similar to the 22q11.2 deletion syndrome.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 5</title>
+			<sec>
+				<title>5q14.3-q15 Deletion</title>
+				<p>ID (late Honest), epilepsy, hypotonia and dimples in the jugular region are found in patients with this deletion. Patients present with atypical clinical Rett syndrome features. The gene involved is 
+					<italic>MEF2C</italic>
+					.</p>
+			</sec>
+			<sec>
+				<title>5q35.2-q35.3 Deletion/Duplication</title>
+				<p>The deletion is 1.63 Mb and sometimes includes 
+					<italic>NSD1</italic>
+					, the gene responsible for Sotos syndrome. Patients also have the Sotos phenotype, cleft palate, language delay, ID and macrocephaly. Microduplication of the Sotos syndrome region, which contains 
+					<italic>NSD1</italic>
+					, has been associated with microcephaly, short stature and development delay.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 6</title>
+			<sec>
+				<title>6p25 Deletion</title>
+				<p>Patients present with white matter abnormalities, hypotonia, ID, a dysmorphic face, hypoacusis, short stature, Axenfeld-Rieger anomaly and a bicuspid aortic valve.</p>
+			</sec>
+			<sec>
+				<title>6q13-q14 Deletion</title>
+				<p>ID and connective tissue abnormalities are found in patients with this deletion. The deletion is 3.7 Mb and affects 16 genes, including 
+					<italic>COL12A1</italic>
+					,a good candidate for the anomaly in the connective tissue.</p>
+			</sec>
+			<sec>
+				<title>6q14.1-q15 Deletion</title>
+				<p>Obesity, ID and atypical facial phenotypic traits are observed among these patients. This deletion syndrome partly phenocopies patients with Prader-Willi syndrome. The haploinsufficiency of 
+					<italic>SIM1</italic>
+					is suggested to be responsible for the phenotype.</p>
+			</sec>
+			<sec>
+				<title>6q16.1 Deletion</title>
+				<p>Patients present with ID and characteristic facies. The deletion includes the haploinsufficiency of one gene (ephrin receptor 7; 
+					<italic>EPHA7</italic>
+					) that has implications in cortical development.</p>
+			</sec>
+			<sec>
+				<title>6q25 Deletion</title>
+				<p>Patients usually show ID. Olfactory bulb aplasia and anosmia may also be observed. The syndrome is due to the haploinsufficiency of 
+					<italic>ARID1B</italic>
+					, a member of the SWI/SNF chromatin-remodeling complex. Some patients with ID have point mutations in this gene.</p>
+			</sec>
+			<sec>
+				<title>6q25.2-q25.3 Deletion</title>
+				<p>Microcephaly, ID, hypoacusis and dysmorphic features are observed in patients with this deletion. The smallest region of overlap of the deletion in 4 patients is 3.52 Mb in size.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 7</title>
+			<sec>
+				<title>7p14.1 Deletion</title>
+				<p>This deletion is characterized by polysyndactyly, hypertelorism and microcephaly, having a phenotype similar to Greig syndrome.</p>
+			</sec>
+			<sec>
+				<title>7p22.1 Duplication</title>
+				<p>Speech delay and recognizable facial features are observed in these patients. The duplication is approximately 1.7 Mb. Macrocephaly, ocular hypertelorism and low-set ears can also occur. Fifteen genes are involved in the duplicated segment.</p>
+			</sec>
+			<sec>
+				<title>7q11.23 Duplication</title>
+				<p>It is the reciprocal duplication of the deletion observed in Williams Syndrome. Patients present with speech delay, epilepsy, ID, straight and thick eyebrows and ASD.</p>
+			</sec>
+			<sec>
+				<title>7q11.23 Deletion</title>
+				<p>This is the distal deletion of the Williams-Beuren region. The deletions are recurrent, 1.2 Mb in size and include the Huntingtin-interacting protein 1 (
+					<italic>HIP1</italic>
+					) and tyrosine 3-monooxygenase/tryptophan 5-monooxygenase activation protein gamma (
+					<italic>YWHAG</italic>
+					) genes. The deletion of 
+					<italic>HIP1</italic>
+					seems to be sufficient to cause ID.</p>
+			</sec>
+			<sec>
+				<title>7q21.3 Deletion</title>
+				<p>Myoclonus, dystonia, ID and psychosis have been observed in these patients. Two regions of 455 and 496 kb are critical for ID, which is where the gene 
+					<italic>LOC253012</italic>
+					(
+					<italic>HEPACAM2</italic>
+					) is located.</p>
+			</sec>
+			<sec>
+				<title>7q22.2-q22.3 Deletion</title>
+				<p>Overgrowth, delayed bone age, epilepsy, ID, unusual face, hypoplasia of the corpus callosum and cerebellar hypoplasia are observed in patients with this deletion. The deletion spans 3.2 Mb and includes four of 15 genes involved in cell cycle (
+					<italic>SRPK2, MLL5, RINT1</italic>
+					and 
+					<italic>LHFPL3</italic>
+					).</p>
+			</sec>
+			<sec>
+				<title>7q33-q35 Deletion</title>
+				<p>Patients with this deletion present with speech delay and ID. The deletion includes 
+					<italic>CNTNAP2</italic>
+					, a gene that has previously been found in children with speech disorders.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 8</title>
+			<sec>
+				<title>8p21 Deletion</title>
+				<p>ID and behavior disorder, with some features of autistic spectrum disorder occur in patients with this deletion.</p>
+			</sec>
+			<sec>
+				<title>8p23.1 Duplication</title>
+				<p>This duplication leads to a variable phenotype that may include one or more of the following: congenital heart disease (CHD), ID and mild dysmorphism with prominent forehead and arched eyebrows. The critical region is a duplication of 3.68 Mb that contains 31 genes and microRNAs, of which only 
+					<italic>GATA4</italic>
+					, 
+					<italic>TNKS</italic>
+					, 
+					<italic>SOX7</italic>
+					and 
+					<italic>XKR6</italic>
+					are likely to be dosage-sensitive genes. Of the microRNAs, 
+					<italic>MIR124-1</italic>
+					and 
+					<italic>MIR598</italic>
+					have been implicated in neurocognitive phenotypes. A combination of the duplication of 
+					<italic>GATA4</italic>
+					, 
+					<italic>SOX7</italic>
+					and related genes may account for the variable penetrance of CHD.</p>
+			</sec>
+			<sec>
+				<title>8q12 Duplication</title>
+				<p>This duplication includes 
+					<italic>CHD7</italic>
+					. Patients present with hypotonia, ID, failure to thrive, Duane anomaly, Mondini malformation, hearing loss, malformations of the ear canal and atrial septal defects.</p>
+			</sec>
+			<sec>
+				<title>8q21.11 Deletion</title>
+				<p>ID, round face with full cheeks, eyelid ptosis, ocular malformations, hypoplastic nose, abnormal philtrum and vermillion and minimal hand anomalies (camptodactyly, syndactyly) are all observed in these patients. The smallest region of overlap is 539.7 kb, which includes three genes, including Zinc Finger Homeobox 4 (
+					<italic>ZFHX4</italic>
+					)(
+					<xref ref-type="fig" rid="f1-gmb-37-210">Figure 1B</xref>
+					).</p>
+			</sec>
+			<sec>
+				<title>8q22.1 Deletion</title>
+				<p>The phenotype of this deletion is similar to that of the Nablus mask syndrome, symptoms include ID, speech disorder and typical dysmorphic features. The deletion is approximately 1.6 Mb.</p>
+			</sec>
+			<sec>
+				<title>8q22.2 Deletion</title>
+				<p>Patients with this deletion have characteristic facial features, ID, absent speech, seizures, growth retardation and diaphragmatic hernia in some cases. The smallest region of deletion is 3.87 Mb (100.69 to 104.56 Mb, hg18), comprising at least 25 genes.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 9</title>
+			<sec>
+				<title>9p13.3-p13.1 interstitial Deletion</title>
+				<p>Patients with a 9p13 deletion have mild to moderate ID, social and interactive personality and behavioral problems, such as attention deficit-hyperactivity disorder. Short stature, prominent antihelices, hypoplastic nails and precocious/early puberty are also present (
+					<xref ref-type="fig" rid="f1-gmb-37-210">Figure 1C</xref>
+					).</p>
+			</sec>
+			<sec>
+				<title>9q22.3 Deletion</title>
+				<p>ID, dysarthria, metopic craniosynostosis, hydrocephalus, macrosomia and seizures are associated with this deletion. Patients with a 9q22.3 microdeletion have the clinical findings of the Gorlin syndrome. The 9q22.3 microdeletions (352 kb to 20.5 Mb in size) include 
+					<italic>PTCH1</italic>
+					, the gene that is mutated in Gorlin syndrome (nevoid basal cell carcinoma syndrome).</p>
+			</sec>
+			<sec>
+				<title>9q31.1-q31.3 Deletion</title>
+				<p>Patients have a distinct clinical phenotype characterized by mild ID, short stature with high body mass index, thick hair, arched eyebrows, flat profile with broad chin, mild prognathism, broad and slightly overhanging tip of the nose and short neck with cervical gibbus.</p>
+			</sec>
+			<sec>
+				<title>9q34.3 Deletion (Kleefstra syndrome)</title>
+				<p>Patients have ID, behavior anomalies, hypotonia, epilepsy, congenital heart defect and renal anomalies. The highly recognizable facial features are hypertelorism, midface hypoplasia, prognathism, prominent eyebrows, cupid bow or tented upper lip and everted lower lip. The syndrome is either caused by a submicroscopic deletion in the chromosomal region 9q34.3 or an intragenic mutation of the 
+					<italic>EHMT1</italic>
+					gene causing haploinsufficiency of 
+					<italic>EHMT1</italic>
+					. There are some communications of mosaicism in parents of affected patients (
+					<xref ref-type="fig" rid="f1-gmb-37-210">Figure 1D</xref>
+					).</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 10</title>
+			<sec>
+				<title>10q22-q23 Deletion</title>
+				<p>The overlap of neuropathological phenotypes among patients described suggests that this region harbors genes important for function and neurodevelopment (
+					<italic>NRG3, GRD1D1</italic>
+					, BMPR1A, SNCG). Indeed, several genes in this region are candidates for neuropsychiatric disorders. 
+					<italic>NRG3 and GRD1D1</italic>
+					have been described as candidate genes associated with schizophrenia.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 11</title>
+			<sec>
+				<title>11q13.1 Deletion</title>
+				<p>Speech delay, autistic spectrum disorder, dysmorphic features, such as wide halluces and firsts digits and pancreatic gastrinoma. The deletion is 0.57 Mb.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 12</title>
+			<sec>
+				<title>12q13.11 Deletion</title>
+				<p>Severe ID, cleft palate and severe myopia. The deleted region contains 16 genes. It is hypothesized that haploinsufficiency of 
+					<italic>AMIGO2</italic>
+					is responsible for the ID and haploinsufficiency of 
+					<italic>COL2A1</italic>
+					in cleft palate and myopia.</p>
+			</sec>
+			<sec>
+				<title>12q13 Duplication</title>
+				<p>This syndrome may represent a phenocopy of the Wolf Hirschhorn syndrome (
+					<xref ref-type="bibr" rid="b1-gmb-37-210">
+						Bertioli 
+						<italic>et al.</italic>
+						, 2013</xref>)</p>
+			</sec>
+			<sec>
+				<title>12q14 Deletion</title>
+				<p>Microcephaly, short stature with similar clinical findings to the Russell Silver syndrome. Patients may have osteopoikilosis, low weight, failure to thrive and learning problems. The 
+					<italic>HMGA2</italic>
+					gene is involved in the growth deficiency.</p>
+			</sec>
+			<sec>
+				<title>12q24.31 Deletion</title>
+				<p>Hypoglycemia, macroglossia and overgrowth (similar to the Beckwith-Wiedemann syndrome at birth). The deleted region contains the gene 
+					<italic>HNF1</italic>
+					homeobox A (HNF1A) and others.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 14</title>
+			<sec>
+				<title>14q12-q22.1 Deletion</title>
+				<p>Patients present ID, failure to thrive, microcephaly and recognizable facial features (hypertelorism, epicanthic folds, peculiar eyebrows, depressed nose, receding forehead, CNS disorders, seizures, apnea, myoclonus and infection proneness).</p>
+			</sec>
+			<sec>
+				<title>14q32.2 Deletion</title>
+				<p>ID and many phenotypic abnormalities in two unrelated patients with identical deletions. The deletions are mediated by repetitions (TGG) (n)</p>
+			</sec>
+			<sec>
+				<title>14q32.33 Deletion</title>
+				<p>ID and minimal dysmorphic features. The deletion affects a small fragment of 0.3 Mb with 6 genes, including 
+					<italic>NUDT14, BRF1, BTBD6, PACS2, MTA1</italic>
+					and 
+					<italic>TEX22</italic>
+					. A 250-kb region critical for certain features of terminal 14q deletion syndrome has been proposed. Amongst them three potential candidate genes for intellectual disability: 
+					<italic>CRIP2, MTA1</italic>
+					and 
+					<italic>TMEM121</italic>
+					(
+					<xref ref-type="bibr" rid="b3-gmb-37-210">
+						Engels 
+						<italic>et al.</italic>
+						, 2012</xref>).</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 15</title>
+			<sec>
+				<title>15q11.2 Deletion</title>
+				<p>ID, speech delay, behavioral problems, seizures and ASD. The deletion is between the 
+					<italic>BP1</italic>
+					and 
+					<italic>BP2</italic>
+					regions of the proximal portion of chromosome 15 that contains four genes (
+					<italic>TUBGCP5, NIPA1, NIPA2</italic>
+					and 
+					<italic>CYFIP1</italic>
+					) not subjected to imprinting.</p>
+			</sec>
+			<sec>
+				<title>15q11-q13 Duplication</title>
+				<p>ASD, mild facial dysmorphism, sleep problems and unusual electroencephalogram findings (
+					<xref ref-type="bibr" rid="b13-gmb-37-210">
+						Urraca 
+						<italic>et al</italic>
+						., 2013</xref>).</p>
+			</sec>
+			<sec>
+				<title>15q13.2-q13.3 Deletion</title>
+				<p>Phenotypic findings similar to the Angelman syndrome, with ASD, epilepsy and behavioral problems.</p>
+			</sec>
+			<sec>
+				<title>15q13.3 Deletion</title>
+				<p>Epilepsy, ID, psychiatric disorders (bipolar disorder), severe hypotonia and EEG abnormalities. Locus with incomplete penetrance for autism; may show retinal dysfunction and encephalopathy. One gene appears to be involved (
+					<italic>CHRNA7</italic>
+					) (
+					<xref ref-type="bibr" rid="b12-gmb-37-210">
+						Shinawi 
+						<italic>et al.</italic>
+						, 2009</xref>).</p>
+			</sec>
+			<sec>
+				<title>15q14 Deletion</title>
+				<p>Dandy-Walker malformation, ID, macrocephaly, myopia and brachytelephalangy.</p>
+			</sec>
+			<sec>
+				<title>15q21.1-q21.2 Deletion</title>
+				<p>Clinical features similar to Marfan syndrome and with ID. The deletions involve the 
+					<italic>FBN1</italic>
+					gene.</p>
+			</sec>
+			<sec>
+				<title>15q24 Deletion/Duplication</title>
+				<p>Growth delay, ID, facial features (long face, anterior hairline, epicanthic folds, hypertelorism, long philtrum and thick lower lip). Other findings include ASD, hypotonia, behavioral problems, hearing loss, hernias and GH deficiency. Most deletions have breakpoints in five LCRs (LCR15q24A, -B, -C, -D and -E) and the minimum region of overlap is 1.2 Mb between LCR15q24B and LCR15q24C. Candidate genes within this deletion are 
+					<italic>CYP11A1, SEMA7A, CPLX3, ARID3B, Stra6, Sin3A</italic>
+					and 
+					<italic>CSK</italic>
+					. The duplication cases described share similar clinical features with the 15q24 deletion.</p>
+			</sec>
+			<sec>
+				<title>15q24.1 Deletion</title>
+				<p>Multiple cysts of the corpus callosum, ID, micropenis and strabismus. The deletion is approximately 3.1 Mb. The sizes of the deleted regions range from 1.7 Mb to 6.1 Mb. Most of the reported cases are male. Male genital abnormalities are frequently observed in 15q24 microdeletion patients. One candidate gene is 
+					<italic>CYP11A1</italic>
+					, which is highly expressed in the adrenal gland.</p>
+			</sec>
+			<sec>
+				<title>15q24.3- q25.2 Deletion</title>
+				<p>Cleft palate with or without cleft lip and hypotonia.</p>
+			</sec>
+			<sec>
+				<title>15q26 Deletion</title>
+				<p>Patients have mainly short stature due to haploinsufficiency of the 
+					<italic>IGF1R</italic>
+					gene.</p>
+			</sec>
+			<sec>
+				<title>15q26.1 Deletion</title>
+				<p>Intractable epilepsy, ID and short stature.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 16</title>
+			<sec>
+				<title>16p11.2 Deletion/Duplication</title>
+				<p>The deletion is characterized by ID, ASD, epilepsy and other less common findings, such as obesity, microphthalmia, coloboma of the optic nerve, kidney and urinary tract abnormalities, Hirschsprung disease, endocardial fibroelastosis and hemivertebrae. Duplication is associated with autism, ID, CNS disorders and schizophrenia (
+					<xref ref-type="bibr" rid="b11-gmb-37-210">
+						Rosenfeld 
+						<italic>et al.</italic>
+						, 2010</xref>). A 600-kb 16p11.2 deletion containing 29 genes has been associated with several neurocognitive disorders, including autism, diabetes-independent obesity and microcephaly, whereas duplication of the same region is associated with autism, schizophrenia, anorexia and microcephaly. The 16p11.2 deletion is associated with increased head size, whereas 16p11.2 duplication is associated with decreased head size (
+					<xref ref-type="bibr" rid="b6-gmb-37-210">
+						Golzio 
+						<italic>et al.</italic>
+						, 2012</xref>) (
+					<xref ref-type="fig" rid="f1-gmb-37-210">Figure 1E</xref>
+					).</p>
+			</sec>
+			<sec>
+				<title>16p11.2-p12.2 Deletion/Duplication</title>
+				<p>Minimal facial abnormalities, speech disorder, frequent ear infections and ID. It should be distinguished from the proximal deletion (see immediately above). Patients with duplications have severe ID, ASD and dysmorphic features (
+					<xref ref-type="fig" rid="f2-gmb-37-210">Figure 2A and B</xref>
+					).</p>
+			</sec>
+			<sec>
+				<title>16p12.1 Deletion</title>
+				<p>ID and abnormal behavioral phenotype with behavioral disorders. It is a 520-kb deletion.</p>
+			</sec>
+			<sec>
+				<title>16q12-q13 Deletion</title>
+				<p>The phenotypic spectrum of microdeletions in 16q12-q13 region is broad with variable degrees of ID, craniofacial dysmorphic features, congenital brain abnormalities and limb and congenital heart disease.</p>
+			</sec>
+			<sec>
+				<title>16q22.1 Deletion/Duplication</title>
+				<p>Deletion presents ID and lobular breast cancer. The deletion is 0.24 MB and affects 3 genes (
+					<italic>ZFP90, CDH3</italic>
+					and 
+					<italic>CDH1</italic>
+					). 
+					<italic>ZFP90</italic>
+					is expressed in the brain and is responsible for ID, while 
+					<italic>CDH1</italic>
+					may be responsible for cancer. Duplication is characterized by epilepsy and learning disabilities.</p>
+			</sec>
+			<sec>
+				<title>16q24.1 Deletion</title>
+				<p>Typically present persistent pulmonary hypertension in the newborn and sometimes atrioventricular canal, ureteral stenosis and annular pancreas. 
+					<italic>FOXF1</italic>
+					alterations would be responsible for alveolar capillary dysplasia and other alveolar malformations.</p>
+			</sec>
+			<sec>
+				<title>16q24.3 Deletion</title>
+				<p>ID, ASD, short stature and minimal facial anomalies. Deletions involve the 
+					<italic>ANKRD11</italic>
+					gene and cause KBG-like syndrome.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 17</title>
+			<sec>
+				<title>17p13.1 Deletion</title>
+				<p>ID, hypotonia and anomalies of the hands and feet but not cancer. Microdeletions affect the 
+					<italic>TP53</italic>
+					gene.</p>
+			</sec>
+			<sec>
+				<title>17p13.3 Deletion/Duplication</title>
+				<p>Short stature, ID and abnormal facial features. The microduplication includes autism and affects a region of 72 kb that includes a single gene (
+					<italic>YWHAE</italic>
+					). The microdeletion sometimes includes 
+					<italic>CRK</italic>
+					, sometimes 
+					<italic>YWHAE</italic>
+					and / or 
+					<italic>TUSC5</italic>
+					(
+					<xref ref-type="fig" rid="f2-gmb-37-210">Figure 2C and 2D</xref>
+					).</p>
+			</sec>
+			<sec>
+				<title>17q11.2 Deletion/Duplication</title>
+				<p>The deletion and duplication affects the 
+					<italic>NF1</italic>
+					region. ID, facial dysmorphic features and seizures.</p>
+			</sec>
+			<sec>
+				<title>17q12 Deletion/Duplication</title>
+				<p>The deletion presents congenital diaphragmatic herniae and pulmonary and renal cysts. A case of Mayer-Rokitansky-Kuster-Hauser syndrome has been described with this deletion. The deletion is 1.4 Mb and affects 17 genes, including 
+					<italic>AATF, ACACA, DDX52, DUSP14, GGNBP2, HNF- 1B, Lhx1, PIGW, SYNRG, TADA2A</italic>
+					and 
+					<italic>ZNHIT3</italic>
+					. Duplication is characterized by ASD (
+					<xref ref-type="fig" rid="f2-gmb-37-210">Figure 2E</xref>
+					).</p>
+			</sec>
+			<sec>
+				<title>17q21.31 Deletion/Duplication</title>
+				<p>Deletions are associated with macrocephaly, ID, epilepsy, congenital anomalies and dysmorphic facial alterations of the pituitary. The skin lesions are characterized by nevi, abnormal skin pigmentation similar to cardiofaciocutaneous syndrome. Other findings include dilation of the aortic root, joint subluxation, hearing loss, recurrent otitis media and persistent digital pads. At least 6 genes are affected, including 
+					<italic>MAPT</italic>
+					and 
+					<italic>STH.</italic></p>
+			</sec>
+			<sec>
+				<title>17q22-q23.2 Deletion</title>
+				<p>Microcephaly, thyroid duct cyst, sensorineural hearing loss and pulmonary hypertension. Includes the loss of 
+					<italic>TBX2</italic>
+					and 
+					<italic>TBX4</italic>
+					but not 
+					<italic>NOG</italic>
+					.</p>
+			</sec>
+			<sec>
+				<title>17q23.1-q23.2 Deletion/Duplication</title>
+				<p>Duplication has been associated with pes cavus familiar. Duplication affects 
+					<italic>PITX1</italic>
+					and 
+					<italic>TBX4</italic>
+					. The deletion has congenital heart disease and limb abnormalities.</p>
+			</sec>
+			<sec>
+				<title>17q23.2 Deletion</title>
+				<p>Bilateral sensorineural hearing loss in two isolated patients.</p>
+			</sec>
+			<sec>
+				<title>17q24.2-q24.3 Deletion/Duplication</title>
+				<p>Duplication presents generalized hypertrichosis with gingival hyperplasia and deletions in general have less gingival hyperplasia.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 18</title>
+			<sec>
+				<title>18q12.3 Deletion</title>
+				<p>The deletion is 372 kb in size with haploinsufficiency of 
+					<italic>SETBP1.</italic>
+					The clinical findings include ID and speech disorder. Missense heterozygous mutations in this gene cause Schinzel-Giedion syndrome (SGS). However, the phenotype of individual with partial chromosome 18q deletions does not resemble SGS.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 19</title>
+			<sec>
+				<title>19p13.11 Deletion</title>
+				<p>One patient presented with pontocerebellar hypoplasia and ID and haploinsufficiency of the helicase 
+					<italic>DDX39</italic>
+					. Another patient with a deletion in this region showed a deletion of 1.1 Mb involving 
+					<italic>EPS15L1</italic>
+					. The patient showed short stature, ID, severe hypotonia, ataxia, premature pubarche and dysmorphic features.</p>
+			</sec>
+			<sec>
+				<title>19p13.12 Deletion</title>
+				<p>Defects of the branchial arches (preauricular tags, ear canal stenosis), mild hearing loss and mild ID are due to the deletion of a region of 0.8 Mb of genomic DNA. The deletion extends 15300338-16064271 (hg18, NCBI build 36.1). One patient presented with ID, obesity and hypertrichosis.</p>
+			</sec>
+			<sec>
+				<title>19p13.13 Deletion/Duplication</title>
+				<p>The deletion is characterized by macrocephaly, overgrowth and ophthalmologic and gastrointestinal disturbances. Duplication has short stature and microcephaly. The smallest region of overlap is 311–340 Kb and has 16 genes including 
+					<italic>MAST1, NFIX</italic>
+					and 
+					<italic>CALR</italic>
+					.</p>
+			</sec>
+			<sec>
+				<title>19p13.2 Deletion</title>
+				<p>Patients present with ID, mild facial features, febrile seizures. The deletion is 834.2 kb in size and includes 32 genes.</p>
+			</sec>
+			<sec>
+				<title>19p13.3 Terminal Duplication</title>
+				<p>Patients’ phenotypes include severe psychomotor DD, skeletal malformations and a distinctive facial appearance.</p>
+			</sec>
+			<sec>
+				<title>19q13.2 Deletion</title>
+				<p>Patients present branchial arch defects. The critical region is approximately 0.8 Mb</p>
+			</sec>
+			<sec>
+				<title>19q12-q13.2 Duplication</title>
+				<p>It is an obesity-related syndrome, with ID and minor facial findings.</p>
+			</sec>
+			<sec>
+				<title>19q13.11 Deletion</title>
+				<p>Patients present a Diamond-Blackfan syndrome, pre and postnatal growth deficiency, tall stature, microcephaly, hypospadias, signs of ectodermal dysplasia and aplasia cutis vertex. The critical region is defined to 750 kb and is due to haploinsufficiency of 
+					<italic>RPS19</italic>
+					(
+					<xref ref-type="bibr" rid="b8-gmb-37-210">
+						Malan 
+						<italic>et al.</italic>
+						, 2009</xref>).</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 20</title>
+			<sec>
+				<title>20p12.3 Deletion</title>
+				<p>Cleft palate / cleft lip, Pierre-Robin sequence. The deletion involves the 
+					<italic>BMP2</italic>
+					gene and has been implicated in Wolff-Parkinson-White (WPW) syndrome with neurocognitive deficits and with Alagille syndrome when the deletion includes the neighboring 
+					<italic>JAG1</italic>
+					gene in addition to 
+					<italic>BMP2</italic>
+					.</p>
+			</sec>
+			<sec>
+				<title>20p13 Deletion</title>
+				<p>Dysmorphic features, ID, epilepsy and brachydactyly. 
+					<italic>SOX12</italic>
+					and 
+					<italic>NRSN2</italic>
+					are the candidate genes that may be involved in the developmental defects.</p>
+			</sec>
+			<sec>
+				<title>20q13.33 Deletion</title>
+				<p>Severe limb malformations, skeletal abnormalities, ID, speech delay, seizures and other minimal dysmorphic features. The 
+					<italic>ARFGAP1, CHRNA4</italic>
+					and 
+					<italic>KCNQ2</italic>
+					genes have been associated with neurological deficits.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome 21</title>
+			<sec>
+				<title>21q22 Deletion</title>
+				<p>Two patients with similar phenotype and overlapping deletions of the 21q22 region were observed. They had behavioral problems, no speech, microcephaly, feeding problems, regurgitation, obesity dysplastic ears and pointed chin. They also present with cerebral atrophy, thinned corpus callosum, epilepsy and ventricular septal defect. Another patient had microcephaly, ID, hypospadias and corneal opacity. Patients with chromosomal deletions of 21q show a variation in size and usually include the 21q22.12 region. The deleted region in most of these patients included, among other deleted genes, the 
+					<italic>RUNX1</italic>
+					gene (21q22.12), which is related with thrombocytopenia and platelet function and a predisposition to develop myeloid leukemia.</p>
+			</sec>
+		</sec>
+		<sec sec-type="other">
+			<title>Chromosome X</title>
+			<sec>
+				<title>Xq11.11 Deletion</title>
+				<p>Patients with this deletion have ID, epilepsy, macrosomia, macrocephaly, tall stature and dysmorphic features. The 1.3 Mb deletion includes 
+					<italic>ARHGEF9</italic>
+					, which is proposed to have a role in the cognitive development.</p>
+			</sec>
+		</sec>
+		<sec sec-type="conclusions">
+			<title>Conclusions</title>
+			<p>The extensive use of high-resolution microarrays and the “genotype-first” experimental approach taken by genetic laboratories have allowed for the recognition and description of an important and growing number of new microdeletion and microduplication syndromes over the last three to five years (
+				<xref ref-type="fig" rid="f3-gmb-37-210">Figure 3</xref>
+				). Interestingly, most of these syndromes have phenotypic features that are similar to and overlapping with other previously described genetic syndromes. This review may be considered a quick guide to help pediatricians, clinical geneticists, cytogeneticists and/or molecular geneticists and emphasizes the necessity of a strong collaboration between clinical (pediatricians, geneticists) and molecular geneticists to assure new phenotype recognitions for these genomic aberrations.</p>
+		</sec>
+	</body>
+	<back>
+		<ref-list>
+			<title>References</title>
+			<ref id="b1-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Bertoli</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Alesi</surname>
+							<given-names>V</given-names>
+						</name>
+						<name>
+							<surname>Gullotta</surname>
+							<given-names>F</given-names>
+						</name>
+						<name>
+							<surname>Zampatti</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Abate</surname>
+							<given-names>MR</given-names>
+						</name>
+						<name>
+							<surname>Palmieri</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Novelli</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Frontali</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Nardone</surname>
+							<given-names>AM</given-names>
+						</name>
+					</person-group>
+					<year>2013</year>
+					<article-title>Another patient with 12q13 microduplication</article-title>
+					<source>Am J Med Genet A</source>
+					<volume>161A</volume>
+					<fpage>2004</fpage>
+					<lpage>2008</lpage>
+				</element-citation>
+				<mixed-citation>Bertoli M, Alesi V, Gullotta F, Zampatti S, Abate MR, Palmieri C, Novelli A, Frontali M and Nardone AM (2013) Another patient with 12q13 microduplication. Am J Med Genet A 161A:2004–2008.</mixed-citation>
+			</ref>
+			<ref id="b2-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Deak</surname>
+							<given-names>KL</given-names>
+						</name>
+						<name>
+							<surname>Horn</surname>
+							<given-names>SR</given-names>
+						</name>
+						<name>
+							<surname>Rehder</surname>
+							<given-names>CW</given-names>
+						</name>
+					</person-group>
+					<year>2011</year>
+					<article-title>The evolving picture of microdeletion/microduplication syndromes in the age of microarray analysis: Variable expressivity and genomic complexity</article-title>
+					<source>Clin Lab Med</source>
+					<volume>31</volume>
+					<fpage>543</fpage>
+					<lpage>564</lpage>
+				</element-citation>
+				<mixed-citation>Deak KL, Horn SR and Rehder CW (2011) The evolving picture of microdeletion/microduplication syndromes in the age of microarray analysis: Variable expressivity and genomic complexity. Clin Lab Med 31:543–564.</mixed-citation>
+			</ref>
+			<ref id="b3-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Engels</surname>
+							<given-names>H</given-names>
+						</name>
+						<name>
+							<surname>Schüler</surname>
+							<given-names>HM</given-names>
+						</name>
+						<name>
+							<surname>Zink</surname>
+							<given-names>AM</given-names>
+						</name>
+						<name>
+							<surname>Wohlleber</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Brockschmidt</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Hoischen</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Drechsler</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Lee</surname>
+							<given-names>JA</given-names>
+						</name>
+						<name>
+							<surname>Ludwig</surname>
+							<given-names>KU</given-names>
+						</name>
+						<name>
+							<surname>Kubisch</surname>
+							<given-names>C</given-names>
+						</name>
+						<etal/>
+					</person-group>
+					<year>2012</year>
+					<article-title>A phenotype map for 14q32.3 terminal deletions</article-title>
+					<source>Am J Med Genet A.</source>
+					<volume>158A</volume>
+					<fpage>695</fpage>
+					<lpage>706</lpage>
+				</element-citation>
+				<mixed-citation>Engels H, Schüler HM, Zink AM, Wohlleber E, Brockschmidt A, Hoischen A, Drechsler M, Lee JA, Ludwig KU, Kubisch C, 
+					<italic>et al.</italic>
+					(2012) A phenotype map for 14q32.3 terminal deletions. Am J Med Genet A.158A:695–706.</mixed-citation>
+			</ref>
+			<ref id="b4-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Filges</surname>
+							<given-names>I</given-names>
+						</name>
+						<name>
+							<surname>Röthlisberger</surname>
+							<given-names>B</given-names>
+						</name>
+						<name>
+							<surname>Boesch</surname>
+							<given-names>N</given-names>
+						</name>
+						<name>
+							<surname>Weber</surname>
+							<given-names>P</given-names>
+						</name>
+						<name>
+							<surname>Wenzel</surname>
+							<given-names>F</given-names>
+						</name>
+						<name>
+							<surname>Huber</surname>
+							<given-names>AR</given-names>
+						</name>
+						<name>
+							<surname>Heinimann</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Miny</surname>
+							<given-names>P</given-names>
+						</name>
+					</person-group>
+					<year>2010</year>
+					<article-title>Interstitial deletion 1q42 in a patient with agenesis of corpus callosum: Phenotype-genotype comparison to the 1q41q42 microdeletion suggests a contiguous 1q4 syndrome</article-title>
+					<source>Am J Med Genet A</source>
+					<volume>152A</volume>
+					<fpage>987</fpage>
+					<lpage>993</lpage>
+				</element-citation>
+				<mixed-citation>Filges I, Röthlisberger B, Boesch N, Weber P, Wenzel F, Huber AR, Heinimann K and Miny P (2010) Interstitial deletion 1q42 in a patient with agenesis of corpus callosum: Phenotype-genotype comparison to the 1q41q42 microdeletion suggests a contiguous 1q4 syndrome. Am J Med Genet A 152A:987–993.</mixed-citation>
+			</ref>
+			<ref id="b5-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Jaillard</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Dubourg</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Gérard-Blanluet</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Delahaye</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Pasquier</surname>
+							<given-names>L</given-names>
+						</name>
+						<name>
+							<surname>Dupont</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Henry</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Tabet</surname>
+							<given-names>AC</given-names>
+						</name>
+						<name>
+							<surname>Lucas</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Aboura</surname>
+							<given-names>A</given-names>
+						</name>
+						<etal/>
+					</person-group>
+					<year>2009</year>
+					<article-title>2q23.1 microdeletion identified by array comparative genomic hybridisation: An emerging phenotype with Angelman-like features?</article-title>
+					<source>J Med Genet</source>
+					<volume>46</volume>
+					<fpage>847</fpage>
+					<lpage>855</lpage>
+				</element-citation>
+				<mixed-citation>Jaillard S, Dubourg C, Gérard-Blanluet M, Delahaye A, Pasquier L, Dupont C, Henry C, Tabet AC, Lucas J, Aboura A, 
+					<italic>et al.</italic>
+					(2009) 2q23.1 microdeletion identified by array comparative genomic hybridisation: An emerging phenotype with Angelman-like features? J Med Genet 46:847–855.</mixed-citation>
+			</ref>
+			<ref id="b6-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Golzio</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Willer</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Talkowski</surname>
+							<given-names>ME</given-names>
+						</name>
+						<name>
+							<surname>Oh</surname>
+							<given-names>EC</given-names>
+						</name>
+						<name>
+							<surname>Taniguchi</surname>
+							<given-names>Y</given-names>
+						</name>
+						<name>
+							<surname>Jacquemont</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Reymond</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Sun</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Sawa</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Gusella</surname>
+							<given-names>JF</given-names>
+						</name>
+						<etal/>
+					</person-group>
+					<year>2012</year>
+					<article-title>KCTD13 is a major driver of mirrored neuroanatomical phenotypes of the 16p11.2 copy number variant</article-title>
+					<source>Nature</source>
+					<volume>485</volume>
+					<fpage>363</fpage>
+					<lpage>367</lpage>
+				</element-citation>
+				<mixed-citation>Golzio C, Willer J, Talkowski ME, Oh EC, Taniguchi Y, Jacquemont S, Reymond A, Sun M, Sawa A, Gusella JF, 
+					<italic>et al.</italic>
+					(2012) KCTD13 is a major driver of mirrored neuroanatomical phenotypes of the 16p11.2 copy number variant. Nature.485:363–367.</mixed-citation>
+			</ref>
+			<ref id="b7-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Lupski</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Stankiewicz</surname>
+							<given-names>P</given-names>
+						</name>
+					</person-group>
+					<year>2005</year>
+					<article-title>Genomic disorders: Molecular mechanism for rearrangements and conveyed phenotypes</article-title>
+					<source>PLoS Genetics</source>
+					<volume>1</volume>
+					<fpage>e-49</fpage>
+				</element-citation>
+				<mixed-citation>Lupski, J and Stankiewicz, P (2005) Genomic disorders: Molecular mechanism for rearrangements and conveyed phenotypes. PLoS Genetics 1:e-49.</mixed-citation>
+			</ref>
+			<ref id="b8-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Malan</surname>
+							<given-names>V</given-names>
+						</name>
+						<name>
+							<surname>Raoul</surname>
+							<given-names>O</given-names>
+						</name>
+						<name>
+							<surname>Firth</surname>
+							<given-names>HV</given-names>
+						</name>
+						<name>
+							<surname>Royer</surname>
+							<given-names>G</given-names>
+						</name>
+						<name>
+							<surname>Turleau</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Bernheim</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Willatt</surname>
+							<given-names>L</given-names>
+						</name>
+						<name>
+							<surname>Munnich</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Vekemans</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Lyonnet</surname>
+							<given-names>S</given-names>
+						</name>
+						<etal/>
+					</person-group>
+					<year>2009</year>
+					<article-title>19q13.11 deletion syndrome: A novel clinically recognisable genetic condition identified by array comparative genomic hybridisation</article-title>
+					<source>J Med Genet</source>
+					<volume>46</volume>
+					<fpage>635</fpage>
+					<lpage>640</lpage>
+				</element-citation>
+				<mixed-citation>Malan V, Raoul O, Firth HV, Royer G, Turleau C, Bernheim A, Willatt L, Munnich A, Vekemans M, Lyonnet S, 
+					<italic>et al.</italic>
+					(2009) 19q13.11 deletion syndrome: A novel clinically recognisable genetic condition identified by array comparative genomic hybridisation. J Med Genet 46:635–640.</mixed-citation>
+			</ref>
+			<ref id="b9-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Rafati</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Seyyedaboutorabi</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Ghadirzadeh</surname>
+							<given-names>MR</given-names>
+						</name>
+						<name>
+							<surname>Heshmati</surname>
+							<given-names>Y</given-names>
+						</name>
+						<name>
+							<surname>Adibi</surname>
+							<given-names>H</given-names>
+						</name>
+						<name>
+							<surname>Keihanidoust</surname>
+							<given-names>Z</given-names>
+						</name>
+						<name>
+							<surname>Eshraghian</surname>
+							<given-names>MR</given-names>
+						</name>
+						<name>
+							<surname>Javadi</surname>
+							<given-names>GR</given-names>
+						</name>
+						<name>
+							<surname>Dastan</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Mosavi-Jarrahi</surname>
+							<given-names>A</given-names>
+						</name>
+						<etal/>
+					</person-group>
+					<year>2012</year>
+					<article-title>“Familial” 
+						<italic>vs</italic>
+						. “Sporadic” intellectual disability: Contribution of common microdeletion and microduplication syndromes</article-title>
+					<source>Mol Cytogenet</source>
+					<volume>5</volume>
+					<fpage>9</fpage>
+				</element-citation>
+				<mixed-citation>Rafati M, Seyyedaboutorabi E, Ghadirzadeh MR, Heshmati Y, Adibi H, Keihanidoust Z, Eshraghian MR, Javadi GR, Dastan J, Mosavi-Jarrahi A, 
+					<italic>et al.</italic>
+					(2012) “Familial” 
+					<italic>vs.</italic>
+					“Sporadic” intellectual disability: Contribution of common microdeletion and microduplication syndromes. Mol Cytogenet 5:9.</mixed-citation>
+			</ref>
+			<ref id="b10-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Rosenfeld</surname>
+							<given-names>JA</given-names>
+						</name>
+						<name>
+							<surname>Ballif</surname>
+							<given-names>BC</given-names>
+						</name>
+						<name>
+							<surname>Lucas</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Spence</surname>
+							<given-names>EJ</given-names>
+						</name>
+						<name>
+							<surname>Powell</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Aylsworth</surname>
+							<given-names>AS</given-names>
+						</name>
+						<name>
+							<surname>Torchia</surname>
+							<given-names>BA</given-names>
+						</name>
+						<name>
+							<surname>Shaffer</surname>
+							<given-names>LG</given-names>
+						</name>
+					</person-group>
+					<year>2009</year>
+					<article-title>Small deletions of SATB2 cause some of the clinical features of the 2q33.1 microdeletion syndrome</article-title>
+					<source>PLoS One</source>
+					<volume>4</volume>
+					<fpage>e6568</fpage>
+				</element-citation>
+				<mixed-citation>Rosenfeld JA, Ballif BC, Lucas A, Spence EJ, Powell C, Aylsworth AS, Torchia BA and Shaffer LG (2009) Small deletions of SATB2 cause some of the clinical features of the 2q33.1 microdeletion syndrome. PLoS One 4:e6568.</mixed-citation>
+			</ref>
+			<ref id="b11-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Rosenfeld</surname>
+							<given-names>JA</given-names>
+						</name>
+						<name>
+							<surname>Coppinger</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Bejjani</surname>
+							<given-names>BA</given-names>
+						</name>
+						<name>
+							<surname>Girirajan</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Eichler</surname>
+							<given-names>EE</given-names>
+						</name>
+						<name>
+							<surname>Shaffer</surname>
+							<given-names>LG</given-names>
+						</name>
+						<name>
+							<surname>Ballif</surname>
+							<given-names>BC</given-names>
+						</name>
+					</person-group>
+					<year>2010</year>
+					<article-title>Speech delays and behavioral problems are the predominant features in individuals with developmental delays and 16p11.2 microdeletions and microduplications</article-title>
+					<source>J Neurodev Disord</source>
+					<volume>2</volume>
+					<fpage>26</fpage>
+					<lpage>38</lpage>
+				</element-citation>
+				<mixed-citation>Rosenfeld JA, Coppinger J, Bejjani BA, Girirajan S, Eichler EE, Shaffer LG and Ballif BC (2010) Speech delays and behavioral problems are the predominant features in individuals with developmental delays and 16p11.2 microdeletions and microduplications J Neurodev Disord 2:26–38.</mixed-citation>
+			</ref>
+			<ref id="b12-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Shinawi</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Schaaf</surname>
+							<given-names>CP</given-names>
+						</name>
+						<name>
+							<surname>Bhatt</surname>
+							<given-names>SS</given-names>
+						</name>
+						<name>
+							<surname>Xia</surname>
+							<given-names>Z</given-names>
+						</name>
+						<name>
+							<surname>Patel</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Cheung</surname>
+							<given-names>SW</given-names>
+						</name>
+						<name>
+							<surname>Lanpher</surname>
+							<given-names>B</given-names>
+						</name>
+						<name>
+							<surname>Nagl</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Herding</surname>
+							<given-names>HS</given-names>
+						</name>
+						<name>
+							<surname>Nevinny-Stickel</surname>
+							<given-names>C</given-names>
+						</name>
+						<etal/>
+					</person-group>
+					<year>2009</year>
+					<article-title>A small recurrent deletion within 15q13.3 is associated with a range of neurodevelopmental phenotypes</article-title>
+					<source>Nat Genet</source>
+					<volume>41</volume>
+					<fpage>1269</fpage>
+					<lpage>1271</lpage>
+				</element-citation>
+				<mixed-citation>Shinawi M, Schaaf CP, Bhatt SS, Xia Z, Patel A, Cheung SW, Lanpher B, Nagl S, Herding HS, Nevinny-Stickel C, 
+					<italic>et al.</italic>
+					(2009) A small recurrent deletion within 15q13.3 is associated with a range of neurodevelopmental phenotypes. Nat Genet 41:1269–1271.</mixed-citation>
+			</ref>
+			<ref id="b13-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Urraca</surname>
+							<given-names>N</given-names>
+						</name>
+						<name>
+							<surname>Cleary</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Brewer</surname>
+							<given-names>V</given-names>
+						</name>
+						<name>
+							<surname>Pivnick</surname>
+							<given-names>EK</given-names>
+						</name>
+						<name>
+							<surname>McVicar</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Thibert</surname>
+							<given-names>RL</given-names>
+						</name>
+						<name>
+							<surname>Schanen</surname>
+							<given-names>NC</given-names>
+						</name>
+						<name>
+							<surname>Esmer</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Lamport</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>Reiter</surname>
+							<given-names>LT</given-names>
+						</name>
+					</person-group>
+					<year>2013</year>
+					<article-title>The interstitial duplication 15q11.2–q13 syndrome includes autism, mild facial anomalies and a characteristic EEG signature</article-title>
+					<source>Autism Res</source>
+					<volume>6</volume>
+					<fpage>268</fpage>
+					<lpage>279</lpage>
+				</element-citation>
+				<mixed-citation>Urraca N, Cleary J, Brewer V, Pivnick EK, McVicar K, Thibert RL, Schanen NC, Esmer C, Lamport D and Reiter LT (2013) The interstitial duplication 15q11.2–q13 syndrome includes autism, mild facial anomalies and a characteristic EEG signature. Autism Res 6:268–279.</mixed-citation>
+			</ref>
+			<ref id="b14-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Vissers</surname>
+							<given-names>LE</given-names>
+						</name>
+						<name>
+							<surname>Stankiewicz</surname>
+							<given-names>P</given-names>
+						</name>
+					</person-group>
+					<year>2012</year>
+					<article-title>Microdeletion and microduplication syndromes</article-title>
+					<source>Methods Mol Biol</source>
+					<volume>838</volume>
+					<fpage>29</fpage>
+					<lpage>75</lpage>
+				</element-citation>
+				<mixed-citation>Vissers LE and Stankiewicz P (2012) Microdeletion and microduplication syndromes. Methods Mol Biol 838:29–75.</mixed-citation>
+			</ref>
+			<ref id="b15-gmb-37-210">
+				<element-citation publication-type="journal">
+					<person-group person-group-type="author">
+						<name>
+							<surname>Weise</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Mrasek</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Klein</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Mulatinho</surname>
+							<given-names>MV</given-names>
+						</name>
+						<name>
+							<surname>Llerena</surname>
+							<given-names>JC</given-names>
+							<suffix>Jr</suffix>
+						</name>
+						<name>
+							<surname>Hardekopf</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>Pekova</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Bhatt</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Kosyakova</surname>
+							<given-names>N</given-names>
+						</name>
+						<name>
+							<surname>Liehr</surname>
+							<given-names>T</given-names>
+						</name>
+					</person-group>
+					<year>2012</year>
+					<article-title>Microdeletion and Microduplication Syndromes</article-title>
+					<source>J Histochem Cytochem</source>
+					<volume>60</volume>
+					<fpage>346</fpage>
+					<lpage>358</lpage>
+				</element-citation>
+				<mixed-citation>Weise A, Mrasek K, Klein E, Mulatinho MV, Llerena JC Jr, Hardekopf D, Pekova S, Bhatt S, Kosyakova N and Liehr T (2012) Microdeletion and Microduplication Syndromes. J Histochem Cytochem 60:346–358.</mixed-citation>
+			</ref>
+		</ref-list>
+		<sec sec-type="display-objects">
+			<title>Figures</title>
+			<fig id="f1-gmb-37-210" position="float">
+				<label>Figure 1</label>
+				<caption>
+					<p>Chromosome microduplications and microdeletions. A: 3q29 microduplication. B: 8q21 microdeletion. C: Chromosome 9 profile showing a 9p13 microdeletion. D: Atypical microdeletion of 9q34. E: Partial aCGH in a patient with a 16p11.2 microdeletion.</p>
+				</caption>
+				<graphic xlink:href="1415-4757-gmb-37-210-gf01.tif"/>
+			</fig>
+			<fig id="f2-gmb-37-210" position="float">
+				<label>Figure 2</label>
+				<caption>
+					<p>A: 16p12.2 deletion (array-cgh) and B: (FISH). C: 17p13.3 duplication (array-cgh) and D (FISH). E: 17q12 deletion (array-cgh).</p>
+				</caption>
+				<graphic xlink:href="1415-4757-gmb-37-210-gf02.tif"/>
+			</fig>
+			<fig id="f3-gmb-37-210" position="float">
+				<label>Figure 3</label>
+				<caption>
+					<p>New microdeletion and microduplication syndromes discovered over the last three to five years. Red squares indicate reported microdeletions; blue circles indicate reported microduplications.</p>
+				</caption>
+				<graphic xlink:href="1415-4757-gmb-37-210-gf03.tif"/>
+			</fig>
+		</sec>
+	</back>
+</article>
