@@ -25,6 +25,11 @@ from django.db.models import Q
 from journalmanager.models import *
 
 
+def capitalize(text):
+    text = str(text).lower()
+    return text[0].upper()+text[1:]
+
+
 class JournalImport:
 
     def __init__(self):
@@ -254,7 +259,7 @@ class JournalImport:
 
         use_license = UseLicense.objects.get_or_create(license_code=code)[0]
 
-        if parsed_subfields_disclaimer.has_key('t'):
+        if 't' in parsed_subfields_disclaimer:
             use_license.disclaimer = parsed_subfields_disclaimer['t']
 
         use_license.save()
@@ -422,6 +427,15 @@ class JournalImport:
         if '64' in record:
             journal.editor_email = record['64'][0]
 
+        if '851' in record:
+            journal.is_indexed_scie = True
+
+        if '852' in record:
+            journal.is_indexed_ssci = True
+
+        if '853' in record:
+            journal.is_indexed_aehci = True
+
         journal.creator_id = user.pk
         journal.collection = collection
 
@@ -430,6 +444,16 @@ class JournalImport:
         self.charge_summary("journals")
 
         journal.sponsor = loaded_sponsor
+
+        if '854' in record:
+            for item in record['854']:
+                capitalized = ' '.join([capitalize(i.lower()) for i in item.split(' ')])
+                try:
+                    area = SubjectCategory.objects.get(term=capitalized)
+                except:
+                    print 'Subject Category not found (%s) for journal (%s)' % (capitalized, journal.title)
+
+                journal.subject_categories.add(area)
 
         # created date
         if '940' in record:
