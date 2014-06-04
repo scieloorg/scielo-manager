@@ -447,7 +447,7 @@ class JournalImport:
 
         if '854' in record:
             for item in record['854']:
-                capitalized = ' '.join([capitalize(i.lower()) for i in item.split(' ')])
+                capitalized = ' '.join([capitalize(i) for i in item.split(' ')])
                 try:
                     area = SubjectCategory.objects.get(term=capitalized)
                 except:
