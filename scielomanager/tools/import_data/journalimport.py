@@ -26,8 +26,13 @@ from journalmanager.models import *
 
 
 def capitalize(text):
-    text = str(text).lower()
-    return text[0].upper()+text[1:]
+
+    def capitalize_word(word):
+        return word[0].upper()+word[1:]
+
+    text = ' '.join([capitalize_word(i) for i in str(text).lower().split(' ')])
+
+    return text
 
 
 class JournalImport:
@@ -447,7 +452,7 @@ class JournalImport:
 
         if '854' in record:
             for item in record['854']:
-                capitalized = ' '.join([capitalize(i) for i in item.split(' ')])
+                capitalized = capitalize(item)
                 try:
                     area = SubjectCategory.objects.get(term=capitalized)
                 except:
