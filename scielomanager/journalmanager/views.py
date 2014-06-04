@@ -7,6 +7,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+import operator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth import forms as auth_forms
@@ -561,9 +562,15 @@ def add_journal(request, journal_id=None):
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
                 # Ensuring that journal doesnt exists on created journal form, so journal_id must be None
-                if journal_id is None and models.Journal.objects.filter(
-                   Q(print_issn__icontains=request.POST.get('journal-print_issn')) |
-                   Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
+                filter_list = []
+
+                if request.POST.get('journal-print_issn') != '':
+                    filter_list.append(Q(print_issn__icontains=request.POST.get('journal-print_issn')))
+
+                if request.POST.get('journal-eletronic_issn') != '':
+                    filter_list.append(Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn')))
+
+                if journal_id is None and models.Journal.objects.filter(reduce(operator.or_, filter_list)).exists():
                     messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
                 else:
                     saved_journal = journalform.save_all(creator=request.user)
