@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
 from os import path
 from articletrack.balaio import BalaioAPI
+from django.conf import settings
+from urllib2 import urlopen
+
+
+def make_expected_generator(file_uri):
+    # function to return a generator with the expected result
+    response = urlopen(file_uri, timeout=settings.API_BALAIO_DEFAULT_TIMEOUT)
+    while True:
+        response_chunk = response.read(settings.API_BALAIO_DEFAULT_CHUNK_SIZE)
+        if response_chunk:
+            yield response_chunk
+        else:
+            raise StopIteration()
 
 
 class BalaioAPIDouble(BalaioAPI):
