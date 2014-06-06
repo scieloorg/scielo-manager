@@ -39,3 +39,11 @@ class BalaioAPIDouble(BalaioAPI):
     def get_xml_uri(self, attempt_id, target_name):
         tests_xmls_dirs = path.abspath(path.join(path.dirname(__file__), 'xml_tests_files'))
         return "file://%s" % path.join(tests_xmls_dirs, "valid.xml")
+
+
+class BalaioAPIDoubleDisabled(BalaioAPI):
+    def is_up(self):
+        return False
+
+    def list_files_members_by_attempt(self, attempt_id):
+        raise ValueError
