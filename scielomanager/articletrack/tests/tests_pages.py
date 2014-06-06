@@ -27,7 +27,7 @@ def _makePermission(perm, model, app_label='articletrack'):
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
 
 
-class CheckinListTests(WebTest):
+class CheckinListTests(WebTest, mocker.MockerTestCase):
 
     def setUp(self):
         self.user = auth.UserF(is_active=True)
@@ -186,6 +186,12 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self._addWaffleFlag()
         notice = self._makeOne()
 
+        # to avoid making a request will replace it with a double
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(doubles.BalaioAPIDoubleDisabled())
+        self.mocker.replay()
+
         response = self.app.get(reverse('notice_detail',
                                         args=[notice.checkin.pk]), user=self.user)
 
@@ -203,6 +209,12 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self._addWaffleFlag()
         notice = self._makeOne()
 
+        # to avoid making a request will replace it with a double
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(doubles.BalaioAPIDoubleDisabled())
+        self.mocker.replay()
+
         response = self.app.get(reverse('notice_detail',
                                         args=[notice.checkin.pk]), user=self.user)
 
@@ -211,6 +223,12 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
     def test_notice_list_must_have_link_to_checkin_list(self):
         self._addWaffleFlag()
         notice = self._makeOne()
+
+        # to avoid making a request will replace it with a double
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(doubles.BalaioAPIDoubleDisabled())
+        self.mocker.replay()
 
         response = self.app.get(reverse('notice_detail',
                                         args=[notice.checkin.pk]), user=self.user)

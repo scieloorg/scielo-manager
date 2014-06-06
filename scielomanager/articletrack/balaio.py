@@ -95,7 +95,13 @@ class BalaioAPI(SettingsMixin):
         return self._process_response_as_json(response)
 
     def get_file_member_by_attempt(self, attempt_id, target_name, file_member):
-        url = self.get_fullpath() + 'files/%s/%s.zip/?file=%s' % (attempt_id, target_name, file_member)
+        if '&file=' not in file_member:  # single file_member
+            qs = {'file': file_member}
+        else:  # a list of params &files=A&files=B...
+            list_of_members = file_member.split('&file=')  # ['file=A', file=B, ]
+            qs = [('file', param) for param in list_of_members]  # [('file', 'A'), ('file', 'B'), ]
+        qs = urlencode(qs)
+        url = self.get_fullpath() + 'files/%s/%s.zip?%s' % (attempt_id, target_name, qs)
         return self._open(url)
 
     def get_files_members_by_attempt(self, attempt_id, target_name, files_members):
@@ -103,7 +109,7 @@ class BalaioAPI(SettingsMixin):
         return self.get_file_member_by_attempt(attempt_id, target_name, files_members)
 
     def get_full_package(self, attempt_id, target_name):
-        url = self.get_fullpath() + 'files/%s/%s.zip/?full=true' % (attempt_id, target_name)
+        url = self.get_fullpath() + 'files/%s/%s.zip?full=true' % (attempt_id, target_name)
         return self._open(url)
 
     def get_xml_uri(self, attempt_id, target_name):
@@ -151,4 +157,3 @@ class BalaioRPC(SettingsMixin):
         rpc_server = self.get_server(uri)
 
         return getattr(rpc_server, method)(*args)
-
