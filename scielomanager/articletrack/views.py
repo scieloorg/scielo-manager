@@ -40,13 +40,14 @@ def extract_validation_errors(validation_errors):
     error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
     for error in validation_errors:
         error_data = {
-            'line': error.line,
-            'column': error.column,
-            'message': error.message,
-            'level': error.level_name,
+            'line': error.line or '--',
+            'column': error.column or '--',
+            'message': error.message or '',
+            'level': error.level_name or 'ERROR',
         }
         results.append(error_data)
-        error_lines.append(str(error.line))
+        if error.line:
+            error_lines.append(str(error.line))
     return {
         'results': results,
         'error_lines': ", ".join(error_lines)
@@ -280,7 +281,7 @@ def notice_detail(request, checkin_id):
     xml_data = {
         'file_name': None,
         'uri': None,
-        'can_be_analyzed': False,
+        'can_be_analyzed': (False, ''),
         'annotations': None,
         'validation_errors': None,
     }
@@ -294,27 +295,35 @@ def notice_detail(request, checkin_id):
                 files_list += [{'ext': file_extension, 'name': f} for f in files[file_extension]]
 
             xml_data['file_name'] = files['xml'][0]  # assume only ONE xml per package
+            xml_data['can_be_analyzed'] = (True, '')
 
-    except ValueError:
+    except ValueError as e:
         # Service Unavailable
-        pass
+        logger.error('ValueError while requesting: list_files_members_by_attempt(%s) for checkin.pk == %s. Traceback: %s' % (checkin.attempt_ref, checkin.pk, e))
+        xml_data['can_be_analyzed'] = (False, "The package's files could not requested")
 
     # get stylechecker annotations
-    try:
-        xml_data['uri'] = balaio.get_xml_uri(checkin.attempt_ref, xml_data['file_name']) if xml_data['file_name'] else None
-    except ValueError:
-        # Service Unavailable
-        xml_data['can_be_analyzed'] = False
-    else:
-        xml_data['can_be_analyzed'] = bool(xml_data['uri'])
+    if xml_data['can_be_analyzed'][0]:
+        try:
+            xml_data['uri'] = balaio.get_xml_uri(checkin.attempt_ref, xml_data['file_name']) if xml_data['file_name'] else None
+        except ValueError as e:
+            # Service Unavailable
+            logger.error('ValueError while requesting: get_xml_uri(%s, %s) for checkin.pk == %s. Traceback: %s' % (checkin.attempt_ref, xml_data['file_name'], checkin.pk, e))
+            xml_data['can_be_analyzed'] = (False, 'Could not obtain the XML with this file name %s' % xml_data['file_name'])
+        else:
+            if bool(xml_data['uri']):
+                xml_data['can_be_analyzed'] = (True, "")
+            else:
+                xml_data['can_be_analyzed'] = (False, "XML's URI is invalid (%s)" % xml_data['uri'])
 
-    if xml_data['can_be_analyzed']:
+    if xml_data['can_be_analyzed'][0]:
         try:
             xml_check = stylechecker.XML(xml_data['uri'])
-        except Exception:  # any exception will stop the process
-            xml_data['can_be_analyzed'] = False
+        except Exception as e:  # any exception will stop the process
+            xml_data['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
+            logger.error('ValueError while creating: Stylechecker.XML(%s) for checkin.pk == %s. Traceback: %s' % (xml_data['file_name'], checkin.pk, e))
         else:
-            status, errors = xml_check.validate()
+            status, errors = xml_check.validate_style()
             if not status:  # have errors
                 xml_check.annotate_errors()
                 xml_data['annotations'] = str(xml_check)
