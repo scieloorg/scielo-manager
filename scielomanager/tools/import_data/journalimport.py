@@ -27,10 +27,7 @@ from journalmanager.models import *
 
 def capitalize(text):
 
-    def capitalize_word(word):
-        return word[0].upper()+word[1:]
-
-    text = ' '.join([capitalize_word(i) for i in str(text).lower().split(' ')])
+    text = ' '.join([i.capitalize() for i in str(text).lower().split(' ')])
 
     return text
 
