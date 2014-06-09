@@ -262,7 +262,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(xml_data['can_be_analyzed'])
+        self.assertTrue(xml_data['can_be_analyzed'][0])
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertIsNone(xml_data['validation_errors'])
@@ -294,7 +294,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(xml_data['can_be_analyzed'])
+        self.assertFalse(xml_data['can_be_analyzed'][0])
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertIsNone(xml_data['validation_errors'])
@@ -305,7 +305,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         notice = self._makeOne()
 
         # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
-        target_xml = "to_be_annotated.xml"
+        target_xml = "with_style_errors.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
             "uri": self._get_path_of_test_xml(target_xml)
@@ -324,19 +324,18 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
         xml_data = response.context['xml_data']
-
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(xml_data['can_be_analyzed'])
+        self.assertTrue(xml_data['can_be_analyzed'][0])
         self.assertIsNotNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual('7', xml_data['validation_errors']['error_lines'])
+        self.assertEqual('', xml_data['validation_errors']['error_lines'])
         self.assertEqual(1, len(xml_data['validation_errors']['results']))
         expected_validation_errors = {
-            'column': 0,
-            'line': 7,
-            'message': u"Element 'article-meta': This element is not expected. Expected is ( journal-meta ).",
+            'column': '--',
+            'line': '--',
+            'message': u"Element 'funding-group': This element is not filled-in correctly.",
             'level': u'ERROR'
         }
         self.assertEqual([expected_validation_errors], xml_data['validation_errors']['results'])
@@ -368,7 +367,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(xml_data['can_be_analyzed'])
+        self.assertFalse(xml_data['can_be_analyzed'][0])
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])

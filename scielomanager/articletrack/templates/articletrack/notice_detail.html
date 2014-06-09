@@ -137,7 +137,7 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
         <li>
           <a href="#annotations" data-toggle="tab">
             {% trans "Style Checking" %}
-            {% if not xml_data.can_be_analyzed %}
+            {% if not xml_data.can_be_analyzed.0 %}
               {# could not be analyzed #}
               &nbsp;
               <span class="badge badge-warning"></span>
@@ -201,10 +201,11 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
         </div>
         <div class="tab-pane" id="annotations">
           {# annotations #}
-          {% if not xml_data.can_be_analyzed %}
+          {% if not xml_data.can_be_analyzed.0 %}
             {# could not be analyzed #}
             <div class="alert alert-warning">
-              <i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}
+              <h4><i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}</h4>
+              <p>{{ xml_data.can_be_analyzed.1 }}</p>
             </div>
           {% elif not xml_data.annotations %}
             {# xml without annotations #}
