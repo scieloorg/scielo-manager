@@ -160,7 +160,9 @@ INSTALLED_APPS = (
     'tastypie',
     'django_assets',
     'waffle',
-    'articletrack'
+    'articletrack',
+    'djcelery',
+    'kombu.transport.django',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -269,6 +271,12 @@ TEST_RUNNER = 'scielomanager.utils.runner.DiscoveryRunner'
 LOCALE_PATHS = (
     os.path.join(HERE, 'locale'),
 )
+
+if 'djcelery' in INSTALLED_APPS:
+    CELERY_TIMEZONE = TIME_ZONE
+    BROKER_URL = 'django://'
+    CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
+    CELERY_RESULT_BACKEND ='djcelery.backends.database:DatabaseBackend'
 
 ### END App customization settings
 #################################################################
