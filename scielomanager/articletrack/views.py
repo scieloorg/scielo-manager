@@ -67,15 +67,11 @@ def checkin_index(request):
         """
         if form.is_valid():
             package_name = form.cleaned_data.get('package_name', None)
-            journal_title = form.cleaned_data.get('journal_title', None)
             article = form.cleaned_data.get('article', None)
             issue_label = form.cleaned_data.get('issue_label', None)
 
             if package_name:
                 queryset = queryset.filter(package_name__icontains=package_name)
-            if journal_title:
-                # journal_title contains the pk of articletrack.Article with that ok.
-                queryset = queryset.filter(article__pk=journal_title)
             if article:
                 queryset = queryset.filter(article=article)
             if issue_label:
