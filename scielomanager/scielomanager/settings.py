@@ -277,6 +277,7 @@ if 'djcelery' in INSTALLED_APPS:
     BROKER_URL = 'django://'
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_RESULT_BACKEND ='djcelery.backends.database:DatabaseBackend'
+    CELERY_IMPORTS = ('scielomanager.tasks',)
 
 ### END App customization settings
 #################################################################

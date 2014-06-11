@@ -8,8 +8,8 @@ from scielomanager.celery import app
 
 logger = logging.getLogger(__name__)
 
-@app.task
-def send_mail(subject, content, to_list, html=True):
+@app.task(bind=True)
+def send_mail(self, subject, content, to_list, html=True):
     """
     Send email to list set on ``to_list`` param.
     This tasks consider the settings.DEFAUL_FROM_EMAIL as from_mail param
@@ -20,6 +20,9 @@ def send_mail(subject, content, to_list, html=True):
     :param html: Boolean to send as HTML or plain text, default is HTML
 
     Return the result of django.core.mail.message.EmailMessage.send
+
+    If any exception occurred the task will be re-executed in 3 minutes until
+    default max_retries 3 times, all are celery default params
     """
 
     msg = EmailMessage(subject, content, settings.DEFAULT_FROM_EMAIL, to_list)
@@ -29,9 +32,8 @@ def send_mail(subject, content, to_list, html=True):
 
     try:
         ret = msg.send()
-        logger.info("Successfully sent email message to %r.", to_list)
-
+        logger.info("Successfully sent email message to {0!r}.".format(to_list))
         return ret
     except Exception as e:
-        logger.error("Failed to send email message to %r, traceback: %s",
-                      (to_list, e))
+        logger.error("Failed to send email message to {0!r}, traceback: {1!s}".format(to_list, e))
+        raise self.retry(exc=e)
