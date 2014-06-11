@@ -1,1 +1,26 @@
 {% extends "journalmanager/add_issue.html" %}
+{% block extra_js %}
+  <script type="text/javascript">
+    $(function () {
+
+      function toggleFieldBySpeType(field_value){
+        if (field_value == 'volume') {
+          $('#row_number').val('');
+          $('#row_number').slideUp();
+          $('#row_volume').slideDown();
+        } else {
+          if (field_value == 'number')  {
+            $('#row_number').slideDown();
+          }
+          /* is possible to render the checkboxes without a selected anyone */
+        }
+      }
+
+      $('input[name="spe_type"]').click(function(){
+        toggleFieldBySpeType(this.value)
+      });
+      var selected_spe_type = $('input[name="spe_type"]:checked').val();
+      toggleFieldBySpeType(selected_spe_type);
+    });
+  </script>
+{% endblock extra_js %}

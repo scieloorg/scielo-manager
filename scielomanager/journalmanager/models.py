@@ -963,6 +963,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     type = models.CharField(_('Type'),  max_length=15, choices=choices.ISSUE_TYPES, default='regular', editable=False)
     suppl_text = models.CharField(_('Suppl Text'),  max_length=15, null=True, blank=True)
+    spe_text = models.CharField(_('Special Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
         ordering = ('created', )
@@ -990,8 +991,10 @@ class Issue(caching.base.CachingMixin, models.Model):
         if self.type == 'supplement':
             values.append('suppl.%s' % self.suppl_text)
 
-        return ' '.join([val for val in values if val]).strip().replace(
-                'spe', 'special').replace('ahead', 'ahead of print')
+        if self.type == 'special':
+            values.append('spe.%s' % self.spe_text)
+
+        return ' '.join([val for val in values if val]).strip().replace('ahead', 'ahead of print')
 
     def __unicode__(self):
 
@@ -1014,6 +1017,18 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         else:
             raise AttributeError('Issues of type %s do not have an attribute named: suppl_type' % self.get_type_display())
+
+    @property
+    def spe_type(self):
+        if self.type == 'special':
+
+            if self.number != '' and self.volume == '':
+                return 'number'
+            elif self.number == '' and self.volume != '':
+                return 'volume'
+
+        else:
+            raise AttributeError('Issues of type %s do not have an attribute named: esp_type' % self.get_type_display())
 
     def _suggest_order(self, force=False):
         """

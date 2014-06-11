@@ -74,7 +74,7 @@ JOURNAL_PUBLICATION_STATUS = [
 # the index 0 has an empty value
 MONTHS = [(i, month) for i, month in enumerate(calendar.month_name) if i > 0]
 
-ISSUE_SUPPL_TYPE = [
+ISSUE_SPE_TYPE = ISSUE_SUPPL_TYPE = [
     ('volume', 'Volume'),
     ('number', 'Number'),
 ]
@@ -84,4 +84,3 @@ ISSUE_TYPES = (
     ('special', 'Special'),
     ('supplement', 'Supplement'),
 )
-
