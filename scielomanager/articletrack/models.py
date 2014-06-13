@@ -2,6 +2,7 @@
 import caching.base
 import datetime
 import logging
+from collections import deque
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -14,6 +15,8 @@ from articletrack import modelmanagers
 from journalmanager.models import Journal
 
 logger = logging.getLogger(__name__)
+
+SERVICE_STATUS_MAX_STAGES = 2  # The number of block SERV_BEGIN/SERV_END that must be listed in notices at the end of processing
 
 MSG_WORKFLOW_ACCEPTED = 'Checkin Accepted'
 MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
@@ -66,6 +69,27 @@ def log_workflow_status(message):
     return decorator
 
 
+def validate_sequence(sequence, open_symbol, close_symbol):
+    """
+    @param: sequence: iterable with string of symbols/tags to validate.
+                      i.e.: ["SERV_BEGIN", "SERV_BEGIN", "SERV_END"]
+    @param: open_symbol: string represents the open tag/symbol. i.e.: "SERV_BEGIN"
+    @param: close_symbol string represents the close tag/symbol. i.e.: "SERV_END"
+    This function return True if the sequence has for each Open symbol the
+    corresponding Close symbol and no Open or Close symbol has no pair.
+    """
+    d = deque()
+    for item in sequence:
+        if item == open_symbol:
+            d.append(item)
+        elif item == close_symbol:
+            if d[-1] == open_symbol:
+                d.pop()
+            else:
+                return False
+    return len(d) == 0
+
+
 class Checkin(caching.base.CachingMixin, models.Model):
 
     # Custom Managers
@@ -96,13 +120,35 @@ class Checkin(caching.base.CachingMixin, models.Model):
         permissions = (("list_checkin", "Can list Checkin"),)
 
     @property
-    def get_error_level(self):
-        if self.notices.filter(status__iexact="error").count() > 0:
-            return "error"
-        elif self.notices.filter(status__iexact="warning").count() > 0:
-            return "warning"
+    def is_serv_status_completed(self):
+        """
+        If the count of SERV_END == SERVICE_STATUS_MAX_STAGES, and all SERV_BEGIN has a SERV_END,
+            the checkin's automatic notices is FINISHED
+            -> Return True
+        Else:
+            the checkin's automatic notices is UNIFINISHED
+            -> Return False
+        """
+        count_serv_end_notices = self.notices.filter(status__iexact="serv_end").count()
+        count_serv_begin_notices = self.notices.filter(status__iexact="serv_begin").count()
+        if (count_serv_end_notices < SERVICE_STATUS_MAX_STAGES) or (count_serv_begin_notices < SERVICE_STATUS_MAX_STAGES):
+            return False
         else:
-            return "ok"
+            serv_ocurrs = self.notices.filter(status__istartswith="serv_").order_by('created_at')
+            sequence = [sym for sym in serv_ocurrs]
+            return validate_sequence(sequence, open_symbol="SERV_BEGIN", close_symbol="SERV_END")
+
+    @property
+    def get_error_level(self):
+        if self.is_serv_status_completed:
+            if self.notices.filter(status__iexact="error").count() > 0:
+                return "error"
+            elif self.notices.filter(status__iexact="warning").count() > 0:
+                return "warning"
+            else:
+                return "ok"
+        else:
+            return "in progress"
 
     @property
     def get_newest_checkin(self):

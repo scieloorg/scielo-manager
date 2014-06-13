@@ -260,7 +260,7 @@ def checkin_history(request, checkin_id):
 def notice_detail(request, checkin_id):
 
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
-    notices = checkin.notices.all()
+    notices = checkin.notices.exclude(status__istartswith="serv_")
     tickets = checkin.article.tickets.all()
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
