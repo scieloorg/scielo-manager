@@ -4,7 +4,7 @@ import json
 import logging
 
 from waffle.decorators import waffle_flag
-from django.template.loader import get_template, render_to_string
+from django.template.loader import render_to_string
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import permission_required
@@ -14,6 +14,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
+from django.contrib.sites.models import get_current_site
 
 from packtools import stylechecker
 
@@ -144,10 +145,10 @@ def checkin_reject(request, checkin_id):
 
                     tasks.send_mail.delay(subject,
                                     render_to_string('email/rejected.txt',
-                                    {'link': reverse('notice_detail', args=[checkin_id,]),
-                                    'reason': rejected_cause},
+                                    {'checkin': checkin,
+                                     'reason': rejected_cause,
+                                     'domain': get_current_site(request)}),
                                     [checkin.submitted_by])
-                                    )
                 except ValueError:
                     messages.error(request, MSG_FORM_MISSING)
             else:
@@ -194,10 +195,9 @@ def checkin_review(request, checkin_id):
 
                     tasks.send_mail.delay(subject,
                                     render_to_string('email/accepted.txt',
-                                    {'link': reverse('notice_detail', args=[checkin_id,])},
+                                    {'checkin': checkin,
+                                     'domain': get_current_site(request)}),
                                     [checkin.submitted_by])
-                                    )
-
                 except ValueError as e:
                     logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
                     error_msg = _("An unexpected error, this attempt connot set to checkout. Please try again later.")
@@ -232,9 +232,9 @@ def checkin_accept(request, checkin_id):
 
                 tasks.send_mail.delay(subject,
                                 render_to_string('email/accepted.txt',
-                                {'link': reverse('notice_detail', args=[checkin_id,])},
+                                {'checkin': checkin,
+                                 'domain': get_current_site(request)}),
                                 [checkin.submitted_by])
-                                )
             except ValueError as e:
                 logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
                 messages.error(request, MSG_FORM_MISSING)
@@ -263,9 +263,9 @@ def checkin_send_to_pending(request, checkin_id):
 
             tasks.send_mail.delay(subject,
                             render_to_string('email/sended_to_pending.txt',
-                            {'link': reverse('notice_detail', args=[checkin_id,])},
+                            {'checkin': checkin,
+                             'domain': get_current_site(request)}),
                             [checkin.submitted_by])
-                            )
         except ValueError:
             messages.error(request, MSG_FORM_MISSING)
     else:
@@ -290,9 +290,9 @@ def checkin_send_to_review(request, checkin_id):
 
             tasks.send_mail.delay(subject,
                             render_to_string('email/sended_to_review.txt',
-                            {'link': reverse('notice_detail', args=[checkin_id,])},
+                            {'checkin': checkin,
+                             'domain': get_current_site(request)}),
                             [checkin.submitted_by])
-                            )
 
         except ValueError:
             messages.error(request, MSG_FORM_MISSING)
