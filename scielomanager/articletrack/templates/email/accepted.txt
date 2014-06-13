@@ -1,0 +1,3 @@
+Your article was accepted by SciELO team, it will be soon available online.
+
+See: {{link}}

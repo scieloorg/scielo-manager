@@ -1,0 +1,3 @@
+Your article was rejected for the following reason: {{reason}}
+
+See:{{link}}

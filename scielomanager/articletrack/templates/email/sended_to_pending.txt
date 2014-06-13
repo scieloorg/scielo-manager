@@ -1,0 +1,1 @@
+Your package was sent to pending, check: {{link}}
