@@ -2,6 +2,7 @@
 import caching.base
 import datetime
 import logging
+from collections import deque
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -13,8 +14,11 @@ from django.conf import settings
 
 from articletrack import modelmanagers
 from journalmanager.models import Journal
+from scielomanager.utils import misc
 
 logger = logging.getLogger(__name__)
+
+SERVICE_STATUS_MAX_STAGES = 2  # The count of pairs (SERV_BEGIN, SERV_END) in notice.status at the end of processing
 
 MSG_WORKFLOW_ACCEPTED = 'Checkin Accepted'
 MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
@@ -101,13 +105,45 @@ class Checkin(caching.base.CachingMixin, models.Model):
         permissions = (("list_checkin", "Can list Checkin"),)
 
     @property
-    def get_error_level(self):
-        if self.notices.filter(status__iexact="error").count() > 0:
-            return "error"
-        elif self.notices.filter(status__iexact="warning").count() > 0:
-            return "warning"
+    def is_serv_status_completed(self):
+        """
+        If:
+            the count of SERV_END < SERVICE_STATUS_MAX_STAGES, or
+            the count of SERV_BEGIN < SERVICE_STATUS_MAX_STAGES
+        then:
+            the checkin's notices sequence is UNCOMPLETED (possible more notices will arrive)
+            -> Return False
+        Else:
+            if the count of SERV_* is equal to 2 * SERVICE_STATUS_MAX_STAGES, then
+                call the ``misc.validate_sequence`` function
+                to check if the checkin's notices sequence is COMPLETED
+                -> Return True
+            else:
+                -> Return False
+        """
+        count_serv_end_notices = self.notices.filter(status__iexact="SERV_END").count()
+        count_serv_begin_notices = self.notices.filter(status__iexact="SERV_BEGIN").count()
+        if (count_serv_end_notices < SERVICE_STATUS_MAX_STAGES) or (count_serv_begin_notices < SERVICE_STATUS_MAX_STAGES):
+            return False
         else:
-            return "ok"
+            serv_ocurrs = self.notices.filter(status__istartswith="serv_").order_by('created_at')
+            if serv_ocurrs.count() == (2 * SERVICE_STATUS_MAX_STAGES):
+                sequence = [sym.status for sym in serv_ocurrs]
+                return misc.validate_sequence(sequence)
+            else:
+                return False
+
+    @property
+    def get_error_level(self):
+        if self.is_serv_status_completed:
+            if self.notices.filter(status__iexact="error").count() > 0:
+                return "error"
+            elif self.notices.filter(status__iexact="warning").count() > 0:
+                return "warning"
+            else:
+                return "ok"
+        else:
+            return "in progress"
 
     @property
     def get_newest_checkin(self):

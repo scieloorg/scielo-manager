@@ -5,6 +5,7 @@ from django_factory_boy import auth
 from django.conf import settings
 from articletrack import models
 from . import modelfactories
+from scielomanager.utils import misc
 
 
 class CommentTests(TestCase):
@@ -203,6 +204,20 @@ class CheckinTests(TestCase):
         self.assertEqual(checkin.expiration_at.date(), now.date())
         self.assertTrue(checkin.is_expirable)
 
+    def test_validate_sequence_function(self):
+        sequences = (
+            (True, ["SERV_BEGIN", "SERV_END", "SERV_BEGIN", "SERV_END"]),
+            (True, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "ANOTHER_SYMBOL"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_END", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_BEGIN", "SERV_BEGIN", ]),
+            (False, ["SERV_END", "SERV_END", "SERV_END", "SERV_END", ]),
+        )
+        for expected_result, sequence in sequences:
+            validation_result = misc.validate_sequence(sequence)
+            self.assertEqual(expected_result, validation_result)
+
 
 class ArticleTests(TestCase):
 
@@ -360,3 +375,68 @@ class CheckinWorkflowLogTests(TestCase):
         self.assertIsNone(logs[0].user)
         self.assertEqual(logs[0].status, 'expired')
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_EXPIRED)
+
+    def test_checkin_with_notices_incomplete_service_status_must_be_in_progress(self):
+        """
+        For one checkin, generate various notices like incomplete processing, such as only one SERV_BEGIN
+        """
+        checkin = modelfactories.CheckinFactory()
+        modelfactories.NoticeFactory(
+            checkin=checkin,
+            stage=" ", message=" ", status="SERV_BEGIN",
+            created_at=datetime.datetime.now())
+
+        self.assertFalse(checkin.is_serv_status_completed)
+        self.assertEqual('in progress', checkin.get_error_level)
+
+    def test_checkin_notices_with_less_serv_status_than_SERVICE_STATUS_MAX_STAGES_is_incompleted(self):
+        """
+        If a checkin's notices, are less than SERVICE_STATUS_MAX_STAGES service status (SERV_END), is incomplete
+        """
+        checkin = modelfactories.CheckinFactory()
+        serv_status_count = models.SERVICE_STATUS_MAX_STAGES - 1
+        for step in xrange(0, serv_status_count):
+            modelfactories.NoticeFactory(
+                checkin=checkin,
+                stage=" ", message=" ", status="SERV_END",
+                created_at=datetime.datetime.now())
+
+        self.assertFalse(checkin.is_serv_status_completed)
+        self.assertEqual('in progress', checkin.get_error_level)
+
+    def test_checkin_notices_with_equal_serv_status_than_SERVICE_STATUS_MAX_STAGES_is_incompleted(self):
+        """
+        If a checkin's notices, are equal to SERVICE_STATUS_MAX_STAGES service status (SERV_END), still incomplete
+        because only have: "SERV_END" as service status.
+        """
+        checkin = modelfactories.CheckinFactory()
+        serv_status_count = models.SERVICE_STATUS_MAX_STAGES
+        for step in xrange(0, serv_status_count):
+            modelfactories.NoticeFactory(
+                checkin=checkin,
+                stage=" ", message=" ", status="SERV_END",
+                created_at=datetime.datetime.now())
+
+        self.assertFalse(checkin.is_serv_status_completed)
+        self.assertEqual('in progress', checkin.get_error_level)
+
+    def test_checkin_notices_with_correct_pair_of_service_status_is_completed(self):
+        """
+        If checkin's notices, are equal to SERVICE_STATUS_MAX_STAGES service status (SERV_END), is complete
+        because each service status  has a pair: "SERV_BEGIN"/"SERV_END" as service status, and checkin.error_level
+        is 'ok' because has no "error"/"warning" notices
+        """
+        checkin = modelfactories.CheckinFactory()
+        serv_status_count = models.SERVICE_STATUS_MAX_STAGES
+        for step in xrange(0, serv_status_count):
+            notice_serv_begin = modelfactories.NoticeFactory(
+                checkin=checkin,
+                stage=" ", message=" ", status="SERV_BEGIN",
+                created_at=datetime.datetime.now())
+            notice_serv_end = modelfactories.NoticeFactory(
+                checkin=checkin,
+                stage=" ", message=" ", status="SERV_END",
+                created_at=datetime.datetime.now())
+        self.assertTrue(checkin.is_serv_status_completed)
+        self.assertEqual('ok', checkin.get_error_level)
+

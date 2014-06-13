@@ -49,7 +49,11 @@
         <td>{{ checkin.article.issue_label }}</td>
         <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
         <td>
-          <span class="label label-{% trans_status checkin.get_error_level to_label='True' %}">
+          {% if checkin.get_error_level == 'in progress' %}
+            <span class="label label-info">
+          {% else %}
+            <span class="label label-{% trans_status checkin.get_error_level to_label='True' %}">
+          {% endif %}
             {{ checkin.get_error_level }}
           </span>
         </td>
