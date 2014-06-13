@@ -52,6 +52,36 @@ class UserChangeForm(UserChangeForm):
             raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
         return email
 
+USER_EMAIL_ERROR_MESSAGES = _("That e-mail address is associated with another user account.")
+
+
+class UserCreationForm(UserCreationForm):
+    email = forms.EmailField(label=_("E-mail"), max_length=75, required=True)
+
+    def clean_email(self):
+        """
+        Validates that the given email address is not used by another user.
+        """
+        email = self.cleaned_data["email"]
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
+        if len(self.users_cache) > 0:
+            raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
+        return email
+
+
+class UserChangeForm(UserChangeForm):
+    email = forms.EmailField(label=_("E-mail"), max_length=75, required=True)
+
+    def clean_email(self):
+        """
+        Validates that the given email address is not used by another user.
+        """
+        email = self.cleaned_data["email"]
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True).exclude(pk=self.instance.pk)
+        if len(self.users_cache) > 0:
+            raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
+        return email
+
 
 class UserCollectionContext(ModelForm):
     """
