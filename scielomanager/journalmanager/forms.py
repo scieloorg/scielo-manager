@@ -21,7 +21,6 @@ from scielomanager.widgets import CustomImageWidget
 from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
-SPECIAL_ISSUE_FORM_FIELD_NUMBER = 'spe'
 
 USER_EMAIL_ERROR_MESSAGES = _("That e-mail address is associated with another user account.")
 
@@ -354,7 +353,6 @@ class RegularIssueForm(IssueBaseForm):
 
         super(RegularIssueForm, self).__init__(*args, **kwargs)
 
-
     def clean(self):
         volume = self.cleaned_data.get('volume')
         number = self.cleaned_data.get('number')
@@ -441,7 +439,13 @@ class SupplementIssueForm(IssueBaseForm):
 
 
 class SpecialIssueForm(RegularIssueForm):
-    number = forms.CharField(required=False, initial=SPECIAL_ISSUE_FORM_FIELD_NUMBER, widget=forms.HiddenInput(attrs={'readonly':'readonly'}))
+    spe_type = forms.ChoiceField(choices=choices.ISSUE_SPE_TYPE, widget=forms.RadioSelect, initial='volume')
+
+    class Meta(IssueBaseForm.Meta):
+        fields = ('publication_year', 'spe_type', 'volume', 'number', 'spe_text',
+            'publication_start_month', 'publication_end_month', 'is_marked_up',
+            'use_license', 'total_documents', 'ctrl_vocabulary', 'editorial_standard',
+            'section', 'cover',)
 
     def __init__(self, *args, **kwargs):
         # RegularIssueForm expects 'params' is present in kwargs
@@ -454,10 +458,35 @@ class SpecialIssueForm(RegularIssueForm):
 
         super(SpecialIssueForm, self).__init__(*args, **kwargs)
 
+    def clean(self):
+        volume = self.cleaned_data.get('volume', '')
+        number = self.cleaned_data.get('number', '')
+        spe_type = self.cleaned_data.get('spe_type')
+        publication_year = self.cleaned_data.get('publication_year')
+        spe_text = self.cleaned_data.get('spe_text')
 
-    def clean_number(self):
-        # override the number value
-        return SPECIAL_ISSUE_FORM_FIELD_NUMBER
+        if spe_type == 'volume' and (volume == '' or number != ''):
+            raise forms.ValidationError(_('You must complete the volume filed. Number field must be empty.'))
+        elif spe_type == 'number' and (number == ''):
+            raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.'))
+        else:
+            try:
+                issue = models.Issue.objects.get(volume=volume, number=number, publication_year=publication_year, spe_text=spe_text, journal=self.journal)
+            except models.Issue.DoesNotExist:
+                # Perfect! A brand new issue!
+                pass
+            except MultipleObjectsReturned as e:
+                logger.error('''
+                    Multiple issues returned for the same number, volume and year for one journal.
+                    Traceback: %s'''.strip() % e.message)
+                raise forms.ValidationError({NON_FIELD_ERRORS: _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+            else:
+                # Issue already exists (handling updates).
+                if self.instance is None or (self.instance.pk != issue.pk):
+                    raise forms.ValidationError({NON_FIELD_ERRORS:\
+                        _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
+
+        return self.cleaned_data
 
 
 ###########################################
