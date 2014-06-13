@@ -429,11 +429,7 @@ class SpecialIssueForm(RegularIssueForm):
             raise forms.ValidationError(_('You must complete the number filed. Volume field must be empty.'))
         else:
             try:
-                issue = models.Issue.objects.get(volume=volume,
-                                                 number=number,
-                                                 publication_year=publication_year,
-                                                 spe_text=spe_text,
-                                                 journal=self.journal)
+                issue = models.Issue.objects.get(volume=volume, number=number, publication_year=publication_year, spe_text=spe_text, journal=self.journal)
             except models.Issue.DoesNotExist:
                 # Perfect! A brand new issue!
                 pass

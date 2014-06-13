@@ -2384,7 +2384,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
         self.assertFalse(issue_form.is_valid())
 
-
     def test_clean_fails_for_type_number_if_issue_already_exist(self):
         issue = modelfactories.IssueFactory(number='1', volume='', type='supplement')
         journal = issue.journal
@@ -2395,7 +2394,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':issue.suppl_type,
+            'suppl_type': issue.suppl_type,
             'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -2408,7 +2407,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2417,7 +2415,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
                                             })
 
         self.assertFalse(issue_form.is_valid())
-
 
     def test_clean_fails_for_type_volume_if_issue_already_exist(self):
         issue = modelfactories.IssueFactory(number='', volume='1', type='supplement')
@@ -2429,7 +2426,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':issue.suppl_type,
+            'suppl_type': issue.suppl_type,
             'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -2442,7 +2439,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2451,7 +2447,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
                                             })
 
         self.assertFalse(issue_form.is_valid())
-
 
     def test_clean_for_type_number_on_edit(self):
         journal = modelfactories.JournalFactory()
@@ -2480,7 +2475,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                                 instance=issue,
@@ -2569,7 +2563,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2600,7 +2593,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
@@ -2633,7 +2625,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2664,7 +2655,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
@@ -2697,7 +2687,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2728,7 +2717,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
@@ -2761,7 +2749,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2792,7 +2779,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
@@ -2848,18 +2834,24 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 
     def test_clean_fails_for_type_volume_if_duplicated_issue(self):
         journal = modelfactories.JournalFactory()
-        issue = modelfactories.IssueFactory(volume='1',
-                                            number='',
-                                            suppl_text='1',
-                                            publication_year=2013,
-                                            journal=journal,
-                                            type='special')
-        issue2 = modelfactories.IssueFactory(volume='1',
-                                            number='',
-                                            suppl_text='1',
-                                            publication_year=2013,
-                                            journal=journal,
-                                            type='special')
+        issue = modelfactories.IssueFactory(
+            volume='1',
+            number='',
+            suppl_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special',
+            spe_text='1'
+        )
+        issue2 = modelfactories.IssueFactory(
+            volume='1',
+            number='',
+            suppl_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special',
+            spe_text='1'
+        )
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -2890,7 +2882,13 @@ class SpecialIssueFormClassTests(unittest.TestCase):
         self.assertFalse(issue_form.is_valid())
 
     def test_clean_fails_for_type_number_if_issue_already_exist(self):
-        issue = modelfactories.IssueFactory(number='1', volume='', type='special')
+        issue = modelfactories.IssueFactory(
+            publication_year='2014',
+            number='1',
+            volume='',
+            type='special',
+            spe_text='1'
+        )
         journal = issue.journal
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -2912,17 +2910,23 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-        issue_form = forms.SpecialIssueForm(POST,
-                                            params={'journal': journal},
-                                            querysets={
-                                                'section': journal.section_set.all(),
-                                                'use_license': models.UseLicense.objects.all(),
-                                            })
+        issue_form = forms.SpecialIssueForm(
+            POST,
+            params={'journal': journal},
+            querysets={
+                'section': journal.section_set.all(),
+                'use_license': models.UseLicense.objects.all(),
+            })
 
         self.assertFalse(issue_form.is_valid())
 
     def test_clean_fails_for_type_volume_if_issue_already_exist(self):
-        issue = modelfactories.IssueFactory(number='', volume='1', type='special')
+        issue = modelfactories.IssueFactory(
+            number='',
+            volume='1',
+            type='special',
+            spe_text='1'
+        )
         journal = issue.journal
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
@@ -2955,12 +2959,14 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 
     def test_clean_for_type_number_on_edit(self):
         journal = modelfactories.JournalFactory()
-        issue = modelfactories.IssueFactory(volume='',
-                                            number='2',
-                                            spe_text='1',
-                                            publication_year=2013,
-                                            journal=journal,
-                                            type='special')
+        issue = modelfactories.IssueFactory(
+            volume='',
+            number='2',
+            spe_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special'
+        )
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -2993,12 +2999,15 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 
     def test_clean_for_type_volume_on_edit(self):
         journal = modelfactories.JournalFactory()
-        issue = modelfactories.IssueFactory(volume='2',
-                                            number='',
-                                            suppl_text='1',
-                                            publication_year=2013,
-                                            journal=journal,
-                                            type='special')
+        issue = modelfactories.IssueFactory(
+            volume='2',
+            number='',
+            suppl_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special',
+            spe_text='1'
+        )
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
@@ -3110,6 +3119,8 @@ class IssueFormTests(WebTest):
                 form['suppl_text'] = 'suppl.X'
             elif t == 'special':
                 form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
             else: # regular
                 form['number'] = '3'
                 form['volume'] = '29'
@@ -3215,7 +3226,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        for t in ['regular', 'special']:
+        for t in ['regular']:  # May be used in anther forms kind of issues
             issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
             form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
@@ -3293,6 +3304,12 @@ class IssueFormTests(WebTest):
                 form['suppl_type'] = 'volume'
                 form['suppl_text'] = 'suppl.XX'
                 form['number'] = ''
+
+            if t == 'special':
+                form['spe_type'] = 'volume'
+                form['spe_text'] = 'spe.XX'
+                form['number'] = ''
+
             response = form.submit().follow()
 
             self.assertIn('Saved.', response.body)

@@ -152,14 +152,15 @@ class IssueImport:
         issue_type = self.issue_type(record)
         issue.type = issue_type
 
-        if '31' in record:
-            issue.volume = record['31'][0].strip()
+        issue.volume = record.get('31', ' ')[0].strip()
 
-        if '32' in record:
-            issue.number = record['32'][0].strip()
+        number = record.get('32', ' ')[0].strip()
+        if 'spe' in number:
+            issue.spe_text = number.lower().replace('spe', '')
+        else:
+            issue.number = number
 
         suppl_volume = suppl_number = ''
-
         suppl_text = []
         if '131' in record:
             suppl_text.append(record['131'][0].strip())
@@ -167,7 +168,8 @@ class IssueImport:
         if '132' in record:
             suppl_text.append(record['132'][0].strip())
 
-        issue.suppl_text = ' '.join(suppl_text)
+        if len(suppl_text) > 0:
+            issue.suppl_text = ' '.join(suppl_text)
 
         if '41' in record:
             if record['41'][0] == 'pr':
