@@ -20,7 +20,7 @@ from packtools import stylechecker
 
 from scielomanager.tools import get_paginated, get_referer_view
 from scielomanager import tasks
-from . import models, utils
+from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
 
