@@ -92,6 +92,18 @@
       {% include "journalmanager/includes/form_field_row.html" %}
     {% endwith %}
 
+    <div id="other_previous_title" class="control-group {% if add_form.other_previous_title.errors %}error{% endif %}">
+      <label
+        for="{{ add_form.other_previous_title.auto_id }}"
+        class="control-label {% if field.field.required %} req-field {% endif %}">
+          {% trans add_form.other_previous_title.label %}
+      </label>
+      <div class="controls">
+        {{ add_form.other_previous_title }}
+        {% field_help add_form.other_previous_title.label add_form.other_previous_title.help_text term-previous-title %}
+      </div>
+    </div>
+
   </div>
 
   <h2><a name="other_title"></a>{% trans "Other Titles" %}:</h2>
