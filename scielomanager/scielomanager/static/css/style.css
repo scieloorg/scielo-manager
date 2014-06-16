@@ -42,10 +42,6 @@ ul._actions li:last-child {
     width: 800px;
 }
 
-.ui-datepicker, .ui-datepicker-header{
-    width: 250px;
-}
-
 .ui-widget {
     font-family: Verdana,Arial,sans-serif;
     font-size: 0.8em;
