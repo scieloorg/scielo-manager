@@ -10,8 +10,7 @@ base_bundle = Bundle('../static/js/jquery/jquery-1.8.3.js',
 minify_bundle = Bundle('../static/js/angular/angular.min.js',
                        '../static/js/bootstrap-filestyle.min.js')
 
-plugins_bundle = Bundle('../static/js/jquery/datepicker.js',
-                        '../static/js/jquery/jquery.asmselect.js',
+plugins_bundle = Bundle('../static/js/jquery/jquery.asmselect.js',
                         '../static/js/jquery/jquery.popupwindow.js',
                         '../static/js/jquery/jquery.formset.js',
                         '../static/js/angular/ui-bootstrap-tpls-0.4.0.js',
