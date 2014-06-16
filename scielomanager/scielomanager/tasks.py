@@ -8,6 +8,7 @@ from scielomanager.celery import app
 
 logger = logging.getLogger(__name__)
 
+
 @app.task(bind=True)
 def send_mail(self, subject, content, to_list, html=True):
     """
