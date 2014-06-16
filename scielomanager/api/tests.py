@@ -461,6 +461,7 @@ class IssuesRestAPITest(WebTest):
             u'publication_end_month',
             u'editorial_standard',
             u'sections',
+            u'spe_text',
             u'updated',
             u'suppl_volume',
             u'journal',

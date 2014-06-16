@@ -116,6 +116,18 @@ class IssueImport:
 
         return issue_sections
 
+    def issue_type(self, record):
+        data = record.get('31', ' ')[0]
+        data += record.get('32', ' ')[0]
+
+        if '131' in record or '132' in record:
+            return 'supplement'
+
+        if 'spe' in data:
+            return 'special'
+
+        return 'regular'
+
     def load_issue(self, record):
         """
         Function: load_issue
@@ -137,8 +149,27 @@ class IssueImport:
         if error:
             return False
 
-        if '32' in record:
-            issue.number = record['32'][0]
+        issue_type = self.issue_type(record)
+        issue.type = issue_type
+
+        issue.volume = record.get('31', ' ')[0].strip()
+
+        number = record.get('32', ' ')[0].strip()
+        if 'spe' in number:
+            issue.spe_text = number.lower().replace('spe', '')
+        else:
+            issue.number = number
+
+        suppl_volume = suppl_number = ''
+        suppl_text = []
+        if '131' in record:
+            suppl_text.append(record['131'][0].strip())
+
+        if '132' in record:
+            suppl_text.append(record['132'][0].strip())
+
+        if len(suppl_text) > 0:
+            issue.suppl_text = ' '.join(suppl_text)
 
         if '41' in record:
             if record['41'][0] == 'pr':
@@ -191,21 +222,14 @@ class IssueImport:
         issue.journal = journal
         issue.creation_date = datetime.now()
 
-        if '31' in record:
-            issue.volume = record['31'][0]
-        if '131' in record:
-            issue.suppl_volume = record['131'][0]
-        if '132' in record:
-            issue.suppl_number = record['132'][0]
         if '33' in record:
             issue.title = record['33'][0]
+
         if '36' in record:
             try:
                 issue.order = int(str(record['36'][0])[4:])
             except ValueError:
                 print record
-        if '33' in record:
-            issue.title = record['33'][0]
         if '200' in record:
             if int(record['200'][0]) == 1:
                 issue.is_marked_up = True
@@ -232,6 +256,21 @@ class IssueImport:
             issue.created = datetime.strptime(created, "%Y-%m-%dT%H:%M:%S")
 
         issue.save()
+
+        if '33' in record:
+            for subtitle in record['33']:
+                expanded = subfield.expand(subtitle)
+                parsed_subfields = dict(expanded)
+
+                title = parsed_subfields['_']
+                lang = parsed_subfields['l']
+
+                language = Language.objects.get(iso_code=lang)
+                issuetitle = IssueTitle()
+                issuetitle.title = title
+                issuetitle.issue = issue
+                issuetitle.language = language
+                issuetitle.save(force_insert=True)
 
         self.load_sections(issue, record)
 

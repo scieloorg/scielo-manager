@@ -118,26 +118,6 @@ class CheckinListFilterFormTests(WebTest):
         self.assertEqual(target_checkin, context_checkins[0])
         self.assertTrue(u'%s' % target_checkin.package_name in response_partial)
 
-    def tests_filter_pending_by_journal_title(self):
-        """
-        Creates various (pending) checkins and apply a filter by
-        (a random existing) journal title
-        """
-        checkins = self._make_N_checkins()
-        random_index = randint(0, len(checkins) - 1)
-        target_checkin = checkins[random_index]
-
-        page = self.app.get(reverse('checkin_index',), user=self.user)
-        form = page.forms['filter_pending']
-        form['pending-journal_title'] = target_checkin.article.pk
-        response = form.submit()
-        response_partial = _extract_results_from_body(response)
-        context_checkins = response.context['checkins_pending'].object_list
-
-        self.assertEqual(len(context_checkins), 1)
-        self.assertEqual(target_checkin, context_checkins[0])
-        self.assertTrue(u'%s' % target_checkin.article.journal_title in response_partial)
-
     def tests_filter_pending_by_article(self):
         """
         Creates various (pending) checkins and apply a filter by
@@ -200,26 +180,6 @@ class CheckinListFilterFormTests(WebTest):
         self.assertEqual(len(context_checkins), 1)
         self.assertEqual(target_checkin, context_checkins[0])
         self.assertTrue(u'%s' % target_checkin.package_name in response_partial)
-
-    def tests_filter_rejected_by_journal_title(self):
-        """
-        Creates various (rejected) checkins and apply a filter by
-        (a random existing) journal title
-        """
-        checkins = self._make_N_checkins(checkins_status='rejected')
-        random_index = randint(0, len(checkins) - 1)
-        target_checkin = checkins[random_index]
-
-        page = self.app.get(reverse('checkin_index',), user=self.user)
-        form = page.forms['filter_rejected']
-        form['rejected-journal_title'] = target_checkin.article.pk
-        response = form.submit()
-        response_partial = _extract_results_from_body(response, extract_section='rejected')
-        context_checkins = response.context['checkins_rejected'].object_list
-
-        self.assertEqual(len(context_checkins), 1)
-        self.assertEqual(target_checkin, context_checkins[0])
-        self.assertTrue(u'%s' % target_checkin.article.journal_title in response_partial)
 
     def tests_filter_rejected_by_article(self):
         """
@@ -284,26 +244,6 @@ class CheckinListFilterFormTests(WebTest):
         self.assertEqual(target_checkin, context_checkins[0])
         self.assertTrue(u'%s' % target_checkin.package_name in response_partial)
 
-    def tests_filter_review_by_journal_title(self):
-        """
-        Creates various (review) checkins and apply a filter by
-        (a random existing) journal title
-        """
-        checkins = self._make_N_checkins(checkins_status='review')
-        random_index = randint(0, len(checkins) - 1)
-        target_checkin = checkins[random_index]
-
-        page = self.app.get(reverse('checkin_index',), user=self.user)
-        form = page.forms['filter_review']
-        form['review-journal_title'] = target_checkin.article.pk
-        response = form.submit()
-        response_partial = _extract_results_from_body(response, extract_section='review')
-        context_checkins = response.context['checkins_review'].object_list
-
-        self.assertEqual(len(context_checkins), 1)
-        self.assertEqual(target_checkin, context_checkins[0])
-        self.assertTrue(u'%s' % target_checkin.article.journal_title in response_partial)
-
     def tests_filter_review_by_article(self):
         """
         Creates various (review) checkins and apply a filter by
@@ -366,26 +306,6 @@ class CheckinListFilterFormTests(WebTest):
         self.assertTrue(len(context_checkins) >= 1)
         self.assertIn(target_checkin, context_checkins)
         self.assertTrue(u'%s' % target_checkin.package_name in response_partial)
-
-    def tests_filter_accepted_by_journal_title(self):
-        """
-        Creates various (accepted) checkins and apply a filter by
-        (a random existing) journal title
-        """
-        checkins = self._make_N_checkins(checkins_status='accepted')
-        random_index = randint(0, len(checkins) - 1)
-        target_checkin = checkins[random_index]
-
-        page = self.app.get(reverse('checkin_index',), user=self.user)
-        form = page.forms['filter_accepted']
-        form['accepted-journal_title'] = target_checkin.article.pk
-        response = form.submit()
-        response_partial = _extract_results_from_body(response, extract_section='accepted')
-        context_checkins = response.context['checkins_accepted'].object_list
-
-        self.assertEqual(len(context_checkins), 1)
-        self.assertEqual(target_checkin, context_checkins[0])
-        self.assertTrue(u'%s' % target_checkin.article.journal_title in response_partial)
 
     def tests_filter_accepted_by_article(self):
         """

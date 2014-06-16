@@ -391,7 +391,7 @@ def add_user(request, user_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_publication_events', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journaltimeline', login_url=AUTHZ_REDIRECT_URL)
 def edit_journal_status(request, journal_id=None):
     """
     Handles Journal Status.
