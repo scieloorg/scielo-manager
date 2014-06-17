@@ -11,6 +11,7 @@ from scielomanager.tasks import send_mail
 from . import modelfactories
 from . import doubles
 from articletrack.tasks import process_expirable_checkins, do_expirate_checkin
+from articletrack.models import Checkin
 
 
 class CeleryTestCaseBase(TestCase, mocker.MockerTestCase):
@@ -85,18 +86,20 @@ class TestCheckinExpirationTask(CeleryTestCaseBase, mocker.MockerTestCase):
         create 10 checkins test, that expire today, then call process_expirable_checkins()
         """
         checkins = []
-        for step in xrange(0, 10):
+
+        for x in xrange(0, 10):
             checkin = modelfactories.CheckinFactory(expiration_at=self.now)
             checkins.append(checkin)
 
-        # to avoid making a request will replace it with a double
         balaio = self.mocker.replace('articletrack.balaio.BalaioRPC')
-        balaio()
-        self.mocker.result(doubles.BalaioRPCDouble())
+        for x in xrange(0, 10):
+            balaio()
+            self.mocker.result(doubles.BalaioRPCDouble())
         self.mocker.replay()
 
-        result = process_expirable_checkins.delay(args=[])
+        result = process_expirable_checkins.delay()
         self.assertTrue(result.successful())
-        for x in xrange(0, 10):
+
+        for checkin in Checkin.objects.all():
             self.assertFalse(checkin.is_expirable)
             self.assertEqual('expired', checkin.status)
