@@ -25,3 +25,12 @@ API_BALAIO_DEFAULT_TIMEOUT = 0  # in seconds
 
 JOURNAL_COVER_MAX_SIZE = 30 * 1024
 JOURNAL_LOGO_MAX_SIZE = 13 * 1024
+
+#Use this command to start a little SMTP server
+#python -m smtpd -n -c DebuggingServer localhost:1025
+
+EMAIL_HOST = 'localhost'
+EMAIL_USE_TLS = False
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''

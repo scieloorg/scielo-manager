@@ -1,0 +1,1235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN" "JATS-journalpublishing1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" dtd-version="1.0" article-type="research-article" xml:lang="en">
+	<front>
+		<journal-meta>
+			<journal-id journal-id-type="nlm-ta">Rev Saude Publica</journal-id>
+			<journal-title-group>
+				<journal-title>Revista de Saúde Pública</journal-title>
+				<abbrev-journal-title abbrev-type="publisher">Rev. Saúde Pública</abbrev-journal-title>
+			</journal-title-group>
+			<issn pub-type="ppub">0034-8910</issn>
+			<issn pub-type="epub">1518-8787</issn>
+			<publisher>
+				<publisher-name>Faculdade de Saúde Pública da Universidade de São Paulo</publisher-name>
+			</publisher>
+		</journal-meta>
+		<article-meta>
+			<article-id pub-id-type="publisher-id">S0034-8910.2014048004911</article-id>
+			<article-id pub-id-type="doi">10.1590/S0034-8910.2014048004911</article-id>
+			<article-categories>
+				<subj-group subj-group-type="heading">
+					<subject>Artigos Originais</subject>
+				</subj-group>
+			</article-categories>
+			<title-group>
+				<article-title xml:lang="en">HIV/AIDS knowledge among men who have sex with men: applying the item response theory</article-title>
+				<trans-title-group xml:lang="pt">
+					<trans-title>Conhecimento de HIV/Aids entre homens que fazem sexo com homens: teoria de resposta ao item</trans-title>
+				</trans-title-group>
+			</title-group>
+			<contrib-group>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Gomes</surname>
+						<given-names>Raquel Regina de Freitas Magalhães</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff1">
+						<sup>I</sup>
+					</xref>
+					<xref ref-type="aff" rid="aff2">
+						<sup>II</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Batista</surname>
+						<given-names>José Rodrigues</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff3">
+						<sup>III</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Ceccato</surname>
+						<given-names>Maria das Graças Braga</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff2">
+						<sup>II</sup>
+					</xref>
+					<xref ref-type="aff" rid="aff4">
+						<sup>IV</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Kerr</surname>
+						<given-names>Lígia Regina Franco Sansigolo</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff5">
+						<sup>V</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Guimarães</surname>
+						<given-names>Mark Drew Crosland</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff2">
+						<sup>II</sup>
+					</xref>
+					<xref ref-type="aff" rid="aff6">
+						<sup>VI</sup>
+					</xref>
+				</contrib>
+			</contrib-group>
+			<aff id="aff1">
+				<label>I</label>
+				<institution content-type="orgname">Secretaria Municipal de Saúde de Belo Horizonte</institution>
+				<addr-line>
+					<named-content content-type="city">Belo Horizonte</named-content>
+					<named-content content-type="state">MG</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original">Secretaria Municipal de Saúde de Belo Horizonte. Belo Horizonte, MG, Brasil</institution>
+			</aff>
+			<aff id="aff2">
+				<label>II</label>
+				<institution content-type="orgdiv1">Faculdade de Medicina</institution>
+				<institution content-type="orgname">Universidade Federal de Minas Gerais</institution>
+				<addr-line>
+					<named-content content-type="city">Belo Horizonte</named-content>
+					<named-content content-type="state">MG</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original"> Grupo de Pesquisas em Epidemiologia e Avaliação em Saúde. Faculdade de Medicina. Universidade Federal de Minas Gerais. Belo Horizonte, MG, Brasil</institution>
+			</aff>
+			<aff id="aff3">
+				<label>III</label>
+				<institution content-type="orgdiv1">Faculdade de Educação</institution>
+				<institution content-type="orgname">Universidade Federal de Minas Gerais</institution>
+				<addr-line>
+					<named-content content-type="city">Belo Horizonte</named-content>
+					<named-content content-type="state">MG</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original">Grupo de Avaliação e Medidas Educacionais. Faculdade de Educação. Universidade Federal de Minas Gerais. Belo Horizonte, MG, Brasil</institution>
+			</aff>
+			<aff id="aff4">
+				<label>IV</label>
+				<institution content-type="orgdiv2">Departamento de Farmácia Social</institution>
+				<institution content-type="orgdiv1">Faculdade de Farmácia</institution>
+				<institution content-type="orgname">Universidade Federal de Minas Gerais</institution>
+				<addr-line>
+					<named-content content-type="city">Belo Horizonte</named-content>
+					<named-content content-type="state">MG</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original">Departamento de Farmácia Social. Faculdade de Farmácia. Universidade Federal de Minas Gerais. Belo Horizonte, MG, Brasil</institution>
+			</aff>
+			<aff id="aff5">
+				<label>V</label>
+				<institution content-type="orgdiv2">Departamento de Saúde Comunitária</institution>
+				<institution content-type="orgdiv1">Faculdade de Medicina</institution>
+				<institution content-type="orgname">Universidade Federal do Ceará</institution>
+				<addr-line>
+					<named-content content-type="city">Fortaleza</named-content>
+					<named-content content-type="state">CE</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original">Departamento de Saúde Comunitária. Faculdade de Medicina. Universidade Federal do Ceará. Fortaleza, CE, Brasil</institution>
+			</aff>
+			<aff id="aff6">
+				<label>VI</label>
+				<institution content-type="orgdiv2">Departamento de Medicina Preventiva e Social</institution>
+				<institution content-type="orgdiv1">Faculdade de Medicina</institution>
+				<institution content-type="orgname">Universidade Federal de Minas Gerais</institution>
+				<addr-line>
+					<named-content content-type="city">Belo Horizonte</named-content>
+					<named-content content-type="state">MG</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original">Departamento de Medicina Preventiva e Social. Faculdade de Medicina. Universidade Federal de Minas Gerais. Belo Horizonte, MG, Brasil</institution>
+			</aff>
+			<author-notes>
+				<corresp>
+					<label>Correspondence</label>:  Raquel Regina de Freitas Magalhães Gomes  Rua Virgílio Uchoa, 627 Belo Horizonte  30320-240 Belo Horizonte, MG, Brasil  E-mail: <email>quelfmg@gmail.com</email>
+				</corresp>
+				<fn fn-type="other">
+					<p>This article was based on the doctorate thesis of Gomes RRFM, entitled: “Conhecimento sobre HIV/Aids entre homens que fazem sexo com homens em dez cidades brasileiras”, presented to the <italic>Universidade Federal de Minas Gerais</italic>, in 2014.</p>
+				</fn>
+				<fn fn-type="conflict">
+					<p>The authors declare that there is no conflict of interest.</p>
+				</fn>
+			</author-notes>
+			<pub-date pub-type="epub-ppub">
+				<month>04</month>
+				<year>2014</year>
+			</pub-date>
+			<volume>48</volume>
+			<issue>2</issue>
+			<fpage>206</fpage>
+			<lpage>215</lpage>
+			<history>
+				<date date-type="received">
+					<day>24</day>
+					<month>4</month>
+					<year>2013</year>
+				</date>
+				<date date-type="accepted">
+					<day>12</day>
+					<month>11</month>
+					<year>2013</year>
+				</date>
+			</history>
+			<permissions>
+				<license license-type="open-access" xlink:href="http://creativecommons.org/licenses/by-nc/3.0/">
+					<license-p>This is an Open Access article distributed under the terms of the Creative Commons Attribution Non-Commercial License, which permits unrestricted non-commercial use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p>
+				</license>
+			</permissions>
+			<abstract xml:lang="en">
+				<sec>
+					<title>OBJECTIVE</title>
+					<p>To evaluate the level of HIV/AIDS knowledge among men who have sex with men in Brazil using the latent trait model estimated by Item Response Theory.</p>
+				</sec>
+				<sec>
+					<title>METHODS</title>
+					<p>Multicenter, cross-sectional study, carried out in ten Brazilian cities between 2008 and 2009. Adult men who have sex with men were recruited (n = 3,746) through Respondent Driven Sampling. HIV/AIDS knowledge was ascertained through ten statements by face-to-face interview and latent scores were obtained through two-parameter logistic modeling (difficulty and discrimination) using Item Response Theory. Differential item functioning was used to examine each item characteristic curve by age and schooling.</p>
+				</sec>
+				<sec>
+					<title>RESULTS</title>
+					<p>Overall, the HIV/AIDS knowledge scores using Item Response Theory did not exceed 6.0 (scale 0-10), with mean and median values of 5.0 (SD = 0.9) and 5.3, respectively, with 40.7% of the sample with knowledge levels below the average. Some beliefs still exist in this population regarding the transmission of the virus by insect bites, by using public restrooms, and by sharing utensils during meals. With regard to the difficulty and discrimination parameters, eight items were located below the mean of the scale and were considered very easy, and four items presented very low discrimination parameter (&lt; 0.34). The absence of difficult items contributed to the inaccuracy of the measurement of knowledge among those with median level and above.</p>
+				</sec>
+				<sec>
+					<title>CONCLUSIONS</title>
+					<p>Item Response Theory analysis, which focuses on the individual properties of each item, allows measures to be obtained that do not vary or depend on the questionnaire, which provides better ascertainment and accuracy of knowledge scores. Valid and reliable scales are essential for monitoring HIV/AIDS knowledge among the men who have sex with men population over time and in different geographic regions, and this psychometric model brings this advantage.</p>
+				</sec>
+			</abstract>
+			<trans-abstract xml:lang="pt">
+				<sec>
+					<title>OBJETIVO</title>
+					<p>Avaliar o nível de conhecimento de HIV/Aids entre homens que fazem sexo com homens no Brasil, utilizando o modelo de traço latente da Teoria de Resposta ao Item.</p>
+				</sec>
+				<sec>
+					<title>MÉTODOS</title>
+					<p>Estudo multicêntrico, transversal, que ocorreu entre 2008 e 2009 em 10 cidades brasileiras. Foram recrutados 3.746 homens que fazem sexo com homens pela técnica amostral Respondent Driven Sampling. O conhecimento em HIV/Aids foi apurado a partir de dez afirmativas da entrevista realizada face a face e os escores foram obtidos utilizando o modelo logístico de dois parâmetros (discriminação e dificuldade) da Teoria de Resposta ao Item. O funcionamento diferencial dos itens foi verificado, analisando as curvas características dos itens pela idade e escolaridade.</p>
+				</sec>
+				<sec>
+					<title>RESULTADOS</title>
+					<p>Os escores de conhecimento estimados pela Teoria de Resposta ao Item não ultrapassaram o valor 6,0 (escala de 0-10), com média e mediana de 5,0 (DP = 0,9) e 5,3, respectivamente, e com 40,7% da amostra com níveis de conhecimento abaixo da média. Algumas crenças ainda existem nessa população sobre a transmissão do vírus por picadas de insetos, pelo uso de banheiros públicos e pelo compartilhamento de utensílios durante as refeições. Com relação aos parâmetros dificuldade e discriminação, oito itens ficaram abaixo da média da escala de conhecimento e considerados muito fáceis, e quatro itens apresentaram parâmetros de discriminação muito baixos (&lt; 0,34). A ausência de itens difíceis contribuiu para a imprecisão da medida do conhecimento entre aqueles com nível médio e superior.</p>
+				</sec>
+				<sec>
+					<title>CONCLUSÕES</title>
+					<p>A análise da Teoria de Resposta ao Item, centrada nas propriedades individuais de cada item, permite a obtenção de medidas que não variam ou dependem do questionário utilizado, o que proporciona uma melhor apuração e precisão dos escores de conhecimento. Escalas válidas e confiáveis são fundamentais para monitorar o conhecimento em HIV/Aids nessa população ao longo do tempo e em diferentes regiões geográficas, vantagem que esse modelo psicométrico traz.</p>
+				</sec>
+			</trans-abstract>
+			<kwd-group xml:lang="en">
+				<kwd>Homosexuality, Male</kwd>
+				<kwd>Risk Groups</kwd>
+				<kwd>Health Knowledge, Attitudes, Practice</kwd>
+				<kwd>Acquired Immunodeficiency Syndrome, prevention &amp; control</kwd>
+				<kwd>Multicenter Study</kwd>
+			</kwd-group>
+			<kwd-group xml:lang="pt">
+				<kwd>Homossexualidade Masculina</kwd>
+				<kwd>Grupos de Risco</kwd>
+				<kwd>Conhecimentos, Atitudes e Prática em Saúde</kwd>
+				<kwd>Síndrome de Imunodeficiência Adquirida, prevenção &amp; controle</kwd>
+				<kwd>Estudo Multicêntrico</kwd>
+			</kwd-group>
+			<counts>
+				<fig-count count="4"/>
+				<table-count count="1"/>
+				<ref-count count="19"/>
+				<page-count count="10"/>
+			</counts>
+		</article-meta>
+	</front>
+	<body>
+		<sec sec-type="intro">
+			<title>INTRODUCTION</title>
+			<p>Brazil has adopted the <italic>Declaration of Commitment of the United Nations,</italic> which aimed at slowing the HIV/AIDS epidemic by 2015. HIV/AIDS knowledge is one of the indicators proposed by the United Nations General Assembly Special Session for monitoring AIDS among vulnerable subgroups including, sex workers, injection drug users and men who have sex with men (MSM). This indicator requires that adequate HIV/AIDS knowledge is an essential prerequisite for the adoption of behaviors that reduce the risk of infection.<xref ref-type="fn" rid="fn1">
+					<sup>a</sup>
+				</xref> Global estimates among low and middle income countries indicate that 56.0% of MSM did not have correct knowledge about HIV/AIDS, 70.0% had never been tested for HIV and 46.0% did not use condoms the last time they practiced anal sex.<xref ref-type="bibr" rid="B2">
+					<sup>2</sup>
+				</xref>
+			</p>
+			<p>In Brazil, the AIDS epidemic is concentrated in population subgroups with a markedly higher risk of acquiring HIV infection among MSM.<xref ref-type="bibr" rid="B4">
+					<sup>4</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B6">
+					<sup>6</sup>
+				</xref> Recent data from a national survey found a worrisome HIV prevalence rate of 14.2% among this population.<xref ref-type="bibr" rid="B10">
+					<sup>10</sup>
+				</xref> The promotion of safer sex has been the main policy strategy for HIV prevention and access to information is a key element in reducing vulnerability to HIV/AIDS by providing an opportunity to change individual attitudes and increase safe practices.<xref ref-type="fn" rid="fn2">
+					<sup>b</sup>
+				</xref>
+			</p>
+			<p>Despite its importance, there is no standard instrument used to assess HIV/AIDS knowledge across different populations and many studies vary in their choice of the number and formulation of questions used.<xref ref-type="bibr" rid="B18">
+					<sup>18</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B19">
+					<sup>19</sup>
+				</xref> Moreover, the knowledge score has been expressed as the sum of the correct responses to each item, based on Classical Test Theory (CTT), and an arbitrary cut-off point is established in order to classify good or adequate knowledge.<xref ref-type="bibr" rid="B9">
+					<sup>9</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B11">
+					<sup>11</sup>
+				</xref> Thus, the total score is dependent on the set of items that compose the measuring instrument, which makes it difficult to compare results between different studies.<xref ref-type="fn" rid="fn3">
+					<sup>c</sup>
+				</xref>
+			</p>
+			<p>Recent studies assessed HIV/AIDS knowledge using the Item Response Theory (IRT).<xref ref-type="bibr" rid="B1">
+					<sup>1</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B13">
+					<sup>13</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B15">
+					<sup>15</sup>
+				</xref> IRT is considered the modern theory of psychometry, focuses on each item of the measuring instrument and assumes that the performance of a given test can be explained by individual characteristics, not directly observable, named latent traits.<xref ref-type="bibr" rid="B3">
+					<sup>3</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B14">
+					<sup>14</sup>
+				</xref> Although IRT does not contradict classical methods, it is based on the assumption that the estimate of the latent trait is independent of sample items, which allows the equalization of scores on evaluations when using different instruments applied to the same population.<xref ref-type="bibr" rid="B14">
+					<sup>14</sup>
+				</xref> This is especially important when assessment of HIV/AIDS knowledge is used to monitor effectiveness of public health policies over time among vulnerable populations. More precise and accurate analysis of knowledge may allow proper planning of new prevention intervention strategies.</p>
+			<p>The objective of this study was to evaluate the level of HIV/AIDS knowledge among men who have sex with men from Brazil using the Item Response Theory.</p>
+		</sec>
+		<sec sec-type="methods">
+			<title>METHODS</title>
+			<p>This analysis is part of a cross-sectional study of MSM carried out in 10 Brazilian cities in 2008-2009. The main objectives of the national study were to estimate the prevalence of HIV and syphilis and to assess knowledge, attitudes and sexual practices of MSM.<xref ref-type="bibr" rid="B10">
+					<sup>10</sup>
+				</xref>
+			</p>
+			<p>Participants should be residents of the following cities: Manaus, Recife, Salvador, Campo Grande, Brasília, Curitiba, Itajaí, Santos, Rio de Janeiro and Belo Horizonte. These were <italic>a priori </italic>chosen by the Department of STD, AIDS and Viral Hepatitis of the Ministry of Health (STD/AIDS/MH). Eligibility criteria included adult MSM (18 years old or over), who reported at least one sexual contact with another man in the 12 months preceding the interview.</p>
+			<p>The sample size was previously calculated as 250 to 350 participants by city (α = 0.05, power = 0.90, estimated prevalence = 13.6%) <xref ref-type="bibr" rid="B10">
+					<sup>10</sup>
+				</xref> to provide independent estimates for each city and it was obtained using the Respondent Driven Sampling technique.<xref ref-type="bibr" rid="B12">
+					<sup>12</sup>
+				</xref> This technique is a chain link sampling method used to address hard to reach populations and their social networks, since the lack of a sampling base does not allow the application of traditional probabilistic method. The recruitment is carried out by participants themselves using a dual incentive system, and begins with a convenience sample of members of the target population, named seeds. In this study, these were selected during preliminary formative research, when individuals of different ages and socioeconomic classes were included. In each city, participants received three unique coupons, non-falsifiable, to distribute to their peers. Individuals who came to the study site with a valid coupon and who met the inclusion criteria were considered the first “wave” of the study. Each participant also received three coupons to invite new acquaintances, repeating this process thereafter until the desired sample size was reached in each city.</p>
+			<p>Data were collected in face-to-face interviews, composed of questions regarding sociodemographic data, behavior, social context, health care and HIV/AIDS knowledge. Participants were also invited for HIV and syphilis testing.</p>
+			<p>HIV/AIDS knowledge was assessed using 10 statements to which participants should indicate whether each one was true, false or “did not know”. The statements were chosen from previously used instrument by the STD/AIDS/MH at face value<bold>.</bold> For this analysis, correct responses were categorized as 1 and those which were considered incorrect or to which respondents replied “did not know” were categorized as 0.</p>
+			<p>Descriptive analysis of the sample was carried out and HIV/AIDS knowledge was assessed by IRT using the two-parameter logistic model, difficulty and discrimination. Because our main interest was to assess the overall result and the quality of the instrument using the methodology of IRT, we conducted the analysis considering the 10 cities simultaneously, since the parameter estimates do not depend on the recruitment sampling method.<xref ref-type="bibr" rid="B8">
+					<sup>8</sup>
+				</xref> This model makes the assumption of unidimensionality, i.e., that a given test should measure one single latent trait, which indicates a dominant skill responsible for the performance of a set of items of the test. In this study, HIV/AIDS knowledge was the dominant latent trait measured by the 10 items.</p>
+			<p>The logistic model represents the probability that the participants correctly responded to a given item as a function of their level of HIV/AIDS knowledge and the difficulty and discrimination parameters of the item. The responses to the different items are independent (local independence). It is described as a non-linear logistic function and expressed by the item characteristic curve (ICC) defined by the parameters of the item. The probability of a correct answer varies from 0 to 1 and the knowledge scale assumes a normal distribution pattern (-∞ to +∞) with mean = 0 and standard deviation = 1, but in practice -3 to +3 is used, corresponding to 99.97% of all individuals in a population. It is assumed that every individual has a specific level of knowledge, score theta, which places him on the scale. The discrimination parameter of each item (<italic>a</italic>
+				<sub>
+					<italic>i</italic>
+				</sub>) is expressed by the slope of the ICC at the inflection point when the probability of a correct response is 0.5. In general, the metric for this parameter is 0 to 3, where higher values produce steeper curves and indicate items with high discrimination power.<xref ref-type="bibr" rid="B14">
+					<sup>14</sup>
+				</xref> Baker’s scale was used to interpret this parameter.<xref ref-type="fn" rid="fn4">
+					<sup>d</sup>
+				</xref> The difficulty parameter of each item (<italic>b</italic>
+				<sub>
+					<italic>i</italic>
+				</sub>) corresponds to the point on the scale of knowledge where the probability of correct response is 0.5. Typically, the values are between -3 to +3 and higher values indicate the most difficult items. For a better understanding of our results, the parameters and the knowledge scores were transformed so that the knowledge scores were presented on a scale of 0 to 10.<xref ref-type="bibr" rid="B14">
+					<sup>14</sup>
+				</xref>
+			</p>
+			<p>The item parameters were estimated by marginal maximum likelihood, proposed by Bock &amp; Aitkin,<xref ref-type="bibr" rid="B5">
+					<sup>5</sup>
+				</xref> and the knowledge score (theta) was estimated by the expected <italic>a posteriori</italic> method based on Bayesian statistical principles. BILOG-MG software for Windows 3.0.2 was used for these analyses and the convergence criterion used was 0.0001.<xref ref-type="bibr" rid="B18">
+					<sup>18</sup>
+				</xref>
+			</p>
+			<p>Full-information factor analysis was carried out to test the unidimensionality of the knowledge scale, i.e., the items must share only one underlying variable if they are to be combined into a scale. Full-information factor analysis takes into account all the empirical data and it is based on the tetrachoric correlation matrix using TESTFACT software, version 4.0.<xref ref-type="fn" rid="fn5">
+					<sup>e</sup>
+				</xref> The marginal maximum likelihood was used to estimate the probabilities of all possible response patterns that occurred in the sample according to the different levels of knowledge.</p>
+			<p>The differential item functioning (DIF) was assessed by the likelihood ratio test for age and years of schooling, using the IRTLRDIF software, version 2.0b.<xref ref-type="fn" rid="fn6">
+					<sup>f</sup>
+				</xref> When individuals with the same level of knowledge in different groups do not have the same probability of correctly answering a given item, this is taken as an indicator of DIF. Differences in parameters were tested by chi-squared statistic and the significance level considered was 0.05. The characteristic curves of the items which presented with DIF were analyzed and differentiated between uniform DIF (parallel ICC) and non-uniform (crossover ICC).<xref ref-type="fn" rid="fn7">
+					<sup>g</sup>
+				</xref>
+			</p>
+			<p>This study was approved by the National Research Ethical Committee (CONEP 14,494) and all participants signed the informed consent form.</p>
+		</sec>
+		<sec sec-type="results">
+			<title>RESULTS</title>
+			<p>On average, there were 15 (range 8-20) waves of recruitment in each city, resulting in 3,859 participants, with 3,746 (97.1%) responding to the ten items on HIV/AIDS knowledge. Most of the participants was more than 25 years old (52.1%), had more than eight years of schooling (69.7%), were single or separated (83.4%) and non-white (72.4%). Only 19.0% was living alone, and 28.8% were classified as economic class AB (higher).</p>
+			<p>Overall, the proportion of correct answers varied from 34.5% to 98.5%, with the lowest proportions shown for items 1 and 2 (35.5% and 34.5%, respectively)<bold>. </bold>Some beliefs still exist in this population regarding the transmission of the virus by insect bites, by using public restrooms, and by sharing utensils during meals (<xref ref-type="table" rid="t01">Table</xref>).</p>
+			<p>
+				<table-wrap id="t01">
+					<label>Table. </label>
+					<caption>
+						<title>Proportion of correct HIV/AIDS knowledge responses as reported by the men who have sex with men, the difficulty and discrimination parameters for each item, estimated by Item Response Theory. Brazil, 2008-2009. (N = 3,746)</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="25%">
+							<col width="60%"/>
+							<col width="10%"/>
+							<col width="10%"/>
+							<col width="10%"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th style="font-weight:normal" align="left">Item</th>
+								<th style="font-weight:normal">% Correct response</th>
+								<th style="font-weight:normal">Difficulty (<italic>b</italic>
+									<sub>
+										<italic>i</italic>
+									</sub>)</th>
+								<th style="font-weight:normal">Discrimination (<italic>a</italic>
+									<sub>
+										<italic>i</italic>
+									</sub>)</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1. The risk of transmitting HIV is small if one follows the treatment correctly.</td>
+								<td align="center">35.5</td>
+								<td align="center">14.45</td>
+								<td align="center">0.04</td>
+							</tr>
+							<tr>
+								<td>2. People are using less condoms because of AIDS treatment.</td>
+								<td align="center">34.5</td>
+								<td align="center">14.23</td>
+								<td align="center">0.04</td>
+							</tr>
+							<tr>
+								<td>3. A person can get the AIDS virus by using public toilets.</td>
+								<td align="center">78.1</td>
+								<td align="center">3.72</td>
+								<td align="center">0.95</td>
+							</tr>
+							<tr>
+								<td>4. A person can get the AIDS virus through insect bites.</td>
+								<td align="center">75.5</td>
+								<td align="center">3.70</td>
+								<td align="center">0.72</td>
+							</tr>
+							<tr>
+								<td>5. A person can become infected by sharing eating utensils, cups or food.</td>
+								<td align="center">85.7</td>
+								<td align="center">3.28</td>
+								<td align="center">1.01</td>
+							</tr>
+							<tr>
+								<td>6. The risk of HIV + mothers infecting their babies is small if she receives treatment in pregnancy and childbirth.</td>
+								<td align="center">75.8</td>
+								<td align="center">2.70</td>
+								<td align="center">0.32</td>
+							</tr>
+							<tr>
+								<td>7. The risk of HIV infection can be reduced if you have relations only with an uninfected partner.</td>
+								<td align="center">72.6</td>
+								<td align="center">2.03</td>
+								<td align="center">0.20</td>
+							</tr>
+							<tr>
+								<td>8. A healthy person can be infected with the AIDS virus.</td>
+								<td align="center">94.1</td>
+								<td align="center">1.61</td>
+								<td align="center">0.59</td>
+							</tr>
+							<tr>
+								<td>9. A person can get the virus from sharing a syringe or needle.</td>
+								<td align="center">96.9</td>
+								<td align="center">1.51</td>
+								<td align="center">0.78</td>
+							</tr>
+							<tr>
+								<td>10. Anyone can get the AIDS virus if condoms are not used.</td>
+								<td align="center">98.5</td>
+								<td align="center">1.27</td>
+								<td align="center">0.95</td>
+							</tr>
+						</tbody>
+					</table>
+					<table-wrap-foot>
+						<p>
+							<italic>b</italic>
+							<sub>
+								<italic>i</italic>
+							</sub>: Difficulty parameter of each item; <italic>a</italic>
+							<sub>
+								<italic>i</italic>
+							</sub>: Discrimination parameter of each item</p>
+					</table-wrap-foot>
+				</table-wrap>
+			</p>
+			<p>The crude mean and median total score of correct items were 7.5 (SD = 1.5) and 8.0, respectively, with 43.2% of the sample falling below the average. On the other hand, the mean and median overall HIV/AIDS knowledge score using IRT were 5.0 (SD = 0.9) and 5.3, respectively, with 40.7% of the sample with knowledge levels below the average.</p>
+			<p>The parameters for each item, estimated by IRT, can also be seen in the Table, in descending order of the parameter of difficulty. Items 1 and 2 stood out as the most difficult items, with the larger values of difficulty parameter (b = 14) exceeding the scale (0 to 10). This points to potential problems in these items, as indicated by the low percentage of correct responses for these items. The eight remaining items showed low degree of difficulty, with values below the average of the scale, ranging from 1.0 to 4.0. The average difficulty of the set of items, excluding items 1 and 2, was 2.48 (SD = 1.0). The discrimination parameters ranged from 0.04 to 1.01. Item 5 was considered the best item, with the highest discrimination parameter (a<sub>5 </sub>= 1.01), capable of differentiating individual HIV/AIDS knowledge. According to Baker’s classification, five items (3, 4, 5, 9 and 10) showed moderate discrimination, one item showed low discrimination (8), and four items (1, 2, 6 and 7) had very low discrimination (values lower than 0.34). The overall average of all items was 0.56 (SD = 0.38), and it can be considered of low discriminatory value.</p>
+			<p>One item of each type of discrimination is shown in <xref ref-type="fig" rid="f01">Figure 1</xref>, represented on the left by the ICC and on the right by the curve of the item information. As observed, the ICC of item 5 is the steepest curve, gently sloping to the right of the knowledge scale. This indicates that a slight increase in the level of knowledge is capable of significantly increasing the probability of a correct response to this item. Because item 5 had the highest degree of discrimination, it is capable of distinguishing individual knowledge at much closer levels, as compared to the remaining items. On the other hand, ICC for item 1 is almost a straight line parallel to the scale of knowledge, indicating that an increase in the theta values does not significantly change the probability of correctly answering the item, i.e., low discriminatory power of this item. The item information curve shows how much the item contributes to the measure of knowledge, i.e., it indicates precisely which levels of theta were better discriminated. Usually the item brings best information about a few theta levels than others, and its representation resembles a normal curve type. The information curve of item 5 brought more information for measuring the levels of knowledge around value 3.0. Outside this amplitude, the item starts producing incorrect information on the level of knowledge, since the standard error curve is inversely proportional to the information curve. On the other hand, the information curve of item 1 showed that this item hardly contributed with any information for measuring HIV/AIDS knowledge.</p>
+			<p>
+				<fig id="f01">
+					<label>Figure 1</label>
+					<caption>
+						<title>Graphical representation of the characteristic and information curves of the items selected.</title>
+					</caption>
+					<graphic xlink:href="0034-8910-rsp-48-2-0206-gf01"/>
+				</fig>
+			</p>
+			<p>
+				<xref ref-type="fig" rid="f02">Figure 2</xref> presents a graphical representation of the total information curve, i.e., the sum of all information functions, for all the ten items. Overall, the curve indicates that the 10 items provided better differentiation among individuals who are below the midpoint on the knowledge scale. For individuals with levels above the average, the items have little discrimination, producing most of the information error, as seen by the standard error curve (dotted line). In addition, there was no measurable knowledge score above six on the scale.</p>
+			<p>
+				<fig id="f02">
+					<label>Figure 2</label>
+					<caption>
+						<title>Total Information curve (10 items).</title>
+					</caption>
+					<graphic xlink:href="0034-8910-rsp-48-2-0206-gf02"/>
+				</fig>
+			</p>
+			<p>A macroscopic view of the item analysis in our sample is shown in <xref ref-type="fig" rid="f03">Figure 3</xref>, which simultaneously provides the total information curve, the curve of HIV/AIDS knowledge scores (IRT), and the total observed scores (CTT). In summary, the estimated latent knowledge among MSM was limited by the parameters of the items, i.e., it more accurately measured individuals with lower knowledge but little differentiation was obtained among those with median or high knowledge levels.</p>
+			<p>
+				<fig id="f03">
+					<label>Figure 3</label>
+					<caption>
+						<title>Graphical representation of the items and HIV/AIDS knowledge scores.</title>
+					</caption>
+					<graphic xlink:href="0034-8910-rsp-48-2-0206-gf03"/>
+				</fig>
+			</p>
+			<p>Regarding the existence of the unidimensionality, Full-information factor analysis indicated four factors with the following variance partition: 31.0%, 10.0%, 5.2% and 3.8%. The first component is predominant in relation to the other factors, which confirms that the set of analyzed items presents a unidimensional structure, explained by a variance of 31.0%.</p>
+			<p>The DIF by age and schooling was identified in six items (1, 2, 3, 5, 6 and 7) whose ICC are shown in <xref ref-type="fig" rid="f04">Figure 4</xref>. Items 3 and 5 presented uniform DIF in the two variables, producing parallel curves that differ between the two groups only in the difficulty parameter. This indicates that individuals who are younger than 25 years old and those with more than eight years of schooling have a greater probability of correctly responding to these items compared to those 25 years old or more and with eight or fewer years of education, respectively. On the other hand, crossover DIF has been found for items 2 and 6 with respect to age, and for items 1 and 7 with respect to schooling. This indicates that the ICC of these items differ with respect to both parameters difficulty and discrimination.</p>
+			<p>
+				<fig id="f04">
+					<label>Figure 4</label>
+					<caption>
+						<title>Items characteristic curves with differential item functioning.</title>
+					</caption>
+					<graphic xlink:href="0034-8910-rsp-48-2-0206-gf04"/>
+				</fig>
+			</p>
+		</sec>
+		<sec sec-type="discussion">
+			<title>DISCUSSION</title>
+			<p>Currently, there is no validated instrument capable of measuring HIV/AIDS knowledge across different populations in Brazil. This study applied IRT for the analysis of HIV/AIDS knowledge among MSM, as it offers important advantages, particularly by the individual analysis of the items and the reliability of the measure, supplementing information provided by the CTT. In addition, IRT psychometrics offers a suitable approach to studying an instrument’s ability to detect change.<xref ref-type="bibr" rid="B17">
+					<sup>17</sup>
+				</xref> In particular, IRT offers both the potential for new ways of interpreting individual change and improving scale properties in order to better ascertain the measurement scores.</p>
+			<p>Initially, both analyses (CTT and IRT) showed that a large proportion (43.2% and 40.7%, respectively) of participants did not reach the average level of HIV/AIDS knowledge, and this is of public health concern. It also indicates that myths about HIV transmission are still present in this population, also reported in other studies.<xref ref-type="bibr" rid="B11">
+					<sup>11</sup>
+				</xref>
+			</p>
+			<p>On the other hand, the IRT analysis provided more useful information with regard to the knowledge score as well as the individual analysis of the items, including the characteristic curves, the item information curves, the identification of items with problems, their distribution on a scale, and how much information each item brought to the measurement of knowledge.</p>
+			<p>We should note that the most problematic items were those related to AIDS treatment (items 1 and 2). Both require knowledge on two distinct issues, risk or prevention and treatment, and therefore, presented higher degree of difficulty, low discrimination power and also the lowest percentage of correct answers. Most likely, the respondents did not completely distinguish or understood their contents, casting doubt on where the lack of knowledge predominated and also indicating an excessive difficulty for a correct response. On the other hand, item 6, which is also related to the risk of HIV positive mothers infecting their babies and AIDS treatment, did not seem to be totally unknown by the respondents.</p>
+			<p>The absence of difficult items in this study contributed to the inaccuracy of the measurement of knowledge among those with median level and above, as accurately shown by the total information curve. A recent study that examined the psychometric properties of an HIV/AIDS knowledge scale among adolescents reported that in order to improve the precision of the instrument, new items should be added, particularly those more difficult to answer which provide information about higher trait values. Moreover, in order to improve the overall performance of the knowledge scale, this should include a greater number of items, with higher discriminatory power and different degrees of difficulty, which can provide information along the whole scale.<xref ref-type="bibr" rid="B1">
+					<sup>1</sup>
+				</xref>
+			</p>
+			<p>The analysis of the DIF identified items that tend to benefit one group more than others. Items 3 and 5 were shown to be more favorable to MSM under age 25 and those with higher schooling, showing higher chances of correct answers of these items. The domain of items 3 and 5 with uniform DIF refers to the indirect transmission of HIV (using public restrooms and the sharing of meals). Studies show that the analysis of patterns of items that display DIF is a useful tool to identify and better understand the differences between ethnic and racial groups.<xref ref-type="bibr" rid="B7">
+					<sup>7</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B16">
+					<sup>16</sup>
+				</xref> The analysis of the DIF items may contribute to the development of educational strategies in the approach of the domain of items in which DIF was detected. However, it becomes more complex when trying to understand crossover DIF, as in the case of items 1, 2, 6 and 7. As these items also showed low discrimination power, further analysis is warranted for a better understanding of the DIF effects. We suggest they should be reviewed with regard to content, language and format, since they contain words (e.g., small, less, reduced) that may have caused ambiguity, bringing confusion, indecision and insecurity for respondents.</p>
+			<p>Although there are substantial problems in the structure of some items, the results of the unidimensional analysis led us to admit the existence of a dominant trait or factor (i.e., HIV knowledge) responsible for the performance of the set of items and that the instrument used was able to measure the levels of latent knowledge. Ideally, one should pursue a higher percentage of total variance accounted for by the first principle component, indicating that the set of items is more associated with the dominant factor, which is the latent trait measured.<xref ref-type="fn" rid="fn8">
+					<sup>h</sup>
+				</xref> We emphasize the need to review items 1, 2, 6 and 7 in order to better compose the scale with large loading values in the first factor. In addition, in order to promote unidimensionality, it is recommended to use constructs that are in the same direction, i.e., a set of items strictly negative or positive.<xref ref-type="fn" rid="fn9">
+					<sup>i</sup>
+				</xref>
+			</p>
+			<p>In conclusion, the IRT model was shown to be adequate to measure the level of HIV/AIDS knowledge among MSM and brought important information that can contribute to improving the properties of the items in order to build a knowledge scale suitable for this population. The high proportion (40.7%) of participants with a knowledge score below the average is of concern, considering that the evaluated items are basic and well publicized information about the modes of HIV transmission, particularly among MSM populations. Furthermore, the results revealed some weaknesses of the measuring instrument, and improvement in the quality of the instrument is essential to better ascertain the levels of knowledge of HIV/AIDS.</p>
+			<p>The results of IRT analyses should be considered before carrying out other evaluations or interventions in this population. It is essential to review the items with lower discrimination, to incorporate new and more difficult items, and to add other relevant topics. Calibration of items and checking differential item functioning should be assessed in preliminary pilot studies. Comparisons between scores of different samples are possible with IRT methodology because item parameters are invariant to the various groups, and both parameters and latent trait are measured in the same metric scale.<xref ref-type="fn" rid="fn2">
+					<sup>b</sup>
+				</xref> This way, monitoring the level of knowledge of this MSM population, or others, over time could be measured in different samples, allowing to accurately detect the progress made by the population, as well as assisting in the development of prevention programs and of new interventions.</p>
+		</sec>
+	</body>
+	<back>
+		<ref-list>
+			<title>REFERENCES</title>
+			<ref id="B1">
+				<label>1</label>
+				<mixed-citation>. AarØ LE, Breivik K, Klepp KI, Kaaya S, Onya HE, Wubs A,  et al. An HIV/AIDS knowledge scale for adolescents: item response theory analyses based on data from a study in South Africa and Tanzania. <italic>Health Educ Res.</italic> 2011;26(2):212-24. DOI:10.1093/her/cyq086</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>AarØ</surname>
+							<given-names>LE</given-names>
+						</name>
+						<name>
+							<surname>Breivik</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Klepp</surname>
+							<given-names>KI</given-names>
+						</name>
+						<name>
+							<surname>Kaaya</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Onya</surname>
+							<given-names>HE</given-names>
+						</name>
+						<name>
+							<surname>Wubs</surname>
+							<given-names>A</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">An HIV/AIDS knowledge scale for adolescents: item response theory analyses based on data from a study in South Africa and Tanzania</article-title>
+					<source>Health Educ Res</source>
+					<year>2011</year>
+					<volume>26</volume>
+					<issue>2</issue>
+					<fpage>212</fpage>
+					<lpage>224</lpage>
+					<pub-id pub-id-type="doi">10.1093/her/cyq086</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B2">
+				<label>2</label>
+				<mixed-citation>. Adam PCG, Wit JBF, Toskin I, Mathers BM, Nashkhoev M, Zoblotska I,  et al. Estimating levels of HIV testing, HIV prevention coverage, HIV knowledge, and condom use among men who have sex with (MSM) in low-income and middle-income countries. <italic>J Acquir Immune Defic Syndr.</italic> 2009;52(Suppl 2):143-51. DOI:10.1097/QAI.0b013e3181baf111</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Adam</surname>
+							<given-names>PCG</given-names>
+						</name>
+						<name>
+							<surname>Wit</surname>
+							<given-names>JBF</given-names>
+						</name>
+						<name>
+							<surname>Toskin</surname>
+							<given-names>I</given-names>
+						</name>
+						<name>
+							<surname>Mathers</surname>
+							<given-names>BM</given-names>
+						</name>
+						<name>
+							<surname>Nashkhoev</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Zoblotska</surname>
+							<given-names>I</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">Estimating levels of HIV testing, HIV prevention coverage, HIV knowledge, and condom use among men who have sex with (MSM) in low-income and middle-income countries</article-title>
+					<source>J Acquir Immune Defic Syndr</source>
+					<year>2009</year>
+					<volume>52</volume>
+					<supplement>2</supplement>
+					<fpage>143</fpage>
+					<lpage>151</lpage>
+					<pub-id pub-id-type="doi">10.1097/QAI.0b013e3181baf111</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B3">
+				<label>3</label>
+				<mixed-citation>. Araújo EAC, Andrade DF, Bortolotti SLV. Teoria da resposta ao item. <italic>Rev Esc Enferm.</italic> 2009;43(Esp):1000-8. DOI:10.1590/S0080-62342009000500003</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Araújo</surname>
+							<given-names>EAC</given-names>
+						</name>
+						<name>
+							<surname>Andrade</surname>
+							<given-names>DF</given-names>
+						</name>
+						<name>
+							<surname>Bortolotti</surname>
+							<given-names>SLV</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Teoria da resposta ao item</article-title>
+					<source>Rev Esc Enferm</source>
+					<year>2009</year>
+					<volume>43</volume>
+					<issue>Esp</issue>
+					<fpage>1000</fpage>
+					<lpage>1008</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0080-62342009000500003</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B4">
+				<label>4</label>
+				<mixed-citation>. Beyrer C, Baral SD, van Griensven F, Goodreau SM, Chariyalertsak S, Wirtz AL,  et al. Global epidemiology of HIV infection in men who have sex with men. <italic>Lancet.</italic> 2012;380(9839):367-77. DOI:10.1016/S0140-6736(12)60821-6</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Beyrer</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Baral</surname>
+							<given-names>SD</given-names>
+						</name>
+						<name>
+							<surname>van Griensven</surname>
+							<given-names>F</given-names>
+						</name>
+						<name>
+							<surname>Goodreau</surname>
+							<given-names>SM</given-names>
+						</name>
+						<name>
+							<surname>Chariyalertsak</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Wirtz</surname>
+							<given-names>AL</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">Global epidemiology of HIV infection in men who have sex with men</article-title>
+					<source>Lancet</source>
+					<year>2012</year>
+					<volume>380</volume>
+					<issue>9839</issue>
+					<fpage>367</fpage>
+					<lpage>377</lpage>
+					<pub-id pub-id-type="doi">10.1016/S0140-6736(12)60821-6</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B5">
+				<label>5</label>
+				<mixed-citation>. Bock RD, Aitkin M. Marginal maximum likelihood estimation of item parameters: Application of an EM algorithm. <italic>Psychometrika.</italic> 1981;46(4):443-59. DOI:10.1007/BF02293801</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Bock</surname>
+							<given-names>RD</given-names>
+						</name>
+						<name>
+							<surname>Aitkin</surname>
+							<given-names>M</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Marginal maximum likelihood estimation of item parameters: Application of an EM algorithm</article-title>
+					<source>Psychometrika</source>
+					<year>1981</year>
+					<volume>46</volume>
+					<issue>4</issue>
+					<fpage>443</fpage>
+					<lpage>459</lpage>
+					<pub-id pub-id-type="doi">10.1007/BF02293801</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B6">
+				<label>6</label>
+				<mixed-citation>. Gondim RC, Kerr LRFS, Werneck GI, Macena RHM, Pontes MK, Kendall C. Risky sexual practices among men who have sex with men in Northeast Brazil: results from four sequential surveys. <italic>Cad Saude Publica.</italic> 2009;25(6):1390-8. DOI:10.1590/S0102-311X2009000600021</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Gondim</surname>
+							<given-names>RC</given-names>
+						</name>
+						<name>
+							<surname>Kerr</surname>
+							<given-names>LRFS</given-names>
+						</name>
+						<name>
+							<surname>Werneck</surname>
+							<given-names>GI</given-names>
+						</name>
+						<name>
+							<surname>Macena</surname>
+							<given-names>RHM</given-names>
+						</name>
+						<name>
+							<surname>Pontes</surname>
+							<given-names>MK</given-names>
+						</name>
+						<name>
+							<surname>Kendall</surname>
+							<given-names>C</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Risky sexual practices among men who have sex with men in Northeast Brazil: results from four sequential surveys</article-title>
+					<source>Cad Saude Publica</source>
+					<year>2009</year>
+					<volume>25</volume>
+					<issue>6</issue>
+					<fpage>1390</fpage>
+					<lpage>1398</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0102-311X2009000600021</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B7">
+				<label>7</label>
+				<mixed-citation>. Hagman BT, Kuerbis AN, Morgenstern J, Bux DA, Parsons JT, Heidinger BE. An item response theory (IRT) analysis of the short inventory of problems-alcohol and drugs (SIP-AD) among non-treatment seeking men-who-have-sex-with-men: evidence for a shortened 10-item SIP-AD. <italic>Addict Behav.</italic> 2009;34(11):948-54. DOI:10.1016/j.addbeh.2009.06.004</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Hagman</surname>
+							<given-names>BT</given-names>
+						</name>
+						<name>
+							<surname>Kuerbis</surname>
+							<given-names>AN</given-names>
+						</name>
+						<name>
+							<surname>Morgenstern</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Bux</surname>
+							<given-names>DA</given-names>
+						</name>
+						<name>
+							<surname>Parsons</surname>
+							<given-names>JT</given-names>
+						</name>
+						<name>
+							<surname>Heidinger</surname>
+							<given-names>BE</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">An item response theory (IRT) analysis of the short inventory of problems-alcohol and drugs (SIP-AD) among non-treatment seeking men-who-have-sex-with-men: evidence for a shortened 10-item SIP-AD</article-title>
+					<source>Addict Behav</source>
+					<year>2009</year>
+					<volume>34</volume>
+					<issue>11</issue>
+					<fpage>948</fpage>
+					<lpage>954</lpage>
+					<pub-id pub-id-type="doi">10.1016/j.addbeh.2009.06.004</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B8">
+				<label>8</label>
+				<mixed-citation>. Hambleton RK, Jones RW. Comparison of classical test theory and item response theory and their applications to test development. <italic>Educ Meas Issues Pract. </italic>1993;12(3):38-47. DOI:10.1111/j.1745-3992.1993.tb00543.x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Hambleton</surname>
+							<given-names>RK</given-names>
+						</name>
+						<name>
+							<surname>Jones</surname>
+							<given-names>RW</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Comparison of classical test theory and item response theory and their applications to test development</article-title>
+					<source>Educ Meas Issues Pract</source>
+					<year>1993</year>
+					<volume>12</volume>
+					<issue>3</issue>
+					<fpage>38</fpage>
+					<lpage>47</lpage>
+					<pub-id pub-id-type="doi">10.1111/j.1745-3992.1993.tb00543.x</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B9">
+				<label>9</label>
+				<mixed-citation>. Hong SY, Thompson D, Wanke C, Omosa G, Jordan MR, Tang AM,  et al. Knowledge of HIV transmission and associated factors among HIV-positive and HIV-negative patients in rural Kenya. <italic>J AIDS Clinic Res.</italic> 2012;3(7):1-6.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Hong</surname>
+							<given-names>SY</given-names>
+						</name>
+						<name>
+							<surname>Thompson</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>Wanke</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Omosa</surname>
+							<given-names>G</given-names>
+						</name>
+						<name>
+							<surname>Jordan</surname>
+							<given-names>MR</given-names>
+						</name>
+						<name>
+							<surname>Tang</surname>
+							<given-names>AM</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">Knowledge of HIV transmission and associated factors among HIV-positive and HIV-negative patients in rural Kenya</article-title>
+					<source>J AIDS Clinic Res</source>
+					<year>2012</year>
+					<volume>3</volume>
+					<issue>7</issue>
+					<fpage>1</fpage>
+					<lpage>6</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B10">
+				<label>10</label>
+				<mixed-citation>. Kerr LRFS, Mota RS, Kendall C, Pinho AA, Melo MB, Guimarães MDC, et al. HIV among MSM in a large middle-income country. <italic>AIDS.</italic> 2013;27(3):427-35. DOI:10.1097/QAD.0b013e32835ad504</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Kerr</surname>
+							<given-names>LRFS</given-names>
+						</name>
+						<name>
+							<surname>Mota</surname>
+							<given-names>RS</given-names>
+						</name>
+						<name>
+							<surname>Kendall</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Pinho</surname>
+							<given-names>AA</given-names>
+						</name>
+						<name>
+							<surname>Melo</surname>
+							<given-names>MB</given-names>
+						</name>
+						<name>
+							<surname>Guimarães</surname>
+							<given-names>MDC</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">HIV among MSM in a large middle-income country</article-title>
+					<source>AIDS</source>
+					<year>2013</year>
+					<volume>27</volume>
+					<issue>3</issue>
+					<fpage>427</fpage>
+					<lpage>435</lpage>
+					<pub-id pub-id-type="doi">10.1097/QAD.0b013e32835ad504</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B11">
+				<label>11</label>
+				<mixed-citation>. Liu S, Wang K, Yao S, Guo X, Liu Y, Wang B. Knowledge and risk behaviors related to HIV/AIDS and their association with information resource among men who have sex with men in Heilongjiang province, China. <italic>BMC Public Health. </italic>2010;10:250. DOI:10.1186/1471-2458-10-250</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Liu</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Wang</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Yao</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Guo</surname>
+							<given-names>X</given-names>
+						</name>
+						<name>
+							<surname>Liu</surname>
+							<given-names>Y</given-names>
+						</name>
+						<name>
+							<surname>Wang</surname>
+							<given-names>B</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Knowledge and risk behaviors related to HIV/AIDS and their association with information resource among men who have sex with men in Heilongjiang province, China</article-title>
+					<source>BMC Public Health</source>
+					<year>2010</year>
+					<volume>10</volume>
+					<size units="pages">250</size>
+					<pub-id pub-id-type="doi">10.1186/1471-2458-10-250</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B12">
+				<label>12</label>
+				<mixed-citation>. Magnani R, Sabin K, Saidel T, Heckathorn D. Review of sampling hard-to-reach and hidden populations for HIV surveillance. <italic>AIDS</italic>. 2005;19(Suppl2):67-72. DOI:10.1097/01.aids.0000172879.20628.e1</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Magnani</surname>
+							<given-names>R</given-names>
+						</name>
+						<name>
+							<surname>Sabin</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Saidel</surname>
+							<given-names>T</given-names>
+						</name>
+						<name>
+							<surname>Heckathorn</surname>
+							<given-names>D</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Review of sampling hard-to-reach and hidden populations for HIV surveillance</article-title>
+					<source>AIDS</source>
+					<year>2005</year>
+					<volume>19</volume>
+					<supplement>2</supplement>
+					<fpage>67</fpage>
+					<lpage>72</lpage>
+					<pub-id pub-id-type="doi">10.1097/01.aids.0000172879.20628.e1</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B13">
+				<label>13</label>
+				<mixed-citation>. Melo APS, César CC, Acurcio FA, Campos LN, Ceccato MGB, Wainberg ML,  et al. Individual and treatment setting predictors of HIV/AIDS knowledge among psychiatric patients and their implications in a national multisite study in Brazil. <italic>Community Ment Healthy J.</italic> 2010;46(5):505-16. DOI:10.1007/s10597-010-9303-7</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Melo</surname>
+							<given-names>APS</given-names>
+						</name>
+						<name>
+							<surname>César</surname>
+							<given-names>CC</given-names>
+						</name>
+						<name>
+							<surname>Acurcio</surname>
+							<given-names>FA</given-names>
+						</name>
+						<name>
+							<surname>Campos</surname>
+							<given-names>LN</given-names>
+						</name>
+						<name>
+							<surname>Ceccato</surname>
+							<given-names>MGB</given-names>
+						</name>
+						<name>
+							<surname>Wainberg</surname>
+							<given-names>ML</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">Individual and treatment setting predictors of HIV/AIDS knowledge among psychiatric patients and their implications in a national multisite study in Brazil</article-title>
+					<source>Community Ment Healthy J</source>
+					<year>2010</year>
+					<volume>46</volume>
+					<issue>5</issue>
+					<fpage>505</fpage>
+					<lpage>516</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B14">
+				<label>14</label>
+				<mixed-citation>. Pasquali L, Primi R. Fundamentos da teoria da resposta ao item - TRI. <italic>Aval Psicol. </italic>2003;2(2):99-110.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Pasquali</surname>
+							<given-names>L</given-names>
+						</name>
+						<name>
+							<surname>Primi</surname>
+							<given-names>R</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Fundamentos da teoria da resposta ao item - TRI</article-title>
+					<source>Aval Psicol</source>
+					<year>2003</year>
+					<volume>2</volume>
+					<issue>2</issue>
+					<fpage>99</fpage>
+					<lpage>110</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B15">
+				<label>15</label>
+				<mixed-citation>. Okubo T, Ohsawa S, Nakagawa M. Scaling of AIDS knowledge test items for japanese junior high school students. <italic>School Health.</italic> 2006;2:27-32.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Okubo</surname>
+							<given-names>T</given-names>
+						</name>
+						<name>
+							<surname>Ohsawa</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Nakagawa</surname>
+							<given-names>M</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Scaling of AIDS knowledge test items for japanese junior high school students</article-title>
+					<source>School Health</source>
+					<year>2006</year>
+					<volume>2</volume>
+					<fpage>27</fpage>
+					<lpage>32</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B16">
+				<label>16</label>
+				<mixed-citation>. Rao D, Pryor JB, Gaddist BW, Mayer R. Stigma, secrecy and discrimination: ethnic/racial differences in the concerns of people living with HIV/Aids. <italic>AIDS Behav.</italic> 2008;12(2):265-71. DOI:10.1007/s10461-007-9268-x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Rao</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>Pryor</surname>
+							<given-names>JB</given-names>
+						</name>
+						<name>
+							<surname>Gaddist</surname>
+							<given-names>BW</given-names>
+						</name>
+						<name>
+							<surname>Mayer</surname>
+							<given-names>R</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Stigma, secrecy and discrimination: ethnic/racial differences in the concerns of people living with HIV/Aids</article-title>
+					<source>AIDS Behav</source>
+					<year>2008</year>
+					<volume>12</volume>
+					<issue>2</issue>
+					<fpage>265</fpage>
+					<lpage>271</lpage>
+					<pub-id pub-id-type="doi">10.1007/s10461-007-9268-x</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B17">
+				<label>17</label>
+				<mixed-citation>. Reise SP, Haviland MG. Item response theory and the measurement of clinical change. <italic>J Pers Assess.</italic> 2005;84(3):228-38. DOI:10.1207/s15327752jpa8403_02</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Reise</surname>
+							<given-names>SP</given-names>
+						</name>
+						<name>
+							<surname>Haviland</surname>
+							<given-names>MG</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Item response theory and the measurement of clinical change</article-title>
+					<source>J Pers Assess</source>
+					<year>2005</year>
+					<volume>84</volume>
+					<issue>3</issue>
+					<fpage>228</fpage>
+					<lpage>238</lpage>
+					<pub-id pub-id-type="doi">10.1207/s15327752jpa8403_02</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B18">
+				<label>18</label>
+				<mixed-citation>. Vian T, Semrau K, Hamer DH, Loan LTT, Sabin LL. HIV/AIDS-related knowledge and behaviors among most-at-risk populations in Vietnam. <italic>Open AIDS J.</italic> 2012;6:259-65. DOI:10.2174/1874613601206010259</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Vian</surname>
+							<given-names>T</given-names>
+						</name>
+						<name>
+							<surname>Semrau</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Hamer</surname>
+							<given-names>DH</given-names>
+						</name>
+						<name>
+							<surname>Loan</surname>
+							<given-names>LTT</given-names>
+						</name>
+						<name>
+							<surname>Sabin</surname>
+							<given-names>LL</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">HIV/AIDS-related knowledge and behaviors among most-at-risk populations in Vietnam</article-title>
+					<source>Open AIDS J</source>
+					<year>2012</year>
+					<volume>6</volume>
+					<fpage>259</fpage>
+					<lpage>265</lpage>
+					<pub-id pub-id-type="doi">10.2174/1874613601206010259</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B19">
+				<label>19</label>
+				<mixed-citation>. Zhang H, Liao M, Nie X, Pan R, Wang C, Ruan S,  et al. Predictors of consistent condom use based on the information-motivation-behavioral skills IMB) model among female sex workers in Jinan, China. <italic>BMC Public Health.</italic> 2011;11:113. DOI:10.1186/1471-2458-11-113</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Zhang</surname>
+							<given-names>H</given-names>
+						</name>
+						<name>
+							<surname>Liao</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Nie</surname>
+							<given-names>X</given-names>
+						</name>
+						<name>
+							<surname>Pan</surname>
+							<given-names>R</given-names>
+						</name>
+						<name>
+							<surname>Wang</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Ruan</surname>
+							<given-names>S</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">Predictors of consistent condom use based on the information-motivation-behavioral skills IMB) model among female sex workers in Jinan, China</article-title>
+					<source>BMC Public Health</source>
+					<year>2011</year>
+					<volume>11</volume>
+					<size units="pages">113</size>
+					<pub-id pub-id-type="doi">10.1186/1471-2458-11-113</pub-id>
+				</element-citation>
+			</ref>
+		</ref-list>
+		<fn-group>
+			<fn id="fn1">
+				<label>a </label>
+				<p>United Nations General Assembly Special Session on HIV/AIDS. Monitoring the Declaration of Commitment on HIV/AIDS: Guidelines on Constructions of Core Indicators: 2008 reporting. Geneva; 2008.</p>
+			</fn>
+			<fn id="fn2">
+				<label>b </label>
+				<p>Ministério da Saúde. Secretaria de Vigilância em Saúde. Departamento de DST, Aids e Hepatites Virais. Resumo analítico dos dados do Boletim Epidemiológico de 2011. Brasília (DF); 2011.</p>
+			</fn>
+			<fn id="fn3">
+				<label>c </label>
+				<p>Pasquali L. Teoria de resposta ao item: teoria, procedimentos e aplicações. Brasília (DF): Laboratório de pesquisa em avaliação e medida da UnB; 2007.</p>
+			</fn>
+			<fn id="fn4">
+				<label>d </label>
+				<p>Baker FB. The basics of item response theory. College Park: ERIC Clearinghouse on Assessment and Evaluation; 2001.</p>
+			</fn>
+			<fn id="fn5">
+				<label>e </label>
+				<p>Scientific software international. IRT from SSI: BILOG-MG, MULTILOG, PARSCALE, TESTFACT. Lincolnwood: Mathilda du Toit; 2003.</p>
+			</fn>
+			<fn id="fn6">
+				<label>f </label>
+				<p>Thissen D. IRTLRDIF V.2.0b: Software for the computation of the statistics involved in item response theory likelihood-ratio tests for differential item functioning. Wilmington: University of North Carolina at Chapel Hill; 2001.</p>
+			</fn>
+			<fn id="fn7">
+				<label>g </label>
+				<p>Pasquali L. Teoria de resposta ao item: teoria, procedimentos e aplicações. Brasília (DF): Laboratório de pesquisa em avaliação e medida da UnB; 2007.</p>
+			</fn>
+			<fn id="fn8">
+				<label>h </label>
+				<p>Deng N, Wells C, Hambleton R. A confirmatory factor analytic study examining the dimensionality of educational achievement tests. In: Paper 31. NERA Conference Proceedings. Connecticut; 2008. Available from: http://digitalcommons.uconn.edu/nera_2008/31</p>
+			</fn>
+			<fn id="fn9">
+				<label>i </label>
+				<p>Andrade DF, Tavares HR, Valle RC. Teoria da resposta ao item: conceitos e aplicações. In: 4º SINAPE. São Paulo: Associação Brasileira de Estatística; 2000.</p>
+			</fn>
+			<fn id="fn10" fn-type="financial-disclosure">
+				<p>This study was supported by the Brazilian Ministry of Health/Secretariat of Health Surveillance/Department of STD, AIDS and Viral Hepatitis, through the Project of International Technical Cooperation AD/BRA/03/H34 between the Brazilian Government and the United Nations Office on Drugs and Crime (Process CSV 234/07).</p>
+			</fn>
+		</fn-group>
+	</back>
+</article>

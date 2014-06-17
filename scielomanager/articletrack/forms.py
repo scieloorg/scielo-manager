@@ -27,14 +27,12 @@ class TicketForm(ModelForm):
 
 class CheckinListFilterForm(forms.Form):
     package_name = forms.CharField(max_length=128, required=False)
-    journal_title = forms.ChoiceField(required=False)
     article = forms.ModelChoiceField(queryset=None, required=False)
     issue_label = forms.CharField(max_length=64, required=False)
 
     def __init__(self, *args, **kwargs):
         super(CheckinListFilterForm, self).__init__(*args, **kwargs)
         qs_articles_with_checkins = models.Article.userobjects.filter(checkins__isnull=False).distinct()
-        self.fields['journal_title'].choices = [('', '---------'), ] + [(article.pk, article.journal_title) for article in qs_articles_with_checkins]
         self.fields['article'].queryset = qs_articles_with_checkins
 
 

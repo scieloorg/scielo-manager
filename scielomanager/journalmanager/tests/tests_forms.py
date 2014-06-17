@@ -493,8 +493,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
-        # form.set('asmSelect0', '1')  # groups
+        form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
@@ -517,7 +516,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
@@ -537,7 +536,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
 
         response = form.submit().follow()
@@ -577,7 +576,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
 
         response = form.submit()
 
@@ -602,7 +601,7 @@ class UserFormTests(WebTest):
         form['user-username'] = 'bazz'
         form['user-first_name'] = 'foo'
         form['user-last_name'] = 'bar'
-        form['userprofile-0-email'] = 'bazz@spam.org'
+        form['user-email'] = 'bazz@spam.org'
         # Remove the collection
         form.set('usercollections-0-collection', '')
 
@@ -1419,7 +1418,6 @@ class JournalFormTests(WebTest):
         sponsor = modelfactories.SponsorFactory.create()
         use_license = modelfactories.UseLicenseFactory.create()
         language = modelfactories.LanguageFactory.create()
-        subject_category = modelfactories.SubjectCategoryFactory.create()
         study_area = modelfactories.StudyAreaFactory.create()
         journal = modelfactories.JournalFactory.create()
 
@@ -1461,7 +1459,6 @@ class JournalFormTests(WebTest):
         form['journal-use_license'] = use_license.pk
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
-        form.set('journal-subject_categories', str(subject_category.pk))
         form['journal-is_indexed_scie'] = True
         form['journal-is_indexed_ssci'] = False
         form['journal-is_indexed_aehci'] = True
@@ -1476,6 +1473,70 @@ class JournalFormTests(WebTest):
         self.assertIn('This Journal already exists, please search the journal in the previous step', response.body)
 
         self.assertTemplateUsed(response, 'journalmanager/add_journal.html')
+
+    def test_user_add_journal_but_print_issn_is_empty(self):
+        """
+        Try to submit a journal but print issn is empty
+        """
+        perm_journal_change = _makePermission(perm='change_journal',
+            model='journal', app_label='journalmanager')
+        perm_journal_list = _makePermission(perm='list_journal',
+            model='journal', app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_change)
+        self.user.user_permissions.add(perm_journal_list)
+
+        sponsor = modelfactories.SponsorFactory.create()
+        use_license = modelfactories.UseLicenseFactory.create()
+        language = modelfactories.LanguageFactory.create()
+        study_area = modelfactories.StudyAreaFactory.create()
+
+        form = self.app.get(reverse('journal.add'), user=self.user).forms[1]
+
+        form['journal-sponsor'] = [sponsor.pk]
+        form['journal-study_areas'] = [study_area.pk]
+        form['journal-ctrl_vocabulary'] = 'decs'
+        form['journal-frequency'] = 'Q'
+        form['journal-final_num'] = ''
+        form['journal-print_issn'] = ''
+        form['journal-eletronic_issn'] = '1234-9876'
+        form['journal-init_vol'] = '1'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-editorial_standard'] = 'vancouv'
+        form['journal-scielo_issn'] = 'print'
+        form['journal-init_year'] = '1986'
+        form['journal-acronym'] = 'ABCD'
+        form['journal-pub_level'] = 'CT'
+        form['journal-init_num'] = '1'
+        form['journal-final_vol'] = ''
+        form['journal-subject_descriptors'] = 'MEDICINA, CIRURGIA, GASTROENTEROLOGIA, GASTROENTEROLOGIA'
+        form['journal-copyrighter'] = 'Texto do copyrighter'
+        form['journal-publisher_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-publisher_country'] = 'BR'
+        form['journal-publisher_state'] = 'SP'
+        form['journal-publication_city'] = 'São Paulo'
+        form['journal-editor_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
+        form['journal-editor_address'] = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11'
+        form['journal-editor_address_city'] = 'São Paulo'
+        form['journal-editor_address_state'] = 'SP'
+        form['journal-editor_address_zip'] = '01318-901'
+        form['journal-editor_address_country'] = 'BR'
+        form['journal-editor_phone1'] = '(11) 3288-8174'
+        form['journal-editor_phone2'] = '(11) 3289-0741'
+        form['journal-editor_email'] = 'cbcd@cbcd.org.br'
+        form['journal-use_license'] = use_license.pk
+        form['journal-languages'] = [language.pk]
+        form['journal-abstract_keyword_languages'] = [language.pk]
+        form['journal-is_indexed_scie'] = True
+        form['journal-is_indexed_ssci'] = False
+        form['journal-is_indexed_aehci'] = True
+
+        response = form.submit().follow()
+
+        self.assertIn('Saved.', response.body)
+
+        self.assertTemplateUsed(response, 'journalmanager/journal_dash.html')
 
     def test_form_enctype_must_be_multipart_formdata(self):
         """
@@ -2384,7 +2445,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
 
         self.assertFalse(issue_form.is_valid())
 
-
     def test_clean_fails_for_type_number_if_issue_already_exist(self):
         issue = modelfactories.IssueFactory(number='1', volume='', type='supplement')
         journal = issue.journal
@@ -2395,7 +2455,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':issue.suppl_type,
+            'suppl_type': issue.suppl_type,
             'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -2408,7 +2468,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2417,7 +2476,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
                                             })
 
         self.assertFalse(issue_form.is_valid())
-
 
     def test_clean_fails_for_type_volume_if_issue_already_exist(self):
         issue = modelfactories.IssueFactory(number='', volume='1', type='supplement')
@@ -2429,7 +2487,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':issue.suppl_type,
+            'suppl_type': issue.suppl_type,
             'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -2442,7 +2500,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2451,7 +2508,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
                                             })
 
         self.assertFalse(issue_form.is_valid())
-
 
     def test_clean_for_type_number_on_edit(self):
         journal = modelfactories.JournalFactory()
@@ -2480,7 +2536,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                                 instance=issue,
@@ -2545,25 +2600,19 @@ class SpecialIssueFormClassTests(unittest.TestCase):
         journal = modelfactories.JournalFactory()
         issue_form = forms.SpecialIssueForm(params={'journal': journal})
         self.assertEqual(dj_forms.CharField, type(issue_form.fields['number']))
+        self.assertEqual(dj_forms.ChoiceField, type(issue_form.fields['spe_type']))
 
-    def test_mandatory_number_value(self):
-        from django import forms as dj_forms
-        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
-        journal = modelfactories.JournalFactory()
-        issue_form = forms.SpecialIssueForm(params={'journal': journal})
-        self.assertEqual(issue_form['number'].value(), SPECIAL_ISSUE_FORM_FIELD_NUMBER)
-
-    def test_clean(self):
-        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
-
+    def test_clean_for_volume_type(self):
         journal = modelfactories.JournalFactory()
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
         POST = {
             'section': [section.pk],
-            'volume': '',
-            'number': SPECIAL_ISSUE_FORM_FIELD_NUMBER,
+            'spe_text': 'Lorem ipsum',
+            'spe_type': 'volume',
+            'volume': '1',
+            'number': '',
             'publication_start_month': '1',
             'publication_end_month': '2',
             'publication_year': '2014',
@@ -2575,13 +2624,6 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-        issue_regular_form = forms.RegularIssueForm(POST,
-                                            params={'journal': journal},
-                                            querysets={
-                                                'section': journal.section_set.all(),
-                                                'use_license': models.UseLicense.objects.all(),
-                                            })
-        self.assertTrue(issue_regular_form.is_valid())
         issue_form = forms.SpecialIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2591,15 +2633,15 @@ class SpecialIssueFormClassTests(unittest.TestCase):
 
         self.assertTrue(issue_form.is_valid())
 
-    def test_clean_with_any_number_value(self):
-        from journalmanager.forms import SPECIAL_ISSUE_FORM_FIELD_NUMBER
-
+    def test_clean_for_type_number(self):
         journal = modelfactories.JournalFactory()
         section = modelfactories.SectionFactory(journal=journal)
         use_license = modelfactories.UseLicenseFactory()
 
         POST = {
             'section': [section.pk],
+            'spe_text': 'Lorem ipsum',
+            'spe_type': 'number',
             'volume': '',
             'number': '1',
             'publication_start_month': '1',
@@ -2621,7 +2663,441 @@ class SpecialIssueFormClassTests(unittest.TestCase):
                                             })
 
         self.assertTrue(issue_form.is_valid())
-        self.assertEqual(issue_form.cleaned_data['number'], SPECIAL_ISSUE_FORM_FIELD_NUMBER)
+
+    def test_clean_valid_for_type_number_with_both_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'spe_text': 'Lorem ipsum',
+            'spe_type': 'number',
+            'volume': '1',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_with_both_volume_and_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'spe_type': 'volume',
+            'volume': '1',
+            'number': '1',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_without_number(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'spe_type' : 'number',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'spe_type': 'number',
+            'volume': '1',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_number_without_number_and_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'spe_type' : 'number',
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fail_for_type_volume_without_number_and_without_volume(self):
+        journal = modelfactories.JournalFactory()
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
+            'spe_type': 'volume',
+            'volume': '',
+            'number': '',
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': '2014',
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_for_type_number_if_duplicated_issue(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(volume='',
+                                            number='1',
+                                            spe_text='1',
+                                            publication_year=2013,
+                                            journal=journal,
+                                            type='special')
+        issue2 = modelfactories.IssueFactory(volume='',
+                                             number='1',
+                                             spe_text='1',
+                                             publication_year=2013,
+                                             journal=journal,
+                                             type='special')
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'spe_type':'number',
+            'spe_text': issue.spe_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_for_type_volume_if_duplicated_issue(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(
+            volume='1',
+            number='',
+            suppl_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special',
+            spe_text='1'
+        )
+        issue2 = modelfactories.IssueFactory(
+            volume='1',
+            number='',
+            suppl_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special',
+            spe_text='1'
+        )
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'spe_type': 'volume',
+            'spe_text': issue.spe_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_for_type_number_if_issue_already_exist(self):
+        issue = modelfactories.IssueFactory(
+            publication_year='2014',
+            number='1',
+            volume='',
+            type='special',
+            spe_text='1'
+        )
+        journal = issue.journal
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'spe_type': issue.spe_type,
+            'spe_text': issue.spe_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(
+            POST,
+            params={'journal': journal},
+            querysets={
+                'section': journal.section_set.all(),
+                'use_license': models.UseLicense.objects.all(),
+            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_fails_for_type_volume_if_issue_already_exist(self):
+        issue = modelfactories.IssueFactory(
+            number='',
+            volume='1',
+            type='special',
+            spe_text='1'
+        )
+        journal = issue.journal
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'spe_type': issue.spe_type,
+            'spe_text': issue.spe_text,
+            'publication_start_month': '1',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
+
+        self.assertFalse(issue_form.is_valid())
+
+    def test_clean_for_type_number_on_edit(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(
+            volume='',
+            number='2',
+            spe_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special'
+        )
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'spe_type': issue.spe_type,
+            'spe_text': issue.spe_text,
+            'publication_start_month': '2',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                                instance=issue,
+                                                params={'journal': journal},
+                                                querysets={
+                                                    'section': journal.section_set.all(),
+                                                    'use_license': models.UseLicense.objects.all(),
+                                                })
+
+        self.assertTrue(issue_form.is_valid())
+
+    def test_clean_for_type_volume_on_edit(self):
+        journal = modelfactories.JournalFactory()
+        issue = modelfactories.IssueFactory(
+            volume='2',
+            number='',
+            suppl_text='1',
+            publication_year=2013,
+            journal=journal,
+            type='special',
+            spe_text='1'
+        )
+        section = modelfactories.SectionFactory(journal=journal)
+        use_license = modelfactories.UseLicenseFactory()
+
+        POST = {
+            'section': [section.pk],
+            'volume': issue.volume,
+            'number': issue.number,
+            'spe_type': issue.spe_type,
+            'spe_text': issue.spe_text,
+            'publication_start_month': '2',
+            'publication_end_month': '2',
+            'publication_year': issue.publication_year,
+            'is_marked_up': True,
+            'use_license': use_license.pk,
+            'total_documents': '10',
+            'ctrl_vocabulary': 'nd',
+            'editorial_standard': 'iso690',
+            'cover': '',
+        }
+
+        issue_form = forms.SpecialIssueForm(POST,
+                                                instance=issue,
+                                                params={'journal': journal},
+                                                querysets={
+                                                    'section': journal.section_set.all(),
+                                                    'use_license': models.UseLicense.objects.all(),
+                                                })
+
+        self.assertTrue(issue_form.is_valid())
 
 
 ####
@@ -2704,6 +3180,8 @@ class IssueFormTests(WebTest):
                 form['suppl_text'] = 'suppl.X'
             elif t == 'special':
                 form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
             else: # regular
                 form['number'] = '3'
                 form['volume'] = '29'
@@ -2809,7 +3287,7 @@ class IssueFormTests(WebTest):
         self.user.user_permissions.add(perm_issue_change)
         self.user.user_permissions.add(perm_issue_list)
 
-        for t in ['regular', 'special']:
+        for t in ['regular']:  # May be used in anther forms kind of issues
             issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
             form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
 
@@ -2887,6 +3365,12 @@ class IssueFormTests(WebTest):
                 form['suppl_type'] = 'volume'
                 form['suppl_text'] = 'suppl.XX'
                 form['number'] = ''
+
+            if t == 'special':
+                form['spe_type'] = 'volume'
+                form['spe_text'] = 'spe.XX'
+                form['number'] = ''
+
             response = form.submit().follow()
 
             self.assertIn('Saved.', response.body)

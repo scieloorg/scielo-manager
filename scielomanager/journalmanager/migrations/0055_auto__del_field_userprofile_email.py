@@ -8,90 +8,18 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'CheckinWorkflowLog'
-        db.create_table('articletrack_checkinworkflowlog', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='checkin_log_responsible', null=True, to=orm['auth.User'])),
-            ('status', self.gf('django.db.models.fields.CharField')(default='pending', max_length=10)),
-            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('checkin', self.gf('django.db.models.fields.related.ForeignKey')(related_name='submission_log', to=orm['articletrack.Checkin'])),
-        ))
-        db.send_create_signal('articletrack', ['CheckinWorkflowLog'])
+        # Deleting field 'UserProfile.email'
+        db.delete_column('journalmanager_userprofile', 'email')
 
 
     def backwards(self, orm):
-        # Deleting model 'CheckinWorkflowLog'
-        db.delete_table('articletrack_checkinworkflowlog')
+        # Adding field 'UserProfile.email'
+        db.add_column('journalmanager_userprofile', 'email',
+                      self.gf('django.db.models.fields.EmailField')(default=None, max_length=75, unique=True),
+                      keep_default=False)
 
 
     models = {
-        'articletrack.article': {
-            'Meta': {'object_name': 'Article'},
-            'article_title': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
-            'articlepkg_ref': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'eissn': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '9'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue_label': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'journal_title': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'journals': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'checkin_articles'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
-            'pissn': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '9'})
-        },
-        'articletrack.checkin': {
-            'Meta': {'ordering': "['-created_at']", 'object_name': 'Checkin'},
-            'accepted_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'accepted_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'}),
-            'article': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'checkins'", 'null': 'True', 'to': "orm['articletrack.Article']"}),
-            'attempt_ref': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'package_name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'rejected_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'rejected_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'checkins_rejected'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'rejected_cause': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'reviewed_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'reviewed_by': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'checkins_reviewed'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'pending'", 'max_length': '10'}),
-            'uploaded_at': ('django.db.models.fields.CharField', [], {'max_length': '128'})
-        },
-        'articletrack.checkinworkflowlog': {
-            'Meta': {'object_name': 'CheckinWorkflowLog'},
-            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'submission_log'", 'to': "orm['articletrack.Checkin']"}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'pending'", 'max_length': '10'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'checkin_log_responsible'", 'null': 'True', 'to': "orm['auth.User']"})
-        },
-        'articletrack.comment': {
-            'Meta': {'ordering': "['created_at']", 'object_name': 'Comment'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'comments_author'", 'to': "orm['auth.User']"}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message': ('django.db.models.fields.TextField', [], {}),
-            'ticket': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'comments'", 'to': "orm['articletrack.Ticket']"}),
-            'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
-        },
-        'articletrack.notice': {
-            'Meta': {'ordering': "['-created_at']", 'object_name': 'Notice'},
-            'checkin': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notices'", 'to': "orm['articletrack.Checkin']"}),
-            'checkpoint': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
-            'stage': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'status': ('django.db.models.fields.CharField', [], {'max_length': '64'})
-        },
-        'articletrack.ticket': {
-            'Meta': {'ordering': "['started_at']", 'object_name': 'Ticket'},
-            'article': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'tickets'", 'to': "orm['articletrack.Article']"}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'tickets'", 'to': "orm['auth.User']"}),
-            'finished_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'message': ('django.db.models.fields.TextField', [], {}),
-            'started_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -128,6 +56,20 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'journalmanager.aheadpressrelease': {
+            'Meta': {'object_name': 'AheadPressRelease', '_ormbases': ['journalmanager.PressRelease']},
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Journal']"}),
+            'pressrelease_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.PressRelease']", 'unique': 'True', 'primary_key': 'True'})
+        },
+        'journalmanager.article': {
+            'Meta': {'object_name': 'Article'},
+            'front': ('jsonfield.fields.JSONField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'images_url': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'articles'", 'to': "orm['journalmanager.Issue']"}),
+            'pdf_url': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'xml_url': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+        },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
             'acronym': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'blank': 'True'}),
@@ -147,6 +89,16 @@ class Migration(SchemaMigration):
             'state': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
             'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
+        },
+        'journalmanager.datachangeevent': {
+            'Meta': {'object_name': 'DataChangeEvent'},
+            'changed_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'event_type': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
         },
         'journalmanager.institution': {
             'Meta': {'ordering': "['name']", 'object_name': 'Institution'},
@@ -168,6 +120,37 @@ class Migration(SchemaMigration):
             'state': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
             'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
+        },
+        'journalmanager.issue': {
+            'Meta': {'ordering': "('created',)", 'object_name': 'Issue'},
+            'cover': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
+            'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_marked_up': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'label': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '64', 'null': 'True', 'blank': 'True'}),
+            'number': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
+            'order': ('django.db.models.fields.IntegerField', [], {'blank': 'True'}),
+            'publication_end_month': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'publication_start_month': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'publication_year': ('django.db.models.fields.IntegerField', [], {}),
+            'section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Section']", 'symmetrical': 'False', 'blank': 'True'}),
+            'suppl_text': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
+            'total_documents': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'type': ('django.db.models.fields.CharField', [], {'default': "'regular'", 'max_length': '15'}),
+            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']", 'null': 'True'}),
+            'volume': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'})
+        },
+        'journalmanager.issuetitle': {
+            'Meta': {'object_name': 'IssueTitle'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Issue']"}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
         },
         'journalmanager.journal': {
             'Meta': {'ordering': "['title']", 'object_name': 'Journal'},
@@ -235,6 +218,30 @@ class Migration(SchemaMigration):
             'url_online_submission': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
             'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']"})
         },
+        'journalmanager.journalmission': {
+            'Meta': {'object_name': 'JournalMission'},
+            'description': ('django.db.models.fields.TextField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'missions'", 'to': "orm['journalmanager.Journal']"}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True'})
+        },
+        'journalmanager.journaltimeline': {
+            'Meta': {'object_name': 'JournalTimeline'},
+            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'statuses'", 'to': "orm['journalmanager.Journal']"}),
+            'reason': ('django.db.models.fields.TextField', [], {'default': "''"}),
+            'since': ('django.db.models.fields.DateTimeField', [], {}),
+            'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
+        },
+        'journalmanager.journaltitle': {
+            'Meta': {'object_name': 'JournalTitle'},
+            'category': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'other_titles'", 'to': "orm['journalmanager.Journal']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
         'journalmanager.language': {
             'Meta': {'ordering': "['name']", 'object_name': 'Language'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -251,6 +258,62 @@ class Migration(SchemaMigration):
             'since': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'inprogress'", 'max_length': '16'})
         },
+        'journalmanager.pendedform': {
+            'Meta': {'object_name': 'PendedForm'},
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'form_hash': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pending_forms'", 'to': "orm['auth.User']"}),
+            'view_name': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
+        'journalmanager.pendedvalue': {
+            'Meta': {'object_name': 'PendedValue'},
+            'form': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'data'", 'to': "orm['journalmanager.PendedForm']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'value': ('django.db.models.fields.TextField', [], {})
+        },
+        'journalmanager.pressrelease': {
+            'Meta': {'object_name': 'PressRelease'},
+            'doi': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        'journalmanager.pressreleasearticle': {
+            'Meta': {'object_name': 'PressReleaseArticle'},
+            'article_pid': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_index': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'articles'", 'to': "orm['journalmanager.PressRelease']"})
+        },
+        'journalmanager.pressreleasetranslation': {
+            'Meta': {'object_name': 'PressReleaseTranslation'},
+            'content': ('django.db.models.fields.TextField', [], {}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
+            'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'to': "orm['journalmanager.PressRelease']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
+        },
+        'journalmanager.regularpressrelease': {
+            'Meta': {'object_name': 'RegularPressRelease', '_ormbases': ['journalmanager.PressRelease']},
+            'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Issue']"}),
+            'pressrelease_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.PressRelease']", 'unique': 'True', 'primary_key': 'True'})
+        },
+        'journalmanager.section': {
+            'Meta': {'object_name': 'Section'},
+            'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '21', 'blank': 'True'}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
+            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
+            'legacy_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
+            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
+        },
+        'journalmanager.sectiontitle': {
+            'Meta': {'ordering': "['title']", 'object_name': 'SectionTitle'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
+            'section': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'titles'", 'to': "orm['journalmanager.Section']"}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+        },
         'journalmanager.sponsor': {
             'Meta': {'ordering': "['name']", 'object_name': 'Sponsor', '_ormbases': ['journalmanager.Institution']},
             'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
@@ -265,6 +328,14 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'SubjectCategory'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'term': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
+        },
+        'journalmanager.translateddata': {
+            'Meta': {'object_name': 'TranslatedData'},
+            'field': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'model': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'translation': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
         },
         'journalmanager.uselicense': {
             'Meta': {'ordering': "['license_code']", 'object_name': 'UseLicense'},
@@ -281,7 +352,12 @@ class Migration(SchemaMigration):
             'is_default': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_manager': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+        },
+        'journalmanager.userprofile': {
+            'Meta': {'object_name': 'UserProfile'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         }
     }
 
-    complete_apps = ['articletrack']
+    complete_apps = ['journalmanager']

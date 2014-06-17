@@ -2,12 +2,17 @@
 import unittest
 import json
 import urlparse
+from urllib import urlencode
+from os import path
+from urllib2 import urlopen
+from itertools import izip_longest
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import mocker
 
 from articletrack.balaio import BalaioAPI, BalaioRPC, SettingsMixin
+from . import doubles
 
 
 class BalaioCheckSettingsTests(unittest.TestCase):
@@ -52,7 +57,6 @@ class BalaioCheckSettingsTests(unittest.TestCase):
         api_settings_port = settings.API_BALAIO['default']['PORT']
         api_settings_netloc = ":".join([api_settings_host, api_settings_port])
         api_settings_path = settings.API_BALAIO['default']['PATH']
-
 
         self.assertTrue(api_fullpath_url.scheme == api_settings_protocol)
         self.assertTrue(api_fullpath_url.netloc == api_settings_netloc)
@@ -176,8 +180,162 @@ class BalaioRequestsTests(mocker.MockerTestCase):
             expected_json_response
         )
 
+    def test_get_file_member_by_attempt(self):
+        """
+        Test that the method ``get_file_member_by_attempt`` returns a generator by chunks
+        Test that the method ``get_file_member_by_attempt`` request the correct URL
+        Test that the query string is url_encoded
+        """
+        balaio_api = BalaioAPI()
+        attempt_id = '25'
+        target_name = '0034-8910-rsp-48-2-0206'
+        file_member = '%s.xml' % target_name
+        expected_filename = '%s.zip' % file_member
+        zip_tests_files_dir = path.abspath(path.join(
+            path.dirname(__file__),
+            'zip_tests_files'
+        ))
+        zip_tests_file_abs_path = path.abspath(path.join(zip_tests_files_dir, expected_filename))
+        expected_file_uri = 'file://%s' % zip_tests_file_abs_path
 
-class BalaioAPIRequestsTests(mocker.MockerTestCase):
+        qs = {'file': file_member}
+        qs = urlencode(qs)
+        remote_url = balaio_api.get_fullpath() + 'files/%s/%s.zip?%s' % (attempt_id, target_name, qs)
+
+        # Override Balaio's method
+        class BalaioTest(doubles.BalaioAPIDouble):
+
+            def _open(self, url):
+                # to avoid the request, override de result of _open to return a local
+                # zip file as a generator, same behavior as expected
+                if url != remote_url:
+                    raise AssertionError('The requested URL is different to the expected')
+                return doubles.make_expected_generator(expected_file_uri)
+
+        # get the results
+        balaio_test = BalaioTest()
+
+        balaio_mock = self.mocker.proxy(balaio_test)
+        balaio_mock.get_file_member_by_attempt(attempt_id, target_name, file_member)
+        self.mocker.passthrough()
+
+        self.mocker.replay()
+
+        balaio_response = balaio_mock.get_file_member_by_attempt(attempt_id, target_name, file_member)
+        expected_response = doubles.make_expected_generator(expected_file_uri)
+
+        # compare the 2 responses - http://stackoverflow.com/a/9983596/1503
+        compare_equal = all(a == b for a, b in izip_longest(balaio_response, expected_response))
+        self.assertTrue(compare_equal)
+
+    def test_get_files_members_by_attempt(self):
+        """
+        Test that the method ``get_files_members_by_attempt`` returns a generator by chunks
+        Test that the method ``get_files_members_by_attempt`` request the correct URL
+        Test that the query string is url_encoded
+        """
+        balaio_api = BalaioAPI()
+        attempt_id = '25'
+        target_name1 = 'foo'
+        target_name2 = 'bar'
+        target_name = 'foo_bar'
+        file_members = ['foo.xml', 'bar.xml']
+        expected_filename = '%s.zip' % target_name
+        zip_tests_files_dir = path.abspath(path.join(
+            path.dirname(__file__),
+            'zip_tests_files'
+        ))
+        zip_tests_file_abs_path = path.abspath(path.join(zip_tests_files_dir, expected_filename))
+        expected_file_uri = 'file://%s' % zip_tests_file_abs_path
+
+        qs = [('file', member) for member in file_members]
+        qs = urlencode(qs)
+        remote_url = balaio_api.get_fullpath() + 'files/%s/%s.zip?%s' % (attempt_id, target_name, qs)
+
+        # Override Balaio's method
+        class BalaioTest(doubles.BalaioAPIDouble):
+
+            def _open(self, url):
+                # to avoid the request, override de result of _open to return a local
+                # zip file as a generator, same behavior as expected
+                if url != remote_url:
+                    raise AssertionError('The requested URL is different to the expected')
+                return doubles.make_expected_generator(expected_file_uri)
+
+        # get the results
+        balaio_test = BalaioTest()
+
+        balaio_mock = self.mocker.proxy(balaio_test)
+        balaio_mock.get_files_members_by_attempt(attempt_id, target_name, file_members)
+        self.mocker.passthrough()
+
+        self.mocker.replay()
+
+        balaio_response = balaio_mock.get_files_members_by_attempt(attempt_id, target_name, file_members)
+        expected_response = doubles.make_expected_generator(expected_file_uri)
+
+        # compare the 2 responses - http://stackoverflow.com/a/9983596/1503
+        compare_equal = all(a == b for a, b in izip_longest(balaio_response, expected_response))
+        self.assertTrue(compare_equal)
+
+    def test_get_full_package(self):
+        balaio_api = BalaioAPI()
+        attempt_id = '25'
+        target_name = 'test_full_package_file'
+        expected_filename = 'full_package.zip'
+        zip_tests_files_dir = path.abspath(path.join(
+            path.dirname(__file__),
+            'zip_tests_files'
+        ))
+        zip_tests_file_abs_path = path.abspath(path.join(zip_tests_files_dir, expected_filename))
+        expected_file_uri = 'file://%s' % zip_tests_file_abs_path
+
+        remote_url = balaio_api.get_fullpath() + 'files/%s/%s.zip?full=true' % (attempt_id, target_name)
+
+        # Override Balaio's method
+        class BalaioTest(doubles.BalaioAPIDouble):
+
+            def _open(self, url):
+                # to avoid the request, override de result of _open to return a local
+                # zip file as a generator, same behavior as expected
+                if url != remote_url:
+                    raise AssertionError('The requested URL is different to the expected')
+                return doubles.make_expected_generator(expected_file_uri)
+
+        # get the results
+        balaio_test = BalaioTest()
+
+        balaio_mock = self.mocker.proxy(balaio_test)
+        balaio_mock.get_full_package(attempt_id, target_name)
+        self.mocker.passthrough()
+
+        self.mocker.replay()
+
+        balaio_response = balaio_mock.get_full_package(attempt_id, target_name)
+        expected_response = doubles.make_expected_generator(expected_file_uri)
+
+        # compare the 2 responses - http://stackoverflow.com/a/9983596/1503
+        compare_equal = all(a == b for a, b in izip_longest(balaio_response, expected_response))
+        self.assertTrue(compare_equal)
+
+    def test_get_xml_uri(self):
+        balaio_api = BalaioAPI()
+        attempt_id = 25
+        target_name = "1415-4757-gmb-37-0210.xml"
+        qs_parms = {
+            'file': target_name,
+            'raw': True
+        }
+        qs = urlencode(qs_parms)
+        expected_xml_uri = balaio_api.get_fullpath() + 'files/%s/get.xml?%s' % (attempt_id, qs)
+
+        self.assertEqual(
+            balaio_api.get_xml_uri(attempt_id, target_name),
+            expected_xml_uri
+        )
+
+
+class BalaioRPCRequestsTests(mocker.MockerTestCase):
     def test_valid_remote_call_without_args(self):
         client = BalaioRPC(using='default')
 
@@ -259,4 +417,3 @@ class BalaioAPIRequestsTests(mocker.MockerTestCase):
         self.mocker.replay()
 
         self.assertFalse(client.is_up())
-

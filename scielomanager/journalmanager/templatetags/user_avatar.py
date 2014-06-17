@@ -39,14 +39,14 @@ def user_avatar_url(user, size):
     else:
         return '' # unknow size, no photo
 
-    try:
-        user_gravatar_id = user.get_profile().gravatar_id
-    except UserProfile.DoesNotExist:
-        return '' # no profile, no photo
-    else:
+    user_gravatar_id = user.email
+
+    if user_gravatar_id:
         params = urllib.urlencode({'s': size, 'd': 'mm'})
         gravatar_url = getattr(settings, 'GRAVATAR_BASE_URL', 'https://secure.gravatar.com')
         avartar_url = '{0}/avatar/{1}?{2}'.format(gravatar_url, user_gravatar_id, params)
         return avartar_url
+    else:
+        return ''
 
 register.simple_tag(user_avatar_url)

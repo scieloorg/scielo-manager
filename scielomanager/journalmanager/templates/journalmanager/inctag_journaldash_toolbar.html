@@ -23,7 +23,7 @@
           <a href="{% url prelease.index journal_id %}">{% trans "Press Releases" %}</a>
         </li>
         {% endif %}
-        {% if perms.journalmanager.change_journalpublicationevents %}
+        {% if perms.journalmanager.change_journaltimeline %}
         <li {% if page == 'status' %}class="active activedash" {% endif %}>
           <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>

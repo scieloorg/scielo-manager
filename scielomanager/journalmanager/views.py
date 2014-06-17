@@ -7,6 +7,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+import operator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth import forms as auth_forms
@@ -343,7 +344,6 @@ def add_user(request, user_id=None):
     # Getting Collections from the logged user.
     user_collections = models.get_user_collections(request.user.id)
 
-    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
         form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
@@ -352,12 +352,10 @@ def add_user(request, user_id=None):
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')
-        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
 
-        if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
+        if userform.is_valid() and usercollectionsformset.is_valid():
             new_user = userform.save()
-            userprofileformset.save()
 
             # Clear cache when changes in UserCollections
             invalid = [collection for collection in user_collections]
@@ -382,7 +380,6 @@ def add_user(request, user_id=None):
             messages.error(request, MSG_FORM_MISSING)
     else:
         userform = UserForm(instance=user, prefix='user')
-        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
 
     return render_to_response('journalmanager/add_user.html', {
@@ -390,12 +387,11 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
-                              'userprofileformset': userprofileformset
                               },
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_publication_events', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journaltimeline', login_url=AUTHZ_REDIRECT_URL)
 def edit_journal_status(request, journal_id=None):
     """
     Handles Journal Status.
@@ -566,9 +562,15 @@ def add_journal(request, journal_id=None):
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
                 # Ensuring that journal doesnt exists on created journal form, so journal_id must be None
-                if journal_id is None and models.Journal.objects.filter(
-                   Q(print_issn__icontains=request.POST.get('journal-print_issn')) |
-                   Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn'))).exists():
+                filter_list = []
+
+                if request.POST.get('journal-print_issn') != '':
+                    filter_list.append(Q(print_issn__icontains=request.POST.get('journal-print_issn')))
+
+                if request.POST.get('journal-eletronic_issn') != '':
+                    filter_list.append(Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn')))
+
+                if journal_id is None and models.Journal.objects.filter(reduce(operator.or_, filter_list)).exists():
                     messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
                 else:
                     saved_journal = journalform.save_all(creator=request.user)

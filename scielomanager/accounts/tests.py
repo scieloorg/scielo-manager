@@ -124,7 +124,7 @@ class UserMyAccountTests(WebTest):
     def test_logged_user_change_password_right_password(self):
         user = auth.UserF(username='foo',
                           password=HASH_FOR_123,
-                          is_active=False)
+                          is_active=True)
         collection = modelfactories.CollectionFactory.create()
         collection.add_user(user)
 

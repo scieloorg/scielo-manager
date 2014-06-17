@@ -9,6 +9,7 @@ from .modelfactories import (
     ArticleFactory,
     IssueFactory,
     UserProfileFactory,
+    UserFactory,
     SectionFactory,
     LanguageFactory,
     SectionTitleFactory,
@@ -16,11 +17,14 @@ from .modelfactories import (
     CollectionFactory,
     RegularPressReleaseFactory,
 )
-from journalmanager import models
+
 from scielomanager.utils.modelmanagers.helpers import (
     _makeUserProfile,
     _makeUserRequestContext,
 )
+
+from journalmanager import models
+
 HASH_FOR_123 = 'sha1$93d45$5f366b56ce0444bfea0f5634c7ce8248508c9799'
 
 
@@ -88,16 +92,23 @@ class SectionTests(MockerTestCase):
 class UserProfileTests(TestCase):
 
     def test_gravatar_id_generation(self):
-        profile = UserProfileFactory.build(email='foo@bar.org')
+        user = UserFactory(username='foo', email='foo@bar.org', password=HASH_FOR_123, is_active=True)
+        profile = UserProfileFactory.build(user=user)
         expected_gravatar_id = '24191827e60cdb49a3d17fb1befe951b'
 
         self.assertEqual(profile.gravatar_id, expected_gravatar_id)
 
     def test_gravatar_url(self):
+        user = UserFactory(username='foo', email='foo@bar.org', password=HASH_FOR_123, is_active=True)
         expected_url = 'https://secure.gravatar.com/avatar/24191827e60cdb49a3d17fb1befe951b?s=18&d=mm'
-        profile = UserProfileFactory.build(email='foo@bar.org')
+        profile = UserProfileFactory.build(user=user)
 
         self.assertEqual(profile.avatar_url, expected_url)
+
+    def test_create_user_must_create_profile(self):
+        user = UserFactory(username='foo', password=HASH_FOR_123, is_active=True)
+        profile_exists = models.UserProfile.objects.filter(user=user).exists()
+        self.assertTrue(profile_exists)
 
 
 class IssueTests(TestCase):
@@ -133,8 +144,8 @@ class IssueTests(TestCase):
         self.assertEqual(issue.identification, expected)
 
     def test_identification_for_special(self):
-        issue = IssueFactory.create(number='spe')
-        expected = u'special'
+        issue = IssueFactory.create(number='1', spe_text='2', type='special')
+        expected = u'1 spe.2'
 
         self.assertEqual(issue.identification, expected)
 
@@ -564,83 +575,6 @@ class CollectionTests(TestCase):
         self.collection.add_user(self.user, is_manager=True)
 
         self.assertTrue(self.collection.is_managed_by_user(self.user))
-
-
-class CollectionManagerTests(TestCase):
-    def setUp(self):
-        self.user = auth.UserF()
-        _makeUserProfile(self.user)
-        _makeUserRequestContext(self.user)
-        self.collection = CollectionFactory.create()
-
-    def tearDown(self):
-        """
-        Restore the default values.
-        """
-
-    def test_get_all_by_user(self):
-        for i in range(5):
-            if i % 2:
-                CollectionFactory.create()
-            else:
-                col = CollectionFactory.create()
-                col.add_user(self.user)
-
-        def get_user_collections():
-            return self.user.user_collection.all()
-
-        collections = models.Collection.userobjects.all(
-            get_all_collections=get_user_collections
-        )
-
-        self.assertEqual(collections.count(), 3)
-
-    def test_get_default_by_user(self):
-        col1 = CollectionFactory.create()
-        col1.make_default_to_user(self.user)
-        col2 = CollectionFactory.create()
-        col2.add_user(self.user)
-        self.assertEqual(
-            self.user.get_profile().get_default_collection,
-            col1)
-
-    def test_get_default_by_user_second_collection(self):
-        col1 = CollectionFactory.create()
-        col1.make_default_to_user(self.user)
-        col2 = CollectionFactory.create()
-        col2.make_default_to_user(self.user)
-
-        def get_user_active_collection():
-            return col2
-
-        self.assertEqual(
-            models.Collection.userobjects.active(get_active_collection=get_user_active_collection),
-            col2)
-
-    def test_get_default_by_user_with_two_users(self):
-        user1 = auth.UserF()
-        user2 = auth.UserF()
-        _makeUserProfile(user1)
-        _makeUserProfile(user2)
-
-        col1 = CollectionFactory.create()
-        col1.make_default_to_user(user1)
-
-        col2 = CollectionFactory.create()
-        col2.add_user(user1)
-        col2.make_default_to_user(user2)
-        self.assertEqual(user1.get_profile().get_default_collection, col1)
-        self.assertEqual(user2.get_profile().get_default_collection, col2)
-
-    def test_get_default_by_user_must_raise_doesnotexist_if_the_user_has_no_collections(self):
-        col1 = CollectionFactory.create()
-
-        def get_user_collections():
-            raise RuntimeError()
-
-        self.assertRaises(
-            models.Collection.DoesNotExist,
-            lambda: models.Collection.userobjects.active(get_active_collection=get_user_collections))
 
 
 class PressReleaseTests(TestCase):

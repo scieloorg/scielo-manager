@@ -18,7 +18,7 @@ from django.db import (
     DatabaseError,
     )
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
@@ -28,7 +28,6 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from django.core.exceptions import ImproperlyConfigured
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 import jsonfield
@@ -305,11 +304,10 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     user = models.OneToOneField(User)
-    email = models.EmailField(_('E-mail'), blank=False, unique=True, null=False)
 
     @property
     def gravatar_id(self):
-        return hashlib.md5(self.email.lower().strip()).hexdigest()
+        return hashlib.md5(self.user.email.lower().strip()).hexdigest()
 
     @property
     def avatar_url(self):
@@ -321,14 +319,8 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         """
         Return the default collection for this user
         """
-        # return Collection.objects.filter.active()
         uc = UserCollections.objects.get(user=self.user, is_default=True)
         return uc.collection
-
-    def save(self, force_insert=False, force_update=False):
-        self.user.email = self.email
-        self.user.save()
-        return super(UserProfile, self).save(force_insert, force_update)
 
 
 class Collection(caching.base.CachingMixin, models.Model):
@@ -555,8 +547,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9, db_index=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=1024)
     init_year = models.CharField(_('Initial Year'), max_length=4)
-    init_vol = models.CharField(_('Initial Volume'), max_length=16)
-    init_num = models.CharField(_('Initial Number'), max_length=16)
+    init_vol = models.CharField(_('Initial Volume'), max_length=16, null=True, blank=True)
+    init_num = models.CharField(_('Initial Number'), max_length=16, null=True, blank=True)
     final_year = models.CharField(_('Final Year'), max_length=4, null=True, blank=True)
     final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True)
     final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True)
@@ -963,6 +955,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     type = models.CharField(_('Type'),  max_length=15, choices=choices.ISSUE_TYPES, default='regular', editable=False)
     suppl_text = models.CharField(_('Suppl Text'),  max_length=15, null=True, blank=True)
+    spe_text = models.CharField(_('Special Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
         ordering = ('created', )
@@ -990,8 +983,10 @@ class Issue(caching.base.CachingMixin, models.Model):
         if self.type == 'supplement':
             values.append('suppl.%s' % self.suppl_text)
 
-        return ' '.join([val for val in values if val]).strip().replace(
-                'spe', 'special').replace('ahead', 'ahead of print')
+        if self.type == 'special':
+            values.append('spe.%s' % self.spe_text)
+
+        return ' '.join([val for val in values if val]).strip().replace('ahead', 'ahead of print')
 
     def __unicode__(self):
 
@@ -1014,6 +1009,18 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         else:
             raise AttributeError('Issues of type %s do not have an attribute named: suppl_type' % self.get_type_display())
+
+    @property
+    def spe_type(self):
+        if self.type == 'special':
+
+            if self.number != '' and self.volume == '':
+                return 'number'
+            elif self.number == '' and self.volume != '':
+                return 'volume'
+
+        else:
+            raise AttributeError('Issues of type %s do not have an attribute named: esp_type' % self.get_type_display())
 
     def _suggest_order(self, force=False):
         """
@@ -1258,4 +1265,12 @@ class Article(caching.base.CachingMixin, models.Model):
 
         return self.front['title-group']
 
+# ---- SIGNALS ------
 models.signals.post_save.connect(create_api_key, sender=User)
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if created:
+        profile, new = UserProfile.objects.get_or_create(user=instance)

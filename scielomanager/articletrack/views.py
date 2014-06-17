@@ -13,6 +13,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 
+from packtools import stylechecker
+
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
@@ -29,6 +31,29 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 logger = logging.getLogger(__name__)
 
 
+def extract_validation_errors(validation_errors):
+    """
+    Return a "parsed" dict of validation errors returned by stylechecker
+    """
+    # iterate over the errors and get the relevant data
+    results = []
+    error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
+    for error in validation_errors:
+        error_data = {
+            'line': error.line or '--',
+            'column': error.column or '--',
+            'message': error.message or '',
+            'level': error.level_name or 'ERROR',
+        }
+        results.append(error_data)
+        if error.line:
+            error_lines.append(str(error.line))
+    return {
+        'results': results,
+        'error_lines': ", ".join(error_lines)
+    }
+
+
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_index(request):
@@ -42,15 +67,11 @@ def checkin_index(request):
         """
         if form.is_valid():
             package_name = form.cleaned_data.get('package_name', None)
-            journal_title = form.cleaned_data.get('journal_title', None)
             article = form.cleaned_data.get('article', None)
             issue_label = form.cleaned_data.get('issue_label', None)
 
             if package_name:
                 queryset = queryset.filter(package_name__icontains=package_name)
-            if journal_title:
-                # journal_title contains the pk of articletrack.Article with that ok.
-                queryset = queryset.filter(article__pk=journal_title)
             if article:
                 queryset = queryset.filter(article=article)
             if issue_label:
@@ -253,6 +274,13 @@ def notice_detail(request, checkin_id):
 
     balaio = BalaioAPI()
     files_list = []
+    xml_data = {
+        'file_name': None,
+        'uri': None,
+        'can_be_analyzed': (False, ''),
+        'annotations': None,
+        'validation_errors': None,
+    }
 
     try:
 
@@ -262,10 +290,43 @@ def notice_detail(request, checkin_id):
             for file_extension in files.keys():
                 files_list += [{'ext': file_extension, 'name': f} for f in files[file_extension]]
 
-    except ValueError:
-        pass # Service Unavailable
+            xml_data['file_name'] = files['xml'][0]  # assume only ONE xml per package
+            xml_data['can_be_analyzed'] = (True, '')
+
+    except ValueError as e:
+        # Service Unavailable
+        logger.error('ValueError while requesting: list_files_members_by_attempt(%s) for checkin.pk == %s. Traceback: %s' % (checkin.attempt_ref, checkin.pk, e))
+        xml_data['can_be_analyzed'] = (False, "The package's files could not requested")
+
+    # get stylechecker annotations
+    if xml_data['can_be_analyzed'][0]:
+        try:
+            xml_data['uri'] = balaio.get_xml_uri(checkin.attempt_ref, xml_data['file_name']) if xml_data['file_name'] else None
+        except ValueError as e:
+            # Service Unavailable
+            logger.error('ValueError while requesting: get_xml_uri(%s, %s) for checkin.pk == %s. Traceback: %s' % (checkin.attempt_ref, xml_data['file_name'], checkin.pk, e))
+            xml_data['can_be_analyzed'] = (False, 'Could not obtain the XML with this file name %s' % xml_data['file_name'])
+        else:
+            if bool(xml_data['uri']):
+                xml_data['can_be_analyzed'] = (True, "")
+            else:
+                xml_data['can_be_analyzed'] = (False, "XML's URI is invalid (%s)" % xml_data['uri'])
+
+    if xml_data['can_be_analyzed'][0]:
+        try:
+            xml_check = stylechecker.XML(xml_data['uri'])
+        except Exception as e:  # any exception will stop the process
+            xml_data['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
+            logger.error('ValueError while creating: Stylechecker.XML(%s) for checkin.pk == %s. Traceback: %s' % (xml_data['file_name'], checkin.pk, e))
+        else:
+            status, errors = xml_check.validate_style()
+            if not status:  # have errors
+                xml_check.annotate_errors()
+                xml_data['annotations'] = str(xml_check)
+                xml_data['validation_errors'] = extract_validation_errors(errors)
 
     context['files'] = files_list
+    context['xml_data'] = xml_data
 
     return render_to_response(
         'articletrack/notice_detail.html',
