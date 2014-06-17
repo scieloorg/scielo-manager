@@ -10,7 +10,7 @@ from celery.task.base import Task
 from scielomanager.tasks import send_mail
 from . import modelfactories
 from . import doubles
-from articletrack.tasks import process_expirable_checkins, do_expirate_checkin
+from articletrack.tasks import process_expirable_checkins, do_expires_checkin
 from articletrack.models import Checkin
 
 
@@ -63,9 +63,9 @@ class TestCheckinExpirationTask(CeleryTestCaseBase, mocker.MockerTestCase):
         self.next_week_date = self.now + days_delta
 
     @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
-    def test_do_expirate_checkin(self):
+    def test_do_expires_checkin(self):
         """
-        create a checkin, that expire today, then call do_expirate_checkin()
+        create a checkin, that expire today, then call do_expires_checkin()
         """
         checkin = modelfactories.CheckinFactory(expiration_at=self.now)
 
@@ -75,7 +75,7 @@ class TestCheckinExpirationTask(CeleryTestCaseBase, mocker.MockerTestCase):
         self.mocker.result(doubles.BalaioRPCDouble())
         self.mocker.replay()
 
-        result = do_expirate_checkin.delay(checkin)
+        result = do_expires_checkin.delay(checkin)
         self.assertTrue(result.successful())
         self.assertFalse(checkin.is_expirable)
         self.assertEqual('expired', checkin.status)

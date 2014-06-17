@@ -308,7 +308,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             raise ValueError('This checkin does not comply with the conditions to change status to "rejected"')
 
     @log_workflow_status(MSG_WORKFLOW_EXPIRED)
-    def do_expirate(self, responsible=None):
+    def do_expires(self, responsible=None):
         """
         Change self.status to 'expired'.
         Change self.expiration_at to now()

@@ -348,11 +348,11 @@ class CheckinWorkflowLogTests(TestCase):
         self.assertEqual(logs[0].user, user2_send_to_review)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDING)
 
-    def test_do_expirate_generate_log_entry(self):
+    def test_do_expires_generate_log_entry(self):
         checkin = modelfactories.CheckinFactory()
 
-        # do_expirate
-        checkin.do_expirate()
+        # do_expires
+        checkin.do_expires()
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status)
 
