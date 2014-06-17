@@ -2,7 +2,7 @@
 import datetime
 from django.test import TestCase
 from django_factory_boy import auth
-
+from django.conf import settings
 from articletrack import models
 from . import modelfactories
 
@@ -185,6 +185,24 @@ class CheckinTests(TestCase):
         self.assertTrue(checkin2.is_newest_checkin)
         self.assertFalse(checkin1.is_newest_checkin)
 
+    def test_new_checkin_has_correct_expiration_date_and_is_not_expirable(self):
+        checkin = modelfactories.CheckinFactory()
+
+        now = datetime.datetime.now()
+        days_delta = datetime.timedelta(days=settings.CHECKIN_EXPIRATION_TIME_SPAN)
+        next_week_date = now + days_delta
+
+        self.assertEqual(checkin.expiration_at.date(), next_week_date.date())
+        self.assertFalse(checkin.is_expirable)
+
+    def test_if_expiration_date_is_today_then_checkin_is_expirable(self):
+        now = datetime.datetime.now()
+
+        checkin = modelfactories.CheckinFactory(expiration_at=now)
+
+        self.assertEqual(checkin.expiration_at.date(), now.date())
+        self.assertTrue(checkin.is_expirable)
+
 
 class ArticleTests(TestCase):
 
@@ -329,3 +347,16 @@ class CheckinWorkflowLogTests(TestCase):
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, user2_send_to_review)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDING)
+
+    def test_do_expires_generate_log_entry(self):
+        checkin = modelfactories.CheckinFactory()
+
+        # do_expires
+        checkin.do_expires()
+
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status)
+
+        self.assertEqual(logs.count(), 1)
+        self.assertIsNone(logs[0].user)
+        self.assertEqual(logs[0].status, 'expired')
+        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_EXPIRED)

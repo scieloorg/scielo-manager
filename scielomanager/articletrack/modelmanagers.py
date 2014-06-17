@@ -15,7 +15,8 @@ class CheckinQuerySet(UserObjectQuerySet):
 
     def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
         return self.filter(
-            article__journals__collections=get_active_collection()).distinct()
+            article__journals__collections=get_active_collection()
+            ).exclude(status='expired').distinct()
 
     def accepted(self):
         return self.filter(status='accepted')
@@ -28,6 +29,9 @@ class CheckinQuerySet(UserObjectQuerySet):
 
     def review(self):
         return self.filter(status='review')
+
+    def expired(self):
+        return self.filter(status='expired')
 
 
 class CheckinManager(UserObjectManager):
