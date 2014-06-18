@@ -145,7 +145,7 @@ def checkin_reject(request, checkin_id):
                                     {'checkin': checkin,
                                      'reason': rejected_cause,
                                      'domain': get_current_site(request)}),
-                                    [checkin.submitted_by])
+                                    [checkin.submitted_by.email])
                 except ValueError:
                     messages.error(request, MSG_FORM_MISSING)
             else:
