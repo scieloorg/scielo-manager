@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import caching.base
 import datetime
 import logging
@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.conf import settings
 
 from articletrack import modelmanagers
 from journalmanager.models import Journal
@@ -20,6 +21,7 @@ MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
 MSG_WORKFLOW_REVIEWED = 'Checkin Reviewed'
 MSG_WORKFLOW_SENT_TO_PENDING = 'Checkin Sent to Pending'
 MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
+MSG_WORKFLOW_EXPIRED = 'Checkin Expired'
 
 
 class Notice(caching.base.CachingMixin, models.Model):
@@ -45,6 +47,7 @@ CHECKIN_STATUS_CHOICES = (
     ('review', _('Review')),
     ('accepted', _('Accepted')),
     ('rejected', _('Rejected')),
+    ('expired', _('Expired')),
 )
 
 
@@ -57,7 +60,7 @@ def log_workflow_status(message):
             log.checkin = args[0]
             log.status = args[0].status
             log.created_at = datetime.datetime.now()
-            log.user = args[1]
+            log.user = args[1] if len(args) >= 2 else None
             log.description = message + (" - Reason: %s" % args[0].rejected_cause if getattr(args[0], 'rejected_cause') else '')
             log.save()
 
@@ -91,6 +94,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
     submitted_by = models.ForeignKey(User, related_name='checkins_submitted_by', null=True, blank=True)
 
+    expiration_at = models.DateTimeField(_(u'Expiration Date'), null=True, blank=True)
+
     class Meta:
         ordering = ['-created_at']
         permissions = (("list_checkin", "Can list Checkin"),)
@@ -117,6 +122,14 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Checks if instance is the newest checkin
         """
         return self.pk == self.get_newest_checkin.pk
+
+    @property
+    def is_expirable(self):
+        """
+        Return True if the expiration_at's date is equal to datetime.date.today()
+        Compared with <= to catch possibly unprocessed checkins
+        """
+        return self.status == 'pending' and self.expiration_at.date() <= datetime.date.today()
 
     def is_accepted(self):
         """
@@ -270,7 +283,6 @@ class Checkin(caching.base.CachingMixin, models.Model):
         else:
             raise ValueError('This checkin does not comply with the conditions to be reviewed')
 
-
     @log_workflow_status(MSG_WORKFLOW_REJECTED)
     def do_reject(self, responsible, reason):
         """
@@ -295,6 +307,18 @@ class Checkin(caching.base.CachingMixin, models.Model):
         else:
             raise ValueError('This checkin does not comply with the conditions to change status to "rejected"')
 
+    @log_workflow_status(MSG_WORKFLOW_EXPIRED)
+    def do_expires(self, responsible=None):
+        """
+        Change self.status to 'expired'.
+        Change self.expiration_at to now()
+        This action generates a ``CheckinWorkflowLog`` entry.
+        """
+        if self.status != 'expired':
+            self.status = 'expired'
+            self.expiration_at = datetime.datetime.now()
+            self.save()
+
     def clean(self):
         # validation for status "accepted"
         if self.status == 'accepted' and not bool(self.accepted_by and self.accepted_at and self.reviewed_by and self.reviewed_at):
@@ -307,6 +331,12 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
     def save(self, *args, **kwargs):
         if self.status == 'pending':
+            if self.expiration_at is None:
+                # update expiration info
+                now = datetime.datetime.now()
+                time_span = settings.CHECKIN_EXPIRATION_TIME_SPAN
+                delta_next = datetime.timedelta(days=time_span)
+                self.expiration_at = now + delta_next
             # clear 'review' fields
             self.reviewed_by = None
             self.reviewed_at = None
@@ -318,6 +348,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.rejected_at = None
             self.rejected_cause = None
         elif self.status == 'review':
+            # update expiration info
+            self.expiration_at = None
             # clear 'accepted' fields
             self.accepted_by = None
             self.accepted_at = None
@@ -326,12 +358,17 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.rejected_at = None
             self.rejected_cause = None
         elif self.status == 'rejected':
+            # update expiration info
+            self.expiration_at = None
             # clear 'review' fields
             self.reviewed_by = None
             self.reviewed_at = None
             # clear 'accepted' fields
             self.accepted_by = None
             self.accepted_at = None
+        else:
+            # update expiration info
+            self.expiration_at = None
         super(Checkin, self).save(*args, **kwargs)
 
     def __unicode__(self):

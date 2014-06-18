@@ -18,5 +18,19 @@ app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
+# Schedule:
+# http://celery.readthedocs.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
+from celery.schedules import crontab
+CELERYBEAT_SCHEDULE = {
+    'checkin-expire-daily': {
+        'task': 'articletrack.tasks.process_expirable_checkins',
+        'schedule': crontab(minute=0, hour=0),
+        'args': ()
+    },
+}
+app.conf.update(
+    CELERYBEAT_SCHEDULE=CELERYBEAT_SCHEDULE,
+)
+
 if __name__ == '__main__':
     app.start()

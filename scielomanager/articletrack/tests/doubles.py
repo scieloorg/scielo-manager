@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from os import path
-from articletrack.balaio import BalaioAPI
+from articletrack.balaio import BalaioAPI, BalaioRPC
 from django.conf import settings
 from urllib2 import urlopen
 
@@ -47,3 +47,12 @@ class BalaioAPIDoubleDisabled(BalaioAPI):
 
     def list_files_members_by_attempt(self, attempt_id):
         raise ValueError
+
+
+class BalaioRPCDouble(BalaioRPC):
+
+    def is_up(self):
+        return True
+
+    def call(self, method, args=()):
+        return None
