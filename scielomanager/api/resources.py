@@ -26,6 +26,8 @@ from journalmanager.models import (
     Article,
 )
 
+from scielomanager.utils import usercontext
+
 from articletrack.models import (
     Checkin,
     Notice,
@@ -35,6 +37,15 @@ from articletrack.models import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def current_user_active_collection():
+    return usercontext.get_finder().get_current_user_active_collection()
+
+
+def current_user_collections():
+    return usercontext.get_finder().get_current_user_collections()
+
 
 class ApiKeyAuthMeta:
     authentication = ApiKeyAuthentication()
@@ -263,11 +274,19 @@ class JournalResource(ModelResource):
             return ''
 
     def dehydrate_pub_status(self, bundle):
-        col = bundle.obj.collections.get()
+        try:
+            col = bundle.obj.collections.get()
+        except:
+            col = current_user_active_collection()
+
         return bundle.obj.membership_info(col, 'status')
 
     def dehydrate_pub_status_reason(self, bundle):
-        col = bundle.obj.collections.get()
+        try:
+            col = bundle.obj.collections.get()
+        except:
+            col = current_user_active_collection()
+
         return bundle.obj.membership_info(col, 'reason')
 
 

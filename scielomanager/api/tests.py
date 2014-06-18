@@ -303,6 +303,39 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
         self.assertEqual(json.loads(response.content)['objects'][0]['eletronic_issn'], '1234-1234')
 
+    def test_dehydrate_pub_status_with_one_collections(self):
+        col = modelfactories.CollectionFactory()
+
+        col.add_user(self.user)
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+
+        response = self.app.get('/api/v1/journals/',
+            extra_environ=self.extra_environ).json
+
+        self.assertEqual(response['objects'][0]['pub_status'], u'inprogress')
+
+    def test_dehydrate_pub_status_with_multiple_collections(self):
+        col = modelfactories.CollectionFactory()
+        col2 = modelfactories.CollectionFactory()
+
+        col.add_user(self.user)
+        col2.add_user(self.user)
+
+        col.make_default_to_user(self.user)
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+        journal.join(col2, self.user, )
+
+        journal.change_status(col, u'current', u'yeah', self.user)
+
+        response = self.app.get('/api/v1/journals/',
+            extra_environ=self.extra_environ).json
+
+        self.assertEqual(response['objects'][0]['pub_status'], u'current')
+
 
 class CollectionRestAPITest(WebTest):
 
