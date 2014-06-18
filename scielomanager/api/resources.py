@@ -3,7 +3,7 @@ import logging
 
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from tastypie.resources import ModelResource, Resource
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
@@ -276,7 +276,7 @@ class JournalResource(ModelResource):
     def dehydrate_pub_status(self, bundle):
         try:
             col = bundle.obj.collections.get()
-        except:
+        except MultipleObjectsReturned:
             col = current_user_active_collection()
 
         return bundle.obj.membership_info(col, 'status')
@@ -284,7 +284,7 @@ class JournalResource(ModelResource):
     def dehydrate_pub_status_reason(self, bundle):
         try:
             col = bundle.obj.collections.get()
-        except:
+        except MultipleObjectsReturned:
             col = current_user_active_collection()
 
         return bundle.obj.membership_info(col, 'reason')
