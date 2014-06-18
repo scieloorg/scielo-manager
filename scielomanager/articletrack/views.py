@@ -3,6 +3,7 @@ import json
 import logging
 
 from waffle.decorators import waffle_flag
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
@@ -29,9 +30,6 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
-
-EMAIL_PREFIX = '[SciELO Manager]'
-EMAIL_DONT_REPLAY = 'DO NOT REPLY'
 
 
 logger = logging.getLogger(__name__)
@@ -137,9 +135,8 @@ def checkin_reject(request, checkin_id):
                     checkin.do_reject(request.user, rejected_cause)
                     messages.info(request, MSG_FORM_SAVED)
 
-                    subject = ' '.join([EMAIL_PREFIX,
+                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                        checkin.package_name,
-                                       EMAIL_DONT_REPLAY,
                                        'Package rejected'])
 
                     tasks.send_mail.delay(subject,
@@ -187,16 +184,15 @@ def checkin_review(request, checkin_id):
                     msg = _("Checkin accepted succesfully.")
                     messages.info(request, msg)
 
-                    subject = ' '.join([EMAIL_PREFIX,
+                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                        checkin.package_name,
-                                       EMAIL_DONT_REPLAY,
                                        'Package accepted'])
 
                     tasks.send_mail.delay(subject,
                                     render_to_string('email/accepted.txt',
                                     {'checkin': checkin,
                                      'domain': get_current_site(request)}),
-                                    [checkin.submitted_by])
+                                    [checkin.submitted_by.email])
                 except ValueError as e:
                     logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
                     error_msg = _("An unexpected error, this attempt connot set to checkout. Please try again later.")
@@ -224,16 +220,15 @@ def checkin_accept(request, checkin_id):
                 checkin.accept(request.user)
                 messages.info(request, MSG_FORM_SAVED)
 
-                subject = ' '.join([EMAIL_PREFIX,
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                    checkin.package_name,
-                                   EMAIL_DONT_REPLAY,
                                    'Package accepted'])
 
                 tasks.send_mail.delay(subject,
                                 render_to_string('email/accepted.txt',
                                 {'checkin': checkin,
                                  'domain': get_current_site(request)}),
-                                [checkin.submitted_by])
+                                [checkin.submitted_by.email])
             except ValueError as e:
                 logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
                 messages.error(request, MSG_FORM_MISSING)
@@ -255,16 +250,15 @@ def checkin_send_to_pending(request, checkin_id):
             checkin.send_to_pending(request.user)
             messages.info(request, MSG_FORM_SAVED)
 
-            subject = ' '.join([EMAIL_PREFIX,
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                checkin.package_name,
-                               EMAIL_DONT_REPLAY,
                                'Package send to pending'])
 
             tasks.send_mail.delay(subject,
                             render_to_string('email/sended_to_pending.txt',
                             {'checkin': checkin,
                              'domain': get_current_site(request)}),
-                            [checkin.submitted_by])
+                            [checkin.submitted_by.email])
         except ValueError:
             messages.error(request, MSG_FORM_MISSING)
     else:
@@ -282,16 +276,15 @@ def checkin_send_to_review(request, checkin_id):
             checkin.send_to_review(request.user)
             messages.info(request, MSG_FORM_SAVED)
 
-            subject = ' '.join([EMAIL_PREFIX,
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                checkin.package_name,
-                               EMAIL_DONT_REPLAY,
                                'Package send to review'])
 
             tasks.send_mail.delay(subject,
                             render_to_string('email/sended_to_review.txt',
                             {'checkin': checkin,
                              'domain': get_current_site(request)}),
-                            [checkin.submitted_by])
+                            [checkin.submitted_by.email])
 
         except ValueError:
             messages.error(request, MSG_FORM_MISSING)
