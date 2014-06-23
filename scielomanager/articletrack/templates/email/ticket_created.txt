@@ -1,0 +1,4 @@
+One ticket was created for checkin: {{checkin.package_name}}
+<br/>
+<br/>
+Check: http://{{domain}}{% url ticket_detail ticket.id %}
