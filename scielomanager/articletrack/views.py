@@ -141,7 +141,7 @@ def checkin_reject(request, checkin_id):
                                        'Package rejected'])
 
                     tasks.send_mail.delay(subject,
-                                    render_to_string('email/rejected.txt',
+                                    render_to_string('email/checkin_rejected.txt',
                                     {'checkin': checkin,
                                      'reason': rejected_cause,
                                      'domain': get_current_site(request)}),
@@ -226,7 +226,7 @@ def checkin_accept(request, checkin_id):
                                    'Package accepted'])
 
                 tasks.send_mail.delay(subject,
-                                render_to_string('email/accepted.txt',
+                                render_to_string('email/checkin_accepted.txt',
                                 {'checkin': checkin,
                                  'domain': get_current_site(request)}),
                                 [checkin.submitted_by.email])
@@ -256,7 +256,7 @@ def checkin_send_to_pending(request, checkin_id):
                                'Package send to pending'])
 
             tasks.send_mail.delay(subject,
-                            render_to_string('email/sended_to_pending.txt',
+                            render_to_string('email/checkin_sended_to_pending.txt',
                             {'checkin': checkin,
                              'domain': get_current_site(request)}),
                             [checkin.submitted_by.email])
@@ -282,7 +282,7 @@ def checkin_send_to_review(request, checkin_id):
                                'Package send to review'])
 
             tasks.send_mail.delay(subject,
-                            render_to_string('email/sended_to_review.txt',
+                            render_to_string('email/checkin_sended_to_review.txt',
                             {'checkin': checkin,
                              'domain': get_current_site(request)}),
                             [checkin.submitted_by.email])
@@ -428,6 +428,20 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
             comment.author = request.user
             comment.ticket = ticket
             comment.save()
+
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                               'NEW COMMENT'])
+
+            emails = [checkin.submitted_by.email for checkin in ticket.article.checkins.all()]
+            emails.append(ticket.author.email)
+
+            tasks.send_mail.delay(subject,
+                            render_to_string('email/comment_created.txt',
+                            {'ticket': ticket,
+                             'checkin': checkin,
+                             'domain': get_current_site(request)}),
+                             emails)
+
             messages.info(request, MSG_FORM_SAVED)
             return render_to_response(
                 template_name,
@@ -455,6 +469,19 @@ def ticket_close(request, ticket_id):
 
     ticket.finished_at = datetime.datetime.now()
     ticket.save()
+
+    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                       'CLOSED TICKET'])
+
+    emails = [checkin.submitted_by.email for checkin in ticket.article.checkins.all()]
+    emails.append(ticket.author.email)
+
+    tasks.send_mail.delay(subject,
+                render_to_string('email/ticket_closed.txt',
+                {'ticket': ticket,
+                 'domain': get_current_site(request)}),
+                 emails)
+
     messages.info(request, MSG_FORM_SAVED)
 
     referer = get_referer_view(request)
@@ -483,8 +510,18 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
             ticket.article = checkin.article
             ticket.save()
 
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                               'TICKET CREATED'])
+
+            tasks.send_mail.delay(subject,
+                        render_to_string('email/ticket_created.txt',
+                        {'ticket': ticket,
+                         'checkin': checkin,
+                         'domain': get_current_site(request)}),
+                        [checkin.submitted_by.email])
+
             messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
+            return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id, ]))
         else:
             context['form'] = ticket_form
 
@@ -498,6 +535,7 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
 @waffle_flag('articletrack')
 @permission_required('articletrack.change_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html'):
+
     ticket = get_object_or_404(models.Ticket.userobjects.active(), pk=ticket_id)
 
     if not ticket.is_open:
@@ -518,6 +556,19 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
             ticket = ticket_form.save()
 
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                               'TICKET MODIFY'])
+
+            emails = [checkin.submitted_by.email for checkin in ticket.article.checkins.all()]
+            emails.append(ticket.author.email)
+
+            tasks.send_mail.delay(subject,
+                        render_to_string('email/ticket_modify.txt',
+                        {'ticket': ticket,
+                         'checkin': checkin,
+                         'domain': get_current_site(request)}),
+                         emails)
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
         else:
@@ -531,6 +582,7 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
 
 def comment_edit(request, comment_id, template_name='articletrack/comment_edit.html'):
+
     comment = get_object_or_404(models.Comment.userobjects.active(), pk=comment_id)
 
     if not comment.ticket.is_open:
@@ -549,8 +601,22 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
         if comment_form.is_valid():
             comment = comment_form.save()
 
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                               'COMMENT MODIFY'])
+
+            emails = [checkin.submitted_by.email for  checkin in comment.ticket.article.checkins]
+            emails.append(comment.ticket.author.email)
+
+            tasks.send_mail.delay(subject,
+                        render_to_string('email/comment_modify.txt',
+                        {'comment': comment,
+                         'ticket': comment.ticket,
+                         'domain': get_current_site(request)}),
+                         emails)
+
+
             messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
+            return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk, checkin.id]))
         else:
             context['form'] = comment_form
 
