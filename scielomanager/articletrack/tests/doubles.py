@@ -3,6 +3,7 @@ from os import path
 from articletrack.balaio import BalaioAPI, BalaioRPC
 from django.conf import settings
 from urllib2 import urlopen
+from packtools import stylechecker
 
 
 def make_expected_generator(file_uri):
@@ -56,3 +57,36 @@ class BalaioRPCDouble(BalaioRPC):
 
     def call(self, method, args=()):
         return None
+
+
+# packtools.stylechecker double
+
+
+class StylecheckerDouble(stylechecker.XML):
+    def __init__(self, file):
+        pass
+
+    def validate(self):
+        return (True, None)
+
+    def validate_style(self):
+        return (True, None)
+
+    def annotate_errors(self):
+        return None
+
+
+class StylecheckerAnnotationsDouble(StylecheckerDouble):
+    def __str__(self):
+        return "some annotations in xml string"
+
+    def validate(self):
+        return (True, None)
+
+    def validate_style(self):
+        class Error(object):
+            line = None
+            column = None
+            message = u"Element 'funding-group': This element is not filled-in correctly."
+            level_name = u'ERROR'
+        return (False, [Error(), ])
