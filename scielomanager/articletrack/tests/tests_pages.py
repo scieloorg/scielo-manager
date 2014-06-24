@@ -372,7 +372,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         # MOCK/REPLACE/FAKE/PIMP MY STYLECHECKER!!!
         XML = self.mocker.replace('packtools.stylechecker.XML')
         XML(expected_response['uri'])
-        self.mocker.call(lambda: doubles.StylecheckerIOErrorDouble(expected_response['uri']))
+        self.mocker.throw(IOError)
         self.mocker.replay()
 
         response = self.app.get(

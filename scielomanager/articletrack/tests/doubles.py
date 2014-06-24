@@ -90,8 +90,3 @@ class StylecheckerAnnotationsDouble(StylecheckerDouble):
             message = u"Element 'funding-group': This element is not filled-in correctly."
             level_name = u'ERROR'
         return (False, [Error(), ])
-
-
-class StylecheckerIOErrorDouble(StylecheckerDouble):
-    def __init__(self, file):
-        raise IOError('Error reading file: %s' % file)
