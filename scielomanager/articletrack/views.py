@@ -502,7 +502,10 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
         context,
         context_instance=RequestContext(request)
     )
+
+
 # BALAIO API
+
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_ticket', login_url=AUTHZ_REDIRECT_URL)
@@ -552,4 +555,3 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
             return view_response
     else:
         return HttpResponseBadRequest()
-
