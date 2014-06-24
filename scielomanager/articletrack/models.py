@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import caching.base
 import datetime
 import logging
@@ -16,7 +16,7 @@ from journalmanager.models import Journal
 
 logger = logging.getLogger(__name__)
 
-SERVICE_STATUS_MAX_STAGES = 2  # The number of block SERV_BEGIN/SERV_END that must be listed in notices at the end of processing
+SERVICE_STATUS_MAX_STAGES = 2  # The count of pairs (SERV_BEGIN, SERV_END) in notice.status at the end of processing
 
 MSG_WORKFLOW_ACCEPTED = 'Checkin Accepted'
 MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
@@ -75,15 +75,19 @@ def validate_sequence(sequence, open_symbol, close_symbol):
                       i.e.: ["SERV_BEGIN", "SERV_BEGIN", "SERV_END"]
     @param: open_symbol: string represents the open tag/symbol. i.e.: "SERV_BEGIN"
     @param: close_symbol string represents the close tag/symbol. i.e.: "SERV_END"
-    This function return True if the sequence has for each Open symbol the
-    corresponding Close symbol and no Open or Close symbol has no pair.
+
+    This function return True if the sequence has for each "open_symbol" the
+    corresponding "close_symbol" as the next item, and no "open_symbol" or "close_symbol" without a pair.
     """
     d = deque()
     for item in sequence:
         if item == open_symbol:
             d.append(item)
         elif item == close_symbol:
-            if d[-1] == open_symbol:
+            if len(d) == 1 and d[0] == open_symbol:
+                # only call pop() if the first element is a open_symbol,
+                # and the next one in sequence (a.k.a. "item" here) is a close_symbol
+                # to avoid invalid sequence as: <BEGIN, BEGIN, END, END>
                 d.pop()
             else:
                 return False
@@ -122,21 +126,31 @@ class Checkin(caching.base.CachingMixin, models.Model):
     @property
     def is_serv_status_completed(self):
         """
-        If the count of SERV_END == SERVICE_STATUS_MAX_STAGES, and all SERV_BEGIN has a SERV_END,
-            the checkin's automatic notices is FINISHED
-            -> Return True
-        Else:
-            the checkin's automatic notices is UNIFINISHED
+        If:
+            the count of SERV_END < SERVICE_STATUS_MAX_STAGES, or
+            the count of SERV_BEGIN < SERVICE_STATUS_MAX_STAGES
+        then:
+            the checkin's notices sequence is UNCOMPLETED (possible more notices will arrive)
             -> Return False
+        Else:
+            if the count of SERV_* is equal to 2 * SERVICE_STATUS_MAX_STAGES, then
+                call the ``validate_sequence`` function
+                to check if the checkin's notices sequence is COMPLETED
+                -> Return True
+            else:
+                -> Return False
         """
-        count_serv_end_notices = self.notices.filter(status__iexact="serv_end").count()
-        count_serv_begin_notices = self.notices.filter(status__iexact="serv_begin").count()
+        count_serv_end_notices = self.notices.filter(status__iexact="SERV_END").count()
+        count_serv_begin_notices = self.notices.filter(status__iexact="SERV_BEGIN").count()
         if (count_serv_end_notices < SERVICE_STATUS_MAX_STAGES) or (count_serv_begin_notices < SERVICE_STATUS_MAX_STAGES):
             return False
         else:
             serv_ocurrs = self.notices.filter(status__istartswith="serv_").order_by('created_at')
-            sequence = [sym for sym in serv_ocurrs]
-            return validate_sequence(sequence, open_symbol="SERV_BEGIN", close_symbol="SERV_END")
+            if serv_ocurrs.count() == (2 * SERVICE_STATUS_MAX_STAGES):
+                sequence = [sym.status for sym in serv_ocurrs]
+                return validate_sequence(sequence, open_symbol="SERV_BEGIN", close_symbol="SERV_END")
+            else:
+                return False
 
     @property
     def get_error_level(self):
@@ -315,7 +329,6 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.save()
         else:
             raise ValueError('This checkin does not comply with the conditions to be reviewed')
-
 
     @log_workflow_status(MSG_WORKFLOW_REJECTED)
     def do_reject(self, responsible, reason):

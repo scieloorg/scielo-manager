@@ -185,6 +185,20 @@ class CheckinTests(TestCase):
         self.assertTrue(checkin2.is_newest_checkin)
         self.assertFalse(checkin1.is_newest_checkin)
 
+    def test_validate_sequence_function(self):
+        sequences = (
+            (True, ["SERV_BEGIN", "SERV_END", "SERV_BEGIN", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "ANOTHER_SYMBOL"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_END", "SERV_END"]),
+            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_BEGIN", "SERV_BEGIN", ]),
+            (False, ["SERV_END", "SERV_END", "SERV_END", "SERV_END", ]),
+        )
+        for expected_result, sequence in sequences:
+            validation_result = models.validate_sequence(sequence, "SERV_BEGIN", "SERV_END")
+            self.assertEqual(expected_result, validation_result)
+
 
 class ArticleTests(TestCase):
 
