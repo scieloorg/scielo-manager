@@ -1075,7 +1075,7 @@ class IssueTitle(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     issue = models.ForeignKey(Issue)
     language = models.ForeignKey('Language')
-    title = models.CharField(_('Title'), max_length=128)
+    title = models.CharField(_('Title'), max_length=256)
 
 
 class PendedForm(caching.base.CachingMixin, models.Model):
