@@ -82,6 +82,15 @@
 
           {% endif %}
 
+          {% if checkin.status == "pending" and checkin.expiration_at %}
+              <dt>{% trans "Will Expire at" %}:</dt>
+              <dd>
+                <span class="label label-important">
+                  {{ checkin.expiration_at|date:"d/m/Y - H:i" }}
+                </span>
+              </dd>
+          {% endif %}
+
         </dl>
       </div>
     </div>

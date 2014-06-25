@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # Django settings for scielomanager project.
 import os
-
+from datetime import timedelta
 from django.contrib.messages import constants as messages
 
 DEBUG = False
@@ -67,20 +67,20 @@ USE_L10N = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-MEDIA_ROOT  = os.path.join(HERE, 'static/media/')
-#STATIC_ROOT = os.path.join(PROJECT_PATH, 'static/')
+MEDIA_ROOT = os.path.join(HERE, 'static/media/')
+# STATIC_ROOT = os.path.join(PROJECT_PATH, 'static/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
-MEDIA_URL  = '/static/media/'
+MEDIA_URL = '/static/media/'
 
 # Webassets
 ASSETS_ROOT = os.path.join(HERE, 'static/')
 ASSETS_URL = '/static/'
 ASSETS_DEBUG = False
 
-#Third-party URLS
+# Third-party URLS
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest'
 
 AVAILABLE_IN_TEMPLATES = {
@@ -115,7 +115,7 @@ SECRET_KEY = ')gowbe964a_$7&gj5mt%fz5asd&9!8d^_-+2wjacn4sm6e$!cw'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -238,7 +238,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 CACHES = {
     'default': {
-        #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        # 'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         'LOCATION': '',
     }
@@ -276,8 +276,11 @@ if 'djcelery' in INSTALLED_APPS:
     CELERY_TIMEZONE = TIME_ZONE
     BROKER_URL = 'django://'
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-    CELERY_RESULT_BACKEND ='djcelery.backends.database:DatabaseBackend'
-    CELERY_IMPORTS = ('scielomanager.tasks',)
+    CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
+    CELERY_IMPORTS = ('scielomanager.tasks')
+
+# Checkin expiration time span (in days)
+CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
 
 ### END App customization settings
 #################################################################

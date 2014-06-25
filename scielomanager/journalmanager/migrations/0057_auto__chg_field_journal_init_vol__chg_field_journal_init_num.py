@@ -8,15 +8,28 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        for issue in orm.Issue.objects.filter():
-            if 'spe' in issue.number:
-                issue.spe_text = issue.number.lower().replace('spe', '')
-                issue.number = ''
-                issue.type = 'special'
-                issue.save()
+
+        # Changing field 'Journal.init_vol'
+        db.alter_column('journalmanager_journal', 'init_vol', self.gf('django.db.models.fields.CharField')(max_length=16, null=True))
+
+        # Changing field 'Journal.init_num'
+        db.alter_column('journalmanager_journal', 'init_num', self.gf('django.db.models.fields.CharField')(max_length=16, null=True))
 
     def backwards(self, orm):
-        pass
+
+        # User chose to not deal with backwards NULL issues for 'Journal.init_vol'
+        raise RuntimeError("Cannot reverse this migration. 'Journal.init_vol' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration
+        # Changing field 'Journal.init_vol'
+        db.alter_column('journalmanager_journal', 'init_vol', self.gf('django.db.models.fields.CharField')(max_length=16))
+
+        # User chose to not deal with backwards NULL issues for 'Journal.init_num'
+        raise RuntimeError("Cannot reverse this migration. 'Journal.init_num' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration
+        # Changing field 'Journal.init_num'
+        db.alter_column('journalmanager_journal', 'init_num', self.gf('django.db.models.fields.CharField')(max_length=16))
 
     models = {
         'auth.group': {
@@ -181,8 +194,8 @@ class Migration(SchemaMigration):
             'frequency': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'index_coverage': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'init_num': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
-            'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'init_num': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
+            'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
             'init_year': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
             'is_indexed_aehci': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_indexed_scie': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
