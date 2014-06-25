@@ -5,6 +5,7 @@ from django_factory_boy import auth
 
 from articletrack import models
 from . import modelfactories
+from scielomanager.utils import misc
 
 
 class CommentTests(TestCase):
@@ -188,7 +189,7 @@ class CheckinTests(TestCase):
     def test_validate_sequence_function(self):
         sequences = (
             (True, ["SERV_BEGIN", "SERV_END", "SERV_BEGIN", "SERV_END"]),
-            (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "SERV_END"]),
+            (True, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "SERV_END"]),
             (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END", "ANOTHER_SYMBOL"]),
             (False, ["SERV_BEGIN", "SERV_BEGIN", "SERV_END"]),
             (False, ["SERV_BEGIN", "SERV_END", "SERV_END"]),
@@ -196,7 +197,7 @@ class CheckinTests(TestCase):
             (False, ["SERV_END", "SERV_END", "SERV_END", "SERV_END", ]),
         )
         for expected_result, sequence in sequences:
-            validation_result = models.validate_sequence(sequence, "SERV_BEGIN", "SERV_END")
+            validation_result = misc.validate_sequence(sequence)
             self.assertEqual(expected_result, validation_result)
 
 

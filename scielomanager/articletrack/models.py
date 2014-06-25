@@ -13,6 +13,7 @@ from django.core.exceptions import SuspiciousOperation, ValidationError
 
 from articletrack import modelmanagers
 from journalmanager.models import Journal
+from scielomanager.utils import misc
 
 logger = logging.getLogger(__name__)
 
@@ -69,31 +70,6 @@ def log_workflow_status(message):
     return decorator
 
 
-def validate_sequence(sequence, open_symbol, close_symbol):
-    """
-    @param: sequence: iterable with string of symbols/tags to validate.
-                      i.e.: ["SERV_BEGIN", "SERV_BEGIN", "SERV_END"]
-    @param: open_symbol: string represents the open tag/symbol. i.e.: "SERV_BEGIN"
-    @param: close_symbol string represents the close tag/symbol. i.e.: "SERV_END"
-
-    This function return True if the sequence has for each "open_symbol" the
-    corresponding "close_symbol" as the next item, and no "open_symbol" or "close_symbol" without a pair.
-    """
-    d = deque()
-    for item in sequence:
-        if item == open_symbol:
-            d.append(item)
-        elif item == close_symbol:
-            if len(d) == 1 and d[0] == open_symbol:
-                # only call pop() if the first element is a open_symbol,
-                # and the next one in sequence (a.k.a. "item" here) is a close_symbol
-                # to avoid invalid sequence as: <BEGIN, BEGIN, END, END>
-                d.pop()
-            else:
-                return False
-    return len(d) == 0
-
-
 class Checkin(caching.base.CachingMixin, models.Model):
 
     # Custom Managers
@@ -134,7 +110,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             -> Return False
         Else:
             if the count of SERV_* is equal to 2 * SERVICE_STATUS_MAX_STAGES, then
-                call the ``validate_sequence`` function
+                call the ``misc.validate_sequence`` function
                 to check if the checkin's notices sequence is COMPLETED
                 -> Return True
             else:
@@ -148,7 +124,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             serv_ocurrs = self.notices.filter(status__istartswith="serv_").order_by('created_at')
             if serv_ocurrs.count() == (2 * SERVICE_STATUS_MAX_STAGES):
                 sequence = [sym.status for sym in serv_ocurrs]
-                return validate_sequence(sequence, open_symbol="SERV_BEGIN", close_symbol="SERV_END")
+                return misc.validate_sequence(sequence)
             else:
                 return False
 
