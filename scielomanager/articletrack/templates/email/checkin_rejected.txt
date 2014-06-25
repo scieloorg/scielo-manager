@@ -1,3 +1,4 @@
 Your article was rejected for the following reason: {{reason}}
-
+<br/>
+<br/>
 Check: http://{{domain}}{% url notice_detail checkin.id %}

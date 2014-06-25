@@ -1,4 +1,4 @@
-Any comment of ticket: {{ticket.title}} <b>has been modified</b>.
+Any comment of the ticket {{ticket.title}} <b>has been modified</b>.
 <br/>
 <br/>
 Check: http://{{domain}}{% url ticket_detail ticket.id %}
