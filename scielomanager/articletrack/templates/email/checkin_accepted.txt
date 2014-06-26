@@ -1,0 +1,4 @@
+Your article was accepted by SciELO team, it will be soon available online.
+<br/>
+<br/>
+Check: http://{{domain}}{% url notice_detail checkin.id %}

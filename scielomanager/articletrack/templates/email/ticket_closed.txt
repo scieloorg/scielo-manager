@@ -1,0 +1,4 @@
+The ticket {{ticket.title}}  <b>was closed</b>.
+<br/>
+<br/>
+Check: http://{{domain}}{% url ticket_detail ticket.id %}
