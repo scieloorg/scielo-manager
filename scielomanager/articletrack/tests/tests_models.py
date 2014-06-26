@@ -47,12 +47,12 @@ class CheckinTests(TestCase):
         rejection_text = 'your checkin is bad, and you should feel bad!'  # http://www.quickmeme.com/Zoidberg-you-should-feel-bad/?upcoming
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user)
 
         # can be reviewed and can be rejected, then reject
-        self.assertTrue(checkin.can_be_reviewed())
-        self.assertTrue(checkin.can_be_rejected())
+        self.assertTrue(checkin.can_be_reviewed)
+        self.assertTrue(checkin.can_be_rejected)
         checkin.do_reject(user, rejection_text)
 
         # check status and Integrity
@@ -67,13 +67,13 @@ class CheckinTests(TestCase):
         self.assertIsNone(checkin.accepted_at)
 
         # the checkin is not pending, reviewed, or accepted
-        self.assertFalse(checkin.is_reviewed())
-        self.assertFalse(checkin.is_accepted())
-        self.assertFalse(checkin.can_be_accepted())
-        self.assertFalse(checkin.can_be_reviewed())
+        self.assertFalse(checkin.is_reviewed)
+        self.assertFalse(checkin.is_accepted)
+        self.assertFalse(checkin.can_be_accepted)
+        self.assertFalse(checkin.can_be_reviewed)
 
         # checkin must be able to be sent to pending
-        self.assertTrue(checkin.can_be_send_to_pending())
+        self.assertTrue(checkin.can_be_send_to_pending)
         self.assertEqual(checkin.rejected_cause, rejection_text)
 
     def test_accept_workflow_simple(self):
@@ -81,15 +81,15 @@ class CheckinTests(TestCase):
         checkin = modelfactories.CheckinFactory()
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user)
 
         # do review
-        self.assertTrue(checkin.can_be_reviewed())
+        self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review(user)
 
         # do accept
-        self.assertTrue(checkin.can_be_accepted())
+        self.assertTrue(checkin.can_be_accepted)
         checkin.accept(user)
 
         # fields related with review and accept, must be clear
@@ -99,22 +99,22 @@ class CheckinTests(TestCase):
         self.assertIsNotNone(checkin.reviewed_at)
 
         # checkin must be accepted
-        self.assertTrue(checkin.is_accepted())
+        self.assertTrue(checkin.is_accepted)
 
     def test_accept_raises_ValueError_when_already_accepted(self):
         user = auth.UserF(is_active=True)
         checkin = modelfactories.CheckinFactory()
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user)
 
         # do review
-        self.assertTrue(checkin.can_be_reviewed())
+        self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review(user)
 
         # do accept
-        self.assertTrue(checkin.can_be_accepted())
+        self.assertTrue(checkin.can_be_accepted)
         checkin.accept(user)
 
         self.assertRaises(ValueError, lambda: checkin.accept(user))
@@ -125,15 +125,15 @@ class CheckinTests(TestCase):
         checkin = modelfactories.CheckinFactory()
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(active_user)
 
         # do review
-        self.assertTrue(checkin.can_be_reviewed())
+        self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review(active_user)
 
         # do accept
-        self.assertTrue(checkin.can_be_accepted())
+        self.assertTrue(checkin.can_be_accepted)
         self.assertRaises(ValueError, lambda: checkin.accept(inactive_user))
 
     def test_is_accepted_method_with_accepted_checkin(self):
@@ -141,21 +141,21 @@ class CheckinTests(TestCase):
         checkin = modelfactories.CheckinFactory()
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user)
 
         # do review
-        self.assertTrue(checkin.can_be_reviewed())
+        self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review(user)
 
         # do accept
-        self.assertTrue(checkin.can_be_accepted())
+        self.assertTrue(checkin.can_be_accepted)
         checkin.accept(user)
-        self.assertTrue(checkin.is_accepted())
+        self.assertTrue(checkin.is_accepted)
 
     def test_is_accepted_method_without_accepted_checkin(self):
         checkin = modelfactories.CheckinFactory()
-        self.assertFalse(checkin.is_accepted())
+        self.assertFalse(checkin.is_accepted)
 
     def test_get_newest_checkin(self):
         user = auth.UserF(is_active=True)
@@ -265,7 +265,7 @@ class CheckinWorkflowLogTests(TestCase):
         user = auth.UserF(is_active=True)
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user)
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user)
@@ -280,11 +280,11 @@ class CheckinWorkflowLogTests(TestCase):
         user_review = auth.UserF(is_active=True)
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user_send_to_review)
 
         # do review
-        self.assertTrue(checkin.can_be_reviewed())
+        self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review(user_review)
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_review)
@@ -300,15 +300,15 @@ class CheckinWorkflowLogTests(TestCase):
         user_accept = auth.UserF(is_active=True)
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user_send_to_review)
 
         # do review
-        self.assertTrue(checkin.can_be_reviewed())
+        self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review(user_review)
 
         # do accept
-        self.assertTrue(checkin.can_be_accepted())
+        self.assertTrue(checkin.can_be_accepted)
         checkin.accept(user_accept)
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_accept)
@@ -324,11 +324,11 @@ class CheckinWorkflowLogTests(TestCase):
         rejection_text = 'your checkin is bad, and you should feel bad!'  # http://www.quickmeme.com/Zoidberg-you-should-feel-bad/?upcoming
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user_send_to_review)
 
         # do reject
-        self.assertTrue(checkin.can_be_rejected())
+        self.assertTrue(checkin.can_be_rejected)
         checkin.do_reject(user_reject, rejection_text)
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_reject)
@@ -346,15 +346,15 @@ class CheckinWorkflowLogTests(TestCase):
         rejection_text = 'your checkin is bad, and you should feel bad!'  # http://www.quickmeme.com/Zoidberg-you-should-feel-bad/?upcoming
 
         # send to review
-        self.assertTrue(checkin.can_be_send_to_review())
+        self.assertTrue(checkin.can_be_send_to_review)
         checkin.send_to_review(user1_send_to_review)
 
         # do reject
-        self.assertTrue(checkin.can_be_rejected())
+        self.assertTrue(checkin.can_be_rejected)
         checkin.do_reject(user_reject, rejection_text)
 
         # send to pending
-        self.assertTrue(checkin.can_be_send_to_pending())
+        self.assertTrue(checkin.can_be_send_to_pending)
         checkin.send_to_pending(user2_send_to_review)
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user2_send_to_review)
@@ -439,4 +439,3 @@ class CheckinWorkflowLogTests(TestCase):
                 created_at=datetime.datetime.now())
         self.assertTrue(checkin.is_serv_status_completed)
         self.assertEqual('ok', checkin.get_error_level)
-
