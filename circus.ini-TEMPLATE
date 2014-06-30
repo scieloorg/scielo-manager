@@ -22,6 +22,21 @@ numprocesses = 2
 ;---- needed if running outside the app's virtualenv
 ;virtualenv = $(circus.env.virtualenv_path)
 
+[watcher:celeryd]
+copy_env = True
+copy_path = True
+
+cmd = celery
+args = -A scielomanager worker --loglevel=INFO --logfile=/var/log/celery/celeryd.log --pidfile=/tmp/celeryd.pid
+virtualenv = $(circus.env.virtualenv_path)
+
+[watcher:celerybeat]
+copy_env = True
+copy_path = True
+
+cmd = celery
+args = -A scielomanager beat --loglevel=INFO --logfile=/var/log/celery/celerybeat.log --pidfile=/tmp/celerybeat.pid
+virtualenv = $(circus.env.virtualenv_path)
 
 [socket:scielomanager]
 ;---- bind a AF_INET socket
@@ -30,6 +45,6 @@ numprocesses = 2
 
 ;---- bind a UNIX socket
 family = AF_UNIX
-path = scielomanager.sock 
+path = scielomanager.sock
 replace = True
 
