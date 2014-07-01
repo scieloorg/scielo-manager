@@ -1,1 +1,0 @@
-Your package was sent for review, check: http://{{domain}}{% url notice_detail checkin.id %}
