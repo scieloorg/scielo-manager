@@ -22,7 +22,7 @@ from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 
-USER_EMAIL_ERROR_MESSAGES = _("That e-mail address is associated with another user account.")
+USER_EMAIL_ERROR_MESSAGES = _("This email is being used by another user, please try another email.")
 
 
 class UserCreationForm(UserCreationForm):
