@@ -505,6 +505,50 @@ class UserFormTests(WebTest):
         self.assertTrue(response.context['user'].user_collection.get(
             pk=self.collection.pk))
 
+    def test_POST_workflow_with_already_exist_email(self):
+        """
+        When a valid form is submited, the email field must be unique.
+
+        The user should receive a message that this email already exists.
+        """
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['user-email'] = self.user.email
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit()
+
+        self.assertTemplateUsed(response, 'journalmanager/add_user.html')
+        response.mustcontain('This email is being used by another user, please try another email.')
+
+    def test_POST_workflow_must_not_validate_the_current_email_on_edit(self):
+        """
+        When a valid form is submited, the email field must be unique, but the validate
+        must ignore the current email on edit .
+
+        The user should not receive a message that this email already exists.
+        """
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.edit', args=[self.user.id, ]), user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['user-email'] = self.user.email
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
+
     def test_new_users_must_receive_an_email_to_define_their_password(self):
         perm = _makePermission(perm='change_user',
                                model='user', app_label='auth')
