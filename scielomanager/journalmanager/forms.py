@@ -22,7 +22,7 @@ from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 
-USER_EMAIL_ERROR_MESSAGES = _("That e-mail address is associated with another user account.")
+USER_EMAIL_ERROR_MESSAGES = _("This email is being used by another user, please try another email.")
 
 
 class UserCreationForm(UserCreationForm):
@@ -275,7 +275,7 @@ class UserForm(ModelForm):
         Validates that the given email address is not used by another user.
         """
         email = self.cleaned_data["email"]
-        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True).exclude(pk=self.instance.id)
         if len(self.users_cache) > 0:
             raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
         return email
