@@ -80,10 +80,10 @@
                             {{ num.identification }}
                           {% endif %}
                         </a>
-                      {% flag 'articletrack' %}
-                        <span class="label pull-right">{{ num.articles.all|length }} {% trans "articles" %}</span>
                       </td>
+                      {% flag 'articletrack' %}
                         <td>
+                          <span class="label">{{ num.articles.all|length }} {% trans "articles" %}</span>
                           <a  class='btn btn-mini' href="{% url article.index num.id %}">{% trans "view articles" %}</a>
                         </td>
                       {% endflag %}
