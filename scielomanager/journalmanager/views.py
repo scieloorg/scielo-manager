@@ -345,7 +345,7 @@ def add_user(request, user_id=None):
     user_collections = models.get_user_collections(request.user.id)
 
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
-        form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+        form=UserCollectionsForm, extra=1, can_delete=True, formset=OnlyOneDefaultCollectionRequiredFormSet)
 
     # filter the collections the user is manager.
     UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
