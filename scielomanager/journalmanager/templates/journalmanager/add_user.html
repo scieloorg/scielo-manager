@@ -5,7 +5,7 @@
 {% block messages %}
   {% if add_form.errors %}
   <div class="alert alert-error">
-    <button class="close" data-dismiss="alert" type="button">×</button>
+    <button class="close" data-dismiss="alert" type="button">&times;</button>
     <ul>
       {% for field in add_form %}
         {% if field.errors %}
@@ -15,6 +15,13 @@
     </ul>
   </div>
   {% endif %}
+
+  {% for error in add_form.non_field_errors %}
+    <div class="alert alert-error">
+      <button class="close" data-dismiss="alert" type="button">&times;</button> 
+      <strong>{{ error }}</strong>
+    </div>
+  {% endfor %}
 {% endblock %}
 
 {% block form_content %}
@@ -89,11 +96,11 @@
 {% if usercollectionsformset.non_form_errors %}
   <div class="alert alert-error">
     <button class="close" data-dismiss="alert" type="button">×</button>
-      {% for non_form_error in usercollectionsformset.non_form_errors %}
-        {{ non_form_error }}
-      {% endfor %}
+    {% for non_form_error in usercollectionsformset.non_form_errors %}
+      {{ non_form_error }}
+    {% endfor %}
   </div>
-  {% endif %}
+{% endif %}
 
   <h2>{% trans "User Collections" %}:</h2>
   <div class="well">
@@ -103,7 +110,8 @@
           <th>{% trans "Collection" %}
           	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
           </th>
-          <th>{% trans "is_manager" %}</th>
+          <th>{% trans "is manager" %}</th>
+          <th>{% trans "is default" %}</th>
           <th>{% trans "options" %}</th>
         </tr>
       </thead>
@@ -120,6 +128,11 @@
           <td>
             <div class="control-group {% if add_form.is_manager.errors %}error{% endif %}">
               {{ form.is_manager }}
+            </div>
+          </td>
+          <td>
+            <div class="control-group {% if add_form.is_default.errors %}error{% endif %}">
+              {{ form.is_default }}
             </div>
           </td>
           <td></td>
