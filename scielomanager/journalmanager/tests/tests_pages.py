@@ -197,7 +197,6 @@ class JournalEditorsTests(WebTest):
         self.journal = modelfactories.JournalFactory(creator=self.user)
         self.journal.join(self.collection, self.user)
 
-
     def test_journal_editors_list_without_users(self):
         from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
@@ -254,6 +253,81 @@ class JournalEditorsTests(WebTest):
         response_js = json.loads(response.content)
 
         self.assertIn("username", response_js[0])
+
+    def test_edit_journal_status_ok(self):
+        "Try to submit a change of status correctly"
+        perm_journal_list = _makePermission(perm='change_journaltimeline',
+                                            model='journaltimeline',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        journal_history = self.journal.statuses.filter(collection=self.collection)
+        journal_history_count_elem = len(journal_history)
+        response = self.app.get(
+            reverse('journal_status.edit', args=[self.journal.pk]),
+            user=self.user,
+            expect_errors=False
+        )
+        form = response.forms['journal-status-form']
+
+        current_status = self.journal.membership_info(self.collection).status
+
+        form['status'] = current_status
+        form['reason'] = 'input some reason here'
+
+        response = form.submit().follow()
+        self.assertTemplateUsed(
+            response,
+            'journalmanager/edit_journal_status.html')
+        response.mustcontain('Saved')
+        # add a new entry on the history of journal statuses
+        self.assertEqual(
+            journal_history_count_elem + 1,
+            len(self.journal.statuses.filter(collection=self.collection))
+        )
+
+    def test_edit_journal_status_fail_if_not_set_reason_field(self):
+        """
+        Try to submit a change of status but:
+        - no reason field filled
+        so, the journal has no change_user
+        and error are displayed to user
+        """
+        perm_journal_list = _makePermission(perm='change_journaltimeline',
+                                            model='journaltimeline',
+                                            app_label='journalmanager')
+        self.user.user_permissions.add(perm_journal_list)
+
+        journal_history = self.journal.statuses.filter(collection=self.collection)
+        journal_history_count_elem = len(journal_history)
+        response = self.app.get(
+            reverse('journal_status.edit', args=[self.journal.pk]),
+            user=self.user,
+            expect_errors=False
+        )
+        form = response.forms['journal-status-form']
+
+        current_status = self.journal.membership_info(self.collection).status
+
+        form['status'] = current_status
+        form['reason'] = ''
+        response = form.submit()
+
+        form = response.context['add_form']
+        self.assertFalse(form.is_valid())
+        self.assertTemplateUsed(
+            response,
+            'journalmanager/edit_journal_status.html'
+        )
+        self.assertNotIn('Saved', response.body)
+        # add a new entry on the history of journal statuses
+        self.assertEqual(
+            journal_history_count_elem,
+            len(self.journal.statuses.filter(collection=self.collection))
+        )
+        expected_errors = {'reason': [u'This field is required.']}
+        self.assertEqual(expected_errors, form.errors)
+        self.assertIn('This field is required.', response.body)
 
 
 class JournalsListTests(WebTest):
