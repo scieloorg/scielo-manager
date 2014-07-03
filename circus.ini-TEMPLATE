@@ -30,6 +30,6 @@ numprocesses = 2
 
 ;---- bind a UNIX socket
 family = AF_UNIX
-path = scielomanager.sock 
+path = scielomanager.sock
 replace = True
 
