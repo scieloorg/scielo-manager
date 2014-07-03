@@ -304,6 +304,7 @@ class MembershipForm(ModelForm):
         membership.created_by = user
         membership.save()
 
+
 class IssueBaseForm(forms.ModelForm):
     section = forms.ModelMultipleChoiceField(
         models.Section.objects.none(),
@@ -752,7 +753,6 @@ class UserCollectionsForm(ModelForm):
 
     class Meta:
         model = models.UserCollections
-        exclude = ('is_default', )
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
@@ -803,3 +803,19 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
                 pass
         if count < 1:
             raise forms.ValidationError(_('Please fill in at least one form'))
+
+
+class OnlyOneDefaultCollectionRequiredFormSet(FirstFieldRequiredFormSet):
+    def clean(self):
+        super(OnlyOneDefaultCollectionRequiredFormSet, self).clean()
+        count = 0
+        for form in self.forms:
+            try:
+                if form.cleaned_data and form.cleaned_data.get('is_default', False):
+                    count += 1
+            except AttributeError:
+                pass
+        if count < 1:
+            raise forms.ValidationError(_('At least one collection is required to be set as default'))
+        elif count > 1:
+            raise forms.ValidationError(_('Only one collection can be set as default!'))
