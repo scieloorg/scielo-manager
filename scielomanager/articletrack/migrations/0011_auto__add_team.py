@@ -11,15 +11,26 @@ class Migration(SchemaMigration):
         # Adding model 'Team'
         db.create_table('articletrack_team', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.TextField')()),
-            ('member', self.gf('django.db.models.fields.related.ForeignKey')(related_name='team', to=orm['auth.User'])),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=128)),
         ))
         db.send_create_signal('articletrack', ['Team'])
+
+        # Adding M2M table for field member on 'Team'
+        m2m_table_name = db.shorten_name('articletrack_team_member')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('team', models.ForeignKey(orm['articletrack.team'], null=False)),
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['team_id', 'user_id'])
 
 
     def backwards(self, orm):
         # Deleting model 'Team'
         db.delete_table('articletrack_team')
+
+        # Removing M2M table for field member on 'Team'
+        db.delete_table(db.shorten_name('articletrack_team_member'))
 
 
     models = {
@@ -84,8 +95,8 @@ class Migration(SchemaMigration):
         'articletrack.team': {
             'Meta': {'object_name': 'Team'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'member': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'team'", 'to': "orm['auth.User']"}),
-            'name': ('django.db.models.fields.TextField', [], {})
+            'member': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'team'", 'symmetrical': 'False', 'to': "orm['auth.User']"}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'})
         },
         'articletrack.ticket': {
             'Meta': {'ordering': "['started_at']", 'object_name': 'Ticket'},

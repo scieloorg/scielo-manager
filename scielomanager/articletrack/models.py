@@ -33,7 +33,7 @@ class Team(caching.base.CachingMixin, models.Model):
     Represents a group of users
     """
 
-    name = models.CharField(_(u"Name of team"), max_length=128)
+    name = models.CharField(_(u"Name of team"), max_length=128, unique=True)
     member = models.ManyToManyField(User, related_name="team")
 
     class Meta:
