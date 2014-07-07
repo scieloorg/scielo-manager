@@ -28,6 +28,20 @@ MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 MSG_WORKFLOW_EXPIRED = 'Checkin Expired'
 
 
+class Team(caching.base.CachingMixin, models.Model):
+    """
+    Represents a group of users
+    """
+
+    name = models.CharField(_(u"Name of team"), max_length=128, unique=True)
+    member = models.ManyToManyField(User, related_name="team")
+
+    class Meta:
+        verbose_name = _(u'Team')
+        verbose_name_plural = _(u'Teams')
+        permissions = (("list_team", "Can list Team"),)
+
+
 class Notice(caching.base.CachingMixin, models.Model):
 
     checkin = models.ForeignKey('Checkin', related_name='notices')
