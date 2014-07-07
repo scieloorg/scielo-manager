@@ -31,8 +31,20 @@
       options = {placement:'bottom'}
       $(".tip-bottom").tooltip(options);
       $(".popover-bottom").popover(options)
+
+      $('.search_filter').click(function(event){
+        event.preventDefault();
+        var qs = "?q=" + $("#search_input").val();
+        window.location.href = $(this).attr("href") + encodeURI(qs);
+      });
+
+      $(":file").filestyle({
+        buttonText: '{% trans "Browse" %}',
+        classButton: 'btn btn-primary'
+      });
+
     });
-  </script>
+  </script>  
   {% block extrafooter %}{% endblock %}
   </body>
 </html>

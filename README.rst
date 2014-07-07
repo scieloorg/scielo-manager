@@ -1,20 +1,29 @@
-just create a database, preferably in PostgreSQL, and make the necessary db settings in ``scielomanager/settings_local.include``.
+Setup
+=====
+
+Just create a database, preferably in PostgreSQL, and make the necessary db settings in ``scielomanager/settings_local.include``.
 
 run ``make setup`` et voilà.
 
+Docs
+====
+
 See more information about this project in http://docs.scielo.org
 
-.. image:: https://secure.travis-ci.org/scieloorg/SciELO-Manager.png?branch=master
-`See Build details <http://travis-ci.org/#!/scieloorg/SciELO-Manager>`_
+Build status
+============
 
-------
+.. image:: https://travis-ci.org/scieloorg/scielo-manager.png?branch=master :target: https://travis-ci.org/scieloorg/scielo-manager
+`See Build details <https://travis-ci.org/scieloorg/scielo-manager>`_
+
+i18n status
+===========
 
 **Current internationalization status**
 
 .. image:: https://www.transifex.com/projects/p/scielomanager/resource/english/chart/image_png
 `Help with translations <https://www.transifex.com/projects/p/scielomanager/resource/english/>`_
-    
-    
+
 
 Use License
 ===========

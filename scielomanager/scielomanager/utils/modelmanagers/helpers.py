@@ -53,10 +53,19 @@ def _patch_userrequestcontextfinder_settings_teardown(func):
     """
     def wrapper(self, **kwargs):
         func(self, **kwargs)
-        
+
         attr_name = settings.USERREQUESTCONTEXT_FINDER.rsplit('.', 1)[-1]
         delattr(finders, attr_name)
 
         settings.USERREQUESTCONTEXT_FINDER = self.default_USERREQUESTCONTEXT_FINDER
 
     return wrapper
+
+
+def _makeUserProfile(user):
+    """
+    Create a UserProfile for the ``user``
+    """
+    from journalmanager.models import UserProfile
+
+    profile, created = UserProfile.objects.get_or_create(user=user)

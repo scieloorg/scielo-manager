@@ -1,7 +1,8 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load static %}
-{% load scielo_common %}
+{% load waffle_tags %}
+{% load pagination_tags %}
 {% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Issues" %} - {{journal.title}}{% endblock %}
@@ -9,12 +10,19 @@
 {% block content %}
 {% journaldash_toolbar 'issue' journal user %}
 <div class="row-fluid show-grid">
-  <div class="span1">
-    <a class="btn btn-primary" href="{% url issue.add journal.id %}">{% trans 'New' %}</a>
+  <div class="btn-group span1">
+    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+      {% trans 'New' %}
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li><a href="{% url issue.add_regular journal.id %}">{% trans "Regular" %}</a></li>
+      <li><a href="{% url issue.add_special journal.id %}">{% trans "Special" %}</a></li>
+      <li><a href="{% url issue.add_supplement journal.id %}">{% trans "Supplement" %}</a></li>
+    </ul>
   </div>
   {% if perms.journalmanager.change_issue %}
   <div class="span11">
-    <div class="span12" style="padding-left: 18px;">{% trans 'Total of ahead of print documents at:' %}</div>
     <div class="span12">
       <form id="ahead-form"
             method="post"
@@ -22,97 +30,97 @@
             enctype="application/x-www-form-urlencoded"
             class="form-inline">
         {% csrf_token %}
-        <div class="control-group {% if aheadform.current_ahead_documents.errors %}error{% endif %}" style="
-        float: left; padding-right: 10px;">
-          {{ current_year }} {{ aheadform.current_ahead_documents }}
+        <div class="pull-right control-group {% if aheadform.current_ahead_documents.errors or aheadform.previous_ahead_documents.errors %}error{% endif %}">
+          {% trans 'Total of ahead of print documents at:' %}
+           &nbsp;&nbsp; {{ current_year }} {{ aheadform.current_ahead_documents }}
+           &nbsp;&nbsp; {{ previous_year }} {{ aheadform.previous_ahead_documents }}
+          <input class="btn btn-primary" name="submit" type="submit" value="{% trans 'update' %}" />
         </div>
-        <div class="control-group {% if aheadform.previous_ahead_documents.errors %}error{% endif %}" style="float: left; padding-right: 10px;">
-          {{ previous_year }} {{ aheadform.previous_ahead_documents }}
-        </div>
-        <input
-          class="btn btn-primary"
-          name="submit"
-          type="submit"
-          value="{% trans 'update' %}" />
       </form>
     </div>
   </div>
   {% endif %}
 </div>
 
-<table class="table-issue">
-  <thead>
-    <tr>
-      <th>{% trans 'Year' %}</th>
-      <th>{% trans 'Volume' %}</th>
-      <th>{% trans 'Numbers' %}
-        {% if perms.journalmanager.can_reorder_issues %}
-          <a id="issue_locked_unlocked" href="javascript:void(0)">
-            <img id="issue_locked_unlocked_img" class="img_lock" src="/static/img/lock.png" >
+<div class="accordion" id="accordion-issues">
+  <div class="accordion-group">
+    {% for year, vols in issue_grid.items %}
+      
+      {% for vol, nums in vols.items %}
+      
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-issues" href="#collapse_{{ year }}_{{ vol|default:'_' }}">
+            {{ year }} &raquo; {% trans 'Volume' %} {{ vol|default:'-' }}
           </a>
-        {% endif %}
-      </th>
-    </tr>
-  </thead>
-  {% for year, vols in issue_grid.items %}
-    {% for vol, nums in vols.items %}
-      <tr>
-        <th>{{ year }}</th>
-        <th>{{ vol|default:'-' }}</th>
-        <td>
-          <div class="sortable-div">
-              <ul class="sortable" id="numbers-{{ year }}|{{ vol|default:'None' }}">
+        </div>
+      
+        <div id="collapse_{{ year }}_{{ vol|default:'_' }}" {% if forloop.parentloop.first and forloop.first %} class="accordion-body collapse in" {% else %} class="accordion-body collapse" {% endif %}>
+          <div class="accordion-inner">
+            <table class="table table-hover table-condensed">
+              <thead>
+                <tr>
+                  <th>{% trans "Number" %}:</th>
+                  {% flag 'articletrack' %}
+                    <th>{% trans "Articles" %}:</th>
+                  {% endflag %}
+                  <th>{% trans "Total documents" %}:</th>
+                  <th>{% trans "Publication months" %}:</th>
+                  <th>{% trans "Updated" %}:</th>
+                  <th>{% trans "Actions" %}:</th>
+                </tr>
+              </thead>
+              <tbody>
                 {% for num in nums %}
-                  {% if not num.number and not num.suppl_number and not num.suppl_volume %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{% trans 'volume issue' %}</a></li>
-                  {% else %}
-                    <li class="ui-state-default" id="num_{{ num.id }}"><a href="{% url issue.edit journal.pk num.id %}">{{ num.identification }}</a></li>
-                  {% endif %}
+                  <tr>
+                      <td>
+                        <a href="{% url issue.edit journal.pk num.id %}">
+                          {% if num.type == 'regular' and not num.number %}
+                            {% trans 'volume issue' %}
+                          {% else %}
+                            {{ num.identification }} 
+                          {% endif %}
+                        </a> 
+                        <span class="label pull-right">{{ num.articles.all|length }} {% trans "articles" %}</span>
+                      </td>
+                      {% flag 'articletrack' %}
+                        <td>
+                          <a  class='btn btn-mini' href="{% url article.index num.id %}">{% trans "view articles" %}</a>
+                        </td>
+                      {% endflag %}
+                      <td>
+                        <span class="badge {% if num.total_documents == num.articles.all|length %} badge-success {% endif %}">
+                          {{ num.total_documents }}
+                        </span>
+                      </td>
+                      <td>{{ num.get_publication_start_month_display }}/{{ num.get_publication_end_month_display }}</td>
+                      <td>{{ num.updated|date:"d/m/Y - H:i"  }}</td>
+                      <td>
+                        <a href="{% url issue.edit journal.pk num.id %}" class="btn btn-mini">
+                          {% trans "Edit" %}
+                        </a>
+                      </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="6">{% trans 'There are no items.' %}</td>
+                  </tr>
                 {% endfor %}
-              </ul>
-            </div>
-            {% endfor %}
-          </td>
-          {% empty %}
-          <tr>
-            <td colspan="5">{% trans 'There are no items.' %}</td>
-          </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% empty %}
+        <tr>
+          <td colspan="6">{% trans 'There are no items.' %}</td>
+        </tr>
       {% endfor %}
+    {% empty %}
+      <tr>
+        <td colspan="6">{% trans 'There are no items.' %}</td>
       </tr>
-</table>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock %}
 
-{% block extrafooter %}
-{{ block.super }}
-  <script>
-    $(function() {
-
-      $("ul.sortable").sortable({
-          placeholder: "ui-state-highlight",
-          opacity: 0.5,
-          disabled: true,
-          update: function(event, ui) {
-            $.ajax({
-              url: "{% url issue.reorder.ajax journal.pk %}",
-              data: {
-                numbers: $(this).sortable('serialize'),
-                issues_set: $(this).attr('id')
-              }
-            });
-          }
-      });
-
-      $("#issue_locked_unlocked").click(function(){
-        if($("ul.sortable").sortable( "option", "disabled")){
-          $("ul.sortable").sortable('enable');
-          $("#issue_locked_unlocked_img").attr("src", "/static/img/unlock.png");
-        }else{
-          $("ul.sortable").sortable('disable');
-          $("#issue_locked_unlocked_img").attr("src", "/static/img/lock.png");
-        }
-      });
-
-    });
-  </script>
-{% endblock %}

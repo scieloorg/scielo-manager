@@ -14,6 +14,9 @@ clean:
 test: clean
 	@python $(MANAGE) test --settings=$(SETTINGS_TEST)
 
+testfast: clean
+	@python $(MANAGE) test --settings=$(SETTINGS_TEST) --failfast
+
 dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)

@@ -43,7 +43,7 @@
     <input type="hidden" value="1" name="popup" />
   {% endif %}
 
-  <span class="label"><a name="title"></a>{% trans "Settings" %}</span>
+  <h2><a name="title"></a>{% trans "Settings" %}</h2>
   <div class="well">
 
     {% if pressrelease_form.issue %}
@@ -58,7 +58,7 @@
         <tr>
           <td>
             <span {% if article_formset.forms.0.article_pid.field.required %}class="req-field"{% endif %}>
-            Article PID
+              {% trans "Article PID" %}
             </span>
           </td>
         </tr>
@@ -67,9 +67,9 @@
         {% for form in article_formset %}
         <tr id="{{ form.prefix }}-row">
           <td>
-          {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-          {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-          {% stamp_inlineformset_field form.article_pid 0 %}
+            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+            {% stamp_inlineformset_field form.article_pid 0 %}
           </td>
         </tr>
         {% endfor %}
@@ -80,7 +80,7 @@
 
   {% summarize_errors translation_formset %}
 
-  <span class="label"><a name="title"></a>{% trans "Content" %}</span>
+  <h2><a name="title"></a>{% trans "Content" %}</h2>
   <div class="well">
     <table id="translation_formset"
            class="table table-bordered table-striped">
@@ -115,12 +115,12 @@
   </div>
   <div class="row-fluid">
     <input
-      class="btn btn-primary"
+      class="btn btn-success pull-right"
       name="submit"
       type="submit"
       value="{% trans 'save' %}" />
     <input
-      class="btn btn-warning"
+      class="btn btn-danger"
       type="reset"
       value="{% trans 'cancel' %}"
       {% if request.GET.popup %}
@@ -136,11 +136,11 @@
 <div id="pr-preview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="lbl-pr-preview" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="lbl-pr-preview">Preview</h3>
+    <h3 id="lbl-pr-preview">{% trans "Preview" %}</h3>
   </div>
   <div class="modal-body" id="body-pr-preview"></div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
   </div>
 </div>
 {% endblock %}

@@ -1,117 +1,159 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
+{% load urlize_ticket %}
+{% load user_avatar %}
 
 {% block page_title %}{% trans "Ticket detail" %}{% endblock %}
 
 {% block content %}
 
-<div class="page-header">
-  <h1>
-    {% if ticket.is_open %}
-      <span class="label label-success">{% trans "Open" %}</span> 
-    {% else %}
-      <span class="label label-important">{% trans "Closed" %}</span> 
-    {% endif %}
-    {{ ticket.title|title }} <small>#{{ ticket.pk }}</small>
-  </h1>
-  <p class='muted'>
-    <img style="vertical-align:top;" src="{{ ticket.author.get_profile.avatar_url }}" alt="Gravatar">
-    {{ ticket.author.get_full_name }} 
-    {% trans "created this ticket on" %}: {{ ticket.started_at|date:"d/m/Y - H:i" }} &bull;
-    ({{ ticket.comments.all|length }} {% trans "comments" %})
-  </p>
-  {% if not ticket.is_open %}
-    <div class="alert alert-info">
-      <strong>
-        <i class="icon-ban-circle"></i> {% trans "The ticket was closed on" %}:
-      </strong>
-      {{ ticket.started_at|date:"d/m/Y - H:i" }}
+  <!-- NAVIGATIONS -->
+  <div class="navbar">
+    <div class="navbar-inner">
+      <ul class="nav">
+        <li>
+          <a href="{% url checkin_index %}"><i class="icon-chevron-left"></i> {% trans "List of Articles in submission" %}</a>
+        </li>
+        <li class="divider-vertical"></li>
+        <li class="active">
+          <a href="#">{% trans "Ticket" %}: #{{ ticket.pk }}</a>
+        </li>
+      </ul>
+      <ul class="nav pull-right">
+        <li class="divider-vertical"></li>
+        <li><a href="#comments" role="menuitem"><i class="icon-comment"></i> {% trans "Comments" %}</a></li>
+      </ul>
     </div>
-  {% endif %}
-</div>
+  </div>
 
-<div class="row-fluid show-grid">
-  <div class="span12">
-    <h4>{% trans "Message" %}:</h4>
-    <blockquote>{{ ticket.message|linebreaksbr }}<blockquote>
+  <div class="page-header">
+    <h1>
+      {% if ticket.is_open %}
+        <span class="label label-success">{% trans "Open" %}</span> 
+      {% else %}
+        <span class="label label-important">{% trans "Closed" %}</span> 
+      {% endif %}
+      {{ ticket.title|capfirst|urlize_ticket_link }} <small>#{{ ticket.pk }}</small>
+    </h1>
+    {% if not ticket.is_open %}
+      <div class="alert alert-info">
+        <strong>
+          <i class="icon-ban-circle"></i> {% trans "The ticket was closed" %}
+        </strong>
+        <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ ticket.finished_at }}'>{{ ticket.finished_at|timesince }} {% trans "ago" %}</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="row-fluid show-grid">
+    <div class="span12">
+      <p class='muted'>
+        <img  class="img-rounded" src="{% user_avatar_url ticket.author 'medium' %}" alt="Gravatar">
+        {{ ticket.author.get_full_name }} 
+        {% trans "created this ticket" %}
+        <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ ticket.started_at }}'>{{ ticket.started_at|timesince }} {% trans "ago" %}</a>
+        <span class='pull-right'>
+          {{ ticket.comments.all|length }} {% trans "comments" %}
+        </span>
+      </p>
+      <div class='message_top_arror_box'>
+        {{ ticket.message|urlize_ticket_link|linebreaksbr }}
+      </div>
+    </div>
+
+    {% if ticket.is_open %}
+    
+      <div id='action_buttons_row'>
+                
+        {% if perms.ticket.can_change %}
+
+          <div class="btn-group pull-right">
+            <a href="{% url ticket_edit ticket.pk %}" class='btn btn-primary'>
+              <i class="icon-pencil"></i> {% trans "Edit" %}
+            </a>
+            <a id='close_ticket' href="#" class="btn btn-warning" type="button">
+              <i class="icon-remove-circle"></i> {% trans "Close" %}
+            </a>
+          </div>
+
+        {% endif %}
+      </div>
+
+    {% endif %}
+
   </div>
 
   {% if ticket.is_open %}
-  
-    <div id='action_buttons_row'>
-      {% if perms.comment.can_add or perms.ticket.can_add %}
-        <a id='add_comment' href="#" class="btn btn-success" type="button">
-          <i class="icon-plus-sign"></i> {% trans "Add Comment" %}
-        </a>
-      {% endif %}
-      
-      {% if perms.ticket.can_change %}
-
-        <a href="{% url ticket_edit ticket.pk %}" class='btn'>
-          <i class="icon-pencil"></i> {% trans "Edit" %}
-        </a>
-
-        <a id='close_ticket' href="#" class="btn btn-warning pull-right" type="button">
-          <i class="icon-remove-circle"></i> {% trans "Close" %}
-        </a>
-
-      {% endif %}
-    </div>
-
-  {% endif %}
-
-</div>
-{% if ticket.is_open %}
-  <!-- ADD COMMENT FORM -->
-  <div id='add_comment_section_row' class='row hide_row'>
-    <div class="span10 offset1">
-      <form id='add_comment_form' action='.' method='POST'>
-        {% csrf_token %}
-        <div id='form_error_msg' class="alert alert-error" style='display:none;'></div>
-        {{ form }}
-        <input type='button' id='discard_comment' class='btn btn-danger pull-left' value='{% trans "Discard" %}'/>
-        <input type='submit' class='btn btn-primary pull-right' value='{% trans "Send" %}'/>
-      </form>
-    </div>
-  </div>
-{% endif %}
-<!-- COMMENTS -->
-<h4>{% trans "Comments" %}:</h4>
-{% for comment in ticket.comments.all %}
-  <div class="row-fluid show-grid">
-      <div class="span12">
-          <blockquote>
-              {{ comment.message|linebreaksbr }}
-              <small>
-                  <img style="vertical-align:top;" src="{{ comment.author.get_profile.avatar_url }}" alt="Gravatar">
-                  {{ comment.author.get_full_name }} <i class="icon-time"></i> 
-                  <cite title="">
-                    {{ comment.created_at|date:"d/m/Y - H:i" }}
-                    {% if comment.created_at|date:"d/m/Y - H:i" != comment.updated_at|date:"d/m/Y - H:i" %}
-                      <em>({% trans "Updated" %}: {{ comment.updated_at|date:"d/m/Y - H:i" }} )</em>
-                    {% endif %}
-                    {% if request.user == comment.author and comment.ticket.is_open %}
-                      <i class="icon-edit"></i> <a href="{% url comment_edit comment.pk %}">{% trans "Edit" %}</a>
-                    {% endif %}
-                  </cite>
-              </small>
-          </blockquote>
-          <hr>
+    <!-- ADD COMMENT FORM -->
+    <div id='add_comment_section_row' class='row hide_row'>
+      <div class="span10 offset1">
+        <form id='add_comment_form' action='.' method='POST'>
+          {% csrf_token %}
+          <div id='form_error_msg' class="alert alert-error" style='display:none;'></div>
+          {{ form }}
+          {% include "articletrack/includes/help_text_ticket_link.html" %}
+          <input type='button' id='discard_comment' class='btn btn-danger pull-left' value='{% trans "Discard" %}'/>
+          <input type='submit' class='btn btn-primary pull-right' value='{% trans "Save" %}'/>
+        </form>
       </div>
-  </div>
-{% empty %}
-  <p>{% trans "No comments" %}</p>
-{% endfor %}
+    </div>
+  {% endif %}
+  <hr>
+  <!-- COMMENTS -->
+  
+  <a name="comments"></a><br><br>
+  <div class="row-fluid show-grid">
+    <div class="span10">
+      <h4>{% trans "Comments" %}:</h4>
+    </div>
+    <div class="span2">
 
-<!-- NAVIGATIONS -->
-<div class="row-fluid show-grid">
-  <div class="span12">
-    <div class="btn-group">
-      <a class="btn disabled">{% trans 'Go to' %}:</a>
-      <a class="btn" href="{% url ticket_list %}"><i class="icon-arrow-left"></i> {% trans "List of tickets" %}</a>
+        {% if ticket.is_open and perms.comment.can_add %}
+          <a id='add_comment' href="#" class="btn btn-success pull-right" type="button">
+            <i class="icon-plus-sign"></i> {% trans "Add Comment" %}
+          </a>
+        {% endif %}
+
     </div>
   </div>
-</div>
+
+  {% for comment in ticket.comments.all %}
+
+    <div class="row-fluid show-grid">
+      <div class="span1">
+        <img class="img-rounded" src="{% user_avatar_url comment.author 'medium' %}" alt="Gravatar">
+        <br>
+        <small>{{ comment.author.get_full_name }}</small>
+      </div>
+      <div class="span11">
+        <div class='comment_left_arrow_box'>
+          <small>
+            {% trans "Commented" %}: 
+            <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ comment.created_at }}'>{{ comment.created_at|timesince }} {% trans "ago" %}</a>
+            {% if comment.created_at|date:"d/m/Y - H:i" != comment.updated_at|date:"d/m/Y - H:i" %}
+              <em>
+                ({% trans "Updated" %}: <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ comment.updated_at }}'>{{ comment.updated_at|timesince }} {% trans "ago" %}</a>)
+              </em>
+            {% endif %}
+            {% if request.user == comment.author and comment.ticket.is_open %}
+              <span class='pull-right'>
+                <a href="{% url comment_edit comment.pk %}" class='btn btn-mini'><i class="icon-pencil"></i> {% trans "Edit" %}</a>
+              </span>
+            {% endif %}
+          </small>
+        </div>
+        <div class='comment_message_box'>
+          {{ comment.message|urlize_ticket_link|linebreaksbr }}
+        </div>
+      </div>
+    </div>
+
+  {% empty %}
+    <div class="alert alert-info">
+      <i class="icon-info-sign"></i> {% trans "No comments" %}
+    </div>
+  {% endfor %}
+
 {% endblock %}
 
 {% block extrafooter %}
@@ -123,6 +165,7 @@
         $('#action_buttons_row').hide();
         $('#add_comment_section_row').show();
         $('#id_message').focus();
+        $(this).addClass('disabled');
       });
       $('#discard_comment').click(function(event){
         if (confirm('{% trans "The message of the comment will be unsaved, are you sure?" %}')) {
@@ -142,6 +185,7 @@
         }
         return true;
       });
+      $('.time_ago_tooltip').tooltip();
     });
   </script>
 {% endblock %}

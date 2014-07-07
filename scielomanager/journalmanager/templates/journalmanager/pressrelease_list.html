@@ -1,6 +1,6 @@
 {% extends "base_lv1.html" %}
 {% load i18n %}
-{% load scielo_common %}
+{% load pagination_tags %}
 {% load query_string %}
 {% load inctag_toolbars %}
 
@@ -10,18 +10,18 @@
 {% journaldash_toolbar 'press_release' journal user %}
 <ul class="nav nav-tabs">
   {% if perms.journalmanager.change_pressrelease %}
-  <li>
-    <div class="btn-group" style="margin-right: 10px">
-      <button class="btn btn-primary">{% trans 'New' %}</button>
-      <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-      <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a href="{% url prelease.add journal.id %}">{% trans 'New regular press release' %}</a></li>
-        <li><a href="{% url aprelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a></li>
-      </ul>
-    </div>
-  </li>
+    <li>
+      <div class="btn-group first-tab-btn-group">
+        <button class="btn btn-primary">{% trans 'New' %}</button>
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="{% url prelease.add journal.id %}">{% trans 'New regular press release' %}</a></li>
+          <li><a href="{% url aprelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a></li>
+        </ul>
+      </div>
+    </li>
   {% endif %}
   <li class="{% if not request.GET.tab %}active{% endif %}">
     <a href="{% query_string request '' 'include_ampersand' %}">{% trans 'Press Release of Issue' %}</a>

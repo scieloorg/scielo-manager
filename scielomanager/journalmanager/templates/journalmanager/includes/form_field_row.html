@@ -1,0 +1,37 @@
+{% load i18n %}
+{% load pagination_tags %}
+<div class="control-group {% if field.errors %}error{% endif %}">
+  <label
+    for="{{ field.auto_id }}"
+    class="control-label {% if field.field.required %} req-field {% endif %}">
+      {% trans field.label %}
+  </label>
+  <div class="controls">
+    {{ field }}
+    {% if field.html_name == 'journal-is_indexed_scie' %}
+      <span class="help-inline">
+        <small>Science Citation Index</small>
+      </span>
+    {% elif field.html_name == 'journal-is_indexed_ssci' %}
+      <span class="help-inline">
+        <small>Social Science Citation</small>
+      </span>
+    {% elif field.html_name == 'journal-is_indexed_aehci' %}
+      <span class="help-inline">
+        <small>Arts & Humanities Citation</small>
+      </span>
+    {% endif %}
+    {% if field.help_text %}
+      {% with term="term-"|add:field.name|slugify %}
+        <span class="help-inline">
+          {% field_help field.label field.help_text term %}
+        </span>
+      {% endwith %}
+      {% field_help field.label field.help_text term-journal-title %}
+    {% endif %}
+    {% if field.errors %}
+      <span class="help-inline danger">{{ field.errors }}</span>
+    {% endif %}
+
+  </div>
+</div>

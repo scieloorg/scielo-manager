@@ -7,6 +7,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 
+import operator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth import forms as auth_forms
@@ -28,10 +29,12 @@ from django.utils.functional import curry
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.conf import settings
+from django.db.models import Q
 
 from . import models
 from .forms import *
 from scielomanager.utils.pendingform import PendingPostData
+from scielomanager.utils import usercontext
 from scielomanager.tools import (
     get_paginated,
     get_referer_view,
@@ -46,6 +49,8 @@ MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
+
+user_request_context = usercontext.get_finder()
 
 
 def get_first_letter(objects_all):
@@ -82,73 +87,49 @@ def index(request):
         context, context_instance=RequestContext(request))
 
 
-def list_search(request, model, journal_id):
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+def journal_index(request):
     """
-    Generic list and search
+    Journal list by active collection
     """
-    if journal_id:
-        journal = models.Journal.objects.get(pk=journal_id)
-        objects_all = model.objects.filter(journal=journal_id)
-
-        if model is models.Section:
-            # order by a non persistent property
-            objects_all = model.objects.filter(journal=journal_id, is_trashed=False)
-            objects_all = sorted(objects_all, key=lambda x: unicode(x))
-    else:
-        journal = None
-        objects_all = model.objects.all_by_user(request.user)
-
-        #filtering by pub_status is only available to Journal instances.
-        if model is models.Journal and request.GET.get('jstatus'):
-            objects_all = objects_all.filter(pub_status=request.GET['jstatus'])
-
-        if request.GET.get('letter'):
-            if issubclass(model, models.Institution):
-                objects_all = objects_all.filter(name__startswith=request.GET.get('letter'))
-            else:
-                objects_all = objects_all.filter(title__startswith=request.GET.get('letter'))
+    filters = {}
 
     if request.GET.get('q'):
-        objects_all = model.objects.all_by_user(request.user)
+        filters['title__icontains'] = request.GET.get('q')
 
-        if issubclass(model, models.Institution):
-            objects_all = objects_all.filter(
-                name__icontains=request.REQUEST['q']).order_by('name')
-        else:
-            objects_all = objects_all.filter(
-                title__icontains=request.REQUEST['q']).order_by('title')
+    if request.GET.get('letter'):
+        filters['title__istartswith'] = request.GET.get('letter')
 
-    objects = get_paginated(objects_all, request.GET.get('page', 1))
-    template_name = 'journalmanager/%s_list.html' % model.__name__.lower()
+    if request.GET.get('jstatus'):
+        filters['membership__status'] = request.GET.get('jstatus')
 
-    return render_to_response(
-        template_name, {
-           'objects_%s' % model.__name__.lower(): objects,
-           'journal': journal,
-           'letters': get_first_letter(objects_all),
+    journals = models.Journal.userobjects.active().filter(**filters)
+
+    objects = get_paginated(journals, request.GET.get('page', 1))
+
+    return render_to_response('journalmanager/journal_list.html', {
+           'objects_journal': objects,
+           'letters': get_first_letter(journals),
         },
         context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
-def article_index(request, issue_id):
+@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+def dash_journal(request, journal_id=None):
+    """
+    Handles new and existing journals
+    """
 
-    issue = get_object_or_404(models.Issue, pk=issue_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
 
-    return render_to_response(
-        'journalmanager/article_list.html',
-        {
-            'journal': issue.journal,
-            'issue': issue,
-            'articles': issue.articles.all()
-        },
-        context_instance=RequestContext(request)
-    )
+    return render_to_response('journalmanager/journal_dash.html', {
+                              'journal': journal,
+                              }, context_instance=RequestContext(request))
 
 
 @permission_required('journalmanager.list_issue', login_url=AUTHZ_REDIRECT_URL)
 def issue_index(request, journal_id):
-    journal = get_object_or_404(models.Journal, pk=journal_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
 
     current_year = datetime.now().year
     previous_year = current_year - 1
@@ -177,36 +158,61 @@ def issue_index(request, journal_id):
     )
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_index(request, model, journal_id=None):
+@permission_required('journalmanager.list_section', login_url=AUTHZ_REDIRECT_URL)
+def section_index(request, journal_id=None):
     """
-    Journal list and search
+    Section list by active collection
     """
-    return list_search(request, model, journal_id)
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
+
+    sections = models.Section.userobjects.active().filter(journal=journal)
+    sections = sorted(sections, key=lambda x: unicode(x))
+
+    objects = get_paginated(sections, request.GET.get('page', 1))
+
+    return render_to_response('journalmanager/section_list.html', {
+           'objects_section': objects,
+           'journal': journal },
+           context_instance=RequestContext(request))
 
 
 @permission_required('journalmanager.list_sponsor', login_url=AUTHZ_REDIRECT_URL)
-def sponsor_index(request, model, journal_id=None):
+def sponsor_index(request):
     """
-    Sponsor list and search
+    Sponsor list by active collection
     """
-    return list_search(request, model, journal_id)
+    filters = {}
+
+    if request.GET.get('q'):
+        filters['name__icontains'] = request.GET.get('q')
+
+    if request.GET.get('letter'):
+        filters['name__istartswith'] = request.GET.get('letter')
+
+    sponsors = models.Sponsor.userobjects.active().filter(**filters)
+
+    objects = get_paginated(sponsors, request.GET.get('page', 1))
+
+    return render_to_response('journalmanager/sponsor_list.html', {
+           'objects_sponsor': objects,
+           'letters': get_first_letter(sponsors)},
+           context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_section', login_url=AUTHZ_REDIRECT_URL)
-def section_index(request, model, journal_id=None):
-    """
-    Section list and search
-    """
-    return list_search(request, model, journal_id)
+@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
+def article_index(request, issue_id):
 
+    issue = get_object_or_404(models.Issue.userobjects.active(), pk=issue_id)
 
-@permission_required('journalmanager.list_collection', login_url=AUTHZ_REDIRECT_URL)
-def collection_index(request, model, journal_id=None):
-    """
-    Collection list and search
-    """
-    return list_search(request, model, journal_id)
+    return render_to_response(
+        'journalmanager/article_list.html',
+        {
+            'journal': issue.journal,
+            'issue': issue,
+            'articles': issue.articles.all()
+        },
+        context_instance=RequestContext(request)
+    )
 
 
 @permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
@@ -233,7 +239,7 @@ def generic_toggle_availability(request, object_id, model):
 
     if request.is_ajax():
 
-        model = get_object_or_404(model, pk=object_id)
+        model = get_object_or_404(model.userobjects.active(), pk=object_id)
         model.is_trashed = not model.is_trashed
         model.save()
 
@@ -258,9 +264,7 @@ def toggle_active_collection(request, user_id, collection_id):
     collection = get_object_or_404(models.Collection, pk=collection_id)
     collection.make_default_to_user(request.user)
 
-    referer = get_referer_view(request)
-
-    return HttpResponseRedirect(referer)
+    return HttpResponseRedirect('/')
 
 
 @login_required
@@ -305,7 +309,7 @@ def generic_bulk_action(request, model_name, action_name, value=None):
 @permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
 def user_index(request):
 
-    collection = models.Collection.objects.get_default_by_user(request.user)
+    collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
@@ -327,12 +331,12 @@ def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
-    collection = models.Collection.objects.get_default_by_user(request.user)
+    collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
         return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
 
-    if user_id == None:
+    if user_id is None:
         user = User()
     else:
         user = get_object_or_404(User, id=user_id)
@@ -340,21 +344,18 @@ def add_user(request, user_id=None):
     # Getting Collections from the logged user.
     user_collections = models.get_user_collections(request.user.id)
 
-    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, )
     UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
-        form=UserCollectionsForm, extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
+        form=UserCollectionsForm, extra=1, can_delete=True, formset=OnlyOneDefaultCollectionRequiredFormSet)
 
     # filter the collections the user is manager.
     UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')
-        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
 
-        if userform.is_valid() and userprofileformset.is_valid() and usercollectionsformset.is_valid():
+        if userform.is_valid() and usercollectionsformset.is_valid():
             new_user = userform.save()
-            userprofileformset.save()
 
             # Clear cache when changes in UserCollections
             invalid = [collection for collection in user_collections]
@@ -379,7 +380,6 @@ def add_user(request, user_id=None):
             messages.error(request, MSG_FORM_MISSING)
     else:
         userform = UserForm(instance=user, prefix='user')
-        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile',)
         usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
 
     return render_to_response('journalmanager/add_user.html', {
@@ -387,40 +387,39 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
-                              'userprofileformset': userprofileformset
                               },
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_publication_events', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journaltimeline', login_url=AUTHZ_REDIRECT_URL)
 def edit_journal_status(request, journal_id=None):
     """
     Handles Journal Status.
 
     Allow user just to update the status history of a specific journal.
     """
-    # Always a new event. Considering that events must not be deleted or changed.
-    journal_history = models.JournalPublicationEvents.objects.filter(journal=journal_id).order_by('-created_at')
-    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
+
+    current_user_collection = user_request_context.get_current_user_active_collection()
+    journal_history = journal.statuses.filter(collection=current_user_collection)
 
     if request.method == "POST":
-        journaleventform = EventJournalForm(request.POST)
+        membership = journal.membership_info(current_user_collection)
+        membershipform = MembershipForm(request.POST, instance=membership)
 
-        if journaleventform.is_valid():
-            cleaned_data = journaleventform.cleaned_data
-            journal.change_publication_status(cleaned_data["pub_status"],
-                cleaned_data["pub_status_reason"], request.user)
-
+        if membershipform.is_valid():
+            membershipform.save_all(request.user, journal, current_user_collection)
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse(
                 'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
-    else:
-        journaleventform = EventJournalForm()
+
+    membershipform = MembershipForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
-                              'add_form': journaleventform,
+                              'add_form': membershipform,
                               'journal_history': journal_history,
                               'journal': journal,
                               }, context_instance=RequestContext(request))
@@ -518,19 +517,6 @@ def dash_editor_journal(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
-def dash_journal(request, journal_id=None):
-    """
-    Handles new and existing journals
-    """
-
-    journal = get_object_or_404(models.Journal, id=journal_id)
-
-    return render_to_response('journalmanager/journal_dash.html', {
-                              'journal': journal,
-                              }, context_instance=RequestContext(request))
-
-
 @permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
 def add_journal(request, journal_id=None):
     """
@@ -538,11 +524,25 @@ def add_journal(request, journal_id=None):
     """
 
     user_collections = models.get_user_collections(request.user.id)
+    previous_journal_cover = None
+    previous_journal_logo = None
+    has_cover_url = has_logo_url = False
 
     if journal_id is None:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)
+        # preserve the cover and logo urls before save in case of error when updating these fields
+
+        try:
+            previous_journal_cover = journal.cover.url
+        except ValueError:
+            previous_journal_cover = None
+
+        try:
+            previous_journal_logo = journal.logo.url
+        except ValueError:
+            previous_journal_logo = None
 
     form_hash = None
 
@@ -550,7 +550,7 @@ def add_journal(request, journal_id=None):
     JournalMissionFormSet = inlineformset_factory(models.Journal, models.JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
     if request.method == "POST":
-        journalform = JournalForm(request.POST,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+        journalform = JournalForm(request.POST, request.FILES, instance=journal, prefix='journal')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
@@ -561,48 +561,77 @@ def add_journal(request, journal_id=None):
         else:
 
             if journalform.is_valid() and titleformset.is_valid() and missionformset.is_valid():
-                saved_journal = journalform.save_all(creator=request.user)
-                titleformset.save()
-                missionformset.save()
-                messages.info(request, MSG_FORM_SAVED)
+                # Ensuring that journal doesnt exists on created journal form, so journal_id must be None
+                filter_list = []
 
-                if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
-                    models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+                if request.POST.get('journal-print_issn') != '':
+                    filter_list.append(Q(print_issn__icontains=request.POST.get('journal-print_issn')))
 
-                # record the event
-                models.DataChangeEvent.objects.create(
-                    user=request.user,
-                    content_object=saved_journal,
-                    collection=models.Collection.objects.get_default_by_user(request.user),
-                    event_type='updated' if journal_id else 'added'
-                )
-                return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
+                if request.POST.get('journal-eletronic_issn') != '':
+                    filter_list.append(Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn')))
+
+                if journal_id is None and models.Journal.objects.filter(reduce(operator.or_, filter_list)).exists():
+                    messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
+                else:
+                    saved_journal = journalform.save_all(creator=request.user)
+
+                    if not journal_id:
+                        saved_journal.join(user_request_context.get_current_user_active_collection(), request.user)
+
+                    titleformset.save()
+                    missionformset.save()
+                    messages.info(request, MSG_FORM_SAVED)
+
+                    if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
+                        models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
+
+                    # record the event
+                    models.DataChangeEvent.objects.create(
+                        user=request.user,
+                        content_object=saved_journal,
+                        collection=models.Collection.userobjects.active(),
+                        event_type='updated' if journal_id else 'added'
+                    )
+                    return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
             else:
                 messages.error(request, MSG_FORM_MISSING)
+
+                # if conver or logo fail in validation, then override the has_xxx_url with
+                # the value stored previously, or false if none
+
+                if 'cover' in journalform.errors.keys():
+                    has_cover_url = previous_journal_cover if previous_journal_cover else False
+                else:
+                    has_cover_url = journal.cover.url if hasattr(journal, 'cover') and hasattr(journal.cover, 'url') else False
+
+                if 'logo' in journalform.errors.keys():
+                    has_logo_url = previous_journal_logo if previous_journal_logo else False
+                else:
+                    has_logo_url = journal.logo.url if hasattr(journal, 'logo') and hasattr(journal.logo, 'url') else False
 
     else:
         if request.GET.get('resume', None):
             pended_post_data = PendingPostData.resume(request.GET.get('resume'))
 
-            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(pended_post_data,  request.FILES, instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(pended_post_data, instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(pended_post_data, instance=journal, prefix='mission')
         else:
-            journalform = JournalForm(instance=journal, prefix='journal', collections_qset=user_collections)
+            journalform = JournalForm(instance=journal, prefix='journal')
             titleformset = JournalTitleFormSet(instance=journal, prefix='title')
             missionformset = JournalMissionFormSet(instance=journal, prefix='mission')
 
-    # Recovering Journal Cover url.
-    try:
-        has_cover_url = journal.cover.url
-    except ValueError:
-        has_cover_url = False
+        # Recovering Journal Cover url.
+        try:
+            has_cover_url = journal.cover.url
+        except ValueError:
+            has_cover_url = False
 
-    # Recovering Journal Logo url.
-    try:
-        has_logo_url = journal.logo.url
-    except ValueError:
-        has_logo_url = False
+        # Recovering Journal Logo url.
+        try:
+            has_logo_url = journal.logo.url
+        except ValueError:
+            has_logo_url = False
 
     return render_to_response('journalmanager/add_journal.html', {
                               'journal': journal,
@@ -633,7 +662,7 @@ def add_sponsor(request, sponsor_id=None):
     if  sponsor_id is None:
         sponsor = models.Sponsor()
     else:
-        sponsor = get_object_or_404(models.Sponsor.objects.all_by_user(request.user), id=sponsor_id)
+        sponsor = get_object_or_404(models.Sponsor.userobjects.active(), id=sponsor_id)
 
     user_collections = models.get_user_collections(request.user.id)
 
@@ -701,11 +730,133 @@ def add_collection(request, collection_id):
 
 
 @permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
-def add_issue(request, journal_id, issue_id=None):
+def edit_issue(request, journal_id, issue_id=None):
+    """
+    Handles edition of existing issues
+    """
+
+    def get_issue_form_by_type(issue_type, request, journal, instance):
+        """
+            This method is useful to get the correct IssueForm based on issue_type.
+        """
+        form_kwargs = {
+            'params' : {
+                'journal': journal,
+            },
+            'querysets' : {
+                'section': journal.section_set.filter(is_trashed=False),
+                'use_license': models.UseLicense.objects.all(),
+            },
+            'instance' : instance,
+        }
+
+        form_args = []
+        if request.method == 'POST':
+            form_args.append(request.POST)
+            form_args.append(request.FILES)
+        else:
+            initial = issue.__dict__
+            initial['suppl_type'] = issue.suppl_type if issue.type == 'supplement' else None
+            initial['use_license'] = issue.use_license
+            initial['section'] = issue.section.all()
+            initial['journal'] = issue.journal
+            form_kwargs['initial'] = initial
+
+        if issue_type == 'supplement':
+            return SupplementIssueForm(*form_args, **form_kwargs)
+        elif issue_type == 'special':
+            return SpecialIssueForm(*form_args, **form_kwargs)
+        else:  # issue_type == 'regular':
+            return RegularIssueForm(*form_args, **form_kwargs)
+
+    issue = models.Issue.objects.get(pk=issue_id)
+
+    IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
+                                              form=IssueTitleForm, extra=1, can_delete=True)
+
+    if request.method == 'POST':
+        form = get_issue_form_by_type(issue.type, request, issue.journal, issue)
+        titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
+
+        if form.is_valid():
+            saved_issue = form.save(commit=False)
+            saved_issue.journal = issue.journal
+            saved_issue.save()
+            form.save_m2m()
+
+            if titleformset.is_valid():
+                titleformset.save()
+
+            messages.info(request, MSG_FORM_SAVED)
+
+            # record the event
+            models.DataChangeEvent.objects.create(
+                user=request.user,
+                content_object=saved_issue,
+                collection=models.Collection.userobjects.get_query_set().get_default_by_user(request.user),
+                event_type='updated'
+            )
+
+            return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
+        else:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        form = get_issue_form_by_type(issue.type, request, issue.journal, issue)
+        titleformset = IssueTitleFormSet(instance=issue, prefix='title')
+
+    # Recovering Journal Cover url.
+    try:
+        has_cover_url = issue.cover.url
+    except ValueError:
+        has_cover_url = False
+
+    # variable names are add_form, and add_issue_xxx is that way to re-use the template
+    return render_to_response('journalmanager/add_issue_%s.html' % issue.type, {
+                              'add_form': form,
+                              'issue_type': issue.type,
+                              'journal': issue.journal,
+                              'titleformset': titleformset,
+                              'user_name': request.user.pk,
+                              'has_cover_url': has_cover_url,
+                              },
+                              context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+def add_issue(request, issue_type, journal_id, issue_id=None):
     """
     Handles new and existing issues
     """
-    journal = get_object_or_404(models.Journal.objects.all_by_user(request.user), pk=journal_id)
+
+    def get_issue_form_by_type(issue_type, request, journal, instance=None, initial=None):
+        """
+            This method is useful to get the correct IssueForm based on issue_type.
+            if initial == None then the request.POST and request.FILES is used to fill the form.
+            if initial != None then the form is used in a GET request.
+        """
+        form_kwargs = {
+            'params': {
+                'journal': journal,
+            },
+            'querysets': {
+                'section': journal.section_set.filter(is_trashed=False),
+                'use_license': models.UseLicense.objects.all(),
+            },
+            'instance': instance,
+            'initial': initial,
+        }
+        form_args = []
+        if initial is None:
+            form_args.append(request.POST)
+            form_args.append(request.FILES)
+        if issue_type == 'supplement':
+            return SupplementIssueForm(*form_args, **form_kwargs)
+        elif issue_type == 'special':
+            return SpecialIssueForm(*form_args, **form_kwargs)
+        else:  # issue_type == 'regular':
+            return RegularIssueForm(*form_args, **form_kwargs)
+
+    journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
 
     if issue_id is None:
         data_dict = {'use_license': journal.use_license.id,
@@ -717,14 +868,18 @@ def add_issue(request, journal_id, issue_id=None):
         issue = models.Issue.objects.get(pk=issue_id)
 
     IssueTitleFormSet = inlineformset_factory(models.Issue, models.IssueTitle,
-        form=IssueTitleForm, extra=1, can_delete=True)
+                                              form=IssueTitleForm, extra=1, can_delete=True)
 
     if request.method == 'POST':
-        add_form = IssueForm(request.POST, request.FILES, journal_id=journal.pk, instance=issue)
+        add_form = get_issue_form_by_type(issue_type, request, journal, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
         if add_form.is_valid():
-            saved_issue = add_form.save_all(journal)
+            saved_issue = add_form.save(commit=False)
+            saved_issue.journal = journal
+            saved_issue.type = issue_type
+            saved_issue.save()
+            add_form.save_m2m()
             # the backward relation is created only
             # if title is given.
             if titleformset.is_valid():
@@ -736,15 +891,15 @@ def add_issue(request, journal_id, issue_id=None):
             models.DataChangeEvent.objects.create(
                 user=request.user,
                 content_object=saved_issue,
-                collection=models.Collection.objects.get_default_by_user(request.user),
-                event_type='updated' if issue_id else 'added'
+                collection=models.Collection.userobjects.active(),
+                event_type='added'
             )
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
     else:
-        add_form = IssueForm(journal_id=journal.pk, instance=issue, initial=data_dict)
+        add_form = get_issue_form_by_type(issue_type, request, journal, instance=issue, initial=data_dict)
         titleformset = IssueTitleFormSet(instance=issue, prefix='title')
 
     # Recovering Journal Cover url.
@@ -752,9 +907,9 @@ def add_issue(request, journal_id, issue_id=None):
         has_cover_url = issue.cover.url
     except ValueError:
         has_cover_url = False
-
-    return render_to_response('journalmanager/add_issue.html', {
+    return render_to_response('journalmanager/add_issue_%s.html' % issue_type, {
                               'add_form': add_form,
+                              'issue_type': issue_type,
                               'journal': journal,
                               'titleformset': titleformset,
                               'user_name': request.user.pk,
@@ -934,6 +1089,67 @@ def ajx_list_users(request):
 
     return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
+
+@login_required
+def ajx_search_journal(request):
+    """
+    Ajax view function to search the journal by: ``title``, ``short_title``,
+    ``print_issn``, ``eletronic_issn`` and ``acronym``
+    """
+
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    if 'q' in request.GET:
+        query = request.GET.get('q')
+        journals = models.Journal.objects.filter(Q(title__icontains=query) |
+                                                 Q(short_title__icontains=query) |
+                                                 Q(print_issn__icontains=query) |
+                                                 Q(eletronic_issn__icontains=query) |
+                                                 Q(acronym__icontains=query))
+
+        return HttpResponse(json.dumps({'data':
+                               [
+                                  {'id': journal.id,
+                                   'title': journal.title,
+                                   'print_issn': journal.print_issn,
+                                   'eletronic_issn': journal.eletronic_issn,
+                                   'short_title': journal.short_title,
+                                   'acronym': journal.acronym,
+                                   'collections': [collection.name for collection in journal.collections.all()],
+                                  } for journal in journals
+                                ]
+                               })
+                           )
+
+@login_required
+def ajx_add_journal_to_user_collection(request, journal_id):
+    """
+    Add journal to the user current collection
+    """
+
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+
+    user_collection = user_request_context.get_current_user_active_collection()
+
+    journal = models.Journal.objects.get(id=journal_id)
+
+    if journal.is_member(user_collection):
+        return HttpResponse(json.dumps({
+                                    'journal': journal.title,
+                                    'collection': user_collection.name,
+                                    'assignment': False,
+                                    }))
+    else:
+        #The journal is join to new collection with status ``inprogress``
+        journal.join(user_collection, request.user)
+        messages.error(request, _('%s add to collection %s') % (journal, user_collection))
+        return HttpResponse(json.dumps({
+                                    'journal': journal.title,
+                                    'collection': user_collection.name,
+                                    'assignment': True,
+                                    }))
 
 @login_required
 def ajx_list_issues_for_markup_files(request):

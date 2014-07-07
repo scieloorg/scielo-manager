@@ -1,7 +1,7 @@
 {% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load static %}
-{% load scielo_common %}
+{% load pagination_tags %}
 {% load formstamps %}
 {% load inctag_toolbars %}
 
@@ -15,247 +15,23 @@
 
 {% journaldash_toolbar 'issue' journal user %}
 
-<form id="issue-form" method="post" action="" enctype="multipart/form-data">
+<form id="issue-form" method="post" action="" enctype="multipart/form-data" class="form-horizontal">
   {% csrf_token %}
-  <span class="label">{% trans "Issue Information" %}</span>
-  <div class="well">
-    <table id="titleformset" class="table table-bordered table-striped">
-      <tbody>
-        <tr>
-          <td>{% trans "Thematic Title" %}</td>
-          <td>{% trans "Language" %}</td>
-        </tr>
-        {% for form in titleformset.forms %}
-        <tr id="{{ form.prefix }}-row">
-          <td>
-            <div class="control-group {% if add_form.title.errors %}error{% endif %}">
-              {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-              {{ form.title }}
-            </div>
-          </td>
-          <td>
-            <div class="control-group {% if add_form.language.errors %}error{% endif %}">
-              {{ form.language }}
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <p>
-      {{ titleformset.management_form }}
-    </p>
-    <div class="span12" style="margin: 0px">
-      <div class="control-group {% if add_form.volume.errors %}error{% endif %}" style="float: left;">
-        <label for="{{ add_form.volume.auto_id }}">
-          <span class="req-field">
-            {% trans add_form.volume.label %}
-          </span>
-        </label>
-        <div class="controls">
-          {{ add_form.volume }}
-          {% field_help add_form.volume.label add_form.volume.help_text term-issue-volume %}
-        </div>
-      </div>
-      <div class="control-group {% if add_form.suppl_volume.errors %}error{% endif %}" style="float: left; margin-left: 10px;">
-        <label for="{{ add_form.suppl_volume.auto_id }}">
-          <span {% if add_form.suppl_volume.field.required %}class="req-field"{% endif %}>
-            {% trans add_form.suppl_volume.label %}
-          </span>
-        </label>
-        <div class="controls">
-          {{ add_form.suppl_volume }}
-          {% field_help add_form.suppl_volume.label add_form.suppl_volume.help_text term-issue-suppl_volume %}
-        </div>
-      </div>
-    </div>
-    <div class="span12" style="margin: 0px">
-      <div class="control-group {% if add_form.number.errors %}error{% endif %}" style="float: left;">
-        <label for="{{ add_form.number.auto_id }}">
-          <span class="req-field">
-            {% trans add_form.number.label %}
-          </span>
-        </label>
-        <div class="controls">
-          {{ add_form.number }}
-          {% field_help add_form.number.label add_form.number.help_text term-issue-number %}
-        </div>
-      </div>
-
-      <div class="control-group {% if add_form.suppl_number.errors %}error{% endif %}" style="float: left;  margin-left: 10px;">
-        <label for="{{ add_form.suppl_number.auto_id }}">
-          <span {% if add_form.suppl_number.field.required %}class="req-field"{% endif %}>
-            {% trans add_form.suppl_number.label %}
-          </span>
-        </label>
-        <div class="controls">
-          {{ add_form.suppl_number }}
-          {% field_help add_form.suppl_number.label add_form.suppl_number.help_text term-issue-suppl_number %}
-        </div>
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.publication_start_month.errors %}error{% endif %}">
-      <label for="{{ add_form.publication_start_month.auto_id }}">
-        <span {% if add_form.publication_start_month.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publication_start_month.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publication_start_month }}
-        {% field_help add_form.publication_start_month.label add_form.publication_start_month.help_text term-issue-publication-date %}
-        {% if add_form.publication_start_month.errors %}
-        <span class="help-inline">{{ add_form.publication_start_month.errors }}</span>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.publication_end_month.errors %}error{% endif %}">
-      <label for="{{ add_form.publication_end_month.auto_id }}">
-        <span {% if add_form.publication_end_month.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publication_end_month.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publication_end_month }}
-        {% field_help add_form.publication_end_month.label add_form.publication_end_month.help_text term-issue-publication-date %}
-        {% if add_form.publication_end_month.errors %}
-        <span class="help-inline">{{ add_form.publication_end_month.errors }}</span>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.publication_year.errors %}error{% endif %}">
-      <label for="{{ add_form.publication_year.auto_id }}">
-        <span {% if add_form.publication_year.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.publication_year.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.publication_year }}
-        {% field_help add_form.publication_year.label add_form.publication_year.help_text term-issue-publication-date %}
-        {% if add_form.publication_year.errors %}
-        <span class="help-inline">{{ add_form.publication_year.errors }}</span>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.use_license.errors %}error{% endif %}">
-      <label for="{{ add_form.use_license.auto_id }}">
-        <span {% if add_form.use_license.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.use_license.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.use_license }}
-        {% field_help add_form.use_license.label add_form.use_license.help_text term-issue-use-license %}
-        {% if add_form.use_license.errors %}
-        <span class="help-inline">{{ add_form.use_license.errors }}</span>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.total_documents.errors %}error{% endif %}">
-      <label for="{{ add_form.total_documents.auto_id }}">
-        <span {% if add_form.total_documents.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.total_documents.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.total_documents }}
-        {% field_help add_form.total_documents.label add_form.total_documents.help_text term-issue-total-documents %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.ctrl_vocabulary.errors %}error{% endif %}">
-      <label for="{{ add_form.ctrl_vocabulary.auto_id }}">
-        <span {% if add_form.ctrl_vocabulary.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.ctrl_vocabulary.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.ctrl_vocabulary }}
-        {% field_help add_form.ctrl_vocabulary.label add_form.ctrl_vocabulary.help_text term-controlled-vocabulary %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.editorial_standard.errors %}error{% endif %}">
-      <label for="{{ add_form.editorial_standard.auto_id }}">
-        <span {% if add_form.editorial_standard.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.editorial_standard.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.editorial_standard }}
-        {% field_help add_form.editorial_standard.label add_form.editorial_standard.help_text term-editorial-standard %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.section.errors %}error{% endif %}">
-      <label for="{{ add_form.section.auto_id }}">
-        <span {% if add_form.section.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.section.label %}
-          <a class="popup" href="{% url section.add journal.id %}?popup=1">
-            <img width="10" height="10" alt="{% trans 'Add new' %}" src="/static/images/icon_addlink.gif">
-          </a>
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.section }}
-        {% field_help add_form.section.label add_form.section.help_text term-issue-section %}
-        {% if add_form.section.errors %}
-          <span class="help-inline">{{ add_form.section.errors }}</span>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.is_marked_up.errors %}error{% endif %}">
-      <label for="{{ add_form.is_marked_up.auto_id }}">
-        <span {% if add_form.is_marked_up.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.is_marked_up.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.is_marked_up }}
-      </div>
-    </div>
-
-    <div class="control-group {% if add_form.is_press_release.errors %}error{% endif %}">
-      <label for="{{ add_form.is_press_release.auto_id }}">
-        <span {% if add_form.is_press_release.field.required %}class="req-field"{% endif %}>
-          {% trans add_form.is_press_release.label %}
-        </span>
-      </label>
-      <div class="controls">
-        {{ add_form.is_press_release }}
-      </div>
-    </div>
-
-  </div>
-
-  <span class="label">{% trans "Issue Cover" %}</span>
-  <div class="well">
-    <div class="control-group {% if add_form.cover.errors %}error{% endif %}">
-      <div class="controls">
-        {{ add_form.cover }}
-      </div>
-      <div align="center">
-          {% if has_cover_url %}
-            <img src="{{ has_cover_url }}" />
-          {% else %}
-            {% trans "This issue does not have a cover, it will use the default journal cover" %}
-          {% endif %}
-      </div>
-    </div>
-  </div>
+  <h3>{{ issue_type|capfirst}} {% trans "Issue Information" %}:</h3>
+  {% include "journalmanager/includes/titleformset.html" %}
+  <hr>
+  {% with form=add_form %}
+    {% include "journalmanager/includes/issue_form_generic_field_list.html" %}
+  {% endwith %}
+  <hr>
+  {% include "journalmanager/includes/issue_cover.html" %}
   <input
-    class="btn btn-primary"
+    class="btn btn-success pull-right"
     name="submit"
     type="submit"
     value="{% trans 'save' %}" />
   <input
-    class="btn btn-warning"
+    class="btn btn-danger"
     name="reset"
     type="reset"
     value="{% trans 'cancel' %}"
@@ -281,4 +57,5 @@
     });
   });
 </script>
+{% block extra_js %}{% endblock extra_js %}
 {% endblock %}

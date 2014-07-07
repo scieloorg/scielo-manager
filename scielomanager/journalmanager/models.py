@@ -18,7 +18,7 @@ from django.db import (
     DatabaseError,
     )
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
@@ -33,6 +33,7 @@ from tastypie.models import create_api_key
 import jsonfield
 
 from scielomanager.utils import base28
+from scielomanager.custom_fields import ContentTypeRestrictedFileField
 from . import modelmanagers
 
 User.__bases__ = (caching.base.CachingMixin, models.Model)
@@ -41,6 +42,8 @@ User.add_to_class('objects', caching.base.CachingManager())
 logger = logging.getLogger(__name__)
 
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
+ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If not defined, will be applied the related journal's use license. \
+The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.")
 
 
 def get_user_collections(user_id):
@@ -52,6 +55,20 @@ def get_user_collections(user_id):
         'collection__name')
 
     return user_collections
+
+
+def get_journals_default_use_license():
+    """
+    Returns the default use license for all new Journals.
+
+    This callable is passed as the default value on Journal.use_license field.
+    The default use license is the one defined on SciELO criteria, and at
+    the time is BY-NC. See http://ref.scielo.org/jf5ndd for more information.
+    """
+    try:
+        return UseLicense.objects.get(is_default=True)
+    except UseLicense.DoesNotExist:
+        raise ImproperlyConfigured("There is no UseLicense set as default")
 
 
 class AppCustomManager(caching.base.CachingManager):
@@ -86,10 +103,11 @@ class JournalCustomManager(AppCustomManager):
         Retrieves all the user's journals, contextualized by
         their default collection.
         """
-        default_collection = Collection.objects.get_default_by_user(user)
-
-        objects_all = self.available(is_available).filter(
-            collection=default_collection).distinct()
+        objects_all = Journal.userobjects.all()
+        if is_available:
+            objects_all = objects_all.available().distinct()
+        else:
+            objects_all = objects_all.unavailable().distinct()
 
         if pub_status:
             if pub_status in [stat[0] for stat in choices.JOURNAL_PUBLICATION_STATUS]:
@@ -101,16 +119,16 @@ class JournalCustomManager(AppCustomManager):
         """
         Retrieves the recently modified objects related to the given user.
         """
-        default_collection = Collection.objects.get_default_by_user(user)
+        default_collection = Collection.userobjects.active()
 
         recents = self.filter(
-            collection=default_collection).distinct().order_by('-updated')[:5]
+            collections=default_collection).distinct().order_by('-updated')[:5]
 
         return recents
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            collection=collection)
+            collections=collection)
         return objects_all
 
     def by_issn(self, issn):
@@ -125,7 +143,9 @@ class JournalCustomManager(AppCustomManager):
             return Journal.objects.none()
 
         journals = Journal.objects.filter(
-            models.Q(print_issn=issn) | models.Q(eletronic_issn=issn))
+            models.Q(print_issn=issn) | models.Q(eletronic_issn=issn)
+        )
+
         return journals
 
 
@@ -135,7 +155,7 @@ class SectionCustomManager(AppCustomManager):
         default_collection = Collection.objects.get_default_by_user(user)
 
         objects_all = self.available(is_available).filter(
-            journal__collection=default_collection).distinct()
+            journal__collections=default_collection).distinct()
 
         return objects_all
 
@@ -144,7 +164,7 @@ class IssueCustomManager(AppCustomManager):
 
     def all_by_collection(self, collection, is_available=True):
         objects_all = self.available(is_available).filter(
-            journal__collection=collection)
+            journal__collections=collection)
 
         return objects_all
 
@@ -185,7 +205,8 @@ class CollectionCustomManager(AppCustomManager):
         `get_default_by_user` raises DoesNotExist if there is no
         result for the given parameter.
         """
-        collections = self.filter(usercollections__user=user,
+        collections = self.filter(
+            usercollections__user=user,
             usercollections__is_default=True).order_by('name')
 
         if not collections.count():
@@ -203,7 +224,8 @@ class CollectionCustomManager(AppCustomManager):
         """
         Returns all collections managed by a given user.
         """
-        collections = self.filter(usercollections__user=user,
+        collections = self.filter(
+            usercollections__user=user,
             usercollections__is_manager=True).order_by('name')
 
         return collections
@@ -266,6 +288,7 @@ class Language(caching.base.CachingMixin, models.Model):
     """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+
     iso_code = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     name = models.CharField(_('Language Name (in English)'), max_length=64)
 
@@ -279,30 +302,36 @@ class Language(caching.base.CachingMixin, models.Model):
 class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+
     user = models.OneToOneField(User)
-    email = models.EmailField(_('E-mail'), blank=False, unique=True, null=False)
 
     @property
     def gravatar_id(self):
-        return hashlib.md5(self.email.lower().strip()).hexdigest()
+        return hashlib.md5(self.user.email.lower().strip()).hexdigest()
 
     @property
     def avatar_url(self):
         params = urllib.urlencode({'s': 18, 'd': 'mm'})
-        return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL',
-            'https://secure.gravatar.com'), self.gravatar_id, params)
+        return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL', 'https://secure.gravatar.com'), self.gravatar_id, params)
 
-    def save(self, force_insert=False, force_update=False):
-        self.user.email = self.email
-        self.user.save()
-        return super(UserProfile, self).save(force_insert, force_update)
+    @property
+    def get_default_collection(self):
+        """
+        Return the default collection for this user
+        """
+        uc = UserCollections.objects.get(user=self.user, is_default=True)
+        return uc.collection
 
 
 class Collection(caching.base.CachingMixin, models.Model):
-    objects = CollectionCustomManager()
+    # objects = CollectionCustomManager()
+    # nocacheobjects = models.Manager()
+    # Custom manager
+    objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
-    collection = models.ManyToManyField(User, related_name='user_collection',
-        through='UserCollections', null=True, blank=True, )
+    userobjects = modelmanagers.CollectionManager()
+
+    collection = models.ManyToManyField(User, related_name='user_collection', through='UserCollections', null=True, blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
     name_slug = models.SlugField(unique=True, db_index=True, blank=True, null=True)
     url = models.URLField(_('Instance URL'), )
@@ -330,14 +359,21 @@ class Collection(caching.base.CachingMixin, models.Model):
         self.name_slug = slugify(self.name)
         super(Collection, self).save(*args, **kwargs)
 
-    def add_user(self, user, is_default=False, is_manager=False):
+    def add_user(self, user, is_manager=False):
         """
         Add the user to the current collection.
+        If user have not a default collection, then ``self``
+        will be the default one
         """
         UserCollections.objects.create(collection=self,
                                        user=user,
-                                       is_default=is_default,
+                                       is_default=False,
                                        is_manager=is_manager)
+
+        # if user do not have a default collections, make this the default one
+        user_has_default_collection = UserCollections.objects.filter(is_default=True, user=user).exists()
+        if not user_has_default_collection:
+            self.make_default_to_user(user)
 
     def remove_user(self, user):
         """
@@ -388,11 +424,12 @@ class Collection(caching.base.CachingMixin, models.Model):
 class UserCollections(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.UserCollectionsManager()
+
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection)
     is_default = models.BooleanField(_('Is default'), default=False, null=False, blank=False)
-    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False,
-        blank=False)
+    is_manager = models.BooleanField(_('Is manager of the collection?'), default=False, null=False, blank=False)
 
     class Meta:
         unique_together = ("user", "collection", )
@@ -400,9 +437,10 @@ class UserCollections(caching.base.CachingMixin, models.Model):
 
 class Institution(caching.base.CachingMixin, models.Model):
 
-    #Custom manager
-    objects = AppCustomManager()
+    # Custom manager
+    objects = models.Manager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.InstitutionManager()
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -430,7 +468,8 @@ class Institution(caching.base.CachingMixin, models.Model):
 
 
 class Sponsor(Institution):
-    objects = InstitutionCustomManager()
+    # Custom manager
+    objects = models.Manager()
     nocacheobjects = models.Manager()
     userobjects = modelmanagers.SponsorManager()
 
@@ -442,7 +481,7 @@ class Sponsor(Institution):
 
 class SubjectCategory(caching.base.CachingMixin, models.Model):
 
-    #Custom manager
+    # Custom manager
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
 
@@ -458,7 +497,7 @@ class StudyArea(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     study_area = models.CharField(_('Study Area'), max_length=256,
-        choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
+                                  choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
 
     def __unicode__(self):
         return self.study_area
@@ -474,17 +513,17 @@ class Journal(caching.base.CachingMixin, models.Model):
     for the Journal.
     """
 
-    #Custom manager
+    # Custom manager
     objects = JournalCustomManager()
     nocacheobjects = models.Manager()
     userobjects = modelmanagers.JournalManager()
 
-    #Relation fields
+    # Relation fields
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
-    use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'))
-    collection = models.ForeignKey('Collection', verbose_name=_('Collection'), related_name='journals')
+    use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'), default=get_journals_default_use_license)
+    collections = models.ManyToManyField('Collection', through='Membership')
     languages = models.ManyToManyField('Language',)
     national_code = models.CharField(_('National Code'), max_length=64, null=True, blank=True)
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
@@ -492,7 +531,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
     editors = models.ManyToManyField(User, related_name='user_editors', null=True, blank=True)
 
-    #Fields
+    # Fields
     current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)
     previous_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the previous year'), max_length=3, default=0, blank=True, null=True)
     twitter_user = models.CharField(_('Twitter User'), max_length=128, null=True, blank=True)
@@ -508,8 +547,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9, db_index=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'), max_length=1024)
     init_year = models.CharField(_('Initial Year'), max_length=4)
-    init_vol = models.CharField(_('Initial Volume'), max_length=16)
-    init_num = models.CharField(_('Initial Number'), max_length=16)
+    init_vol = models.CharField(_('Initial Volume'), max_length=16, null=True, blank=True)
+    init_num = models.CharField(_('Initial Number'), max_length=16, null=True, blank=True)
     final_year = models.CharField(_('Final Year'), max_length=4, null=True, blank=True)
     final_vol = models.CharField(_('Final Volume'), max_length=16, null=False, blank=True)
     final_num = models.CharField(_('Final Number'), max_length=16, null=False, blank=True)
@@ -517,10 +556,6 @@ class Journal(caching.base.CachingMixin, models.Model):
     medline_code = models.CharField(_('Medline Code'), max_length=64, null=True, blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
         choices=sorted(choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
-    pub_status = models.CharField(_('Publication Status'), max_length=16, blank=True, null=True, default="inprogress",
-        choices=choices.JOURNAL_PUBLICATION_STATUS)
-    pub_status_reason = models.TextField(_('Why the journal status will change?'), blank=True, default="",)
-    pub_status_changed_by = models.ForeignKey(User, related_name='pub_status_changed_by', editable=False)
     editorial_standard = models.CharField(_('Editorial Standard'), max_length=64,
         choices=sorted(choices.STANDARD, key=lambda STANDARD: STANDARD[1]))
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
@@ -533,8 +568,10 @@ class Journal(caching.base.CachingMixin, models.Model):
     url_journal = models.CharField(_('URL of the journal'), max_length=128, null=True, blank=True)
     notes = models.TextField(_('Notes'), max_length=254, null=True, blank=True)
     index_coverage = models.TextField(_('Index Coverage'), null=True, blank=True)
-    cover = models.ImageField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True)
-    logo = models.ImageField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True)
+    cover = ContentTypeRestrictedFileField(_('Journal Cover'), upload_to='img/journal_cover/', null=True, blank=True,
+                                           content_types=settings.IMAGE_CONTENT_TYPE, max_upload_size=settings.JOURNAL_COVER_MAX_SIZE)
+    logo = ContentTypeRestrictedFileField(_('Journal Logo'), upload_to='img/journals_logos', null=True, blank=True,
+                                          content_types=settings.IMAGE_CONTENT_TYPE, max_upload_size=settings.JOURNAL_LOGO_MAX_SIZE)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'), max_length=255, blank=True)
     editor_name = models.CharField(_('Editor Names'), max_length=512)
@@ -561,15 +598,6 @@ class Journal(caching.base.CachingMixin, models.Model):
         ordering = ['title']
         permissions = (("list_journal", "Can list Journals"),
                        ("list_editor_journal", "Can list editor Journals"))
-
-    def change_publication_status(self, status, reason, changed_by):
-        """
-        Syntatic suggar for changing publication status.
-        """
-        self.pub_status = status
-        self.pub_status_reason = reason
-        self.pub_status_changed_by = changed_by
-        self.save()
 
     def issues_as_grid(self, is_available=True):
         objects_all = self.issue_set.available(is_available).order_by(
@@ -648,34 +676,80 @@ class Journal(caching.base.CachingMixin, models.Model):
         attr = u'print_issn' if self.scielo_issn == u'print' else u'eletronic_issn'
         return getattr(self, attr)
 
+    def join(self, collection, responsible):
+        """Make this journal part of the collection.
+        """
 
-class JournalPublicationEvents(caching.base.CachingMixin, models.Model):
+        Membership.objects.create(journal=self,
+                                  collection=collection,
+                                  created_by=responsible,
+                                  status='inprogress')
+
+    def membership_info(self, collection, attribute=None):
+        """Retrieve info about the relation of this journal with a
+        given collection.
+        """
+        rel = self.membership_set.get(collection=collection)
+        if attribute:
+            return getattr(rel, attribute)
+        else:
+            return rel
+
+    def is_member(self, collection):
+        """
+        Returns a boolean indicating whether or not a member of a specific collection
+        """
+        return self.membership_set.filter(collection=collection).exists()
+
+    def change_status(self, collection, new_status, reason, responsible):
+        rel = self.membership_info(collection)
+        rel.status = new_status
+        rel.reason = reason
+        rel.created_by = responsible
+        rel.save()
+
+
+class Membership(models.Model):
     """
-    Records the status changes for a given Journal.
-
-    Known status:
-    * Current
-    * Deceased
-    * Suspended
-    * In progress
+    Represents the many-to-many relation
+    between Journal and Collection.
     """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
+    journal = models.ForeignKey('Journal')
+    collection = models.ForeignKey('Collection')
+    status = models.CharField(max_length=16, default="inprogress",
+        choices=choices.JOURNAL_PUBLICATION_STATUS)
+    since = models.DateTimeField(auto_now=True)
+    reason = models.TextField(_('Why are you changing the publication status?'),
+        blank=True, default="")
+    created_by = models.ForeignKey(User, editable=False)
 
-    journal = models.ForeignKey(Journal, editable=False, related_name='status_history')
-    status = models.CharField(_('Journal Status'), max_length=16,)
-    reason = models.TextField(_('Reason'), blank=True, default="",)
-    created_at = models.DateTimeField(_('Changed at'), auto_now_add=True)
-    changed_by = models.ForeignKey(User, editable=False)
+    def save(self, *args, **kwargs):
+        """
+        Always save a copy at JournalTimeline
+        """
+        super(Membership, self).save(*args, **kwargs)
+        JournalTimeline.objects.create(journal=self.journal,
+                                       collection=self.collection,
+                                       status=self.status,
+                                       reason=self.reason,
+                                       created_by=self.created_by,
+                                       since=self.since)
 
-    def __unicode__(self):
-        return self.status
+    class Meta():
+        unique_together = ("journal", "collection")
 
-    class Meta:
-        verbose_name = 'journal publication event'
-        verbose_name_plural = 'Journal Publication Events'
-        ordering = ['created_at']
-        permissions = (("list_publication_events", "Can list Publication Events"),)
+
+class JournalTimeline(models.Model):
+    """
+    Represents the status history of a journal.
+    """
+    journal = models.ForeignKey('Journal', related_name='statuses')
+    collection = models.ForeignKey('Collection')
+    status = models.CharField(max_length=16,
+        choices=choices.JOURNAL_PUBLICATION_STATUS)
+    since = models.DateTimeField()
+    reason = models.TextField(default="")
+    created_by = models.ForeignKey(User)
 
 
 class JournalTitle(caching.base.CachingMixin, models.Model):
@@ -701,12 +775,34 @@ class UseLicense(caching.base.CachingMixin, models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
     disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
+    is_default = models.BooleanField(_('Is Default?'), default=False)
 
     def __unicode__(self):
         return self.license_code
 
     class Meta:
         ordering = ['license_code']
+
+    def save(self, *args, **kwargs):
+        """
+        Only one UseLicense must be the default (is_default==True).
+        If already have one, these will be unset as default (is_default==False)
+        If None is already setted, this instance been saved, will be the default.
+        If the only one is unsetted as default, then will be foreced to be the default anyway,
+        to allways get one license setted as default
+        """
+        qs = UseLicense.objects.filter(is_default=True)
+        if (qs.count() == 0 ) or (self in qs):
+            # no other was default, or ``self`` is the current default one,
+            # so ``self`` will be set as default
+            self.is_default = True
+
+        if self.is_default:
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            if qs.count() != 0:
+                qs.update(is_default=False)
+        super(UseLicense, self).save(*args, **kwargs)
 
 
 class TranslatedData(caching.base.CachingMixin, models.Model):
@@ -742,7 +838,7 @@ class Section(caching.base.CachingMixin, models.Model):
     title manager. We've decided to store this value just by
     historical reasons, and we don't know if it will last forever.
     """
-    #Custom manager
+    # Custom manager
     objects = SectionCustomManager()
     nocacheobjects = models.Manager()
     userobjects = modelmanagers.SectionManager()
@@ -777,8 +873,7 @@ class Section(caching.base.CachingMixin, models.Model):
 
         A Language instance must be passed as the language argument.
         """
-        SectionTitle.objects.create(section=self,
-            title=title, language=language)
+        SectionTitle.objects.create(section=self, title=title, language=language)
 
     def _suggest_code(self, rand_generator=base28.genbase):
         """
@@ -831,23 +926,22 @@ class Section(caching.base.CachingMixin, models.Model):
 
 class Issue(caching.base.CachingMixin, models.Model):
 
-    #Custom manager
+    # Custom manager
     objects = IssueCustomManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.IssueManager()
 
     section = models.ManyToManyField(Section, blank=True)
     journal = models.ForeignKey(Journal)
     volume = models.CharField(_('Volume'), blank=True, max_length=16)
     number = models.CharField(_('Number'), blank=True, max_length=16)
-    suppl_volume = models.CharField(_('Volume Supplement'), null=True, blank=True, max_length=16)
-    suppl_number = models.CharField(_('Number Supplement'), null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     publication_start_month = models.IntegerField(_('Start Month'), blank=True, null=True, choices=choices.MONTHS)
     publication_end_month = models.IntegerField(_('End Month'), blank=True, null=True, choices=choices.MONTHS)
     publication_year = models.IntegerField(_('Year'))
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True)
-    use_license = models.ForeignKey(UseLicense, null=True)
+    use_license = models.ForeignKey(UseLicense, null=True, help_text=ISSUE_DEFAULT_LICENSE_HELP_TEXT)
     total_documents = models.IntegerField(_('Total of Documents'), default=0)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=sorted(choices.CTRL_VOCABULARY, key=lambda CTRL_VOCABULARY: CTRL_VOCABULARY[1]), null=False, blank=True)
@@ -859,7 +953,12 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     order = models.IntegerField(_('Issue Order'), blank=True)
 
+    type = models.CharField(_('Type'),  max_length=15, choices=choices.ISSUE_TYPES, default='regular', editable=False)
+    suppl_text = models.CharField(_('Suppl Text'),  max_length=15, null=True, blank=True)
+    spe_text = models.CharField(_('Special Text'),  max_length=15, null=True, blank=True)
+
     class Meta:
+        ordering = ('created', )
         permissions = (("list_issue", "Can list Issues"),
                       ("reorder_issue", "Can Reorder Issues"))
 
@@ -880,13 +979,14 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     @property
     def identification(self):
-        suppl_volume = _('suppl.') + self.suppl_volume if self.suppl_volume else ''
-        suppl_number = _('suppl.') + self.suppl_number if self.suppl_number else ''
+        values = [self.number]
+        if self.type == 'supplement':
+            values.append('suppl.%s' % self.suppl_text)
 
-        values = [self.number, suppl_volume, suppl_number]
+        if self.type == 'special':
+            values.append('spe.%s' % self.spe_text)
 
-        return ' '.join([val for val in values if val]).strip().replace(
-                'spe', 'special').replace('ahead', 'ahead of print')
+        return ' '.join([val for val in values if val]).strip().replace('ahead', 'ahead of print')
 
     def __unicode__(self):
 
@@ -897,6 +997,30 @@ class Issue(caching.base.CachingMixin, models.Model):
         return '{0} / {1} - {2}'.format(self.publication_start_month,
                                         self.publication_end_month,
                                         self.publication_year)
+
+    @property
+    def suppl_type(self):
+        if self.type == 'supplement':
+
+            if self.number != '' and self.volume == '':
+                return 'number'
+            elif self.number == '' and self.volume != '':
+                return 'volume'
+
+        else:
+            raise AttributeError('Issues of type %s do not have an attribute named: suppl_type' % self.get_type_display())
+
+    @property
+    def spe_type(self):
+        if self.type == 'special':
+
+            if self.number != '' and self.volume == '':
+                return 'number'
+            elif self.number == '' and self.volume != '':
+                return 'volume'
+
+        else:
+            raise AttributeError('Issues of type %s do not have an attribute named: esp_type' % self.get_type_display())
 
     def _suggest_order(self, force=False):
         """
@@ -926,8 +1050,14 @@ class Issue(caching.base.CachingMixin, models.Model):
 
         return next_order
 
+    def _get_default_use_license(self):
+        return self.journal.use_license
+
     def save(self, *args, **kwargs):
         self.label = unicode(self)
+
+        if self.use_license is None and self.journal:
+            self.use_license = self._get_default_use_license()
 
         if not self.pk:
             self.order = self._suggest_order()
@@ -1108,6 +1238,9 @@ class Article(caching.base.CachingMixin, models.Model):
     pdf_url = models.CharField(_('PDF URL'), max_length=256)
     images_url = models.CharField(_('Images URL'), max_length=256)
 
+    def __unicode__(self):
+        return u' - '.join([self.title, str(self.issue)])
+
     class Meta:
         permissions = (("list_article", "Can list Article"),)
 
@@ -1132,29 +1265,12 @@ class Article(caching.base.CachingMixin, models.Model):
 
         return self.front['title-group']
 
-####
-# Pre and Post save to handle `Journal.pub_status` data modification.
-####
-@receiver(pre_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_pre_save')
-def journal_pub_status_pre_save(sender, **kwargs):
-    """
-    Fetch the `pub_status` value from the db before the data is modified.
-    """
-    try:
-        kwargs['instance']._pub_status = Journal.nocacheobjects.get(pk=kwargs['instance'].pk).pub_status
-    except Journal.DoesNotExist:
-        return None
-
-
-@receiver(post_save, sender=Journal, dispatch_uid='journalmanager.models.journal_pub_status_post_save')
-def journal_pub_status_post_save(sender, instance, created, **kwargs):
-    """
-    Check if the `pub_status` value is new or has been modified.
-    """
-    if getattr(instance, '_pub_status', None) and instance.pub_status == instance._pub_status:
-        return None
-
-    JournalPublicationEvents.objects.create(journal=instance,
-        status=instance.pub_status, changed_by=instance.pub_status_changed_by, reason=instance.pub_status_reason)
-
+# ---- SIGNALS ------
 models.signals.post_save.connect(create_api_key, sender=User)
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if created:
+        profile, new = UserProfile.objects.get_or_create(user=instance)

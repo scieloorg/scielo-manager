@@ -1,19 +1,22 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load static %}
-{% load scielo_common %}
+{% load pagination_tags %}
 {% load inctag_toolbars %}
+{% load user_avatar %}
 
 {% block page_title %}{% trans "Users" %}{% endblock %}
 
 {% block content %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
-  <div class="span10">
+  <div class="span9">
     <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
   </div>
-  <div class="span2">
-    {% simple_pagination users %}
+  <div class="span3">
+    <div class="pull-right">
+      {% simple_pagination users %}
+    </div>
   </div>
 </div>
 {% endif %}
@@ -31,16 +34,15 @@
     {% for user in users.object_list %}
     <tr id="{{ user.pk }}">
       <td>
-        <h4>
-          <a {% if not user.is_active %}class="strikethrough"{% endif %}
-             href="{% url user.edit user.pk %}">
-             {{ user.username }}
-          </a>
-        </h4>
+        <a {% if not user.is_active %}class="strikethrough"{% endif %}
+           href="{% url user.edit user.pk %}">
+           <img class="img-rounded" src="{% user_avatar_url user 'small' %}" alt="Gravatar">
+           {{ user.username }}
+        </a>
       </td>
       <td>
-        <a href="mailto:{{ user.get_profile.email }}">
-          {{ user.get_profile.email }}
+        <a href="mailto:{{ user.email }}">
+          {{ user.email }}
         </a>
       </td>
       <td>{{ user.first_name }} {{ user.last_name }}</td>
@@ -57,7 +59,7 @@
             </button>
             {% else %}
             <button id="action_disable_disable"
-                    class="btn btn-mini"
+                    class="btn btn-mini btn-success"
                     value="{% url user.toggle_availability user.pk %}">
               {% trans 'Enable' %}
             </button>

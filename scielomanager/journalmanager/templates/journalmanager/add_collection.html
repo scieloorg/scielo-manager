@@ -1,14 +1,13 @@
 {% extends "base_form_lv0.html" %}
 {% load i18n %}
 {% load static %}
-{% load scielo_common %}
 
 {% block page_title %}{% trans "Collection" %}{% endblock %}
 
 {% block form_content %}
 <form id="collection-form" method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <span class="label">{% trans "Collection Information" %}</span>
+  <h2>{% trans "Collection Information" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.name.errors %}error{% endif %}">
       <label for="{{ add_form.name.auto_id }}">
@@ -141,7 +140,7 @@
       </div>
     </div>
   </div>
-  <span class="label">{% trans "Collection Logomarca" %}</span>
+  <h2>{% trans "Collection Logomarca" %}:</h2>
   <div class="well">
     <div class="control-group {% if add_form.logo.errors %}error{% endif %}">
       <div class="controls">
@@ -149,20 +148,24 @@
       </div>
       <div align="center">
         {% if collection_logo %}
-        <img src="{{ collection_logo }}" />
+          <img src="{{ collection_logo }}" />
         {% else %}
-        {% trans "This collections does not have a logomarca" %}
+          <br>
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans "This collections does not have a logomarca" %}
+          </div>
         {% endif %}
       </div>
     </div>
   </div>
   <input
-    class="btn btn-primary"
+    class="btn btn-success pull-right"
     name="submit"
     type="submit"
     value="{% trans "save" %}" />
   <input
-    class="btn btn-warning"
+    class="btn btn-danger"
     name="reset"
     type="reset"
     value="{% trans "cancel" %}"

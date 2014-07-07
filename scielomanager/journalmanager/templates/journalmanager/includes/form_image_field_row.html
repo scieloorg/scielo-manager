@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load pagination_tags %}
+<div class="control-group {% if field.errors %}error{% endif %}">
+  <label
+    for="{{ field.auto_id }}"
+    class="control-label {% if field.field.required %} req-field {% endif %}">
+      {% trans field.label %}
+  </label>
+  <div class="controls">
+    {% if field.html_name == 'journal-cover' %}
+      <div>
+        {% if has_cover_url %}
+          <img class="img-cover img-thumb img-polaroid" src="{{ has_cover_url }}" />
+        {% else %}
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans "This journal does not have a cover" %}
+          </div>
+        {% endif %}
+      </div>
+    {% elif field.html_name == 'journal-logo' %}
+      <div>
+        {% if has_logo_url %}
+          <img class="img-cover img-thumb img-polaroid" src="{{ has_logo_url }}" />
+        {% else %}
+          <div class="alert alert-info">
+            <i class="icon-info-sign"></i>
+            {% trans "This journal does not have a logo" %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+    {{ field }}
+    {% if field.help_text %}
+      {% with term="term-"|add:field.name|slugify %}
+        <span class="help-inline">
+          {% field_help field.label field.help_text term %}
+        </span>
+      {% endwith %}
+      {% field_help field.label field.help_text term-journal-title %}
+    {% endif %}
+    {% if field.errors %}
+      <span class="help-inline danger">{{ field.errors }}</span>
+    {% endif %}
+
+  </div>
+</div>

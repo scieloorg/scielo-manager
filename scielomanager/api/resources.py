@@ -1,5 +1,9 @@
 # coding: utf-8
+import logging
+
+from django.db.models import Q
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from tastypie.resources import ModelResource, Resource
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
@@ -22,6 +26,8 @@ from journalmanager.models import (
     Article,
 )
 
+from scielomanager.utils import usercontext
+
 from articletrack.models import (
     Checkin,
     Notice,
@@ -29,6 +35,16 @@ from articletrack.models import (
     Ticket,
     Comment
 )
+
+logger = logging.getLogger(__name__)
+
+
+def current_user_active_collection():
+    return usercontext.get_finder().get_current_user_active_collection()
+
+
+def current_user_collections():
+    return usercontext.get_finder().get_current_user_collections()
 
 
 class ApiKeyAuthMeta:
@@ -63,6 +79,8 @@ class IssueResource(ModelResource):
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
     is_press_release = fields.BooleanField(readonly=True)
+    suppl_volume = fields.CharField(attribute='volume', readonly=True)
+    suppl_number = fields.CharField(attribute='number', readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
@@ -73,6 +91,7 @@ class IssueResource(ModelResource):
             "is_marked_up": ('exact'),
             "volume": ('exact'),
             "number": ('exact'),
+            "publication_year": ('exact'),
             "suppl_number": ('exact'),
             "suppl_volume": ('exact')
         }
@@ -83,23 +102,31 @@ class IssueResource(ModelResource):
         """
         if filters is None:
             filters = {}
-
         orm_filters = super(IssueResource, self).build_filters(filters)
 
+        param_filters = {}
+
         if 'collection' in filters:
-            issues = Issue.objects.filter(
-                journal__collection__name_slug=filters['collection'])
-            orm_filters['pk__in'] = issues
+            param_filters['journal__collections__name_slug'] = filters['collection']
 
         if 'eletronic_issn' in filters:
-            issues = Issue.objects.filter(
-                journal__eletronic_issn=filters['eletronic_issn'])
-            orm_filters['pk__in'] = issues
+            param_filters['journal__eletronic_issn'] = filters['eletronic_issn']
 
         if 'print_issn' in filters:
-            issues = Issue.objects.filter(
-                journal__print_issn=filters['print_issn'])
-            orm_filters['pk__in'] = issues
+            param_filters['journal__print_issn'] = filters['print_issn']
+
+        if 'suppl_number' in filters:
+            param_filters['type'] = 'supplement'
+            param_filters['number'] = filters['suppl_number']
+
+        if 'suppl_volume' in filters:
+            param_filters['type'] = 'supplement'
+            param_filters['number'] = ''
+            param_filters['volume'] = filters['suppl_volume']
+
+        issues = Issue.objects.filter(**param_filters)
+
+        orm_filters['pk__in'] = issues
 
         return orm_filters
 
@@ -109,6 +136,18 @@ class IssueResource(ModelResource):
 
     def dehydrate_is_press_release(self, bundle):
         return False
+
+    def dehydrate_suppl_volume(self, bundle):
+        if bundle.obj.type == 'supplement':
+            return bundle.obj.suppl_text if bundle.obj.volume else ''
+        else:
+            return ''
+
+    def dehydrate_suppl_number(self, bundle):
+        if bundle.obj.type == 'supplement':
+            return bundle.obj.suppl_text if bundle.obj.number else ''
+        else:
+            return ''
 
 
 class CollectionResource(ModelResource):
@@ -155,12 +194,14 @@ class JournalResource(ModelResource):
     languages = fields.CharField(readonly=True)
     use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
-    collections = fields.ForeignKey(CollectionResource, 'collection')
+    collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
     pub_status_history = fields.ListField(readonly=True)
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
+    pub_status = fields.CharField(readonly=True)
+    pub_status_reason = fields.CharField(readonly=True)
 
     #recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
@@ -186,7 +227,7 @@ class JournalResource(ModelResource):
 
         if 'collection' in filters:
             journals = Journal.objects.filter(
-                collection__name_slug=filters['collection'])
+                collections__name_slug=filters['collection'])
             orm_filters['pk__in'] = journals
 
         if 'pubstatus' in filters:
@@ -198,7 +239,7 @@ class JournalResource(ModelResource):
 
             statuses = filters.getlist('pubstatus')
             journals = j.filter(
-                pub_status__in=statuses)
+                membership__status__in=statuses)
             orm_filters['pk__in'] = journals
 
         return orm_filters
@@ -216,13 +257,37 @@ class JournalResource(ModelResource):
             for language in bundle.obj.languages.all()]
 
     def dehydrate_pub_status_history(self, bundle):
-        return [{'date': event.created_at,
+        return [{'date': event.since,
                 'status': event.status}
-            for event in bundle.obj.status_history.order_by('-created_at').all()]
+            for event in bundle.obj.statuses.order_by('-since').all()]
 
     def dehydrate_study_areas(self, bundle):
         return [area.study_area
             for area in bundle.obj.study_areas.all()]
+
+    def dehydrate_collections(self, bundle):
+        """Only works com v1, without multiple collections per journal.
+        """
+        try:
+            return bundle.data['collections'][0]
+        except IndexError:
+            return ''
+
+    def dehydrate_pub_status(self, bundle):
+        try:
+            col = bundle.obj.collections.get()
+        except MultipleObjectsReturned:
+            col = current_user_active_collection()
+
+        return bundle.obj.membership_info(col, 'status')
+
+    def dehydrate_pub_status_reason(self, bundle):
+        try:
+            col = bundle.obj.collections.get()
+        except MultipleObjectsReturned:
+            col = current_user_active_collection()
+
+        return bundle.obj.membership_info(col, 'reason')
 
 
 class DataChangeEventResource(ModelResource):
@@ -321,8 +386,8 @@ class PressReleaseResource(ModelResource):
             'short_title': issue.journal.short_title,
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_volume': issue.suppl_volume,
-            'suppl_number': issue.suppl_number,
+            'suppl_volume': issue.suppl_text if issue.type == 'supplement' and issue.volume else '',
+            'suppl_number': issue.suppl_text if issue.type == 'supplement' and issue.number else '',
             'publication_start_month': issue.publication_start_month,
             'publication_end_month': issue.publication_end_month,
             'publication_city': issue.journal.publication_city,
@@ -379,6 +444,24 @@ class CheckinResource(ModelResource):
         allowed_methods = ['get', 'post', 'put']
 
 
+    def obj_create(self, bundle, **kwargs):
+        bundle = super(CheckinResource, self).obj_create(bundle, **kwargs)
+
+        submitted_by = bundle.data.get('submitted_by','')
+
+        try:
+            user = User.objects.get(email=submitted_by)
+        except ObjectDoesNotExist:
+            message = u"""Could not find the right User that submitted this checkin
+                          %s.""".strip()
+            logger.error(message % repr(bundle.obj))
+        else:
+            bundle.obj.submitted_by = user
+            bundle.obj.save()
+
+        return bundle
+
+
 class CheckinNoticeResource(ModelResource):
     checkin = fields.ForeignKey(CheckinResource, 'checkin')
 
@@ -398,6 +481,24 @@ class CheckinArticleResource(ModelResource):
         default_format = "application/json"
         allowed_methods = ['get', 'post', 'put']
 
+    def obj_create(self, bundle, **kwargs):
+        bundle = super(CheckinArticleResource, self).obj_create(bundle, **kwargs)
+
+        pissn = bundle.data.get('pissn', '')
+        eissn = bundle.data.get('eissn', '')
+
+        try:
+            journal = Journal.objects.get(
+                Q(print_issn=pissn) | Q(eletronic_issn=eissn)
+            )
+        except ObjectDoesNotExist:
+            message = u"""Could not find the right Journal instance to bind with
+                          %s. The Journal instance will stay in an orphan state.""".strip()
+            logger.error(message % repr(bundle.obj))
+        else:
+            bundle.obj.journals.add(journal)
+
+        return bundle
 
 class TicketResource(ModelResource):
     author = fields.ForeignKey(UserResource, 'author')
@@ -422,6 +523,7 @@ class CommentResource(ModelResource):
 
 
 class ArticleResource(ModelResource):
+    issue = fields.ForeignKey(IssueResource, 'issue')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Article.objects.all()

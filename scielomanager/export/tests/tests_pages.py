@@ -14,8 +14,8 @@ class DownloadMarkupFilesTests(WebTest):
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=False)
-        self.journal = modelfactories.JournalFactory(
-            collection=self.collection)
+        self.journal = modelfactories.JournalFactory(creator=self.user)
+        self.journal.join(self.collection, self.user)
 
     def test_non_authenticated_users_are_redirected_to_login_page(self):
         response = self.app.get(
@@ -44,8 +44,8 @@ class ListIssuesForMarkupFilesTests(WebTest):
 
         self.collection = modelfactories.CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=False)
-        self.journal = modelfactories.JournalFactory(
-            collection=self.collection)
+        self.journal = modelfactories.JournalFactory()
+        self.journal.join(self.collection, self.user)
 
     def test_get_issues_pending_for_markup(self):
         """

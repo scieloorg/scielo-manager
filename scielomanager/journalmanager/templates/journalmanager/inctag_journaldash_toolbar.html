@@ -6,7 +6,7 @@
     <div class="navbar-inner">
       <ul class="nav">
         <li {% if page == 'dashboard' %}class="active activedash" {% endif %}>
-          <a href="{% url journal.dash journal_id %}">{% trans 'Dashboard' %}</a>
+          <a href="{% url journal.dash journal_id %}">{% trans 'About' %}</a>
         </li>
         {% if perms.journalmanager.list_issue %}
         <li {% if page == 'issue' %}class="active activedash" {% endif %}>
@@ -20,10 +20,10 @@
         {% endif %}
         {% if perms.journalmanager.list_pressrelease %}
         <li {% if page == 'press_release' %}class="active activedash" {% endif %}>
-          <a href="{% url prelease.index journal_id %}">Press Releases</a>
+          <a href="{% url prelease.index journal_id %}">{% trans "Press Releases" %}</a>
         </li>
         {% endif %}
-        {% if perms.journalmanager.change_journalpublicationevents %}
+        {% if perms.journalmanager.change_journaltimeline %}
         <li {% if page == 'status' %}class="active activedash" {% endif %}>
           <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>

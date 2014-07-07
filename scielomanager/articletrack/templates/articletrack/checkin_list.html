@@ -1,59 +1,80 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
-{% load scielo_common %}
+{% load pagination_tags %}
+{% load trans_status %}
 
-{% block page_title %}{% trans "List of Article Check ins" %}{% endblock %}
+{% block page_title %}{% trans "List of Checkins" %}{% endblock %}
 
 {% block content %}
 
-<div class="row-fluid show-grid">
-  <div class="span10">
-    <h4>{% trans 'List of Article Check ins' %}</h4>
-  </div>
-  <div class="2" style="text-align:right; margin-bottom:20px;">
-    {% simple_pagination checkins %}
+{# NAVIGATIONS #}
+<div class="navbar">
+  <div class="navbar-inner">
+    <ul class="nav">
+      <li>
+        <a class="brand" href="#">{% trans 'List of Check-ins' %}</a>
+      </li>
+      <li class="divider-vertical"></li>
+    </ul>
+    <ul class="nav pull-right">
+      <li class="divider-vertical"></li>
+      <li><a href="#pending" role="menuitem"><i class="icon-time"></i> {% trans "Pending" %}</a></li>
+      <li class="divider-vertical"></li>
+      <li><a href="#rejected" role="menuitem"><i class="icon-eye-close"></i> {% trans "Rejected" %}</a></li>
+      <li class="divider-vertical"></li>
+      <li><a href="#review" role="menuitem"><i class="icon-eye-open"></i> {% trans "Review" %}</a></li>
+      <li class="divider-vertical"></li>
+      <li><a href="#accepted" role="menuitem"><i class="icon-ok-circle"></i> {% trans "Accepted" %}</a></li>
+    </ul>
   </div>
 </div>
 
-<table class="table table-striped table-condensed">
-  <thead>
-    <tr>
-      <th>{% trans "Package Name" %}</th>
-      <th>{% trans "Article Name" %}</th>
-      <th>{% trans "Journal Name" %}</th>
-      <th>{% trans "Issue Label" %}</th>
-      <th>{% trans "Uploaded at" %}</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for checkin in checkins.object_list %}
-    <tr>
-      <td>
-        {{ checkin.package_name }}
-      </td>
-      <td>
-        {{ checkin.article.article_title|truncatewords:5 }}
-      </td>
-      <td>
-        {{ checkin.article.journal_title }}
-      </td>
-      <td>
-        {{ checkin.article.issue_label }}
-      </td>
-      <td>
-        {{ checkin.created_at|date:"d/m/Y - H:i" }}
-      </td>
-      <td>
-        <a href="{% url notice_detail checkin.id %}" class="btn btn-mini btn" type="button">{% trans "Details" %}</a>
-        <a href="{% url checkin_history checkin.article.pk %}" class="btn btn-mini btn" type="button">{% trans "History" %}</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="5">{% trans 'There are no items.' %}</td>
-    </tr>
-    {% endfor %}
-  <tbody>
-</table>
+{# PENDING LIST #}
+{% with status="pending" icon_class="icon-time" list_title="Pending" checkins_collection=checkins_pending pagination_prefix="pending_page" filter_form=pending_filter_form  %}
+  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+{% endwith %}
+
+{# REJECTED LIST #}
+{% with status="rejected" icon_class="icon-eye-close" list_title="Rejected" checkins_collection=checkins_rejected pagination_prefix="rejected_page" filter_form=rejected_filter_form  %}
+  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+{% endwith %}
+
+{# REVIEW LIST #}
+{% with status="review" icon_class="icon-eye-open" list_title="Review" checkins_collection=checkins_review pagination_prefix="review_page" filter_form=review_filter_form  %}
+  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+{% endwith %}
+
+{# ACCEPTED LIST #}
+{% with status="accepted" icon_class="icon-ok-circle" list_title="Accepted" checkins_collection=checkins_accepted pagination_prefix="accepted_page" filter_form=accepted_filter_form  %}
+  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+{% endwith %}
+
 {% endblock %}
+{% block extrafooter %}
+  {{ block.super }}
+  <script>
+    $(function () {
+      $('.hide-form').click(function(event) {
+        var form = $(this).parents('form');
+        form.find('.filter-action').hide();
+        form.find('.filter-fields').slideUp();
+      });
+      $('.show-form').click(function(event) {
+        var form = $(this).parents('form');
+        form.find('.filter-action').show();
+        form.find('.filter-fields').slideDown();
+      });
+      $('.filter-form').each(function(index, el) {
+        var form = $(el);
+        var has_all_empty_fields = form.find("input, select").map(function(){ return this.value; }).get().join('') === "";
+        if (has_all_empty_fields) {
+          form.find('.filter-action').hide();
+          form.find('.filter-fields').hide();
+          form.find('.hide-form').addClass('active');
+          form.find('.show-form').removeClass('active');
+        }
+      });
+    });
+  </script>
+
+{% endblock extrafooter %}

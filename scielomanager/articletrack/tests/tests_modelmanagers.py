@@ -1,4 +1,5 @@
 # coding: utf-8
+import datetime
 from django.test import TestCase
 
 from articletrack import (
@@ -7,7 +8,7 @@ from articletrack import (
 )
 
 from articletrack.tests import modelfactories
-from journalmanager.tests.modelfactories import UserFactory
+from journalmanager.tests.modelfactories import UserFactory, CollectionFactory, JournalFactory
 
 
 class ArticleManagerTests(TestCase):
@@ -38,8 +39,8 @@ class ArticleManagerTests(TestCase):
         article1 = modelfactories.ArticleFactory.create()
         article2 = modelfactories.ArticleFactory.create()
 
-        collection1 = article1.journals.all()[0].collection
-        collection2 = article2.journals.all()[0].collection
+        collection1 = article1.journals.all()[0].collections.all()[0]
+        collection2 = article2.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -59,8 +60,8 @@ class ArticleManagerTests(TestCase):
         article1 = modelfactories.ArticleFactory.create()
         article2 = modelfactories.ArticleFactory.create()
 
-        collection1 = article1.journals.all()[0].collection
-        collection2 = article2.journals.all()[0].collection
+        collection1 = article1.journals.all()[0].collections.all()[0]
+        collection2 = article2.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -103,8 +104,8 @@ class CheckinManagerTests(TestCase):
         checkin1 = modelfactories.CheckinFactory.create()
         checkin2 = modelfactories.CheckinFactory.create()
 
-        collection1 = checkin1.article.journals.all()[0].collection
-        collection2 = checkin2.article.journals.all()[0].collection
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -124,8 +125,27 @@ class CheckinManagerTests(TestCase):
         checkin1 = modelfactories.CheckinFactory.create()
         checkin2 = modelfactories.CheckinFactory.create()
 
-        collection1 = checkin1.article.journals.all()[0].collection
-        collection2 = checkin2.article.journals.all()[0].collection
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection).pending()
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_pending_checkins_return_active_collection_checkins(self):
+        checkin1 = modelfactories.CheckinFactory.create(status='pending')
+        checkin2 = modelfactories.CheckinFactory.create(status='pending')
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -137,6 +157,90 @@ class CheckinManagerTests(TestCase):
             get_active_collection=get_active_collection)
 
         self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'pending')
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_rejected_checkins_return_active_collection_checkins(self):
+        user_reject = UserFactory(is_active=True)
+        checkin1 = modelfactories.CheckinFactory.create(
+            status='rejected',
+            rejected_by=user_reject,
+            rejected_at=datetime.datetime.now(),
+            rejected_cause='your checkin is bad, and you should feel bad!')
+        checkin2 = modelfactories.CheckinFactory.create(
+            status='rejected',
+            rejected_by=user_reject,
+            rejected_at=datetime.datetime.now(),
+            rejected_cause='your checkin is bad, and you should feel bad!')
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'rejected')
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_reviewed_checkins_return_active_collection_checkins(self):
+        user_review = UserFactory(is_active=True)
+        checkin1 = modelfactories.CheckinFactory.create(
+            status='review',
+            reviewed_by=user_review,
+            reviewed_at=datetime.datetime.now())
+        checkin2 = modelfactories.CheckinFactory.create(
+            status='review',
+            reviewed_by=user_review,
+            reviewed_at=datetime.datetime.now())
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'review')
+        self.assertIn(checkin2, user_checkins)
+
+    def test_active_accepted_checkins_return_active_collection_checkins(self):
+        user_accepted = UserFactory(is_active=True)
+        checkin1 = modelfactories.CheckinFactory.create(
+            status='accepted',
+            accepted_by=user_accepted,
+            accepted_at=datetime.datetime.now())
+        checkin2 = modelfactories.CheckinFactory.create(
+            status='accepted',
+            accepted_by=user_accepted,
+            accepted_at=datetime.datetime.now())
+
+        collection1 = checkin1.article.journals.all()[0].collections.all()[0]
+        collection2 = checkin2.article.journals.all()[0].collections.all()[0]
+
+        user = self._make_user(collection1, collection2)
+        collection2.make_default_to_user(user)
+
+        def get_active_collection():
+            return user.user_collection.get(usercollections__is_default=True)
+
+        user_checkins = models.Checkin.userobjects.active(
+            get_active_collection=get_active_collection)
+
+        self.assertEqual(user_checkins.count(), 1)
+        self.assertEqual(user_checkins[0].status, 'accepted')
         self.assertIn(checkin2, user_checkins)
 
 
@@ -168,8 +272,8 @@ class TicketManagerTests(TestCase):
         ticket1 = modelfactories.TicketFactory.create()
         ticket2 = modelfactories.TicketFactory.create()
 
-        collection1 = ticket1.article.journals.all()[0].collection
-        collection2 = ticket2.article.journals.all()[0].collection
+        collection1 = ticket1.article.journals.all()[0].collections.all()[0]
+        collection2 = ticket2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -189,8 +293,8 @@ class TicketManagerTests(TestCase):
         ticket1 = modelfactories.TicketFactory.create()
         ticket2 = modelfactories.TicketFactory.create()
 
-        collection1 = ticket1.article.journals.all()[0].collection
-        collection2 = ticket2.article.journals.all()[0].collection
+        collection1 = ticket1.article.journals.all()[0].collections.all()[0]
+        collection2 = ticket2.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -233,8 +337,8 @@ class CommentManagerTests(TestCase):
         comment1 = modelfactories.CommentFactory.create()
         comment2 = modelfactories.CommentFactory.create()
 
-        collection1 = comment1.ticket.article.journals.all()[0].collection
-        collection2 = comment2.ticket.article.journals.all()[0].collection
+        collection1 = comment1.ticket.article.journals.all()[0].collections.all()[0]
+        collection2 = comment2.ticket.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)
@@ -254,8 +358,8 @@ class CommentManagerTests(TestCase):
         comment1 = modelfactories.CommentFactory.create()
         comment2 = modelfactories.CommentFactory.create()
 
-        collection1 = comment1.ticket.article.journals.all()[0].collection
-        collection2 = comment2.ticket.article.journals.all()[0].collection
+        collection1 = comment1.ticket.article.journals.all()[0].collections.all()[0]
+        collection2 = comment2.ticket.article.journals.all()[0].collections.all()[0]
 
         user = self._make_user(collection1, collection2)
         collection2.make_default_to_user(user)

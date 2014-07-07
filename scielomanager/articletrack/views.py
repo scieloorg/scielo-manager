@@ -1,5 +1,7 @@
+# coding: utf-8
 import datetime
 import json
+import logging
 
 from waffle.decorators import waffle_flag
 from django.shortcuts import render_to_response, get_object_or_404
@@ -12,10 +14,12 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 
+from packtools import stylechecker
+
 from scielomanager.tools import get_paginated, get_referer_view
 from . import models
-from .forms import CommentMessageForm, TicketForm
-from .balaio_api import BalaioAPI
+from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
+from .balaio import BalaioAPI, BalaioRPC
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -25,18 +29,91 @@ MSG_FORM_MISSING = _('There are some errors or missing data.')
 MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
+logger = logging.getLogger(__name__)
+
+
+def extract_validation_errors(validation_errors):
+    """
+    Return a "parsed" dict of validation errors returned by stylechecker
+    """
+    # iterate over the errors and get the relevant data
+    results = []
+    error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
+    for error in validation_errors:
+        error_data = {
+            'line': error.line or '--',
+            'column': error.column or '--',
+            'message': error.message or '',
+            'level': error.level_name or 'ERROR',
+        }
+        results.append(error_data)
+        if error.line:
+            error_lines.append(str(error.line))
+    return {
+        'results': results,
+        'error_lines': ", ".join(error_lines)
+    }
+
+
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
 def checkin_index(request):
 
-    checkins = models.Checkin.userobjects.active()
+    def filter_queryset_by_form_fields(queryset, form):
+        """
+        Shortcut function to filter the queryset in both filter-forms: pending and accepted listings
+        And assume that both forms have the same fields, because is allways a CheckinListFilterForm
+        with different prefix.
+        Returns: a filtered queryset.
+        """
+        if form.is_valid():
+            package_name = form.cleaned_data.get('package_name', None)
+            article = form.cleaned_data.get('article', None)
+            issue_label = form.cleaned_data.get('issue_label', None)
 
-    objects = get_paginated(checkins, request.GET.get('page', 1))
+            if package_name:
+                queryset = queryset.filter(package_name__icontains=package_name)
+            if article:
+                queryset = queryset.filter(article=article)
+            if issue_label:
+                queryset = queryset.filter(article__issue_label__icontains=issue_label)
+
+        return queryset
+
+    pending_filter_form = CheckinListFilterForm(request.GET, prefix="pending")
+    rejected_filter_form = CheckinListFilterForm(request.GET, prefix="rejected")
+    review_filter_form = CheckinListFilterForm(request.GET, prefix="review")
+    accepted_filter_form = CheckinListFilterForm(request.GET, prefix="accepted")
+
+    # get records from db
+    checkins_pending = models.Checkin.userobjects.active().pending()
+    checkins_rejected = models.Checkin.userobjects.active().rejected()
+    checkins_review = models.Checkin.userobjects.active().review()
+    checkins_accepted = models.Checkin.userobjects.active().accepted()
+
+    # apply filters from form fields
+    checkins_pending = filter_queryset_by_form_fields(checkins_pending, pending_filter_form)
+    checkins_rejected = filter_queryset_by_form_fields(checkins_rejected, rejected_filter_form)
+    checkins_review = filter_queryset_by_form_fields(checkins_review, review_filter_form)
+    checkins_accepted = filter_queryset_by_form_fields(checkins_accepted, accepted_filter_form)
+
+    # paginate resutls
+    objects_pending = get_paginated(checkins_pending, request.GET.get('pending_page', 1))
+    objects_rejected = get_paginated(checkins_rejected, request.GET.get('rejected_page', 1))
+    objects_review = get_paginated(checkins_review, request.GET.get('review_page', 1))
+    objects_accepted = get_paginated(checkins_accepted, request.GET.get('accepted_page', 1))
 
     return render_to_response(
         'articletrack/checkin_list.html',
         {
-            'checkins': objects,
+            'checkins_pending': objects_pending,
+            'checkins_rejected': objects_rejected,
+            'checkins_review': objects_review,
+            'checkins_accepted': objects_accepted,
+            'pending_filter_form': pending_filter_form,
+            'rejected_filter_form': rejected_filter_form,
+            'review_filter_form': review_filter_form,
+            'accepted_filter_form': accepted_filter_form,
         },
         context_instance=RequestContext(request)
     )
@@ -44,18 +121,132 @@ def checkin_index(request):
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
-def checkin_history(request, article_id):
+def checkin_reject(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_rejected:
+        if request.method == 'POST':
+            form = CheckinRejectForm(request.POST)
+            if form.is_valid():
+                rejected_cause = form.cleaned_data['rejected_cause']
+                try:
+                    checkin.do_reject(request.user, rejected_cause)
+                    messages.info(request, MSG_FORM_SAVED)
+                except ValueError:
+                    messages.error(request, MSG_FORM_MISSING)
+            else:
+                form_errors = u", ".join([u"%s %s" % (field, error[0]) for field, error in form.errors.items()])
+                error_msg = "%s %s" % (MSG_FORM_MISSING, form_errors)
+                messages.error(request, error_msg)
+    else:
+        error_msg = _("This checkin cannot be rejected")
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
-    article = get_object_or_404(models.Article.userobjects.active().select_related('checkins'),
-        pk=article_id)
 
-    objects = get_paginated(article.checkins.all(), request.GET.get('page', 1))
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_review(request, checkin_id):
+    """
+    Excecute checkin.do_review, and if checkin can be accepted and Balaio RPC API
+    is up, try to proceed to checkout.
+    """
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_reviewed:
+        try:
+            checkin.do_review(request.user)
+            msg = _("Checkin reviewed succesfully.")
+            messages.info(request, msg)
+        except ValueError:
+            messages.error(request, MSG_FORM_MISSING)
+
+        # if Balaio RPC API is up, then try to proceed to Checkout and marked as accepted
+        rpc_client = BalaioRPC()
+        if checkin.can_be_accepted and rpc_client.is_up():
+            rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
+            if rpc_response:
+                try:
+                    checkin.accept(request.user)
+                    msg = _("Checkin accepted succesfully.")
+                    messages.info(request, msg)
+                except ValueError as e:
+                    logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
+                    error_msg = _("An unexpected error, this attempt connot set to checkout. Please try again later.")
+                    messages.error(request, error_msg)
+    else:
+        error_msg = _("This checkin cannot be reviewed")
+        messages.error(request, error_msg)
+
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_accept(request, checkin_id):
+    """
+    Excecute checkin.accept, if checkin can be accepted and Balaio RPC API
+    is up, try to proceed to checkout.
+    """
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    rpc_client = BalaioRPC()
+    if checkin.can_be_accepted and rpc_client.is_up():
+        rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
+        if rpc_response:
+            try:
+                checkin.accept(request.user)
+                messages.info(request, MSG_FORM_SAVED)
+            except ValueError as e:
+                logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
+                messages.error(request, MSG_FORM_MISSING)
+        else:
+            error_msg = _("The API response was unsuccessful")
+            messages.error(request, error_msg)
+    else:
+        error_msg = _("This checkin cannot be accepted or the API is down.")
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_send_to_pending(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_send_to_pending:
+        try:
+            checkin.send_to_pending(request.user)
+            messages.info(request, MSG_FORM_SAVED)
+        except ValueError:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        error_msg = _("This checkin cannot be send to Pending")
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_send_to_review(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+    if checkin.can_be_send_to_review:
+        try:
+            checkin.send_to_review(request.user)
+            messages.info(request, MSG_FORM_SAVED)
+        except ValueError:
+            messages.error(request, MSG_FORM_MISSING)
+    else:
+        error_msg = _("This checkin cannot be Reviewed")
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+def checkin_history(request, checkin_id):
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
 
     return render_to_response(
-        'articletrack/history.html',
+        'articletrack/checkin_history.html',
         {
-            'checkins': objects,
-            'first_article': article,
+            'checkin': checkin,
         },
         context_instance=RequestContext(request)
     )
@@ -66,26 +257,31 @@ def checkin_history(request, article_id):
 def notice_detail(request, checkin_id):
 
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
-    notices = checkin.notices.all()
-
-    objects = get_paginated(notices, request.GET.get('page', 1))
-
-    tickets = models.Ticket.userobjects.active()
+    notices = checkin.notices.exclude(status__istartswith="serv_")
+    tickets = checkin.article.tickets.all()
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
 
-    zip_filename =  "%s_%s"% (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
-
+    zip_filename = "%s_%s" % (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
+    reject_form = CheckinRejectForm()
     context = {
-        'notices': objects,
+        'notices': notices,
         'checkin': checkin,
         'opened_tickets': opened_tickets,
         'closed_tickets': closed_tickets,
         'zip_filename': zip_filename,
+        'reject_form': reject_form,
     }
 
     balaio = BalaioAPI()
     files_list = []
+    xml_data = {
+        'file_name': None,
+        'uri': None,
+        'can_be_analyzed': (False, ''),
+        'annotations': None,
+        'validation_errors': None,
+    }
 
     try:
 
@@ -95,10 +291,43 @@ def notice_detail(request, checkin_id):
             for file_extension in files.keys():
                 files_list += [{'ext': file_extension, 'name': f} for f in files[file_extension]]
 
-    except ValueError:
-        pass # Service Unavailable
+            xml_data['file_name'] = files['xml'][0]  # assume only ONE xml per package
+            xml_data['can_be_analyzed'] = (True, '')
+
+    except ValueError as e:
+        # Service Unavailable
+        logger.error('ValueError while requesting: list_files_members_by_attempt(%s) for checkin.pk == %s. Traceback: %s' % (checkin.attempt_ref, checkin.pk, e))
+        xml_data['can_be_analyzed'] = (False, "The package's files could not requested")
+
+    # get stylechecker annotations
+    if xml_data['can_be_analyzed'][0]:
+        try:
+            xml_data['uri'] = balaio.get_xml_uri(checkin.attempt_ref, xml_data['file_name']) if xml_data['file_name'] else None
+        except ValueError as e:
+            # Service Unavailable
+            logger.error('ValueError while requesting: get_xml_uri(%s, %s) for checkin.pk == %s. Traceback: %s' % (checkin.attempt_ref, xml_data['file_name'], checkin.pk, e))
+            xml_data['can_be_analyzed'] = (False, 'Could not obtain the XML with this file name %s' % xml_data['file_name'])
+        else:
+            if bool(xml_data['uri']):
+                xml_data['can_be_analyzed'] = (True, "")
+            else:
+                xml_data['can_be_analyzed'] = (False, "XML's URI is invalid (%s)" % xml_data['uri'])
+
+    if xml_data['can_be_analyzed'][0]:
+        try:
+            xml_check = stylechecker.XML(xml_data['uri'])
+        except Exception as e:  # any exception will stop the process
+            xml_data['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
+            logger.error('ValueError while creating: Stylechecker.XML(%s) for checkin.pk == %s. Traceback: %s' % (xml_data['file_name'], checkin.pk, e))
+        else:
+            status, errors = xml_check.validate_style()
+            if not status:  # have errors
+                xml_check.annotate_errors()
+                xml_data['annotations'] = str(xml_check)
+                xml_data['validation_errors'] = extract_validation_errors(errors)
 
     context['files'] = files_list
+    context['xml_data'] = xml_data
 
     return render_to_response(
         'articletrack/notice_detail.html',
@@ -273,7 +502,10 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
         context,
         context_instance=RequestContext(request)
     )
+
+
 # BALAIO API
+
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_ticket', login_url=AUTHZ_REDIRECT_URL)
@@ -323,4 +555,3 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
             return view_response
     else:
         return HttpResponseBadRequest()
-

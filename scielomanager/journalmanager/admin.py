@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from tastypie.models import ApiAccess
 
 from .models import *
+from .forms import UserChangeForm, UserCreationForm
 
 
 admin.site.register(ApiAccess)
@@ -16,6 +17,14 @@ class JournalMissionInline(admin.StackedInline):
 
 class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
+
+
+class StudyAreaAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return StudyArea.nocacheobjects
+
+admin.site.register(StudyArea, StudyAreaAdmin)
 
 
 class CollectionAdmin(admin.ModelAdmin):
@@ -83,6 +92,17 @@ class UserProfileInline(admin.StackedInline):
 
 class UserAdmin(UserAdmin):
     inlines = (UserProfileInline, UserCollectionsInline)
+    form = UserChangeForm
+    add_form = UserCreationForm
+    add_fieldsets = (
+        (
+            None,
+            {
+                'classes': ('wide',),
+                'fields': ('username', 'password1', 'password2', 'email')
+            }
+        ),
+    )
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
@@ -109,7 +129,7 @@ admin.site.register(Sponsor, SponsorAdmin)
 
 
 class UseLicenseAdmin(admin.ModelAdmin):
-
+    list_display = ('license_code', 'is_default', )
     def queryset(self, request):
         return UseLicense.nocacheobjects
 
@@ -132,21 +152,17 @@ class TranslatedDataAdmin(admin.ModelAdmin):
 admin.site.register(TranslatedData)
 
 
-class JournalPublicationEventsAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return JournalPublicationEvents.nocacheobjects
-
-    list_display = ['journal', 'status', 'created_at']
-    list_filter = ['status']
-    search_fields = ['journal']
-
-admin.site.register(JournalPublicationEvents, JournalPublicationEventsAdmin)
-
-
 class PressReleaseAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         return PressRelease.nocacheobjects
 
 admin.site.register(PressRelease, PressReleaseAdmin)
+
+
+class ArticleAdmin(admin.ModelAdmin):
+
+    def queryset(self, request):
+        return Article.nocacheobjects
+
+admin.site.register(Article, ArticleAdmin)

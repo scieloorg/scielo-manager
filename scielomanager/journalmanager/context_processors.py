@@ -56,7 +56,7 @@ def show_user_collections(request):
     queryset of collections the user relates to.
     """
     def wrap():
-        return models.Collection.objects.all_by_user(request.user)
+        return models.Collection.userobjects.all()
 
     if request.user.is_authenticated():
         return {'user_collections': wrap}
@@ -67,8 +67,11 @@ def show_user_collections(request):
 def add_default_collection(request):
     if request.user.is_authenticated():
         try:
-            collection = models.Collection.objects.get_default_by_user(request.user)
-        except models.Collection.DoesNotExist:
+            collection = models.Collection.userobjects.active()
+        except (RuntimeError, models.Collection.DoesNotExist):
+            # RuntimeError: if decorators such as waffle fails, then return a 404 response,
+            # with RequestContext(), with UserContext(), that generate the RuntimeError without
+            # response object, and without user, and collections.
             return {}
         else:
 
