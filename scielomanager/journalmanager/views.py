@@ -407,7 +407,6 @@ def edit_journal_status(request, journal_id=None):
     if request.method == "POST":
         membership = journal.membership_info(current_user_collection)
         membershipform = MembershipForm(request.POST, instance=membership)
-
         if membershipform.is_valid():
             membershipform.save_all(request.user, journal, current_user_collection)
             messages.info(request, MSG_FORM_SAVED)
@@ -415,8 +414,8 @@ def edit_journal_status(request, journal_id=None):
                 'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
-
-    membershipform = MembershipForm()
+    else:
+        membershipform = MembershipForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
                               'add_form': membershipform,
