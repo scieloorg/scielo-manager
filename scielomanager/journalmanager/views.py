@@ -344,8 +344,9 @@ def add_user(request, user_id=None):
     # Getting Collections from the logged user.
     user_collections = models.get_user_collections(request.user.id)
 
-    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
-        form=UserCollectionsForm, extra=1, can_delete=True, formset=OnlyOneDefaultCollectionRequiredFormSet)
+    UserCollectionsFormSet = inlineformset_factory(
+        User, models.UserCollections, form=UserCollectionsForm,
+        extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     # filter the collections the user is manager.
     UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
@@ -361,7 +362,14 @@ def add_user(request, user_id=None):
             invalid = [collection for collection in user_collections]
             models.UserCollections.objects.invalidate(*invalid)
 
-            usercollectionsformset.save()
+            # force the first instance (collection) to be set as default
+            instances = usercollectionsformset.save(commit=False)
+            has_set_as_default = False
+            for instance in instances:
+                if not has_set_as_default:
+                    instance.is_default = True
+                    has_set_as_default = True
+                instance.save()
 
             # if it is a new user, mail him
             # requesting for password change
