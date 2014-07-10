@@ -497,7 +497,6 @@ class UserFormTests(WebTest):
         form['user-last_name'] = 'bar'
         form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
-        form['usercollections-0-is_default'] = True
 
         response = form.submit().follow()
 
@@ -565,7 +564,6 @@ class UserFormTests(WebTest):
         form['user-last_name'] = 'bar'
         form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
-        form['usercollections-0-is_default'] = True
 
         response = form.submit().follow()
 
@@ -586,7 +584,6 @@ class UserFormTests(WebTest):
         form['user-last_name'] = 'bar'
         form['user-email'] = 'bazz@spam.org'
         form.set('usercollections-0-collection', self.collection.pk)
-        form['usercollections-0-is_default'] = True
 
         response = form.submit().follow()
 
@@ -739,8 +736,8 @@ class UserFormTests(WebTest):
         self.assertTemplateUsed(response, 'journalmanager/add_user.html')
         self.assertEqual([u'Please fill in at least one form'], response.context['usercollectionsformset'].non_form_errors())
 
-    def test_create_user_with_coll_but_not_default_must_fail(self):
-        """ When create a new user, if one collecttion  were added but no is default, must fail """
+    def test_create_user_with_coll_must_set_a_default(self):
+        """ When create a new user, one collecttion must be set as default """
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
@@ -752,11 +749,13 @@ class UserFormTests(WebTest):
         # filled collection selected, but not setted as default
         form.set('usercollections-0-collection', self.collection.pk)
 
-        response = form.submit()
-        self.assertTemplateUsed(response, 'journalmanager/add_user.html')
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
+        self.assertEqual(1, len(self.user.usercollections_set.filter(is_default=True)))
         self.assertEqual(
-            [u'At least one collection is required to be set as default'],
-            response.context['usercollectionsformset'].non_form_errors()
+            self.collection.pk,
+            self.user.usercollections_set.get(is_default=True).collection.pk
         )
 
     def test_create_user_with_only_one_default_coll_must_succeed(self):
@@ -771,7 +770,6 @@ class UserFormTests(WebTest):
         form['user-email'] = 'bazz@spam.org'
         # filled collection selected, but not setted as default
         form.set('usercollections-0-collection', self.collection.pk)
-        form['usercollections-0-is_default'] = True
 
         response = form.submit().follow()
 
@@ -779,8 +777,7 @@ class UserFormTests(WebTest):
         response.mustcontain('bazz', 'bazz@spam.org')
 
         # check if basic state has been set
-        self.assertTrue(response.context['user'].user_collection.get(
-            pk=self.collection.pk))
+        self.assertTrue(response.context['user'].user_collection.get(pk=self.collection.pk))
 
 
 class UserCollectionsFormSetTests(TestCase):
@@ -803,7 +800,7 @@ class UserCollectionsFormSetTests(TestCase):
         UserCollectionsFormSet = inlineformset_factory(
             User, models.UserCollections,
             form=forms.UserCollectionsForm, extra=1, can_delete=True,
-            formset=forms.OnlyOneDefaultCollectionRequiredFormSet
+            formset=forms.FirstFieldRequiredFormSet
         )
         data = {
             'usercollections-TOTAL_FORMS': '2',
@@ -812,12 +809,10 @@ class UserCollectionsFormSetTests(TestCase):
 
             'usercollections-0-id': None,
             'usercollections-0-collection': '%s' % self.collection.pk,
-            'usercollections-0-is_default': True,
             'usercollections-0-is_manager': '',
 
             'usercollections-1-id': None,
             'usercollections-1-collection': '%s' % other_collection.pk,
-            'usercollections-1-is_default': '',
             'usercollections-1-is_manager': '',
         }
 
@@ -835,7 +830,7 @@ class UserCollectionsFormSetTests(TestCase):
         UserCollectionsFormSet = inlineformset_factory(
             User, models.UserCollections,
             form=forms.UserCollectionsForm, extra=1, can_delete=True,
-            formset=forms.OnlyOneDefaultCollectionRequiredFormSet
+            formset=forms.FirstFieldRequiredFormSet
         )
         data = {
             'usercollections-TOTAL_FORMS': '2',
@@ -844,12 +839,10 @@ class UserCollectionsFormSetTests(TestCase):
 
             'usercollections-0-id': None,
             'usercollections-0-collection': '%s' % self.collection.pk,
-            'usercollections-0-is_default': True,
             'usercollections-0-is_manager': '',
 
             'usercollections-1-id': None,
             'usercollections-1-collection': '%s' % self.collection.pk,
-            'usercollections-1-is_default': '',
             'usercollections-1-is_manager': '',
         }
 
@@ -860,20 +853,19 @@ class UserCollectionsFormSetTests(TestCase):
         expected_errors = {'__all__': [u'User collections with this User and Collection already exists.']}
         self.assertEqual(formset.forms[1].errors, expected_errors)
 
-    def test_create_formset_with_two_default_collections_is_not_valid(self):
+    def test_create_formset_with_two_collections_only_the_first_is_set_as_default(self):
         """
         Test if is possible to create a formset with a basic setup of 2 forms,
-        each form will have different collections associated,
-        and both forms will set the associated collections as default.
+        each form will have different collections associated
 
-        The formset must be invalid, because only ONE collection can be set as default
+        The formset must be valid, with only the first collection setted as default
         """
         other_collection = modelfactories.CollectionFactory.create()
 
         UserCollectionsFormSet = inlineformset_factory(
             User, models.UserCollections,
             form=forms.UserCollectionsForm, extra=1, can_delete=True,
-            formset=forms.OnlyOneDefaultCollectionRequiredFormSet
+            formset=forms.FirstFieldRequiredFormSet
         )
         data = {
             'usercollections-TOTAL_FORMS': '2',
@@ -882,22 +874,19 @@ class UserCollectionsFormSetTests(TestCase):
 
             'usercollections-0-id': None,
             'usercollections-0-collection': '%s' % self.collection.pk,
-            'usercollections-0-is_default': True,
             'usercollections-0-is_manager': '',
 
             'usercollections-1-id': None,
             'usercollections-1-collection': '%s' % other_collection.pk,
-            'usercollections-1-is_default': True,
             'usercollections-1-is_manager': '',
         }
 
         formset = UserCollectionsFormSet(data, instance=self.user, prefix='usercollections',)
-
-        self.assertFalse(formset.is_valid())
+        self.assertTrue(formset.is_valid())
         self.assertTrue(formset.forms[0].is_valid())
         self.assertTrue(formset.forms[1].is_valid())
-        expected_errors = [u'Only one collection can be set as default!']
-        self.assertEqual(formset.non_form_errors(), expected_errors)
+        self.assertEqual(1, len(self.user.usercollections_set.filter(is_default=True)))
+        self.assertEqual(self.collection, self.user.usercollections_set.get(is_default=True).collection)
 
     def test_create_formset_with_one_default_and_two_manager_collections_is_valid(self):
         """
@@ -912,7 +901,7 @@ class UserCollectionsFormSetTests(TestCase):
         UserCollectionsFormSet = inlineformset_factory(
             User, models.UserCollections,
             form=forms.UserCollectionsForm, extra=1, can_delete=True,
-            formset=forms.OnlyOneDefaultCollectionRequiredFormSet
+            formset=forms.FirstFieldRequiredFormSet
         )
         data = {
             'usercollections-TOTAL_FORMS': '2',
@@ -921,12 +910,10 @@ class UserCollectionsFormSetTests(TestCase):
 
             'usercollections-0-id': None,
             'usercollections-0-collection': '%s' % self.collection.pk,
-            'usercollections-0-is_default': True,
             'usercollections-0-is_manager': True,
 
             'usercollections-1-id': None,
             'usercollections-1-collection': '%s' % other_collection.pk,
-            'usercollections-1-is_default': '',
             'usercollections-1-is_manager': True,
         }
 
@@ -935,20 +922,22 @@ class UserCollectionsFormSetTests(TestCase):
         self.assertTrue(formset.is_valid())
         self.assertTrue(formset.forms[0].is_valid())
         self.assertTrue(formset.forms[1].is_valid())
+        self.assertEqual(1, len(self.user.usercollections_set.filter(is_default=True)))
+        self.assertEqual(self.collection, self.user.usercollections_set.get(is_default=True).collection)
 
-    def test_create_formset_without_default_collections_is_not_valid(self):
+    def test_create_formset_without_managed_collections_is_valid(self):
         """
         Test if is possible to create a formset with a basic setup of 2 forms,
-        each one with a collection associated, and none of them was set as default.
+        each one with a collection associated, and none of them was set as is_manager.
 
-        The formset must be invalid
+        The formset must be valid, and self.collection must be set as default
         """
         other_collection = modelfactories.CollectionFactory.create()
 
         UserCollectionsFormSet = inlineformset_factory(
             User, models.UserCollections,
             form=forms.UserCollectionsForm, extra=1, can_delete=True,
-            formset=forms.OnlyOneDefaultCollectionRequiredFormSet
+            formset=forms.FirstFieldRequiredFormSet
         )
         data = {
             'usercollections-TOTAL_FORMS': '2',
@@ -957,22 +946,20 @@ class UserCollectionsFormSetTests(TestCase):
 
             'usercollections-0-id': None,
             'usercollections-0-collection': '%s' % self.collection.pk,
-            'usercollections-0-is_default': '',
             'usercollections-0-is_manager': '',
 
             'usercollections-1-id': None,
             'usercollections-1-collection': '%s' % other_collection.pk,
-            'usercollections-1-is_default': '',
             'usercollections-1-is_manager': '',
         }
 
         formset = UserCollectionsFormSet(data, instance=self.user, prefix='usercollections',)
 
-        self.assertFalse(formset.is_valid())
+        self.assertTrue(formset.is_valid())
         self.assertTrue(formset.forms[0].is_valid())
         self.assertTrue(formset.forms[1].is_valid())
-        expected_errors = [u'At least one collection is required to be set as default']
-        self.assertEqual(formset.non_form_errors(), expected_errors)
+        self.assertEqual(1, len(self.user.usercollections_set.filter(is_default=True)))
+        self.assertEqual(self.collection, self.user.usercollections_set.get(is_default=True).collection)
 
 
 class JournalFormTests(WebTest):
@@ -995,8 +982,7 @@ class JournalFormTests(WebTest):
         are unable to access the form. They must be redirected to a page
         with informations about their lack of permissions.
         """
-        response = self.app.get(reverse('journal.add'),
-            user=self.user).follow()
+        response = self.app.get(reverse('journal.add'), user=self.user).follow()
 
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
@@ -1033,8 +1019,7 @@ class JournalFormTests(WebTest):
         form is rendered again and an alert is shown with the message
         ``There are some errors or missing data``.
         """
-        perm = _makePermission(perm='change_journal',
-            model='journal', app_label='journalmanager')
+        perm = _makePermission(perm='change_journal', model='journal', app_label='journalmanager')
         self.user.user_permissions.add(perm)
 
         sponsor = modelfactories.SponsorFactory.create()
