@@ -29,6 +29,20 @@
 <form id="user-form" method="post" action="">
   {% csrf_token %}
   <div class="well">
+    <div class="span4 pull-right">
+      <h5>{% trans "Teams" %}:</h5>
+      <ul class="nav nav-tabs nav-stacked">
+        {% if user and user.team %}
+          {% for team in user.team.all %}
+            <li class="active"><a href="#">{{ team.name }}</a></li>
+          {% empty %}
+            <li class="active"><a href="#">{% trans "No team associated" %}</a></li>
+          {% endfor %}
+        {% else %}
+            <li class="active"><a href="#">{% trans "No team associated" %}</a></li>
+        {% endif %}
+      </ul>
+    </div>
     <div class="control-group {% if add_form.username.errors %}error{% endif %}">
       <label for="{{ add_form.username.auto_id }}">
         <span {% if add_form.username.field.required %}class="req-field"{% endif %}>
