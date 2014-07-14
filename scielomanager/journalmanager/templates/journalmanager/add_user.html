@@ -5,7 +5,7 @@
 {% block messages %}
   {% if add_form.errors %}
   <div class="alert alert-error">
-    <button class="close" data-dismiss="alert" type="button">×</button>
+    <button class="close" data-dismiss="alert" type="button">&times;</button>
     <ul>
       {% for field in add_form %}
         {% if field.errors %}
@@ -15,6 +15,13 @@
     </ul>
   </div>
   {% endif %}
+
+  {% for error in add_form.non_field_errors %}
+    <div class="alert alert-error">
+      <button class="close" data-dismiss="alert" type="button">&times;</button>
+      <strong>{{ error }}</strong>
+    </div>
+  {% endfor %}
 {% endblock %}
 
 {% block form_content %}
@@ -67,7 +74,7 @@
         {% if add_form.email.errors %}
           <ul>
             {% for error in add_form.email.errors %}
-              <li>{{ error }}</li>              
+              <li>{{ error }}</li>
             {% endfor %}
           </ul>
         {% endif %}
@@ -87,15 +94,17 @@
   </div>
 
 {% if usercollectionsformset.non_form_errors %}
+  {# non form errors #}
   <div class="alert alert-error">
     <button class="close" data-dismiss="alert" type="button">×</button>
-      {% for non_form_error in usercollectionsformset.non_form_errors %}
-        {{ non_form_error }}
-      {% endfor %}
+    {% for non_form_error in usercollectionsformset.non_form_errors %}
+      {{ non_form_error }}
+    {% endfor %}
   </div>
-  {% endif %}
+{% endif %}
 
   <h2>{% trans "User Collections" %}:</h2>
+  <span class="label label-info">{% trans "The first collection will be set as default" %}</span>
   <div class="well">
     <table id="usercollectionsformset" class="table table-bordered table-striped">
       <thead>
@@ -103,7 +112,7 @@
           <th>{% trans "Collection" %}
           	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
           </th>
-          <th>{% trans "is_manager" %}</th>
+          <th>{% trans "is manager" %}</th>
           <th>{% trans "options" %}</th>
         </tr>
       </thead>
@@ -111,15 +120,39 @@
         {% for form in usercollectionsformset.forms %}
         <tr id="{{ form.prefix }}-row">
           <td>
+            {# non field errors #}
+            {% if form.non_field_errors %}
+              <div class="alert alert-error">
+                {% for non_field_error in form.non_field_errors %}
+                  {{ non_field_error }}
+                {% endfor %}
+              </div>
+            {% endif %}
             <div class="control-group {% if form.collection.errors %}error{% endif %}">
               {% for field in form.hidden_fields %}{{ field }}{% endfor %}
               {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
               {{ form.collection }}
+              {# collection field errors #}
+              {% if form.collection.errors %}
+                <div class="alert alert-error">
+                  {% for error in form.collection.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </td>
           <td>
             <div class="control-group {% if add_form.is_manager.errors %}error{% endif %}">
               {{ form.is_manager }}
+              {% if form.is_manager.errors %}
+                {# is_manager field errors #}
+                <div class="alert alert-error">
+                  {% for error in form.is_manager.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </td>
           <td></td>
