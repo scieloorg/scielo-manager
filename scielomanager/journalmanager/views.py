@@ -395,6 +395,7 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
+                              'user': user,
                               },
                               context_instance=RequestContext(request))
 
