@@ -316,8 +316,25 @@ class JournalTests(TestCase):
         Restore the default values.
         """
 
+    def test_succeeding_title(self):
+        journal1 = JournalFactory.create(title='uPrevious Title')
+
+        journal2 = JournalFactory.create(title=u'Succeeding Title', previous_title=journal1)
+
+        result = journal1.succeeding_title
+
+        self.assertEqual(result.title, u'Succeeding Title')
+
+    def test_without_succeeding_title(self):
+        journal1 = JournalFactory.create(title=u'Previous Title')
+
+        result = journal1.succeeding_title
+
+        self.assertEqual(result, None)
+
     def test_valid_is_editors(self):
         user = auth.UserF()
+
         journal = JournalFactory.create()
 
         journal.editors.add(user)
