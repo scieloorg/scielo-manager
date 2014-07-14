@@ -3,6 +3,24 @@ from django.contrib import admin
 from . import models
 
 
+class TeamAdmin(admin.ModelAdmin):
+
+    def display_member(self, obj):
+        list_members = []
+        if obj.member:
+            for pr in obj.member.all():
+                list_members.append(pr.username)
+        return ' | '.join(list_members)
+
+    display_member.short_description = 'Members'
+
+    list_display = ('name', 'display_member')
+    filter_horizontal = ("member",)
+    search_fields = ('name',)
+
+admin.site.register(models.Team, TeamAdmin)
+
+
 class CheckinAdmin(admin.ModelAdmin):
     list_display = ('package_name', 'attempt_ref', 'uploaded_at', 'created_at')
     search_fields = ('package_name',)

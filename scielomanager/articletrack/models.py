@@ -28,6 +28,20 @@ MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 MSG_WORKFLOW_EXPIRED = 'Checkin Expired'
 
 
+class Team(caching.base.CachingMixin, models.Model):
+    """
+    Represents a group of users
+    """
+
+    name = models.CharField(_(u"Name of team"), max_length=128, unique=True)
+    member = models.ManyToManyField(User, related_name="team")
+
+    class Meta:
+        verbose_name = _(u'Team')
+        verbose_name_plural = _(u'Teams')
+        permissions = (("list_team", "Can list Team"),)
+
+
 class Notice(caching.base.CachingMixin, models.Model):
 
     checkin = models.ForeignKey('Checkin', related_name='notices')
@@ -167,6 +181,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'pending' and self.expiration_at.date() <= datetime.date.today()
 
+    @property
     def is_accepted(self):
         """
         Checks if this checkin has been accepted
@@ -176,6 +191,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'accepted' and bool(self.accepted_by and self.accepted_at)
 
+    @property
     def is_reviewed(self):
         """
         Checks if this checkin has been reviewed
@@ -185,6 +201,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'review' and bool(self.reviewed_by and self.reviewed_at)
 
+    @property
     def is_rejected(self):
         """
         Checks if this checkin has been rejected
@@ -193,6 +210,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'rejected'
 
+    @property
     def can_be_send_to_pending(self):
         """
         Check the conditions to enable: 'send to pending'  action.
@@ -201,6 +219,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'rejected' and not self.article.is_accepted()
 
+    @property
     def can_be_send_to_review(self):
         """
         Check the conditions to enable: 'send to review'  action.
@@ -209,6 +228,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'pending' and self.get_error_level != 'error' and not self.article.is_accepted()
 
+    @property
     def can_be_reviewed(self):
         """
         Check the conditions to enable the process of 'review' action.
@@ -217,6 +237,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'review' and self.get_error_level != 'error' and not self.article.is_accepted()
 
+    @property
     def can_be_accepted(self):
         """
         Check the conditions to enable the process of 'accept' action.
@@ -225,6 +246,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'review' and self.is_reviewed and not self.article.is_accepted()
 
+    @property
     def can_be_rejected(self):
         """
         Return True if Checkin can be rejected.
