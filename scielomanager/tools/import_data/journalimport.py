@@ -203,16 +203,19 @@ class JournalImport:
         for cycledate, cyclestatus in iter(sorted(lifecycles.iteritems())):
             defaults = {
                 'created_by': user,
-                'since': cycledate,
-                'status': self.trans_pub_status.get(
-                    cyclestatus.lower(),
-                    'inprogress'
-                )
             }
+
+            status = self.trans_pub_status.get(
+                cyclestatus.lower(),
+                'inprogress'
+            )
+
             try:
                 timeline = JournalTimeline.objects.get_or_create(
                     journal=journal,
                     collection=collection,
+                    since=cycledate,
+                    status=status,
                     defaults=defaults)[0]
                 self.charge_summary("timeline")
             except exceptions.ValidationError:
@@ -222,6 +225,8 @@ class JournalImport:
             membership = Membership.objects.get_or_create(
                 journal=journal,
                 collection=collection,
+                since=cycledate,
+                status=status,
                 defaults=defaults
             )
         except:
