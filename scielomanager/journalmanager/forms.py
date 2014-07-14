@@ -304,6 +304,7 @@ class MembershipForm(ModelForm):
         membership.created_by = user
         membership.save()
 
+
 class IssueBaseForm(forms.ModelForm):
     section = forms.ModelMultipleChoiceField(
         models.Section.objects.none(),
