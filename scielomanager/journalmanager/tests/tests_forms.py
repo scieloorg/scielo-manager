@@ -432,6 +432,37 @@ class UserFormTests(WebTest):
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
+    def test_new_user_have_not_any_team(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('user.add'), user=self.user)
+        page.mustcontain('No team associated')
+
+    def test_user_without_teams_message(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        page = self.app.get(reverse('user.edit', args=[self.user.id, ]), user=self.user)
+        page.mustcontain('No team associated')
+
+    def test_user_with_teams_message(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        from articletrack.tests import modelfactories as alt_factories
+        team_list = []
+        for x in xrange(0, 10):
+            team = alt_factories.TeamFactory()
+            team.save()
+            team.member.add(self.user)
+            team_list.append(team)
+
+        page = self.app.get(reverse('user.edit', args=[self.user.id, ]), user=self.user)
+        self.assertNotIn('No team associated', page.body)
+        for team in team_list:
+            self.assertIn(str(team.name), page.body)
+
     def test_access_without_being_manager(self):
         """
         Asserts that authenticated users that are not managers of the
