@@ -12,6 +12,8 @@ from django.test import TestCase
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 
+from waffle import Flag
+
 from journalmanager.tests import modelfactories
 from journalmanager import forms
 from journalmanager import models
@@ -433,6 +435,7 @@ class UserFormTests(WebTest):
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
     def test_new_user_have_not_any_team(self):
+        Flag.objects.create(name='teams', everyone=True)
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
@@ -440,6 +443,7 @@ class UserFormTests(WebTest):
         page.mustcontain('No team associated')
 
     def test_user_without_teams_message(self):
+        Flag.objects.create(name='teams', everyone=True)
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
@@ -447,6 +451,7 @@ class UserFormTests(WebTest):
         page.mustcontain('No team associated')
 
     def test_user_with_teams_message(self):
+        Flag.objects.create(name='teams', everyone=True)
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
 
@@ -3946,7 +3951,6 @@ class JournalEditorsTests(WebTest):
         self.user.user_permissions.add(perm_journal_list)
 
     def test_form_ectype_must_be_urlencoded(self):
-        from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
 
         form = self.app.get(reverse('journal_editors.index',
@@ -3959,7 +3963,6 @@ class JournalEditorsTests(WebTest):
         Asserts that the method attribute of the ahead form is
         ``POST``.
         """
-        from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
 
         form = self.app.get(reverse('journal_editors.index',
@@ -3968,7 +3971,6 @@ class JournalEditorsTests(WebTest):
         self.assertEqual(form.method.lower(), 'post')
 
     def test_form_action_must_not_be_empty(self):
-        from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
 
         form = self.app.get(reverse('journal_editors.index',
@@ -3979,7 +3981,6 @@ class JournalEditorsTests(WebTest):
         self.assertEqual(form.action, r)
 
     def test_form_adding_an_editor_with_a_valid_username(self):
-        from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
 
         perm_journal_change = _makePermission(perm='change_journal',
@@ -3997,7 +3998,6 @@ class JournalEditorsTests(WebTest):
         self.assertIn('Now, %s is an editor of this journal.' % self.user.username, response.body)
 
     def test_form_adding_an_editor_with_a_invalid_username(self):
-        from waffle import Flag
         Flag.objects.create(name='editor_manager', everyone=True)
 
         perm_journal_change = _makePermission(perm='change_journal',
