@@ -518,7 +518,7 @@ class JournalImport:
                     next_journal = Journal.objects.filter(title__exact=record['710'][0],
                                                           collections=collection).update(previous_title=previous_journal.id)
                 except Journal.DoesNotExist:
-                    print "Not possible to update the previous title of the journal: " + next_journal.title
+                    print "Not possible to update the previous title of the journal: %s" % record['100'][0]
 
     def run_import(self, json_file, collection, user):
         """
