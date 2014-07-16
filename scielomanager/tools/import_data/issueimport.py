@@ -175,6 +175,7 @@ class IssueImport:
             if record['41'][0] == 'pr':
                 issue.is_press_release = True
 
+        month_start = 0
         if '43' in record:
             expanded = subfield.expand(record['43'][0])
             month_start = dict(expanded)
@@ -192,11 +193,13 @@ class IssueImport:
         else:
             issue.total_documents = 0
 
+        month_end = '01'
         if '65' in record:
             year = record['65'][0][0:4]
             month_end = record['65'][0][4:6]
             if month_end == '00':
                 month_end = '01'
+
             issue.publication_start_month = month_start
             issue.publication_end_month = month_end
             issue.publication_year = int(year)
