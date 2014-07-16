@@ -9,11 +9,9 @@ from django.core.urlresolvers import reverse
 from django.template import defaultfilters as filters
 from django.conf import settings
 
-import mocker
-
-from . import modelfactories
 from journalmanager.tests.modelfactories import UserFactory, CollectionFactory
-from articletrack.balaio import BalaioAPI
+from articletrack.tests.tests_models import create_notices
+from . import modelfactories
 from . import doubles
 
 
@@ -129,7 +127,20 @@ class CheckinListTests(WebTest, mocker.MockerTestCase):
         """
         self._addWaffleFlag()
         checkin = self._makeOne()
+        create_notices('ok', checkin)
         rejection_text = 'your checkin is bad, and you should feel bad!'
+
+        # users
+        # QAL 1 definitions
+        user_qal_1 = auth.UserF(is_active=True)
+        group_qal_1 = auth.GroupF(name='QAL1')
+        user_qal_1.groups.add(group_qal_1)
+        user_qal_1.save()
+        # QAL 2 definitions
+        user_qal_2 = auth.UserF(is_active=True)
+        group_qal_2 = auth.GroupF(name='QAL2')
+        user_qal_2.groups.add(group_qal_2)
+        user_qal_2.save()
 
         # send to review
         checkin.send_to_review(self.user)
@@ -139,14 +150,22 @@ class CheckinListTests(WebTest, mocker.MockerTestCase):
         checkin.send_to_pending(self.user)
         # send to review
         checkin.send_to_review(self.user)
-        # do review
-        checkin.do_review(self.user)
+
+        # do review by QAL1
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_1(user_qal_1)
+
+        # do review by QAL2
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_2(user_qal_2)
+
         # do accept
+        self.assertTrue(checkin.can_be_accepted)
         checkin.accept(self.user)
 
         response = self.app.get(reverse('checkin_history', args=[checkin.pk]), user=self.user)
         logs = checkin.submission_log.all()
-        self.assertEqual(6, len(logs))
+        self.assertEqual(7, len(logs))
 
         for log in logs:
             creation_date_formatted = filters.date(log.created_at, settings.DATETIME_FORMAT)

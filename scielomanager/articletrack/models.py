@@ -2,14 +2,13 @@
 import caching.base
 import datetime
 import logging
-from collections import deque
 
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.core.exceptions import ValidationError
 from django.conf import settings
 
 from articletrack import modelmanagers
@@ -22,7 +21,8 @@ SERVICE_STATUS_MAX_STAGES = 2  # The count of pairs (SERV_BEGIN, SERV_END) in no
 
 MSG_WORKFLOW_ACCEPTED = 'Checkin Accepted'
 MSG_WORKFLOW_REJECTED = 'Checkin Rejected'
-MSG_WORKFLOW_REVIEWED = 'Checkin Reviewed'
+MSG_WORKFLOW_REVIEWED_QAL1 = 'Checkin Reviewed - Level 1'
+MSG_WORKFLOW_REVIEWED_QAL2 = 'Checkin Reviewed - Level 2'
 MSG_WORKFLOW_SENT_TO_PENDING = 'Checkin Sent to Pending'
 MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 MSG_WORKFLOW_EXPIRED = 'Checkin Expired'
@@ -102,9 +102,12 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
     accepted_by = models.ForeignKey(User, null=True, blank=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
-
+    # QAL1
     reviewed_by = models.ForeignKey(User, related_name='checkins_reviewed', null=True, blank=True)
     reviewed_at = models.DateTimeField(null=True, blank=True)
+    # QAL2
+    scielo_reviewed_by = models.ForeignKey(User, related_name='checkins_scielo_reviewed', null=True, blank=True)
+    scielo_reviewed_at = models.DateTimeField(null=True, blank=True)
 
     rejected_by = models.ForeignKey(User, related_name='checkins_rejected', null=True, blank=True)
     rejected_at = models.DateTimeField(null=True, blank=True)
@@ -192,14 +195,31 @@ class Checkin(caching.base.CachingMixin, models.Model):
         return self.status == 'accepted' and bool(self.accepted_by and self.accepted_at)
 
     @property
-    def is_reviewed(self):
+    def is_level1_reviewed(self):
         """
-        Checks if this checkin has been reviewed
+        Checks if this checkin has been reviewed by a QAL1 user
 
-        The condicional is ``status = review`` and has been reviewed_by and
-        has any date in reviewed_at
+        The condicional is ``status = review`` and has been ``reviewed_by`` and
+        has any date in ``reviewed_at``
         """
-        return self.status == 'review' and bool(self.reviewed_by and self.reviewed_at)
+        return bool(self.reviewed_by and self.reviewed_at)
+
+    @property
+    def is_level2_reviewed(self):
+        """
+        Checks if this checkin has been reviewed by a QAL2 user
+
+        The condicional is ``status = review`` and has been ``scielo_reviewed_by``  and
+        has any date in ``reviewed_at``
+        """
+        return bool(self.scielo_reviewed_by and self.scielo_reviewed_at)
+
+    @property
+    def is_full_reviewed(self):
+        """
+        Checks if this checkin has been reviewed by both user's roles: QAL1 and QAL2
+        """
+        return self.status == 'review' and self.is_level1_reviewed and self.is_level2_reviewed
 
     @property
     def is_rejected(self):
@@ -226,7 +246,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Return True if this checkin have status ``pending`` and have no errors and
         does not exist another checkin accepted for the related article.
         """
-        return self.status == 'pending' and self.get_error_level != 'error' and not self.article.is_accepted()
+        return self.status == 'pending' and self.get_error_level in ['ok', 'warning'] and not self.article.is_accepted()
 
     @property
     def can_be_reviewed(self):
@@ -235,16 +255,16 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Return True if this checkin is in status ``pending`` and have no errors and
         does not exist another checkin accepted for the related article.
         """
-        return self.status == 'review' and self.get_error_level != 'error' and not self.article.is_accepted()
+        return self.status == 'review' and self.get_error_level in ['ok', 'warning'] and not self.article.is_accepted()
 
     @property
     def can_be_accepted(self):
         """
         Check the conditions to enable the process of 'accept' action.
-        Return True if this checkin is in status ``review`` and self.is_reviewed == True and
+        Return True if this checkin is in status ``review`` and self.is_full_reviewed == True and
         does not exist another checkin accepted for the related article.
         """
-        return self.status == 'review' and self.is_reviewed and not self.article.is_accepted()
+        return self.is_full_reviewed and not self.article.is_accepted()
 
     @property
     def can_be_rejected(self):
@@ -319,27 +339,59 @@ class Checkin(caching.base.CachingMixin, models.Model):
         else:
             raise ValueError('This checkin does not comply with the conditions to change status to "review"')
 
-    @log_workflow_status(MSG_WORKFLOW_REVIEWED)
-    def do_review(self, responsible):
+    def _do_review_validation(self, responsible, group_name):
         """
-        Checkin with status review, are filled with review information (saves reviewer and revisition data)
+        Do some validations required to do a checkin review.
+        Return a tuple:
+            - (True, None) if validation is successful
+            - (False, "Error message") if not: 
 
-        Raises ValueError if self relates to an already accepted article or
-        if the user `responsible` is not active or if exist any accepted article already.
+        if the user `responsible` is not active or if exist any accepted article already, or
+        if the user `responsible` has not assigend 'group_name' as a group
         :param responsible: instance of django.contrib.auth.User
+        :param group_name: name of the group that `responsible` must belong
         """
         if not responsible.is_active:
-            raise ValueError('User must be active')
+            return (False, 'User must be active')
+
+        if not responsible.groups.filter(name__iexact=group_name).exists():
+            return (False, 'User must belong to group: %s' % group_name)
 
         if self.article.is_accepted():
-            raise ValueError('Cannot accept more than one checkin per article')
-        elif self.can_be_reviewed:
+            return (False, 'Cannot accept more than one checkin per article')
+
+        if not self.can_be_reviewed:
+            return (False, 'This checkin does not comply with the conditions to be reviewed')
+
+        return (True, None)
+
+    @log_workflow_status(MSG_WORKFLOW_REVIEWED_QAL1)
+    def do_review_by_level_1(self, responsible):
+        """
+        Checkin with status review, are filled with review information (reviewed_by and reviewed_at)
+        """
+        is_valid, errors = self._do_review_validation(responsible, 'QAL1')
+        if is_valid:
             self.status = 'review'
             self.reviewed_by = responsible
             self.reviewed_at = datetime.datetime.now()
             self.save()
         else:
-            raise ValueError('This checkin does not comply with the conditions to be reviewed')
+            raise ValueError(errors)
+
+    @log_workflow_status(MSG_WORKFLOW_REVIEWED_QAL2)
+    def do_review_by_level_2(self, responsible):
+        """
+        Checkin with status review, are filled with review information (scielo_reviewed_by and scielo_reviewed_at)
+        """
+        is_valid, errors = self._do_review_validation(responsible, 'QAL2')
+        if is_valid:
+            self.status = 'review'
+            self.scielo_reviewed_by = responsible
+            self.scielo_reviewed_at = datetime.datetime.now()
+            self.save()
+        else:
+            raise ValueError(errors)
 
     @log_workflow_status(MSG_WORKFLOW_REJECTED)
     def do_reject(self, responsible, reason):
@@ -383,6 +435,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             raise ValidationError('Checkin with "accepted" status must have filled: "accepted_by", \
                 "accepted_at", "reviewed_by" and "reviewed_at" fields.')
 
+        # validation for status "rejected"
         if self.status == 'rejected' and not bool(self.rejected_by and self.rejected_at and self.rejected_cause):
             raise ValidationError('Checkin with "rejected" status must have filled: "rejected_by", \
                 "rejected_at" and "reviewed_cause" fields.')
@@ -398,6 +451,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
             # clear 'review' fields
             self.reviewed_by = None
             self.reviewed_at = None
+            self.scielo_reviewed_by = None
+            self.scielo_reviewed_at = None
             # clear 'accepted' fields
             self.accepted_by = None
             self.accepted_at = None
@@ -421,6 +476,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
             # clear 'review' fields
             self.reviewed_by = None
             self.reviewed_at = None
+            self.scielo_reviewed_by = None
+            self.scielo_reviewed_at = None
             # clear 'accepted' fields
             self.accepted_by = None
             self.accepted_at = None

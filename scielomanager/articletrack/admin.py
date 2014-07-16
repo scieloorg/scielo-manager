@@ -22,7 +22,7 @@ admin.site.register(models.Team, TeamAdmin)
 
 
 class CheckinAdmin(admin.ModelAdmin):
-    list_display = ('package_name', 'attempt_ref', 'uploaded_at', 'created_at')
+    list_display = ('package_name', 'attempt_ref', 'uploaded_at', 'created_at', 'status',)
     search_fields = ('package_name',)
     readonly_fields = ('created_at',)
 
