@@ -41,6 +41,10 @@ class Team(caching.base.CachingMixin, models.Model):
         verbose_name_plural = _(u'Teams')
         permissions = (("list_team", "Can list Team"),)
 
+    def join(self, user):
+        self.member.add(user)
+        self.save()
+
 
 class Notice(caching.base.CachingMixin, models.Model):
 
@@ -117,6 +121,22 @@ class Checkin(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ['-created_at']
         permissions = (("list_checkin", "Can list Checkin"),)
+
+    @property
+    def team(self):
+        if not self.submitted_by:
+            return []
+
+        return self.submitted_by.team.all()
+
+    @property
+    def team_members(self):
+        users = []
+
+        for team in self.team:
+            users += team.member.all()
+
+        return users
 
     @property
     def is_serv_status_completed(self):
