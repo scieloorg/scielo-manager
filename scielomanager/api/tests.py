@@ -1243,6 +1243,7 @@ class CheckinRestAPITest(WebTest):
                 u'rejected_at',
                 u'rejected_cause',
                 u'reviewed_at',
+                u'scielo_reviewed_at',
                 u'resource_uri',
                 u'status',
                 u'uploaded_at'
