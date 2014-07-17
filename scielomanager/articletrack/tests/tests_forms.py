@@ -56,6 +56,10 @@ class CheckinListFilterFormTests(WebTest):
         self.user.user_permissions.add(perm)
         self.collection = CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+        # Producer definition:
+        group_producer = auth.GroupF(name='producer')
+        self.user.groups.add(group_producer)
+        self.user.save()
         # QAL 1 definitions
         self.user_qal_1 = auth.UserF(is_active=True)
         group_qal_1 = auth.GroupF(name='QAL1')
@@ -87,19 +91,24 @@ class CheckinListFilterFormTests(WebTest):
             for journal in new_checkin.article.journals.all():
                 journal.join(self.collection, self.user)
 
-            create_notices('ok', new_checkin)
+            create_notices('ok', new_checkin)  # all notices have error_level as: ok, to proceed
             if checkins_status == 'review' or checkins_status == 'rejected' or checkins_status == 'accepted':
+                self.assertTrue(self.user.get_profile().can_send_checkins_to_review)
                 new_checkin.send_to_review(self.user)
                 # do review by QAL1
+                self.assertTrue(self.user_qal_1.get_profile().can_review_l1_checkins)
                 new_checkin.do_review_by_level_1(self.user_qal_1)
                 # do review by QAL2
+                self.assertTrue(self.user_qal_2.get_profile().can_review_l2_checkins)
                 new_checkin.do_review_by_level_2(self.user_qal_2)
 
             if checkins_status == 'rejected':
                 rejection_text = 'your checkin is bad, and you should feel bad!'
-                new_checkin.do_reject(self.user, rejection_text)
+                self.assertTrue(self.user_qal_1.get_profile().can_reject_checkins)
+                new_checkin.do_reject(self.user_qal_1, rejection_text)
             if checkins_status == 'accepted':
-                new_checkin.accept(self.user)
+                self.assertTrue(self.user_qal_2.get_profile().can_accept_checkins)
+                new_checkin.accept(self.user_qal_2)
 
             checkins.append(new_checkin)
 

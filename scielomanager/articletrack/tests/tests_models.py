@@ -49,6 +49,23 @@ class TicketTests(TestCase):
 
 class CheckinTests(TestCase):
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        # Producer definition:
+        group_producer = auth.GroupF(name='producer')
+        self.user.groups.add(group_producer)
+        self.user.save()
+        # QAL 1 definitions
+        self.user_qal_1 = auth.UserF(is_active=True)
+        group_qal_1 = auth.GroupF(name='QAL1')
+        self.user_qal_1.groups.add(group_qal_1)
+        self.user_qal_1.save()
+        # QAL 2 definitions
+        self.user_qal_2 = auth.UserF(is_active=True)
+        self.group_qal_2 = auth.GroupF(name='QAL2')
+        self.user_qal_2.groups.add(self.group_qal_2)
+        self.user_qal_2.save()
+
     def test_new_checkin_is_pending_and_clear(self):
 
         checkin = modelfactories.CheckinFactory()
@@ -76,33 +93,20 @@ class CheckinTests(TestCase):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
-
         rejection_text = 'your checkin is bad, and you should feel bad!'  # http://www.quickmeme.com/Zoidberg-you-should-feel-bad/?upcoming
 
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user)
+        checkin.send_to_review(self.user)
 
         # can be reviewed and can be rejected, then reject
         self.assertTrue(checkin.can_be_reviewed)
         self.assertTrue(checkin.can_be_rejected)
-        checkin.do_reject(user, rejection_text)
+        checkin.do_reject(self.user_qal_1, rejection_text)
 
         # check status and Integrity
         self.assertEqual(checkin.status, 'rejected')
-        self.assertEqual(checkin.rejected_by, user)
+        self.assertEqual(checkin.rejected_by, self.user_qal_1)
         self.assertIsNotNone(checkin.rejected_at)
 
         # fields related with review and accept, must be clear
@@ -126,42 +130,30 @@ class CheckinTests(TestCase):
     def test_accept_workflow_simple(self):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
-        
-        # users
-        user = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
 
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user)
+        checkin.send_to_review(self.user)
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
         # do review by QAL2
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_2(user_qal_2)
+        checkin.do_review_by_level_2(self.user_qal_2)
 
         # do accept
         self.assertTrue(checkin.can_be_accepted)
-        checkin.accept(user)
+        checkin.accept(self.user_qal_2)
 
         # fields related with review and accept, must be clear
-        self.assertEqual(checkin.accepted_by, user)
+        self.assertEqual(checkin.accepted_by, self.user_qal_2)
         self.assertIsNotNone(checkin.accepted_at)
-        self.assertEqual(checkin.reviewed_by, user_qal_1)
-        self.assertEqual(checkin.scielo_reviewed_by, user_qal_2)
+        self.assertEqual(checkin.reviewed_by, self.user_qal_1)
+        self.assertEqual(checkin.scielo_reviewed_by, self.user_qal_2)
         self.assertIsNotNone(checkin.reviewed_at)
+        self.assertIsNotNone(checkin.scielo_reviewed_at)
 
         # checkin must be accepted
         self.assertTrue(checkin.is_accepted)
@@ -170,36 +162,23 @@ class CheckinTests(TestCase):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
-
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user)
+        checkin.send_to_review(self.user)
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
         # do review by QAL2
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_2(user_qal_2)
+        checkin.do_review_by_level_2(self.user_qal_2)
 
         # do accept
         self.assertTrue(checkin.can_be_accepted)
-        checkin.accept(user)
+        checkin.accept(self.user_qal_2)
 
-        self.assertRaises(ValueError, lambda: checkin.accept(user))
+        self.assertRaises(ValueError, lambda: checkin.accept(self.user_qal_2))
 
     def test_accept_raises_ValueError_when_user_is_inactive(self):
         checkin = modelfactories.CheckinFactory()
@@ -207,17 +186,12 @@ class CheckinTests(TestCase):
 
         # users
         active_user = auth.UserF(is_active=True)
+        active_user.groups.add(self.group_qal_2)
+        active_user.save()
+
         inactive_user = auth.UserF(is_active=False)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
+        inactive_user.groups.add(self.group_qal_2)
+        inactive_user.save()
 
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
@@ -225,11 +199,11 @@ class CheckinTests(TestCase):
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
         # do review by QAL2
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_2(user_qal_2)
+        checkin.do_review_by_level_2(self.user_qal_2)
 
         # do accept
         self.assertTrue(checkin.can_be_accepted)
@@ -239,34 +213,21 @@ class CheckinTests(TestCase):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
-
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user)
+        checkin.send_to_review(self.user)
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
         # do review by QAL2
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_2(user_qal_2)
+        checkin.do_review_by_level_2(self.user_qal_2)
 
         # do accept
         self.assertTrue(checkin.can_be_accepted)
-        checkin.accept(user)
+        checkin.accept(self.user_qal_2)
         self.assertTrue(checkin.is_accepted)
 
     def test_is_accepted_method_without_accepted_checkin(self):
@@ -364,6 +325,23 @@ class CheckinWorkflowLogTests(TestCase):
     This way is possible to audit the actions made with the related checkin
     """
 
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        # Producer definition:
+        group_producer = auth.GroupF(name='producer')
+        self.user.groups.add(group_producer)
+        self.user.save()
+        # QAL 1 definitions
+        self.user_qal_1 = auth.UserF(is_active=True)
+        group_qal_1 = auth.GroupF(name='QAL1')
+        self.user_qal_1.groups.add(group_qal_1)
+        self.user_qal_1.save()
+        # QAL 2 definitions
+        self.user_qal_2 = auth.UserF(is_active=True)
+        self.group_qal_2 = auth.GroupF(name='QAL2')
+        self.user_qal_2.groups.add(self.group_qal_2)
+        self.user_qal_2.save()
+
     def test_checkinworkflowlog_ordering(self):
         ordering = models.CheckinWorkflowLog._meta.ordering
         self.assertEqual(ordering, ['created_at'])
@@ -380,141 +358,100 @@ class CheckinWorkflowLogTests(TestCase):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user = auth.UserF(is_active=True)
-
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user)
+        checkin.send_to_review(self.user)
 
-        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user)
 
         self.assertEqual(logs.count(), 1)
-        self.assertEqual(logs[0].user, user)
+        self.assertEqual(logs[0].user, self.user)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_REVIEW)
 
     def test_checkin_do_review_level1_log(self):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user_send_to_review = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user_send_to_review)
+        checkin.send_to_review(self.user)
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
-        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_qal_1)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_1)
 
         self.assertEqual(logs.count(), 1)
-        self.assertEqual(logs[0].user, user_qal_1)
+        self.assertEqual(logs[0].user, self.user_qal_1)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_REVIEWED_QAL1)
 
     def test_checkin_do_review_level2_log(self):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user_send_to_review = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
-
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user_send_to_review)
+        checkin.send_to_review(self.user)
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
         # do review by QAL2
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_2(user_qal_2)
+        checkin.do_review_by_level_2(self.user_qal_2)
 
-        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_qal_2)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_2)
 
         self.assertEqual(logs.count(), 1)
-        self.assertEqual(logs[0].user, user_qal_2)
+        self.assertEqual(logs[0].user, self.user_qal_2)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_REVIEWED_QAL2)
 
     def test_checkin_do_accept_log(self):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user_send_to_review = auth.UserF(is_active=True)
-        # QAL 1 definitions
-        user_qal_1 = auth.UserF(is_active=True)
-        group_qal_1 = auth.GroupF(name='QAL1')
-        user_qal_1.groups.add(group_qal_1)
-        user_qal_1.save()
-        # QAL 2 definitions
-        user_qal_2 = auth.UserF(is_active=True)
-        group_qal_2 = auth.GroupF(name='QAL2')
-        user_qal_2.groups.add(group_qal_2)
-        user_qal_2.save()
-        user_accept = auth.UserF(is_active=True)
-
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user_send_to_review)
+        checkin.send_to_review(self.user)
 
         # do review by QAL1
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_1(user_qal_1)
+        checkin.do_review_by_level_1(self.user_qal_1)
 
         # do review by QAL2
         self.assertTrue(checkin.can_be_reviewed)
-        checkin.do_review_by_level_2(user_qal_2)
+        checkin.do_review_by_level_2(self.user_qal_2)
 
         # do accept
         self.assertTrue(checkin.can_be_accepted)
-        checkin.accept(user_accept)
+        checkin.accept(self.user_qal_2)
 
-        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_accept)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_2)
 
         self.assertEqual(logs.count(), 1)
-        self.assertEqual(logs[0].user, user_accept)
+        self.assertEqual(logs[0].user, self.user_qal_2)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_ACCEPTED)
 
     def test_checkin_do_reject_log(self):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user_send_to_review = auth.UserF(is_active=True)
-        user_reject = auth.UserF(is_active=True)
         rejection_text = 'your checkin is bad, and you should feel bad!'  # http://www.quickmeme.com/Zoidberg-you-should-feel-bad/?upcoming
 
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user_send_to_review)
+        checkin.send_to_review(self.user)
 
         # do reject
         self.assertTrue(checkin.can_be_rejected)
-        checkin.do_reject(user_reject, rejection_text)
+        checkin.do_reject(self.user_qal_1, rejection_text)
 
-        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user_reject)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_1)
 
         self.assertEqual(logs.count(), 1)
-        self.assertEqual(logs[0].user, user_reject)
+        self.assertEqual(logs[0].user, self.user_qal_1)
         expected_description = "%s - Reason: %s" % (models.MSG_WORKFLOW_REJECTED, checkin.rejected_cause)
         self.assertEqual(logs[0].description, expected_description)
 
@@ -522,28 +459,24 @@ class CheckinWorkflowLogTests(TestCase):
         checkin = modelfactories.CheckinFactory()
         create_notices('ok', checkin)
 
-        # users
-        user1_send_to_review = auth.UserF(is_active=True)
-        user_reject = auth.UserF(is_active=True)
-        user2_send_to_review = auth.UserF(is_active=True)
         rejection_text = 'your checkin is bad, and you should feel bad!'  # http://www.quickmeme.com/Zoidberg-you-should-feel-bad/?upcoming
 
         # send to review
         self.assertTrue(checkin.can_be_send_to_review)
-        checkin.send_to_review(user1_send_to_review)
+        checkin.send_to_review(self.user)
 
         # do reject
         self.assertTrue(checkin.can_be_rejected)
-        checkin.do_reject(user_reject, rejection_text)
+        checkin.do_reject(self.user_qal_1, rejection_text)
 
         # send to pending
         self.assertTrue(checkin.can_be_send_to_pending)
-        checkin.send_to_pending(user2_send_to_review)
+        checkin.send_to_pending(self.user_qal_2)
 
-        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=user2_send_to_review)
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_2)
 
         self.assertEqual(logs.count(), 1)
-        self.assertEqual(logs[0].user, user2_send_to_review)
+        self.assertEqual(logs[0].user, self.user_qal_2)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SENT_TO_PENDING)
 
     def test_do_expires_generate_log_entry(self):

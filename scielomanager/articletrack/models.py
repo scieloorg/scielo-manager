@@ -124,19 +124,13 @@ class Checkin(caching.base.CachingMixin, models.Model):
     @property
     def is_serv_status_completed(self):
         """
-        If:
-            the count of SERV_END < SERVICE_STATUS_MAX_STAGES, or
-            the count of SERV_BEGIN < SERVICE_STATUS_MAX_STAGES
-        then:
-            the checkin's notices sequence is UNCOMPLETED (possible more notices will arrive)
-            -> Return False
+        If the checkin's notices sequence is UNCOMPLETED (probably more notices will arrive)
+            Return False
         Else:
-            if the count of SERV_* is equal to 2 * SERVICE_STATUS_MAX_STAGES, then
-                call the ``misc.validate_sequence`` function
-                to check if the checkin's notices sequence is COMPLETED
-                -> Return True
+            if the quantity of SERV_* is ok then
+                Return the result of validate the order of SERV_.
             else:
-                -> Return False
+                Return False
         """
         count_serv_end_notices = self.notices.filter(status__iexact="SERV_END").count()
         count_serv_begin_notices = self.notices.filter(status__iexact="SERV_BEGIN").count()
@@ -237,7 +231,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Return True if this checkin have status ``rejected``
         does not exist another checkin accepted for the related article.
         """
-        return self.status == 'rejected' and not self.article.is_accepted()
+        return self.status == 'rejected'
 
     @property
     def can_be_send_to_review(self):
@@ -246,7 +240,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Return True if this checkin have status ``pending`` and have no errors and
         does not exist another checkin accepted for the related article.
         """
-        return self.status == 'pending' and self.get_error_level in ['ok', 'warning'] and not self.article.is_accepted()
+        return self.status == 'pending' and self.get_error_level in ['ok', 'warning']
 
     @property
     def can_be_reviewed(self):
@@ -255,7 +249,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Return True if this checkin is in status ``pending`` and have no errors and
         does not exist another checkin accepted for the related article.
         """
-        return self.status == 'review' and self.get_error_level in ['ok', 'warning'] and not self.article.is_accepted()
+        return self.status == 'review' and self.get_error_level in ['ok', 'warning']
 
     @property
     def can_be_accepted(self):
@@ -264,7 +258,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Return True if this checkin is in status ``review`` and self.is_full_reviewed == True and
         does not exist another checkin accepted for the related article.
         """
-        return self.is_full_reviewed and not self.article.is_accepted()
+        return self.is_full_reviewed
 
     @property
     def can_be_rejected(self):
@@ -274,72 +268,49 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         return self.status == 'review'
 
-    @log_workflow_status(MSG_WORKFLOW_ACCEPTED)
-    def accept(self, responsible):
-        """
-        Accept the checkin as ready to be part of the collection.
-        Change status of this checkin from 'review' to 'accepted'.
+    # ########### #
+    # VALIDATIONS #
+    # ########### #
 
-        Raises ValueError if self relates to an already accepted article or
-        if the user `responsible` is not active or if exist any accepted article already.
+    def _do_basic_validation(self, responsible, action):
+        """
+        Do some general validations required to modify a checkin.
+        Return a tuple:
+            - (True, None) if validation is successful
+            - (False, "Error message") if not.
+
+        Is not valid when:
+        - exist any accepted article already, or
+        - the user `responsible` is not active or
+        - the user `responsible` dont belong to the corresponding auth.group (depends on `action`)
         :param responsible: instance of django.contrib.auth.User
+        :param action: could be:
+            ['accept', 'reject', 'review_l1', 'review_l2', 'send_to_review', 'send_to_pending']
         """
         if not responsible.is_active:
-            raise ValueError('User must be active')
+            return (False, 'User must be active')
+
+        profile = responsible.get_profile()
+
+        if action == 'accept' and not profile.can_accept_checkins:
+            return (False, 'User can\'t ACCEPT checkins, because don\'t have enough permissions')
+        elif action == 'reject' and not profile.can_reject_checkins:
+            return (False, 'User can\'t REJECT checkins, because don\'t have enough permissions')
+        elif action == 'review_l1' and not profile.can_review_l1_checkins:
+            return (False, 'User can\'t REVIEW (Level 1) checkins, because don\'t have enough permissions')
+        elif action == 'review_l2' and not profile.can_review_l2_checkins:
+            return (False, 'User can\'t REVIEW (Level 2) checkins, because don\'t have enough permissions')
+        elif action == 'send_to_review' and not profile.can_send_checkins_to_review:
+            return (False, 'User can\'t SEND checkins TO REVIEW, because don\'t have enough permissions')
+        elif action == 'send_to_pending' and not profile.can_send_checkins_to_pending:
+            return (False, 'User can\'t SEND checkins TO PENDING, because don\'t have enough permissions')
 
         if self.article.is_accepted():
-            raise ValueError('Cannot accept more than one checkin per article')
-        elif self.can_be_accepted:
-            self.accepted_by = responsible
-            self.accepted_at = datetime.datetime.now()
-            self.status = 'accepted'
-            self.save()
-        else:
-            raise ValueError('This checkin does not comply with the conditions to be accepted')
+            return (False, 'Can\'t  accept more than one checkin per article')
 
-    @log_workflow_status(MSG_WORKFLOW_SENT_TO_PENDING)
-    def send_to_pending(self, responsible):
-        """
-        Send to pending list: change the status to 'pending' if self.can_be_send_to_pending == True else raise
-        ValueError.
+        return (True, None)
 
-        Raises ValueError if self relates to an already accepted article or
-        if the user `responsible` is not active or if exist any accepted article already.
-        :param responsible: instance of django.contrib.auth.User
-        """
-        if not responsible.is_active:
-            raise ValueError('User must be active')
-
-        if self.article.is_accepted():
-            raise ValueError('Cannot accept more than one checkin per article')
-        elif self.can_be_send_to_pending:
-            self.status = 'pending'
-            self.save()
-        else:
-            raise ValueError('This checkin does not comply with the conditions to change status to "review"')
-
-    @log_workflow_status(MSG_WORKFLOW_SENT_TO_REVIEW)
-    def send_to_review(self, responsible):
-        """
-        Send to review list: change the status to review if self.can_be_send_to_review == True else raise
-        ValueError.
-
-        Raises ValueError if self relates to an already accepted article or
-        if the user `responsible` is not active or if exist any accepted article already.
-        :param responsible: instance of django.contrib.auth.User
-        """
-        if not responsible.is_active:
-            raise ValueError('User must be active')
-
-        if self.article.is_accepted():
-            raise ValueError('Cannot accept more than one checkin per article')
-        elif self.can_be_send_to_review:
-            self.status = 'review'
-            self.save()
-        else:
-            raise ValueError('This checkin does not comply with the conditions to change status to "review"')
-
-    def _do_review_validation(self, responsible, group_name):
+    def _do_review_validation(self, responsible, action):
         """
         Do some validations required to do a checkin review.
         Return a tuple:
@@ -347,30 +318,84 @@ class Checkin(caching.base.CachingMixin, models.Model):
             - (False, "Error message") if not: 
 
         if the user `responsible` is not active or if exist any accepted article already, or
-        if the user `responsible` has not assigend 'group_name' as a group
         :param responsible: instance of django.contrib.auth.User
-        :param group_name: name of the group that `responsible` must belong
+        :param action: could be:
+            ['review_l1', 'review_l2']
         """
-        if not responsible.is_active:
-            return (False, 'User must be active')
-
-        if not responsible.groups.filter(name__iexact=group_name).exists():
-            return (False, 'User must belong to group: %s' % group_name)
-
-        if self.article.is_accepted():
-            return (False, 'Cannot accept more than one checkin per article')
 
         if not self.can_be_reviewed:
             return (False, 'This checkin does not comply with the conditions to be reviewed')
 
-        return (True, None)
+        return self._do_basic_validation(responsible, action)
+
+    # ####### #
+    # ACTIONS #
+    # ####### #
+
+    @log_workflow_status(MSG_WORKFLOW_ACCEPTED)
+    def accept(self, responsible):
+        """
+        Accept the checkin as ready to be part of the collection.
+        Change status of this checkin from 'review' to 'accepted'.
+
+        Raises ValueError if don't comply with required validations.
+        :param responsible: instance of django.contrib.auth.User
+        """
+        is_valid, errors = self._do_basic_validation(responsible, 'accept')
+
+        if not is_valid:
+            raise ValueError(errors)
+        elif self.can_be_accepted:
+            self.accepted_by = responsible
+            self.accepted_at = datetime.datetime.now()
+            self.status = 'accepted'
+            self.save()
+        else:
+            raise ValueError('This checkin do not comply with the conditions to be accepted')
+
+    @log_workflow_status(MSG_WORKFLOW_SENT_TO_PENDING)
+    def send_to_pending(self, responsible):
+        """
+        Send to pending list (change the status to 'pending').
+
+        Raises ValueError if don't comply with required validations.
+        :param responsible: instance of django.contrib.auth.User
+        """
+        is_valid, errors = self._do_basic_validation(responsible, 'send_to_pending')
+        if not is_valid:
+            raise ValueError(errors)
+        elif self.can_be_send_to_pending:
+            self.status = 'pending'
+            self.save()
+        else:
+            raise ValueError('This checkin do not comply with the conditions to be moved to pending list')
+
+    @log_workflow_status(MSG_WORKFLOW_SENT_TO_REVIEW)
+    def send_to_review(self, responsible):
+        """
+        Send to review list (change the status to 'review')
+
+        Raises ValueError if don't comply with required validations.
+        :param responsible: instance of django.contrib.auth.User
+        """
+        is_valid, errors = self._do_basic_validation(responsible, 'send_to_review')
+        if not is_valid:
+            raise ValueError(errors)
+        elif self.can_be_send_to_review:
+            self.status = 'review'
+            self.save()
+        else:
+            raise ValueError('This checkin does not comply with the conditions to be moved to review list')
 
     @log_workflow_status(MSG_WORKFLOW_REVIEWED_QAL1)
     def do_review_by_level_1(self, responsible):
         """
         Checkin with status review, are filled with review information (reviewed_by and reviewed_at)
+
+        Raises ValueError if don't comply with required validations.
+        :param responsible: instance of django.contrib.auth.User
         """
-        is_valid, errors = self._do_review_validation(responsible, 'QAL1')
+        is_valid, errors = self._do_review_validation(responsible, 'review_l1')
         if is_valid:
             self.status = 'review'
             self.reviewed_by = responsible
@@ -383,8 +408,11 @@ class Checkin(caching.base.CachingMixin, models.Model):
     def do_review_by_level_2(self, responsible):
         """
         Checkin with status review, are filled with review information (scielo_reviewed_by and scielo_reviewed_at)
+
+        Raises ValueError if don't comply with required validations.
+        :param responsible: instance of django.contrib.auth.User
         """
-        is_valid, errors = self._do_review_validation(responsible, 'QAL2')
+        is_valid, errors = self._do_review_validation(responsible, 'review_l2')
         if is_valid:
             self.status = 'review'
             self.scielo_reviewed_by = responsible
@@ -396,18 +424,15 @@ class Checkin(caching.base.CachingMixin, models.Model):
     @log_workflow_status(MSG_WORKFLOW_REJECTED)
     def do_reject(self, responsible, reason):
         """
-        Checkins that can_be_rejected == True, is changed to status == 'rejected'
-        Must be saved the date, the responsible of the action and a reason of rejection.
+        Reject the checkin.  (change the status to 'rejected')
+        If can be rejected must be saved the date, the responsible of the action and a reason of rejection.
 
-        Raises ValueError if self relates to an already accepted article or
-        if the user `responsible` is not active or if exist any accepted article already.
+        Raises ValueError if don't comply with required validations.
         :param responsible: instance of django.contrib.auth.User
         """
-        if not responsible.is_active:
-            raise ValueError('User must be active')
-
-        if self.article.is_accepted():
-            raise ValueError('Cannot accept more than one checkin per article')
+        is_valid, errors = self._do_basic_validation(responsible, 'reject')
+        if not is_valid:
+            raise ValueError(errors)
         elif self.can_be_rejected:
             self.status = 'rejected'
             self.rejected_by = responsible
@@ -415,7 +440,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.rejected_cause = reason
             self.save()
         else:
-            raise ValueError('This checkin does not comply with the conditions to change status to "rejected"')
+            raise ValueError('This checkin does not comply with the conditions to be rejected')
 
     @log_workflow_status(MSG_WORKFLOW_EXPIRED)
     def do_expires(self, responsible=None):

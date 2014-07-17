@@ -17,7 +17,7 @@ from django.db import (
     IntegrityError,
     DatabaseError,
     )
-
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -322,6 +322,41 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         uc = UserCollections.objects.get(user=self.user, is_default=True)
         return uc.collection
 
+    @property
+    def can_reject_checkins(self):
+        return self.user.groups.filter(
+            Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_accept_checkins(self):
+        return self.user.groups.filter(
+            Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_review_l1_checkins(self):
+        return self.user.groups.filter(
+            Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_review_l2_checkins(self):
+        return self.user.groups.filter(
+            Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_send_checkins_to_pending(self):
+        return self.user.groups.filter(
+            Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_send_checkins_to_review(self):
+        return self.user.groups.filter(
+            Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
 
 class Collection(caching.base.CachingMixin, models.Model):
     # objects = CollectionCustomManager()

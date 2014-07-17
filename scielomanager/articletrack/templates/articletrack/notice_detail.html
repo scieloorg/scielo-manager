@@ -83,6 +83,10 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
                 </a>
               </li>
             {% endif %}
+            {# THERE ARE NO ACTIONS AVAILABLE #}
+            {% if not checkin.can_be_rejected and not checkin.can_be_send_to_pending and not checkin.can_be_send_to_review and not checkin.can_be_reviewed and not checkin.can_be_accepted %}
+              <li class="disabled force-no-margin"><a href="#">{% trans "There are no actions available" %}</a></li>
+            {% endif %}
           </ul>
         </li>
         <li class="divider-vertical"></li>
@@ -275,7 +279,7 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
             {% trans "Closed" %} <span class="badge">{{ closed_tickets|length }}</span>
           </a>
         </li>
-        {% if perms.ticket.can_add %}
+        {% if perms.articletrack.add_ticket %}
           <li class='pull-right'>
             <a class='tab_add_ticket btn btn-mini btn-success' href="{% url ticket_add checkin.pk %}">
               {% trans "Create a ticket" %}

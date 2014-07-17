@@ -131,6 +131,9 @@ class CheckinListTests(WebTest, mocker.MockerTestCase):
         rejection_text = 'your checkin is bad, and you should feel bad!'
 
         # users
+        group_producer = auth.GroupF(name='producer')
+        self.user.groups.add(group_producer)
+        self.user.save()
         # QAL 1 definitions
         user_qal_1 = auth.UserF(is_active=True)
         group_qal_1 = auth.GroupF(name='QAL1')
@@ -145,9 +148,9 @@ class CheckinListTests(WebTest, mocker.MockerTestCase):
         # send to review
         checkin.send_to_review(self.user)
         # reject
-        checkin.do_reject(self.user, rejection_text)
+        checkin.do_reject(user_qal_1, rejection_text)
         # send to pending
-        checkin.send_to_pending(self.user)
+        checkin.send_to_pending(user_qal_2)
         # send to review
         checkin.send_to_review(self.user)
 
@@ -161,7 +164,7 @@ class CheckinListTests(WebTest, mocker.MockerTestCase):
 
         # do accept
         self.assertTrue(checkin.can_be_accepted)
-        checkin.accept(self.user)
+        checkin.accept(user_qal_2)
 
         response = self.app.get(reverse('checkin_history', args=[checkin.pk]), user=self.user)
         logs = checkin.submission_log.all()
