@@ -12,4 +12,5 @@
 <b>{% trans 'Electronic ISSN' %}:</b> {{ journal.eletronic_issn|default:"n.a." }}<br/>
 <b>{% trans 'Editor name' %}:</b> {{ journal.editor_name|default:"n.a." }}<br/>
 <b>{% trans 'Editor e-mail' %}:</b> {{ journal.editor_email|default:"n.a." }}<br/>
+<b>{% trans 'Managed by the collections' %}:</b> {{ journal.collections.all|join:', ' }}<br/>
 {% endblock %}

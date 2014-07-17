@@ -616,6 +616,13 @@ class Journal(caching.base.CachingMixin, models.Model):
 
         return grid
 
+    @property
+    def succeeding_title(self):
+        try:
+            return self.prev_title.get()
+        except ObjectDoesNotExist:
+            return None
+
     def has_issues(self, issues):
         """
         Returns ``True`` if all the given issues are bound to the journal.
@@ -1075,7 +1082,7 @@ class IssueTitle(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
     issue = models.ForeignKey(Issue)
     language = models.ForeignKey('Language')
-    title = models.CharField(_('Title'), max_length=128)
+    title = models.CharField(_('Title'), max_length=256)
 
 
 class PendedForm(caching.base.CachingMixin, models.Model):

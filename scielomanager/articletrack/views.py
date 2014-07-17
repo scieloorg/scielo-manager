@@ -4,6 +4,8 @@ import json
 import logging
 
 from waffle.decorators import waffle_flag
+from django.conf import settings
+from django.template.loader import render_to_string
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import permission_required
@@ -13,10 +15,12 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
+from django.contrib.sites.models import get_current_site
 
 from packtools import stylechecker
 
 from scielomanager.tools import get_paginated, get_referer_view
+from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
@@ -131,6 +135,27 @@ def checkin_reject(request, checkin_id):
                 try:
                     checkin.do_reject(request.user, rejected_cause)
                     messages.info(request, MSG_FORM_SAVED)
+
+                    send_to = set([i.email for i in checkin.team_members])
+
+                    if len(send_to) > 0:
+                        subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                           checkin.package_name,
+                                           'Package rejected'])
+
+                        tasks.send_mail.delay(
+                            subject,
+                            render_to_string(
+                                'email/checkin_rejected.txt',
+                                {
+                                    'checkin': checkin,
+                                    'reason': rejected_cause,
+                                    'domain': get_current_site(request)
+                                }
+                            ),
+                            send_to
+                        )
+
                 except ValueError:
                     messages.error(request, MSG_FORM_MISSING)
             else:
@@ -149,6 +174,7 @@ def checkin_review(request, checkin_id):
     """
     Excecute checkin.do_review, and if checkin can be accepted and Balaio RPC API
     is up, try to proceed to checkout.
+    This view function send to review and accepted the checkin
     """
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
     if checkin.can_be_reviewed:
@@ -168,6 +194,26 @@ def checkin_review(request, checkin_id):
                     checkin.accept(request.user)
                     msg = _("Checkin accepted succesfully.")
                     messages.info(request, msg)
+
+                    send_to = [i.username for i in checkin.team_members]
+
+                    if len(send_to) > 0:
+                        subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                           checkin.package_name,
+                                           'Package accepted'])
+
+                        tasks.send_mail.delay(
+                            subject,
+                            render_to_string(
+                                'email/accepted.txt',
+                                {
+                                    'checkin': checkin,
+                                    'domain': get_current_site(request)
+                                }
+                            ),
+                            send_to
+                        )
+
                 except ValueError as e:
                     logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
                     error_msg = _("An unexpected error, this attempt connot set to checkout. Please try again later.")
@@ -194,6 +240,26 @@ def checkin_accept(request, checkin_id):
             try:
                 checkin.accept(request.user)
                 messages.info(request, MSG_FORM_SAVED)
+
+                send_to = set([i.email for i in checkin.team_members])
+
+                if len(send_to) > 0:
+                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                       checkin.package_name,
+                                       'Package accepted'])
+
+                    tasks.send_mail.delay(
+                        subject,
+                        render_to_string(
+                            'email/checkin_accepted.txt',
+                            {
+                                'checkin': checkin,
+                                'domain': get_current_site(request)
+                            }
+                        ),
+                        send_to
+                    )
+
             except ValueError as e:
                 logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
                 messages.error(request, MSG_FORM_MISSING)
@@ -214,6 +280,26 @@ def checkin_send_to_pending(request, checkin_id):
         try:
             checkin.send_to_pending(request.user)
             messages.info(request, MSG_FORM_SAVED)
+
+            send_to = set([i.email for i in checkin.team_members])
+
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package send to pending'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_sent_to_pending.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
         except ValueError:
             messages.error(request, MSG_FORM_MISSING)
     else:
@@ -230,6 +316,26 @@ def checkin_send_to_review(request, checkin_id):
         try:
             checkin.send_to_review(request.user)
             messages.info(request, MSG_FORM_SAVED)
+
+            send_to = set([i.email for i in checkin.team_members])
+
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package send to review'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_sent_to_review.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
         except ValueError:
             messages.error(request, MSG_FORM_MISSING)
     else:
@@ -257,7 +363,7 @@ def checkin_history(request, checkin_id):
 def notice_detail(request, checkin_id):
 
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
-    notices = checkin.notices.all()
+    notices = checkin.notices.exclude(status__istartswith="serv_")
     tickets = checkin.article.tickets.all()
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
@@ -371,6 +477,28 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
             comment.author = request.user
             comment.ticket = ticket
             comment.save()
+
+            send_to = []
+            for checkin in ticket.article.checkins.all():
+                send_to += [i.username for i in checkin.team_members]
+            send_to = set(send_to)
+            send_to.add(ticket.author.email)
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                    'NEW COMMENT'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/comment_created.txt',
+                        {
+                            'ticket': ticket,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
             messages.info(request, MSG_FORM_SAVED)
             return render_to_response(
                 template_name,
@@ -398,6 +526,29 @@ def ticket_close(request, ticket_id):
 
     ticket.finished_at = datetime.datetime.now()
     ticket.save()
+
+    send_to = []
+    for checkin in ticket.article.checkins.all():
+        send_to += [i.email for i in checkin.team_members]
+    send_to = set(send_to)
+    send_to.add(ticket.author.email)
+    if len(send_to) > 0:
+
+        subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                           'CLOSED TICKET'])
+
+        tasks.send_mail.delay(
+            subject,
+            render_to_string(
+                'email/ticket_closed.txt',
+                {
+                    'ticket': ticket,
+                    'domain': get_current_site(request)
+                }
+            ),
+            send_to
+        )
+
     messages.info(request, MSG_FORM_SAVED)
 
     referer = get_referer_view(request)
@@ -426,8 +577,27 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
             ticket.article = checkin.article
             ticket.save()
 
+            send_to = set([i.email for i in checkin.team_members])
+
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   'TICKET CREATED'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/ticket_created.txt',
+                        {
+                            'ticket': ticket,
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
             messages.info(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id]))
+            return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id, ]))
         else:
             context['form'] = ticket_form
 
@@ -441,6 +611,7 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
 @waffle_flag('articletrack')
 @permission_required('articletrack.change_ticket', login_url=AUTHZ_REDIRECT_URL)
 def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html'):
+
     ticket = get_object_or_404(models.Ticket.userobjects.active(), pk=ticket_id)
 
     if not ticket.is_open:
@@ -461,6 +632,27 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
             ticket = ticket_form.save()
 
+            send_to = []
+            for checkin in ticket.article.checkins.all():
+                send_to += [i.email for i in checkin.team_members]
+            send_to = set(send_to)
+            send_to.add(ticket.author.email)
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   'TICKET MODIFY'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/ticket_modify.txt',
+                        {
+                            'ticket': ticket,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
         else:
@@ -474,6 +666,7 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
 
 def comment_edit(request, comment_id, template_name='articletrack/comment_edit.html'):
+
     comment = get_object_or_404(models.Comment.userobjects.active(), pk=comment_id)
 
     if not comment.ticket.is_open:
@@ -492,6 +685,28 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
         if comment_form.is_valid():
             comment = comment_form.save()
 
+            send_to = []
+            for checkin in comment.ticket.article.checkins.all():
+                send_to += [i.email for i in checkin.team_members]
+            send_to = set(send_to)
+            send_to.add(comment.ticket.author.email)
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   'COMMENT MODIFY'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/comment_modify.txt',
+                        {
+                            'comment': comment,
+                            'ticket': comment.ticket,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
             messages.info(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
         else:
@@ -502,7 +717,10 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
         context,
         context_instance=RequestContext(request)
     )
+
+
 # BALAIO API
+
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_ticket', login_url=AUTHZ_REDIRECT_URL)
@@ -552,4 +770,3 @@ def get_balaio_api_files_members(request, attempt_id, target_name):
             return view_response
     else:
         return HttpResponseBadRequest()
-

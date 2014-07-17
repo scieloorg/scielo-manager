@@ -45,15 +45,15 @@
 <div class="accordion" id="accordion-issues">
   <div class="accordion-group">
     {% for year, vols in issue_grid.items %}
-      
+
       {% for vol, nums in vols.items %}
-      
+
         <div class="accordion-heading">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-issues" href="#collapse_{{ year }}_{{ vol|default:'_' }}">
             {{ year }} &raquo; {% trans 'Volume' %} {{ vol|default:'-' }}
           </a>
         </div>
-      
+
         <div id="collapse_{{ year }}_{{ vol|default:'_' }}" {% if forloop.parentloop.first and forloop.first %} class="accordion-body collapse in" {% else %} class="accordion-body collapse" {% endif %}>
           <div class="accordion-inner">
             <table class="table table-hover table-condensed">
@@ -77,13 +77,13 @@
                           {% if num.type == 'regular' and not num.number %}
                             {% trans 'volume issue' %}
                           {% else %}
-                            {{ num.identification }} 
+                            {{ num.identification }}
                           {% endif %}
-                        </a> 
-                        <span class="label pull-right">{{ num.articles.all|length }} {% trans "articles" %}</span>
+                        </a>
                       </td>
                       {% flag 'articletrack' %}
                         <td>
+                          <span class="label">{{ num.articles.all|length }} {% trans "articles" %}</span>
                           <a  class='btn btn-mini' href="{% url article.index num.id %}">{% trans "view articles" %}</a>
                         </td>
                       {% endflag %}

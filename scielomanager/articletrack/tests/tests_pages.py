@@ -1,6 +1,8 @@
 # coding: utf-8
 from waffle import Flag
 from os import path
+import mocker
+
 from django_webtest import WebTest
 from django_factory_boy import auth
 from django.core.urlresolvers import reverse
@@ -254,8 +256,13 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
         balaio()
         self.mocker.result(BalaioTest())
-        self.mocker.replay()
 
+        # MOCK/REPLACE/FAKE/PIMP MY STYLECHECKER!!!
+        XML = self.mocker.replace('packtools.stylechecker.XML')
+        XML(mocker.ANY)
+        self.mocker.result(doubles.StylecheckerDouble(mocker.ANY))
+
+        self.mocker.replay()
         response = self.app.get(
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
@@ -268,7 +275,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNone(xml_data['validation_errors'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
 
-    def test_annotations_warning_if_balaio_broke(self):
+    def test_annotations_warning_if_balaio_breaks(self):
         self._addWaffleFlag()
         notice = self._makeOne()
 
@@ -281,7 +288,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
         class BalaioTest(doubles.BalaioAPIDouble):
             def get_xml_uri(self, attempt_id, target_name):
-                return expected_response['uri']
+                raise ValueError
 
         balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
         balaio()
@@ -296,7 +303,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(xml_data['can_be_analyzed'][0])
         self.assertIsNone(xml_data['annotations'])
-        self.assertEqual(xml_data['uri'], expected_response['uri'])
+        self.assertEqual(xml_data['uri'], None)
         self.assertIsNone(xml_data['validation_errors'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
 
@@ -304,7 +311,6 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
         target_xml = "with_style_errors.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
@@ -318,12 +324,19 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
         balaio()
         self.mocker.result(BalaioTest())
+
+        XML = self.mocker.replace('packtools.stylechecker.XML')
+        XML(mocker.ANY)
+        self.mocker.result(doubles.StylecheckerAnnotationsDouble(mocker.ANY))
+
         self.mocker.replay()
 
         response = self.app.get(
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
+
         xml_data = response.context['xml_data']
+
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
         self.assertIsNotNone(xml_data['annotations'])
@@ -332,20 +345,17 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNotNone(xml_data['validation_errors'])
         self.assertEqual('', xml_data['validation_errors']['error_lines'])
         self.assertEqual(1, len(xml_data['validation_errors']['results']))
-        expected_validation_errors = {
-            'column': '--',
-            'line': '--',
-            'message': u"Element 'funding-group': This element is not filled-in correctly.",
-            'level': u'ERROR'
-        }
-        self.assertEqual([expected_validation_errors], xml_data['validation_errors']['results'])
+        self.assertEqual(
+                xml_data['validation_errors']['results'],
+                [{'column': '--',
+                  'line': '--',
+                  'message': u"Element 'funding-group': This element is not filled-in correctly.",
+                  'level': u'ERROR'}])
 
     def test_xml_not_found(self):
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
         target_xml = "blaus.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
@@ -359,16 +369,23 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
         balaio()
         self.mocker.result(BalaioTest())
+
+        XML = self.mocker.replace('packtools.stylechecker.XML')
+        XML(expected_response['uri'])
+        self.mocker.throw(IOError)
         self.mocker.replay()
 
         response = self.app.get(
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
+
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(xml_data['can_be_analyzed'][0])
+        self.assertEqual(xml_data['can_be_analyzed'][1], "Error while starting Stylechecker.XML()")
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNone(xml_data['validation_errors'])
+
