@@ -26,6 +26,7 @@ MSG_WORKFLOW_REVIEWED_QAL2 = 'Checkin Reviewed - Level 2'
 MSG_WORKFLOW_SENT_TO_PENDING = 'Checkin Sent to Pending'
 MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 MSG_WORKFLOW_EXPIRED = 'Checkin Expired'
+MSG_WORKFLOW_CHECKED_OUT = 'Checkin Checked Out'
 
 
 class Team(caching.base.CachingMixin, models.Model):
@@ -116,6 +117,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
     submitted_by = models.ForeignKey(User, related_name='checkins_submitted_by', null=True, blank=True)
 
     expiration_at = models.DateTimeField(_(u'Expiration Date'), null=True, blank=True)
+
+    checked_out = models.BooleanField(_(u'Checked Out'), default=False)
 
     class Meta:
         ordering = ['-created_at']
@@ -255,10 +258,16 @@ class Checkin(caching.base.CachingMixin, models.Model):
     def can_be_accepted(self):
         """
         Check the conditions to enable the process of 'accept' action.
-        Return True if this checkin is in status ``review`` and self.is_full_reviewed == True and
-        does not exist another checkin accepted for the related article.
+        Return True if this checkin has been reviwed by both (scielo and non scielo parts).
         """
         return self.is_full_reviewed
+
+    @property
+    def can_be_send_to_checkout(self):
+        """
+        Only if status == 'accepted' and self.checked_out == False
+        """
+        return self.status == 'accepted' and not self.checked_out
 
     @property
     def can_be_rejected(self):
@@ -279,7 +288,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
             - (True, None) if validation is successful
             - (False, "Error message") if not.
 
-        Is not valid when:
+        Will not be valid when:
         - exist any accepted article already, or
         - the user `responsible` is not active or
         - the user `responsible` dont belong to the corresponding auth.group (depends on `action`)
@@ -293,17 +302,17 @@ class Checkin(caching.base.CachingMixin, models.Model):
         profile = responsible.get_profile()
 
         if action == 'accept' and not profile.can_accept_checkins:
-            return (False, 'User can\'t ACCEPT checkins, because don\'t have enough permissions')
+            return (False, 'User can\'t ACCEPT checkins, because doesn\'t have enough permissions')
         elif action == 'reject' and not profile.can_reject_checkins:
-            return (False, 'User can\'t REJECT checkins, because don\'t have enough permissions')
+            return (False, 'User can\'t REJECT checkins, because doesn\'t have enough permissions')
         elif action == 'review_l1' and not profile.can_review_l1_checkins:
-            return (False, 'User can\'t REVIEW (Level 1) checkins, because don\'t have enough permissions')
+            return (False, 'User can\'t REVIEW (Level 1) checkins, because doesn\'t have enough permissions')
         elif action == 'review_l2' and not profile.can_review_l2_checkins:
-            return (False, 'User can\'t REVIEW (Level 2) checkins, because don\'t have enough permissions')
+            return (False, 'User can\'t REVIEW (Level 2) checkins, because doesn\'t have enough permissions')
         elif action == 'send_to_review' and not profile.can_send_checkins_to_review:
-            return (False, 'User can\'t SEND checkins TO REVIEW, because don\'t have enough permissions')
+            return (False, 'User can\'t SEND checkins TO REVIEW, because doesn\'t have enough permissions')
         elif action == 'send_to_pending' and not profile.can_send_checkins_to_pending:
-            return (False, 'User can\'t SEND checkins TO PENDING, because don\'t have enough permissions')
+            return (False, 'User can\'t SEND checkins TO PENDING, because doesn\'t have enough permissions')
 
         if self.article.is_accepted():
             return (False, 'Can\'t  accept more than one checkin per article')
@@ -452,6 +461,16 @@ class Checkin(caching.base.CachingMixin, models.Model):
         if self.status != 'expired':
             self.status = 'expired'
             self.expiration_at = datetime.datetime.now()
+            self.save()
+
+    @log_workflow_status(MSG_WORKFLOW_CHECKED_OUT)
+    def do_mark_as_checked_out(self, responsible=None):
+        """
+        This method will be call before successfully checked out via BalaioRPC api.
+        Will change to True self.checked_out field only with self.status == accepted.
+        """
+        if self.can_be_send_to_checkout:
+            self.checked_out = True
             self.save()
 
     def clean(self):

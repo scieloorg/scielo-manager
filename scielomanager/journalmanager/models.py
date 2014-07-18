@@ -330,9 +330,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
     @property
     def can_accept_checkins(self):
-        return self.user.groups.filter(
-            Q(name__iexact='QAL2')
-        ).exists()
+        return self.user.groups.filter(name__iexact='QAL2').exists()
 
     @property
     def can_review_l1_checkins(self):
@@ -342,9 +340,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
     @property
     def can_review_l2_checkins(self):
-        return self.user.groups.filter(
-            Q(name__iexact='QAL2')
-        ).exists()
+        return self.user.groups.filter(name__iexact='QAL2').exists()
 
     @property
     def can_send_checkins_to_pending(self):
@@ -357,6 +353,10 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         return self.user.groups.filter(
             Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
         ).exists()
+
+    @property
+    def can_send_checkins_to_checkout(self):
+        return self.user.groups.filter(name__iexact='QAL2').exists()
 
 class Collection(caching.base.CachingMixin, models.Model):
     # objects = CollectionCustomManager()

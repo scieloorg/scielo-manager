@@ -135,7 +135,7 @@ class BalaioRPC(SettingsMixin):
         """
         try:
             return self.call('status')
-        except xmlrpclib.Error:
+        except Exception: # any exception, such as "CONNECTION REFUESED" means API is down
             return False
 
     def get_server(self, uri):
