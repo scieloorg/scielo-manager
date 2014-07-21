@@ -6,7 +6,7 @@
       <div class="alert alert-error alert-block">
         <h4><i class="icon-warning-sign"></i> {% trans "REJECTED" %}:</h4>
         <p>
-          {% trans "This checkin is rejected by" %} 
+          {% trans "This checkin was rejected by" %} 
           {% with checkin.rejected_by as user %}
             {% include "articletrack/includes/gravatar_tooltip.html" %}  
           {% endwith %} 

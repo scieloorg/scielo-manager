@@ -411,3 +411,354 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNone(xml_data['validation_errors'])
 
+class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
+
+    def _mock_balaio_disabled(self):
+        # to avoid making a request will replace it with a double
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(doubles.BalaioAPIDoubleDisabled())
+        self.mocker.replay()
+
+    def _makeOne(self):
+        checkin = modelfactories.CheckinFactory.create()
+
+        # # Get only the first collection and set to the user
+        collection = checkin.article.journals.all()[0].collections.all()[0]
+        collection.add_user(self.user, is_manager=True)
+        collection.make_default_to_user(self.user)
+
+        collection.add_user(self.user_qal_1, is_manager=True)
+        collection.make_default_to_user(self.user_qal_1)
+
+        collection.add_user(self.user_qal_2, is_manager=True)
+        collection.make_default_to_user(self.user_qal_2)
+
+        return checkin
+
+    def _addWaffleFlag(self):
+        Flag.objects.create(name='articletrack', authenticated=True)
+
+    def setUp(self):
+        self.user = auth.UserF(is_active=True)
+        self.collection = CollectionFactory.create()
+
+        # checkin list permission
+        list_checkin_perm = _makePermission(perm='list_checkin', model='checkin')
+        # notices_detail view, requires this permission too
+        list_notice_perm = _makePermission(perm='list_notice', model='notice')
+
+        # users-groups-permissions
+        self.group_producer = auth.GroupF(name='producer')
+        self.user.groups.add(self.group_producer)
+        self.user.save()
+        
+        self.user.user_permissions.add(list_notice_perm)
+        self.user.user_permissions.add(list_checkin_perm)
+        # QAL 1 definitions
+        self.user_qal_1 = auth.UserF(is_active=True)
+        self.group_qal_1 = auth.GroupF(name='QAL1')
+        self.user_qal_1.groups.add(self.group_qal_1)
+        self.user_qal_1.save()
+
+        self.user_qal_1.user_permissions.add(list_notice_perm)
+        self.user_qal_1.user_permissions.add(list_checkin_perm)
+        # QAL 2 definitions
+        self.user_qal_2 = auth.UserF(is_active=True)
+        self.group_qal_2 = auth.GroupF(name='QAL2')
+        self.user_qal_2.groups.add(self.group_qal_2)
+        self.user_qal_2.save()
+
+        self.user_qal_2.user_permissions.add(list_notice_perm)
+        self.user_qal_2.user_permissions.add(list_checkin_perm)
+
+        # add user, user_qal1 and user_qal2 to default collection
+        self.collection.add_user(self.user)
+        self.collection.make_default_to_user(self.user)
+        # add qal1 user to collection
+        self.collection.add_user(self.user_qal_1)
+        self.collection.make_default_to_user(self.user_qal_1)
+        # add qal2 user to collection
+        self.collection.add_user(self.user_qal_2)
+        self.collection.make_default_to_user(self.user_qal_2)
+
+    def tearDown(self):
+        """
+        Restore the default values.
+        """
+
+    def test_checkin_send_to_review(self):
+        """ Create a checkin and call the view: checkin_send_to_review """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+
+        response = self.app.get(reverse('checkin_send_to_review', args=[checkin.pk, ]), user=self.user)
+        response = response.follow() #  "checkin_send_to_review" redirects to: "notice_detail"
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_message = 'Checkin was SENT TO REVIEW succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        self.assertTrue(response_checkin.status, 'review')
+        # is not reviewed yet
+        self.assertFalse(response_checkin.is_level1_reviewed)
+        self.assertFalse(response_checkin.is_level2_reviewed)
+        self.assertFalse(response_checkin.is_full_reviewed)
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.is_accepted)
+        # can be rejected or reviewed
+        self.assertTrue(response_checkin.can_be_rejected)
+        self.assertTrue(response_checkin.can_be_reviewed)
+
+    def test_checkin_reject(self):
+        """ Create a checkin and call the view: checkin_reject """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+        rejection_text = 'your checkin is bad, and you should feel bad!'
+        # send to review
+        checkin.send_to_review(self.user)
+
+        form = self.app.get(
+            reverse('checkin_reject', args=[checkin.pk, ]),
+            user=self.user).follow().forms['checkin_reject_form']
+        form['rejected_cause'] = rejection_text
+        response = form.submit()
+        response = response.follow() #  "checkin_reject" redirects to: "notice_detail"
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_message = 'Checkin REJECTED succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        self.assertTrue(response_checkin.status, 'rejected')
+
+        self.assertFalse(response_checkin.is_level1_reviewed)
+        self.assertFalse(response_checkin.is_level2_reviewed)
+        self.assertFalse(response_checkin.is_full_reviewed)
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.is_accepted)
+        # can't be rejected or reviewed
+        self.assertFalse(response_checkin.can_be_rejected)
+        self.assertFalse(response_checkin.can_be_reviewed)
+        # can be sent to pending
+        self.assertTrue(response_checkin.can_be_send_to_pending)
+
+
+    def test_checkin_send_to_pending(self):
+        """ Create a checkin and call the view: checkin_send_to_pending """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+        rejection_text = 'your checkin is bad, and you should feel bad!'
+
+        # send to review
+        checkin.send_to_review(self.user)
+        # reject
+        checkin.do_reject(self.user_qal_1, rejection_text)
+
+        response = self.app.get(reverse('checkin_send_to_pending', args=[checkin.pk, ]), user=self.user)
+        response = response.follow() #  "checkin_send_to_pending" redirects to: "notice_detail"
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_message = 'Checkin was SENT TO PENDING succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        self.assertTrue(response_checkin.status, 'pending')
+        # is not reviewed or rejected or accepted yet
+        self.assertFalse(response_checkin.is_level1_reviewed)
+        self.assertFalse(response_checkin.is_level2_reviewed)
+        self.assertFalse(response_checkin.is_full_reviewed)
+        self.assertFalse(response_checkin.is_rejected)
+        self.assertFalse(response_checkin.is_accepted)
+        # can't be sent to pending again
+        self.assertFalse(response_checkin.can_be_send_to_pending)
+        # but can be send to review
+        self.assertTrue(response_checkin.can_be_send_to_review)
+
+    def test_checkin_review_level1(self):
+        """ Create a checkin and call the view: checkin_review(level=1) """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+        # send to review
+        checkin.send_to_review(self.user)
+
+        # do review by QAL1
+        response = self.app.get(reverse('checkin_review', args=[checkin.pk, 1]), user=self.user_qal_1)
+        response = response.follow() #  "checkin_review" redirects to: "notice_detail"
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_message = 'Checkin REVIEWED succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        self.assertTrue(response_checkin.status, 'review')
+        # is only reviewed at level 1
+        self.assertTrue(response_checkin.is_level1_reviewed)
+        self.assertFalse(response_checkin.is_level2_reviewed)
+        self.assertFalse(response_checkin.is_full_reviewed)
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.is_accepted)
+        # can be rejected and reviewed too
+        self.assertTrue(response_checkin.can_be_rejected)
+        self.assertTrue(response_checkin.can_be_reviewed)
+
+    def test_checkin_review_level2(self):
+        """ Create a checkin and call the view: checkin_review(level=2) """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+        # send to review
+        checkin.send_to_review(self.user)
+        # do review by QAL1
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_1(self.user_qal_1)
+
+        # mock balaio for checkout step
+        self._mock_balaio_disabled()
+
+        # do review by user_qal2
+        response = self.app.get(reverse('checkin_review', args=[checkin.pk, 2]), user=self.user_qal_2)
+
+        # if ok, will try automatically to call checkin_accept
+        self.assertEqual(response.status_code, 302)
+        expected_location = reverse('checkin_accept', args=[checkin.pk, ])
+        self.assertTrue(response.location.endswith(expected_location))
+
+        # if ok, will try automatically to call checkin_send_to_checkout
+        response = response.follow()
+        expected_location = reverse('checkin_send_to_checkout', args=[checkin.pk, ])
+        self.assertTrue(response.location.endswith(expected_location))
+
+        # if ok, will try automatically to call notice_detail
+        response = response.follow()
+        expected_location = reverse('notice_detail', args=[checkin.pk, ])
+        self.assertTrue(response.location.endswith(expected_location))
+
+        # finally get response and check status
+        response = response.follow()
+        self.assertEqual(response.status_code, 200)
+
+        expected_message = 'Checkin REVIEWED succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        expected_message = 'Checkin ACCEPTED succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        expected_message = "Unable to communicate with the server to proceed to checkout. Please try again later."
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        self.assertTrue(response_checkin.status, 'review')
+        # is reviewed at level 1, level 2, and accepted
+        self.assertTrue(response_checkin.is_level1_reviewed)
+        self.assertTrue(response_checkin.is_level2_reviewed)
+        self.assertTrue(response_checkin.is_accepted)
+        # can't be rejected, reviewed, or send_to_review, or send_to_pending
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.can_be_send_to_pending)
+        self.assertFalse(response_checkin.can_be_rejected)
+        self.assertFalse(response_checkin.can_be_reviewed)
+        # checkin can't be checked out, so:
+        self.assertFalse(response_checkin.checked_out)
+
+    def test_checkin_accept(self):
+        """ Create a checkin and call the view: checkin_accept """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+        # send to review
+        checkin.send_to_review(self.user)
+
+        # do review by QAL1
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_1(self.user_qal_1)
+
+        # do review by QAL2
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_2(self.user_qal_2)
+
+        # mock balaio for checkout step
+        self._mock_balaio_disabled()
+
+        # do accept with QAL2
+        response = self.app.get(reverse('checkin_accept', args=[checkin.pk, ]), user=self.user_qal_2)
+        # if ok, will try automatically to call checkin_send_to_checkout
+        expected_location = reverse('checkin_send_to_checkout', args=[checkin.pk, ])
+        self.assertTrue(response.location.endswith(expected_location))
+
+        # if ok, will try automatically to call notice_detail
+        response = response.follow()
+        expected_location = reverse('notice_detail', args=[checkin.pk, ])
+        self.assertTrue(response.location.endswith(expected_location))
+
+        # finally get response and check status
+        response = response.follow()
+        self.assertEqual(response.status_code, 200)
+
+        expected_message = 'Checkin ACCEPTED succesfully.'
+        self.assertIn(expected_message, response.body)
+
+        expected_message = "Unable to communicate with the server to proceed to checkout. Please try again later."
+        self.assertIn(expected_message, response.body)
+
+
+        response_checkin = response.context['checkin']
+        self.assertTrue(response_checkin.status, 'accepted')
+        # is reviewed at level 1, level 2, and accepted
+        self.assertTrue(response_checkin.is_level1_reviewed)
+        self.assertTrue(response_checkin.is_level2_reviewed)
+        self.assertTrue(response_checkin.is_accepted)
+        # can't be rejected, reviewed, or send_to_review, or send_to_pending
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.can_be_send_to_pending)
+        self.assertFalse(response_checkin.can_be_rejected)
+        self.assertFalse(response_checkin.can_be_reviewed)
+        # checkin can't be checked out, so:
+        self.assertFalse(response_checkin.checked_out)
+
+    def test_checkin_send_to_checkout(self):
+        """ 
+        Create a checkin and call the view: checkin_send_to_checkout.
+        Balalio API will be down, so must test that user can possible to call again this view.
+        """
+        self._addWaffleFlag()
+        checkin = self._makeOne()
+        create_notices('ok', checkin)
+
+        # send to review
+        checkin.send_to_review(self.user)
+
+        # do review by QAL1
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_1(self.user_qal_1)
+
+        # do review by QAL2
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_2(self.user_qal_2)
+
+        # do accept
+        self.assertTrue(checkin.can_be_accepted)
+        checkin.accept(self.user_qal_2)
+
+        # mock balaio for checkout step
+        self._mock_balaio_disabled()
+
+        # try to do send to checkout:
+        response = self.app.get(reverse('checkin_send_to_checkout', args=[checkin.pk, ]), user=self.user_qal_2)
+
+        # if ok, will try automatically to call notice_detail
+        expected_location = reverse('notice_detail', args=[checkin.pk, ])
+        self.assertTrue(response.location.endswith(expected_location))
+
+        # finally get response and check status
+        response = response.follow()
+        self.assertEqual(response.status_code, 200)
