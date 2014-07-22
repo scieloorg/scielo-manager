@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     'articletrack',
     'djcelery',
     'kombu.transport.django',
+    'validator',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

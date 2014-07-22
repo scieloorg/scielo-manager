@@ -1,0 +1,33 @@
+{% extends "validator/base.html" %}
+
+{% load i18n %}
+
+{% block main_content %}
+
+  <div class="row-fluid">
+    <div class="span6 offset3 well">
+      <h2>{% trans "Fill the form" %}</h2>
+
+      <form enctype="multipart/form-data" method="post" action="" class="form-horizontal">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-success">{% trans "Validate" %}</button> 
+      </form>
+    </div>    
+  </div>
+
+  {% if results %}
+
+    <div class="row-fluid">
+      <div class="span12">
+        {# annotations #}
+        {% with results as xml_data %}
+          {% include "validator/includes/xml_annotated.html" %}
+        {% endwith %}
+        {# /annotations #}
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endblock main_content %}

@@ -24,6 +24,7 @@ from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
+from validator.utils import extract_validation_errors
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -34,29 +35,6 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
 logger = logging.getLogger(__name__)
-
-
-def extract_validation_errors(validation_errors):
-    """
-    Return a "parsed" dict of validation errors returned by stylechecker
-    """
-    # iterate over the errors and get the relevant data
-    results = []
-    error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
-    for error in validation_errors:
-        error_data = {
-            'line': error.line or '--',
-            'column': error.column or '--',
-            'message': error.message or '',
-            'level': error.level_name or 'ERROR',
-        }
-        results.append(error_data)
-        if error.line:
-            error_lines.append(str(error.line))
-    return {
-        'results': results,
-        'error_lines': ", ".join(error_lines)
-    }
 
 
 @waffle_flag('articletrack')
