@@ -67,6 +67,9 @@ urlpatterns = patterns('',
 
     #AJAX
     url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
+
+    # Validator URLs:
+    url(r'^tools/validators/', include('validator.urls')),
 )
 
 if settings.DEBUG:
