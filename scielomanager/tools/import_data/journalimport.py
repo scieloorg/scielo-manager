@@ -301,24 +301,24 @@ class JournalImport:
         if not '935' in record:  # Old fashion ISSN persistance style
             if record['35'][0] == "PRINT":
                 issn_type = "print"
-                print_issn = record['400'][0]
+                print_issn = record['400'][0].strip()
             else:
                 issn_type = "electronic"
-                electronic_issn = record['400'][0]
+                electronic_issn = record['400'][0].strip()
         else:  # New ISSN persistance style
             if '35' in record:
                 if record['35'][0] == "PRINT":
                     issn_type = "print"
-                    print_issn = record['935'][0]
-                    if record['935'][0] != record['400'][0]:
+                    print_issn = record['935'][0].strip()
+                    if record['935'][0].strip() != record['400'][0].strip():
                         issn_type = "electronic"
-                        electronic_issn = record['400'][0]
+                        electronic_issn = record['400'][0].strip()
                 else:
                     issn_type = "electronic"
-                    electronic_issn = record['935'][0]
-                    if record['935'][0] != record['400'][0]:
+                    electronic_issn = record['935'][0].strip()
+                    if record['935'][0].strip() != record['400'][0].strip():
                         issn_type = "print"
-                        print_issn = record['400'][0]
+                        print_issn = record['400'][0].strip()
 
         journal.scielo_issn = issn_type
         journal.print_issn = print_issn
