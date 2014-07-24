@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response
-
+from django.conf import settings
 from waffle.decorators import waffle_flag
 
 from . import forms
@@ -17,7 +17,9 @@ def __prepare_and_analyze(data_type, data_input):
 
 @waffle_flag('packtools_validator')
 def packtools_home(request, template_name='validator/packtools.html'):
-    context = {}
+    context = {
+        'SETTINGS_MAX_UPLOAD_SIZE' : settings.VALIDATOR_MAX_UPLOAD_SIZE,
+    }
 
     form = forms.StyleCheckerForm()
     if request.method == 'POST':

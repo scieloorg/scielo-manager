@@ -5,6 +5,7 @@ from packtools import stylechecker
 
 logger = logging.getLogger(__name__)
 
+
 def extract_validation_errors(validation_errors):
     """
     Return a "parsed" dict of validation errors returned by stylechecker
