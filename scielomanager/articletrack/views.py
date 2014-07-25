@@ -233,7 +233,7 @@ def checkin_review(request, checkin_id, level):
                 tasks.send_mail.delay(
                     subject,
                     render_to_string(
-                        'email/accepted.txt',
+                        'email/checkin_accepted.txt',
                         {
                             'checkin': checkin,
                             'domain': get_current_site(request)
