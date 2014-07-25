@@ -205,6 +205,7 @@ class JournalResource(ModelResource):
 
     #recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
+    succeeding_title = fields.ForeignKey('self', 'succeeding_title', null=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Journal.objects.all().filter()

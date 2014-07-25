@@ -247,7 +247,10 @@ table._listings h4 {
 .disabled {
     color: #CCCCCC;
     margin: 5px 0 5px 20px;
+}
 
+.force-no-margin { 
+  margin:0 !important;
 }
 
 .sys-msgs {
