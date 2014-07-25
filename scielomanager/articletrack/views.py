@@ -146,7 +146,7 @@ def checkin_reject(request, checkin_id):
                     msg = _("Something went wrong when trying to REJECT this Checkin, please try again later.")
                     messages.error(request, msg)
                     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
-                
+
                 #Send e-mail only exists submitted_by attribute
                 if checkin.submitted_by:
                     subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
@@ -223,17 +223,13 @@ def checkin_review(request, checkin_id, level):
             if level == '2': # SciELO review
                 subject += ' by SciELO'
 
-            send_to = [i.username for i in checkin.team_members]
+            send_to = [i.email for i in checkin.team_members]
 
             if len(send_to) > 0:
-                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                                   checkin.package_name,
-                                   'Package accepted'])
-
                 tasks.send_mail.delay(
                     subject,
                     render_to_string(
-                        'email/checkin_accepted.txt',
+                        'email/checkin_reviewed.txt',
                         {
                             'checkin': checkin,
                             'domain': get_current_site(request)
@@ -578,7 +574,7 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
 
             send_to = []
             for checkin in ticket.article.checkins.all():
-                send_to += [i.username for i in checkin.team_members]
+                send_to += [i.email for i in checkin.team_members]
             send_to = set(send_to)
             send_to.add(ticket.author.email)
             if len(send_to) > 0:
