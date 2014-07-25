@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load waffle_tags %}
 
 <div class="footer row-fluid">
   <div class="span3">
@@ -29,10 +30,14 @@
     </ul>
   </div>
   <div class="span2">
-    <h4>{% trans 'SciELO Project' %}</h4>
+    {% flag 'packtools_validator' %}
+    <h4>{% trans "Tools" %}</h4>
     <ul>
-      <li><a href="http://docs.scielo.org/en/latest/index.html">{% trans 'About' %}</a></li>
+      <li>
+        <a href="{% url validator.packtools.stylechecker %}">{% trans "Packtools StyleChecker" %}</a>
+      </li>
     </ul>
+    {% endflag %}
   </div>
   <div class="span2">
     <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">

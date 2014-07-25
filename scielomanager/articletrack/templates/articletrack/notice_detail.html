@@ -9,24 +9,6 @@
 {% block content %}
 <link href="{% static 'css/prism.css' %}" rel="stylesheet" />
 <style type="text/css">
-/* OVERRIDE STYLES OF PRIMSM
-.line-highlight { left: 15px;}
-FIXES STYLES OF PRIMSM */
-code, pre { font-size: 12px; }
-code[class*="language-"],
-pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
-.line-highlight:before, .line-highlight[data-end]:after {
-  border-radius: 0;
-  left: 0;
-  min-height: 20px;
-  min-width: 30px;
-  padding: 0;
-  top: 0;
-}
-.longer-tab {
-  width: 155px;
-}
-
 .tab_add_ticket:hover { background-color: #51A351 !important; }
 </style>
 
@@ -182,7 +164,7 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
               {# xml analyzed and with annotations #}
               &nbsp;
               <span class="badge badge-important">
-                {{ xml_data.validation_errors.error_lines|length }}
+                {{ xml_data.validation_errors.results|length }}
               </span>
             {% endif %}
           </a>
@@ -234,52 +216,7 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
         </div>
         <div class="tab-pane" id="annotations">
           {# annotations #}
-          {% if not xml_data.can_be_analyzed.0 %}
-            {# could not be analyzed #}
-            <div class="alert alert-warning">
-              <h4><i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}</h4>
-              <p>{{ xml_data.can_be_analyzed.1 }}</p>
-            </div>
-          {% elif not xml_data.annotations %}
-            {# xml without annotations #}
-            <div class="alert alert-success">
-              <i class="icon-ok"></i> {% trans "The XML has no errors" %}
-            </div>
-          {% else %}
-            {# xml analyzed and with annotations #}
-            <div class="alert alert-block alert-error">
-              <h4 class="alert-heading"> {% trans "The XML have some errors" %}:</h4>
-            </div>
-            {% if xml_data.validation_errors %}
-              <table class="table table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>{% trans "Level" %}:</th>
-                    <th>{% trans "Line" %}:</th>
-                    <th>{% trans "Column" %}:</th>
-                    <th>{% trans "Message" %}:</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for error in xml_data.validation_errors.results %}
-                    <tr>
-                      <td><span class="label label-{% trans_status error.level to_label='True' %}">{{ error.level }}</span></td>
-                      <td>{{ error.line }}</td>
-                      <td>{{ error.column }}</td>
-                      <td>{{ error.message }}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            {% endif %}
-            {# XML ANNOTATED #}              
-            <pre
-              class="line-numbers language-markup pre-scrollable"
-              {% if xml_data.validation_errors %}
-                data-line='{{ xml_data.validation_errors.error_lines }}'
-              {% endif %}
-              ><code class="language-markup">{{ xml_data.annotations }}</code></pre>
-          {% endif %}
+          {% include "validator/includes/xml_annotated.html" %}
           {# /annotations #}
         </div>
       </div>
@@ -465,7 +402,6 @@ pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
 {% endblock %}
 
 {% block extrafooter %}
-  <script type="text/javascript" src="{% static 'js/prism.js' %}"></script>
   <script type="text/javascript">
     $(document).ready(function(){
       var fail_msg = '<i class="icon-warning-sign"></i> {% trans "Unable to communicate with the file server. Please try again later." %}';

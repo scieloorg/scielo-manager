@@ -24,6 +24,7 @@ from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
+from validator.utils import extract_validation_errors
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -34,29 +35,6 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
 logger = logging.getLogger(__name__)
-
-
-def extract_validation_errors(validation_errors):
-    """
-    Return a "parsed" dict of validation errors returned by stylechecker
-    """
-    # iterate over the errors and get the relevant data
-    results = []
-    error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
-    for error in validation_errors:
-        error_data = {
-            'line': error.line or '--',
-            'column': error.column or '--',
-            'message': error.message or '',
-            'level': error.level_name or 'ERROR',
-        }
-        results.append(error_data)
-        if error.line:
-            error_lines.append(str(error.line))
-    return {
-        'results': results,
-        'error_lines': ", ".join(error_lines)
-    }
 
 
 def verify_if_user_can_do(action):
@@ -175,12 +153,26 @@ def checkin_reject(request, checkin_id):
                                        checkin.package_name,
                                        'Package rejected'])
 
-                    tasks.send_mail.delay(subject,
-                                    render_to_string('email/checkin_rejected.txt',
-                                    {'checkin': checkin,
-                                     'reason': rejected_cause,
-                                     'domain': get_current_site(request)}),
-                                    [checkin.submitted_by.email])
+                    send_to = set([i.email for i in checkin.team_members])
+
+                    if len(send_to) > 0:
+                        subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                           checkin.package_name,
+                                           'Package rejected'])
+
+                        tasks.send_mail.delay(
+                            subject,
+                            render_to_string(
+                                'email/checkin_rejected.txt',
+                                {
+                                    'checkin': checkin,
+                                    'reason': rejected_cause,
+                                    'domain': get_current_site(request)
+                                }
+                            ),
+                            send_to
+                        )
+
             else:
                 form_errors = u", ".join([u"%s %s" % (field, error[0]) for field, error in form.errors.items()])
                 error_msg = "%s %s" % (MSG_FORM_MISSING, form_errors)
@@ -223,7 +215,6 @@ def checkin_review(request, checkin_id, level):
             msg = _("Something went wrong when trying to REVIEW this Checkin, please try again later.")
             messages.error(request, msg)
             return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
-
         # Send e-mail only if has "submitted_by" attribute
         if checkin.submitted_by:
             subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
@@ -232,11 +223,24 @@ def checkin_review(request, checkin_id, level):
             if level == '2': # SciELO review
                 subject += ' by SciELO'
 
-            tasks.send_mail.delay(subject,
-                            render_to_string('email/checkin_reviewed.txt',
-                            {'checkin': checkin,
-                             'domain': get_current_site(request)}),
-                            [checkin.submitted_by.email])
+            send_to = [i.username for i in checkin.team_members]
+
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package accepted'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/accepted.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
 
         if checkin.can_be_accepted:
             return HttpResponseRedirect(reverse('checkin_accept', args=[checkin_id, ]))
@@ -272,22 +276,30 @@ def checkin_accept(request, checkin_id):
             return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
         
         if checkin.submitted_by:
-            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                               checkin.package_name,
-                               'Package accepted'])
+            send_to = set([i.email for i in checkin.team_members])
 
-            tasks.send_mail.delay(subject,
-                            render_to_string('email/checkin_accepted.txt',
-                            {'checkin': checkin,
-                             'domain': get_current_site(request)}),
-                            [checkin.submitted_by.email])
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package accepted'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_accepted.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
         # Proceed to Checkout
         if checkin.can_be_send_to_checkout:
             return HttpResponseRedirect(reverse('checkin_send_to_checkout', args=[checkin_id, ]))
     else:
         error_msg = _("This checkin doesn't comply the requirements to be accepted")
         messages.error(request, error_msg)
-
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 
@@ -311,15 +323,25 @@ def checkin_send_to_pending(request, checkin_id):
 
         #Send e-mail only exists submitted_by attribute
         if checkin.submitted_by:
-            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                               checkin.package_name,
-                               'Package send to pending'])
+            send_to = set([i.email for i in checkin.team_members])
 
-            tasks.send_mail.delay(subject,
-                            render_to_string('email/checkin_sent_to_pending.txt',
-                            {'checkin': checkin,
-                             'domain': get_current_site(request)}),
-                            [checkin.submitted_by.email])
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package send to pending'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_sent_to_pending.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
     else:
         error_msg = _("This checkin doesn't comply the requirements to be sent to pending")
         messages.error(request, error_msg)
@@ -348,15 +370,25 @@ def checkin_send_to_review(request, checkin_id):
 
         #Send e-mail only exists submitted_by attribute
         if checkin.submitted_by:
-            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                               checkin.package_name,
-                               'Package send to review'])
+            send_to = set([i.email for i in checkin.team_members])
 
-            tasks.send_mail.delay(subject,
-                            render_to_string('email/checkin_sent_to_review.txt',
-                            {'checkin': checkin,
-                             'domain': get_current_site(request)}),
-                            [checkin.submitted_by.email])
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package send to review'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_sent_to_review.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+
     else:
         error_msg = _("This checkin doesn't comply the requirements to be sent to review")
         messages.error(request, error_msg)
@@ -544,20 +576,26 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
             comment.ticket = ticket
             comment.save()
 
-            emails = [checkin.submitted_by.email for checkin in ticket.article.checkins.all() if hasattr(checkin.submitted_by, 'email')]
-
-            if emails:
-                emails.append(ticket.author.email)
-
+            send_to = []
+            for checkin in ticket.article.checkins.all():
+                send_to += [i.username for i in checkin.team_members]
+            send_to = set(send_to)
+            send_to.add(ticket.author.email)
+            if len(send_to) > 0:
                 subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                     'NEW COMMENT'])
 
-                tasks.send_mail.delay(subject,
-                                render_to_string('email/comment_created.txt',
-                                {'ticket': ticket,
-                                 'checkin': checkin,
-                                 'domain': get_current_site(request)}),
-                                 emails)
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/comment_created.txt',
+                        {
+                            'ticket': ticket,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
 
             messages.info(request, MSG_FORM_SAVED)
             return render_to_response(
@@ -587,22 +625,29 @@ def ticket_close(request, ticket_id):
     ticket.finished_at = datetime.datetime.now()
     ticket.save()
 
-    emails = [checkin.submitted_by.email for checkin in ticket.article.checkins.all() if hasattr(checkin.submitted_by, 'email')]
-
-    if emails:
-        emails.append(ticket.author.email)
+    send_to = []
+    for checkin in ticket.article.checkins.all():
+        send_to += [i.email for i in checkin.team_members]
+    send_to = set(send_to)
+    send_to.add(ticket.author.email)
+    if len(send_to) > 0:
 
         subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                            'CLOSED TICKET'])
 
+        tasks.send_mail.delay(
+            subject,
+            render_to_string(
+                'email/ticket_closed.txt',
+                {
+                    'ticket': ticket,
+                    'domain': get_current_site(request)
+                }
+            ),
+            send_to
+        )
 
-        tasks.send_mail.delay(subject,
-                    render_to_string('email/ticket_closed.txt',
-                    {'ticket': ticket,
-                     'domain': get_current_site(request)}),
-                     emails)
-
-    messages.success(request, MSG_FORM_SAVED)
+    messages.info(request, MSG_FORM_SAVED)
 
     referer = get_referer_view(request)
     return HttpResponseRedirect(referer)
@@ -629,17 +674,25 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
             ticket.author = request.user
             ticket.article = checkin.article
             ticket.save()
-
             if checkin.submitted_by:
-                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                                   'TICKET CREATED'])
+                send_to = set([i.email for i in checkin.team_members])
 
-                tasks.send_mail.delay(subject,
-                            render_to_string('email/ticket_created.txt',
-                            {'ticket': ticket,
-                             'checkin': checkin,
-                             'domain': get_current_site(request)}),
-                            [checkin.submitted_by.email])
+                if len(send_to) > 0:
+                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                       'TICKET CREATED'])
+
+                    tasks.send_mail.delay(
+                        subject,
+                        render_to_string(
+                            'email/ticket_created.txt',
+                            {
+                                'ticket': ticket,
+                                'checkin': checkin,
+                                'domain': get_current_site(request)
+                            }
+                        ),
+                        send_to
+                    )
 
             messages.success(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id, ]))
@@ -677,18 +730,26 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
 
             ticket = ticket_form.save()
 
-            emails = [checkin.submitted_by.email for checkin in ticket.article.checkins.all() if hasattr(checkin.submitted_by, 'email')]
-
-            if emails:
+            send_to = []
+            for checkin in ticket.article.checkins.all():
+                send_to += [i.email for i in checkin.team_members]
+            send_to = set(send_to)
+            send_to.add(ticket.author.email)
+            if len(send_to) > 0:
                 subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                    'TICKET MODIFY'])
 
-                tasks.send_mail.delay(subject,
-                            render_to_string('email/ticket_modify.txt',
-                            {'ticket': ticket,
-                             'checkin': checkin,
-                             'domain': get_current_site(request)}),
-                             emails)
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/ticket_modify.txt',
+                        {
+                            'ticket': ticket,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
 
             messages.success(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
@@ -722,24 +783,30 @@ def comment_edit(request, comment_id, template_name='articletrack/comment_edit.h
         if comment_form.is_valid():
             comment = comment_form.save()
 
-            emails = [checkin.submitted_by.email for checkin in comment.ticket.article.checkins if hasattr(checkin.submitted_by, 'email')]
-
-            if emails:
-                emails.append(comment.ticket.author.email)
-
+            send_to = []
+            for checkin in comment.ticket.article.checkins.all():
+                send_to += [i.email for i in checkin.team_members]
+            send_to = set(send_to)
+            send_to.add(comment.ticket.author.email)
+            if len(send_to) > 0:
                 subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
                                    'COMMENT MODIFY'])
 
-                tasks.send_mail.delay(subject,
-                            render_to_string('email/comment_modify.txt',
-                            {'comment': comment,
-                             'ticket': comment.ticket,
-                             'domain': get_current_site(request)}),
-                             emails)
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/comment_modify.txt',
+                        {
+                            'comment': comment,
+                            'ticket': comment.ticket,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
 
-
-            messages.success(request, MSG_FORM_SAVED)
-            return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk, checkin.id]))
+            messages.info(request, MSG_FORM_SAVED)
+            return HttpResponseRedirect(reverse('ticket_detail', args=[comment.ticket.pk]))
         else:
             context['form'] = comment_form
 

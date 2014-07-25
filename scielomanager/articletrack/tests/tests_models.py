@@ -47,6 +47,50 @@ class TicketTests(TestCase):
         self.assertEqual(ordering, ['started_at'])
 
 
+class TeamTests(TestCase):
+
+    def test_add_member(self):
+        user = auth.UserF(is_active=True)
+        team = modelfactories.TeamFactory()
+        team.join(user)
+
+        self.assertEqual(team.member.all()[0].username, user.username)
+
+
+    def test_team(self):
+        user = auth.UserF(is_active=True)
+        team = modelfactories.TeamFactory(name=u'Team Alcachofra')
+        team.join(user)
+        checkin = modelfactories.CheckinFactory(submitted_by=user)
+
+        self.assertEqual(checkin.team.all()[0].name, u'Team Alcachofra')
+
+    def test_team_without_submitted_by_user(self):
+        checkin = modelfactories.CheckinFactory()
+
+        self.assertEqual(checkin.team, None)
+
+    def test_team_members(self):
+        user1 = auth.UserF(is_active=True)
+        user2 = auth.UserF(is_active=True)
+        user3 = auth.UserF(is_active=True)
+
+        team1 = modelfactories.TeamFactory(name=u'Team Alcachofra')
+        team1.join(user1)
+        team1.join(user2)
+
+        team2 = modelfactories.TeamFactory(name=u'Team Picles')
+        team2.join(user2)
+        team2.join(user3)
+
+        checkin = modelfactories.CheckinFactory(submitted_by=user1)
+
+        users = [i.username for i in checkin.team_members]
+
+        self.assertTrue(user1.username in users)
+        self.assertTrue(user2.username in users)
+        self.assertFalse(user3.username in users)
+
 class CheckinTests(TestCase):
 
     def setUp(self):
