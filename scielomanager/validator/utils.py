@@ -6,6 +6,27 @@ from packtools import stylechecker
 logger = logging.getLogger(__name__)
 
 
+def extract_syntax_errors(syntax_error_exception):
+    """
+    Return a dict with information about the syntax error exception
+    """
+    results = []
+    error_lines = []
+    if syntax_error_exception.position:
+        line, column = syntax_error_exception.position
+        error_data = {
+            'line': line or '--',
+            'column': column or '--',
+            'message': syntax_error_exception.message or '',
+            'level': 'ERROR',
+        }
+        results.append(error_data)
+        error_lines.append(str(line))
+    return {
+        'results': results,
+        'error_lines': ", ".join(error_lines)
+    }
+
 def extract_validation_errors(validation_errors):
     """
     Return a "parsed" dict of validation errors returned by stylechecker

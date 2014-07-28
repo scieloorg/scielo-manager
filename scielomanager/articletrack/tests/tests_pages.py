@@ -2,6 +2,7 @@
 from waffle import Flag
 from os import path
 import mocker
+import lxml
 
 from django_webtest import WebTest
 from django_factory_boy import auth
@@ -411,6 +412,71 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNone(xml_data['validation_errors'])
 
+    def test_annotations_of_syntax_error(self):
+        self._addWaffleFlag()
+        notice = self._makeOne()
+
+        target_xml = "with_syntax_error.xml"
+        expected_response = {
+            "filename": "1415-4757-gmb-37-0210.xml",
+            "uri": self._get_path_of_test_xml(target_xml)
+        }
+
+        class BalaioTest(doubles.BalaioAPIDouble):
+            def get_xml_uri(self, attempt_id, target_name):
+                return expected_response['uri']
+
+        balaio = self.mocker.replace('articletrack.balaio.BalaioAPI')
+        balaio()
+        self.mocker.result(BalaioTest())
+
+        syntax_error_data = {
+            'message': u'Premature end of data in tag xml line 1, line 1, column 6',
+            'line': 1,
+            'column': 6,
+            'code': 77,
+        }
+
+        XML = self.mocker.replace('packtools.stylechecker.XML')
+        XML(expected_response['uri'])
+        self.mocker.throw(
+            lxml.etree.XMLSyntaxError(
+                syntax_error_data['message'],
+                syntax_error_data['code'],
+                syntax_error_data['line'],
+                syntax_error_data['column'],
+            )
+        )
+
+        self.mocker.replay()
+
+        response = self.app.get(
+            reverse('notice_detail', args=[notice.checkin.pk]),
+            user=self.user)
+
+        xml_data = response.context['xml_data']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(xml_data['can_be_analyzed'][0])
+        self.assertIsNotNone(xml_data['annotations'])
+        self.assertEqual(xml_data['uri'], expected_response['uri'])
+        self.assertEqual(xml_data['file_name'], expected_response['filename'])
+        self.assertIsNotNone(xml_data['validation_errors'])
+        self.assertEqual('1', xml_data['validation_errors']['error_lines'])
+        self.assertEqual(1, len(xml_data['validation_errors']['results']))
+        self.assertEqual(
+            xml_data['validation_errors']['results'],
+            [
+                {
+                    'column': syntax_error_data['column'],
+                    'line': syntax_error_data['line'],
+                    'message': syntax_error_data['message'],
+                    'level': 'ERROR',
+                }
+            ]
+        )
+
+
 class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
 
     def _mock_balaio_disabled(self):
@@ -452,7 +518,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.group_producer = auth.GroupF(name='producer')
         self.user.groups.add(self.group_producer)
         self.user.save()
-        
+
         self.user.user_permissions.add(list_notice_perm)
         self.user.user_permissions.add(list_checkin_perm)
         # QAL 1 definitions
@@ -726,7 +792,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertFalse(response_checkin.checked_out)
 
     def test_checkin_send_to_checkout(self):
-        """ 
+        """
         Create a checkin and call the view: checkin_send_to_checkout.
         Balalio API will be down, so must test that user can possible to call again this view.
         """
