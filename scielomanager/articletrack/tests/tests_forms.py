@@ -1,21 +1,16 @@
 # coding:utf-8
 
-import os
-import unittest
 from random import randint
 
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django_factory_boy import auth
-from django.test import TestCase
 
 from waffle import Flag
 
 from journalmanager.tests.modelfactories import CollectionFactory
 from articletrack.tests import modelfactories
-from articletrack import forms
-from articletrack import models
-
+from articletrack.tests.tests_models import create_notices
 
 MAX_CHOICES_QTY = 10
 
@@ -61,6 +56,20 @@ class CheckinListFilterFormTests(WebTest):
         self.user.user_permissions.add(perm)
         self.collection = CollectionFactory.create()
         self.collection.add_user(self.user, is_manager=True)
+        # Producer definition:
+        group_producer = auth.GroupF(name='producer')
+        self.user.groups.add(group_producer)
+        self.user.save()
+        # QAL 1 definitions
+        self.user_qal_1 = auth.UserF(is_active=True)
+        group_qal_1 = auth.GroupF(name='QAL1')
+        self.user_qal_1.groups.add(group_qal_1)
+        self.user_qal_1.save()
+        # QAL 2 definitions
+        self.user_qal_2 = auth.UserF(is_active=True)
+        group_qal_2 = auth.GroupF(name='QAL2')
+        self.user_qal_2.groups.add(group_qal_2)
+        self.user_qal_2.save()
 
     def tearDown(self):
         """
@@ -82,14 +91,24 @@ class CheckinListFilterFormTests(WebTest):
             for journal in new_checkin.article.journals.all():
                 journal.join(self.collection, self.user)
 
+            create_notices('ok', new_checkin)  # all notices have error_level as: ok, to proceed
             if checkins_status == 'review' or checkins_status == 'rejected' or checkins_status == 'accepted':
+                self.assertTrue(self.user.get_profile().can_send_checkins_to_review)
                 new_checkin.send_to_review(self.user)
-                new_checkin.do_review(self.user)
+                # do review by QAL1
+                self.assertTrue(self.user_qal_1.get_profile().can_review_l1_checkins)
+                new_checkin.do_review_by_level_1(self.user_qal_1)
+                # do review by QAL2
+                self.assertTrue(self.user_qal_2.get_profile().can_review_l2_checkins)
+                new_checkin.do_review_by_level_2(self.user_qal_2)
+
             if checkins_status == 'rejected':
                 rejection_text = 'your checkin is bad, and you should feel bad!'
-                new_checkin.do_reject(self.user, rejection_text)
+                self.assertTrue(self.user_qal_1.get_profile().can_reject_checkins)
+                new_checkin.do_reject(self.user_qal_1, rejection_text)
             if checkins_status == 'accepted':
-                new_checkin.accept(self.user)
+                self.assertTrue(self.user_qal_2.get_profile().can_accept_checkins)
+                new_checkin.accept(self.user_qal_2)
 
             checkins.append(new_checkin)
 
@@ -313,6 +332,7 @@ class CheckinListFilterFormTests(WebTest):
         (a random existing) article
         """
         checkins = self._make_N_checkins(checkins_status='accepted')
+        
         random_index = randint(0, len(checkins) - 1)
         target_checkin = checkins[random_index]
 
@@ -356,7 +376,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (pending) checkins and apply a filter by
         (a random existing) package name
         """
-        checkins = self._make_N_checkins()
+        self._make_N_checkins()
         target_package_name = '9999.zip'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_pending']
@@ -373,7 +393,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (pending) checkins and apply a filter by
         (a random existing) issue label
         """
-        checkins = self._make_N_checkins()
+        self._make_N_checkins()
         target_issue_label = '1999 v.99 n.9'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_pending']
@@ -382,6 +402,9 @@ class CheckinListFilterFormTests(WebTest):
         response_partial = _extract_results_from_body(response)
         context_checkins = response.context['checkins_pending'].object_list
 
+        self.assertEqual(len(context_checkins), 0)
+        self.assertFalse(u'%s' % target_issue_label in response_partial)
+
     # Review:
 
     def tests_filter_non_existing_review_by_package_name(self):
@@ -389,7 +412,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (review) checkins and apply a filter by
         (a random existing) package name
         """
-        checkins = self._make_N_checkins(checkins_status='review')
+        self._make_N_checkins(checkins_status='review')
         target_package_name = '9999.zip'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_review']
@@ -406,7 +429,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (review) checkins and apply a filter by
         (a random existing) issue label
         """
-        checkins = self._make_N_checkins(checkins_status='review')
+        self._make_N_checkins(checkins_status='review')
         target_issue_label = '1999 v.99 n.9'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_review']
@@ -415,6 +438,9 @@ class CheckinListFilterFormTests(WebTest):
         response_partial = _extract_results_from_body(response, extract_section='review')
         context_checkins = response.context['checkins_review'].object_list
 
+        self.assertEqual(len(context_checkins), 0)
+        self.assertFalse(u'%s' % target_issue_label in response_partial)
+
     # Rejected:
 
     def tests_filter_non_existing_rejected_by_package_name(self):
@@ -422,7 +448,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (rejected) checkins and apply a filter by
         (a random existing) package name
         """
-        checkins = self._make_N_checkins(checkins_status='rejected')
+        self._make_N_checkins(checkins_status='rejected')
         target_package_name = '9999.zip'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_rejected']
@@ -439,7 +465,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (rejected) checkins and apply a filter by
         (a random existing) issue label
         """
-        checkins = self._make_N_checkins(checkins_status='rejected')
+        self._make_N_checkins(checkins_status='rejected')
         target_issue_label = '1999 v.99 n.9'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_rejected']
@@ -448,6 +474,9 @@ class CheckinListFilterFormTests(WebTest):
         response_partial = _extract_results_from_body(response, extract_section='rejected')
         context_checkins = response.context['checkins_rejected'].object_list
 
+        self.assertEqual(len(context_checkins), 0)
+        self.assertFalse(u'%s' % target_issue_label in response_partial)
+
     # accepted:
 
     def tests_filter_non_existing_accepted_by_package_name(self):
@@ -455,7 +484,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (accepted) checkins and apply a filter by
         (a random existing) package name
         """
-        checkins = self._make_N_checkins(checkins_status='accepted')
+        self._make_N_checkins(checkins_status='accepted')
         target_package_name = '9999.zip'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_accepted']
@@ -472,7 +501,7 @@ class CheckinListFilterFormTests(WebTest):
         Creates various (accepted) checkins and apply a filter by
         (a random existing) issue label
         """
-        checkins = self._make_N_checkins(checkins_status='accepted')
+        self._make_N_checkins(checkins_status='accepted')
         target_issue_label = '1999 v.99 n.9'
         page = self.app.get(reverse('checkin_index',), user=self.user)
         form = page.forms['filter_accepted']
