@@ -65,7 +65,7 @@
     
       <div id='action_buttons_row'>
                 
-        {% if perms.ticket.can_change %}
+        {% if perms.articletrack.change_ticket %}
 
           <div class="btn-group pull-right">
             <a href="{% url ticket_edit ticket.pk %}" class='btn btn-primary'>
@@ -103,12 +103,12 @@
   
   <a name="comments"></a><br><br>
   <div class="row-fluid show-grid">
-    <div class="span10">
+    <div class="span9">
       <h4>{% trans "Comments" %}:</h4>
     </div>
-    <div class="span2">
+    <div class="span3 pull-right">
 
-        {% if ticket.is_open and perms.comment.can_add %}
+        {% if ticket.is_open and perms.articletrack.add_comment %}
           <a id='add_comment' href="#" class="btn btn-success pull-right" type="button">
             <i class="icon-plus-sign"></i> {% trans "Add Comment" %}
           </a>

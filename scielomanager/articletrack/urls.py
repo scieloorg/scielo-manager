@@ -9,10 +9,11 @@ urlpatterns = patterns(
     # notice:
     url(r'^notice/(?P<checkin_id>\d+)/$', views.notice_detail, name="notice_detail"),
     url(r'^checkin/(?P<checkin_id>\d+)/reject/$', views.checkin_reject, name="checkin_reject"),
-    url(r'^checkin/(?P<checkin_id>\d+)/review/$', views.checkin_review, name="checkin_review"),
+    url(r'^checkin/(?P<checkin_id>\d+)/review/(?P<level>\d)$', views.checkin_review, name="checkin_review"),
     url(r'^checkin/(?P<checkin_id>\d+)/accept/$', views.checkin_accept, name="checkin_accept"),
     url(r'^checkin/(?P<checkin_id>\d+)/send_to/pending/$', views.checkin_send_to_pending, name="checkin_send_to_pending"),
     url(r'^checkin/(?P<checkin_id>\d+)/send_to/review/$', views.checkin_send_to_review, name="checkin_send_to_review"),
+    url(r'^checkin/(?P<checkin_id>\d+)/send_to/checkout/$', views.checkin_send_to_checkout, name="checkin_send_to_checkout"),
     url(r'^checkin/(?P<checkin_id>\d+)/history/$', views.checkin_history, name="checkin_history"),
 
     # TICKETS

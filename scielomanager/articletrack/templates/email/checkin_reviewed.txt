@@ -1,0 +1,4 @@
+Your article was reviewed {% if checkin.is_level2_reviewed %} by SciELO team {% endif %}
+<br/>
+<br/>
+Check: http://{{domain}}{% url notice_detail checkin.id %}
