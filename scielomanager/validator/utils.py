@@ -1,6 +1,6 @@
 # coding: utf-8
 import logging
-
+import lxml
 from packtools import stylechecker
 
 logger = logging.getLogger(__name__)
@@ -58,6 +58,11 @@ def stylechecker_analyze(data_type, data_input):
     }
     try:
         xml_check = stylechecker.XML(data_input)
+    except lxml.etree.XMLSyntaxError as e:
+        results['can_be_analyzed'] = (True, None)
+        results['annotations'] = e.message
+        results['validation_errors'] = extract_syntax_errors(e)
+        return results
     except Exception as e:  # any exception means that cannot be analyzed
         results['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
         # logger.error('ValueError while creating: Stylechecker.XML(%s) of type: %s. Traceback: %s' % (data_input, data_type, e))
