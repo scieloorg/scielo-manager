@@ -40,7 +40,7 @@
           </li>
           <li>
             <a href="#XML" data-toggle="tab">
-              {% trans "Uplaod XML" %}
+              {% trans "Upload XML" %}
             </a>
           </li>
           <li>
@@ -55,7 +55,7 @@
             {% with form.url as field %}
               <div class="control-group {% if field.errors|length > 0 %}error{% endif %}">
                 {{ field|attr:"class=span12"|attr:"placeholder=Insert a valid URL" }}
-                
+
                 {# field errors #}
                 {% for error in field.errors %}
                   <div class="alert alert-error">
@@ -84,7 +84,7 @@
             <div class="alert alert-info">
               <i class="icon-question-sign"></i>&nbsp;
               {% blocktrans %}
-              If you have any problems with the tool or with the SPS Tagging Guidelines, please contact: 
+              If you have any problems with the tool or with the SPS Tagging Guidelines, please contact:
               <strong><a href="mailto:scielo-xml@googlegroups.com">scielo-xml@googlegroups.com</a></strong>.
               {% endblocktrans %}
             </div>
@@ -112,7 +112,7 @@
         </div>
 
       </form>
-    </div>    
+    </div>
   </div>
 
   {% if results %}
@@ -164,7 +164,7 @@
       }
 
       function guess_selected_type(){
-        /* 
+        /*
         first inspect "selected_tab" var if set to: XML or URL and the correct field with a value,
         if none, then try:
           - if url field have some value, then return "URL" as selected type.
@@ -237,9 +237,9 @@
           }
           return true;
         }
-        
+
       });
-      
+
     });
     </script>
 
