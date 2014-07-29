@@ -2,6 +2,7 @@
 import datetime
 import json
 import logging
+import lxml
 
 from waffle.decorators import waffle_flag
 from django.conf import settings
@@ -24,7 +25,7 @@ from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
-from validator.utils import extract_validation_errors
+from validator.utils import extract_validation_errors, extract_syntax_errors
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -525,6 +526,9 @@ def notice_detail(request, checkin_id):
     if xml_data['can_be_analyzed'][0]:
         try:
             xml_check = stylechecker.XML(xml_data['uri'])
+        except lxml.etree.XMLSyntaxError as e:
+            xml_data['annotations'] = e.message
+            xml_data['validation_errors'] = extract_syntax_errors(e)
         except Exception as e:  # any exception will stop the process
             xml_data['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
             logger.error('ValueError while creating: Stylechecker.XML(%s) for checkin.pk == %s. Traceback: %s' % (xml_data['file_name'], checkin.pk, e))
