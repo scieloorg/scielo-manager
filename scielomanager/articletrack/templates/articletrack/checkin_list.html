@@ -12,42 +12,61 @@
   <div class="navbar-inner">
     <ul class="nav">
       <li>
-        <a class="brand force-no-margin" href="#">{% trans 'List of Check-ins' %}</a>
+        <a class="brand force-no-margin" href="#">{% trans 'List of Check-ins' %}:</a>
       </li>
       <li class="divider-vertical"></li>
-    </ul>
-    <ul class="nav pull-right">
-      <li class="divider-vertical"></li>
-      <li><a href="#pending" role="menuitem"><i class="icon-time"></i> {% trans "Pending" %}</a></li>
-      <li class="divider-vertical"></li>
-      <li><a href="#rejected" role="menuitem"><i class="icon-eye-close"></i> {% trans "Rejected" %}</a></li>
-      <li class="divider-vertical"></li>
-      <li><a href="#review" role="menuitem"><i class="icon-eye-open"></i> {% trans "Review" %}</a></li>
-      <li class="divider-vertical"></li>
-      <li><a href="#accepted" role="menuitem"><i class="icon-ok-circle"></i> {% trans "Accepted" %}</a></li>
     </ul>
   </div>
 </div>
 
-{# PENDING LIST #}
-{% with status="pending" icon_class="icon-time" list_title="Pending" checkins_collection=checkins_pending pagination_prefix="pending_page" filter_form=pending_filter_form  %}
-  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
-{% endwith %}
-
-{# REJECTED LIST #}
-{% with status="rejected" icon_class="icon-eye-close" list_title="Rejected" checkins_collection=checkins_rejected pagination_prefix="rejected_page" filter_form=rejected_filter_form  %}
-  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
-{% endwith %}
-
-{# REVIEW LIST #}
-{% with status="review" icon_class="icon-eye-open" list_title="Review" checkins_collection=checkins_review pagination_prefix="review_page" filter_form=review_filter_form  %}
-  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
-{% endwith %}
-
-{# ACCEPTED LIST #}
-{% with status="accepted" icon_class="icon-ok-circle" list_title="Accepted" checkins_collection=checkins_accepted pagination_prefix="accepted_page" filter_form=accepted_filter_form  %}
-  {% include "articletrack/includes/checkin_list_and_filterform.html" %}
-{% endwith %}
+<ul class="nav nav-tabs">
+  <li {% if prefered_tab == 'pending' %}class="active" {% endif %}>
+    <a href="#PENDING" data-toggle="tab">
+      <strong><i class="icon-time"></i> {% trans "Pending" %}</strong>
+    </a>
+  </li>
+  <li {% if prefered_tab == 'rejected' %}class="active" {% endif %}>
+    <a href="#REJECTED" data-toggle="tab">
+      <strong><i class="icon-eye-close"></i> {% trans "Rejected" %}</strong>
+    </a>
+  </li>
+  <li {% if prefered_tab == 'review' %}class="active" {% endif %}>
+    <a href="#REVIEW" data-toggle="tab">
+      <strong><i class="icon-eye-open"></i> {% trans "Review" %}</strong>
+    </a>
+  </li>
+  <li {% if prefered_tab == 'accepted' %}class="active" {% endif %}>
+    <a href="#ACCEPTED" data-toggle="tab">
+      <strong><i class="icon-ok-circle"></i> {% trans "Accepted" %}</strong>
+    </a>
+  </li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane active" id="PENDING">
+    {# PENDING LIST #}
+    {% with status="pending" icon_class="icon-time" list_title="Pending" checkins_collection=checkins_pending pagination_prefix="pending_page" filter_form=pending_filter_form  %}
+      {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+    {% endwith %}
+  </div>
+  <div class="tab-pane" id="REJECTED">
+    {# REJECTED LIST #}
+    {% with status="rejected" icon_class="icon-eye-close" list_title="Rejected" checkins_collection=checkins_rejected pagination_prefix="rejected_page" filter_form=rejected_filter_form  %}
+      {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+    {% endwith %}
+  </div>
+  <div class="tab-pane" id="REVIEW">
+    {# REVIEW LIST #}
+    {% with status="review" icon_class="icon-eye-open" list_title="Review" checkins_collection=checkins_review pagination_prefix="review_page" filter_form=review_filter_form  %}
+      {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+    {% endwith %}
+  </div>
+  <div class="tab-pane" id="ACCEPTED">
+    {# ACCEPTED LIST #}
+    {% with status="accepted" icon_class="icon-ok-circle" list_title="Accepted" checkins_collection=checkins_accepted pagination_prefix="accepted_page" filter_form=accepted_filter_form  %}
+      {% include "articletrack/includes/checkin_list_and_filterform.html" %}
+    {% endwith %}
+  </div>
+</div>
 
 {% endblock %}
 {% block extrafooter %}

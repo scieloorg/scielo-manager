@@ -107,6 +107,14 @@ def checkin_index(request):
     objects_review = get_paginated(checkins_review, request.GET.get('review_page', 1))
     objects_accepted = get_paginated(checkins_accepted, request.GET.get('accepted_page', 1))
 
+    prefered_tab = 'pending'
+    if request.method == "GET" and request.GET.keys() and len(request.GET.keys()) > 0:
+        # get the prefix of first querystring parameter (something like: accepted-article), and get that prefix as a prefered tab
+        prefered_tab = request.GET.keys()[0].split('-')[0]  # keys are lilke: "prefix-fieldname"
+        if prefered_tab not in ['pending', 'rejected', 'review', 'accepted']:
+            # maybe the user put something strange in the address bar
+            prefered_tab = 'pending'
+
     return render_to_response(
         'articletrack/checkin_list.html',
         {
@@ -118,6 +126,7 @@ def checkin_index(request):
             'rejected_filter_form': rejected_filter_form,
             'review_filter_form': review_filter_form,
             'accepted_filter_form': accepted_filter_form,
+            'prefered_tab': prefered_tab,
         },
         context_instance=RequestContext(request)
     )
@@ -270,7 +279,7 @@ def checkin_accept(request, checkin_id):
             msg = _("Something went wrong when trying to ACCEPT this Checkin, please try again later.")
             messages.error(request, msg)
             return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
-        
+
         if checkin.submitted_by:
             send_to = set([i.email for i in checkin.team_members])
 
@@ -456,7 +465,7 @@ def notice_detail(request, checkin_id):
             profile.can_send_checkins_to_review and checkin.can_be_send_to_review,
             profile.can_review_l1_checkins and checkin.can_be_reviewed,
             profile.can_review_l2_checkins and checkin.can_be_reviewed,
-            profile.can_accept_checkins and checkin.can_be_accepted, 
+            profile.can_accept_checkins and checkin.can_be_accepted,
             profile.can_send_checkins_to_checkout and checkin.can_be_send_to_checkout,
         ]
     )
