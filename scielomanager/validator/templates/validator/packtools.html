@@ -29,7 +29,7 @@
       {% endblocktrans %}
       </p>
 
-      <form id='stylechercker' enctype="multipart/form-data" method="post" action="">
+      <form id='stylechecker' enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
 
         <ul class="nav nav-tabs">
@@ -134,15 +134,15 @@
 
     <script type="text/javascript">
     $(function () {
-      var stylechercker_form = $('#stylechercker');
-      var form_buttons = $('.form-buttons', stylechercker_form);
-      var url_field = $('#id_url', stylechercker_form);
-      var filestyle_field = $(":file", stylechercker_form);
+      var stylechecker_form = $('#stylechecker');
+      var form_buttons = $('.form-buttons', stylechecker_form);
+      var url_field = $('#id_url', stylechecker_form);
+      var filestyle_field = $(":file", stylechecker_form);
       var selected_tab = null;
 
       /* selet tab on load */
       {% if form.type.value and form.type.value|lower == 'file' %}
-        $('a[href="#XML"]', stylechercker_form).tab('show');
+        $('a[href="#XML"]', stylechecker_form).tab('show');
       {% endif %}
 
 
@@ -201,7 +201,7 @@
         $('#form_messages').html('');
       });
 
-      $('a[data-toggle="tab"]', stylechercker_form).on('shown', function (e) {
+      $('a[data-toggle="tab"]', stylechecker_form).on('shown', function (e) {
         var target_url = e.target.href // activated tab
         selected_tab = target_url.split('#')[1];
         if (selected_tab !== 'XML' && selected_tab !== 'URL') {
@@ -212,7 +212,7 @@
       });
 
       /* control form submit */
-      stylechercker_form.submit(function(){
+      stylechecker_form.submit(function(){
         /* update type_field value, based in selected tab */
         var selected_type = guess_selected_type();
         if (selected_type == 'URL' || selected_type == 'FILE') {
