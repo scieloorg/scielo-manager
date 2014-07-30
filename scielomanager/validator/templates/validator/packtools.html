@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load field_attrs %}
+{% load static %}
 
 {% block main_content %}
 <style type="text/css">
@@ -242,5 +243,8 @@
 
     });
     </script>
+
+    <script type="text/javascript" src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/scroll_to_error_message.js' %}"></script>
 
   {% endblock extrafooter %}

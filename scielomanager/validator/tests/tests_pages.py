@@ -166,7 +166,17 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['form'].is_valid())
         expected_results = {
-            'validation_errors': None,
+            'validation_errors': {
+                'error_lines': '1',
+                'results': [
+                    {
+                        'column': 6,
+                        'level': 'ERROR',
+                        'line': 1,
+                        'message': u'Premature end of data in tag xml line 1, line 1, column 6'
+                    }
+                ]
+            },
             'annotations': None,
             'can_be_analyzed': (True, None)
         }
