@@ -58,9 +58,9 @@
 
               {# DO REVIEW #}
               {% if checkin.can_be_reviewed %}
-                
+
                 {# LEVEL 1 #}
-                {% if user.get_profile.can_review_l1_checkins and not checkin.is_level1_reviewed %}  
+                {% if user.get_profile.can_review_l1_checkins and not checkin.is_level1_reviewed %}
                   <li>
                     <a href="{% url checkin_review checkin.pk 1 %}">
                       <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Review" %}</span>
@@ -491,4 +491,6 @@
 
     });
   </script>
+  <script type="text/javascript" src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/scroll_to_error_message.js' %}"></script>
 {% endblock %}
