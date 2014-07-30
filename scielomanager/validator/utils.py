@@ -6,72 +6,95 @@ from packtools import stylechecker
 logger = logging.getLogger(__name__)
 
 
-def extract_syntax_errors(syntax_error_exception):
-    """
-    Return a dict with information about the syntax error exception
-    """
-    results = []
-    error_lines = []
-    if syntax_error_exception.position:
-        line, column = syntax_error_exception.position
-        error_data = {
-            'line': line or '--',
-            'column': column or '--',
-            'message': syntax_error_exception.message or '',
-            'level': 'ERROR',
+class StyleCheckerAnalyzer(object):
+    target_input = None
+    _target_data = None
+    _can_be_analyzed = (False, "Can't be analyzed")
+    _can_be_analyzed_as_exception = False
+    _annotations = None
+    _validation_errors = None
+
+    def __init__(self, target_input):
+        if not bool(target_input):
+            raise ValueError("Can't analyze, target is None or empty")
+        self.target_input = target_input
+        try:
+            self._target_data = stylechecker.XML(self.target_input)
+            self._can_be_analyzed = (True, "")
+        except lxml.etree.XMLSyntaxError as e:
+            self._target_data = e
+            self._can_be_analyzed_as_exception = True
+        except IOError as e:
+            self._can_be_analyzed = (False, "IOError while starting Stylechecker.XML(), please verify if the input is correct")
+        except Exception as e:
+            self._can_be_analyzed = (False, "Error while starting Stylechecker.XML()")
+
+    def analyze(self):
+        results = {
+            'can_be_analyzed': (False, "Can't be analyzed"),
+            'annotations': None,
+            'validation_errors': None,
         }
-        results.append(error_data)
-        error_lines.append(str(line))
-    return {
-        'results': results,
-        'error_lines': ", ".join(error_lines)
-    }
+        if self._can_be_analyzed_as_exception:
+            # in case of exceptions: self._target_data is the exception
+            self._annotations = self._target_data.message
+            self._validation_errors = self.extract_errors_from_exception(self._target_data)
+            results['can_be_analyzed'] = (True, None)
+        elif self._can_be_analyzed[0]:
+            vs_status, vs_errors = self._target_data.validate_style()
+            if not vs_status:  # have errors
+                self._target_data.annotate_errors()
+                self._annotations = str(self._target_data)
+                self._validation_errors = self.extract_validation_errors(vs_errors)
+            results['can_be_analyzed'] = (True, None)
+        else:
+            results['can_be_analyzed'] = self._can_be_analyzed
 
-def extract_validation_errors(validation_errors):
-    """
-    Return a "parsed" dict of validation errors returned by stylechecker
-    """
-    # iterate over the errors and get the relevant data
-    results = []
-    error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
-    for error in validation_errors:
-        error_data = {
-            'line': error.line or '--',
-            'column': error.column or '--',
-            'message': error.message or '',
-            'level': error.level_name or 'ERROR',
-        }
-        results.append(error_data)
-        if error.line:
-            error_lines.append(str(error.line))
-    return {
-        'results': results,
-        'error_lines': ", ".join(error_lines)
-    }
-
-
-def stylechecker_analyze(data_type, data_input):
-    results = {
-        'can_be_analyzed': (False, ''),
-        'annotations': None,
-        'validation_errors': None,
-    }
-    try:
-        xml_check = stylechecker.XML(data_input)
-    except lxml.etree.XMLSyntaxError as e:
-        results['can_be_analyzed'] = (True, None)
-        results['annotations'] = e.message
-        results['validation_errors'] = extract_syntax_errors(e)
+        results['annotations'] = self._annotations
+        results['validation_errors'] = self._validation_errors
         return results
-    except Exception as e:  # any exception means that cannot be analyzed
-        results['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
-        # logger.error('ValueError while creating: Stylechecker.XML(%s) of type: %s. Traceback: %s' % (data_input, data_type, e))
-    else:
-        results['can_be_analyzed'] = (True, None)
-        status, errors = xml_check.validate_style()
-        if not status:  # have errors
-            xml_check.annotate_errors()
-            results['annotations'] = str(xml_check)
-            results['validation_errors'] = extract_validation_errors(errors)
 
-    return results
+    def extract_errors_from_exception(self, exception_instance):
+        """
+        Return a dict with information about the syntax error exception
+        """
+        results = []
+        error_lines = []
+        if hasattr(exception_instance, 'position'):
+            line, column = exception_instance.position
+            error_data = {
+                'line': line or '--',
+                'column': column or '--',
+                'message': exception_instance.message or '',
+                'level': 'ERROR',
+            }
+            results.append(error_data)
+            error_lines.append(str(line))
+        return {
+            'results': results,
+            'error_lines': ", ".join(error_lines)
+        }
+
+    def extract_validation_errors(self, validation_errors):
+        """
+        Return a dict of validation errors returned by stylechecker
+        """
+        # iterate over the errors and get the relevant data
+        results = []
+        error_lines = []  # only to simplify the line's highlights of prism.js plugin on template
+        for error in validation_errors:
+            error_data = {
+                'line': error.line or '--',
+                'column': error.column or '--',
+                'message': error.message or '',
+                'level': error.level_name or 'ERROR',
+            }
+            results.append(error_data)
+            if error.line:
+                error_lines.append(str(error.line))
+        return {
+            'results': results,
+            'error_lines': ", ".join(error_lines)
+        }
+
+
