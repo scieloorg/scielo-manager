@@ -658,7 +658,7 @@ class Journal(caching.base.CachingMixin, models.Model):
         return self.title
 
     class Meta:
-        ordering = ['title']
+        ordering = ('title', 'id')
         permissions = (("list_journal", "Can list Journals"),
                        ("list_editor_journal", "Can list editor Journals"))
 
@@ -978,6 +978,7 @@ class Section(caching.base.CachingMixin, models.Model):
                 raise DatabaseError(msg)
 
     class Meta:
+        ordering = ('id')
         permissions = (("list_section", "Can list Sections"),)
 
     def save(self, *args, **kwargs):
@@ -1028,7 +1029,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     spe_text = models.CharField(_('Special Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
-        ordering = ('created', )
+        ordering = ('created', 'id')
         permissions = (("list_issue", "Can list Issues"),
                       ("reorder_issue", "Can Reorder Issues"))
 
