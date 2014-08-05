@@ -978,7 +978,7 @@ class Section(caching.base.CachingMixin, models.Model):
                 raise DatabaseError(msg)
 
     class Meta:
-        ordering = ('id')
+        ordering = ('id',)
         permissions = (("list_section", "Can list Sections"),)
 
     def save(self, *args, **kwargs):
