@@ -406,7 +406,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(xml_data['can_be_analyzed'][0])
-        self.assertEqual(xml_data['can_be_analyzed'][1], "Error while starting Stylechecker.XML()")
+        self.assertEqual(xml_data['can_be_analyzed'][1], "IOError while starting Stylechecker.XML(), please verify if the input is correct")
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])

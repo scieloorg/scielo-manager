@@ -9,10 +9,10 @@ from . import utils
 
 # "http://192.168.1.162:7000/api/v1/article?code=S1516-635X2014000100012&format=xmlrsps"
 
-def __prepare_and_analyze(data_type, data_input):
+def __prepare_and_analyze(data_input):
     """ Normalize input to feed the stylechecker and obtain results """
-    results = utils.stylechecker_analyze(data_type, data_input)
-    return results
+    analyzer = utils.StyleCheckerAnalyzer(data_input)
+    return analyzer.analyze()
 
 
 @waffle_flag('packtools_validator')
@@ -28,10 +28,10 @@ def packtools_home(request, template_name='validator/packtools.html'):
             type = form.cleaned_data['type']
             if type == 'url':
                 url = form.cleaned_data['url']
-                results = __prepare_and_analyze(type, url)
+                results = __prepare_and_analyze(url)
             else:
                 xml_file = request.FILES['file']
-                results = __prepare_and_analyze(type, xml_file)
+                results = __prepare_and_analyze(xml_file)
             context['results'] = results
     else:
         form = forms.StyleCheckerForm()
