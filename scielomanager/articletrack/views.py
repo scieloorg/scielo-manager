@@ -25,7 +25,7 @@ from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
-from validator.utils import extract_validation_errors, extract_syntax_errors
+from validator.utils import StyleCheckerAnalyzer
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -524,20 +524,12 @@ def notice_detail(request, checkin_id):
                 xml_data['can_be_analyzed'] = (False, "XML's URI is invalid (%s)" % xml_data['uri'])
 
     if xml_data['can_be_analyzed'][0]:
-        try:
-            xml_check = stylechecker.XML(xml_data['uri'])
-        except lxml.etree.XMLSyntaxError as e:
-            xml_data['annotations'] = e.message
-            xml_data['validation_errors'] = extract_syntax_errors(e)
-        except Exception as e:  # any exception will stop the process
-            xml_data['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
-            logger.error('ValueError while creating: Stylechecker.XML(%s) for checkin.pk == %s. Traceback: %s' % (xml_data['file_name'], checkin.pk, e))
-        else:
-            status, errors = xml_check.validate_style()
-            if not status:  # have errors
-                xml_check.annotate_errors()
-                xml_data['annotations'] = str(xml_check)
-                xml_data['validation_errors'] = extract_validation_errors(errors)
+        analyzer = StyleCheckerAnalyzer(xml_data['uri'])
+        analyzer_results = analyzer.analyze()
+        xml_data['can_be_analyzed'] = analyzer_results['can_be_analyzed']
+        xml_data['annotations'] = analyzer_results['annotations']
+        xml_data['validation_errors'] = analyzer_results['validation_errors']
+
 
     context['files'] = files_list
     context['xml_data'] = xml_data
