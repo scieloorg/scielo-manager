@@ -503,6 +503,9 @@ def notice_detail(request, checkin_id):
 
             xml_data['file_name'] = files['xml'][0]  # assume only ONE xml per package
             xml_data['can_be_analyzed'] = (True, '')
+        else:
+            xml_data['can_be_analyzed'] = (False, "The package's files could not requested")
+
 
     except ValueError as e:
         # Service Unavailable
@@ -526,10 +529,7 @@ def notice_detail(request, checkin_id):
     if xml_data['can_be_analyzed'][0]:
         analyzer = StyleCheckerAnalyzer(xml_data['uri'])
         analyzer_results = analyzer.analyze()
-        xml_data['can_be_analyzed'] = analyzer_results['can_be_analyzed']
-        xml_data['annotations'] = analyzer_results['annotations']
-        xml_data['validation_errors'] = analyzer_results['validation_errors']
-
+        xml_data.update(analyzer_results)
 
     context['files'] = files_list
     context['xml_data'] = xml_data

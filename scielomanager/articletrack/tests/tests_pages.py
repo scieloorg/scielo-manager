@@ -295,7 +295,18 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(xml_data['can_be_analyzed'][0])
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
-        self.assertIsNone(xml_data['validation_errors'])
+        expect_errors = {
+            'error_lines': '1',
+            'results': [
+                {
+                    'column': 6,
+                    'line': 1,
+                    'message': u'Premature end of data in tag xml line 1, line 1, column 6',
+                    'level': 'ERROR'
+                }
+            ]
+        }
+        self.assertEqual(xml_data['validation_errors'], expect_errors)
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
 
     def test_annotations_warning_if_balaio_breaks(self):
@@ -366,14 +377,21 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual('', xml_data['validation_errors']['error_lines'])
+        self.assertEqual('1', xml_data['validation_errors']['error_lines'])
         self.assertEqual(1, len(xml_data['validation_errors']['results']))
-        self.assertEqual(
-                xml_data['validation_errors']['results'],
-                [{'column': '--',
-                  'line': '--',
-                  'message': u"Element 'funding-group': This element is not filled-in correctly.",
-                  'level': u'ERROR'}])
+        expect_errors = {
+            'error_lines': '1',
+            'results': [
+                {
+                    'column': 6,
+                    'line': 1,
+                    'message': u'Premature end of data in tag xml line 1, line 1, column 6',
+                    'level': 'ERROR'
+                }
+            ]
+        }
+        self.assertEqual(xml_data['validation_errors'], expect_errors)
+
 
     def test_xml_not_found(self):
         self._addWaffleFlag()
@@ -410,7 +428,18 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        self.assertIsNone(xml_data['validation_errors'])
+        expect_errors = {
+            'error_lines': '1',
+            'results': [
+                {
+                    'column': 6,
+                    'line': 1,
+                    'message': u'Premature end of data in tag xml line 1, line 1, column 6',
+                    'level': 'ERROR'
+                }
+            ]
+        }
+        self.assertEqual(xml_data['validation_errors'], expect_errors)
 
     def test_annotations_of_syntax_error(self):
         self._addWaffleFlag()

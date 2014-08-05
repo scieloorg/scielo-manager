@@ -85,8 +85,8 @@ class StylecheckerAnnotationsDouble(StylecheckerDouble):
 
     def validate_style(self):
         class Error(object):
-            line = None
-            column = None
-            message = u"Element 'funding-group': This element is not filled-in correctly."
-            level_name = u'ERROR'
+            line = 1
+            column = 6
+            message = u'Premature end of data in tag xml line 1, line 1, column 6'
+            level_name = 'ERROR'
         return (False, [Error(), ])
