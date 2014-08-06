@@ -2,6 +2,7 @@
 import datetime
 import json
 import logging
+import lxml
 
 from waffle.decorators import waffle_flag
 from django.conf import settings
@@ -24,7 +25,7 @@ from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
-from validator.utils import extract_validation_errors
+from validator.utils import extract_validation_errors, extract_syntax_errors
 
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -35,6 +36,28 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 
 logger = logging.getLogger(__name__)
+
+
+def verify_if_user_can_do(action):
+    """
+    Decorator that check if user.get_profile().can_do(``action``)
+    Pre: Exist a request.user with profile
+    Post: If can not, will return a message to the user, else: proceed calling the view function:
+    something like: def checkin_xxxx(request, checkin_id).
+    """
+    def decorator(f):
+        def decorated(*args, **kwargs):
+            request = args[0]
+            checkin_id = kwargs['checkin_id']
+            user_can, error = request.user.get_profile().can_do(action)
+            if user_can:
+                return f(*args, **kwargs)
+            else:
+                messages.error(request, error)
+                return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+        return decorated
+    return decorator
 
 
 @waffle_flag('articletrack')
@@ -85,6 +108,14 @@ def checkin_index(request):
     objects_review = get_paginated(checkins_review, request.GET.get('review_page', 1))
     objects_accepted = get_paginated(checkins_accepted, request.GET.get('accepted_page', 1))
 
+    prefered_tab = 'pending'
+    if request.method == "GET" and request.GET.keys() and len(request.GET.keys()) > 0:
+        # get the prefix of first querystring parameter (something like: accepted-article), and get that prefix as a prefered tab
+        prefered_tab = request.GET.keys()[0].split('-')[0]  # keys are lilke: "prefix-fieldname"
+        if prefered_tab not in ['pending', 'rejected', 'review', 'accepted']:
+            # maybe the user put something strange in the address bar
+            prefered_tab = 'pending'
+
     return render_to_response(
         'articletrack/checkin_list.html',
         {
@@ -96,6 +127,7 @@ def checkin_index(request):
             'rejected_filter_form': rejected_filter_form,
             'review_filter_form': review_filter_form,
             'accepted_filter_form': accepted_filter_form,
+            'prefered_tab': prefered_tab,
         },
         context_instance=RequestContext(request)
     )
@@ -103,8 +135,14 @@ def checkin_index(request):
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+@verify_if_user_can_do('reject')
 def checkin_reject(request, checkin_id):
+    """
+    Excecute checkin.do_reject, obtains the rejection text from the form filled by user.
+    """
+
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+
     if checkin.can_be_rejected:
         if request.method == 'POST':
             form = CheckinRejectForm(request.POST)
@@ -112,7 +150,18 @@ def checkin_reject(request, checkin_id):
                 rejected_cause = form.cleaned_data['rejected_cause']
                 try:
                     checkin.do_reject(request.user, rejected_cause)
-                    messages.info(request, MSG_FORM_SAVED)
+                    messages.success(request, _("Checkin REJECTED succesfully."))
+                except ValueError as e:
+                    logger.error("ValueError when trying to REJECT the Checkin: (pk: %s). Traceback: %s" % (checkin.pk, e))
+                    msg = _("Something went wrong when trying to REJECT this Checkin, please try again later.")
+                    messages.error(request, msg)
+                    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
+                #Send e-mail only exists submitted_by attribute
+                if checkin.submitted_by:
+                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                       checkin.package_name,
+                                       'Package rejected'])
 
                     send_to = set([i.email for i in checkin.team_members])
 
@@ -134,70 +183,76 @@ def checkin_reject(request, checkin_id):
                             send_to
                         )
 
-                except ValueError:
-                    messages.error(request, MSG_FORM_MISSING)
             else:
                 form_errors = u", ".join([u"%s %s" % (field, error[0]) for field, error in form.errors.items()])
                 error_msg = "%s %s" % (MSG_FORM_MISSING, form_errors)
                 messages.error(request, error_msg)
     else:
-        error_msg = _("This checkin cannot be rejected")
+        error_msg = _("This checkin doesn't comply the requirements to be rejected")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
-def checkin_review(request, checkin_id):
+def checkin_review(request, checkin_id, level):
     """
-    Excecute checkin.do_review, and if checkin can be accepted and Balaio RPC API
-    is up, try to proceed to checkout.
-    This view function send to review and accepted the checkin
+    Excecute checkin.[do_review_by_level_1|do_review_by_level_2] (depends on ``level`` args),
+    and if checkin.can_be_accepted, proceed to accept the checkin (redirect to ``checkin_accept``).
     """
+    if level not in ['1','2']:
+        msg = _("Trying to REVIEW the checkin, but parameters are wrong")
+        messages.error(request, msg)
+        return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+    else:
+        user_can, error = request.user.get_profile().can_do('review_l%s' % level)
+        if not user_can:
+            messages.error(request, error)
+            return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+
     if checkin.can_be_reviewed:
         try:
-            checkin.do_review(request.user)
-            msg = _("Checkin reviewed succesfully.")
-            messages.info(request, msg)
-        except ValueError:
-            messages.error(request, MSG_FORM_MISSING)
+            if level == '1':
+                checkin.do_review_by_level_1(request.user)
+            else: # level = '2'
+                checkin.do_review_by_level_2(request.user)
 
-        # if Balaio RPC API is up, then try to proceed to Checkout and marked as accepted
-        rpc_client = BalaioRPC()
-        if checkin.can_be_accepted and rpc_client.is_up():
-            rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
-            if rpc_response:
-                try:
-                    checkin.accept(request.user)
-                    msg = _("Checkin accepted succesfully.")
-                    messages.info(request, msg)
+            messages.success(request, _("Checkin REVIEWED succesfully."))
+        except ValueError as e:
+            logger.error("ValueError when trying to REVIEW the Checkin: (pk: %s). Traceback: %s" % (checkin.pk, e))
+            msg = _("Something went wrong when trying to REVIEW this Checkin, please try again later.")
+            messages.error(request, msg)
+            return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
+        # Send e-mail only if has "submitted_by" attribute
+        if checkin.submitted_by:
+            subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                               checkin.package_name,
+                               'Package reviewed'])
+            if level == '2': # SciELO review
+                subject += ' by SciELO'
 
-                    send_to = [i.username for i in checkin.team_members]
+            send_to = [i.email for i in checkin.team_members]
 
-                    if len(send_to) > 0:
-                        subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                                           checkin.package_name,
-                                           'Package accepted'])
+            if len(send_to) > 0:
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_reviewed.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
 
-                        tasks.send_mail.delay(
-                            subject,
-                            render_to_string(
-                                'email/accepted.txt',
-                                {
-                                    'checkin': checkin,
-                                    'domain': get_current_site(request)
-                                }
-                            ),
-                            send_to
-                        )
+        if checkin.can_be_accepted:
+            return HttpResponseRedirect(reverse('checkin_accept', args=[checkin_id, ]))
 
-                except ValueError as e:
-                    logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
-                    error_msg = _("An unexpected error, this attempt connot set to checkout. Please try again later.")
-                    messages.error(request, error_msg)
     else:
-        error_msg = _("This checkin cannot be reviewed")
+        error_msg = _("This checkin doesn't comply the requirements to be reviewed")
         messages.error(request, error_msg)
 
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
@@ -205,60 +260,75 @@ def checkin_review(request, checkin_id):
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+@verify_if_user_can_do('accept')
 def checkin_accept(request, checkin_id):
     """
     Excecute checkin.accept, if checkin can be accepted and Balaio RPC API
     is up, try to proceed to checkout.
     """
+
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
-    rpc_client = BalaioRPC()
-    if checkin.can_be_accepted and rpc_client.is_up():
-        rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
-        if rpc_response:
-            try:
-                checkin.accept(request.user)
-                messages.info(request, MSG_FORM_SAVED)
 
-                send_to = set([i.email for i in checkin.team_members])
+    if checkin.can_be_accepted:
 
-                if len(send_to) > 0:
-                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                                       checkin.package_name,
-                                       'Package accepted'])
+        try:
+            checkin.accept(request.user)
+            messages.success(request, _("Checkin ACCEPTED succesfully."))
+            # Send e-mail only if has "submitted_by" attribute
+        except ValueError as e:
+            logger.error("ValueError when trying to ACCEPT the Checkin: (pk: %s). Traceback: %s" % (checkin.pk, e))
+            msg = _("Something went wrong when trying to ACCEPT this Checkin, please try again later.")
+            messages.error(request, msg)
+            return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
-                    tasks.send_mail.delay(
-                        subject,
-                        render_to_string(
-                            'email/checkin_accepted.txt',
-                            {
-                                'checkin': checkin,
-                                'domain': get_current_site(request)
-                            }
-                        ),
-                        send_to
-                    )
+        if checkin.submitted_by:
+            send_to = set([i.email for i in checkin.team_members])
 
-            except ValueError as e:
-                logger.info(_('Could not mark %s as accepted. Traceback: %s') % (checkin, e))
-                messages.error(request, MSG_FORM_MISSING)
-        else:
-            error_msg = _("The API response was unsuccessful")
-            messages.error(request, error_msg)
+            if len(send_to) > 0:
+                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                   checkin.package_name,
+                                   'Package accepted'])
+
+                tasks.send_mail.delay(
+                    subject,
+                    render_to_string(
+                        'email/checkin_accepted.txt',
+                        {
+                            'checkin': checkin,
+                            'domain': get_current_site(request)
+                        }
+                    ),
+                    send_to
+                )
+        # Proceed to Checkout
+        if checkin.can_be_send_to_checkout:
+            return HttpResponseRedirect(reverse('checkin_send_to_checkout', args=[checkin_id, ]))
     else:
-        error_msg = _("This checkin cannot be accepted or the API is down.")
+        error_msg = _("This checkin doesn't comply the requirements to be accepted")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+@verify_if_user_can_do('send_to_pending')
 def checkin_send_to_pending(request, checkin_id):
+    """
+    Excecute checkin.send_to_pending, if checkin can be send to pending
+    """
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
     if checkin.can_be_send_to_pending:
         try:
             checkin.send_to_pending(request.user)
-            messages.info(request, MSG_FORM_SAVED)
+            messages.success(request, _("Checkin was SENT TO PENDING succesfully."))
+        except ValueError as e:
+            logger.error("ValueError when trying to SEND TO PENDING the Checkin: (pk: %s). Traceback: %s" % (checkin.pk, e))
+            msg = _("Something went wrong when trying to SEND TO PENDING this Checkin, please try again later.")
+            messages.error(request, msg)
+            return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
+        #Send e-mail only exists submitted_by attribute
+        if checkin.submitted_by:
             send_to = set([i.email for i in checkin.team_members])
 
             if len(send_to) > 0:
@@ -278,23 +348,34 @@ def checkin_send_to_pending(request, checkin_id):
                     send_to
                 )
 
-        except ValueError:
-            messages.error(request, MSG_FORM_MISSING)
     else:
-        error_msg = _("This checkin cannot be send to Pending")
+        error_msg = _("This checkin doesn't comply the requirements to be sent to pending")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+@verify_if_user_can_do('send_to_review')
 def checkin_send_to_review(request, checkin_id):
+    """
+    Excecute checkin.send_to_review, if checkin can be send to review
+    """
+
     checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+
     if checkin.can_be_send_to_review:
         try:
             checkin.send_to_review(request.user)
-            messages.info(request, MSG_FORM_SAVED)
+            messages.success(request, _("Checkin was SENT TO REVIEW succesfully."))
+        except ValueError as e:
+            logger.error("ValueError when trying to SEND TO REVIEW the Checkin: (pk: %s). Traceback: %s" % (checkin.pk, e))
+            msg = _("Something went wrong when trying to SEND TO REVIEW this Checkin, please try again later.")
+            messages.error(request, msg)
+            return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
+        #Send e-mail only exists submitted_by attribute
+        if checkin.submitted_by:
             send_to = set([i.email for i in checkin.team_members])
 
             if len(send_to) > 0:
@@ -314,13 +395,44 @@ def checkin_send_to_review(request, checkin_id):
                     send_to
                 )
 
-        except ValueError:
-            messages.error(request, MSG_FORM_MISSING)
     else:
-        error_msg = _("This checkin cannot be Reviewed")
+        error_msg = _("This checkin doesn't comply the requirements to be sent to review")
         messages.error(request, error_msg)
     return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
+
+@waffle_flag('articletrack')
+@permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
+@verify_if_user_can_do('send_to_checkout')
+def checkin_send_to_checkout(request, checkin_id):
+    """
+    Excecute checkin.send_to_checkout, if checkin can be send to checkout
+    """
+
+    checkin = get_object_or_404(models.Checkin.userobjects.active(), pk=checkin_id)
+
+    if checkin.can_be_send_to_checkout:
+        # TRY to call balaio to process checkin and proceed to checkout
+        # this code SHOULD BE REFACTORED TO USE CELERY TASKS to call balaio async
+        rpc_client = BalaioRPC()
+        if rpc_client.is_up():
+            rpc_response = rpc_client.call('proceed_to_checkout', [checkin.attempt_ref, ])
+            if rpc_response:
+                checkin.do_mark_as_checked_out()
+                messages.success(request, _("Checkin proceed to checkout!"))
+            else:
+                logger.error('BalaioRPC API method: "proceed_to_checkout" FAIL for checkin: %s. Response: %s' % (checkin.pk, rpc_response))
+                msg = _("Server fail when requested to proceed to checkout. Please try again later.")
+                messages.info(request, msg)
+        else:
+            logger.error('BalaioRPC() connection is down!')
+            error_msg = _("Unable to communicate with the server to proceed to checkout. Please try again later.")
+            messages.info(request, error_msg)
+    else:
+        error_msg = _("This checkin doesn't comply the requirements to be sent to checkout")
+        messages.error(request, error_msg)
+
+    return HttpResponseRedirect(reverse('notice_detail', args=[checkin_id, ]))
 
 @waffle_flag('articletrack')
 @permission_required('articletrack.list_checkin', login_url=AUTHZ_REDIRECT_URL)
@@ -346,6 +458,19 @@ def notice_detail(request, checkin_id):
     opened_tickets = tickets.filter(finished_at__isnull=True)
     closed_tickets = tickets.filter(finished_at__isnull=False)
 
+    profile = request.user.get_profile()
+    have_actions_to_do = any(
+        [
+            profile.can_reject_checkins and checkin.can_be_rejected,
+            profile.can_send_checkins_to_pending and checkin.can_be_send_to_pending,
+            profile.can_send_checkins_to_review and checkin.can_be_send_to_review,
+            profile.can_review_l1_checkins and checkin.can_be_reviewed,
+            profile.can_review_l2_checkins and checkin.can_be_reviewed,
+            profile.can_accept_checkins and checkin.can_be_accepted,
+            profile.can_send_checkins_to_checkout and checkin.can_be_send_to_checkout,
+        ]
+    )
+
     zip_filename = "%s_%s" % (datetime.date.today().isoformat(), slugify(checkin.article.article_title))
     reject_form = CheckinRejectForm()
     context = {
@@ -355,6 +480,7 @@ def notice_detail(request, checkin_id):
         'closed_tickets': closed_tickets,
         'zip_filename': zip_filename,
         'reject_form': reject_form,
+        'have_actions_to_do': have_actions_to_do,
     }
 
     balaio = BalaioAPI()
@@ -400,6 +526,9 @@ def notice_detail(request, checkin_id):
     if xml_data['can_be_analyzed'][0]:
         try:
             xml_check = stylechecker.XML(xml_data['uri'])
+        except lxml.etree.XMLSyntaxError as e:
+            xml_data['annotations'] = e.message
+            xml_data['validation_errors'] = extract_syntax_errors(e)
         except Exception as e:  # any exception will stop the process
             xml_data['can_be_analyzed'] = (False, "Error while starting Stylechecker.XML()")
             logger.error('ValueError while creating: Stylechecker.XML(%s) for checkin.pk == %s. Traceback: %s' % (xml_data['file_name'], checkin.pk, e))
@@ -458,7 +587,7 @@ def ticket_detail(request, ticket_id, template_name='articletrack/ticket_detail.
 
             send_to = []
             for checkin in ticket.article.checkins.all():
-                send_to += [i.username for i in checkin.team_members]
+                send_to += [i.email for i in checkin.team_members]
             send_to = set(send_to)
             send_to.add(ticket.author.email)
             if len(send_to) > 0:
@@ -554,27 +683,27 @@ def ticket_add(request, checkin_id, template_name='articletrack/ticket_add.html'
             ticket.author = request.user
             ticket.article = checkin.article
             ticket.save()
+            if checkin.submitted_by:
+                send_to = set([i.email for i in checkin.team_members])
 
-            send_to = set([i.email for i in checkin.team_members])
+                if len(send_to) > 0:
+                    subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
+                                       'TICKET CREATED'])
 
-            if len(send_to) > 0:
-                subject = ' '.join([settings.EMAIL_SUBJECT_PREFIX,
-                                   'TICKET CREATED'])
+                    tasks.send_mail.delay(
+                        subject,
+                        render_to_string(
+                            'email/ticket_created.txt',
+                            {
+                                'ticket': ticket,
+                                'checkin': checkin,
+                                'domain': get_current_site(request)
+                            }
+                        ),
+                        send_to
+                    )
 
-                tasks.send_mail.delay(
-                    subject,
-                    render_to_string(
-                        'email/ticket_created.txt',
-                        {
-                            'ticket': ticket,
-                            'checkin': checkin,
-                            'domain': get_current_site(request)
-                        }
-                    ),
-                    send_to
-                )
-
-            messages.info(request, MSG_FORM_SAVED)
+            messages.success(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.id, ]))
         else:
             context['form'] = ticket_form
@@ -631,7 +760,7 @@ def ticket_edit(request, ticket_id, template_name='articletrack/ticket_edit.html
                     send_to
                 )
 
-            messages.info(request, MSG_FORM_SAVED)
+            messages.success(request, MSG_FORM_SAVED)
             return HttpResponseRedirect(reverse('ticket_detail', args=[ticket.pk]))
         else:
             context['form'] = ticket_form

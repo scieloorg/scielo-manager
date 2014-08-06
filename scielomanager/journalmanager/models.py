@@ -17,7 +17,7 @@ from django.db import (
     IntegrityError,
     DatabaseError,
     )
-
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
@@ -322,6 +322,69 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         uc = UserCollections.objects.get(user=self.user, is_default=True)
         return uc.collection
 
+    @property
+    def can_reject_checkins(self):
+        return self.user.groups.filter(
+            Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_accept_checkins(self):
+        return self.user.groups.filter(name__iexact='QAL2').exists()
+
+    @property
+    def can_review_l1_checkins(self):
+        return self.user.groups.filter(
+            Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_review_l2_checkins(self):
+        return self.user.groups.filter(name__iexact='QAL2').exists()
+
+    @property
+    def can_send_checkins_to_pending(self):
+        return self.user.groups.filter(
+            Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_send_checkins_to_review(self):
+        return self.user.groups.filter(
+            Q(name__iexact='producer') | Q(name__iexact='QAL1') | Q(name__iexact='QAL2')
+        ).exists()
+
+    @property
+    def can_send_checkins_to_checkout(self):
+        return self.user.groups.filter(name__iexact='QAL2').exists()
+
+    def can_do(self, action):
+        """
+        Check if ``self.user`` can do ``action``.
+        @param actions could be:
+            ['accept'|'reject'|'review_l1'|'review_l2'|'send_to_review'|'send_to_pending'|'send_to_checkout']
+        Return (True, None) if success. Else retrun (False, "Error message")
+        """
+        actions = ['accept','reject','review_l1','review_l2','send_to_review','send_to_pending','send_to_checkout']
+        if action not in actions:
+            return (False, _("User can't do this action: %s" % action))
+
+        if action == 'accept' and not self.can_accept_checkins:
+            return (False, _("User can't ACCEPT checkins, because doesn't have enough permissions"))
+        elif action == 'reject' and not self.can_reject_checkins:
+            return (False, _("User can't REJECT checkins, because doesn\'t have enough permissions"))
+        elif action == 'review_l1' and not self.can_review_l1_checkins:
+            return (False, _("User can't REVIEW (Level 1) checkins, because doesn\'t have enough permissions"))
+        elif action == 'review_l2' and not self.can_review_l2_checkins:
+            return (False, _("User can't REVIEW (Level 2) checkins, because doesn\'t have enough permissions"))
+        elif action == 'send_to_review' and not self.can_send_checkins_to_review:
+            return (False, _("User can't SEND checkins TO REVIEW, because doesn\'t have enough permissions"))
+        elif action == 'send_to_pending' and not self.can_send_checkins_to_pending:
+            return (False, _("User can't SEND checkins TO PENDING, because doesn\'t have enough permissions"))
+        elif action == 'send_to_checkout' and not self.can_send_checkins_to_checkout:
+            return (False, _("User can't SEND checkins TO CHECKOUT, because doesn\'t have enough permissions"))
+
+        return (True, None)
 
 class Collection(caching.base.CachingMixin, models.Model):
     # objects = CollectionCustomManager()
@@ -595,7 +658,7 @@ class Journal(caching.base.CachingMixin, models.Model):
         return self.title
 
     class Meta:
-        ordering = ['title']
+        ordering = ('title', 'id')
         permissions = (("list_journal", "Can list Journals"),
                        ("list_editor_journal", "Can list editor Journals"))
 
@@ -915,6 +978,7 @@ class Section(caching.base.CachingMixin, models.Model):
                 raise DatabaseError(msg)
 
     class Meta:
+        ordering = ('id',)
         permissions = (("list_section", "Can list Sections"),)
 
     def save(self, *args, **kwargs):
@@ -965,7 +1029,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     spe_text = models.CharField(_('Special Text'),  max_length=15, null=True, blank=True)
 
     class Meta:
-        ordering = ('created', )
+        ordering = ('created', 'id')
         permissions = (("list_issue", "Can list Issues"),
                       ("reorder_issue", "Can Reorder Issues"))
 

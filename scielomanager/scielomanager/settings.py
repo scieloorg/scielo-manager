@@ -4,6 +4,10 @@ import os
 from datetime import timedelta
 from django.contrib.messages import constants as messages
 
+# XML Catalog env-var is required for sps-stylechecking
+from packtools.catalogs import XML_CATALOG
+os.environ['XML_CATALOG_FILES'] = XML_CATALOG
+
 DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG

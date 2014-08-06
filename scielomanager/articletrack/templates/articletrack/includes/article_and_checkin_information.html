@@ -39,6 +39,12 @@
             {% endif %}
             {{ checkin.get_status_display }}
           </dd>
+          {% if checkin.status == 'accepted' and checkin.checked_out %}
+            <dd>
+              <dt>{% trans "Checked out" %}</dt>
+              <dd><i class='icon-ok-circle'></i></dd>
+            </dd>
+          {% endif %}
           <dt>{% trans "Package name" %}:</dt>
           <dd>{{ checkin.package_name }}</dd>
           <dt>{% trans "Updated at" %}:</dt>
@@ -61,6 +67,15 @@
               <dd>{{ checkin.reviewed_by.get_full_name|default:checkin.reviewed_by }}</dd>
               <dt>{% trans "Reviewed at" %}:</dt>
               <dd>{{ checkin.reviewed_at|date:"d/m/Y - H:i" }}</dd>
+            {% endif %}
+
+            {%if checkin.scielo_reviewed_by %}
+              <dt style="text-align: left;"><em>SciELO review:</em></dt>
+              <dd>&nbsp;</dd>
+              <dt>{% trans "Reviewed by" %}:</dt>
+              <dd>{{ checkin.scielo_reviewed_by.get_full_name|default:checkin.scielo_reviewed_by }}</dd>
+              <dt>{% trans "Reviewed at" %}:</dt>
+              <dd>{{ checkin.scielo_reviewed_at|date:"d/m/Y - H:i" }}</dd>
             {% endif %}
 
           {% endif %}
