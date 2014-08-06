@@ -155,11 +155,11 @@
             {% if not xml_data.can_be_analyzed.0 %}
               {# could not be analyzed #}
               &nbsp;
-              <span class="badge badge-warning"></span>
+              <span class="badge badge-warning">&nbsp;</span>
             {% elif not xml_data.annotations %}
               {# xml without annotations #}
               &nbsp;
-              <span class="badge badge-success"></span>
+              <span class="badge badge-success">&nbsp;</span>
             {% else %}
               {# xml analyzed and with annotations #}
               &nbsp;
