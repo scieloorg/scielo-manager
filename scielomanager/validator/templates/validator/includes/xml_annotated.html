@@ -37,7 +37,7 @@
     <h4 class="alert-heading"> {% trans "The XML have some errors" %}:</h4>
   </div>
   {% if xml_data.validation_errors %}
-    <table class="table table-striped table-condensed">
+    <table id="validation_errors_table" class="table table-striped table-condensed">
       <thead>
         <tr>
           <th>{% trans "Level" %}:</th>
@@ -50,20 +50,26 @@
         {% for error in xml_data.validation_errors.results %}
           <tr>
             <td><span class="label label-{% trans_status error.level to_label='True' %}">{{ error.level }}</span></td>
-            <td>{{ error.line }}</td>
-            <td>{{ error.column }}</td>
-            <td>{{ error.message }}</td>
+            <td>{{ error.line|default:"--" }}</td>
+            <td>{{ error.column|default:"--" }}</td>
+            <td><a class="error_message" href="#" data-search-term="{{ error.message }}">{{ error.message }}</a></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% endif %}
-  {# XML ANNOTATED #}              
-  <pre
+  {# XML ANNOTATED #}
+  <pre id="code-block"
     class="line-numbers language-markup pre-scrollable"
     {% if xml_data.validation_errors and xml_data.validation_errors.error_lines %}
       data-line='{{ xml_data.validation_errors.error_lines }}'
     {% endif %}
     ><code class="language-markup">{{ xml_data.annotations }}</code></pre>
+
+    <p style="text-align: center">
+      <a id="back-to-errors" href="#" class="btn btn-mini btn-primary">
+        {% trans "Back to Errors" %}
+      </a>
+    </p>
 {% endif %}
 <script type="text/javascript" src="{% static 'js/prism.js' %}"></script>
