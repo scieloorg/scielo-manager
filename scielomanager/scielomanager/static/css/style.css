@@ -249,7 +249,7 @@ table._listings h4 {
     margin: 5px 0 5px 20px;
 }
 
-.force-no-margin { 
+.force-no-margin {
   margin:0 !important;
 }
 
@@ -441,7 +441,7 @@ table._listings h4 {
 }
 
 .log-item {
-  border-left: 2px solid #DDDDDD; 
+  border-left: 2px solid #DDDDDD;
   padding-left: 5px;
   padding-top: 0;
 }
@@ -458,4 +458,8 @@ table._listings h4 {
   border-radius: 10px;
   padding: 0;
   margin: 0;
+}
+
+.longer-tab {
+  width: 178px;
 }
