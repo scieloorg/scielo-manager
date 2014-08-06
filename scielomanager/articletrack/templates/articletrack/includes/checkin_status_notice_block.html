@@ -6,7 +6,7 @@
       <div class="alert alert-error alert-block">
         <h4><i class="icon-warning-sign"></i> {% trans "REJECTED" %}:</h4>
         <p>
-          {% trans "This checkin is rejected by" %} 
+          {% trans "This checkin was rejected by" %} 
           {% with checkin.rejected_by as user %}
             {% include "articletrack/includes/gravatar_tooltip.html" %}  
           {% endwith %} 
@@ -44,7 +44,7 @@
           {% trans "at" %} {{ checkin.expiration_at|date:"d/m/Y - H:i" }}
         </p>
         <p>
-          {% trans "Before that date, the checkin will be unreachable." %}
+          {% trans "After that date, the checkin will be unreachable." %}
         </p>
       </div>
     </div>

@@ -22,7 +22,7 @@ from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 
-USER_EMAIL_ERROR_MESSAGES = _("That e-mail address is associated with another user account.")
+USER_EMAIL_ERROR_MESSAGES = _("This email is being used by another user, please try another email.")
 
 
 class UserCreationForm(UserCreationForm):
@@ -275,7 +275,7 @@ class UserForm(ModelForm):
         Validates that the given email address is not used by another user.
         """
         email = self.cleaned_data["email"]
-        self.users_cache = User.objects.filter(email__iexact=email, is_active=True)
+        self.users_cache = User.objects.filter(email__iexact=email, is_active=True).exclude(pk=self.instance.id)
         if len(self.users_cache) > 0:
             raise forms.ValidationError(USER_EMAIL_ERROR_MESSAGES)
         return email
@@ -753,6 +753,7 @@ class UserCollectionsForm(ModelForm):
 
     class Meta:
         model = models.UserCollections
+        exclude = ('is_default', )
         widgets = {
             'collection': forms.Select(attrs={'class': 'span8'}),
         }
@@ -803,19 +804,3 @@ class FirstFieldRequiredFormSet(BaseInlineFormSet):
                 pass
         if count < 1:
             raise forms.ValidationError(_('Please fill in at least one form'))
-
-
-class OnlyOneDefaultCollectionRequiredFormSet(FirstFieldRequiredFormSet):
-    def clean(self):
-        super(OnlyOneDefaultCollectionRequiredFormSet, self).clean()
-        count = 0
-        for form in self.forms:
-            try:
-                if form.cleaned_data and form.cleaned_data.get('is_default', False):
-                    count += 1
-            except AttributeError:
-                pass
-        if count < 1:
-            raise forms.ValidationError(_('At least one collection is required to be set as default'))
-        elif count > 1:
-            raise forms.ValidationError(_('Only one collection can be set as default!'))

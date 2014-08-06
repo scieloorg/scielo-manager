@@ -207,6 +207,7 @@ class JournalRestAPITest(WebTest):
             u'current_ahead_documents',
             u'twitter_user',
             u'previous_title',
+            u'succeeding_title',
         ]
 
         json_keys = set(response.json.keys())
@@ -302,6 +303,40 @@ class JournalRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json.loads(response.content)['objects']), 1)
         self.assertEqual(json.loads(response.content)['objects'][0]['eletronic_issn'], '1234-1234')
+
+    def test_succeding_title(self):
+        col = modelfactories.CollectionFactory()
+
+        col.add_user(self.user)
+
+        journal1 = modelfactories.JournalFactory.create(title='Previous Title')
+        journal1.join(col, self.user)
+
+        journal2 = modelfactories.JournalFactory.create(title='Succeeding Title', previous_title=journal1)
+        journal2.join(col, self.user)
+
+        response = self.app.get(
+            '/api/v1/journals/%s/' % journal1.pk,
+            extra_environ=self.extra_environ).json
+
+        self.assertEqual(
+            response['succeeding_title'],
+            '/api/v1/journals/%s/' % journal2.pk)
+
+    def test_without_succeding_title(self):
+        col = modelfactories.CollectionFactory()
+
+        col.add_user(self.user)
+
+        journal1 = modelfactories.JournalFactory.create(title='Previous Title')
+        journal1.join(col, self.user)
+
+        response = self.app.get(
+            '/api/v1/journals/%s/' % journal1.pk,
+            extra_environ=self.extra_environ).json
+
+        self.assertEqual(
+            response['succeeding_title'], None)
 
     def test_dehydrate_pub_status_with_one_collections(self):
         col = modelfactories.CollectionFactory()
@@ -1201,6 +1236,7 @@ class CheckinRestAPITest(WebTest):
                 u'accepted_at',
                 u'article',
                 u'attempt_ref',
+                u'checked_out',
                 u'created_at',
                 u'expiration_at',
                 u'id',
@@ -1208,6 +1244,7 @@ class CheckinRestAPITest(WebTest):
                 u'rejected_at',
                 u'rejected_cause',
                 u'reviewed_at',
+                u'scielo_reviewed_at',
                 u'resource_uri',
                 u'status',
                 u'uploaded_at'

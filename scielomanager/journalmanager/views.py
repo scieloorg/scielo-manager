@@ -344,8 +344,9 @@ def add_user(request, user_id=None):
     # Getting Collections from the logged user.
     user_collections = models.get_user_collections(request.user.id)
 
-    UserCollectionsFormSet = inlineformset_factory(User, models.UserCollections,
-        form=UserCollectionsForm, extra=1, can_delete=True, formset=OnlyOneDefaultCollectionRequiredFormSet)
+    UserCollectionsFormSet = inlineformset_factory(
+        User, models.UserCollections, form=UserCollectionsForm,
+        extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     # filter the collections the user is manager.
     UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
@@ -361,7 +362,14 @@ def add_user(request, user_id=None):
             invalid = [collection for collection in user_collections]
             models.UserCollections.objects.invalidate(*invalid)
 
-            usercollectionsformset.save()
+            # force the first instance (collection) to be set as default
+            instances = usercollectionsformset.save(commit=False)
+            has_set_as_default = False
+            for instance in instances:
+                if not has_set_as_default:
+                    instance.is_default = True
+                    has_set_as_default = True
+                instance.save()
 
             # if it is a new user, mail him
             # requesting for password change
@@ -387,6 +395,7 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
+                              'user': user,
                               },
                               context_instance=RequestContext(request))
 
@@ -407,7 +416,6 @@ def edit_journal_status(request, journal_id=None):
     if request.method == "POST":
         membership = journal.membership_info(current_user_collection)
         membershipform = MembershipForm(request.POST, instance=membership)
-
         if membershipform.is_valid():
             membershipform.save_all(request.user, journal, current_user_collection)
             messages.info(request, MSG_FORM_SAVED)
@@ -415,8 +423,8 @@ def edit_journal_status(request, journal_id=None):
                 'journal_status.edit', kwargs={'journal_id': journal_id}))
         else:
             messages.error(request, MSG_FORM_MISSING)
-
-    membershipform = MembershipForm()
+    else:
+        membershipform = MembershipForm()
 
     return render_to_response('journalmanager/edit_journal_status.html', {
                               'add_form': membershipform,

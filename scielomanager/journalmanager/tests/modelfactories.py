@@ -33,7 +33,7 @@ class UserFactory(factory.Factory):
         except IndexError:
             return 0
 
-    username = factory.Sequence(lambda n: "username%s" % n)
+    username = factory.Sequence(lambda n: "jmanager_username%s" % n)
     first_name = factory.Sequence(lambda n: "first_name%s" % n)
     last_name = factory.Sequence(lambda n: "last_name%s" % n)
     email = factory.Sequence(lambda n: "email%s@example.com" % n)

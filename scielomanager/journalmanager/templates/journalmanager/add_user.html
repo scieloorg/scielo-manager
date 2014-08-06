@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load static %}
 {% load pagination_tags %}
+{% load waffle_tags %}
+
 {% block messages %}
   {% if add_form.errors %}
   <div class="alert alert-error">
@@ -18,7 +20,7 @@
 
   {% for error in add_form.non_field_errors %}
     <div class="alert alert-error">
-      <button class="close" data-dismiss="alert" type="button">&times;</button> 
+      <button class="close" data-dismiss="alert" type="button">&times;</button>
       <strong>{{ error }}</strong>
     </div>
   {% endfor %}
@@ -29,6 +31,22 @@
 <form id="user-form" method="post" action="">
   {% csrf_token %}
   <div class="well">
+    {% flag 'teams' %}
+      <div class="span4 pull-right">
+        <h5>{% trans "Teams" %}:</h5>
+        <ul class="nav nav-tabs nav-stacked">
+          {% if user and user.team %}
+            {% for team in user.team.all %}
+              <li class="active"><a href="#">{{ team.name }}</a></li>
+            {% empty %}
+              <li class="active"><a href="#">{% trans "No team associated" %}</a></li>
+            {% endfor %}
+          {% else %}
+              <li class="active"><a href="#">{% trans "No team associated" %}</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endflag %}
     <div class="control-group {% if add_form.username.errors %}error{% endif %}">
       <label for="{{ add_form.username.auto_id }}">
         <span {% if add_form.username.field.required %}class="req-field"{% endif %}>
@@ -74,7 +92,7 @@
         {% if add_form.email.errors %}
           <ul>
             {% for error in add_form.email.errors %}
-              <li>{{ error }}</li>              
+              <li>{{ error }}</li>
             {% endfor %}
           </ul>
         {% endif %}
@@ -94,6 +112,7 @@
   </div>
 
 {% if usercollectionsformset.non_form_errors %}
+  {# non form errors #}
   <div class="alert alert-error">
     <button class="close" data-dismiss="alert" type="button">×</button>
     {% for non_form_error in usercollectionsformset.non_form_errors %}
@@ -103,6 +122,7 @@
 {% endif %}
 
   <h2>{% trans "User Collections" %}:</h2>
+  <span class="label label-info">{% trans "The first collection will be set as default" %}</span>
   <div class="well">
     <table id="usercollectionsformset" class="table table-bordered table-striped">
       <thead>
@@ -111,7 +131,6 @@
           	{% field_help usercollectionsformset.forms.0.collection.label usercollectionsformset.forms.0.collection.help_text term-collections %}
           </th>
           <th>{% trans "is manager" %}</th>
-          <th>{% trans "is default" %}</th>
           <th>{% trans "options" %}</th>
         </tr>
       </thead>
@@ -119,20 +138,39 @@
         {% for form in usercollectionsformset.forms %}
         <tr id="{{ form.prefix }}-row">
           <td>
+            {# non field errors #}
+            {% if form.non_field_errors %}
+              <div class="alert alert-error">
+                {% for non_field_error in form.non_field_errors %}
+                  {{ non_field_error }}
+                {% endfor %}
+              </div>
+            {% endif %}
             <div class="control-group {% if form.collection.errors %}error{% endif %}">
               {% for field in form.hidden_fields %}{{ field }}{% endfor %}
               {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
               {{ form.collection }}
+              {# collection field errors #}
+              {% if form.collection.errors %}
+                <div class="alert alert-error">
+                  {% for error in form.collection.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </td>
           <td>
             <div class="control-group {% if add_form.is_manager.errors %}error{% endif %}">
               {{ form.is_manager }}
-            </div>
-          </td>
-          <td>
-            <div class="control-group {% if add_form.is_default.errors %}error{% endif %}">
-              {{ form.is_default }}
+              {% if form.is_manager.errors %}
+                {# is_manager field errors #}
+                <div class="alert alert-error">
+                  {% for error in form.is_manager.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </td>
           <td></td>

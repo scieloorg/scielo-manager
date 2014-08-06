@@ -67,3 +67,10 @@ class CommentFactory(factory.Factory):
     author = factory.SubFactory(UserFactory)
     ticket = factory.SubFactory(TicketFactory)
     message = u'Fixed!'
+
+
+class TeamFactory(factory.Factory):
+    "Create a TEAM with sequence name, but without members"
+    FACTORY_FOR = models.Team
+
+    name = factory.Sequence(lambda n: u"team %s" % n)

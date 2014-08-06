@@ -1,0 +1,246 @@
+{% extends "validator/base.html" %}
+
+{% load i18n %}
+{% load field_attrs %}
+
+{% block main_content %}
+<style type="text/css">
+  .tab-pane {
+    min-height: 50px;
+  }
+  .custom-filestyle {
+    margin: 0 !important;
+  }
+  .form-buttons {
+    margin-bottom: 20px;
+  }
+</style>
+  <div class="row-fluid">
+    <div class="span12 well">
+      <h2>{% trans "SciELO Style Checker" %}</h2>
+      <p>
+      {% blocktrans %}
+      Use this tool to confirm whether an XML file conforms to SciELO Style as defined in the SciELO Publishing Schema Tagging Guidelines.
+      {% endblocktrans %}
+      </p>
+      <p>
+      {% blocktrans %}
+      Enter the URL or browse to your local XML file and click "Validate". The results will be displayed below.
+      {% endblocktrans %}
+      </p>
+
+      <form id='stylechecker' enctype="multipart/form-data" method="post" action="">
+        {% csrf_token %}
+
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a href="#URL" data-toggle="tab">
+              {% trans "Remote URL" %}
+            </a>
+          </li>
+          <li>
+            <a href="#XML" data-toggle="tab">
+              {% trans "Upload XML" %}
+            </a>
+          </li>
+          <li>
+            <a href="#HELP" data-toggle="tab">
+              {% trans "Help?" %}
+            </a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="URL">
+            {# URL FIELD #}
+            {% with form.url as field %}
+              <div class="control-group {% if field.errors|length > 0 %}error{% endif %}">
+                {{ field|attr:"class=span12"|attr:"placeholder=Insert a valid URL" }}
+
+                {# field errors #}
+                {% for error in field.errors %}
+                  <div class="alert alert-error">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endwith %}
+          </div>
+          <div class="tab-pane" id="XML">
+            {# FILE FIELD #}
+            {% with form.file as field %}
+              <div class="control-group {% if field.errors|length > 0 %}error{% endif %}">
+                {{ field }} {# use of |attr doesnt work, 'cause bootstrap js plugin:filestyle create a new input #}
+                <em>{% trans "Max. upload size" %}: <span class="label label-warning">{{ SETTINGS_MAX_UPLOAD_SIZE|filesizeformat }}</span></em>
+                {# field errors #}
+                {% for error in field.errors %}
+                  <div class="alert alert-error">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endwith %}
+          </div>
+          <div class="tab-pane" id="HELP">
+            <div class="alert alert-info">
+              <i class="icon-question-sign"></i>&nbsp;
+              {% blocktrans %}
+              If you have any problems with the tool or with the SPS Tagging Guidelines, please contact:
+              <strong><a href="mailto:scielo-xml@googlegroups.com">scielo-xml@googlegroups.com</a></strong>.
+              {% endblocktrans %}
+            </div>
+          </div>
+        </div>
+
+        {# NON FIELD ERRORS #}
+        {% for error in form.non_field_errors %}
+          <div class="alert alert-error">
+            {{ error }}
+          </div>
+        {% endfor %}
+        <div id='form_messages' style='display:none;'>
+          {# js validations messages goes here #}
+        </div>
+
+        {# TYPE FIELD WILL BE HIDDEN only updated by JS #}
+        <div style='display:none'>
+          {{ form.type }}
+        </div>
+
+        <div class='form-buttons clearfix'>
+          <input type="button" class="btn btn-danger pull-left" id='form_clear_btn' value="{% trans 'Clear' %}" />
+          <input type="submit" class="btn btn-success pull-right" value="{% trans 'Validate' %}" />
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  {% if results %}
+
+    <div class="row-fluid">
+      <div class="span12">
+        {# annotations #}
+        {% with results as xml_data %}
+          {% include "validator/includes/xml_annotated.html" %}
+        {% endwith %}
+        {# /annotations #}
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endblock main_content %}
+{% block extrafooter %}
+
+    <script type="text/javascript">
+    $(function () {
+      var stylechecker_form = $('#stylechecker');
+      var form_buttons = $('.form-buttons', stylechecker_form);
+      var url_field = $('#id_url', stylechecker_form);
+      var filestyle_field = $(":file", stylechecker_form);
+      var selected_tab = null;
+
+      /* selet tab on load */
+      {% if form.type.value and form.type.value|lower == 'file' %}
+        $('a[href="#XML"]', stylechecker_form).tab('show');
+      {% endif %}
+
+
+      function display_form_msg(msg, type, append){
+        var form_messages = $('#form_messages');
+        var html;
+        form_messages.hide();
+
+        html = '<div class="alert alert-'+ type +'">';
+        html += '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+        html += msg;
+        html += '</div>';
+        if (append) {
+          form_messages.append(html);
+        } else {
+          form_messages.html(html);
+        }
+        form_messages.show();
+      }
+
+      function guess_selected_type(){
+        /*
+        first inspect "selected_tab" var if set to: XML or URL and the correct field with a value,
+        if none, then try:
+          - if url field have some value, then return "URL" as selected type.
+          - if file field have some value, then return "XML" as selected type.
+          - else: don't panic! simply return null as type.
+        */
+        var file_field = $('input', '.bootstrap-filestyle');
+
+        if (selected_tab == 'URL' && url_field.val() ) {
+          return 'URL'
+        } else if (selected_tab == 'FILE' && file_field.val()) {
+          return 'FILE'
+        } else {
+          /* no way to guess based on selected_tab */
+          if (url_field.val()) {
+            return 'URL';
+          }
+          if (file_field.val()) {
+            return 'FILE';
+          }
+          /* can't guess */
+          return null;
+        }
+      }
+
+      /* resize button */
+      filestyle_field.filestyle('classInput', 'span11 custom-filestyle');
+
+      /* clear form */
+      var clear_btn = $('#form_clear_btn', form_buttons);
+      clear_btn.click(function(event){
+        url_field.val('');
+        filestyle_field.filestyle('clear');
+        $('#form_messages').html('');
+      });
+
+      $('a[data-toggle="tab"]', stylechecker_form).on('shown', function (e) {
+        var target_url = e.target.href // activated tab
+        selected_tab = target_url.split('#')[1];
+        if (selected_tab !== 'XML' && selected_tab !== 'URL') {
+          form_buttons.hide();
+        } else {
+          form_buttons.show();
+        }
+      });
+
+      /* control form submit */
+      stylechecker_form.submit(function(){
+        /* update type_field value, based in selected tab */
+        var selected_type = guess_selected_type();
+        if (selected_type == 'URL' || selected_type == 'FILE') {
+          $('#id_type').val(selected_type.toLowerCase());
+        } else {
+          msg = "{% trans 'At least one field is required: URL or XML' %}";
+          display_form_msg(msg, 'error', true);
+          return false;
+        }
+        /* validate XML size and content type */
+        if (selected_type == 'FILE') {
+          file_obj = $('#id_file')[0].files[0];
+          if (file_obj.type != "text/xml") {
+            msg = '{% trans "The file submitted is NOT XML" %}';
+            display_form_msg(msg, 'error', true);
+            return false
+          }
+          if (file_obj.size > {{ SETTINGS_MAX_UPLOAD_SIZE }}) {
+            msg = '{% trans "XML file excedes max upload size" %}';
+            display_form_msg(msg, 'error', true);
+            return false
+          }
+          return true;
+        }
+
+      });
+
+    });
+    </script>
+
+  {% endblock extrafooter %}

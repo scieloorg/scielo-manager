@@ -4,6 +4,10 @@ import os
 from datetime import timedelta
 from django.contrib.messages import constants as messages
 
+# XML Catalog env-var is required for sps-stylechecking
+from packtools.catalogs import XML_CATALOG
+os.environ['XML_CATALOG_FILES'] = XML_CATALOG
+
 DEBUG = False
 
 TEMPLATE_DEBUG = DEBUG
@@ -163,6 +167,7 @@ INSTALLED_APPS = (
     'articletrack',
     'djcelery',
     'kombu.transport.django',
+    'validator',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -256,6 +261,7 @@ IMAGE_SIZE = 300 * 1024
 IMAGE_MAX_UPLOAD_SIZE = 5242880  # must be an integer of bytes allowed, see comment on custom_fields.ContentTypeRestrictedFileField for reference
 JOURNAL_COVER_MAX_SIZE = IMAGE_MAX_UPLOAD_SIZE
 JOURNAL_LOGO_MAX_SIZE = IMAGE_MAX_UPLOAD_SIZE
+VALIDATOR_MAX_UPLOAD_SIZE = 512 * 1024 # max size in byte to upload xml to validator
 
 FILE_UPLOAD_HANDLERS = (
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
