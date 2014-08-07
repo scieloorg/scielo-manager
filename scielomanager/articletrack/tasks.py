@@ -20,9 +20,9 @@ def do_expires_checkin(self, checkin):
     """
     rpc_client = BalaioRPC()
     logger.debug('[do_expires_checkin] START process to expire checkin (pk=%s) at %s' % (checkin.pk, datetime.datetime.now()))
-    checkin.do_expires()
-    logger.info('[do_expires_checkin] EXPIRED checkin pk: %s' % checkin.pk)
     if rpc_client.is_up():
+        checkin.do_expires()
+        logger.info('[do_expires_checkin] EXPIRED checkin pk: %s' % checkin.pk)
         try:
             rpc_response = rpc_client.call('expire_attempt', [checkin.attempt_ref, ])
         except (Fault, ProtocolError, ValuerError) as e:
@@ -30,8 +30,8 @@ def do_expires_checkin(self, checkin):
             raise self.retry(exc=e)
         logger.info('[do_expires_checkin] BALAIO RPC method call success!.')
     else:
-        raise self.retry(exc=Exception("Balaio is down!"))
         logger.error('[do_expires_checkin] BALAIO RPC is Down. Could not call "expire_attempt" method.')
+        raise self.retry()
     logger.debug('[do_expires_checkin] FINISH process at %s' % datetime.datetime.now())
 
 
