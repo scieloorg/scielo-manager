@@ -86,7 +86,7 @@
 
         {% if perms.journalmanager.list_journal or perms.journalmanager.list_sponsor %}
           <div class="span" style="margin: 0;">
-            <div class="input-append">
+            <div id="search-form-wrapper" class="input-append">
               <form id="search-form" action="" method="get">
                 <div class="btn-group">
                   <input id="search_input" type="text" class="span2" placeholder="{% trans 'Search' %}" name="q" value="{{request.GET.q}}">

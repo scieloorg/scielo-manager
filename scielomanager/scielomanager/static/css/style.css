@@ -468,3 +468,7 @@ table._listings h4 {
   margin-bottom:0;
   padding-top:5px;
 }
+
+#search-form-wrapper {
+  margin-bottom: 0;
+}
