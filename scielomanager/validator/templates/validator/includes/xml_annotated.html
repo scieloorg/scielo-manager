@@ -49,7 +49,7 @@
       <tbody>
         {% for error in xml_data.validation_errors.results %}
           <tr>
-            <td><span class="label label-{% trans_status error.level to_label='True' %}">{{ error.level }}</span></td>
+            <td><span class="label label-{% trans_status error.level to_label='True' %}">{{ error.level|upper }}</span></td>
             <td>{{ error.line|default:"--" }}</td>
             <td>{{ error.column|default:"--" }}</td>
             <td><a class="error_message" href="#" data-search-term="{{ error.message }}">{{ error.message }}</a></td>

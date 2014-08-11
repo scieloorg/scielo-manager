@@ -463,3 +463,12 @@ table._listings h4 {
 .longer-tab {
   width: 178px;
 }
+
+#search-form {
+  margin-bottom:0;
+  padding-top:5px;
+}
+
+#search-form-wrapper {
+  margin-bottom: 0;
+}

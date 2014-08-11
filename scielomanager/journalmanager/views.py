@@ -57,7 +57,7 @@ def get_first_letter(objects_all):
     """
     Returns a set of first letters from names in `objects_all`
     """
-    letters_set = set(unicode(letter)[0].upper().strip() for letter in objects_all)
+    letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
 
