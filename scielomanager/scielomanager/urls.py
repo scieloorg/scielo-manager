@@ -30,6 +30,10 @@ v1_api_resources = [
     resources.CommentResource()
 ]
 
+v2_api = Api(api_name='v2')
+
+v2_api.register(resources.JournalResource())
+
 for res in v1_api_resources:
     v1_api.register(res)
 
@@ -62,6 +66,9 @@ urlpatterns = patterns('',
 
     #API version 1
     (r'^api/', include(v1_api.urls)),
+
+    #API version 2
+    (r'^api/', include(v2_api.urls)),
 
     (r'^export/', include('export.urls')),
 
