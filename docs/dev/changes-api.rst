@@ -61,9 +61,15 @@ resource_uri
 List all events
 ---------------
 
-Request::
+Request:
 
-  GET /api/v1/changes
+  **API version 1**
+
+  *GET /api/v1/changes*
+
+  **API version 2**
+
+  *GET /api/v1/changes*
 
 Parameters:
 
@@ -83,3 +89,34 @@ Optional Parameters:
   **since**
 
     *Int* of the ``seq`` number used as a starting point to the query.
+
+
+Response version 1 and version 2::
+
+  {
+    "meta": {
+      "limit": 200,
+      "next": null,
+      "offset": 0,
+      "previous": null,
+      "total_count": 28
+    },
+    "objects": [
+      {
+        "changed_at": "2014-04-23T15:23:01.909588",
+        "collection_uri": "/api/v2/collections/1/",
+        "event_type": "added",
+        "object_uri": "/api/v2/journals/319/",
+        "resource_uri": "/api/v2/changes/1/",
+        "seq": 1
+      },
+      {
+        "changed_at": "2014-04-23T15:29:23.524776",
+        "collection_uri": "/api/v2/collections/1/",
+        "event_type": "added",
+        "object_uri": "/api/v2/journals/320/",
+        "resource_uri": "/api/v2/changes/2/",
+        "seq": 2
+      },
+    ]
+  }
