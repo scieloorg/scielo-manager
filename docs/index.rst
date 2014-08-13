@@ -23,7 +23,7 @@ and design decisions.
 
 .. toctree::
    :maxdepth: 2
-   
+
    dev/helptexts
    dev/db-diagram
    dev/mockups
@@ -35,6 +35,7 @@ and design decisions.
    dev/json_sample
    dev/middlewares
    dev/modelmanagers
+   dev/tasks
 
 Indices and tables
 ==================
