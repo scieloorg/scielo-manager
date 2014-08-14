@@ -392,7 +392,6 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         }
         self.assertEqual(xml_data['validation_errors'], expect_errors)
 
-
     def test_xml_not_found(self):
         self._addWaffleFlag()
         notice = self._makeOne()
@@ -588,6 +587,9 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         checkin = self._makeOne()
         create_notices('ok', checkin)
 
+        # mock balaio for request checkin files
+        self._mock_balaio_disabled()
+
         response = self.app.get(reverse('checkin_send_to_review', args=[checkin.pk, ]), user=self.user)
         response = response.follow() #  "checkin_send_to_review" redirects to: "notice_detail"
 
@@ -643,7 +645,6 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         # can be sent to pending
         self.assertTrue(response_checkin.can_be_send_to_pending)
 
-
     def test_checkin_send_to_pending(self):
         """ Create a checkin and call the view: checkin_send_to_pending """
         self._addWaffleFlag()
@@ -655,6 +656,9 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         checkin.send_to_review(self.user)
         # reject
         checkin.do_reject(self.user_qal_1, rejection_text)
+
+        # mock balaio for request checkin files
+        self._mock_balaio_disabled()
 
         response = self.app.get(reverse('checkin_send_to_pending', args=[checkin.pk, ]), user=self.user)
         response = response.follow() #  "checkin_send_to_pending" redirects to: "notice_detail"
@@ -684,6 +688,9 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         create_notices('ok', checkin)
         # send to review
         checkin.send_to_review(self.user)
+
+        # mock balaio for request checkin files
+        self._mock_balaio_disabled()
 
         # do review by QAL1
         response = self.app.get(reverse('checkin_review', args=[checkin.pk, 1]), user=self.user_qal_1)
@@ -717,7 +724,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review_by_level_1(self.user_qal_1)
 
-        # mock balaio for checkout step
+        # mock balaio for request checkin files
         self._mock_balaio_disabled()
 
         # do review by user_qal2
@@ -748,22 +755,23 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         expected_message = 'Checkin ACCEPTED succesfully.'
         self.assertIn(expected_message, response.body)
 
-        expected_message = "Unable to communicate with the server to proceed to checkout. Please try again later."
+        expected_message = "Checkin will proceed to checkout soon!"
         self.assertIn(expected_message, response.body)
 
         response_checkin = response.context['checkin']
-        self.assertTrue(response_checkin.status, 'review')
-        # is reviewed at level 1, level 2, and accepted
+        # is reviewed at level 1, level 2, accepted and scheduled to checkout
+        # normally the final status now is: checkout_scheduled.
+        # 'cause "review l2" -[ redirect to ]-> "accepted"  -[ redirect to ]-> "scheduled to checkout"
         self.assertTrue(response_checkin.is_level1_reviewed)
         self.assertTrue(response_checkin.is_level2_reviewed)
-        self.assertTrue(response_checkin.is_accepted)
+        self.assertFalse(response_checkin.is_accepted)
+        self.assertTrue(response_checkin.is_scheduled_to_checkout)
+        self.assertEqual(response_checkin.status, 'checkout_scheduled')
         # can't be rejected, reviewed, or send_to_review, or send_to_pending
         self.assertFalse(response_checkin.can_be_send_to_review)
         self.assertFalse(response_checkin.can_be_send_to_pending)
         self.assertFalse(response_checkin.can_be_rejected)
         self.assertFalse(response_checkin.can_be_reviewed)
-        # checkin can't be checked out, so:
-        self.assertFalse(response_checkin.checked_out)
 
     def test_checkin_accept(self):
         """ Create a checkin and call the view: checkin_accept """
@@ -781,7 +789,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review_by_level_2(self.user_qal_2)
 
-        # mock balaio for checkout step
+        # mock balaio for request checkin files
         self._mock_balaio_disabled()
 
         # do accept with QAL2
@@ -802,28 +810,27 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         expected_message = 'Checkin ACCEPTED succesfully.'
         self.assertIn(expected_message, response.body)
 
-        expected_message = "Unable to communicate with the server to proceed to checkout. Please try again later."
+        expected_message = "Checkin will proceed to checkout soon!"
         self.assertIn(expected_message, response.body)
 
-
         response_checkin = response.context['checkin']
-        self.assertTrue(response_checkin.status, 'accepted')
-        # is reviewed at level 1, level 2, and accepted
+        # is reviewed at level 1, level 2, accepted and scheduled to checkout
+        # normally the final status now is: checkout_scheduled.
+        # 'cause "review l2" -[ redirect to ]-> "accepted"  -[ redirect to ]-> "scheduled to checkout"
         self.assertTrue(response_checkin.is_level1_reviewed)
         self.assertTrue(response_checkin.is_level2_reviewed)
-        self.assertTrue(response_checkin.is_accepted)
+        self.assertFalse(response_checkin.is_accepted)
+        self.assertTrue(response_checkin.is_scheduled_to_checkout)
+        self.assertEqual(response_checkin.status, 'checkout_scheduled')
         # can't be rejected, reviewed, or send_to_review, or send_to_pending
         self.assertFalse(response_checkin.can_be_send_to_review)
         self.assertFalse(response_checkin.can_be_send_to_pending)
         self.assertFalse(response_checkin.can_be_rejected)
         self.assertFalse(response_checkin.can_be_reviewed)
-        # checkin can't be checked out, so:
-        self.assertFalse(response_checkin.checked_out)
 
     def test_checkin_send_to_checkout(self):
         """
         Create a checkin and call the view: checkin_send_to_checkout.
-        Balalio API will be down, so must test that user can possible to call again this view.
         """
         self._addWaffleFlag()
         checkin = self._makeOne()
@@ -844,7 +851,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(checkin.can_be_accepted)
         checkin.accept(self.user_qal_2)
 
-        # mock balaio for checkout step
+        # mock balaio for request checkin files
         self._mock_balaio_disabled()
 
         # try to do send to checkout:
@@ -857,3 +864,21 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         # finally get response and check status
         response = response.follow()
         self.assertEqual(response.status_code, 200)
+
+        expected_message = "Checkin will proceed to checkout soon!"
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        # is reviewed at level 1, level 2, accepted and scheduled to checkout
+        # normally the final status now is: checkout_scheduled.
+        # 'cause "review l2" -[ redirect to ]-> "accepted"  -[ redirect to ]-> "scheduled to checkout"
+        self.assertTrue(response_checkin.is_level1_reviewed)
+        self.assertTrue(response_checkin.is_level2_reviewed)
+        self.assertFalse(response_checkin.is_accepted)
+        self.assertTrue(response_checkin.is_scheduled_to_checkout)
+        self.assertEqual(response_checkin.status, 'checkout_scheduled')
+        # can't be rejected, reviewed, or send_to_review, or send_to_pending
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.can_be_send_to_pending)
+        self.assertFalse(response_checkin.can_be_rejected)
+        self.assertFalse(response_checkin.can_be_reviewed)

@@ -1,0 +1,5 @@
+Your article was sent to checkout, and will be processed soon.
+You will receive an email notifying when ready.
+<br/>
+<br/>
+Check: http://{{domain}}{% url notice_detail checkin.id %}

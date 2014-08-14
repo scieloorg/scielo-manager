@@ -59,6 +59,15 @@ class BalaioRPCDouble(BalaioRPC):
         return None
 
 
+class BalaioAPICallOKDouble(BalaioRPC):
+
+    def is_up(self):
+        return True
+
+    def call(self, method, args=()):
+        return True
+
+
 # packtools.stylechecker double
 
 

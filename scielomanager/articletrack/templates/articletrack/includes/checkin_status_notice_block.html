@@ -1,64 +1,72 @@
 {% load i18n %}
-{% if checkin.is_rejected %}
+<div class="row-fluid show-grid">
+  <div class="span12">
 
-  <div class="row-fluid show-grid">
-    <div class="span12">
+    {% if checkin.is_rejected %}
+
       <div class="alert alert-error alert-block">
         <h4><i class="icon-warning-sign"></i> {% trans "REJECTED" %}:</h4>
         <p>
-          {% trans "This checkin was rejected by" %} 
+          {% trans "This checkin was rejected by" %}
           {% with checkin.rejected_by as user %}
-            {% include "articletrack/includes/gravatar_tooltip.html" %}  
-          {% endwith %} 
+            {% include "articletrack/includes/gravatar_tooltip.html" %}
+          {% endwith %}
           {% trans "at" %} {{ checkin.rejected_at|date:"d/m/Y - H:i" }}
         </p>
       </div>
-    </div>
-  </div>
 
-{% elif checkin.is_accepted %}
+    {% elif checkin.is_accepted %}
 
-  <div class="row-fluid show-grid">
-    <div class="span12">
       <div class="alert alert-success alert-block">
         <h4><i class="icon-ok-circle"></i> {% trans "ACCEPTED" %}:</h4>
         <p>
-          {% trans "This checkin is accepted by" %} 
+          {% trans "This checkin is accepted by" %}
           {% with checkin.accepted_by as user %}
-            {% include "articletrack/includes/gravatar_tooltip.html" %}  
-          {% endwith %} 
+            {% include "articletrack/includes/gravatar_tooltip.html" %}
+          {% endwith %}
           {% trans "at" %} {{ checkin.accepted_at|date:"d/m/Y - H:i" }}
         </p>
       </div>
-    </div>
-  </div>
 
-{% elif checkin.is_expirable %}
+    {% elif checkin.is_scheduled_to_checkout %}
 
-    <div class="row-fluid show-grid">
-    <div class="span12">
+      <div class="alert alert-success alert-block">
+        <h4><i class="icon-time"></i> {% trans "SCHEDULED TO CHECKOUT" %}:</h4>
+        <p>
+          {% trans "This checkin is scheduled to checkout and it will be processed soon" %}
+        </p>
+      </div>
+
+    {% elif checkin.is_checked_out %}
+
+      <div class="alert alert-success alert-block">
+        <h4><i class="icon-ok"></i> {% trans "CHECKED-OUT" %}:</h4>
+        <p>
+          {% trans "This checkin was checked-out and it will be available online soon" %}
+        </p>
+      </div>
+
+
+    {% elif checkin.is_expirable %}
+
       <div class="alert alert-error alert-block">
         <h4><i class="icon-ok-circle"></i> {% trans "THIS CHECKIN WILL EXPIRE TODAY" %}:</h4>
         <p>
-          {% trans "This checkin will expire at: " %} 
+          {% trans "This checkin will expire at: " %}
           {% trans "at" %} {{ checkin.expiration_at|date:"d/m/Y - H:i" }}
         </p>
         <p>
           {% trans "After that date, the checkin will be unreachable." %}
         </p>
       </div>
-    </div>
-  </div>
 
-{% elif checkin.status == "expired"  %}
+    {% elif checkin.status == "expired"  %}
 
-  <div class="row-fluid show-grid">
-    <div class="span12">
       <div class="alert alert-success alert-block">
         <h4><i class="icon-ok-circle"></i>{% trans "THIS CHECKIN IS EXPIRED!" %}</h4>
       </div>
-    </div>
+
+    {% endif %}
+
   </div>
-
-
-{% endif %}
+</div>

@@ -20,7 +20,7 @@
         <a href="{% url checkin_index %}"><i class="icon-chevron-left"></i> {% trans "List of Checkins" %}</a>
       </li>
       <li class="divider-vertical"></li>
-        {% if not checkin.is_accepted or checkin.can_be_send_to_checkout %}
+        {% if not checkin.is_accepted or checkin.can_be_scheduled_to_checkout %}
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <strong>{% trans "Actions" %}:</strong>
@@ -63,7 +63,7 @@
                 {% if user.get_profile.can_review_l1_checkins and not checkin.is_level1_reviewed %}
                   <li>
                     <a href="{% url checkin_review checkin.pk 1 %}">
-                      <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Review" %}</span>
+                      <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Editorial Review" %}</span>
                     </a>
                   </li>
                 {% endif %}
@@ -85,11 +85,11 @@
                     <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Accept" %}</span>
                   </a>
                 </li>
-              {% elif checkin.can_be_send_to_checkout and user.get_profile.can_send_checkins_to_checkout %}
-                {# DO CHECKOUT #}
+              {% elif checkin.can_be_scheduled_to_checkout and user.get_profile.can_send_checkins_to_checkout %}
+                {# DO SEND TO CHECKOUT #}
                 <li>
                   <a href="{% url checkin_send_to_checkout checkin.pk %}">
-                    <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Checkout!" %}</span>
+                    <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Send to Checkout!" %}</span>
                   </a>
                 </li>
               {% endif %}
@@ -118,8 +118,6 @@
     </ul>
   </div>
 </div>
-
-{% include "articletrack/includes/checkin_status_notice_block.html" %}
 
 {% if not checkin.is_newest_checkin %}
   <div class="row-fluid show-grid">
