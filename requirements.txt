@@ -21,3 +21,4 @@ django-waffle==0.9.1
 Celery
 django-celery
 django-kombu
+defusedxml==0.4.1
