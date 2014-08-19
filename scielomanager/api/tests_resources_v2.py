@@ -1,10 +1,5 @@
-# coding:utf-8
-"""
-`api` app tests
+#coding: utf-8
 
-these tests are in a, maybe, wrong app for pragmatic purposes
-of the app `api` not being part of the django installed apps.
-"""
 import json
 import datetime
 from django_webtest import WebTest
@@ -12,28 +7,13 @@ from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 from articletrack.tests import modelfactories as articletrack_modelfactories
-
-from api.resources import (
-    IssueResource,
-    SectionResource,
+from api.resources_v1 import (
     JournalResource,
-    CheckinResource,
-    CheckinNoticeResource,
-    CheckinArticleResource,
-    TicketResource,
-    CommentResource,
+    IssueResource,
     )
-
-from scielomanager.utils.modelmanagers.helpers import (
-    _makeUserRequestContext,
-    _patch_userrequestcontextfinder_settings_setup,
-    _patch_userrequestcontextfinder_settings_teardown
-    )
-
 
 def _make_auth_environ(username, token):
     return {'HTTP_AUTHORIZATION': 'ApiKey {0}:{1}'.format(username, token)}
-
 
 def _makePermission(perm, model, app_label='journalmanager'):
     """
@@ -46,7 +26,6 @@ def _makePermission(perm, model, app_label='journalmanager'):
                                         app_label=app_label)
 
     return auth_models.Permission.objects.get(codename=perm, content_type=ct)
-
 
 def _makeUseLicense():
     from journalmanager.models import UseLicense
@@ -63,7 +42,7 @@ class JournalRestAPITest(WebTest):
         _makeUseLicense()
 
     def test_journal_index(self):
-        response = self.app.get('/api/v1/journals/',
+        response = self.app.get('/api/v2/journals/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -80,60 +59,69 @@ class JournalRestAPITest(WebTest):
         journal = modelfactories.JournalFactory.create()
         journal.join(col, self.user)
 
-        response = self.app.get('/api/v1/journals/%s/' % journal.pk,
+        response = self.app.get('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('title' in response.content)
 
     def test_post_data_index(self):
-        response = self.app.post('/api/v1/journals/',
+        response = self.app.post('/api/v2/journals/',
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_index(self):
-        response = self.app.put('/api/v1/journals/',
+        response = self.app.put('/api/v2/journals/',
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_index(self):
-        response = self.app.delete('/api/v1/journals/',
+        response = self.app.delete('/api/v2/journals/',
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_post_data_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.app.post('/api/v1/journals/%s/' % journal.pk,
+        response = self.app.post('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.app.put('/api/v1/journals/%s/' % journal.pk,
+        response = self.app.put('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         journal = modelfactories.JournalFactory.create()
-        response = self.app.delete('/api/v1/journals/%s/' % journal.pk,
+        response = self.app.delete('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
-    def test_list_all_by_collection(self):
+    def test_access_denied_for_unauthorized_users(self):
+        response = self.app.get('/api/v2/journals/',
+            status=401)
+
+        self.assertEqual(response.status_code, 401)
+
+    def test_list_all_journals_by_collection(self):
         collection = modelfactories.CollectionFactory()
-        journal = modelfactories.JournalFactory.create()
-        journal.join(collection, self.user)
-        collection_name = collection.name
-        response = self.app.get('/api/v1/journals/?collection=%s' % collection_name,
+
+        journal1 = modelfactories.JournalFactory.create()
+        journal2 = modelfactories.JournalFactory.create()
+        journal1.join(collection, self.user)
+        journal2.join(collection, self.user)
+
+        response = self.app.get('/api/v2/journals/?collection=%s' % collection.name,
             extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_datamodel(self):
+    def test_api_datamodel(self):
         col = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create()
         journal.join(col, self.user)
 
-        response = self.app.get('/api/v1/journals/%s/' % journal.pk,
+        response = self.app.get('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -220,11 +208,21 @@ class JournalRestAPITest(WebTest):
         for key in expected_keys:
             self.assertEqual(True, key in json_keys)
 
-    def test_access_denied_for_unauthorized_users(self):
-        response = self.app.get('/api/v1/journals/',
-            status=401)
+    def test_api_collections_data(self):
+        col1 = modelfactories.CollectionFactory()
+        col2 = modelfactories.CollectionFactory()
 
-        self.assertEqual(response.status_code, 401)
+        journal = modelfactories.JournalFactory.create()
+
+        journal.join(col1, self.user)
+        journal.join(col2, self.user)
+
+        response = self.app.get('/api/v2/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ)
+
+        expected_collections = [col1.name, col2.name]
+
+        self.assertEqual(response.json['collections'], expected_collections)
 
     def test_filter_by_pubstatus(self):
         col = modelfactories.CollectionFactory()
@@ -237,7 +235,7 @@ class JournalRestAPITest(WebTest):
         journal2.join(col, self.user)
         journal2.change_status(col, 'deceased', 'testing', self.user)
 
-        response = self.app.get('/api/v1/journals/?pubstatus=current',
+        response = self.app.get('/api/v2/journals/?pubstatus=current',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -254,7 +252,7 @@ class JournalRestAPITest(WebTest):
         journal2.join(col, self.user)
         journal2.change_status(col, 'deceased', 'testing', self.user)
 
-        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased',
+        response = self.app.get('/api/v2/journals/?pubstatus=current&pubstatus=deceased',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -272,7 +270,7 @@ class JournalRestAPITest(WebTest):
         journal2.join(col2, self.user)
         journal2.change_status(col2, 'deceased', 'testing', self.user)
 
-        response = self.app.get('/api/v1/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % col.name,
+        response = self.app.get('/api/v2/journals/?pubstatus=current&pubstatus=deceased&collection=%s' % col.name,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -280,11 +278,13 @@ class JournalRestAPITest(WebTest):
 
     def test_filter_print_issn(self):
         col = modelfactories.CollectionFactory()
+
         journal = modelfactories.JournalFactory.create(print_issn='1234-1234')
         journal.join(col, self.user)
         journal2 = modelfactories.JournalFactory.create(print_issn='4321-4321')
         journal2.join(col, self.user)
-        response = self.app.get('/api/v1/journals/?print_issn=1234-1234',
+
+        response = self.app.get('/api/v2/journals/?print_issn=1234-1234',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -297,7 +297,7 @@ class JournalRestAPITest(WebTest):
         journal.join(col, self.user)
         journal2 = modelfactories.JournalFactory.create(eletronic_issn='4321-4321')
         journal2.join(col, self.user)
-        response = self.app.get('/api/v1/journals/?eletronic_issn=1234-1234',
+        response = self.app.get('/api/v2/journals/?eletronic_issn=1234-1234',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -316,12 +316,12 @@ class JournalRestAPITest(WebTest):
         journal2.join(col, self.user)
 
         response = self.app.get(
-            '/api/v1/journals/%s/' % journal1.pk,
+            '/api/v2/journals/%s/' % journal1.pk,
             extra_environ=self.extra_environ).json
 
         self.assertEqual(
             response['succeeding_title'],
-            '/api/v1/journals/%s/' % journal2.pk)
+            '/api/v2/journals/%s/' % journal2.pk)
 
     def test_without_succeding_title(self):
         col = modelfactories.CollectionFactory()
@@ -332,44 +332,61 @@ class JournalRestAPITest(WebTest):
         journal1.join(col, self.user)
 
         response = self.app.get(
-            '/api/v1/journals/%s/' % journal1.pk,
+            '/api/v2/journals/%s/' % journal1.pk,
             extra_environ=self.extra_environ).json
 
         self.assertEqual(
             response['succeeding_title'], None)
 
-    def test_dehydrate_pub_status_with_one_collections(self):
+    def test_api_pub_status_data(self):
         col = modelfactories.CollectionFactory()
-
-        col.add_user(self.user)
 
         journal = modelfactories.JournalFactory.create()
         journal.join(col, self.user)
 
-        response = self.app.get('/api/v1/journals/',
+        response = self.app.get('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ).json
 
-        self.assertEqual(response['objects'][0]['pub_status'], u'inprogress')
+        self.assertEqual(response['pub_status'], {col.name:
+                journal.membership_info(collection=col, attribute='status')})
 
-    def test_dehydrate_pub_status_with_multiple_collections(self):
-        col = modelfactories.CollectionFactory()
+    def test_api_pub_status_data_with_multiple_collection(self):
+        col1 = modelfactories.CollectionFactory()
         col2 = modelfactories.CollectionFactory()
 
-        col.add_user(self.user)
-        col2.add_user(self.user)
-
-        col.make_default_to_user(self.user)
-
         journal = modelfactories.JournalFactory.create()
-        journal.join(col, self.user)
-        journal.join(col2, self.user, )
+        journal.join(col1, self.user)
+        journal.join(col2, self.user)
 
-        journal.change_status(col, u'current', u'yeah', self.user)
+        #Change status of journal on collection 1
+        journal.change_status(col1, 'current',
+            'The journal passed on SciELO evaluation', self.user)
 
-        response = self.app.get('/api/v1/journals/',
+        response = self.app.get('/api/v2/journals/%s/' % journal.pk,
             extra_environ=self.extra_environ).json
 
-        self.assertEqual(response['objects'][0]['pub_status'], u'current')
+        self.assertEqual(response['pub_status'],
+            {col.name:journal.membership_info(collection=col, attribute='status')
+            for col in journal.collections.all()})
+
+    def test_api_pub_status_history_data(self):
+        col1 = modelfactories.CollectionFactory()
+        col2 = modelfactories.CollectionFactory()
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col1, self.user)
+        journal.join(col2, self.user)
+
+        response = self.app.get('/api/v2/journals/%s/' % journal.pk,
+            extra_environ=self.extra_environ).json
+
+        expected_history = []
+
+        for history in journal.statuses.order_by('-since').all():
+            expected_history.append({'date': history.since.strftime('%Y-%m-%dT%H:%M:%S.%f'), 'status': history.status})
+
+        self.assertEqual(response['pub_status_history'],
+            expected_history)
 
 
 class CollectionRestAPITest(WebTest):
@@ -380,55 +397,55 @@ class CollectionRestAPITest(WebTest):
             self.user.api_key.key)
 
     def test_index(self):
-        collection = modelfactories.CollectionFactory.create()
-        response = self.app.get('/api/v1/collections/',
+        modelfactories.CollectionFactory.create()
+        response = self.app.get('/api/v2/collections/',
             extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
     def test_post_data(self):
-        response = self.app.post('/api/v1/collections/',
+        response = self.app.post('/api/v2/collections/',
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
-        response = self.app.put('/api/v1/collections/',
+        response = self.app.put('/api/v2/collections/',
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
-        response = self.app.delete('/api/v1/collections/',
+        response = self.app.delete('/api/v2/collections/',
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.app.get('/api/v1/collections/%s/' % collection.pk,
+        response = self.app.get('/api/v2/collections/%s/' % collection.pk,
             extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('name' in response.content)
 
     def test_post_data_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.app.post('/api/v1/collections/%s/' % collection.pk,
+        response = self.app.post('/api/v2/collections/%s/' % collection.pk,
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.app.put('/api/v1/collections/%s/' % collection.pk,
+        response = self.app.put('/api/v2/collections/%s/' % collection.pk,
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.app.delete('/api/v1/collections/%s/' % collection.pk,
+        response = self.app.delete('/api/v2/collections/%s/' % collection.pk,
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_api_v1_datamodel(self):
         collection = modelfactories.CollectionFactory.create()
-        response = self.app.get('/api/v1/collections/%s/' % collection.pk,
+        response = self.app.get('/api/v2/collections/%s/' % collection.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -454,8 +471,8 @@ class CollectionRestAPITest(WebTest):
         self.assertEqual(response.json.keys(), expected_keys)
 
     def test_access_denied_for_unathorized_users(self):
-        collection = modelfactories.CollectionFactory.create()
-        response = self.app.get('/api/v1/collections/', status=401)
+        modelfactories.CollectionFactory.create()
+        response = self.app.get('/api/v2/collections/', status=401)
         self.assertEqual(response.status_code, 401)
 
 
@@ -466,8 +483,8 @@ class IssuesRestAPITest(WebTest):
         self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
 
     def test_issue_index(self):
-        issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/', extra_environ=self.extra_environ)
+        modelfactories.IssueFactory.create()
+        response = self.app.get('/api/v2/issues/', extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -478,47 +495,46 @@ class IssuesRestAPITest(WebTest):
             self.assertTrue(fltr in resource_filters.filtering)
 
     def test_post_data(self):
-        issue = modelfactories.IssueFactory.create()
-        response = self.app.post('/api/v1/issues/', extra_environ=self.extra_environ, status=405)
+        modelfactories.IssueFactory.create()
+        response = self.app.post('/api/v2/issues/', extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
-        issue = modelfactories.IssueFactory.create()
-        response = self.app.put('/api/v1/issues/', extra_environ=self.extra_environ, status=405)
+        modelfactories.IssueFactory.create()
+        response = self.app.put('/api/v2/issues/', extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
-        issue = modelfactories.IssueFactory.create()
-        response = self.app.delete('/api/v1/issues/', extra_environ=self.extra_environ, status=405)
+        modelfactories.IssueFactory.create()
+        response = self.app.delete('/api/v2/issues/', extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_issue_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('number' in response.content)
 
     def test_post_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.post('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
+        response = self.app.post('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_put_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.put('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
+        response = self.app.put('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_del_data_getone(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.delete('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
+        response = self.app.delete('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
     def test_api_v1_datamodel(self):
         issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'is_press_release',
             u'ctrl_vocabulary',
             u'number',
             u'total_documents',
@@ -549,15 +565,15 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
     def test_access_denied_for_unauthenticated_users(self):
-        issue = modelfactories.IssueFactory.create()
-        response = self.app.get('/api/v1/issues/', status=401)
+        modelfactories.IssueFactory.create()
+        response = self.app.get('/api/v2/issues/', status=401)
         self.assertEqual(response.status_code, 401)
 
     def test_thematic_titles_must_be_dict(self):
         issue = modelfactories.IssueFactory.create()
-        issue_title = modelfactories.IssueTitleFactory.create(issue=issue)
+        modelfactories.IssueTitleFactory.create(issue=issue)
 
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         content = json.loads(response.content)
         self.assertEqual(content.get('thematic_titles', None), {'pt': 'Bla'})
@@ -565,7 +581,7 @@ class IssuesRestAPITest(WebTest):
     def test_thematic_titles_must_be_dict_even_if_empty(self):
         issue = modelfactories.IssueFactory.create()
 
-        response = self.app.get('/api/v1/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         content = json.loads(response.content)
         self.assertIsInstance(content.get('thematic_titles', None), dict)
@@ -574,10 +590,10 @@ class IssuesRestAPITest(WebTest):
         collection = modelfactories.CollectionFactory()
         journal = modelfactories.JournalFactory.create()
         journal.join(collection, self.user)
-        issue = modelfactories.IssueFactory.create(journal=journal)
+        modelfactories.IssueFactory.create(journal=journal)
         collection_name = collection.name
 
-        response = self.app.get('/api/v1/issues/?collection=%s' % collection_name, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?collection=%s' % collection_name, extra_environ=self.extra_environ)
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
@@ -588,7 +604,7 @@ class IssuesRestAPITest(WebTest):
         ``suppl_number`` (= ``suppl_text``) and ``suppl_volume`` (empty).
         """
         issue = modelfactories.IssueFactory.create(number='999', suppl_text='2', volume='', type='supplement')
-        response = self.app.get('/api/v1/issues/?suppl_number=%s' % issue.number, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_number=%s' % issue.number, extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -606,7 +622,7 @@ class IssuesRestAPITest(WebTest):
         ``suppl_number`` (= ``suppl_text``) and ``suppl_volume`` (= ``suppl_text``).
         """
         issue = modelfactories.IssueFactory.create(number='999', suppl_text='2', volume='1', type='supplement')
-        response = self.app.get('/api/v1/issues/?suppl_number=%s' % issue.number, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_number=%s' % issue.number, extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -625,7 +641,7 @@ class IssuesRestAPITest(WebTest):
         ``suppl_volume`` (= ``suppl_text``) and ``suppl_number`` (empty).
         """
         issue = modelfactories.IssueFactory.create(volume='999', suppl_text='2', number='', type='supplement')
-        response = self.app.get('/api/v1/issues/?suppl_volume=%s' % issue.volume, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_volume=%s' % issue.volume, extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -644,7 +660,7 @@ class IssuesRestAPITest(WebTest):
         Because, the ``suppl_volume`` filter will apply always with ``number=''`` condition.
         """
         issue = modelfactories.IssueFactory.create(number='999', suppl_text='2', volume='777', type='supplement')
-        response = self.app.get('/api/v1/issues/?suppl_volume=%s' % issue.volume, extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_volume=%s' % issue.volume, extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -665,7 +681,7 @@ class IssuesRestAPITest(WebTest):
         modelfactories.IssueFactory.create(journal=journal)
 
         #test if return one issue from collecion1
-        response1 = self.app.get('/api/v1/issues/?collection=%s&print_issn=%s' % (collection1.name, journal.print_issn) , extra_environ=self.extra_environ)
+        response1 = self.app.get('/api/v2/issues/?collection=%s&print_issn=%s' % (collection1.name, journal.print_issn) , extra_environ=self.extra_environ)
         content1 = json.loads(response1.content)
 
         self.assertEqual(response1.status_code, 200)
@@ -674,7 +690,7 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(len(content1['objects']), 1)
 
         #test if return nothing issue from collecion2
-        response2 = self.app.get('/api/v1/issues/?collection=%s&print_issn=%s' % (collection2.name, journal.print_issn) , extra_environ=self.extra_environ)
+        response2 = self.app.get('/api/v2/issues/?collection=%s&print_issn=%s' % (collection2.name, journal.print_issn) , extra_environ=self.extra_environ)
         content2 = json.loads(response2.content)
 
         self.assertEqual(response2.status_code, 200)
@@ -704,7 +720,7 @@ class IssuesRestAPITest(WebTest):
         modelfactories.IssueFactory.create(journal=journal, number='', volume='2', type='supplement', )
 
         #test with param number
-        response = self.app.get('/api/v1/issues/?suppl_number=999', extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_number=999', extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -713,7 +729,7 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(len(content['objects']), 6)
 
         #test with param number and suppl_volume
-        response = self.app.get('/api/v1/issues/?suppl_volume=2', extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_volume=2', extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -722,7 +738,7 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(len(content['objects']), 3)
 
         #test with param number and suppl_number and suppl_volume, must return empty list
-        response = self.app.get('/api/v1/issues/?suppl_volume=2&suppl_number=999', extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_volume=2&suppl_number=999', extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
@@ -731,76 +747,13 @@ class IssuesRestAPITest(WebTest):
         self.assertEqual(len(content['objects']), 0)
 
         #test with param number and suppl_number and suppl_volume, change sequence of params
-        response = self.app.get('/api/v1/issues/?suppl_number=999&suppl_volume=2', extra_environ=self.extra_environ)
+        response = self.app.get('/api/v2/issues/?suppl_number=999&suppl_volume=2', extra_environ=self.extra_environ)
         content = json.loads(response.content)
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
         self.assertEqual(len(content['objects']), 0)
-
-
-class SectionsRestAPITest(WebTest):
-
-    def setUp(self):
-        self.user = auth.UserF(is_active=True)
-        self.extra_environ = _make_auth_environ(self.user.username,
-            self.user.api_key.key)
-
-    def test_section_index(self):
-        section = modelfactories.SectionFactory.create()
-        response = self.app.get('/api/v1/sections/',
-            extra_environ=self.extra_environ)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('objects' in response.content)
-
-    def test_section_filters(self):
-        resource_filters = SectionResource().Meta
-        mandatory_filters = ['journal']
-        for fltr in mandatory_filters:
-            self.assertTrue(fltr in resource_filters.filtering)
-
-    def test_post_data(self):
-        section = modelfactories.SectionFactory.create()
-        response = self.app.post('/api/v1/sections/',
-            extra_environ=self.extra_environ, status=405)
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data(self):
-        section = modelfactories.SectionFactory.create()
-        response = self.app.put('/api/v1/sections/',
-            extra_environ=self.extra_environ, status=405)
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data(self):
-        section = modelfactories.SectionFactory.create()
-        response = self.app.delete('/api/v1/sections/',
-            extra_environ=self.extra_environ, status=405)
-        self.assertEqual(response.status_code, 405)
-
-    def test_api_v1_datamodel(self):
-        section = modelfactories.SectionFactory.create()
-        response = self.app.get('/api/v1/sections/%s/' % section.pk,
-            extra_environ=self.extra_environ)
-
-        expected_keys = [
-            u'updated',
-            u'code',
-            u'created',
-            u'journal',
-            u'titles',
-            u'is_trashed',
-            u'id',
-            u'issues',
-            u'resource_uri'
-        ]
-
-        self.assertEqual(response.json.keys(), expected_keys)
-
-    def test_access_denied_for_unauthenticated_users(self):
-        section = modelfactories.SectionFactory.create()
-        response = self.app.get('/api/v1/sections/', status=401)
-        self.assertEqual(response.status_code, 401)
 
 
 class ChangesRestAPITest(WebTest):
@@ -811,8 +764,8 @@ class ChangesRestAPITest(WebTest):
             self.user.api_key.key)
 
     def test_changes_index(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.get('/api/v1/changes/',
+        modelfactories.DataChangeEventFactory.create()
+        response = self.app.get('/api/v2/changes/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -824,7 +777,7 @@ class ChangesRestAPITest(WebTest):
             event = modelfactories.DataChangeEventFactory.create()
             seqs.append(event.pk)
 
-        response = self.app.get('/api/v1/changes/?since=%s' % seqs[1],
+        response = self.app.get('/api/v2/changes/?since=%s' % seqs[1],
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -832,29 +785,29 @@ class ChangesRestAPITest(WebTest):
         self.assertEqual(len(json.loads(response.content)['objects']), 4)
 
     def test_post_data(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.post('/api/v1/changes/',
+        modelfactories.DataChangeEventFactory.create()
+        response = self.app.post('/api/v2/changes/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.put('/api/v1/changes/',
+        modelfactories.DataChangeEventFactory.create()
+        response = self.app.put('/api/v2/changes/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.delete('/api/v1/changes/',
+        modelfactories.DataChangeEventFactory.create()
+        response = self.app.delete('/api/v2/changes/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.get('/api/v1/changes/', status=401)
+        modelfactories.DataChangeEventFactory.create()
+        response = self.app.get('/api/v2/changes/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
@@ -868,34 +821,34 @@ class PressReleaseRestAPITest(WebTest):
 
     def test_post_data(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
-        response = self.app.post('/api/v1/pressreleases/',
+        response = self.app.post('/api/v2/pressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
-        response = self.app.put('/api/v1/pressreleases/',
+        response = self.app.put('/api/v2/pressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
-        response = self.app.delete('/api/v1/pressreleases/',
+        response = self.app.delete('/api/v2/pressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
-        response = self.app.get('/api/v1/pressreleases/', status=401)
+        response = self.app.get('/api/v2/pressreleases/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_pressrelease_index(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
-        response = self.app.get('/api/v1/pressreleases/',
+        response = self.app.get('/api/v2/pressreleases/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -903,7 +856,7 @@ class PressReleaseRestAPITest(WebTest):
 
     def test_api_v1_datamodel(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
-        response = self.app.get('/api/v1/pressreleases/%s/' % pr.pk,
+        response = self.app.get('/api/v2/pressreleases/%s/' % pr.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -920,7 +873,7 @@ class PressReleaseRestAPITest(WebTest):
 
     def test_translations_api_v1_datamodel(self):
         pr_trans = modelfactories.PressReleaseTranslationFactory.create()
-        response = self.app.get('/api/v1/pressreleases/%s/' % pr_trans.press_release.pk,
+        response = self.app.get('/api/v2/pressreleases/%s/' % pr_trans.press_release.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -938,7 +891,7 @@ class PressReleaseRestAPITest(WebTest):
 
     def test_issue_meta_api_v1_datamodel(self):
         pr_trans = modelfactories.PressReleaseTranslationFactory.create()
-        response = self.app.get('/api/v1/pressreleases/%s/' % pr_trans.press_release.pk,
+        response = self.app.get('/api/v2/pressreleases/%s/' % pr_trans.press_release.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -965,7 +918,7 @@ class PressReleaseRestAPITest(WebTest):
             pr_articles.append(modelfactories.PressReleaseArticleFactory.create())
 
         response = self.app.get(
-            '/api/v1/pressreleases/?article_pid=%s' % pr_articles[0].article_pid,
+            '/api/v2/pressreleases/?article_pid=%s' % pr_articles[0].article_pid,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -978,7 +931,7 @@ class PressReleaseRestAPITest(WebTest):
             prs.append(modelfactories.RegularPressReleaseFactory.create())
 
         response = self.app.get(
-            '/api/v1/pressreleases/?journal_pid=%s' % prs[0].issue.journal.scielo_pid,
+            '/api/v2/pressreleases/?journal_pid=%s' % prs[0].issue.journal.scielo_pid,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -990,7 +943,7 @@ class PressReleaseRestAPITest(WebTest):
         for pr in range(5):
             prs.append(modelfactories.RegularPressReleaseFactory.create())
         response = self.app.get(
-            '/api/v1/pressreleases/?journal_pid=5',
+            '/api/v2/pressreleases/?journal_pid=5',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1003,7 +956,7 @@ class PressReleaseRestAPITest(WebTest):
             pr_articles.append(modelfactories.PressReleaseArticleFactory.create())
 
         response = self.app.get(
-            '/api/v1/pressreleases/?article_pid=EMPTY',
+            '/api/v2/pressreleases/?article_pid=EMPTY',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1016,7 +969,7 @@ class PressReleaseRestAPITest(WebTest):
             prs.append(modelfactories.RegularPressReleaseFactory.create())
 
         response = self.app.get(
-            '/api/v1/pressreleases/?issue_pid=%s' % prs[0].issue.scielo_pid,
+            '/api/v2/pressreleases/?issue_pid=%s' % prs[0].issue.scielo_pid,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1033,34 +986,34 @@ class AheadPressReleaseRestAPITest(WebTest):
 
     def test_post_data(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
-        response = self.app.post('/api/v1/apressreleases/',
+        response = self.app.post('/api/v2/apressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_put_data(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
-        response = self.app.put('/api/v1/apressreleases/',
+        response = self.app.put('/api/v2/apressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_del_data(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
-        response = self.app.delete('/api/v1/apressreleases/',
+        response = self.app.delete('/api/v2/apressreleases/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
-        response = self.app.get('/api/v1/apressreleases/', status=401)
+        response = self.app.get('/api/v2/apressreleases/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_pressrelease_index(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
-        response = self.app.get('/api/v1/apressreleases/',
+        response = self.app.get('/api/v2/apressreleases/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1068,7 +1021,7 @@ class AheadPressReleaseRestAPITest(WebTest):
 
     def test_api_v1_datamodel(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
-        response = self.app.get('/api/v1/apressreleases/%s/' % pr.pk,
+        response = self.app.get('/api/v2/apressreleases/%s/' % pr.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -1085,7 +1038,7 @@ class AheadPressReleaseRestAPITest(WebTest):
     def test_translations_api_v1_datamodel(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
         pr_trans = modelfactories.PressReleaseTranslationFactory.create(press_release=pr)
-        response = self.app.get('/api/v1/apressreleases/%s/' % pr_trans.press_release.pk,
+        response = self.app.get('/api/v2/apressreleases/%s/' % pr_trans.press_release.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -1108,7 +1061,7 @@ class AheadPressReleaseRestAPITest(WebTest):
             pr_articles.append(modelfactories.PressReleaseArticleFactory.create(press_release=prelease))
 
         response = self.app.get(
-            '/api/v1/apressreleases/?article_pid=%s' % pr_articles[0].article_pid,
+            '/api/v2/apressreleases/?article_pid=%s' % pr_articles[0].article_pid,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1121,7 +1074,7 @@ class AheadPressReleaseRestAPITest(WebTest):
             prs.append(modelfactories.AheadPressReleaseFactory.create())
 
         response = self.app.get(
-            '/api/v1/apressreleases/?journal_pid=%s' % prs[0].journal.scielo_pid,
+            '/api/v2/apressreleases/?journal_pid=%s' % prs[0].journal.scielo_pid,
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1133,7 +1086,7 @@ class AheadPressReleaseRestAPITest(WebTest):
         for pr in range(5):
             prs.append(modelfactories.AheadPressReleaseFactory.create())
         response = self.app.get(
-            '/api/v1/apressreleases/?journal_pid=5',
+            '/api/v2/apressreleases/?journal_pid=5',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1147,7 +1100,7 @@ class AheadPressReleaseRestAPITest(WebTest):
             pr_articles.append(modelfactories.PressReleaseArticleFactory.create(press_release=prelease))
 
         response = self.app.get(
-            '/api/v1/apressreleases/?article_pid=EMPTY',
+            '/api/v2/apressreleases/?article_pid=EMPTY',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1176,10 +1129,10 @@ class CheckinRestAPITest(WebTest):
             u'package_name': u'20132404.zip',
             u'uploaded_at': u'2013-11-13 15:23:12.286068-02',
             u'created_at': u'2013-11-13 15:23:18.286068-02',
-            u'article': u'/api/v1/checkins_articles/%s/' % self.article.pk,
+            u'article': u'/api/v2/checkins_articles/%s/' % self.article.pk,
         }
 
-        response = self.app.post_json('/api/v1/checkins/',
+        response = self.app.post_json('/api/v2/checkins/',
                                       att,
                                       extra_environ=self.extra_environ,
                                       status=201)
@@ -1199,7 +1152,7 @@ class CheckinRestAPITest(WebTest):
 
         checkin = articletrack_modelfactories.CheckinFactory.create()
 
-        response = self.app.put_json('/api/v1/checkins/%s/' % checkin.pk,
+        response = self.app.put_json('/api/v2/checkins/%s/' % checkin.pk,
                                 att,
                                 extra_environ=self.extra_environ,
                                 status=204)
@@ -1209,19 +1162,19 @@ class CheckinRestAPITest(WebTest):
         self.assertEqual(checkin_check.attempt_ref, u'2')
 
     def test_del_data(self):
-        response = self.app.delete('/api/v1/checkins/',
+        response = self.app.delete('/api/v2/checkins/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        response = self.app.get('/api/v1/checkins/', status=401)
+        response = self.app.get('/api/v2/checkins/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_checkin_index(self):
         articletrack_modelfactories.CheckinFactory.create()
-        response = self.app.get('/api/v1/checkins/',
+        response = self.app.get('/api/v2/checkins/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1229,7 +1182,7 @@ class CheckinRestAPITest(WebTest):
 
     def test_api_v1_data_checkin(self):
         check = articletrack_modelfactories.CheckinFactory.create()
-        response = self.app.get('/api/v1/checkins/%s/' % check.pk,
+        response = self.app.get('/api/v2/checkins/%s/' % check.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -1271,7 +1224,7 @@ class NoticeRestAPITest(WebTest):
         perm = _makePermission(perm='add_notice', model='notice', app_label='articletrack')
         self.user.user_permissions.add(perm)
 
-        att = {u'checkin': u'/api/v1/checkins/%s/' % checkin.pk,
+        att = {u'checkin': u'/api/v2/checkins/%s/' % checkin.pk,
                u'checkpoint': u'Validation',
                u'uploaded_at': u'2013-11-14T15:10:20.345520',
                u'message': u'The reference of xyz is not OK',
@@ -1279,7 +1232,7 @@ class NoticeRestAPITest(WebTest):
                u'status': u'warning'
                }
 
-        response = self.app.post_json('/api/v1/notices/',
+        response = self.app.post_json('/api/v2/notices/',
                                       att,
                                       extra_environ=self.extra_environ,
                                       status=201)
@@ -1299,7 +1252,7 @@ class NoticeRestAPITest(WebTest):
         notice = articletrack_modelfactories.NoticeFactory.create(stage='References')
 
         response = self.app.put_json(
-            '/api/v1/notices/%s/' % notice.pk,
+            '/api/v2/notices/%s/' % notice.pk,
             att,
             extra_environ=self.extra_environ,
             status=204)
@@ -1310,13 +1263,13 @@ class NoticeRestAPITest(WebTest):
 
     def test_del_data(self):
         response = self.app.delete(
-            '/api/v1/notices/',
+            '/api/v2/notices/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        response = self.app.get('/api/v1/notices/', status=401)
+        response = self.app.get('/api/v2/notices/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
@@ -1324,7 +1277,7 @@ class NoticeRestAPITest(WebTest):
         articletrack_modelfactories.NoticeFactory.create()
 
         response = self.app.get(
-            '/api/v1/notices/',
+            '/api/v2/notices/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1333,7 +1286,7 @@ class NoticeRestAPITest(WebTest):
     def test_api_v1_model_notice(self):
         check = articletrack_modelfactories.NoticeFactory.create()
         response = self.app.get(
-            '/api/v1/notices/%s/' % check.pk,
+            '/api/v2/notices/%s/' % check.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -1374,7 +1327,7 @@ class CheckinArticleRestAPITest(WebTest):
             u'eissn': u'',
             u'pissn': u'1234-0002',  # matching with JournalFactory.print_issn
         }
-        response = self.app.post_json('/api/v1/checkins_articles/',
+        response = self.app.post_json('/api/v2/checkins_articles/',
                                       att,
                                       extra_environ=self.extra_environ,
                                       status=201)
@@ -1401,7 +1354,7 @@ class CheckinArticleRestAPITest(WebTest):
             u'eissn': u'',
             u'pissn': u'xxx',  # matching with JournalFactory.print_issn
         }
-        response = self.app.post_json('/api/v1/checkins_articles/',
+        response = self.app.post_json('/api/v2/checkins_articles/',
                                       att,
                                       extra_environ=self.extra_environ,
                                       status=201)
@@ -1422,7 +1375,7 @@ class CheckinArticleRestAPITest(WebTest):
         article = articletrack_modelfactories.ArticleFactory.create()
 
         response = self.app.put_json(
-            '/api/v1/checkins_articles/%s/' % article.pk,
+            '/api/v2/checkins_articles/%s/' % article.pk,
             att,
             extra_environ=self.extra_environ,
             status=204)
@@ -1433,20 +1386,20 @@ class CheckinArticleRestAPITest(WebTest):
 
     def test_del_data(self):
         response = self.app.delete(
-            '/api/v1/checkins_articles/',
+            '/api/v2/checkins_articles/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        response = self.app.get('/api/v1/checkins_articles/', status=401)
+        response = self.app.get('/api/v2/checkins_articles/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_checkin_index(self):
         articletrack_modelfactories.ArticleFactory.create()
         response = self.app.get(
-            '/api/v1/checkins_articles/',
+            '/api/v2/checkins_articles/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1455,7 +1408,7 @@ class CheckinArticleRestAPITest(WebTest):
     def test_api_v1_data_checkin(self):
         article = articletrack_modelfactories.ArticleFactory.create()
         response = self.app.get(
-            '/api/v1/checkins_articles/%s/' % article.pk,
+            '/api/v2/checkins_articles/%s/' % article.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -1492,14 +1445,14 @@ class TicketRestAPITest(WebTest):
 
         att = {
             u'started_at': '2013-11-17 15:23:18',
-            u'author': u'/api/v1/users/%s/' % self.author.pk,
+            u'author': u'/api/v2/users/%s/' % self.author.pk,
             u'title': u'title of the ticket',
             u'message': u'message of the ticket',
-            u'article': u'/api/v1/checkins_articles/%s/' % self.article.pk,
+            u'article': u'/api/v2/checkins_articles/%s/' % self.article.pk,
         }
 
         response = self.app.post_json(
-            '/api/v1/tickets/',
+            '/api/v2/tickets/',
             att,
             extra_environ=self.extra_environ,
             status=201)
@@ -1519,7 +1472,7 @@ class TicketRestAPITest(WebTest):
         ticket = articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
 
         response = self.app.put_json(
-            '/api/v1/tickets/%s/' % ticket.pk,
+            '/api/v2/tickets/%s/' % ticket.pk,
             att,
             extra_environ=self.extra_environ,
             status=204)
@@ -1531,20 +1484,20 @@ class TicketRestAPITest(WebTest):
 
     def test_del_data(self):
         response = self.app.delete(
-            '/api/v1/tickets/',
+            '/api/v2/tickets/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        response = self.app.get('/api/v1/tickets/', status=401)
+        response = self.app.get('/api/v2/tickets/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_checkin_index(self):
         articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
         response = self.app.get(
-            '/api/v1/tickets/',
+            '/api/v2/tickets/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1553,7 +1506,7 @@ class TicketRestAPITest(WebTest):
     def test_api_v1_data_checkin(self):
         ticket = articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
         response = self.app.get(
-            '/api/v1/tickets/%s/' % ticket.pk,
+            '/api/v2/tickets/%s/' % ticket.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [
@@ -1588,12 +1541,12 @@ class CommentRestAPITest(WebTest):
         self.user.user_permissions.add(perm)
 
         att = {
-            u'author': u'/api/v1/users/%s/' % self.author.pk,
+            u'author': u'/api/v2/users/%s/' % self.author.pk,
             u'message': u'message of the comment',
-            u'ticket': u'/api/v1/tickets/%s/' % self.ticket.pk,
+            u'ticket': u'/api/v2/tickets/%s/' % self.ticket.pk,
         }
 
-        response = self.app.post_json('/api/v1/comments/',
+        response = self.app.post_json('/api/v2/comments/',
                                       att,
                                       extra_environ=self.extra_environ,
                                       status=201)
@@ -1613,7 +1566,7 @@ class CommentRestAPITest(WebTest):
 
         comment = articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
         response = self.app.put_json(
-            '/api/v1/comments/%s/' % comment.pk,
+            '/api/v2/comments/%s/' % comment.pk,
             att,
             extra_environ=self.extra_environ,
             status=204)
@@ -1624,20 +1577,20 @@ class CommentRestAPITest(WebTest):
 
     def test_del_data(self):
         response = self.app.delete(
-            '/api/v1/comments/',
+            '/api/v2/comments/',
             extra_environ=self.extra_environ, status=405)
 
         self.assertEqual(response.status_code, 405)
 
     def test_access_denied_for_unauthenticated_users(self):
-        response = self.app.get('/api/v1/comments/', status=401)
+        response = self.app.get('/api/v2/comments/', status=401)
 
         self.assertEqual(response.status_code, 401)
 
     def test_checkin_index(self):
         articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
         response = self.app.get(
-            '/api/v1/comments/',
+            '/api/v2/comments/',
             extra_environ=self.extra_environ)
 
         self.assertEqual(response.status_code, 200)
@@ -1646,7 +1599,7 @@ class CommentRestAPITest(WebTest):
     def test_api_v1_data_checkin(self):
         comment = articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
         response = self.app.get(
-            '/api/v1/comments/%s/' % comment.pk,
+            '/api/v2/comments/%s/' % comment.pk,
             extra_environ=self.extra_environ)
 
         expected_keys = [

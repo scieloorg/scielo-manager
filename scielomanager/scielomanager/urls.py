@@ -9,7 +9,7 @@ from api import resources_v1, resources_v2
 
 admin.autodiscover()
 
-# RESTful API config
+# RESTful API Version 1
 v1_api = Api(api_name='v1')
 v1_api_resources = [
     resources_v1.JournalResource(),
@@ -33,6 +33,7 @@ v1_api_resources = [
 for res in v1_api_resources:
     v1_api.register(res)
 
+# RESTful API Version 2
 v2_api = Api(api_name='v2')
 
 v2_api_resources = [
@@ -41,7 +42,18 @@ v2_api_resources = [
     resources_v2.UseLicenseResource(),
     resources_v2.SponsorResource(),
     resources_v2.CollectionResource(),
-    resources_v1.IssueResource(),
+    resources_v2.IssueResource(),
+    resources_v2.SectionResource(),
+    resources_v2.DataChangeEventResource(),
+    resources_v2.PressReleaseResource(),
+    resources_v2.AheadPressReleaseResource(),
+    resources_v2.CheckinResource(),
+    resources_v2.CheckinNoticeResource(),
+    resources_v2.ArticleResource(),
+    resources_v2.CheckinArticleResource(),
+    resources_v2.TicketResource(),
+    resources_v2.CommentResource(),
+    resources_v2.PressReleaseTranslationResource()
 ]
 
 for res in v2_api_resources:

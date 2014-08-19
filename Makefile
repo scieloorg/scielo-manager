@@ -14,7 +14,7 @@ clean:
 test: clean
 	@python $(MANAGE) test --settings=$(SETTINGS_TEST)
 
-testfast: clean
+fasttest: clean
 	@python $(MANAGE) test --settings=$(SETTINGS_TEST) --failfast
 
 dbsetup:
