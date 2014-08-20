@@ -26,7 +26,8 @@ MSG_WORKFLOW_REVIEWED_QAL2 = 'Checkin Reviewed - Level 2 (SciELO)'
 MSG_WORKFLOW_SENT_TO_PENDING = 'Checkin Sent to Pending'
 MSG_WORKFLOW_SENT_TO_REVIEW = 'Checkin Sent to Review'
 MSG_WORKFLOW_EXPIRED = 'Checkin Expired'
-MSG_WORKFLOW_CHECKED_OUT = 'Checkin Checked Out'
+MSG_WORKFLOW_SCHEDULE_TO_CHECKOUT = 'Checkin Scheduled to Checkout'
+MSG_WORKFLOW_CHECKOUT_CONFIRMED = 'Checkin Checked Out'
 
 
 class Team(caching.base.CachingMixin, models.Model):
@@ -71,6 +72,8 @@ CHECKIN_STATUS_CHOICES = (
     ('accepted', _('Accepted')),
     ('rejected', _('Rejected')),
     ('expired', _('Expired')),
+    ('checkout_scheduled', _('Checkout Scheduled')),
+    ('checkout_confirmed', _('Checkout Confirmed')),
 )
 
 
@@ -103,7 +106,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
     uploaded_at = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
     article = models.ForeignKey('Article', related_name='checkins', null=True)
-    status = models.CharField(_(u'Status'), choices=CHECKIN_STATUS_CHOICES, max_length=10, default='pending')
+    status = models.CharField(_(u'Status'), choices=CHECKIN_STATUS_CHOICES, max_length=20, default='pending')
 
     accepted_by = models.ForeignKey(User, null=True, blank=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
@@ -113,7 +116,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
     # QAL2
     scielo_reviewed_by = models.ForeignKey(User, related_name='checkins_scielo_reviewed', null=True, blank=True)
     scielo_reviewed_at = models.DateTimeField(null=True, blank=True)
-
+    # REJECTED
     rejected_by = models.ForeignKey(User, related_name='checkins_rejected', null=True, blank=True)
     rejected_at = models.DateTimeField(null=True, blank=True)
     rejected_cause = models.CharField(_(u'Cause of Rejection'), max_length=128, null=True, blank=True)
@@ -122,7 +125,6 @@ class Checkin(caching.base.CachingMixin, models.Model):
 
     expiration_at = models.DateTimeField(_(u'Expiration Date'), null=True, blank=True)
 
-    checked_out = models.BooleanField(_(u'Checked Out'), default=False)
 
     class Meta:
         ordering = ['-created_at']
@@ -138,9 +140,9 @@ class Checkin(caching.base.CachingMixin, models.Model):
     @property
     def team_members(self):
         users = []
-
-        for team in self.team.all():
-            users += team.member.all()
+        if self.team:
+            for team in self.team.all():
+                users += team.member.all()
 
         return users
 
@@ -248,6 +250,24 @@ class Checkin(caching.base.CachingMixin, models.Model):
         return self.status == 'rejected'
 
     @property
+    def is_scheduled_to_checkout(self):
+        """
+        Checks if this checkin has been scheduled to proceed to checkout
+
+        The condition is ``status = checkout_scheduled``
+        """
+        return self.status == 'checkout_scheduled'
+
+    @property
+    def is_checked_out(self):
+        """
+        Checks if this checkin has been successful proceed to checkout
+
+        The condition is ``status = checkout_confirmed``
+        """
+        return self.status == 'checkout_confirmed'
+
+    @property
     def can_be_send_to_pending(self):
         """
         Check the conditions to enable: 'send to pending'  action.
@@ -283,11 +303,18 @@ class Checkin(caching.base.CachingMixin, models.Model):
         return self.is_full_reviewed
 
     @property
-    def can_be_send_to_checkout(self):
+    def can_be_scheduled_to_checkout(self):
         """
-        Only if status == 'accepted' and self.checked_out == False
+        Only if status == 'accepted'
         """
-        return self.status == 'accepted' and not self.checked_out
+        return self.status == 'accepted'
+
+    @property
+    def can_confirm_checkout(self):
+        """
+        Only if status == 'checkout_scheduled'
+        """
+        return self.status == 'checkout_scheduled'
 
     @property
     def can_be_rejected(self):
@@ -344,7 +371,7 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Do some validations required to do a checkin review.
         Return a tuple:
             - (True, None) if validation is successful
-            - (False, "Error message") if not: 
+            - (False, "Error message") if not:
 
         if the user `responsible` is not active or if exist any accepted article already, or
         :param responsible: instance of django.contrib.auth.User
@@ -483,14 +510,23 @@ class Checkin(caching.base.CachingMixin, models.Model):
             self.expiration_at = datetime.datetime.now()
             self.save()
 
-    @log_workflow_status(MSG_WORKFLOW_CHECKED_OUT)
-    def do_mark_as_checked_out(self, responsible=None):
+    @log_workflow_status(MSG_WORKFLOW_SCHEDULE_TO_CHECKOUT)
+    def do_schedule_to_checkout(self, responsible):
         """
-        This method will be call before successfully checked out via BalaioRPC api.
-        Will change to True self.checked_out field only with self.status == accepted.
+        When a checkin is accepted, next step is mark it to be processed to checkout.
+        This method change checkin's status to: 'checkout_scheduled' so a async task will process it.
         """
-        if self.can_be_send_to_checkout:
-            self.checked_out = True
+        if self.can_be_scheduled_to_checkout:
+            self.status = 'checkout_scheduled'
+            self.save()
+
+    @log_workflow_status(MSG_WORKFLOW_CHECKOUT_CONFIRMED)
+    def do_confirm_checkout(self, responsible=None):
+        """
+        This method will be called after successfully checked-out via BalaioRPC API.
+        """
+        if self.can_confirm_checkout:
+            self.status = 'checkout_confirmed'
             self.save()
 
     def clean(self):
@@ -558,7 +594,7 @@ class CheckinWorkflowLog(caching.base.CachingMixin, models.Model):
     created_at = models.DateTimeField(_(u'Created at'), default=datetime.datetime.now)
     # nullable in case of (Celery's task) processing
     user = models.ForeignKey(User, related_name='checkin_log_responsible', null=True, blank=True)
-    status = models.CharField(_(u'Status'), choices=CHECKIN_STATUS_CHOICES, max_length=10, default='pending')
+    status = models.CharField(_(u'Status'), choices=CHECKIN_STATUS_CHOICES, max_length=20, default='pending')
     description = models.TextField(_(u'Description'), null=True, blank=True)
     checkin = models.ForeignKey(Checkin, related_name='submission_log')
 

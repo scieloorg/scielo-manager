@@ -471,12 +471,85 @@ class CheckinWorkflowLogTests(TestCase):
         # do accept
         self.assertTrue(checkin.can_be_accepted)
         checkin.accept(self.user_qal_2)
+        self.assertEqual("accepted", checkin.status)
+        self.assertTrue(checkin.is_accepted)
+        self.assertEqual(self.user_qal_2, checkin.accepted_by)
 
         logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_2)
 
         self.assertEqual(logs.count(), 1)
         self.assertEqual(logs[0].user, self.user_qal_2)
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_ACCEPTED)
+
+    def test_checkin_do_schedule_to_checkout(self):
+        checkin = modelfactories.CheckinFactory()
+        create_notices('ok', checkin)
+
+        # send to review
+        self.assertTrue(checkin.can_be_send_to_review)
+        checkin.send_to_review(self.user)
+
+        # do review by QAL1
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_1(self.user_qal_1)
+
+        # do review by QAL2
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_2(self.user_qal_2)
+
+        # do accept
+        self.assertTrue(checkin.can_be_accepted)
+        checkin.accept(self.user_qal_2)
+
+        # do schedule to checkout
+        self.assertEqual("accepted", checkin.status)
+        self.assertTrue(checkin.can_be_scheduled_to_checkout)
+        checkin.do_schedule_to_checkout(self.user_qal_2)
+        self.assertEqual("checkout_scheduled", checkin.status)
+
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status, user=self.user_qal_2)
+
+        self.assertEqual(logs.count(), 1)
+        self.assertEqual(logs[0].user, self.user_qal_2)
+        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_SCHEDULE_TO_CHECKOUT)
+
+
+    def test_checkin_do_confirm_checkout(self):
+        checkin = modelfactories.CheckinFactory()
+        create_notices('ok', checkin)
+
+        # send to review
+        self.assertTrue(checkin.can_be_send_to_review)
+        checkin.send_to_review(self.user)
+
+        # do review by QAL1
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_1(self.user_qal_1)
+
+        # do review by QAL2
+        self.assertTrue(checkin.can_be_reviewed)
+        checkin.do_review_by_level_2(self.user_qal_2)
+
+        # do accept
+        self.assertTrue(checkin.can_be_accepted)
+        checkin.accept(self.user_qal_2)
+
+        # do schedule to checkout
+        self.assertTrue(checkin.can_be_scheduled_to_checkout)
+        checkin.do_schedule_to_checkout(self.user_qal_2)
+
+        # do confirm checkout
+        self.assertEqual("checkout_scheduled", checkin.status)
+        self.assertTrue(checkin.can_confirm_checkout)
+        checkin.do_confirm_checkout()
+        self.assertEqual("checkout_confirmed", checkin.status)
+
+        logs = models.CheckinWorkflowLog.objects.filter(checkin=checkin, status=checkin.status)
+
+        self.assertEqual(logs.count(), 1)
+        # the user responsible is None, because is a made by THE SYSTEM (a.k.a. a celery task)
+        self.assertIsNone(logs[0].user)
+        self.assertEqual(logs[0].description, models.MSG_WORKFLOW_CHECKOUT_CONFIRMED)
 
     def test_checkin_do_reject_log(self):
         checkin = modelfactories.CheckinFactory()
@@ -535,6 +608,10 @@ class CheckinWorkflowLogTests(TestCase):
         self.assertIsNone(logs[0].user)
         self.assertEqual(logs[0].status, 'expired')
         self.assertEqual(logs[0].description, models.MSG_WORKFLOW_EXPIRED)
+
+    # ############################### #
+    # CHECKIN NOTICES AND ERROR LEVEL #
+    # ############################### #
 
     def test_checkin_with_notices_incomplete_service_status_must_be_in_progress(self):
         """

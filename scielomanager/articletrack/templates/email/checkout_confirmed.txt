@@ -1,0 +1,4 @@
+The process of Check-out of the article:{{ checkin.article }} has finished successfully, it will be available online soon.
+<br/>
+<br/>
+Check: http://{{domain}}{% url notice_detail checkin.id %}
