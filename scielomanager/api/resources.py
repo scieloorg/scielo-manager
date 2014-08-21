@@ -485,8 +485,9 @@ class CheckinArticleResource(ModelResource):
     def obj_create(self, bundle, **kwargs):
         bundle = super(CheckinArticleResource, self).obj_create(bundle, **kwargs)
 
-        pissn = bundle.data.get('pissn', '')
-        eissn = bundle.data.get('eissn', '')
+        # Using NOISSN to avoid get journal with empty pissn or eissn attribute
+        pissn = bundle.data.get('pissn', 'NOISSN')
+        eissn = bundle.data.get('eissn', 'NOISSN')
 
         try:
             journal = Journal.objects.get(
