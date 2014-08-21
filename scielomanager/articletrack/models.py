@@ -504,6 +504,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
         Change self.status to 'expired'.
         Change self.expiration_at to now()
         This action generates a ``CheckinWorkflowLog`` entry.
+
+        :param responsible: user who made the action, this param is not used in this method, but it necessary to log
         """
         if self.status != 'expired':
             self.status = 'expired'
@@ -515,6 +517,8 @@ class Checkin(caching.base.CachingMixin, models.Model):
         """
         When a checkin is accepted, next step is mark it to be processed to checkout.
         This method change checkin's status to: 'checkout_scheduled' so a async task will process it.
+
+        :param responsible: user who made the action, this param is not used in this method, but it necessary to log
         """
         if self.can_be_scheduled_to_checkout:
             self.status = 'checkout_scheduled'
