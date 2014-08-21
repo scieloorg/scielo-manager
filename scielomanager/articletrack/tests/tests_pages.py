@@ -296,15 +296,8 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         expect_errors = {
-            'error_lines': '1',
-            'results': [
-                {
-                    'column': 6,
-                    'line': 1,
-                    'message': u'Premature end of data in tag xml line 1, line 1, column 6',
-                    'level': 'ERROR'
-                }
-            ]
+            'error_lines': '',
+            'results': []
         }
         self.assertEqual(xml_data['validation_errors'], expect_errors)
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
@@ -428,17 +421,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        expect_errors = {
-            'error_lines': '1',
-            'results': [
-                {
-                    'column': 6,
-                    'line': 1,
-                    'message': u'Premature end of data in tag xml line 1, line 1, column 6',
-                    'level': 'ERROR'
-                }
-            ]
-        }
+        expect_errors = {'error_lines': '', 'results': []}
         self.assertEqual(xml_data['validation_errors'], expect_errors)
 
     def test_annotations_of_syntax_error(self):

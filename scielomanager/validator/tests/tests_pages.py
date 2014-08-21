@@ -150,6 +150,9 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertFalse(hasattr(response.context, 'results'))
 
     def test_submit_valid_url_then_form_is_valid(self):
+        """
+        Submitting a valid url, will not raise a validation error of the form.
+        """
         # with
         self._addWaffleFlag()
         self._mocker_replace_stylechecker()
@@ -166,17 +169,7 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['form'].is_valid())
         expected_results = {
-            'validation_errors': {
-                'error_lines': '1',
-                'results': [
-                    {
-                        'column': 6,
-                        'level': 'ERROR',
-                        'line': 1,
-                        'message': u'Premature end of data in tag xml line 1, line 1, column 6'
-                    }
-                ]
-            },
+            'validation_errors': {'error_lines': '', 'results': []},
             'annotations': None,
             'can_be_analyzed': (True, None)
         }
