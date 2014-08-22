@@ -45,6 +45,7 @@ class SponsorResource(ModelResource):
 
 
 class UserResource(ModelResource):
+    collections = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = User.objects.all()
@@ -58,6 +59,13 @@ class UserResource(ModelResource):
             'is_staff',
             'is_superuser',
         ]
+
+
+    def dehydrate_collections(self, bundle):
+        return [{'name': col.collection.name,
+                 'is_default': col.is_default,
+                 'is_manager': col.is_manager}
+                for col in bundle.obj.usercollections_set.all()]
 
     def dehydrate(self, bundle):
         bundle.data['username'] = bundle.obj.username

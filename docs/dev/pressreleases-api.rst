@@ -1,7 +1,7 @@
 Press Releases API
 ==================
 
-..note::
+.. note::
 
   There are two endpoints for querying press releases.
   **pressreleases**, for regular press releases, and **apressreleases**
@@ -11,9 +11,15 @@ Press Releases API
 List all press releases
 -----------------------
 
-Request::
+Request:
 
-  GET /api/v1/pressreleases
+  **API version 1**
+
+  *GET /api/v1/pressreleases*
+
+  **API version 2**
+
+  *GET /api/v2/pressreleases*
 
 Parameters:
 
@@ -42,10 +48,9 @@ Optional Parameters:
 
     *String* of the **issue pid** as used by SciELO catalogs.
 
-Response::
+Response version 1 and version 2::
 
   {
-
     "meta": {
         "limit": 20,
         "next": null,
@@ -81,16 +86,21 @@ Response::
         "doi": "http://dx.doi.org/10.4415/ANN_12_01_01"
       }
     ]
-
-}
+  }
 
 
 Get a single section
 --------------------
 
-Request::
+Request:
 
-  GET /api/v1/pressreleases/:id/
+  **API version 1**
+
+  *GET /api/v1/pressreleases/:id/*
+
+  **API version 2**
+
+  *GET /api/v2/pressreleases/:id/*
 
 Parameters:
 
@@ -108,7 +118,7 @@ Optional Parameters:
     yml**.
 
 
-Response::
+Response version 1 and version 2::
 
   {
     "articles": ["S0021-25712012000100001"],
