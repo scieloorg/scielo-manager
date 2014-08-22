@@ -38,6 +38,7 @@ v2_api = Api(api_name='v2')
 
 v2_api_resources = [
     resources_v2.JournalResource(),
+    # resources_v2.UserProfileResource(),
     resources_v2.UserResource(),
     resources_v2.UseLicenseResource(),
     resources_v2.SponsorResource(),

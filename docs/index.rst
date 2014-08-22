@@ -30,12 +30,12 @@ and design decisions.
    dev/notes
    dev/useraccesslevel
    dev/exporttoisis
-   dev/api
    dev/importscielo
    dev/json_sample
    dev/middlewares
    dev/modelmanagers
    dev/tasks
+   dev/api
 
 Indices and tables
 ==================

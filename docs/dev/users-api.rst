@@ -4,9 +4,15 @@ Users API
 List all users
 --------------
 
-Request::
+Request:
 
-  GET /api/v1/users
+  **API version 1**
+
+  *GET /api/v1/users*
+
+  **API version 2**
+
+  *GET /api/v2/users*
 
 Parameters:
 
@@ -23,27 +29,30 @@ Optional Parameters:
     *String* of the desired output format. The options are **xml, json,
     yml**.
 
-Response::
+Response:
 
-  {
-  "meta": {
-    "limit": 20,
-    "next": null,
-    "offset": 0,
-    "previous": null,
-    "total_count": 11
-  },
-  "objects": [
+  **API version 1**
+
     {
-      "date_joined": "2012-08-21T14:40:43",
-      "first_name": "",
-      "id": "14",
-      "last_login": "2012-09-26T11:10:55.216742",
-      "last_name": "",
-      "resource_uri": "/api/v1/users/14/",
-      "username": "gustavofonseca"
+      "meta": {
+        "limit": 20,
+        "next": null,
+        "offset": 0,
+        "previous": null,
+        "total_count": 11
+      },
+      "objects": [
+        {
+          "date_joined": "2012-08-21T14:40:43",
+          "first_name": "",
+          "id": "14",
+          "last_login": "2012-09-26T11:10:55.216742",
+          "last_name": "",
+          "resource_uri": "/api/v1/users/14/",
+          "username": "gustavofonseca"
+        }
+      ]
     }
-  ]
 
 Get a single user
 -----------------

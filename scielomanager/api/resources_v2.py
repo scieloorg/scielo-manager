@@ -5,7 +5,7 @@ import logging
 from tastypie import fields
 from django.db.models import Q
 from django.contrib.auth.models import User
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, Resource
 from tastypie.authorization import DjangoAuthorization
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
@@ -45,17 +45,24 @@ class SponsorResource(ModelResource):
 
 
 class UserResource(ModelResource):
+
     class Meta(ApiKeyAuthMeta):
         queryset = User.objects.all()
         resource_name = 'users'
         allowed_methods = ['get', ]
         excludes = [
+            'username',
             'email',
             'password',
             'is_active',
             'is_staff',
             'is_superuser',
         ]
+
+    def dehydrate(self, bundle):
+        bundle.data['username'] = bundle.obj.username
+
+        return bundle
 
 
 class CollectionResource(ModelResource):
@@ -82,9 +89,33 @@ class SectionResource(ModelResource):
             "journal": ('exact'),
         }
 
+    def build_filters(self, filters=None):
+        """
+        Custom filter that retrieves data by journal eletronic_issn and print_issn.
+        """
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(SectionResource, self).build_filters(filters)
+
+        param_filters = {}
+
+        if 'journal_eissn' in filters:
+            param_filters['journal__eletronic_issn'] = filters['journal_eissn']
+
+        if 'journal_pissn' in filters:
+            import pdb; pdb.set_trace()
+            param_filters['journal__print_issn'] = filters['journal_pissn']
+
+        sections = models.Section.objects.filter(**param_filters)
+
+        orm_filters['pk__in'] = sections
+
+        return orm_filters
+
     def dehydrate_titles(self, bundle):
-        return [(title.language.iso_code, title.title)
-            for title in bundle.obj.titles.all()]
+        return dict([title.language.iso_code, title.title]
+            for title in bundle.obj.titles.all())
 
 
 class IssueResource(ModelResource):
@@ -163,6 +194,19 @@ class IssueResource(ModelResource):
             return bundle.obj.suppl_text if bundle.obj.number else ''
         else:
             return ''
+
+    def dehydrate_sections(self, bundle):
+        section_list = []
+
+        for section in bundle.obj.section.all():
+            section_list.append(
+                {'code': section.code,
+                 'titles': [{'lang':ti.language.iso_code, 'title':ti.title} for ti in section.titles.all()]
+                 }
+            )
+
+        return section_list
+
 
 
 class JournalResource(ModelResource):

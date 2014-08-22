@@ -9,7 +9,7 @@ access, but for future releases more methods will be added.
 If you have any problems or requests please contact
 `support <http://groups.google.com/group/scielo-discuss/>`_.
 
-**Current version:** API v1
+**Current version:** API v2 (continue providing support for v1)
 
 
 .. note::
@@ -41,7 +41,7 @@ Available endpoints
   users-api
   changes-api
   pressreleases-api
-  attempts-api
+
 
 
 .. note::
