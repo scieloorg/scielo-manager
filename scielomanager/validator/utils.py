@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class ErrorCollection(object):
-    _errors = []
 
     def __init__(self):
         self._errors = []
@@ -62,7 +61,6 @@ class StyleCheckerAnalyzer(object):
     _can_be_analyzed = (False, "Can't be analyzed")
     _can_be_analyzed_as_exception = False
     _annotations = None
-    _validation_errors = {'results': [], 'error_lines': [], }
     _error_collection = None
 
     def __init__(self, target_input):
