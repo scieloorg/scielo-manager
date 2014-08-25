@@ -21,12 +21,19 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 # Schedule:
 # http://celery.readthedocs.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
 from celery.schedules import crontab
+from datetime import timedelta
+
 CELERYBEAT_SCHEDULE = {
     'checkin-expire-daily': {
         'task': 'articletrack.tasks.process_expirable_checkins',
         'schedule': crontab(minute=0, hour=0),
         'args': ()
     },
+    'process-checkins-scheduled-to-checkout-hourly': {
+        'task': 'articletrack.tasks.process_checkins_scheduled_to_checkout',
+        'schedule': timedelta(hours=1),
+        'args': ()
+    }
 }
 app.conf.update(
     CELERYBEAT_SCHEDULE=CELERYBEAT_SCHEDULE,

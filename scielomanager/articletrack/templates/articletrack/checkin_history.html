@@ -41,17 +41,24 @@
 
     <div class="log-item row-fluid show-grid">
       <div class="span1">
-        <img class="img-rounded" src="{% user_avatar_url log.user 'medium' %}" alt="{{ log.user.get_full_name }}">
-        <br>
-        <small>{{ log.user.get_full_name }}</small>
+        {% if log.user %}
+          <img class="img-rounded" src="{% user_avatar_url log.user 'medium' %}" alt="{{ log.user.get_full_name }}">
+          <br>
+          <small>{{ log.user.get_full_name }}</small>
+        {% else %}
+          {# some operations as made by task, no user involved, so log are generated without a user #}
+          <i class="icon-cog"></i><i class="icon-cog"></i><i class="icon-cog"></i>
+          <br>
+          <small>{% trans "System" %}</small>
+        {% endif %}
       </div>
       <div class="span11">
         <div class='comment_left_arrow_box'>
           <small>
             <a class='muted time_ago_tooltip' href='#' data-toggle="tooltip" title='{{ log.created_at }}'>
               {{ log.created_at|timesince }} {% trans "ago" %}
-            </a> 
-            {% trans "has modified this checkin status to" %}: 
+            </a>
+            {% trans "has modified this checkin status to" %}:
             {% if log.status == 'pending' %}
               <span class="label">
             {% elif log.status == 'rejected' %}
@@ -74,7 +81,7 @@
           </div>
       </div>
     </div>
-    <div class="down_arrow_icon"> 
+    <div class="down_arrow_icon">
       {% if not forloop.last %}
         <i class="icon-chevron-down"></i>
       {% else %}

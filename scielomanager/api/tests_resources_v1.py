@@ -1236,7 +1236,6 @@ class CheckinRestAPITest(WebTest):
                 u'accepted_at',
                 u'article',
                 u'attempt_ref',
-                u'checked_out',
                 u'created_at',
                 u'expiration_at',
                 u'id',
