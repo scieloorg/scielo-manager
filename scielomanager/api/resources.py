@@ -178,12 +178,17 @@ class UserResource(ModelResource):
         resource_name = 'users'
         allowed_methods = ['get', ]
         excludes = [
+            'username',
             'email',
             'password',
             'is_active',
             'is_staff',
             'is_superuser',
         ]
+
+    def dehydrate(self, bundle):
+        bundle.data['username'] = bundle.obj.username
+        return bundle
 
 
 class JournalResource(ModelResource):
