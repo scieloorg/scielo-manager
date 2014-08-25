@@ -60,8 +60,8 @@ Response:
     }
 
 
-Get a single collection
------------------------
+Get a single collection notice
+------------------------------
 
 Request:
 
