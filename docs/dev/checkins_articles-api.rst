@@ -1,7 +1,7 @@
 Checkins Articles API
 =====================
 
-List all Chekins Articles
+List all Checkins Articles
 -------------------------
 
 Request:
@@ -71,11 +71,11 @@ Request:
 
   **API version 1**
 
-  *GET /api/v1/checkins_articless/:id/*
+  *GET /api/v1/checkins_articles/:id/*
 
   **API version 2**
 
-  *GET /api/v2/checkins_articless/:id/*
+  *GET /api/v2/checkins_articles/:id/*
 
 
 Parameters:
