@@ -59,7 +59,7 @@ Response:
     {
       "meta": {
         "limit": 20,
-        "next": "/api/v1/journals/?username=jamil.atta&api_key=atta&limit=20&offset=20&format=json",
+        "next": "/api/v1/journals/?username=jamil.atta&api_key=XXXX&limit=20&offset=20&format=json",
         "offset": 0,
         "previous": null,
         "total_count": 192
@@ -81,7 +81,7 @@ Response:
           "editor_address_country": "",
           "editor_address_state": "",
           "editor_address_zip": "",
-          "editor_email": "rosamaria.murillo@inecol.edu.mx",
+          "editor_email": "",
           "editor_name": "",
           "editor_phone1": "",
           "editor_phone2": null,
@@ -212,7 +212,7 @@ Response:
     {
       "meta": {
         "limit": 20,
-        "next": "/api/v2/journals/?username=admin&api_key=atta&limit=20&offset=20&format=json",
+        "next": "/api/v2/journals/?username=admin&api_key=XXXX&limit=20&offset=20&format=json",
         "offset": 0,
         "previous": null,
         "total_count": 327
@@ -236,7 +236,7 @@ Response:
             "editor_address_country": "",
             "editor_address_state": "",
             "editor_address_zip": "",
-            "editor_email": "actaagron@uem.br",
+            "editor_email": "",
             "editor_name": "",
             "editor_phone1": "",
             "editor_phone2": null,
@@ -529,7 +529,7 @@ Response:
       "editor_address_country": "",
       "editor_address_state": "",
       "editor_address_zip": "",
-      "editor_email": "annali@iss.it",
+      "editor_email": "",
       "editor_name": "",
       "editor_phone1": "",
       "editor_phone2": null,
@@ -664,7 +664,7 @@ Response:
           "editor_address_country": "",
           "editor_address_state": "",
           "editor_address_zip": "",
-          "editor_email": "revsp@org.usp.br",
+          "editor_email": "",
           "editor_name": "",
           "editor_phone1": "",
           "editor_phone2": null,

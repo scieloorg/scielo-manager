@@ -100,7 +100,7 @@ Response:
     {
       "meta": {
         "limit": 20,
-        "next": "/api/v2/issues/?username=admin&api_key=atta&limit=20&offset=20&format=json",
+        "next": "/api/v2/issues/?username=admin&api_key=XXXX&limit=20&offset=20&format=json",
         "offset": 0,
         "previous": null,
         "total_count": 14052
@@ -114,14 +114,14 @@ Response:
           "id": 3273,
           "is_marked_up": false,
           "is_trashed": false,
-          "journal": "\/api\/v2\/journals\/291\/",
+          "journal": "/api/v2/journals/291/",
           "label": "39 (1)",
           "number": "1",
           "order": 1,
           "publication_end_month": 1,
           "publication_start_month": 1,
           "publication_year": 1997,
-          "resource_uri": "\/api\/v2\/issues\/3273\/",
+          "resource_uri": "/api/v2/issues/3273/",
           "sections": [
             {
               "code": "RIMTSP-3x88",
@@ -315,7 +315,7 @@ Response:
       "id": 3273,
       "is_marked_up": false,
       "is_trashed": false,
-      "journal": "\/api\/v2\/journals\/291\/",
+      "journal": "/api/v2/journals/291/",
       "label": "39 (1)",
       "number": "1",
       "order": 1,
