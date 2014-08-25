@@ -7,7 +7,7 @@ from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
 from articletrack.tests import modelfactories as articletrack_modelfactories
-from api.resources_v1 import (
+from api.resources_v2 import (
     JournalResource,
     IssueResource,
     )
@@ -443,7 +443,7 @@ class CollectionRestAPITest(WebTest):
             extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
-    def test_api_v1_datamodel(self):
+    def test_api_v2_datamodel(self):
         collection = modelfactories.CollectionFactory.create()
         response = self.app.get('/api/v2/collections/%s/' % collection.pk,
             extra_environ=self.extra_environ)
@@ -530,7 +530,7 @@ class IssuesRestAPITest(WebTest):
         response = self.app.delete('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ, status=405)
         self.assertEqual(response.status_code, 405)
 
-    def test_api_v1_datamodel(self):
+    def test_api_v2_datamodel(self):
         issue = modelfactories.IssueFactory.create()
         response = self.app.get('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
@@ -854,7 +854,7 @@ class PressReleaseRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_datamodel(self):
+    def test_api_v2_datamodel(self):
         pr = modelfactories.RegularPressReleaseFactory.create()
         response = self.app.get('/api/v2/pressreleases/%s/' % pr.pk,
             extra_environ=self.extra_environ)
@@ -871,7 +871,7 @@ class PressReleaseRestAPITest(WebTest):
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
-    def test_translations_api_v1_datamodel(self):
+    def test_translations_api_v2_datamodel(self):
         pr_trans = modelfactories.PressReleaseTranslationFactory.create()
         response = self.app.get('/api/v2/pressreleases/%s/' % pr_trans.press_release.pk,
             extra_environ=self.extra_environ)
@@ -889,7 +889,7 @@ class PressReleaseRestAPITest(WebTest):
             sorted(expected_keys)
         )
 
-    def test_issue_meta_api_v1_datamodel(self):
+    def test_issue_meta_api_v2_datamodel(self):
         pr_trans = modelfactories.PressReleaseTranslationFactory.create()
         response = self.app.get('/api/v2/pressreleases/%s/' % pr_trans.press_release.pk,
             extra_environ=self.extra_environ)
@@ -1019,7 +1019,7 @@ class AheadPressReleaseRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_datamodel(self):
+    def test_api_v2_datamodel(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
         response = self.app.get('/api/v2/apressreleases/%s/' % pr.pk,
             extra_environ=self.extra_environ)
@@ -1035,7 +1035,7 @@ class AheadPressReleaseRestAPITest(WebTest):
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
-    def test_translations_api_v1_datamodel(self):
+    def test_translations_api_v2_datamodel(self):
         pr = modelfactories.AheadPressReleaseFactory.create()
         pr_trans = modelfactories.PressReleaseTranslationFactory.create(press_release=pr)
         response = self.app.get('/api/v2/apressreleases/%s/' % pr_trans.press_release.pk,
@@ -1180,7 +1180,7 @@ class CheckinRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_data_checkin(self):
+    def test_api_v2_data_checkin(self):
         check = articletrack_modelfactories.CheckinFactory.create()
         response = self.app.get('/api/v2/checkins/%s/' % check.pk,
             extra_environ=self.extra_environ)
@@ -1189,7 +1189,6 @@ class CheckinRestAPITest(WebTest):
                 u'accepted_at',
                 u'article',
                 u'attempt_ref',
-                u'checked_out',
                 u'created_at',
                 u'expiration_at',
                 u'id',
@@ -1283,7 +1282,7 @@ class NoticeRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_model_notice(self):
+    def test_api_v2_model_notice(self):
         check = articletrack_modelfactories.NoticeFactory.create()
         response = self.app.get(
             '/api/v2/notices/%s/' % check.pk,
@@ -1405,7 +1404,7 @@ class CheckinArticleRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_data_checkin(self):
+    def test_api_v2_data_checkin(self):
         article = articletrack_modelfactories.ArticleFactory.create()
         response = self.app.get(
             '/api/v2/checkins_articles/%s/' % article.pk,
@@ -1503,7 +1502,7 @@ class TicketRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_data_checkin(self):
+    def test_api_v2_data_checkin(self):
         ticket = articletrack_modelfactories.TicketFactory.create(author=self.author, article=self.article)
         response = self.app.get(
             '/api/v2/tickets/%s/' % ticket.pk,
@@ -1596,7 +1595,7 @@ class CommentRestAPITest(WebTest):
         self.assertEqual(response.status_code, 200)
         self.assertTrue('objects' in response.content)
 
-    def test_api_v1_data_checkin(self):
+    def test_api_v2_data_checkin(self):
         comment = articletrack_modelfactories.CommentFactory.create(author=self.author, ticket=self.ticket)
         response = self.app.get(
             '/api/v2/comments/%s/' % comment.pk,
