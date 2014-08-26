@@ -118,7 +118,6 @@ class JournalFactory(factory.Factory):
 
     creator = factory.SubFactory(UserFactory)
     use_license = factory.SubFactory(UseLicenseFactory)
-    #collections = factory.SubFactory(CollectionFactory)
 
 
 class SectionFactory(factory.Factory):

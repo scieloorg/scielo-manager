@@ -4,7 +4,7 @@ import logging
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from tastypie.resources import ModelResource, Resource
+from tastypie.resources import ModelResource
 from tastypie import fields
 from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.authentication import ApiKeyAuthentication
@@ -53,9 +53,9 @@ class ApiKeyAuthMeta:
 
 
 class SectionResource(ModelResource):
-    journal = fields.ForeignKey('api.resources.JournalResource',
+    journal = fields.ForeignKey('api.resources_v1.JournalResource',
         'journal')
-    issues = fields.OneToManyField('api.resources.IssueResource',
+    issues = fields.OneToManyField('api.resources_v1.IssueResource',
         'issue_set')
     titles = fields.CharField(readonly=True)
 
@@ -74,7 +74,10 @@ class SectionResource(ModelResource):
 
 
 class IssueResource(ModelResource):
-    journal = fields.ForeignKey('api.resources.JournalResource',
+    """
+    IMPORTANT: is_press_release was removed on V2
+    """
+    journal = fields.ForeignKey('api.resources_v1.JournalResource',
         'journal')
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
@@ -251,10 +254,25 @@ class JournalResource(ModelResource):
         return orm_filters
 
     def dehydrate_missions(self, bundle):
+        """
+        IMPORTANT: Changed to dict on V2
+            missions: {
+                en: "To publish articles of clinical and experimental...",
+                es: "Publicar artÃ­culos de estudios clÃ­nicos y experim...",
+                pt: "Publicar artigos de estudos clÃ­nicos e experiment..."
+            },
+        """
         return [(mission.language.iso_code, mission.description)
             for mission in bundle.obj.missions.all()]
 
     def dehydrate_other_titles(self, bundle):
+        """
+        IMPORTANT: Changed to dict on V2
+            other_titles: {
+                other: "Arquivos Brasileiros de Cirurgia Digestiva",
+                paralleltitle: "Brazilian Archives of Digestive Surgery"
+            },
+        """
         return [(title.category, title.title)
             for title in bundle.obj.other_titles.all()]
 
@@ -272,7 +290,9 @@ class JournalResource(ModelResource):
             for area in bundle.obj.study_areas.all()]
 
     def dehydrate_collections(self, bundle):
-        """Only works com v1, without multiple collections per journal.
+        """
+        Only works with v1, without multiple collections per journal.
+        IMPORTANT: This prepare function was removed from V2
         """
         try:
             return bundle.data['collections'][0]
@@ -441,7 +461,7 @@ class AheadPressReleaseResource(ModelResource):
 
 
 class CheckinResource(ModelResource):
-    article = fields.ForeignKey('api.resources.CheckinArticleResource', 'article')
+    article = fields.ForeignKey('api.resources_v1.CheckinArticleResource', 'article')
 
     class Meta(ApiKeyAuthMeta):
         queryset = Checkin.objects.all()
@@ -506,6 +526,7 @@ class CheckinArticleResource(ModelResource):
             bundle.obj.journals.add(journal)
 
         return bundle
+
 
 class TicketResource(ModelResource):
     author = fields.ForeignKey(UserResource, 'author')
