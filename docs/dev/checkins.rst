@@ -28,7 +28,7 @@ To manipulate a Checkin, is mandatory to be part of at least one this Groups.
 
   * **Producer**:
 
-    Is the lower level, users in this group represents a user that submit (or want to keep track of a submited) package to see their evolution in the workflow.
+    Is the lower level, users in this group represents a user that submit (or want to keep track of a submitted) package to see their evolution in the workflow.
 
   * **QAL1**:
 
@@ -48,7 +48,7 @@ Along the submission process the Checkin will pass between a few stages, each on
 
   * **Pending**:
 
-    Is the lower level, users in this group represents a user that submit (or want keep track of a submited) package to see their evolution in the workflow.
+    Is the lower level, users in this group represents a user that submit (or want keep track of a submitted) package to see their evolution in the workflow.
 
   * **Expired**:
 
@@ -56,7 +56,13 @@ Along the submission process the Checkin will pass between a few stages, each on
 
   * **Review**:
 
-    The Checkin with this state, represent a Checkin ready to be reviewed by a QAL1 user (doing a **Editorial Review**), and also is possible to be reviewed by a QAL2 user (doing a **SciELO Review**), without specific order of events is required.
+    The Checkin with this status, represent a Checkin ready to be reviewed by a QAL1 user (doing a **Editorial Review**), and also is possible to be reviewed by a QAL2 user (doing a **SciELO Review**), without specific order of events is required.
+
+  * **Rejected**:
+
+    The Checkin with this status, represent a Checkin that was sent to be reviewed, but for some reason (written down and stored in a Checkin field), was rejected (by a **Producer**, or **QAL1**, or **QAL2** user).
+
+    A Checkin once accepted (or at any forward steps), could not be rejected.
 
   * **Accepted**:
 
@@ -201,7 +207,7 @@ Workflows:
 
 2. Detailed view:
 
-    .. image:: ../images/workflow_simple.png
+    .. image:: ../images/workflow_for_devs.png
 
 3. Transitions from status: Pending
 
