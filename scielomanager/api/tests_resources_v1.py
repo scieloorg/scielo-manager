@@ -13,7 +13,7 @@ from django_factory_boy import auth
 from journalmanager.tests import modelfactories
 from articletrack.tests import modelfactories as articletrack_modelfactories
 
-from api.resources import (
+from api.resources_v1 import (
     IssueResource,
     SectionResource,
     JournalResource,

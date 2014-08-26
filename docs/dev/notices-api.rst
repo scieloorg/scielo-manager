@@ -1,8 +1,8 @@
-Collections API
+Notices API
 ===============
 
-List all collections
---------------------
+List all notices
+----------------
 
 Request:
 
@@ -70,7 +70,7 @@ Response:
     }
 
 
-Get a single collection
+Get a single notices
 -----------------------
 
 Request::
