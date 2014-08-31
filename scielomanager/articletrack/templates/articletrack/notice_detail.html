@@ -7,7 +7,6 @@
 {% block page_title %}{% trans "Details of checkin" %}: {{ checkin.pk }}{% endblock %}
 
 {% block content %}
-<link href="{% static 'css/prism.css' %}" rel="stylesheet" />
 <style type="text/css">
 .tab_add_ticket:hover { background-color: #51A351 !important; }
 </style>
@@ -489,6 +488,4 @@
 
     });
   </script>
-  <script type="text/javascript" src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/scroll_to_error_message.js' %}"></script>
 {% endblock %}

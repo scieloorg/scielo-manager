@@ -1,9 +1,15 @@
 # coding: utf-8
 import logging
 import lxml
+import pkg_resources
 from packtools import stylechecker
 
 logger = logging.getLogger(__name__)
+
+try:
+    PACKTOOLS_VERSION = pkg_resources.get_distribution('packtools').version
+except DistributionNotFound:
+    PACKTOOLS_VERSION = None
 
 
 class ErrorCollection(object):
@@ -45,6 +51,34 @@ class ErrorCollection(object):
     def get_list(self):
         return self._errors
 
+    def get_list_uniques_and_counts(self):
+        """
+        return a list, with dicts of errors (without repeted) and
+        each error has the count (of ocurrences) of this error
+        """
+        unique_errors = []  # collect errors without repeated
+        occurs = []  # collect error counts, mapped by index of the unique_errors list
+        for error in self._errors:
+            if error in unique_errors:
+                # already included, only increments count
+                error_idx = unique_errors.index(error)
+                occurs[error_idx] += 1
+            else:
+                unique_errors.append(error)
+                error_idx = unique_errors.index(error)
+                occurs.append(1)
+        result = []
+        for error in unique_errors:
+            elem = error
+            error_idx = unique_errors.index(error)
+            elem['count'] = occurs[error_idx]
+            result.append(elem)
+        return result
+
+    def get_total_count(self):
+        """ return the total count of errors found in validation """
+        return len(self._errors)
+
     def get_lines(self):
         result = []
         for error in self._errors:
@@ -62,6 +96,7 @@ class StyleCheckerAnalyzer(object):
     _can_be_analyzed_as_exception = False
     _annotations = None
     _error_collection = None
+    _packtools_version = PACKTOOLS_VERSION
 
     def __init__(self, target_input):
         if not bool(target_input):
@@ -77,28 +112,28 @@ class StyleCheckerAnalyzer(object):
             self._can_be_analyzed = (False, "IOError while starting Stylechecker.XML(), please verify if the input is correct")
         except Exception as e:
             self._can_be_analyzed = (False, "Error while starting Stylechecker.XML()")
-        self._validation_errors = {'results': [], 'error_lines': [], }
+        self._validation_errors = {'results': [], 'errors_total_count': 0, }
         self._error_collection = ErrorCollection()
-
 
     def get_validation_errors(self):
         """
-            returns a dict like { 'results' : ... , 'error_lines': ''}
+            returns a dict like { 'results' : ... , 'error_lines': 0}
             'results' is a dict with a structure necessary to display errors table (error level, line, cols, message)
-            'error_lines' is a coma separated string that list the un-repeated numbers of lines, where the XML has a error annotation
-            (this list is used to highlight the line to the user with a plugin).
+            'errors_total_count' is a number that indicates the total of errors detected in validation
         """
-        self._validation_errors['results'] = self._error_collection.get_list()
-        lines_distinct = [str(l) for l in set(self._error_collection.get_lines())]
-        self._validation_errors['error_lines'] = ", ".join(lines_distinct)
+        self._validation_errors['results'] = self._error_collection.get_list_uniques_and_counts()
+        self._validation_errors['errors_total_count'] = self._error_collection.get_total_count()
         return self._validation_errors
 
+    def get_version(self):
+        return self._packtools_version
 
     def analyze(self):
         results = {
             'can_be_analyzed': (False, "Can't be analyzed"),
             'annotations': None,
             'validation_errors': None,
+            'packtools_version': self.get_version()
         }
         if self._can_be_analyzed_as_exception:
             # in case of exceptions: self._target_data is the exception

@@ -168,10 +168,13 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertTemplateUsed(response, 'validator/packtools.html')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['form'].is_valid())
+        import pkg_resources
+        packtools_version = pkg_resources.get_distribution('packtools').version
         expected_results = {
-            'validation_errors': {'error_lines': '', 'results': []},
+            'validation_errors': {'errors_total_count': 0, 'results': []},
             'annotations': None,
-            'can_be_analyzed': (True, None)
+            'can_be_analyzed': (True, None),
+            'packtools_version': packtools_version
         }
         self.assertEqual(response.context['results'], expected_results)
 
