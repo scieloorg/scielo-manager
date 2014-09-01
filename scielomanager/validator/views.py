@@ -7,7 +7,6 @@ from waffle.decorators import waffle_flag
 from . import forms
 from . import utils
 
-# "http://192.168.1.162:7000/api/v1/article?code=S1516-635X2014000100012&format=xmlrsps"
 
 def __prepare_and_analyze(data_input):
     """ Normalize input to feed the stylechecker and obtain results """

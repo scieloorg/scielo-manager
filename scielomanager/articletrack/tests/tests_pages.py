@@ -296,7 +296,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         expect_errors = {
-            'error_lines': '',
+            'errors_total_count': 0,
             'results': []
         }
         self.assertEqual(xml_data['validation_errors'], expect_errors)
@@ -370,13 +370,14 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual('1', xml_data['validation_errors']['error_lines'])
+        self.assertEqual(1, xml_data['validation_errors']['errors_total_count'])
         self.assertEqual(1, len(xml_data['validation_errors']['results']))
         expect_errors = {
-            'error_lines': '1',
+            'errors_total_count': 1,
             'results': [
                 {
                     'column': 6,
+                    'count': 1,
                     'line': 1,
                     'message': u'Premature end of data in tag xml line 1, line 1, column 6',
                     'level': 'ERROR'
@@ -420,7 +421,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        expect_errors = {'error_lines': '', 'results': []}
+        expect_errors = {'errors_total_count': 0, 'results': []}
         self.assertEqual(xml_data['validation_errors'], expect_errors)
 
     def test_annotations_of_syntax_error(self):
@@ -473,13 +474,14 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
         self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual('1', xml_data['validation_errors']['error_lines'])
+        self.assertEqual(1, xml_data['validation_errors']['errors_total_count'])
         self.assertEqual(1, len(xml_data['validation_errors']['results']))
         self.assertEqual(
             xml_data['validation_errors']['results'],
             [
                 {
                     'column': syntax_error_data['column'],
+                    'count': 1,
                     'line': syntax_error_data['line'],
                     'message': syntax_error_data['message'],
                     'level': 'ERROR',

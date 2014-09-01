@@ -1,0 +1,29 @@
+.CodeMirror {
+  border: 1px solid black;
+}
+.CodeMirror-dialog input {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.line-highlight {
+  background-color: #B3D4FC;
+}
+#search_string.has_content {
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  box-shadow: 0 0 2px 1px #dedede inset;
+  padding: 5px;
+}
+#search_string, #search_string code {
+  font-family: monospace;
+  font-size: 14px;
+}
+#search_string code {
+  color: #333333;
+}
+#search_string.search_string_found {
+  color: #468847;
+}
+#search_string.search_string_not_found {
+  color: #d14;
+}

@@ -1,24 +1,11 @@
 {% load i18n %}
 {% load trans_status %}
 {% load static %}
+{% load assets %}
 
-<link href="{% static 'css/prism.css' %}" rel="stylesheet" />
-<style type="text/css">
-  /* OVERRIDE STYLES OF PRIMSM
-  .line-highlight { left: 15px;}
-  FIXES STYLES OF PRIMSM */
-  code, pre { font-size: 12px; }
-  code[class*="language-"],
-  pre[class*="language-"]{ -moz-tab-size: 2; -o-tab-size: 2; tab-size: 2;}
-  .line-highlight:before, .line-highlight[data-end]:after {
-    border-radius: 0;
-    left: 0;
-    min-height: 20px;
-    min-width: 30px;
-    padding: 0;
-    top: 0;
-  }
-</style>
+{% assets "codemirror_css" %}
+  <link rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
 
 {% if not xml_data.can_be_analyzed.0 %}
   {# could not be analyzed #}
@@ -34,42 +21,491 @@
 {% else %}
   {# xml analyzed and with annotations #}
   <div class="alert alert-block alert-error">
-    <h4 class="alert-heading">{{ xml_data.validation_errors.results|length }} {% trans "error(s) found while checking this XML" %}:</h4>
+    <h4 class="alert-heading">{{ xml_data.validation_errors.errors_total_count }} {% trans "error(s) found while checking this XML" %}:</h4>
   </div>
   {% if xml_data.validation_errors %}
-    <table id="validation_errors_table" class="table table-striped table-condensed">
+    <table id="validation_errors_table" class="table table-striped table-hover table-condensed">
       <thead>
         <tr>
-          <th class="span1">{% trans "Level" %}:</th>
+          <th class="span2">{% trans "Level" %}:</th>
           <th>{% trans "Message" %}:</th>
-          <th class="span2">{% trans "Line" %}:</th>
-          <th class="span2">{% trans "Column" %}:</th>
+          <th class="span2">{% trans "Occurrences" %}:</th>
         </tr>
       </thead>
       <tbody>
         {% for error in xml_data.validation_errors.results %}
           <tr>
             <td><span class="label label-{% trans_status error.level to_label='True' %}">{{ error.level|upper }}</span></td>
-            <td><a class="error_message" href="#" data-search-term="{{ error.message }}">{{ error.message }}</a></td>
-            <td>{{ error.line|default:"--" }}</td>
-            <td>{{ error.column|default:"--" }}</td>
+            <td>
+              {% if error.line %}
+                <a class="goto_line" href="#" data-target-line="{{ error.line }}">{{ error.message }}</a>
+              {% else %}
+                <a class="search_error" href="#" data-target-text="{{ error.message }}">{{ error.message }}</a>
+              {% endif %}
+            </td>
+            <td><span class="badge badge-info">{{ error.count|default:"--" }}</span></td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% endif %}
   {# XML ANNOTATED #}
-  <pre id="code-block"
-    class="line-numbers language-markup pre-scrollable"
-    {% if xml_data.validation_errors and xml_data.validation_errors.error_lines %}
-      data-line='{{ xml_data.validation_errors.error_lines }}'
-    {% endif %}
-    ><code class="language-markup">{{ xml_data.annotations }}</code></pre>
+  <div class="codemirror_wrapper">
+    <div class="row-fluid">
+      <div id="editor_toolbar" class="span12">
 
-    <p style="text-align: center">
-      <a id="back-to-errors" href="#" class="btn btn-mini btn-primary">
-        {% trans "Back to Errors" %}
-      </a>
-    </p>
+        {# help modal btn & jumpt to error list #}
+        <div class="btn-group span2">
+          <a id="editor_help"  class="btn btn-mini" href="#helpModal" data-toggle="modal">
+            <i class="icon-question-sign"></i> {% trans "Help" %}
+          </a>
+          <a id="back-to-errors" class="btn btn-mini" href="#" data-toggle="tooltip" title="scroll to the list of errors">
+            <i class="icon-list"></i> {% trans "back to errors" %}
+          </a>
+          <a id="toggle-fullscreen" class="btn btn-mini" href="#" data-toggle="tooltip" title="toggle fullscreen">
+            <i class="icon-fullscreen"></i>
+          </a>
+        </div>
+
+        {# search and nav #}
+        <div id="error_navigate_toolbar" class="btn-group span1">
+          <a id="clear_search" class="btn btn-mini" href="#" data-toggle="tooltip" title="clear search">
+            <i class="icon-remove"></i>
+          </a>
+          <a id="find_prev" class="btn btn-mini" href="#" data-toggle="tooltip" title="find previous occurrence">
+            <i class="icon-chevron-left"></i>
+          </a>
+          <a id="find_next" class="btn btn-mini" href="#" data-toggle="tooltip" title="find next occurrence">
+            <i class="icon-chevron-right"></i>
+          </a>
+        </div>
+        <div class="search_msg_wrapper span9">
+            <span id="search_string"></span>
+        </div>
+
+      </div>
+    </div>
+    <textarea id="code" name="code">{{ xml_data.annotations }}</textarea>
+    {% if xml_data.packtools_version %}
+      <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ xml_data.packtools_version }}</strong></small></p>
+    {% endif %}
+  </div>
+
+  {# Editor Help Modal #}
+  <div id="helpModal" class="modal hide fade" role="dialog">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h3>{% trans "Help and Shortcuts" %}</h3>
+    </div>
+    <div class="modal-body">
+      <table class="table table-striped table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>{% trans "Shortcut" %}</th>
+            <th>{% trans "Action" %}</th>
+          </tr>
+        </thead>
+          <tbody>
+            <tr>
+              <td><code>F1</code></td>
+              <td>{% trans "Show this Help and Shortcuts popup" %}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>F</code> / <a class="btn btn-mini"><i class="icon-fullscreen"></i></a>
+              </td>
+              <td>{% trans "Go fullscreen" %}</td>
+            </tr>
+            <tr>
+              <td><code>ESC</code></td>
+              <td>{% trans "Exit fullscreen" %}</td>
+            </tr>
+            <tr>
+              <td><code>L</code></td>
+              <td>{% trans "Show go-to-line field" %}</td>
+            </tr>
+            <tr>
+              <td><code>Ctrl-F</code> / <code>Cmd-F</code></td>
+              <td>{% trans "Show search field" %}</td>
+            </tr>
+            <tr>
+              <td><code>Ctrl-G</code> / <code>Cmd-G</code></td>
+              <td>{% trans "Find next" %}</td>
+            </tr>
+            <tr>
+              <td><code>Shift-Ctrl-G</code> / <code>Shift-Cmd-G</code></td>
+              <td>{% trans "Find previous" %}</td>
+            </tr>
+            <tr>
+              <td><code>G</code></td>
+              <td>{% trans "Fold/Unfold current tag" %}</td>
+            </tr>
+            <tr>
+              <td><code>T</code></td>
+              <td>{% trans "Jump to the matching selected tag" %}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>H</code> / <a class="btn btn-mini" href="#"><i class="icon-remove"></i></a>
+              </td>
+              <td>{% trans "Clear the last search of SPS-ERRORs" %}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>J</code> / <a class="btn btn-mini" href="#"><i class="icon-chevron-left"></i></a>
+              </td>
+              <td>{% trans "Jump to Previous Highlighted SPS-ERROR" %}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>K</code> / <a class="btn btn-mini" href="#"><i class="icon-chevron-right"></i></a>
+              </td>
+              <td>{% trans "Jump to Next Highlighted SPS-ERROR" %}</td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      {% if xml_data.packtools_version %}
+        <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ xml_data.packtools_version }}</strong></small></p>
+      {% endif %}
+    </div>
+  </div>
+  {# /Editor Help Modal #}
 {% endif %}
-<script type="text/javascript" src="{% static 'js/prism.js' %}"></script>
+
+{% assets "codemirror_js" %}
+  <link rel="stylesheet" href="{{ ASSET_URL }}">
+  <script src="{{ ASSET_URL }}"></script>
+{% endassets %}
+
+<script type="text/javascript">
+
+  window.editor = null; {# initilize it with: window.Annotations.initialize(); #}
+
+  $(function(){
+
+    $('#editor_toolbar').find('a.btn').tooltip();
+
+    window.Annotations = {
+      code_source_id: 'code',   {# DOM node id, where the source (annotated XML) code is placed #}
+      last_search: {
+        query: null,
+        line: null,
+        searchCursor: null,
+      },
+      search_toolbar: {
+        css_classes: ['search_string_not_found', 'search_string_found', 'has_content'],
+        info_message: null,
+        btn_find_prev: null,
+        btn_find_next: null,
+        btn_clear: null,
+        {# search_toolbar methods #}
+        initialize: function(){
+          this.info_message = $('#search_string');
+          this.btn_find_prev = $('#find_prev');
+          this.btn_find_next = $('#find_next');
+          this.btn_clear = $('#clear_search');
+        },
+        ui_clear_info_msg: function(){
+          this.info_message.html("");
+        },
+        ui_info_remove_css_classes: function(){
+          for (var i = 0; i < this.css_classes.length; i++) {
+            this.info_message.removeClass(this.css_classes[i]);
+          }
+        },
+        ui_disable_buttons: function(elem_array){
+          for (var i = 0; i < elem_array.length; i++) {
+            elem_array[i].attr('disabled', 'disabled');
+          }
+        },
+        ui_enable_buttons: function(elem_array){
+          for (var i = 0; i < elem_array.length; i++) {
+            elem_array[i].removeAttr('disabled');
+          }
+        },
+        ui_info_msg_update: function(content, was_found){
+          this.ui_clear_info_msg();
+          this.ui_info_remove_css_classes();
+          this.info_message.addClass(this.css_classes[2]); {# has_content #}
+          if (was_found) {
+            this.info_message.addClass(this.css_classes[1]); {# search_string_found #}
+          } else {
+            this.info_message.addClass(this.css_classes[0]); {# search_string_not_found #}
+          }
+          this.info_message.html(content);
+        }
+        {# end of search_toolbar methods #}
+      },
+      {# window.Annotations methods #}
+      initialize: function() {
+        this.search_toolbar.initialize();
+        {# initialize the CodeMirror editor instance #}
+        var self = this;
+        window.editor = CodeMirror.fromTextArea(
+          document.getElementById(this.code_source_id),
+          {
+            lineNumbers: true,
+            lineWrapping: true,
+            mode: "application/xml",
+            styleActiveLine: true,
+            extraKeys: {
+              {# show help #}
+              "F1": function(cm) { self.ui_showHelp(); },
+              {# fullscreen #}
+              "F": function(cm) {
+                  cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                  self.ui_toggle_navbar();
+              },
+              "Esc": function(cm) {
+                if (cm.getOption("fullScreen")){
+                  cm.setOption("fullScreen", false);
+                  self.ui_toggle_navbar();
+                }
+              },
+              {# fold #}
+              "G": function(cm){ cm.foldCode(cm.getCursor()); },
+              {# matching tag#}
+              "T": "toMatchingTag",
+              {# jump between errors  #}
+              "J": function(cm){ self.search_prev(); },
+              "K": function(cm){ self.search_next(); },
+              "H": function(cm){ self.clear_search();},
+              {# go-to-line  #}
+              "L": "gotoLine",
+            },
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            matchTags: { bothTags: true },
+        });
+
+        {# ---- read only hack ---- listen for the beforeChange event, and cancel #}
+        window.editor.on('beforeChange',function(cm,change) { change.cancel(); });
+
+        {# ---- render line hack ---- #}
+        var charWidth = window.editor.defaultCharWidth(), basePadding = 4;
+        window.editor.on("renderLine", function(cm, line, elt) {
+          var off = CodeMirror.countColumn(line.text, null, cm.getOption("tabSize")) * charWidth;
+          elt.style.textIndent = "-" + off + "px";
+          elt.style.paddingLeft = (basePadding + off) + "px";
+        });
+        window.editor.refresh();
+      },
+      highlight_line: function (line){
+        window.editor.addLineClass(line, 'background', 'line-highlight');
+      },
+      unhighlinght_line: function (line){
+        window.editor.removeLineClass(line, 'background');
+      },
+      blink_line: function (line){
+        var self = this;
+        var x = 300;  {# timeout interval  #}
+        var i = 2;    {# blink i-times #}
+        (function loop() { {# recurisve IIFE #}
+            self.highlight_line(line);
+            setTimeout(function () {
+                self.unhighlinght_line(line);
+                if (--i) setTimeout(loop, x); {# restart loop #}
+            }, x);
+        }());
+      },
+      jump_to_line: function (line) {
+        var t = window.editor.charCoords({line: line, ch: 0}, 'local').top;
+        var middleHeight = editor.getScrollerElement().offsetHeight / 2;
+        window.editor.scrollTo(null, t - middleHeight - 5);
+        window.editor.focus();
+      },
+      jump_and_blink: function(line){
+        {# shortcut to jump to a line, then animated blinks on it #}
+        this.scroll_to_annotations();
+        this.jump_to_line(line);
+        this.blink_line(line);
+      },
+      scroll_to_annotations: function(){
+        $('html, body').animate({
+            scrollTop: $(".CodeMirror").offset().top
+        }, 200);
+      },
+      search_text: function(target_text) {
+        var searchCursor = window.editor.getSearchCursor(target_text,0,true);
+        this.last_search.query = target_text;
+        this.last_search.searchCursor = searchCursor;
+
+        if (searchCursor.findNext()){
+          var line = searchCursor.from().line;
+          this.last_search.line = line;
+          window.Annotations.jump_and_blink(line);
+          {# enable toolbar buttons #}
+          this.search_toolbar.ui_enable_buttons([
+            this.search_toolbar.btn_find_prev,
+            this.search_toolbar.btn_find_next,
+          ]);
+          this.ui_update_search_message(true, parseInt(line + 1, 10), 'forward');
+        } else {
+          {# text not found, disable toolbar buttons #}
+          this.search_toolbar.ui_disable_buttons([
+            this.search_toolbar.btn_find_prev,
+            this.search_toolbar.btn_find_next,
+          ]);
+          this.ui_update_search_message(false, null, 'forward');
+        }
+        window.editor.focus();
+      },
+      search_next: function(){
+        if (!this.last_search.searchCursor) {
+          {# no previous search made, search for generic error msg #}
+          this.last_search.query = "SPS-ERROR: ";
+          this.last_search.searchCursor = window.editor.getSearchCursor(this.last_search.query ,0,true);
+        }
+
+        {# get context from: searchCursor, and find the NEXT occurrence of the searched text (stored in this.last_search) #}
+        var searchCursor = this.last_search.searchCursor;
+        if (searchCursor.findNext()){
+          var line = searchCursor.from().line;
+          this.last_search.line = line;
+          this.jump_and_blink(line);
+          {# enable toolbar buttons #}
+          this.search_toolbar.ui_enable_buttons([
+            this.search_toolbar.btn_find_prev,
+          ]);
+          this.ui_update_search_message(true, parseInt(line + 1, 10), 'forward');
+        } else {
+          {# text not found, disable toolbar buttons #}
+          this.search_toolbar.ui_disable_buttons([
+            this.search_toolbar.btn_find_next,
+          ]);
+          this.ui_update_search_message(false, null, 'forward');
+        }
+        this.last_search.searchCursor = searchCursor;
+      },
+      search_prev: function(){
+        if (!this.last_search.searchCursor) {
+          {#  no previous search made, search for generic error msg #}
+          this.last_search.query = "SPS-ERROR: ";
+          this.last_search.searchCursor = window.editor.getSearchCursor(this.last_search.query ,0,true);
+        }
+
+        {# get context from: searchCursor, and find the PREVIOUS occurrence of the searched text (stored in this.last_search) #}
+        var searchCursor = this.last_search.searchCursor;
+
+        if (searchCursor.findPrevious()){
+          var line = searchCursor.from().line;
+          this.last_search.line = line;
+          this.jump_and_blink(line);
+          {# enable toolbar buttons #}
+          this.search_toolbar.ui_enable_buttons([
+            this.search_toolbar.btn_find_next,
+          ]);
+          this.ui_update_search_message(true, parseInt(line + 1, 10), 'backward');
+        } else {
+          {# text not found, disable toolbar buttons  #}
+          this.search_toolbar.ui_disable_buttons([
+            this.search_toolbar.btn_find_prev,
+          ]);
+          this.ui_update_search_message(false, null, 'backward');
+        }
+
+        this.last_search.searchCursor = searchCursor;
+      },
+      clear_search: function(){
+        this.last_search.searchCursor = null;
+        this.last_search.query = "";
+        {#  update search toolbar #}
+        this.search_toolbar.ui_clear_info_msg();
+        this.search_toolbar.ui_info_remove_css_classes();
+        this.search_toolbar.ui_enable_buttons([ this.search_toolbar.btn_find_prev,  this.search_toolbar.btn_find_next,]);
+      },
+      toggle_fullscreen: function(){
+        {#  can't find how to trigger a keydown event, to simulate the behavior of pressing the F key #}
+        this.ui_toggle_navbar();
+        window.editor.setOption("fullScreen", true);
+        window.editor.focus();
+      },
+      ui_hide_navbar: function(){
+        $('.navbar').hide();
+      },
+      ui_toggle_navbar: function(){
+        var navbar = $('.navbar');
+        var navbar_display = navbar.css('display');
+        if (navbar_display === 'none') {
+          navbar.show();
+        } else {
+          navbar.hide();
+        }
+      },
+      ui_showHelp: function(){
+        $('#editor_help').click();
+      },
+      ui_update_search_message: function(was_found, line, direction){
+        if (!this.last_search.query) {
+          {# empty string as a last search, go away #}
+          return;
+        }
+
+        var content = '{% trans "Phrase" %}: <code>' + this.last_search.query + '</code>&nbsp;';
+        var direction_msg = '';
+        if (was_found) {
+          content += ' <strong>was found</strong>';
+          if (line) {
+            content += '  at line: <strong>' + line + '</strong>';
+          }
+        } else {
+          content += ' <strong>{% trans "was NOT found" %}</strong>';
+          if(direction === 'forward'){
+            direction_msg = ' {% trans "in the next lines" %}';
+          }
+          if(direction === 'backward'){
+            direction_msg = ' {% trans "in the previous lines" %}';
+          }
+          content += direction_msg;
+        }
+        this.search_toolbar.ui_info_msg_update(content, was_found);
+      },
+    }
+    {# take off sequence starts here :) #}
+    if (document.getElementById('code')) {
+      window.Annotations.initialize();
+    };
+  });
+
+  {# === actions triggered by click on buttons === #}
+  $('.goto_line').click(function(event){
+    event.preventDefault();
+    var line = $(this).data('target-line');
+    window.Annotations.jump_and_blink(line - 1);  {# lines are 0-indexed #}
+  });
+
+  $('.search_error').click(function(event){
+    event.preventDefault();
+    var target_text = $(this).data('target-text');
+    window.Annotations.search_text(target_text);
+  });
+
+  $('#find_next').click(function(event) {
+    event.preventDefault();
+    window.Annotations.search_next();
+  });
+
+  $('#find_prev').click(function(event) {
+    event.preventDefault();
+    window.Annotations.search_prev();
+  });
+  $('#clear_search').click(function(event) {
+    event.preventDefault();
+    window.Annotations.clear_search();
+  });
+  $("#back-to-errors").click(function(event){
+      event.preventDefault();
+      var table = $('#validation_errors_table');
+      $('html, body').animate(
+          { scrollTop: table.offset().top - 100 },
+          200
+      );
+  });
+  $('#toggle-fullscreen').click(function(event) {
+    event.preventDefault();
+    window.Annotations.toggle_fullscreen();
+  });
+</script>
+
