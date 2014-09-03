@@ -16,21 +16,12 @@ urlpatterns = patterns('',
     url(r'^(?P<journal_id>\d+)/edit/status/$', views.edit_journal_status, name='journal_status.edit'),
     url(r'^del_pended/(?P<form_hash>\w+)/$', views.del_pended, name='journal.del_pended'),
 
-    #Editor Pages
-    url(r'^(?P<journal_id>\d+)/edash/$', views.dash_editor_journal, name='editor_journal.dash'),
-    url(r'ej/$', views.editor_journal, name='editor_journal.index'),
-
     # Sponsor Tools
     url(r'^sponsor/$', views.sponsor_index, name='sponsor.index'),
     url(r'^sponsor/new/$', views.add_sponsor, name='sponsor.add'),
     url(r'^sponsor/(?P<sponsor_id>\d+)/edit/$', views.add_sponsor, name='sponsor.edit'),
     url(r'^sponsor/(?P<object_id>\d+)/toggle_availability/$', views.generic_toggle_availability,
         {'model': models.Sponsor}, name='sponsor.toggle_availability'),
-
-    # Editors
-    url(r'^(?P<journal_id>\d+)/editors/$', views.journal_editors,  name='journal_editors.index'),
-    url(r'^(?P<journal_id>\d+)/editors/add$', views.journal_editors_add,  name='journal_editors.add'),
-    url(r'^(?P<journal_id>\d+)/editors/(?P<user_id>\d+)/remove/$', views.journal_editors_remove,  name='journal_editors.remove'),
 
     # Section Tools
     url(r'^(?P<journal_id>\d+)/section/$', views.section_index, name='section.index'),

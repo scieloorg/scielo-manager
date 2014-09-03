@@ -63,27 +63,22 @@ def get_first_letter(objects_all):
 
 
 def index(request):
+
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('journalmanager.user_login'))
 
-    if 'editor' in [i.name.lower() for i in request.user.groups.all()]:
-        landing_page = 'journalmanager/home_editor.html'
-        editor_journals = request.user.user_editors.all()
-        context = {'editor_journals': editor_journals}
-    else:
-        pending_journals = models.PendedForm.objects.filter(
-            user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+    pending_journals = models.PendedForm.objects.filter(
+        user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 
-        # recent activities
-        recent_journals = models.Journal.objects.recents_by_user(request.user)
+    # recent activities
+    recent_journals = models.Journal.objects.recents_by_user(request.user)
 
-        context = {
-            'pending_journals': pending_journals,
-            'recent_activities': recent_journals,
+    context = {
+        'pending_journals': pending_journals,
+        'recent_activities': recent_journals,
         }
 
-        landing_page = 'journalmanager/home_journal.html'
-    return render_to_response(landing_page,
+    return render_to_response('journalmanager/home_journal.html',
         context, context_instance=RequestContext(request))
 
 
@@ -429,98 +424,6 @@ def edit_journal_status(request, journal_id=None):
     return render_to_response('journalmanager/edit_journal_status.html', {
                               'add_form': membershipform,
                               'journal_history': journal_history,
-                              'journal': journal,
-                              }, context_instance=RequestContext(request))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.list_editor_journal', login_url=AUTHZ_REDIRECT_URL)
-def editor_journal(request):
-    """
-    Initial editor page, containing a list of all journals related to the user.
-    """
-    editor_journals = request.user.user_editors.all()
-
-    return render_to_response('journalmanager/home_editor.html', {
-                              'editor_journals': editor_journals,
-                              }, context_instance=RequestContext(request))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_editors(request, journal_id=None):
-    """
-    Handle the users that have an editor profile for a specific journal
-    """
-
-    journal = get_object_or_404(models.Journal, id=journal_id)
-    editors = journal.editors.all()
-
-    return render_to_response('journalmanager/journal_editors_list.html', {
-                              'journal': journal,
-                              'editors': editors,
-                              }, context_instance=RequestContext(request))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_editors_add(request, journal_id):
-
-    journal = get_object_or_404(models.Journal, pk=journal_id)
-
-    if request.method == 'POST':
-        username = request.POST.get('query')
-        try:
-            user = User.objects.get(username=username)
-            try:
-                journal.editors.add(user)
-                messages.error(request, _('Now, %s is an editor of this journal.' % user.username))
-            except IntegrityError:
-                messages.error(request, _('%s is already an editor of this journal.' % user.username))
-        except ObjectDoesNotExist:
-            messages.error(request, _('User %s does not exists' % username))
-
-    editors = journal.editors.all()
-
-    t = loader.get_template('journalmanager/journal_editors_list.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'editors': editors,
-                       })
-    return HttpResponse(t.render(c))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_editors_remove(request, journal_id, user_id):
-
-    journal = models.Journal.objects.get(pk=journal_id)
-    user2remove = models.User.objects.get(pk=user_id)
-
-    journal.editors.remove(user2remove)
-
-    messages.error(request, _('The user %s was removed from this journal.' % user2remove.username))
-
-    editors = journal.editors.all()
-
-    t = loader.get_template('journalmanager/journal_editors_list.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'editors': editors,
-                       })
-    return HttpResponse(t.render(c))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.list_editor_journal', login_url=AUTHZ_REDIRECT_URL)
-def dash_editor_journal(request, journal_id=None):
-    """
-    Handles new and existing journals
-    """
-
-    journal = get_object_or_404(models.Journal, id=journal_id)
-
-    return render_to_response('journalmanager/journal_dash.html', {
                               'journal': journal,
                               }, context_instance=RequestContext(request))
 

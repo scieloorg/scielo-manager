@@ -332,21 +332,6 @@ class JournalTests(TestCase):
 
         self.assertEqual(result, None)
 
-    def test_valid_is_editors(self):
-        user = auth.UserF()
-
-        journal = JournalFactory.create()
-
-        journal.editors.add(user)
-
-        self.assertTrue(journal.is_editor(user))
-
-    def test_invalid_is_editors(self):
-        user = auth.UserF()
-        journal = JournalFactory.create()
-
-        self.assertFalse(journal.is_editor(user))
-
     def test_issues_grid_with_numerical_issue_numbers(self):
         journal = JournalFactory.create()
         for i in range(5):
