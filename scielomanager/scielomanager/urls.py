@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+#coding: utf-8
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
@@ -62,43 +62,44 @@ for res in v2_api_resources:
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
 
-    # Article Tracking
+    # Article Tracking APP
     url(r'^arttrack/', include('articletrack.urls')),
 
-    # Article Tools
+    # Editorial Manager APP
+    url(r'^editorial/', include('editorialmanager.urls')),
+
+    # Article APP
     url(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),
-    #url(r'^article/(?P<article_id>\d+)/edit/$', views.add_article, name='article.edit'),
 
     # Journal Manager APP
     url(r'^journal/', include('journalmanager.urls')),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+    # Django admin APP
     url(r'^admin/', include(admin.site.urls)),
 
-    # Collection Tools
-    url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
-
+    # Accounts APP
     url(r'accounts/', include('accounts.urls')),
 
-    (r'^i18n/', include('django.conf.urls.i18n')),
+    # I18N APP
+    url(r'^i18n/', include('django.conf.urls.i18n')),
 
-    # Trash
-    url(r'^trash/$', views.trash_listing, name="trash.listing"),
-    url(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
-        views.generic_bulk_action, name='trash.bulk_action'),
-
-    #API version 1
+    # API version 1
     (r'^api/', include(v1_api.urls)),
 
-    #API version 2
+    # API version 2
     (r'^api/', include(v2_api.urls)),
-
-    (r'^export/', include('export.urls')),
-
-    #AJAX
-    url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
 
     # Validator URLs:
     url(r'^tools/validators/', include('validator.urls')),
+
+    # Others
+    url(r'^trash/$', views.trash_listing, name="trash.listing"),
+    url(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
+        views.generic_bulk_action, name='trash.bulk_action'),
+    url(r'^export/', include('export.urls')),
+    url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
+    url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
+
 )
 
 if settings.DEBUG:
