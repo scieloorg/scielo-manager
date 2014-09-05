@@ -226,6 +226,7 @@ AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 

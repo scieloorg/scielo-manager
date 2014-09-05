@@ -41,10 +41,8 @@ from scielomanager.tools import (
     asbool,
 )
 
-
 from waffle.decorators import waffle_flag
 
-AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
@@ -82,7 +80,7 @@ def index(request):
         context, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def journal_index(request):
     """
     Journal list by active collection
@@ -109,7 +107,7 @@ def journal_index(request):
         context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def dash_journal(request, journal_id=None):
     """
     Handles new and existing journals
@@ -122,7 +120,7 @@ def dash_journal(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def issue_index(request, journal_id):
     journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
 
@@ -153,7 +151,7 @@ def issue_index(request, journal_id):
     )
 
 
-@permission_required('journalmanager.list_section', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def section_index(request, journal_id=None):
     """
     Section list by active collection
@@ -171,7 +169,7 @@ def section_index(request, journal_id=None):
            context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_sponsor', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_sponsor', login_url=settings.AUTHZ_REDIRECT_URL)
 def sponsor_index(request):
     """
     Sponsor list by active collection
@@ -194,7 +192,7 @@ def sponsor_index(request):
            context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_article', login_url=settings.AUTHZ_REDIRECT_URL)
 def article_index(request, issue_id):
 
     issue = get_object_or_404(models.Issue.userobjects.active(), pk=issue_id)
@@ -210,7 +208,7 @@ def article_index(request, issue_id):
     )
 
 
-@permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
@@ -301,13 +299,13 @@ def generic_bulk_action(request, model_name, action_name, value=None):
     return HttpResponseRedirect(get_referer_view(request))
 
 
-@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
 def user_index(request):
 
     collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     col_users = models.User.objects.filter(
         usercollections__collection__in=[collection]).distinct('username').order_by('username')
@@ -321,7 +319,7 @@ def user_index(request):
     return HttpResponse(t.render(c))
 
 
-@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_user(request, user_id=None):
     """
     Handles new and existing users
@@ -329,7 +327,7 @@ def add_user(request, user_id=None):
     collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if user_id is None:
         user = User()
@@ -395,7 +393,7 @@ def add_user(request, user_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_journaltimeline', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journaltimeline', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_journal_status(request, journal_id=None):
     """
     Handles Journal Status.
@@ -428,7 +426,7 @@ def edit_journal_status(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_journal(request, journal_id=None):
     """
     Handles new and existing journals
@@ -564,7 +562,7 @@ def del_pended(request, form_hash):
     return HttpResponseRedirect(reverse('index'))
 
 
-@permission_required('journalmanager.add_sponsor', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_sponsor', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_sponsor(request, sponsor_id=None):
     """
     Handles new and existing sponsors
@@ -604,7 +602,7 @@ def add_sponsor(request, sponsor_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_collection', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_collection', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_collection(request, collection_id):
     """
     Handles existing collections
@@ -613,7 +611,7 @@ def add_collection(request, collection_id):
     collection = get_object_or_404(models.Collection, id=collection_id)
 
     if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if request.method == "POST":
         collectionform = CollectionForm(request.POST, request.FILES, instance=collection, prefix='collection')
@@ -640,7 +638,7 @@ def add_collection(request, collection_id):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_issue(request, journal_id, issue_id=None):
     """
     Handles edition of existing issues
@@ -733,7 +731,7 @@ def edit_issue(request, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_issue(request, issue_type, journal_id, issue_id=None):
     """
     Handles new and existing issues
@@ -829,7 +827,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.reorder_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.reorder_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def issue_reorder(request, journal_id):
     """
     Handles issues reordering based on ajax interactions.
@@ -878,7 +876,7 @@ def issue_reorder(request, journal_id):
     return HttpResponse(status=200)
 
 
-@permission_required('journalmanager.change_section', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_section(request, journal_id, section_id=None):
     """
     Handles new and existing sections
@@ -923,7 +921,7 @@ def add_section(request, journal_id, section_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.delete_section', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.delete_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def del_section(request, journal_id, section_id):
     section = get_object_or_404(models.Section, pk=section_id)
 
@@ -1146,7 +1144,7 @@ def ajx_lookup_for_section_translation(request):
     return HttpResponse(response_data, mimetype="application/json")
 
 
-@permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_pressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
@@ -1189,7 +1187,7 @@ def add_pressrelease(request, journal_id, prelease_id=None):
     )
 
 
-@permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_aheadpressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 

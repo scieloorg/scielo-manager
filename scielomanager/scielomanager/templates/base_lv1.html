@@ -20,6 +20,19 @@
 
       <div id="global-nav" class="nav-collapse collapse">
         <ul id="site-areas" class="nav">
+
+          {% comment "Menu Editorial Manager" %}
+            <p>Only users with list_editor_journal see this nemu option.</p>
+          {% endcomment %}
+
+          {% flag 'editorialmanager' %}
+            {% if perms.journalmanager.list_editor_journal and not request.user.is_superuser %}
+              <li id="users-link" class="active">
+                <a href="{% url index %}">{% trans 'My Journals' %}</a>
+              </li>
+            {% endif %}
+          {% endflag %}
+
           {% if perms.journalmanager.list_journal %}
             <li id="journals-link" class="{% active '/journal/$' %}">
               <a href="{% url journal.index %}">{% trans 'Journals' %}</a>

@@ -472,3 +472,29 @@ table._listings h4 {
 #search-form-wrapper {
   margin-bottom: 0;
 }
+
+.link-list{
+  float: left;
+  display: block;
+  color: #999;
+  padding: 8px 10px;
+}
+
+.link-list-action:hover {
+  color: #4183c4;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.list-muted {
+  color: #999;
+}
+
+.table-journal-detail-td{
+  text-align:right;
+  vertical-align:right
+}
+
+.accordion-group{
+  border: 0px;
+}

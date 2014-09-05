@@ -48,43 +48,45 @@
     </div>
   {% endif %}
 
-  <div class="span6 well">
-    <table id="activities" class="table table-condensed">
-      <thead>
-        <th colspan="3">{% trans 'Recent activities' %}<th>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>{% trans 'Collection' %}</strong></td>
-          <td><strong>{% trans 'User' %}</strong></td>
-          <td><strong>{% trans 'Journal' %}</strong></td>
-          <td><strong>{% trans 'Updated at' %}</strong></td>
-        </tr>
-        {% for activity in recent_activities %}
-        <tr>
-          <td>
-            {{ activity.collections.all|join:', ' }}
-          </td>
-          <td><a href="mailto:{{ activity.creator.email }}">{{ activity.creator.username }}</a></td>
-          <td><a href="{% url journal.edit activity.pk %}"
-                 class="tip-bottom"
-                 rel="tooltip"
-                 data-original-title="{{ activity.title }}">{{ activity.short_title }}</a>
-          </td>
-          <td>{{ activity.updated|date:"r" }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td>
-            <div class="alert alert-info">
-              <i class="icon-info-sign"></i>
-              {% trans 'There are no items.' %}
-            </div>            
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  {% if perms.journalmanager.list_journal %}
+    <div class="span6 well">
+      <table id="activities" class="table table-condensed">
+        <thead>
+          <th colspan="3">{% trans 'Recent activities' %}<th>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>{% trans 'Collection' %}</strong></td>
+            <td><strong>{% trans 'User' %}</strong></td>
+            <td><strong>{% trans 'Journal' %}</strong></td>
+            <td><strong>{% trans 'Updated at' %}</strong></td>
+          </tr>
+          {% for activity in recent_activities %}
+          <tr>
+            <td>
+              {{ activity.collections.all|join:', ' }}
+            </td>
+            <td><a href="mailto:{{ activity.creator.email }}">{{ activity.creator.username }}</a></td>
+            <td><a href="{% url journal.edit activity.pk %}"
+                   class="tip-bottom"
+                   rel="tooltip"
+                   data-original-title="{{ activity.title }}">{{ activity.short_title }}</a>
+            </td>
+            <td>{{ activity.updated|date:"r" }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td>
+              <div class="alert alert-info">
+                <i class="icon-info-sign"></i>
+                {% trans 'There are no items.' %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
 {% endblock %}
 
