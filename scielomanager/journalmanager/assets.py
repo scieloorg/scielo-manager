@@ -21,6 +21,7 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/multiselect.js',
                     '../static/js/combobox.js',
                     '../static/js/bootstrap.js',
+                    '../static/js/chosen.jquery.js',
                     '../static/js/modal.js')
 
 
@@ -34,6 +35,7 @@ css = Bundle('../static/css/bootstrap.css',
             '../static/css/jquery-ui.css',
             '../static/css/jquery.asmselect.css',
             '../static/css/select2.css',
+            '../static/css/chosen.css',
             '../static/css/style.css', filters='yui_css', output='css/bundle.min.css')
 
 register('css', css)

@@ -1,0 +1,134 @@
+{% extends "base_lv1.html" %}
+{% load show_field %}
+{% load i18n %}
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li><a href="{% url index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li class="active">{% trans 'Edit journal' %}</li>
+  </ul>
+
+  <form id="journal-form" method="post" action="" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <h2>{% trans "Mission" %}:</h2>
+    <div class="well">
+      <table id="missionformset" class="table table-striped">
+        <thead>
+          <tr>
+            <th>
+              {% trans "Description" %}:
+            </th>
+            <th>
+              {% trans "Language" %}:
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in missionformset.forms %}
+            <tr id="{{ form.prefix }}-row">
+              <td>
+                <div class="control-group {% if form.errors %}error{% endif %}">
+                  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+                  {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                  {{ form.description }}
+                  {% if form.description.errors %}
+                    <span class="help-inline danger">{{ form.description.errors }}</span>
+                  {% endif %}
+                </div>
+              </td>
+              <td>
+                <div class="control-group {% if form.errors %}error{% endif %}">
+                  {{ form.language }}
+                  {% if form.language.errors %}
+                    <span class="help-inline danger">{{ form.language.errors }}</span>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p>
+        {{ missionformset.management_form }}
+      </p>
+    </div>
+
+    <h2>{% trans "License" %}:</h2>
+    <div class="well">
+        {% show_field add_form.use_license %}
+    </div>
+
+    <h2>{% trans "Web of Science" %}:</h2>
+    <div class="well">
+      <h4>{% trans "Indexed at:" %}</h4>
+      <div class="control-group ">
+        <label class="checkbox inline">
+          {{ add_form.is_indexed_scie.label }}{{ add_form.is_indexed_scie }}
+        </label>
+        <label class="checkbox inline">
+          {{ add_form.is_indexed_ssci.label }}{{ add_form.is_indexed_ssci }}
+        </label>
+        <label class="checkbox inline">
+          {{ add_form.is_indexed_aehci.label }}{{ add_form.is_indexed_aehci }}
+        </label>
+      </div>
+
+      <div class="control-group ">
+        {% show_field add_form.index_coverage %}
+      </div>
+    </div>
+
+    <h2>{% trans "Editor" %}:</h2>
+      <div class="well">
+
+        {% show_field add_form.editor_name %}
+
+        {% show_field add_form.editor_address %}
+
+        {% show_field add_form.editor_address_city %}
+
+        {% show_field add_form.editor_address_state %}
+
+        {% show_field add_form.editor_address_zip %}
+
+        {% show_field add_form.editor_address_country %}
+
+        {% show_field add_form.editor_phone1 %}
+
+        {% show_field add_form.editor_phone2 %}
+
+        {% show_field add_form.editor_email %}
+
+      </div>
+
+    <div class="row-fluid">
+      <input
+        class="btn btn-success pull-right"
+        name="submit"
+        type="submit"
+        value="{% trans "save" %}" />
+      <input
+        class="btn btn-danger"
+        type="reset"
+        value="{% trans "cancel" %}"
+        onclick="javascript: window.history.back()" />
+    </div>
+  </form>
+
+{% endblock %}
+
+{% block extrafooter %}
+  <script>
+
+    $('#missionformset tbody tr').formset({
+      formCssClass: 'dynamic-missionformset-form',
+      prefix: '{{ missionformset.prefix }}'
+    });
+
+    $(".chzn-select").chosen({no_results_text: "Nenhum resultado encontrado para: "})
+
+  </script>
+{% endblock %}

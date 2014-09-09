@@ -386,6 +386,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
 
         return (True, None)
 
+
 class Collection(caching.base.CachingMixin, models.Model):
     # objects = CollectionCustomManager()
     # nocacheobjects = models.Manager()

@@ -11,10 +11,14 @@
 
   <div class="row-fluid show-grid">
     <div class="span9">
-      <form class="form-search" style="margin: 0px;!importante">
-        <input id="q" name="q"type="text" class="input-xxlarge search-query">
-        <button type="submit" class="btn">{% trans 'Search' %}</button>
-      </form>
+        <div class="span12">
+          <form id="custom-search-form" class="form-search form-horizontal">
+              <div class="input-append span12">
+                  <input type="text" class="search-query mac-style span6" placeholder="{% trans 'Search' %}">
+                  <button type="submit" class="btn"><i class="icon-search"></i></button>
+              </div>
+          </form>
+        </div>
         <p class="muted">{% trans 'Fields: ISSN(s), title, abbreviated title and acronym' %}</p>
     </div>
     <div class="span3">
@@ -52,7 +56,7 @@
             <td>
             <ul class="inline">
               <li>
-                <a href="{% url editorial.journal.edit 1 %}" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
+                <a href="{% url editorial.journal.edit '1' %}" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
               </li>
               <li>
                 <a href="{% url editorial.board %}" class="link-list link-list-action"><i class="icon-list-alt"></i> {% trans 'Corpo editorial' %} </a>

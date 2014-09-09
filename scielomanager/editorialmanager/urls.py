@@ -9,7 +9,7 @@ urlpatterns = patterns('',
 
     # Journal related urls
     url(r'^journal/detail/$', views.journal_detail, name="editorial.journal.detail"),
-    url(r'^journal/(?P<journal_id>\d+)/edit/$', views.journal_edit, name="editorial.journal.edit"),
+    url(r'^journal/(?P<journal_id>\d+)/edit/$', views.edit_journal, name="editorial.journal.edit"),
 
 
     # Editorial Manager
