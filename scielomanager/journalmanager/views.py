@@ -40,7 +40,7 @@ from scielomanager.tools import (
     get_referer_view,
     asbool,
 )
-
+from audit_log import helpers
 
 from waffle.decorators import waffle_flag
 
@@ -536,7 +536,9 @@ def add_journal(request, journal_id=None):
     previous_journal_logo = None
     has_cover_url = has_logo_url = False
 
-    if journal_id is None:
+    is_new_journal = journal_id is None
+
+    if is_new_journal:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)
@@ -561,6 +563,11 @@ def add_journal(request, journal_id=None):
         journalform = JournalForm(request.POST, request.FILES, instance=journal, prefix='journal')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
+
+        if not is_new_journal:
+            audit_old_values = helpers.collect_old_values(journal, journalform, [titleformset, missionformset,])
+        else:
+            audit_old_values = None
 
         if 'pend' in request.POST:
             journal_form_hash = PendingPostData(request.POST).pend(resolve(request.get_full_path()).url_name, request.user)
@@ -588,6 +595,19 @@ def add_journal(request, journal_id=None):
 
                     titleformset.save()
                     missionformset.save()
+
+                    audit_data = {
+                        'user': request.user,
+                        'obj': saved_journal,
+                        'message': helpers.construct_change_message(journalform, [titleformset, missionformset,]),
+                        'old_values': audit_old_values,
+                        'new_values': helpers.collect_new_values(journalform, [titleformset, missionformset,]),
+                    }
+                    if is_new_journal:
+                        helpers.log_create(**audit_data)
+                    else:
+                        helpers.log_change(**audit_data)
+
                     messages.info(request, MSG_FORM_SAVED)
 
                     if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
@@ -786,6 +806,8 @@ def edit_issue(request, journal_id, issue_id=None):
         form = get_issue_form_by_type(issue.type, request, issue.journal, issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
+        audit_old_values = helpers.collect_old_values(issue, form, [titleformset, ])
+
         if form.is_valid():
             saved_issue = form.save(commit=False)
             saved_issue.journal = issue.journal
@@ -794,6 +816,15 @@ def edit_issue(request, journal_id, issue_id=None):
 
             if titleformset.is_valid():
                 titleformset.save()
+
+            audit_data = {
+                'user': request.user,
+                'obj': issue,
+                'message': helpers.construct_change_message(form, [titleformset, ]),
+                'old_values': audit_old_values,
+                'new_values': helpers.collect_new_values(form, [titleformset, ]),
+            }
+            helpers.log_change(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
 
@@ -892,6 +923,15 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             # if title is given.
             if titleformset.is_valid():
                 titleformset.save()
+
+            audit_data = {
+                'user': request.user,
+                'obj': issue,
+                'message': helpers.construct_create_message(add_form, [titleformset, ]),
+                'old_values': '',
+                'new_values': helpers.collect_new_values(add_form, [titleformset, ]),
+            }
+            helpers.log_create(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
 

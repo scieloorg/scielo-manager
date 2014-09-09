@@ -168,6 +168,7 @@ INSTALLED_APPS = (
     'djcelery',
     'kombu.transport.django',
     'validator',
+    'audit_log',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
