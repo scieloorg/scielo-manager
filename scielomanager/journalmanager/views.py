@@ -60,8 +60,12 @@ def get_first_letter(objects_all):
     return sorted(list(letters_set))
 
 
-def list_editor(request, journal_id):
-    pass
+def editor(request, journal_id):
+
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    return render_to_response('journalmanager/editor.html',
+        {'editor': journal.editor}, context_instance=RequestContext(request))
 
 def index(request):
 
