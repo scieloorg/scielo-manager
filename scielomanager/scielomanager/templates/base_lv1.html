@@ -28,7 +28,7 @@
           {% flag 'editorialmanager' %}
             {% if perms.journalmanager.list_editor_journal and not request.user.is_superuser %}
               <li id="users-link" class="active">
-                <a href="{% url index %}">{% trans 'My Journals' %}</a>
+                <a href="{% url editorial.index %}">{% trans 'My Journals' %}</a>
               </li>
             {% endif %}
           {% endflag %}

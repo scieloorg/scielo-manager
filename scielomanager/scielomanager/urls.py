@@ -65,14 +65,14 @@ urlpatterns = patterns('',
     # Article Tracking APP
     url(r'^arttrack/', include('articletrack.urls')),
 
-    # Editorial Manager APP
-    url(r'^editorial/', include('editorialmanager.urls')),
-
     # Article APP
     url(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),
 
     # Journal Manager APP
     url(r'^journal/', include('journalmanager.urls')),
+
+    # Editorial Manager APP
+    url(r'^editorial/', include('editorialmanager.urls')),
 
     # Django admin APP
     url(r'^admin/', include(admin.site.urls)),

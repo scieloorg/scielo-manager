@@ -133,6 +133,9 @@ class RecentActivitiesTests(WebTest):
 
     def test_mailto_the_user_responsible_for_the_activity(self):
         user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_journal', model='journal')
+        user.user_permissions.add(perm)
+
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
 
@@ -144,6 +147,9 @@ class RecentActivitiesTests(WebTest):
 
     def test_expected_table_row(self):
         user = auth.UserF(is_active=True)
+        perm = _makePermission(perm='list_journal', model='journal')
+        user.user_permissions.add(perm)
+
         collection = modelfactories.CollectionFactory.create(name='Brasil')
         collection.add_user(user)
 

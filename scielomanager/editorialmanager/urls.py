@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = patterns('',
 
-    url(r'^$', views.index, name="index"),
+    url(r'^$', views.index, name="editorial.index"),
 
     # Journal related urls
     url(r'^journal/detail/$', views.journal_detail, name="editorial.journal.detail"),

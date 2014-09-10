@@ -48,7 +48,7 @@ def edit_journal(request, journal_id):
 
             messages.info(request, _('Journal updated successfully.'))
 
-            return HttpResponseRedirect(reverse('index'))
+            return HttpResponseRedirect(reverse('editorial.index'))
         else:
             messages.error(request, _('Check mandatory fields.'))
 
