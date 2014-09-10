@@ -6,3 +6,4 @@ settings_local.include
 *.coverage
 _build/
 bundle.min*
+.DS_Store
