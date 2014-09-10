@@ -154,20 +154,21 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'journalmanager',
-    'export',
-    'accounts',
-    'maintenancewindow',
-    'south',
-    'scielo_extensions',
-    'widget_tweaks',
-    'tastypie',
-    'django_assets',
-    'waffle',
-    'articletrack',
-    'djcelery',
     'kombu.transport.django',
+    'maintenancewindow',
+    'scielo_extensions',
+    'journalmanager',
+    'editorialmanager',
+    'widget_tweaks',
+    'django_assets',
+    'articletrack',
     'validator',
+    'djcelery',
+    'tastypie',
+    'accounts',
+    'waffle',
+    'export',
+    'south',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -225,6 +226,7 @@ AUTH_PROFILE_MODULE = 'journalmanager.UserProfile'
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 

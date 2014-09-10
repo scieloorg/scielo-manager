@@ -1,0 +1,145 @@
+{% extends "base_lv1.html" %}
+{% load pagination_tags %}
+{% load i18n %}
+{% load modal %}
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li class="active">{% trans 'Journals' %} </li>
+  </ul>
+
+  <div class="row-fluid show-grid">
+    <div class="span9">
+        <div class="span12">
+          <form id="custom-search-form" class="form-search form-horizontal">
+              <div class="input-append span12">
+                  <input type="text" class="search-query mac-style span6" placeholder="{% trans 'Search' %}">
+                  <button type="submit" class="btn"><i class="icon-search"></i></button>
+              </div>
+          </form>
+        </div>
+        <p class="muted">{% trans 'Fields: ISSN(s), title, abbreviated title and acronym' %}</p>
+    </div>
+    <div class="span3">
+      <div class="pull-right">
+        <ul class="pager">
+          <li class="prev disabled">
+              <a href="/journal/?">←</a>
+          </li>
+          <li class="middle">
+              <span>
+                  <strong>1-20</strong> of <strong>43</strong>
+              </span>
+          </li>
+          <li class="next ">
+              <a href="/journal/?page=2">→</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row-fluid show-grid">
+    <div class="span12">
+      <table class="table table-bordered table-hover table-condensed">
+        <tbody>
+          <tr>
+            <td width="80%">
+              <div style="font-size: 16.5px;font-weight: bold;"><a data-target='modal' href="{% url editorial.journal.detail %}">Acta Scientiarum. Animal Sciences - ASAS</a></div>
+                <ul class="unstyled">
+                  <li><span class="muted">On-line version ISSN: </span><b>1807-1775</b></li>
+                  <li><span class="muted">Editor: </span><b>Ricardo de Castro Fernandes</b></li>
+                  <li><span class="muted">Managed by the collections: </span><b>Brasil</b></li>
+                </ul>
+            </td>
+            <td>
+            <ul class="inline">
+              <li>
+                <a href="{% url editorial.journal.edit '1' %}" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
+              </li>
+              <li>
+                <a href="{% url editorial.board %}" class="link-list link-list-action"><i class="icon-list-alt"></i> {% trans 'Corpo editorial' %} </a>
+              </li>
+            </ul>
+            </td>
+          </tr>
+          <tr>
+            <td width="80%">
+              <div style="font-size: 16.5px;font-weight: bold;"><a href="#">DELTA: Documentação de Estudos em Lingüística Teórica e Aplicada - DELTA </a></div>
+                <ul class="unstyled">
+                  <li><span class="muted">On-line version ISSN: </span><b>1807-1775</b></li>
+                  <li><span class="muted">Editor: </span><b>Ricardo de Castro Fernandes</b></li>
+                  <li><span class="muted">Managed by the collections: </span><b>Brasil</b></li>
+                </ul>
+            </td>
+            <td>
+            <ul class="inline">
+              <li>
+                <a href="#" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
+              </li>
+              <li>
+                <a href="#" class="link-list link-list-action"><i class="icon-list-alt"></i> {% trans 'Corpo editorial' %} </a>
+              </li>
+            </ul>
+            </td>
+          </tr>
+          <tr>
+            <td width="80%">
+              <div style="font-size: 16.5px;font-weight: bold;"><a href="#">Food Science and Technology (Campinas) - FSTC</a></div>
+                <ul class="unstyled">
+                  <li><span class="muted">On-line version ISSN: </span><b>1807-1775</b></li>
+                  <li><span class="muted">Editor: </span><b>Ricardo de Castro Fernandes</b></li>
+                  <li><span class="muted">Managed by the collections: </span><b>Brasil</b></li>
+                </ul>
+            </td>
+            <td>
+            <ul class="inline">
+              <li>
+                <a href="#" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
+              </li>
+              <li>
+                <a href="#" class="link-list link-list-action"><i class="icon-list-alt"></i> {% trans 'Corpo editorial' %} </a>
+              </li>
+            </ul>
+            </td>
+          </tr>
+          <tr>
+            <td width="80%">
+              <div style="font-size: 16.5px;font-weight: bold;"><a href="#">Journal of Microwaves, Optoelectronics and Electromagnetic Applications - JMOEA</a></div>
+                <ul class="unstyled">
+                  <li><span class="muted">On-line version ISSN: </span><b>1807-1775</b></li>
+                  <li><span class="muted">Editor: </span><b>Ricardo de Castro Fernandes</b></li>
+                  <li><span class="muted">Managed by the collections: </span><b>Brasil</b></li>
+                </ul>
+            </td>
+            <td>
+            <ul class="inline">
+              <li>
+                <a href="#" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
+              </li>
+              <li>
+                <a href="#" class="link-list link-list-action"><i class="icon-list-alt"></i> {% trans 'Corpo editorial' %} </a>
+              </li>
+            </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% modal 'Detalhes da Revista' %}
+
+{% endblock %}
+
+{% block extrafooter %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+
+  $("#q").focus();
+
+});
+</script>
+{% endblock %}

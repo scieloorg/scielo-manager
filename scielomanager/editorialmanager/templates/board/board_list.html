@@ -1,0 +1,224 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+{% load modal %}
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li class="active">{% trans 'Editorial Board' %}</li>
+  </ul>
+
+  <h4>ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)</span></h4>
+
+  <ul class="unstyled">
+    <li><span class="muted">On-line version ISSN: </span> <b>1807-1775</b></li>
+    <li><span class="muted">Editor: </span><b>Ricardo de Castro Fernandes</b></li>
+    <li><span class="muted">Managed by the collections: </span><b>Brasil</b></li>
+  </ul>
+
+  <div id="accordion-issues" class="accordion">
+    <div class="accordion-group">
+
+      <div class="accordion-heading">
+        <a href="#collapse_2012_65" data-parent="#accordion-issues" data-toggle="collapse" class="accordion-toggle collapsed">
+          2012 » Volume 65
+        </a>
+      </div>
+
+      <div class="accordion-body collapse" id="collapse_2012_65" style="height: 0px;">
+        <div class="accordion-inner">
+          <div class="span2">
+            <p class="link-list"><i class="icon-list-alt"></i> {% trans 'Corpo editorial' %} </p>
+            <a href="#" class="link-list link-list-action"><i class="icon-pencil"></i> {% trans 'Edit' %}</a>
+          </div>
+          <div class="span10">
+            <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseZero">
+                  Editor
+                </a>
+              </div>
+              <div id="collapseZero" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                  <ul>
+                    <li>
+                      <b>Antonio Fernando Monteiro Camargo</b>
+                      <p>Universidade Estadual Paulista – UNESP, Instituto de Biociências, Dept. de Ecologia, Rio Claro, SP, Brasil
+                      actalb@rc.unesp.br</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                  Editores associados
+                </a>
+              </div>
+              <div id="collapseOne" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <ul>
+                    <li>
+                      Marco Antonio Compagnoni (Universidade Estadual Paulista "Júlio de Mesquita Filho"-UNESP, Araraquara, SP, Brasil)
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                  Editorial Comission
+                </a>
+              </div>
+              <div id="collapseTwo" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <ul>
+                    <li>Adriano Sanches Melo
+                    Universidade Federal de Goiás - UFG, Goiânia, GO, Brasil</li>
+                    <li>Carlos Eduardo de Mattos Bicudo
+                    Instituto de Botânica, São Paulo, SP, Brasil</li>
+                    <li>Claudio Gilberto Froehlich
+                    Universidade de São Paulo - USP, Ribeirão Preto, SP, Brasil</li>
+                    <li>Francisco Antonio Rodrigues Barbosa
+                    Universidade Federal de Minas Gerais - UFMG, Belo Horizonte, MG, Brasil</li>
+                    <li>Francisco de Assis Esteves
+                    Universidade Federal do Rio de Janeiro - UFRJ, Rio de Janeiro, RJ, Brasil</li>
+                    <li>José Galizia Tundisi
+                    Instituto Internacional de Ecologia - IIE, São Carlos, SP, Brasil</li>
+                    <li>José Roberto Verani
+                    Universidade Federal de São Carlos - UFSCar, São Carlos, SP, Brasil</li>
+                    <li>Luis Maurício Bini
+                    Universidade Federal de Goiás - UFG, Goiânia, GO, Brasil</li>
+                    <li> Néstor Mazzeo
+                    Universidad de La Republica, Uruguay
+                    <li>Orlando Necchi Junior
+                    Universidade Estadual Paulista - UNESP, São José do Rio Preto, SP, Brasil</li>
+                    <li>Sidinei Magela Thomaz
+                    Universidade Estadual de Maringá - UEM, Maringá, PR, Brasil</li>
+                    <li>Timothy Peter Moulton
+                    Universidade do Estado do Rio de Janeiro - UERJ, Rio de Janeiro, RJ, Brasil</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTree">
+                  Editorial Production
+                </a>
+              </div>
+              <div id="collapseTree" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <ul>
+                    <li>Editora Cubo ltda me - Rua Marechal Deodoro, 2709, São Carlos, SP, Brasil</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseFour">
+                  Comissão editorial
+                </a>
+              </div>
+              <div id="collapseFour" class="accordion-body collapse">
+                <div class="accordion-inner">
+                  <ul>
+                    <li>Elcio Marcantonio Compagnoni (Universidade Estadual Paulista "Júlio de Mesquita Filho"-UNESP, Araraquara, SP, Brasil)</li>
+                    <li>Romeu Magnani (Universidade Estadual Paulista "Júlio de Mesquita Filho"-UNESP, Araraquara, SP, Brasil) </li>
+                    <li>Adriano Mota Loyola (Universidade Federal de Uberlândia - UFU, Uberlândia, MG, Brasil) </li>
+                    <li>Alberto Carlos Botazzo Delbem (IUniversidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araçatuba, SP, Brasil)</li>
+                    <li>Alessandro D. Loguercio (Universidade Estadual de Ponta Grossa - UEPG, Ponta Grossa, PR, Brasil) </li>
+                    <li>Ana Paula Veras Sobral (Universidade de Pernambuco - UEP, Recife, PE, Brasil) </li>
+                    <li>Antonio Carlos Pereira (Universidade Estadual de Campinas - UNICAMP, Piracicaba, SP, Brasil) </li>
+                    <li>Antheunis Versluis (University of Tennessee, Health Science Center College of Dentistry - UTHSC, Memphis, TN, USA) </li>
+                    <li>Belmiro Cavalcanti do Egito Vasconcelos (Universidade de Pernambuco - UEP, Recife, PE, Brasil) </li>
+                    <li>Brenda Paula Figueiredo de Almeida Gomes (Universidade Estadual de Campinas - UNICAMP, Piracicaba, SP, Brasil) </li>
+                    <li>Carlos Alberto de Souza Costa (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araraquara, SP, Brasil) </li>
+                    <li>Carlos Menezes Aguiar (Universidade Federal de Pernambuco - UEP, Recife, PE, Brasil) </li>
+                    <li>Cassiano Kuchenbecker Rösing (Universidade Federal do Rio Grande do Sul - UFRS, Porto Alegre, RS, Brasil) </li>
+                    <li>Cecília Pedroso Turssi (São Leopoldo Mandic - SLMANDIC, Campinas, SP, Brasil) </li>
+                    <li>Cínthia Pereira Machado Tabchoury (Universidade Estadual de Campinas - UNICAMP, Piracicaba, SP, Brasil) </li>
+                    <li>Cláudia Cristina Montes (Universidade Federal de Sergipe - UFS, Aracajú, SE, Brasil) </li>
+                    <li>Cleber Machado de Souza (Pontifícia Universidade Católica do Paraná - PUC, Curitiba, PR, Brasil) </li>
+                    <li>Cristiane Yumi Koga Ito (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, São José dos Campos, SP, Brasil) </li>
+                    <li>Cristiano Susin (University College of Dental Medicine, Georgia Health Sciences - GHSU, Augusta, Georgia, USA) </li>
+                    <li>Daniela Bazan Palioto (Universidade de São Paulo - USP, Ribeirão Preto, SP, Brasil) </li>
+                    <li>Eduardo Hochuli Vieira (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araraquara, SP, Brasil) </li>
+                    <li>Efigênia Ferreira e Ferreira (Universidade Federal de Minas Gerais - UFMG, Belo Horizonte, MG, Brasil) </li>
+                    <li>Fábio Correia Sampaio (Universidade Federal da Paraíba - UFPB, João Pessoa-PB, Brasil) </li>
+                    <li>Fernando de Oliveira Costa (Universidade Federal de Minas Gerais - UFMG, Belo Horizonte, MG, Brasil) </li>
+                    <li>Guilherme Carpena Lopes (Universidade Federal de Santa Catarina - UFSC, Florianópolis, SC, Brasil) </li>
+                    <li>Guilherme Bonecker Valverde (TUFTS University, School of Dental Medicine, Boston, Massachusetts, USA) </li>
+                    <li>Gustavo Pompermaier Garlet (Universidade de São Paulo - USP, Bauru, SP, Brasil) </li>
+                    <li>Hercílio Martelli Júnior (Universidade Estadual de Montes Claros - UNIMONTES, Montes Claros, MG, Brasil) </li>
+                    <li>Ivete Pomarico Ribeiro de Souza (Universidade Federal do Rio de Janeiro - UFRJ, Rio de Janeiro, RJ, Brasil) </li>
+                    <li>Jamil Awad Shibli (Universidade de Guarulhos - UNG, Guarulhos, SP, Brasil) </li>
+                    <li>Jean Nunes dos Santos (Universidade Federal da Bahia - UFBA, Salvador, BA, Brasil) </li>
+                    <li>João Adolfo Costa Hanemann (Universidade Federal de Alfenas - UNIFAL, Alfenas, MG, Brasil) </li>
+                    <li>João Eduardo Gomes Filho (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araçatuba, SP, Brasil) </li>
+                    <li>José Mauro Granjeiro (Universidade Federal Fluminense - UFF, Niterói-RJ, Brasil) </li>
+                    <li>Josimeri Hebling Costa (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araraquara-SP, Brasil) </li>
+                    <li>José Roberto Cortelli (Universidade Taubaté - UNITAU, Taubaté-SP, Brasil) </li>
+                    <li>Juliane Maria Guerreiro Tanomaru (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araraquara, SP, Brasil) </li>
+                    <li>Kenio Costa Lima (Universidade Federal do Rio Grande do Norte - UFRN, Natal, RN, Brasil) </li>
+                    <li>Lélia Batista de Souza (Universidade Federal do Rio Grande do Norte - UFRN, Natal-RN, Brasil) </li>
+                    <li>Leonardo Rigoldi Bonjardim (Universidade Federal de Sergipe - UFS, Aracajú, SE, Brasil) </li>
+                    <li>Lidiany Karla Azevedo Rodrigues (Universidade Federal do Ceará - UFC, Fortaleza, CE, Brasil) </li>
+                    <li>Lourdes dos Santos Pinto (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araraquara, SP, Brasil) </li>
+                    <li>Lourenço Correr Sobrinho (Universidade Estadual de Campinas - UNICAMP, Piracicaba, SP, Brasil) </li>
+                    <li>Lucianne Cople Maia de Faria (Universidade Federal do Rio de Janeiro - UFRJ, Rio de Janeiro, RJ, Brasil) </li>
+                    <li>Luciene Cristina de Figueiredo (Universidade de Guarulhos - UNG, Guarulhos, SP, Brasil) </li>
+                    <li>Luiz Felipe Valandro (Universidade Federal de Santa Maria - UFSM, Santa Maria, RS, Brasil)</li>
+                    <li>Magda Feres (Universidade de Guarulhos - UNG, Guarulhos, SP, Brasil) </li>
+                    <li>Márcio Campos Oliveira (Universidade Estadual de Feira de Santana - UEFS, Feira de Santana, BA, Brasil) </li>
+                    <li>Maria Beatriz Duarte Gavião (Universidade Estadual de Campinas - UNICAMP, Piracicaba, SP, Brasil) </li>
+                    <li>Maria Cássia Ferreira de Aguiar (Universidade Federal de Minas Gerais - UFMG, Belo Horizonte, MG, Brasil) </li>
+                    <li>Maria da Luz Rosário de Sousa (Universidade Estadual de Campinas - UNICAMP, Piracicaba, SP, Brasil)</li>
+                    <li>Maria do Carmo Matias Freire (Universidade Federal de Goiás - UFG, Goiânia, GO, Brasil)</li>
+                    <li>Maria Urânia Alves (Universidade Regional de Blumenau - FURB Blumenau, SC, Brasil)</li>
+                    <li>Mário Tanomaru Filho (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araraquara, SP, Brasil)</li>
+                    <li>Paula Cristina Trevilatto (Pontifícia Universidade Católica do Paraná - PUCPR, Curitiba, PR, Brasil)</li>
+                    <li>Raphael Freitas de Souza (Universidade de São Paulo - USP, Ribeirão Preto-SP, Brasil)</li>
+                    <li>Regina Guenka Palma Dibb (Universidade de São Paulo - USP, Ribeirão Preto, SP, Brasil)</li>
+                    <li>Ricardo Marins de Carvalho (University of British Columbia - UBC, Faculty of Dentistry, Vancouver, BC, Canadá)</li>
+                    <li>Ricardo Santiago Gomez (Universidade Federal de Minas Gerais - UFMG, Belo Horizonte, MG, Brasil)</li>
+                    <li>Rodrigo Alex Arthur (Universidade Federal do Rio Grande do Sul - UFRS, Porto Alegre, RS, Brasil)</li>
+                    <li>Rodrigo Otávio Citó César Rêgo (Universidade Federal do Ceará - UFC, Fortaleza-CE, Brasil)</li>
+                    <li>Rosemary Sadami Arai Shinkai (Pontifícia Universidade Católica do Rio Grande do Sul - PUCRS, Porto Alegre, RS, Brasil)</li>
+                    <li>Rubens Spin Neto (Aarhus University, Aarhus C, Dinamarca) </li>
+                    <li>Sérgio Vitorino Cardoso (Universidade Federal de Uberlândia - UFU, Uberlândia, MG, Brasil)</li>
+                    <li>Silvia Helena de Carvalho Sales Peres (Universidade de São Paulo - USP, Bauru, SP, Brasil)</li>
+                    <li>Tarcília Aparecida da Silva (Universidade Federal de Minas Gerais - UFMG, Belo Horizonte, MG, Brasil)</li>
+                    <li>Valdir Gouveia Garcia (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araçatuba, SP, Brasil)</li>
+                    <li>Vilma de Lima (Universidade Federal do Ceará - UFC, Ceará, CE, Brasil)</li>
+                    <li>Walter Leal de Moura (Universidade Federal do Piauí - UFPI, Teresina, PI, Brasil)</li>
+                    <li>Wilson Roberto Poi (Universidade Estadual Paulista "Júlio de Mesquita Filho" - UNESP, Araçatuba, SP, Brasil)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-heading">
+        <a href="#collapse_2011_64" data-parent="#accordion-issues" data-toggle="collapse" class="accordion-toggle">
+          2011 » Volume 64
+        </a>
+      </div>
+
+      <div class="accordion-body collapse" id="collapse_2011_64">
+        <div class="accordion-inner">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}
