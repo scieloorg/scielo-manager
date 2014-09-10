@@ -60,6 +60,9 @@ def get_first_letter(objects_all):
     return sorted(list(letters_set))
 
 
+def list_editor(request, journal_id):
+    pass
+
 def index(request):
 
     if not request.user.is_authenticated():
