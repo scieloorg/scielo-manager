@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
-from django_extensions.db.fields import json as db_json
+import jsonfield
 
 ADDITION = 1
 CHANGE = 2
@@ -29,8 +29,8 @@ class AuditLogEntry(models.Model):
     object_repr = models.CharField(_('object repr'), max_length=200)
     action_flag = models.PositiveSmallIntegerField(_('action flag'))
     change_message = models.TextField(_('Description'), blank=True)
-    old_values = db_json.JSONField(_('old values'), blank=True, default={})
-    new_values = db_json.JSONField(_('new values'), blank=True, default={})
+    old_values = jsonfield.JSONField(_('old values'), blank=True, default={})
+    new_values = jsonfield.JSONField(_('new values'), blank=True, default={})
 
     objects = AuditLogEntryManager()
 

@@ -149,7 +149,7 @@ class AuditLogFromJournalFormTests(WebTest):
         self.assertEqual(log_entry.action_flag, audit_models.ADDITION)
         self.assertEqual(log_entry.object_id, unicode(audited_object.pk))
         self.assertEqual(log_entry.content_type, ContentType.objects.get_for_model(audited_object))
-        self.assertEqual(log_entry.old_values, {})
+        self.assertEqual(log_entry.old_values, None)
         self.assertEqual(log_entry.user, self.user)
 
         fields_edited = [
