@@ -55,7 +55,8 @@ urlpatterns = patterns('',
         views.toggle_active_collection, name='usercollection.toggle_active'),
 
     #Editor
-    url(r'^editor/(?P<journal_id>\d+)$', views.editor, name="editor.index"),
+    url(r'^(?P<journal_id>\d+)/editor/$', views.get_editor, name="editor.index"),
+    url(r'^(?P<journal_id>\d+)/editor/add/$', views.add_editor, name="editor.add"),
 
     # Ajax requests
     url(r'^ajx/ajx1/$', views.ajx_list_issues_for_markup_files, name="ajx.list_issues_for_markup_files"),
