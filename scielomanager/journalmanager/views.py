@@ -66,6 +66,10 @@ def index(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('journalmanager.user_login'))
 
+    #Redirect user when it`s is editor
+    if request.user.get_profile().is_editor:
+        return HttpResponseRedirect(reverse('editorial.index'))
+
     pending_journals = models.PendedForm.objects.filter(
         user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 

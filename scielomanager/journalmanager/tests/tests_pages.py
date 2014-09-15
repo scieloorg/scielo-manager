@@ -327,6 +327,21 @@ class IndexPageTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/home_journal.html')
 
+    def test_logged_editor_user_access_to_list_journal(self):
+        editors_group = modelfactories.GroupFactory.create(name='Editors')
+        perm = _makePermission(perm='list_editor_journal', model='journal', app_label='journalmanager')
+        editors_group.permissions.add(perm)
+
+        collection = modelfactories.CollectionFactory.create()
+        collection.add_user(self.user)
+
+        self.user.groups.add(editors_group)
+
+        response = self.app.get(reverse('index'), user=self.user)
+        response = response.follow()
+
+        self.assertTemplateUsed(response, 'journal/journal_list.html')
+
     def test_not_logged_user_access_to_index(self):
         response = self.app.get(reverse('index')).follow()
 

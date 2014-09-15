@@ -4,6 +4,7 @@ import factory
 import datetime
 
 from journalmanager import models
+from django.contrib.auth.models import Group
 
 
 class ArticleFactory(factory.Factory):
@@ -43,6 +44,12 @@ class UserFactory(factory.Factory):
     is_superuser = False
     last_login = datetime.datetime(2000, 1, 1)
     date_joined = datetime.datetime(1999, 1, 1)
+
+
+class GroupFactory(factory.Factory):
+    FACTORY_FOR = Group
+
+    name = factory.Sequence(lambda n: "Group #%s" % n)
 
 
 class SubjectCategoryFactory(factory.Factory):
