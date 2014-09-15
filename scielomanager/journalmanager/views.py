@@ -41,6 +41,7 @@ from scielomanager.tools import (
     asbool,
 )
 from audit_log import helpers
+from editorialmanager.models import EditorialBoard, EditorialMember
 
 from waffle.decorators import waffle_flag
 
@@ -808,6 +809,10 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                      'editorial_standard': journal.editorial_standard,
                      'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
+
+        #Pegando o último fascículo
+        last_issue = journal.get_last_issue()
+
     else:
         data_dict = None
         issue = models.Issue.objects.get(pk=issue_id)
@@ -829,6 +834,15 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             # if title is given.
             if titleformset.is_valid():
                 titleformset.save()
+
+            #Se for um novo issue
+            if issue_id is None:
+                #Cria uma nova instância de EditorialBoard
+                ed_board = EditorialBoard()
+                #Cria o relacionamento com o issue
+                ed_board.issue = saved_issue
+
+
 
             audit_data = {
                 'user': request.user,
