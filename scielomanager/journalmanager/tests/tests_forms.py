@@ -15,6 +15,8 @@ from django.contrib.auth.models import User
 from waffle import Flag
 
 from journalmanager.tests import modelfactories
+from editorialmanager.tests.modelfactories import EditorialBoardFactory, EditorialMemberFactory
+
 from journalmanager import forms
 from journalmanager import models
 
@@ -3441,8 +3443,23 @@ class IssueFormTests(WebTest):
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
 
+        self.issue = self._makeOne()
+
     def tearDown(self):
         pass
+
+    def _makeOne(self):
+        #Create any issue in this journal
+        issue = modelfactories.IssueFactory(journal=self.journal)
+
+        #Create a board to the issue
+        ed_board = EditorialBoardFactory(issue=issue)
+
+        #Add members to the board
+        member = EditorialMemberFactory(board=ed_board)
+        member = EditorialMemberFactory(board=ed_board)
+
+        return issue
 
     def test_basic_struture(self):
         """
@@ -3521,6 +3538,63 @@ class IssueFormTests(WebTest):
             form['editorial_standard'] = 'other'
 
             response = form.submit().follow()
+
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+
+    def test_POST_with_valid_formdata_and_check_editorial_board(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the issue's list and the new user must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.add_issue`` and
+        ``journalmanager.list_issue``.
+
+        This test check if editorial board of this issue was created
+        """
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
+
+            new_issue = models.Issue.objects.get(publication_year='2012', number='3', volume='29')
+
+            #Members of the recent issue
+            new_members = new_issue.editorialboard.editorialmember_set.all()
+
+            self.assertItemsEqual(new_issue.editorialboard.editorialmember_set.all(), new_members)
 
             self.assertIn('Saved.', response.body)
             self.assertTemplateUsed(response, 'journalmanager/issue_list.html')

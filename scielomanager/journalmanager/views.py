@@ -1,3 +1,4 @@
+#coding: utf-8
 import json
 import urlparse
 from datetime import datetime
@@ -810,9 +811,8 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                      'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
 
-        #Pegando o último fascículo
+        #get last issue of the journal
         last_issue = journal.get_last_issue()
-
     else:
         data_dict = None
         issue = models.Issue.objects.get(pk=issue_id)
@@ -835,14 +835,22 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             if titleformset.is_valid():
                 titleformset.save()
 
-            #Se for um novo issue
+            #if is a new issue copy editorial board from the last issue
             if issue_id is None:
-                #Cria uma nova instância de EditorialBoard
-                ed_board = EditorialBoard()
-                #Cria o relacionamento com o issue
-                ed_board.issue = saved_issue
+                try:
+                    members = last_issue.editorialboard.editorialmember_set.all()
+                except ObjectDoesNotExist:
+                    messages.info(request,
+                        _("Issue created successfully, however we can not create the editorial board."))
+                else:
+                    ed_board = EditorialBoard()
+                    ed_board.issue = saved_issue
+                    ed_board.save()
 
-
+                    for member in members:
+                        member.board = ed_board
+                        member.pk = None
+                        member.save()
 
             audit_data = {
                 'user': request.user,
