@@ -10,7 +10,7 @@ class EditorialBoard(models.Model):
     """
     Represents the editorial board for one issue.
     """
-    issue = models.ForeignKey(Issue)
+    issue = models.OneToOneField(Issue, null=False)
 
     def __unicode__(self):
         return "Editorial board of issue: %s" % self.issue

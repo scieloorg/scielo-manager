@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'scielo_extensions',
     'journalmanager',
     'editorialmanager',
+    'audit_log',
     'widget_tweaks',
     'django_assets',
     'articletrack',
