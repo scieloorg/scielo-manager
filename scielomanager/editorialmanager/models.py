@@ -29,13 +29,11 @@ class EditorialMember(models.Model):
     last_name = models.CharField(_('Last Name'), max_length=256)
     email = models.EmailField(_('E-mail'))
 
-    institution = models.CharField(_('institution'), max_length=256, null=True,
-        blank=True)
+    institution = models.CharField(_('institution'), max_length=256, null=True, blank=True)
     link_cv = models.URLField(_('Link CV'), null=True, blank=True)
     city = models.CharField(_('City'), max_length=256, null=True, blank=True)
     state = models.CharField(_('State'), max_length=256, null=True, blank=True)
-    country = models.CharField(_('Country'), max_length=256, null=True,
-        blank=True)
+    country = models.CharField(_('Country'), max_length=256, null=True, blank=True)
 
     def __unicode__(self):
         return self.get_full_name()
@@ -43,13 +41,20 @@ class EditorialMember(models.Model):
     def get_full_name(self):
         return ' '.join([self.first_name, self.last_name])
 
+    class Meta:
+        ordering = ('board', 'role__weight')
+
 
 class RoleType(models.Model):
     """
     Represents the editor category
     """
     name = models.CharField(_('Role Name'), max_length=256)
+    weight = models.PositiveSmallIntegerField(_('role weight'), default=10)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ('weight', 'name')
 

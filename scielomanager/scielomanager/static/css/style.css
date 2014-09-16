@@ -544,3 +544,22 @@ table._listings h4 {
     width: 500px;
 }
 
+/*
+  bootstrap modal custom styles to be wider and larger
+  simple add the class .wide @ .modal node, to make modal wider
+  or add the class .large @ .modal node, to make modal larger
+  for responsive behavior, will require some @media queries
+*/
+.modal.large {
+  top: 5%;
+  bottom: 5%;
+}
+
+.modal.large .modal-body {
+  min-height: 85%;
+}
+
+.modal.wide {
+  width: 80%;
+  margin-left:-40%; /* width/2) */
+}

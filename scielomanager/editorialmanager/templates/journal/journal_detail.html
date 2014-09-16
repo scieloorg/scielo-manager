@@ -1,89 +1,117 @@
 {% load i18n %}
 
-<table class="table table-striped" style="width:100%">
+<table class="table table-bordered table-hover table-condensed">
   <tbody>
     <tr>
-      <td width="30%" class="table-journal-detail-td"><b>{% trans 'Journal title' %}:</b></td>
-      <td>Fundação Zoobotânica do Rio Grande do Sul</td>
+      <td class="table-journal-detail-td span2"><b>{% trans 'Journal title' %}:</b></td>
+      <td>{{ journal.title }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'ISO abbreviated title' %}:</b></td>
-      <td>Iheringia, Sér. Zool. </td>
+      <td>{{ journal.title_iso }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Short title' %}:</b></td>
-      <td>Iheringia, Sér. Zool.</td>
+      <td>{{ journal.short_title }}</td>
     </tr>
     <tr>
-      <td class="table-journal-detail-td"><b>{% trans 'Medile title' %}:</b></td>
-      <td>Iheringia, Sér. Zool. (Mediline)</td>
+      <td class="table-journal-detail-td"><b>{% trans 'Medline title' %}:</b></td>
+      <td>{{ journal.medline_title }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Previous title' %}:</b></td>
-      <td>Revista de Fisioterapia Vasco Nuclear (Previous)</td>
+      <td>{{ journal.previous_title }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'ISSN(s)' %}:</b></td>
-      <td>1234-5678(eissn), 1234-5678(pissn)</td>
+      <td>
+        <dl>
+          {% if journal.print_issn %}
+            <dt>{% trans "Print ISSN" %}:</dt>
+            <dd>{{ journal.print_issn }}</dd>
+          {% endif %}
+
+          {% if journal.eletronic_issn %}
+            <dt>{% trans "Electronic ISSN" %}:</dt>
+            <dd>{{ journal.eletronic_issn }}</dd>
+          {% endif %}
+        </dl>
+      </td>
     </tr>
     <tr>
-      <td class="table-journal-detail-td"><b>{% trans 'Mission' %}:</b></td>
+      <td class="table-journal-detail-td"><b>{% trans 'Missions' %}:</b></td>
       <td>
-        <ul class="inline">
-          <li>Espanhol: Publicar artículos originales en Zoología.</li>
-          <li>Português: Publicar artículos originales en Zoología.</li>
-          <li>Inglês: Publicar artículos originales en Zoología.</li>
-        </ul>
+        <dl>
+          {% for mission in journal.missions.all %}
+            <dt>{{ mission.language}}</dt>
+            <dd>{{ mission.description}}</dd>
+          {% endfor %}
+        </dl>
       </td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Lanaguages' %}:</b></td>
-      <td>Português, Inglês, Espanhol</td>
-    </tr>
-    <tr>
-      <td class="table-journal-detail-td"><b>{% trans 'Acronym' %}:</b></td>
-      <td>Iheringia, Sér. Zool.</td>
-    </tr>
-    <tr>
-      <td class="table-journal-detail-td"><b>{% trans 'Index Coverage' %}:</b></td>
-      <td>abstracts of entomology,
-          bioresearch index,
-          biological abstracts,
-          entomological abstracts,
-          national inquiry services centre,
-          periodica,
-          the zoological record,
-          wild life review abstract,
-          isi
+      <td>
+        <ul>
+          {% for lang in journal.languages.all %}
+            <li>{{lang}}</li>
+          {% endfor %}
+        </ul>
+
       </td>
     </tr>
     <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Acronym' %}:</b></td>
+      <td>{{ journal.acronym }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Index Coverage' %}:</b></td>
+      <td>{{ journal.index_coverage|linebreaksbr }}</td>
+    </tr>
+    <tr>
       <td class="table-journal-detail-td"><b>{% trans 'License' %}:</b></td>
-      <td>BY-NC</td>
+      <td>{{ journal.use_license }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Initial Year' %}:</b></td>
-      <td>1967</td>
+      <td>{{ journal.init_year }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Final Year' %}:</b></td>
-      <td>1967</td>
+      <td>{{ journal.final_year }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Frequency' %}:</b></td>
-      <td>Quaterly</td>
+      <td>{{ journal.get_frequency_display }}</td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Publisher' %}:</b></td>
-      <td>Fundação Zoobotânica do Rio Grande do Sul</td>
+      <td>
+        <dl>
+          <dt>{% trans "Name" %}:</dt>
+          <dd>{{ journal.publisher_name }}</dd>
+          <dt>{% trans "Country" %}:</dt>
+          <dd>{{ journal.publisher_country }}</dd>
+          <dt>{% trans "State/Province/Region" %}:</dt>
+          <dd>{{ journal.publisher_state }}</dd>
+          <dt>{% trans "City" %}:</dt>
+          <dd>{{ journal.publication_city }}</dd>
+        </dl>
+      </td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Sponsor' %}:</b></td>
-      <td>CNPq, Fapergs</td>
+      <td>
+        <ul>
+          {% for sponsor in journal.sponsor.all %}
+            <li>{{sponsor}}</li>
+          {% endfor %}
+        </ul>
+      </td>
     </tr>
     <tr>
       <td class="table-journal-detail-td"><b>{% trans 'Editor' %}:</b></td>
-      <td>Franciso Chavier de Oliveira Manco Rodrigues</td>
+      <td>{{ journal.editor.get_full_name }}</td>
     </tr>
   </tbody>
 </table>

@@ -22,7 +22,8 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/combobox.js',
                     '../static/js/bootstrap.js',
                     '../static/js/chosen.jquery.js',
-                    '../static/js/modal.js')
+                    '../static/js/modal.js',
+                    )
 
 
 js = Bundle(base_bundle, minify_bundle, plugins_bundle, app_bundle, filters='yui_js', output='js/bundle.min.js')

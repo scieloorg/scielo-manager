@@ -128,7 +128,7 @@
       prefix: '{{ missionformset.prefix }}'
     });
 
-    $(".chzn-select").chosen({no_results_text: "Nenhum resultado encontrado para: "})
+    $(".chzn-select").chosen({no_results_text: "{% trans 'No results found for' %}:"});
 
   </script>
 {% endblock %}
