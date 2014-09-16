@@ -153,11 +153,11 @@ def add_board_member(request, journal_id, issue_id):
 
     issue = issue[0]
     # get the related issue::board, if none: create one
-    if issue.editorialboard_set.all().count() != 1: # TODO: this line will brake when changed to OneToOne relation
+    if not hasattr(issue, 'editorialboard'):
         board = models.EditorialBoard(issue=issue)
         board.save()
 
-    board = issue.editorialboard_set.all()[0]
+    board = issue.editorialboard
 
     board_url = reverse('editorial.board', args=[journal_id, ])
     post_url = reverse('editorial.board.add', args=[journal_id, issue_id, ])

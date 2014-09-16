@@ -51,9 +51,9 @@
             {# right side #}
             <div class="span10">
               <h5>{% trans "Editorial Board" %}:</h5>
-              {% for board in issue.editorialboard_set.all %}
+              {% if issue.editorialboard %}
                 <div class="accordion" id="accordion_members_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}">
-                  {% with board.editorialmember_set.all as board_members  %}
+                  {% with issue.editorialboard.editorialmember_set.all as board_members  %}
 
                       {% regroup board_members by role as role_list %}
 
@@ -107,11 +107,11 @@
                   {% endwith %}
                 </div>
 
-              {% empty %}
+              {% else %}
                 <div class="alert alert-error">
                   <i class="icon-exclamation-sign"></i> {% trans "This issue has no Editorial Board associated" %}
                 </div>
-              {% endfor %}
+              {% endif %}
             </div>
             {# /right side #}
           </div>
