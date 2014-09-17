@@ -103,25 +103,24 @@ def add_editor(request, journal_id):
     """
     journal = get_object_or_404(models.Journal, id=journal_id)
 
-    if request.POST:
-
-        if request.POST.get('editor') != "":
-            editor = User.objects.get(pk=request.POST.get('editor'))
+    if request.method == "POST":
+        editor_pk = request.POST.get('editor', None)
+        if editor_pk:
+            editor = User.objects.get(pk=editor_pk)
             journal.editor = editor
             journal.save()
-            messages.success(request,
-                _("Successfully selected %s as editor of this Journal" % editor.get_full_name()))
+            messages.success(request, _("Successfully selected %s as editor of this Journal" % editor.get_full_name()))
         else:
             #Remove editor
             journal.editor = None
             journal.save()
-            messages.success(request,
-                _("No user selected as editor of this journal!"))
+            messages.success(request, _("No user selected as editor of this journal!"))
     else:
-        if not get_users_by_group('Editors'):
+        editors_group = get_users_by_group('Editors')
+        if not editors_group:
             messages.error(request, _("Does not exist the group 'Editors'"))
         else:
-            users_editor = get_users_by_group('Editors')
+            users_editor = editors_group
 
         return render_to_response('journalmanager/includes/form_add_editor.html',
                                  {'journal': journal,
