@@ -306,6 +306,10 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     user = models.OneToOneField(User)
 
     @property
+    def is_editor(self):
+        return self.user.groups.filter(name__iexact='Editors').exists()
+
+    @property
     def gravatar_id(self):
         return hashlib.md5(self.user.email.lower().strip()).hexdigest()
 
@@ -661,6 +665,18 @@ class Journal(caching.base.CachingMixin, models.Model):
         ordering = ('title', 'id')
         permissions = (("list_journal", "Can list Journals"),
                        ("list_editor_journal", "Can list editor Journals"))
+
+    def get_last_issue(self):
+        """
+        Return the latest issue based on descending ordering of parameters:
+        ``publication_year``, ``volume`` and ``number``
+
+        Return a issue instance otherwise ``None``
+        """
+        try:
+            return self.issue_set.order_by('-publication_year', '-volume', '-number')[0]
+        except IndexError:
+            return None
 
     def issues_as_grid(self, is_available=True):
         objects_all = self.issue_set.available(is_available).order_by(

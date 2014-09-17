@@ -1,3 +1,4 @@
+#coding: utf-8
 import json
 import urlparse
 from datetime import datetime
@@ -41,6 +42,7 @@ from scielomanager.tools import (
     asbool,
 )
 from audit_log import helpers
+from editorialmanager.models import EditorialBoard, EditorialMember
 
 from waffle.decorators import waffle_flag
 
@@ -65,6 +67,10 @@ def index(request):
 
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('journalmanager.user_login'))
+
+    #Redirect user when it`s is editor
+    if request.user.get_profile().is_editor:
+        return HttpResponseRedirect(reverse('editorial.index'))
 
     pending_journals = models.PendedForm.objects.filter(
         user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
@@ -804,6 +810,9 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                      'editorial_standard': journal.editorial_standard,
                      'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
+
+        #get last issue of the journal
+        last_issue = journal.get_last_issue()
     else:
         data_dict = None
         issue = models.Issue.objects.get(pk=issue_id)
@@ -825,6 +834,23 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             # if title is given.
             if titleformset.is_valid():
                 titleformset.save()
+
+            #if is a new issue copy editorial board from the last issue
+            if issue_id is None and last_issue:
+                try:
+                    members = last_issue.editorialboard.editorialmember_set.all()
+                except ObjectDoesNotExist:
+                    messages.info(request,
+                        _("Issue created successfully, however we can not create the editorial board."))
+                else:
+                    ed_board = EditorialBoard()
+                    ed_board.issue = saved_issue
+                    ed_board.save()
+
+                    for member in members:
+                        member.board = ed_board
+                        member.pk = None
+                        member.save()
 
             audit_data = {
                 'user': request.user,

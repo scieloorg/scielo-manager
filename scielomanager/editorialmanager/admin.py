@@ -10,10 +10,14 @@ class EditorialMemberInline(admin.StackedInline):
 class EditorialBoardAdmin(admin.ModelAdmin):
     inlines = [EditorialMemberInline, ]
 
+    def journal(self, obj):
+        return obj.issue.journal
+
+    def issue_publication_year(self, obj):
+        return obj.issue.publication_year
+
+    search_fields = ('issue__journal__title', 'issue__volume', 'issue__publication_year')
+    list_display = ('__unicode__', 'issue_publication_year', 'issue', 'journal')
+
 admin.site.register(models.EditorialBoard, EditorialBoardAdmin)
-
-class RoleTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'weight', )
-    search_fields = ('name', 'weight', )
-
-admin.site.register(models.RoleType, RoleTypeAdmin)
+admin.site.register(models.RoleType)
