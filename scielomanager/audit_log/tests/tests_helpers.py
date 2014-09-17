@@ -129,7 +129,7 @@ class AuditLogFromJournalFormTests(WebTest):
         form['journal-use_license'] = use_license.pk
         form['journal-languages'] = [language.pk]
         form['journal-abstract_keyword_languages'] = [language.pk]
-        form.set('journal-subject_categories', str(subject_category.pk))
+        form.set('journal-subject_categories', [str(subject_category.pk),])
         form['journal-is_indexed_scie'] = True
         form['journal-is_indexed_ssci'] = False
         form['journal-is_indexed_aehci'] = True
