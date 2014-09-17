@@ -1,0 +1,67 @@
+{% load i18n %}
+
+<form action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
+    {% csrf_token %}
+    <div class="alert alert-error">
+        <h4>{% trans "This operation cannot be undone" %}</h4>
+        <p>{% trans "And to restore it you will need to create a new member" %}</p>
+    </div>
+    <table class="table table-bordered table-hover table-condensed">
+        <tbody>
+            <tr>
+                <td class="span2"><strong>{% trans "First name" %}:</strong></td>
+                <td>{{ board_member.first_name }}</td>
+            </tr>
+            <tr>
+                <td class="span2"><strong>{% trans "Last name" %}:</strong></td>
+                <td>{{ board_member.last_name }}</td>
+            </tr>
+            <tr>
+                <td class="span2"><strong>{% trans "Email" %}:</strong></td>
+                <td>
+                    <a href="mailto:{{ board_member.email }}">
+                       <i class="icon-envelope"></i> {{ board_member.email }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class="span2"><strong>{% trans "Role" %}:</strong></td>
+                <td>{{ board_member.role.name }}</td>
+            </tr>
+            {# optional fields #}
+            {% if board_member.institution %}
+                <tr>
+                    <td class="span2"><strong>{% trans "Institution" %}:</strong></td>
+                    <td>{{ board_member.institution }}</td>
+                </tr>
+            {% endif %}
+            {% if board_member.link_cv %}
+                <tr>
+                    <td class="span2"><strong>{% trans "Link CV" %}:</strong></td>
+                    <td><a href="{{ board_member.link_cv }}">{{ board_member.link_cv }}</a></td>
+                </tr>
+            {% endif %}
+            {% if board_member.city %}
+                <tr>
+                    <td class="span2"><strong>{% trans "City" %}:</strong></td>
+                    <td>{{ board_member.city }}</a></td>
+                </tr>
+            {% endif %}
+            {% if board_member.state %}
+                <tr>
+                    <td class="span2"><strong>{% trans "State" %}:</strong></td>
+                    <td>{{ board_member.state }}</a></td>
+                </tr>
+            {% endif %}
+            {% if board_member.country %}
+                <tr>
+                    <td class="span2"   ><strong>{% trans "Country" %}:</strong></td>
+                    <td>{{ board_member.country }}</a></td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+</form>
+
+

@@ -64,7 +64,7 @@ def edit_journal(request, journal_id):
             journal = journalform.save()
             missionformset.save()
 
-            messages.info(request, _('Journal updated successfully.'))
+            messages.success(request, _('Journal updated successfully.'))
 
             return HttpResponseRedirect(reverse('editorial.index'))
         else:
@@ -120,7 +120,7 @@ def edit_board_member(request, journal_id, member_id):
         form = forms.EditorialMemberForm(request.POST, instance=board_member)
         if form.is_valid():
             form.save()
-            messages.info(request, _('Board Member updated successfully.'))
+            messages.success(request, _('Board Member updated successfully.'))
             return HttpResponseRedirect(board_url)
         else:
             messages.error(request, _('Check mandatory fields.'))
@@ -182,4 +182,33 @@ def add_board_member(request, journal_id, issue_id):
         form = forms.EditorialMemberForm()
 
     context['form'] = form
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@permission_required('editorialmanager.delete_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
+def delete_board_member(request, journal_id, member_id):
+    # check if user have correct access to view the journal:
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(reverse('editorial.index'))
+
+    if request.is_ajax():
+        template_name = 'board/board_member_delete_data.html'
+    else:
+        template_name = 'board/board_member_delete.html'
+
+    board_member = get_object_or_404(models.EditorialMember, id=member_id)
+    board_url = reverse('editorial.board', args=[journal_id, ])
+    post_url = reverse('editorial.board.delete', args=[journal_id, member_id, ])
+    context = {
+        'board_member': board_member,
+        'post_url': post_url,
+        'board_url': board_url,
+    }
+    if request.method == "POST":
+        # record audit log
+        board_member.delete()
+        messages.success(request, _('Board Member DELETED successfully.'))
+        return HttpResponseRedirect(board_url)
+
     return render_to_response(template_name, context, context_instance=RequestContext(request))

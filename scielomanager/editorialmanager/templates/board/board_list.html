@@ -5,8 +5,9 @@
 {% block content %}
 
   <style>
-  .accordion-board-members li > div { padding-left: 10px;  padding-right: 10px; }
-  .accordion-board-members li > div:hover { background-color: #f5f5f5; }
+  .accordion-board-members li>div { padding-left: 10px;  padding-right: 10px; }
+  .accordion-board-members li div.btn-group .btn { margin-top: 25px; }
+  .accordion-board-members li div:hover { background-color: #f5f5f5; }
   </style>
 
   <ul class="breadcrumb">
@@ -74,27 +75,42 @@
                               <ul class="unstyled accordion-board-members">
                                 {% for member in role.list %}
                                   <li>
+                                    <div class="board-member-details">
 
-                                    <div class="span12">
-                                      <strong>{{ member.get_full_name }}</strong>
-                                      <p>
-                                        {% if member.email %}
-                                          <a href="mailto:{{ member.email }}">
-                                            <i class="icon-envelope"></i> {{ member.email }}
-                                          </a>
-                                        {% endif %}
-                                        {% if member.institution %} &bull; {{ member.institution }}{% endif %}
-                                        {% if member.city %} &bull; {{ member.city }} {% endif %}
-                                        {% if member.state %} &bull; {{ member.state }} {% endif %}
-                                        {% if member.country %} &bull; {{ member.country }} {% endif %}
-                                        {% if perms.editorialmanager.change_editorialmember %}
-                                          <a data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.board.edit journal.pk member.pk %}" class="btn btn-mini btn-primary pull-right">
-                                            <i class="icon-pencil"></i> {% trans "Edit" %}
-                                          </a>
-                                        {% endif %}
-                                      </p>
+                                      <div class="span12">
+                                        <div class="span10">
+
+                                          <h4><strong>{{ member.get_full_name }}</strong></h4>
+                                          <p>
+                                            {% if member.email %}
+                                              <a href="mailto:{{ member.email }}">
+                                                <i class="icon-envelope"></i> {{ member.email }}
+                                              </a>
+                                            {% endif %}
+                                            {% if member.institution %} &bull; {{ member.institution }}{% endif %}
+                                            {% if member.city %} &bull; {{ member.city }} {% endif %}
+                                            {% if member.state %} &bull; {{ member.state }} {% endif %}
+                                            {% if member.country %} &bull; {{ member.country }} {% endif %}
+                                          </p>
+                                        </div>
+                                      {# actions: edit, delete #}
+                                        <div class="span2 pull-right">
+
+                                          <div class="btn-group pull-right">
+                                            {% if perms.editorialmanager.change_editorialmember %}
+                                              <a data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.board.edit journal.pk member.pk %}" class="btn btn-mini btn-primary">
+                                                <i class="icon-pencil"></i> {% trans "Edit" %}
+                                              </a>
+                                            {% endif %}
+                                            {% if perms.editorialmanager.delete_editorialmember %}
+                                              <a data-target='#id_modal_delete_member' data-toggle="modal" href="{% url editorial.board.delete journal.pk member.pk %}" class="btn btn-mini btn-danger">
+                                                <i class="icon-remove"></i> {% trans "Delete" %}
+                                              </a>
+                                            {% endif %}
+                                          </div>
+
+                                        </div>
                                     </div>
-
                                   </li>
                                 {% endfor %}
                               </ul>
@@ -121,5 +137,6 @@
   </div>
 
 {% modal_form title="Edit Member" %}
+{% modal_form title="Confirm to delete this Member" modal_id="id_modal_delete_member" %}
 
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li><a href="{{ board_url }}">{% trans 'Editorial Board' %}</a><span class="divider">/</span></li>
+    <li class="active">{% trans 'Delete Board Member' %}</li>
+  </ul>
+
+
+  <h2>{% trans "Delete Board Member" %}?:</h2>
+  <div  id="board-member-form" class="well">
+
+    {% include "board/board_member_delete_data.html" %}
+
+    <div class="row-fluid">
+        <a class="btn btn-danger pull-left" href="{{ board_url }}">{% trans "Back to Board" %}</a>
+        <button class="btn-submit btn btn-success pull-right">{% trans "Confirm" %}</button>
+    </div>
+  </div>
+
+{% endblock content %}
+
+{% block extrafooter %}
+  {{ block.super }}
+  <script>
+    $(function() {
+      $('.btn-submit').click(function(event) {
+        $('#board-member-form').find('form').submit();
+      });
+      $('input').addClass('span12');
+      $(".chzn-select").chosen({
+        no_results_text: "{% trans 'No results found for' %}:",
+        width: "100%",
+      });
+    });
+  </script>
+{% endblock %}
