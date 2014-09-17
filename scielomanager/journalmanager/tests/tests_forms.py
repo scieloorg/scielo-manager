@@ -3443,8 +3443,6 @@ class IssueFormTests(WebTest):
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
 
-        self.issue = self._makeOne()
-
     def tearDown(self):
         pass
 
@@ -3555,6 +3553,8 @@ class IssueFormTests(WebTest):
         This test check if editorial board of this issue was created
         """
 
+        issue = self._makeOne()
+
         perm_issue_change = _makePermission(perm='add_issue',
             model='issue', app_label='journalmanager')
         perm_issue_list = _makePermission(perm='list_issue',
@@ -3593,7 +3593,7 @@ class IssueFormTests(WebTest):
 
             #Members of the recent IssueFormTests
             new_members = new_issue.editorialboard.editorialmember_set.all()
-            last_members = self.issue.editorialboard.editorialmember_set.all()
+            last_members = issue.editorialboard.editorialmember_set.all()
 
             #comparing first names
             last_first_names = [member.first_name for member in last_members]
