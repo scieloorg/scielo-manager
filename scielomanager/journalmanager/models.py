@@ -587,6 +587,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     userobjects = modelmanagers.JournalManager()
 
     # Relation fields
+    editor = models.ForeignKey(User, verbose_name=_('Editor'), related_name='editor_journal', null=True, blank=True)
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
@@ -664,7 +665,8 @@ class Journal(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ('title', 'id')
         permissions = (("list_journal", "Can list Journals"),
-                       ("list_editor_journal", "Can list editor Journals"))
+                       ("list_editor_journal", "Can list editor Journal"),
+                       ("change_editor", "Can change editor of the journal"))
 
     def get_last_issue(self):
         """

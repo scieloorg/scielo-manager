@@ -68,10 +68,14 @@
 {% block extrafooter %}
 {{ block.super }}
 <script>
-$(document).ready(function() {
+  $(document).ready(function(){
 
-  $("#q").focus();
+    $("#q").focus();
 
-});
+    $('#close_btn').click(function(){
+      $('#modal').modal('hide');
+    });
+
+  });
 </script>
 {% endblock %}

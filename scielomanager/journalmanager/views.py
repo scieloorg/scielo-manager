@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import resolve
@@ -61,6 +62,73 @@ def get_first_letter(objects_all):
     letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
+
+
+def get_users_by_group(group):
+    """
+    Get all users from group, return None if group doesnt exists.
+    """
+    try:
+        editor_group = Group.objects.get(name=group)
+    except ObjectDoesNotExist:
+        return None
+    else:
+        return editor_group.user_set.all()
+
+
+def get_editor(request, journal_id):
+    """
+    Get the editor of the journal.
+    """
+    users_editor = None
+
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    if not journal.editor:
+        if not get_users_by_group('Editors'):
+            messages.error(request, _("Does not exist the group 'Editors'"))
+        else:
+            users_editor = get_users_by_group('Editors')
+
+    return render_to_response('journalmanager/editor.html',
+                             {'editor': journal.editor,
+                              'journal': journal,
+                              'users_editor': users_editor},
+                              context_instance=RequestContext(request))
+
+
+def add_editor(request, journal_id):
+    """
+    Set any user from Editors as editor of any journal.
+    """
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    if request.POST:
+
+        if request.POST.get('editor') != "":
+            editor = User.objects.get(pk=request.POST.get('editor'))
+            journal.editor = editor
+            journal.save()
+            messages.success(request,
+                _("Successfully selected %s as editor of this Journal" % editor.get_full_name()))
+        else:
+            #Remove editor
+            journal.editor = None
+            journal.save()
+            messages.success(request,
+                _("No user selected as editor of this journal!"))
+    else:
+        if not get_users_by_group('Editors'):
+            messages.error(request, _("Does not exist the group 'Editors'"))
+        else:
+            users_editor = get_users_by_group('Editors')
+
+        return render_to_response('journalmanager/includes/form_add_editor.html',
+                                 {'journal': journal,
+                                  'users_editor': users_editor},
+                                 context_instance=RequestContext(request))
+
+    return HttpResponseRedirect(reverse('editor.index', args=[journal.id]))
 
 
 def index(request):

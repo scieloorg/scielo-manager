@@ -1,0 +1,87 @@
+{% extends "base_lv1.html" %}
+{% load inctag_toolbars %}
+{% load user_avatar %}
+{% load modal %}
+{% load i18n %}
+
+{% block page_title %}{{block.super}}{% endblock %}
+
+{% block content %}
+
+  {% journaldash_toolbar 'editor' journal user %}
+
+  {{block.super}}
+
+  {% if editor %}
+    <table class="table table-condensed _listings">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>E-mail</th>
+          <th>Full name</th>
+          <th>Groups</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a {% if not editor.is_active %}class="strikethrough"{% endif %}
+               href="{% url user.edit user.pk %}">
+               <img class="img-rounded" src="{% user_avatar_url editor 'small' %}" alt="Gravatar">
+               {{ editor.username }}
+            </a>
+          </td>
+          <td>
+            <a href="mailto:{{ editor.email }}">
+              {{ editor.email }}
+            </a>
+          </td>
+          <td>{{ editor.get_full_name }}</td>
+          <td>{{ editor.groups.all|join:", " }}</td>
+          <td>
+            <ul class="_actions">
+              <li>
+                <a id="action_disable_disable" class="btn btn-mini btn-warning" data-target='modal' href="{% url editor.add journal.id %}">
+                  {% trans 'Change user editor' %}
+                </a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">
+      {% trans "<b>Attention!</b> No user was elected as editor of this journal. To be the editor user must be in 'Editors' group" %}
+    </div>
+
+    {% include 'journalmanager/includes/form_add_editor.html' %}
+
+  {% endif %}
+
+  {% modal 'Change editor user' %}
+
+{% endblock %}
+
+{% block extrafooter %}
+  <script>
+
+    $('#close_btn').click(function(){
+
+      $('#modal').modal('hide');
+
+     });
+
+    $(".chzn-select").chosen({no_results_text: "Nenhum resultado encontrado para: "})
+
+    $('#modal').on('shown', function () {
+
+      $("select[name='editor']").attr('class', 'chzn-select span12');
+      $(".chzn-select").chosen({no_results_text: "Nenhum resultado encontrado para: "});
+
+    });
+
+  </script>
+{% endblock %}
+
