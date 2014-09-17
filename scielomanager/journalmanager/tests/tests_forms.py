@@ -3446,7 +3446,7 @@ class IssueFormTests(WebTest):
     def tearDown(self):
         pass
 
-    def _makeOne(self):
+    def _makeOneWithEditorialBoard(self):
         #Create any issue in this journal
         issue = modelfactories.IssueFactory(journal=self.journal)
 
@@ -3458,6 +3458,13 @@ class IssueFormTests(WebTest):
         member = EditorialMemberFactory(board=ed_board)
 
         return issue
+
+    def _makeOneWithoutEditorialBoard(self):
+        #Create any issue in this journal
+        issue = modelfactories.IssueFactory(journal=self.journal)
+
+        return issue
+
 
     def test_basic_struture(self):
         """
@@ -3540,7 +3547,7 @@ class IssueFormTests(WebTest):
             self.assertIn('Saved.', response.body)
             self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
-    def test_POST_with_valid_formdata_and_check_editorial_board(self):
+    def test_POST_with_valid_formdata_and_check_copy_of_editorial_board(self):
         """
         When a valid form is submited, the user is redirected to
         the issue's list and the new user must be part
@@ -3553,7 +3560,8 @@ class IssueFormTests(WebTest):
         This test check if editorial board of this issue was created
         """
 
-        issue = self._makeOne()
+        #create an issue with editorial board
+        issue = self._makeOneWithEditorialBoard()
 
         perm_issue_change = _makePermission(perm='add_issue',
             model='issue', app_label='journalmanager')
@@ -3600,7 +3608,60 @@ class IssueFormTests(WebTest):
             new_first_names = [member.first_name for member in new_members]
 
             self.assertItemsEqual(last_first_names, new_first_names)
-            self.assertEqual(len(last_first_names), len(new_first_name))
+            self.assertEqual(len(last_first_names), len(new_first_names))
+
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+
+    def test_POST_with_valid_formdata_and_check_editorial_board_without_issue(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the issue's list and the new user must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.add_issue`` and
+        ``journalmanager.list_issue``.
+
+        This test check if editorial board of this issue was created
+        """
+
+        #create an issue
+        issue = self._makeOneWithoutEditorialBoard()
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
 
             self.assertIn('Saved.', response.body)
             self.assertTemplateUsed(response, 'journalmanager/issue_list.html')

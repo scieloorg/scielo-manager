@@ -836,7 +836,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                 titleformset.save()
 
             #if is a new issue copy editorial board from the last issue
-            if issue_id is None:
+            if issue_id is None and last_issue:
                 try:
                     members = last_issue.editorialboard.editorialmember_set.all()
                 except ObjectDoesNotExist:
