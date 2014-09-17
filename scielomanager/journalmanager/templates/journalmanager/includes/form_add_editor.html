@@ -1,0 +1,29 @@
+{% load i18n %}
+
+<div style="height: 150px">
+  <h4>{% trans 'Choose a user to be editor of this journal' %}:</h4>
+
+  <form method="POST" action="{% url editor.add journal.id %}" enctype="application/x-www-form-urlencoded">
+    {% csrf_token %}
+    <div class="control-group">
+        <div class="controls">
+          <select name="editor" class="chzn-select span3">
+            {% for user in users_editor %}
+              <option value="">{% trans 'Nobody' %}</option>
+              <option value="{{ user.pk }}">{{ user.get_full_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+    </div>
+
+    {% if not request.is_ajax %}
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn btn-success">{% trans 'Add this user as editor of this journal' %}</button>
+        </div>
+      </div>
+    {% endif %}
+
+  </form>
+
+</div>
