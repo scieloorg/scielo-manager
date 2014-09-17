@@ -3591,10 +3591,16 @@ class IssueFormTests(WebTest):
 
             new_issue = models.Issue.objects.get(publication_year='2012', number='3', volume='29')
 
-            #Members of the recent issue
+            #Members of the recent IssueFormTests
             new_members = new_issue.editorialboard.editorialmember_set.all()
+            last_members = self.issue.editorialboard.editorialmember_set.all()
 
-            self.assertItemsEqual(new_issue.editorialboard.editorialmember_set.all(), new_members)
+            #comparing first names
+            last_first_names = [member.first_name for member in last_members]
+            new_first_names = [member.first_name for member in new_members]
+
+            self.assertItemsEqual(last_first_names, new_first_names)
+            self.assertEqual(len(last_first_names), len(new_first_name))
 
             self.assertIn('Saved.', response.body)
             self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
