@@ -2,27 +2,41 @@
 {% load trans_status %}
 {% load static %}
 {% load assets %}
+{% load clean_uri %}
 
 {% assets "codemirror_css" %}
   <link rel="stylesheet" href="{{ ASSET_URL }}">
 {% endassets %}
 
-{% if not xml_data.can_be_analyzed.0 %}
-  {# could not be analyzed #}
+{% if xml_data.meta %}
+  <h4>{% trans "XML Meta" %}:</h4>
+  <div class="well well-small">
+    <dl class="dl-horizontal">
+      <dt>{% trans "File" %}</dt>
+      <dd>{{ xml_data.meta.filename|clean_uri }}</dd>
+
+      <dt>{% trans "Article title" %}</dt>
+      <dd>{{ xml_data.meta.article_title }}</dd>
+
+      <dt>{% trans "Journal title" %}</dt>
+      <dd>{{ xml_data.meta.journal_title }}</dd>
+
+      <dt>{% trans "Issue volume" %}</dt>
+      <dd>{{ xml_data.meta.issue_volume }}</dd>
+
+      <dt>{% trans "Issue number" %}</dt>
+      <dd>{{ xml_data.meta.issue_number }}</dd>
+    </dl>
+  </div>
+{% endif %}
+
+{%if xml_exception  %}
   <div class="alert alert-warning">
     <h4><i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}</h4>
-    <p>{{ xml_data.can_be_analyzed.1 }}</p>
-  </div>
-{% elif not xml_data.annotations %}
-  {# xml without annotations #}
-  <div class="alert alert-success">
-    <i class="icon-ok"></i> {% trans "The XML has no errors" %}
+    <p>{% trans "Detail:"%} <strong>{{ xml_exception }}</strong></p>
   </div>
 {% else %}
-  {# xml analyzed and with annotations #}
-  <div class="alert alert-block alert-error">
-    <h4 class="alert-heading">{{ xml_data.validation_errors.errors_total_count }} {% trans "error(s) found while checking this XML" %}:</h4>
-  </div>
+  <h4>{% trans "XML validation output" %}:</h4>
   {% if xml_data.validation_errors %}
     <table id="validation_errors_table" class="table table-striped table-hover table-condensed">
       <thead>
@@ -33,7 +47,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for error in xml_data.validation_errors.results %}
+        {% for error, count in xml_data.validation_errors %}
           <tr>
             <td><span class="label label-{% trans_status error.level to_label='True' %}">{{ error.level|upper }}</span></td>
             <td>
@@ -43,7 +57,7 @@
                 <a class="search_error" href="#" data-target-text="{{ error.message }}">{{ error.message }}</a>
               {% endif %}
             </td>
-            <td><span class="badge badge-info">{{ error.count|default:"--" }}</span></td>
+            <td><span class="badge badge-info">{{ count|default:"--" }}</span></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -86,9 +100,6 @@
       </div>
     </div>
     <textarea id="code" name="code">{{ xml_data.annotations }}</textarea>
-    {% if xml_data.packtools_version %}
-      <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ xml_data.packtools_version }}</strong></small></p>
-    {% endif %}
   </div>
 
   {# Editor Help Modal #}
@@ -166,8 +177,8 @@
       </table>
     </div>
     <div class="modal-footer">
-      {% if xml_data.packtools_version %}
-        <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ xml_data.packtools_version }}</strong></small></p>
+      {% if packtools_version %}
+        <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ packtools_version }}</strong></small></p>
       {% endif %}
     </div>
   </div>

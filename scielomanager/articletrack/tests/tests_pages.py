@@ -14,6 +14,7 @@ from journalmanager.tests.modelfactories import UserFactory, CollectionFactory
 from articletrack.tests.tests_models import create_notices
 from . import modelfactories
 from . import doubles
+from validator.tests import doubles as packtools_double
 
 
 def _makePermission(perm, model, app_label='articletrack'):
@@ -262,10 +263,10 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         response.mustcontain('<a href="%s">' % url_to_checkin_index)
 
     def test_annotations_ok_if_xml_is_valid(self):
+        # with
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
         target_xml = "valid.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
@@ -280,33 +281,28 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        # MOCK/REPLACE/FAKE/PIMP MY STYLECHECKER!!!
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(mocker.ANY)
-        self.mocker.result(doubles.StylecheckerDouble(mocker.ANY))
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(mocker.ANY)
+        self.mocker.result(packtools_double.XMLValidatorDouble(mocker.ANY))
 
         self.mocker.replay()
+        # when
         response = self.app.get(
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
+        # then
         xml_data = response.context['xml_data']
-
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNone(xml_data['annotations'])
+        self.assertIsNone(response.context['results'])
+        self.assertIsNone(response.context['xml_exception'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
-        expect_errors = {
-            'errors_total_count': 0,
-            'results': []
-        }
-        self.assertEqual(xml_data['validation_errors'], expect_errors)
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
 
     def test_annotations_warning_if_balaio_breaks(self):
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
         target_xml = "error.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
@@ -328,11 +324,17 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
+        # check "could not be analyzed" message
         self.assertFalse(xml_data['can_be_analyzed'][0])
-        self.assertIsNone(xml_data['annotations'])
+        self.assertEqual(
+            xml_data['can_be_analyzed'][1],
+            'Could not obtain the XML with this file name %s' % expected_response['filename']
+        )
+
         self.assertEqual(xml_data['uri'], None)
-        self.assertIsNone(xml_data['validation_errors'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
+        from validator.tests.tests_pages import PACKTOOLS_VERSION
+        self.assertEqual(response.context['packtools_version'], PACKTOOLS_VERSION)
 
     def test_annotations_of_error(self):
         self._addWaffleFlag()
@@ -352,9 +354,12 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(mocker.ANY)
-        self.mocker.result(doubles.StylecheckerAnnotationsDouble(mocker.ANY))
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(mocker.ANY)
+        self.mocker.result(packtools_double.XMLValidatorAnnotationsDouble(mocker.ANY))
+        lxml_tostring = self.mocker.replace('lxml.etree.tostring')
+        lxml_tostring(mocker.ANY, mocker.KWARGS)
+        self.mocker.result("some annotations in xml string")
 
         self.mocker.replay()
 
@@ -366,25 +371,14 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNotNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual(1, xml_data['validation_errors']['errors_total_count'])
-        self.assertEqual(1, len(xml_data['validation_errors']['results']))
-        expect_errors = {
-            'errors_total_count': 1,
-            'results': [
-                {
-                    'column': 6,
-                    'count': 1,
-                    'line': 1,
-                    'message': u'Premature end of data in tag xml line 1, line 1, column 6',
-                    'level': 'ERROR'
-                }
-            ]
-        }
-        self.assertEqual(xml_data['validation_errors'], expect_errors)
+        results = response.context['results']
+        self.assertIsNotNone(results)
+        self.assertIsNotNone(results['annotations'])
+        validation_errors = results['validation_errors']
+        self.assertIsNotNone(validation_errors)
+        self.assertEqual(1, len(validation_errors))
 
     def test_xml_not_found(self):
         self._addWaffleFlag()
@@ -404,8 +398,8 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(expected_response['uri'])
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(expected_response['uri'])
         self.mocker.throw(IOError)
         self.mocker.replay()
 
@@ -416,13 +410,15 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(xml_data['can_be_analyzed'][0])
-        self.assertEqual(xml_data['can_be_analyzed'][1], "IOError while starting Stylechecker.XML(), please verify if the input is correct")
-        self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        expect_errors = {'errors_total_count': 0, 'results': []}
-        self.assertEqual(xml_data['validation_errors'], expect_errors)
+        self.assertTrue(xml_data['can_be_analyzed'][0])
+        # previous version display a IOError exception custom messsage
+        expected_results = None
+        expected_xml_exception = ''
+
+        self.assertEqual(response.context['results'], expected_results)
+        self.assertEqual(response.context['xml_exception'], expected_xml_exception)
 
     def test_annotations_of_syntax_error(self):
         self._addWaffleFlag()
@@ -449,8 +445,8 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
             'code': 77,
         }
 
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(expected_response['uri'])
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(expected_response['uri'])
         self.mocker.throw(
             lxml.etree.XMLSyntaxError(
                 syntax_error_data['message'],
@@ -470,24 +466,15 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNotNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual(1, xml_data['validation_errors']['errors_total_count'])
-        self.assertEqual(1, len(xml_data['validation_errors']['results']))
-        self.assertEqual(
-            xml_data['validation_errors']['results'],
-            [
-                {
-                    'column': syntax_error_data['column'],
-                    'count': 1,
-                    'line': syntax_error_data['line'],
-                    'message': syntax_error_data['message'],
-                    'level': 'ERROR',
-                }
-            ]
-        )
+
+        results = response.context['results']
+        xml_exception = response.context['xml_exception']
+        self.assertIsNone(results)
+        self.assertIsNotNone(xml_exception)
+        self.assertEqual(xml_exception, syntax_error_data['message'])
+
 
 
 class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):

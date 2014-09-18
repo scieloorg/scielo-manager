@@ -116,7 +116,7 @@
     </div>
   </div>
 
-  {% if results %}
+  {% if results or xml_exception %}
 
     <div class="row-fluid">
       <div class="span12">
@@ -129,6 +129,8 @@
     </div>
 
   {% endif %}
+
+  <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ packtools_version }}</strong></small></p>
 
 {% endblock main_content %}
 {% block extrafooter %}
