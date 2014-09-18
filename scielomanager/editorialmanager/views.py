@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, user_passes_test
 
 from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
@@ -19,16 +19,28 @@ from . import forms
 from . import models
 
 
-@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+def _user_has_access(user):
+    return user.is_superuser or user.get_profile().is_editor or user.get_profile().is_librarian
+
+def _get_journals_by_user_access(user):
+    user_profile = user.get_profile()
+    if user_profile.is_editor:
+        journals = Journal.userobjects.active().filter(editor=user)
+    elif user_profile.is_librarian or user.is_superuser:
+        journals = Journal.userobjects.active()
+    else:
+        journals = []
+    return journals
+
+def _get_journal_or_404_by_user_access(user, journal_id):
+    journals = _get_journals_by_user_access(user)
+    return get_object_or_404(journals, id=journal_id)
+
+#@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def index(request):
-    filters = {}
-    if request.GET.get('q'):
-        filters['title__icontains'] = request.GET.get('q')
-    if request.GET.get('letter'):
-        filters['title__istartswith'] = request.GET.get('letter')
-    if request.GET.get('jstatus'):
-        filters['membership__status'] = request.GET.get('jstatus')
-    journals = Journal.userobjects.active().filter(**filters)
+    journals = _get_journals_by_user_access(request.user)
+
     objects = get_paginated(journals, request.GET.get('page', 1))
     context = {
         'objects_journal': objects,
@@ -36,23 +48,29 @@ def index(request):
     return render_to_response('journal/journal_list.html', context, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+#@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def journal_detail(request, journal_id):
-    journal = get_object_or_404(Journal.userobjects.active(), id=journal_id)
+    #journal = get_object_or_404(Journal.userobjects.active().filter(editor=request.user), id=journal_id)
+    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
     context = {
         'journal': journal,
     }
     return render_to_response('journal/journal_detail.html', context, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+# @permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_journal(request, journal_id):
-    journal = get_object_or_404(Journal.userobjects.active(), id=journal_id)
+    user_profile = request.user.get_profile()
+    if request.user.is_superuser or user_profile.is_librarian:
+        # redirect to full edit view:
+        return HttpResponseRedirect(reverse('journal.edit', args=[journal_id, ]))
+
+    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
 
     if journal_id is None:
         journal = Journal()
-    else:
-        journal = get_object_or_404(Journal, id=journal_id)
 
     JournalMissionFormSet = inlineformset_factory(Journal, JournalMission, form=JournalMissionForm, extra=1, can_delete=True)
 
@@ -80,19 +98,16 @@ def edit_journal(request, journal_id):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+#@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def board(request, journal_id):
-    journal = get_object_or_404(Journal.userobjects.active(), id=journal_id)
+    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
     issues = journal.issue_set.all().order_by('-publication_year', '-volume', '-number')
-    latest_issue = issues[0]
-    #latest_issue_boards = latest_issue.editorialboard_set.all()
     context = {
         'journal': journal,
         'issues': issues,
-        #'latest_issue_boards': latest_issue_boards,
     }
-    return render_to_response('board/board_list.html', context,
-        context_instance=RequestContext(request))
+    return render_to_response('board/board_list.html', context, context_instance=RequestContext(request))
 
 
 @permission_required('editorialmanager.change_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
