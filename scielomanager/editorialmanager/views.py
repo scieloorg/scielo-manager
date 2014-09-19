@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
-from django.contrib.auth.decorators import permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 
 from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
@@ -36,7 +36,7 @@ def _get_journal_or_404_by_user_access(user, journal_id):
     journals = _get_journals_by_user_access(user)
     return get_object_or_404(journals, id=journal_id)
 
-#@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@login_required
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def index(request):
     journals = _get_journals_by_user_access(request.user)
@@ -48,10 +48,9 @@ def index(request):
     return render_to_response('journal/journal_list.html', context, context_instance=RequestContext(request))
 
 
-#@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@login_required
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def journal_detail(request, journal_id):
-    #journal = get_object_or_404(Journal.userobjects.active().filter(editor=request.user), id=journal_id)
     journal = _get_journal_or_404_by_user_access(request.user, journal_id)
     context = {
         'journal': journal,
@@ -59,7 +58,7 @@ def journal_detail(request, journal_id):
     return render_to_response('journal/journal_detail.html', context, context_instance=RequestContext(request))
 
 
-# @permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@login_required
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_journal(request, journal_id):
     user_profile = request.user.get_profile()
@@ -98,7 +97,7 @@ def edit_journal(request, journal_id):
                               }, context_instance=RequestContext(request))
 
 
-#@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+@login_required
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def board(request, journal_id):
     journal = _get_journal_or_404_by_user_access(request.user, journal_id)
@@ -110,6 +109,7 @@ def board(request, journal_id):
     return render_to_response('board/board_list.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 @permission_required('editorialmanager.change_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_board_member(request, journal_id, member_id):
     if request.is_ajax():
@@ -148,6 +148,7 @@ def edit_board_member(request, journal_id, member_id):
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
+@login_required
 @permission_required('editorialmanager.add_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_board_member(request, journal_id, issue_id):
     if request.is_ajax():
