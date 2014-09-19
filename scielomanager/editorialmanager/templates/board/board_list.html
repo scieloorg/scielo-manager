@@ -1,142 +1,19 @@
 {% extends "base_lv1.html" %}
 {% load i18n %}
-{% load modal %}
+{% load inctag_toolbars %}
 
+{% block page_title %}{% trans "Journal Editorial Board" %}{% endblock %}
 {% block content %}
 
-  <style>
-  .accordion-board-members li>div { padding-left: 10px;  padding-right: 10px; }
-  .accordion-board-members li div.btn-group .btn { margin-top: 25px; }
-  .accordion-board-members li div:hover { background-color: #f5f5f5; }
-  </style>
+  {% if request.user.get_profile.is_editor %}
+    <ul class="breadcrumb">
+      <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+      <li class="active">{% trans 'Editorial Board' %}</li>
+    </ul>
+  {% else %}
+    {% journaldash_toolbar 'editorial_board' journal user %}
+  {% endif %}
 
-  <ul class="breadcrumb">
-    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
-    <li class="active">{% trans 'Editorial Board' %}</li>
-  </ul>
-
-  {% include "includes/journal_detail_info.html" %}
-
-  <div id="accordion-issues" class="accordion">
-
-      {% for issue in issues %}
-        {# accordion header #}
-        <div class="accordion-heading">
-          <a href="#collapse_issue_pk_{{ issue.pk }}" data-parent="#accordion-issues" data-toggle="collapse" class="accordion-toggle">
-            {{ issue.publication_year }} &raquo; {% trans "Volume" %}: {{ issue.volume }} &raquo; {% trans "Number" %}: {{ issue.number }}
-          </a>
-        </div>
-        {# accordion body #}
-        <div class="accordion-body collapse {% if forloop.first %} in{% endif %}" id="collapse_issue_pk_{{ issue.pk }}">
-          <div class="accordion-inner">
-            {# left sidebar menu #}
-            <div class="span2">
-              <h5>{% trans "Actions" %}:</h5>
-              {# left sidebar menu #}
-              <ul class="nav nav-tabs nav-stacked">
-                <li>
-                  <a href="{% url editorial.journal.edit journal.pk %}">
-                    <i class="icon-pencil"></i> {% trans "Edit Journal" %}
-                  </a>
-                </li>
-                {% if perms.editorialmanager.add_editorialmember %}
-                  <li>
-                    <a data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.board.add journal.pk issue.pk %}">
-                      <i class="icon-plus-sign"></i> {% trans "Add New Member" %}
-                    </a>
-                  </li>
-                {% endif %}
-              </ul>
-            </div>
-            {# /left sidebar menu #}
-            {# right side #}
-            <div class="span10">
-              <h5>{% trans "Editorial Board" %}:</h5>
-              {% if issue.editorialboard %}
-                <div class="accordion" id="accordion_members_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}">
-                  {% with issue.editorialboard.editorialmember_set.all as board_members  %}
-
-                      {% regroup board_members by role as role_list %}
-
-                      {% for role in role_list %}
-
-                        <div class="accordion-group">
-                          <div class="accordion-heading">
-                            <a class="accordion-toggle" data-toggle="collapse"
-                               data-parent="#accordion_members_{{ issue.pk }}_{{ board.pk }}_{{ forloop.parentloop.counter }}"
-                               href="#collpase_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}">
-                              {{ role.grouper }}
-                            </a>
-                          </div>
-
-                          <div id="collpase_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}" class="accordion-body collapse {% if forloop.first %} in{% endif %}">
-                            <div class="accordion-inner">
-
-                              <ul class="unstyled accordion-board-members">
-                                {% for member in role.list %}
-                                  <li>
-                                    <div class="board-member-details">
-
-                                      <div class="span12">
-                                        <div class="span10">
-
-                                          <h4><strong>{{ member.get_full_name }}</strong></h4>
-                                          <p>
-                                            {% if member.email %}
-                                              <a href="mailto:{{ member.email }}">
-                                                <i class="icon-envelope"></i> {{ member.email }}
-                                              </a>
-                                            {% endif %}
-                                            {% if member.institution %} &bull; {{ member.institution }}{% endif %}
-                                            {% if member.city %} &bull; {{ member.city }} {% endif %}
-                                            {% if member.state %} &bull; {{ member.state }} {% endif %}
-                                            {% if member.country %} &bull; {{ member.country }} {% endif %}
-                                          </p>
-                                        </div>
-                                      {# actions: edit, delete #}
-                                        <div class="span2 pull-right">
-
-                                          <div class="btn-group pull-right">
-                                            {% if perms.editorialmanager.change_editorialmember %}
-                                              <a data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.board.edit journal.pk member.pk %}" class="btn btn-mini btn-primary">
-                                                <i class="icon-pencil"></i> {% trans "Edit" %}
-                                              </a>
-                                            {% endif %}
-                                            {% if perms.editorialmanager.delete_editorialmember %}
-                                              <a data-target='#id_modal_delete_member' data-toggle="modal" href="{% url editorial.board.delete journal.pk member.pk %}" class="btn btn-mini btn-danger">
-                                                <i class="icon-remove"></i> {% trans "Delete" %}
-                                              </a>
-                                            {% endif %}
-                                          </div>
-
-                                        </div>
-                                    </div>
-                                  </li>
-                                {% endfor %}
-                              </ul>
-
-                            </div>
-                          </div>
-                        </div>
-                      {% endfor %}
-
-                  {% endwith %}
-                </div>
-
-              {% else %}
-                <div class="alert alert-error">
-                  <i class="icon-exclamation-sign"></i> {% trans "This issue has no Editorial Board associated" %}
-                </div>
-              {% endif %}
-            </div>
-            {# /right side #}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-
-{% modal_form title="Edit Member" %}
-{% modal_form title="Confirm to delete this Member" modal_id="id_modal_delete_member" %}
+  {% include "board/board_list_data.html" %}
 
 {% endblock %}

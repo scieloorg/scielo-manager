@@ -3,7 +3,7 @@
 <a data-target='#modal' data-toggle="modal" href="{% url editorial.journal.detail journal.pk %}">
   <h4>{{ journal.title }}</h4>
 </a>
-<ul class="unstyled">
+<ul class="inline">
   <li>
     <span class="muted">{% trans "On-line version ISSN" %}:</span>
     <strong>{{ journal.scielo_pid }}</strong>
@@ -13,7 +13,7 @@
     {% if journal.editor %}
       <strong>{{ journal.editor.get_full_name }}</strong>
     {% else %}
-      <em>{% trans "No assigned yet" %}</em>
+      <em>{% trans "Not assigned yet" %}</em>
     {% endif %}
   </li>
   <li>

@@ -11,20 +11,8 @@
   </ul>
 
   <div class="row-fluid show-grid">
-    <div class="span9">
-      {% if objects_journal.object_list %}
-        <div class="span12">
-          <form id="custom-search-form" class="form-search form-horizontal">
-            <div class="input-append span12">
-              <input type="text" class="search-query mac-style span6" placeholder="{% trans 'Search' %}">
-              <button type="submit" class="btn"><i class="icon-search"></i></button>
-            </div>
-          </form>
-        </div>
-        <p class="muted">{% trans 'Fields: ISSN(s), title, abbreviated title and acronym' %}</p>
-      {% endif %}
-    </div>
-    <div class="span3">
+
+    <div class="span3 pull-right">
      <div class="pull-right">
       {% simple_pagination objects_journal %}
      </div>
@@ -51,6 +39,14 @@
                       <i class="icon-list-alt"></i> {% trans 'Corpo editorial' %}
                     </a>
                   </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td>
+                <div class="alert alert-info">
+                  {% trans "No Journals found" %}
+                </div>
               </td>
             </tr>
 
