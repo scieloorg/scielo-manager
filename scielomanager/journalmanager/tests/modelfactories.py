@@ -152,13 +152,6 @@ class IssueTitleFactory(factory.Factory):
     title = u'Bla'
 
 
-class MissionFactory(factory.Factory):
-    FACTORY_FOR = models.IssueTitle
-
-    language = factory.SubFactory(LanguageFactory)
-    title = u'Bla'
-
-
 class IssueFactory(factory.Factory):
     FACTORY_FOR = models.Issue
 
