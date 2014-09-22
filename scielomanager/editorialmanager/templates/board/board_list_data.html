@@ -118,6 +118,10 @@
           {# /right side #}
         </div>
       </div>
+    {% empty %}
+      <div class="alert alert-error">
+        <i class="icon-exclamation-sign"></i> {% trans "Cannot retrieve the Editorial Board because this journal has no Issues" %}
+      </div>
     {% endfor %}
   </div>
 </div>
