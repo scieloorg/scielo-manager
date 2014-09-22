@@ -22,6 +22,7 @@ from . import models
 def _user_has_access(user):
     return user.is_superuser or user.get_profile().is_editor or user.get_profile().is_librarian
 
+
 def _get_journals_by_user_access(user):
     user_profile = user.get_profile()
     if user_profile.is_editor:
@@ -32,9 +33,11 @@ def _get_journals_by_user_access(user):
         journals = []
     return journals
 
+
 def _get_journal_or_404_by_user_access(user, journal_id):
     journals = _get_journals_by_user_access(user)
     return get_object_or_404(journals, id=journal_id)
+
 
 @login_required
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)

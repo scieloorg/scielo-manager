@@ -98,7 +98,8 @@ class RestrictedJournalForm(ModelForm):
                 'is_indexed_aehci', 'index_coverage', 'editor_name',
                 'editor_address', 'editor_address_city', 'editor_address_state',
                 'editor_address_zip', 'editor_address_country', 'editor_phone1',
-                'editor_phone2', 'editor_email']
+                'editor_phone2', 'editor_email', 'publisher_name', 'publisher_country',
+                'publisher_state', 'publication_city']
 
         widgets = {
             'index_coverage': forms.Textarea(attrs={'class': 'span12', 'rows': '6'}),
