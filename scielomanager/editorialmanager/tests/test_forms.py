@@ -73,11 +73,13 @@ class AddUserAsEditorFormTests(WebTest):
 
     def setUp(self):
 
-        perm = _makePermission(perm='change_editor', model='journal')
+        perm1 = _makePermission(perm='list_editor_journal', model='journal')
+        perm2 = _makePermission(perm='change_editor', model='journal')
 
         #create a group 'Librarian'
         group = modelfactories.GroupFactory(name="Librarian")
-        group.permissions.add(perm)
+        group.permissions.add(perm1)
+        group.permissions.add(perm2)
 
         #create a user and set group 'Editors'
         self.user = modelfactories.UserFactory(is_active=True)
