@@ -68,12 +68,10 @@ def get_users_by_group(group):
     """
     Get all users from a group or raise a ObjectDoesNotExist
     """
-    try:
-        editor_group = Group.objects.get(name=group)
-    except ObjectDoesNotExist:
-        raise
-    else:
-        return editor_group.user_set.all()
+
+    editor_group = Group.objects.get(name=group)
+
+    return editor_group.user_set.all()
 
 
 @permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
@@ -87,7 +85,6 @@ def get_editor(request, journal_id):
 
     if not journal.editor:
         try:
-            get_users_by_group('Editors')
             users_editor = get_users_by_group('Editors')
         except ObjectDoesNotExist:
             messages.error(request, _("Does not exist the group 'Editors'"))
