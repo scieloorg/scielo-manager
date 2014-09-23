@@ -194,13 +194,12 @@ class AuditLogFromJournalFormTests(WebTest):
             'is_indexed_aehci',
         ]
 
-        expected_change_message = u'Changed fields: %s.' % get_text_list(fields_edited, 'and')
-        self.assertEqual(log_entry.change_message, expected_change_message)
-
         self.assertEqual(log_entry.new_values.keys(), [u'form_data', u'formsets_data'])
-        # all edited fields are in "new_values"-dict
         for field_edited in fields_edited:
+            # all edited fields are in "new_values"-dict
             self.assertIn(field_edited, log_entry.new_values['form_data'].keys())
+            # all edited fields are in the "change message" field
+            self.assertIn(field_edited, log_entry.change_message)
 
         # compare form data and stored new_values data
         for k,v in log_entry.new_values['form_data'].iteritems():
