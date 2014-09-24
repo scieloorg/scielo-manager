@@ -81,6 +81,19 @@
       </div>
     </div>
 
+    <h2>{% trans "Publisher" %}:</h2>
+      <div class="well">
+
+        {% show_field add_form.publisher_name %}
+
+        {% show_field add_form.publisher_country %}
+
+        {% show_field add_form.publisher_state %}
+
+        {% show_field add_form.publication_city %}
+
+      </div>
+
     <h2>{% trans "Editor" %}:</h2>
       <div class="well">
 
@@ -103,6 +116,7 @@
         {% show_field add_form.editor_email %}
 
       </div>
+
 
     <div class="row-fluid">
       <input

@@ -66,16 +66,15 @@ def get_first_letter(objects_all):
 
 def get_users_by_group(group):
     """
-    Get all users from group, return None if group doesnt exists.
+    Get all users from a group or raise a ObjectDoesNotExist
     """
-    try:
-        editor_group = Group.objects.get(name=group)
-    except ObjectDoesNotExist:
-        return None
-    else:
-        return editor_group.user_set.all()
+
+    editor_group = Group.objects.get(name=group)
+
+    return editor_group.user_set.all()
 
 
+@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def get_editor(request, journal_id):
     """
     Get the editor of the journal.
@@ -85,10 +84,10 @@ def get_editor(request, journal_id):
     journal = get_object_or_404(models.Journal, id=journal_id)
 
     if not journal.editor:
-        if not get_users_by_group('Editors'):
-            messages.error(request, _("Does not exist the group 'Editors'"))
-        else:
+        try:
             users_editor = get_users_by_group('Editors')
+        except ObjectDoesNotExist:
+            messages.error(request, _("Does not exist the group 'Editors'"))
 
     return render_to_response('journalmanager/editor.html',
                              {'editor': journal.editor,
@@ -97,6 +96,7 @@ def get_editor(request, journal_id):
                               context_instance=RequestContext(request))
 
 
+@permission_required('journalmanager.change_editor', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_editor(request, journal_id):
     """
     Set any user from Editors as editor of any journal.
@@ -116,11 +116,10 @@ def add_editor(request, journal_id):
             journal.save()
             messages.success(request, _("No user selected as editor of this journal!"))
     else:
-        editors_group = get_users_by_group('Editors')
-        if not editors_group:
+        try:
+            users_editor = get_users_by_group('Editors')
+        except ObjectDoesNotExist:
             messages.error(request, _("Does not exist the group 'Editors'"))
-        else:
-            users_editor = editors_group
 
         return render_to_response('journalmanager/includes/form_add_editor.html',
                                  {'journal': journal,
