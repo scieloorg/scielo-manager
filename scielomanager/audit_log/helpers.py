@@ -208,56 +208,57 @@ def collect_new_values(form, formsets=None, as_json_string=False):
         field_value = form.cleaned_data[field_name]
         result["form_data"][field_name] = field_serializer(field_serializer(field_value))
 
-    for formset in formsets:
-        formset_data = {
-            'added': [],
-            'changed': [],
-            'deleted': [],
-        }
-        added_data = []
-        # formset NEW objects
-        for added_object in formset.new_objects:
-            object_values = {
-                'object_verbose_name': force_unicode(added_object._meta.verbose_name),
-                'object_unicode': force_unicode(added_object),
-                'fields': {}
+    if formsets:
+        for formset in formsets:
+            formset_data = {
+                'added': [],
+                'changed': [],
+                'deleted': [],
             }
-            for field in added_object._meta.local_fields:
-                field_name = field.get_attname()
-                field_value = getattr(added_object, field_name)
-                object_values['fields'][field_name] = field_serializer(field_value)
+            added_data = []
+            # formset NEW objects
+            for added_object in formset.new_objects:
+                object_values = {
+                    'object_verbose_name': force_unicode(added_object._meta.verbose_name),
+                    'object_unicode': force_unicode(added_object),
+                    'fields': {}
+                }
+                for field in added_object._meta.local_fields:
+                    field_name = field.get_attname()
+                    field_value = getattr(added_object, field_name)
+                    object_values['fields'][field_name] = field_serializer(field_value)
 
-            added_data.append(object_values)
-        formset_data['added'] = added_data
+                added_data.append(object_values)
+            formset_data['added'] = added_data
 
-        changed_data = []
-        # formset CHANGED objects
-        for changed_object, changed_fields in formset.changed_objects:
-            object_values = {
-                'object_verbose_name': force_unicode(changed_object._meta.verbose_name),
-                'object_unicode': force_unicode(changed_object),
-                'fields': {}
-            }
-            for field_name in changed_fields:
-                field_value = getattr(changed_object, field_name)
-                object_values['fields'][field_name] = field_serializer(field_value)
+            changed_data = []
+            # formset CHANGED objects
+            for changed_object, changed_fields in formset.changed_objects:
+                object_values = {
+                    'object_verbose_name': force_unicode(changed_object._meta.verbose_name),
+                    'object_unicode': force_unicode(changed_object),
+                    'fields': {}
+                }
+                for field_name in changed_fields:
+                    field_value = getattr(changed_object, field_name)
+                    object_values['fields'][field_name] = field_serializer(field_value)
 
-            changed_data.append(object_values)
-        formset_data['changed'] = changed_data
+                changed_data.append(object_values)
+            formset_data['changed'] = changed_data
 
-        deleted_data = []
-        # formset DELETED objects
-        for deleted_object in formset.deleted_objects:
-            object_values = {
-                'object_verbose_name': force_unicode(deleted_object._meta.verbose_name),
-                'object_unicode': force_unicode(deleted_object),
-            }
-            deleted_data.append(object_values)
-        formset_data['deleted'] = deleted_data
+            deleted_data = []
+            # formset DELETED objects
+            for deleted_object in formset.deleted_objects:
+                object_values = {
+                    'object_verbose_name': force_unicode(deleted_object._meta.verbose_name),
+                    'object_unicode': force_unicode(deleted_object),
+                }
+                deleted_data.append(object_values)
+            formset_data['deleted'] = deleted_data
 
-        # save formset data in the results, if any
-        if any([added_data, changed_data, deleted_data]):
-            result["formsets_data"].append(formset_data)
+            # save formset data in the results, if any
+            if any([added_data, changed_data, deleted_data]):
+                result["formsets_data"].append(formset_data)
 
     if as_json_string:
         return json.dumps(result)
@@ -304,19 +305,21 @@ def construct_create_message(form, formsets=None):
     """
     Construct a "created record" data into a message from a new object.
     """
-    message = []
-    for field in form.cleaned_data:
-        message.append(u'Added %s: %s' % (field, form.cleaned_data[field]))
+    message = [u'%s' % force_unicode(field) for field in form.cleaned_data]
 
     if formsets:
         message.extend(construct_message_from_formset(formsets))
 
-    message = u'\n'.join(message)
+    message = u'Added fields:\n' + u'\n'.join(message)
     return message or _(u'No fields added.')
 
 
 def construct_delete_message(obj):
-    return u"Record DELETED (%s, pk: %s): %s" % (obj.pk, force_unicode(obj._meta.verbose_name), obj)
+    return u"Record DELETED (%s, pk: %s): %s" % (
+                obj.pk,
+                force_unicode(obj._meta.verbose_name),
+                force_unicode(obj)
+            )
 
 
 def _do_log(user, obj, action_flag, change_message, old_values='', new_values=''):

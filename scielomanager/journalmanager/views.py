@@ -573,13 +573,14 @@ def add_journal(request, journal_id=None):
                     audit_data = {
                         'user': request.user,
                         'obj': saved_journal,
-                        'message': helpers.construct_change_message(journalform, [titleformset, missionformset,]),
                         'old_values': audit_old_values,
                         'new_values': helpers.collect_new_values(journalform, [titleformset, missionformset,]),
                     }
                     if is_new_journal:
+                        audit_data['message'] = helpers.construct_create_message(journalform, [titleformset, missionformset,])
                         helpers.log_create(**audit_data)
                     else:
+                        audit_data['message'] = helpers.construct_change_message(journalform, [titleformset, missionformset,])
                         helpers.log_change(**audit_data)
 
                     messages.info(request, MSG_FORM_SAVED)
