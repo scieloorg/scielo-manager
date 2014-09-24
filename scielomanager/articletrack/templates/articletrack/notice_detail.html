@@ -148,20 +148,17 @@
         </li>
         <li class="longer-tab">
           <a href="#annotations" data-toggle="tab">
-            {% trans "Style Checking" %}
-            {% if not xml_data.can_be_analyzed.0 %}
+            {% trans "Style Checking" %} &nbsp;
+            {% if xml_exception or not xml_data.can_be_analyzed.0 %}
               {# could not be analyzed #}
-              &nbsp;
-              <span class="badge badge-warning">&nbsp;</span>
-            {% elif not xml_data.annotations %}
+              <span class="label label-warning">{% trans "Exception" %}</span>
+            {% elif results.validation_errors|length == 0 %}
               {# xml without annotations #}
-              &nbsp;
-              <span class="badge badge-success">&nbsp;</span>
+              <span class="label label-success">{% trans "No errors" %}</span>
             {% else %}
               {# xml analyzed and with annotations #}
-              &nbsp;
-              <span class="badge badge-important">
-                {{ xml_data.validation_errors.results|length }}
+              <span class="label label-important">
+                {{ results.validation_errors|length }} {% trans "Errors" %}
               </span>
             {% endif %}
           </a>
@@ -213,7 +210,17 @@
         </div>
         <div class="tab-pane" id="annotations">
           {# annotations #}
-          {% include "validator/includes/xml_annotated.html" %}
+          {% if not xml_data.can_be_analyzed.0 %}
+            {# could not be analyzed #}
+            <div class="alert alert-warning">
+              <h4><i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}</h4>
+              <p>{% trans "Detail:"%} <strong>{{ xml_data.can_be_analyzed.1 }}</strong></p>
+            </div>
+          {% elif results or xml_exception %}
+            {% with results as xml_data %}
+              {% include "validator/includes/xml_annotated.html" %}
+            {% endwith %}
+          {% endif %}
           {# /annotations #}
         </div>
       </div>

@@ -3,7 +3,6 @@ from os import path
 from articletrack.balaio import BalaioAPI, BalaioRPC
 from django.conf import settings
 from urllib2 import urlopen
-from packtools import stylechecker
 
 
 def make_expected_generator(file_uri):
@@ -66,36 +65,3 @@ class BalaioAPICallOKDouble(BalaioRPC):
 
     def call(self, method, args=()):
         return True
-
-
-# packtools.stylechecker double
-
-
-class StylecheckerDouble(stylechecker.XML):
-    def __init__(self, file):
-        pass
-
-    def validate(self):
-        return (True, None)
-
-    def validate_style(self):
-        return (True, None)
-
-    def annotate_errors(self):
-        return None
-
-
-class StylecheckerAnnotationsDouble(StylecheckerDouble):
-    def __str__(self):
-        return "some annotations in xml string"
-
-    def validate(self):
-        return (True, None)
-
-    def validate_style(self):
-        class Error(object):
-            line = 1
-            column = 6
-            message = u'Premature end of data in tag xml line 1, line 1, column 6'
-            level_name = 'ERROR'
-        return (False, [Error(), ])

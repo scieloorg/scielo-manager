@@ -18,14 +18,12 @@ from django.http import HttpResponseBadRequest
 from django.template.defaultfilters import slugify
 from django.contrib.sites.models import get_current_site
 
-from packtools import stylechecker
-
 from scielomanager.tools import get_paginated, get_referer_view
 from scielomanager import tasks
 from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
-from validator.utils import StyleCheckerAnalyzer
+from validator import utils as stylechecker_utils
 from .utils import checkin_send_email_by_action, ticket_send_mail_by_action, comment_send_mail_by_action
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
@@ -380,6 +378,7 @@ def notice_detail(request, checkin_id):
         'zip_filename': zip_filename,
         'reject_form': reject_form,
         'have_actions_to_do': have_actions_to_do,
+        'packtools_version': stylechecker_utils.PACKTOOLS_VERSION,
     }
 
     balaio = BalaioAPI()
@@ -388,8 +387,6 @@ def notice_detail(request, checkin_id):
         'file_name': None,
         'uri': None,
         'can_be_analyzed': (False, ''),
-        'annotations': None,
-        'validation_errors': None,
     }
 
     try:
@@ -426,9 +423,9 @@ def notice_detail(request, checkin_id):
                 xml_data['can_be_analyzed'] = (False, "XML's URI is invalid (%s)" % xml_data['uri'])
 
     if xml_data['can_be_analyzed'][0]:
-        analyzer = StyleCheckerAnalyzer(xml_data['uri'])
-        analyzer_results = analyzer.analyze()
-        xml_data.update(analyzer_results)
+        results, exc = stylechecker_utils.analyze_xml(xml_data['uri'])
+        context['results'] = results
+        context['xml_exception'] = getattr(exc, 'message', None)
 
     context['files'] = files_list
     context['xml_data'] = xml_data

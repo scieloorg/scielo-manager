@@ -8,16 +8,11 @@ from . import forms
 from . import utils
 
 
-def __prepare_and_analyze(data_input):
-    """ Normalize input to feed the stylechecker and obtain results """
-    analyzer = utils.StyleCheckerAnalyzer(data_input)
-    return analyzer.analyze()
-
-
 @waffle_flag('packtools_validator')
 def packtools_home(request, template_name='validator/packtools.html'):
     context = {
         'SETTINGS_MAX_UPLOAD_SIZE' : settings.VALIDATOR_MAX_UPLOAD_SIZE,
+        'packtools_version': utils.PACKTOOLS_VERSION,
     }
 
     form = forms.StyleCheckerForm()
@@ -26,12 +21,14 @@ def packtools_home(request, template_name='validator/packtools.html'):
         if form.is_valid():
             type = form.cleaned_data['type']
             if type == 'url':
-                url = form.cleaned_data['url']
-                results = __prepare_and_analyze(url)
+                xml_file = form.cleaned_data['url']
             else:
                 xml_file = request.FILES['file']
-                results = __prepare_and_analyze(xml_file)
+
+            results, exc = utils.analyze_xml(xml_file)
             context['results'] = results
+            context['xml_exception'] = getattr(exc, 'message', None)
+
     else:
         form = forms.StyleCheckerForm()
 

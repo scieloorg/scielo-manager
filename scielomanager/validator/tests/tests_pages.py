@@ -13,7 +13,10 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from waffle import Flag
 
-from articletrack.tests import doubles
+from . import doubles
+import pkg_resources
+
+PACKTOOLS_VERSION = pkg_resources.get_distribution('packtools').version
 
 
 def _get_test_xml_abspath(filename):
@@ -55,12 +58,15 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         Flag.objects.create(name='packtools_validator', everyone=True)
 
     def _mocker_replace_stylechecker(self, with_annotations=False):
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(mocker.ANY)
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(mocker.ANY)
         if with_annotations:
-            self.mocker.result(doubles.StylecheckerAnnotationsDouble(mocker.ANY))
+            self.mocker.result(doubles.XMLValidatorAnnotationsDouble(mocker.ANY))
+            lxml_tostring = self.mocker.replace('lxml.etree.tostring')
+            lxml_tostring(mocker.ANY, mocker.KWARGS)
+            self.mocker.result("some annotations in xml string")
         else:
-            self.mocker.result(doubles.StylecheckerDouble(mocker.ANY))
+            self.mocker.result(doubles.XMLValidatorDouble(mocker.ANY))
         self.mocker.replay()
 
     def test_status_code_stylechecker_without_waffle_flag(self):
@@ -127,7 +133,7 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(form_errors, expected_errors)
         self.assertFalse(hasattr(response.context, 'results'))
 
-    def test_submite_invalid_url_then_form_is_not_valid(self):
+    def test_submit_invalid_url_then_form_is_not_valid(self):
         # with
         self._addWaffleFlag()
         page = self.app.get(
@@ -168,17 +174,20 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertTemplateUsed(response, 'validator/packtools.html')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['form'].is_valid())
-        import pkg_resources
-        packtools_version = pkg_resources.get_distribution('packtools').version
+
         expected_results = {
-            'validation_errors': {'errors_total_count': 0, 'results': []},
-            'annotations': None,
-            'can_be_analyzed': (True, None),
-            'packtools_version': packtools_version
+            'results': None,
+            'xml_exception': None,
+            'packtools_version': PACKTOOLS_VERSION
         }
-        self.assertEqual(response.context['results'], expected_results)
+        self.assertEqual(response.context['results'], expected_results['results'])
+        self.assertEqual(response.context['xml_exception'], expected_results['xml_exception'])
+        self.assertEqual(response.context['packtools_version'], expected_results['packtools_version'])
 
     def test_submit_text_file_then_form_not_valid(self):
+        """
+        Submitting a text file will raise a from validation error
+        """
         # with
         self._addWaffleFlag()
         test_file = get_temporary_text_file()
@@ -201,6 +210,9 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertEqual(form.errors, expected_errors)
 
     def test_submit_image_file_then_form_not_valid(self):
+        """
+        Submitting a image file will raise a from validation error
+        """
         # with
         self._addWaffleFlag()
         test_file = get_temporary_image_file()
@@ -222,7 +234,11 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         }
         self.assertEqual(form.errors, expected_errors)
 
-    def test_submit_valid_xml_file_then_form_not_valid(self):
+    def test_submit_valid_xml_file_then_get_annotations_form_valid(self):
+        """
+        Submitting a xml file that generate annotations will let the form as valid,
+        and xml validation will return annotations
+        """
         # with
         self._addWaffleFlag()
         self._mocker_replace_stylechecker(with_annotations=True)
@@ -238,13 +254,24 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         )
         # then
         form = response.context['form']
+        xml_exception = response.context['xml_exception']
         results = response.context['results']
 
         self.assertEqual(200, response.status_code)
         self.assertTrue(response.context['form'].is_valid())
-        self.assertEqual((True, None), results['can_be_analyzed'])
-        self.assertIsNotNone(results['validation_errors'])
-        self.assertIsNotNone(results['annotations'])
-        self.assertTrue(len(results['validation_errors']['results']) > 0)
-
         self.assertTemplateUsed('validator/packtools.html')
+
+        self.assertIsNotNone(results) # have some results
+        self.assertEqual(results.keys(), ['validation_errors', 'meta', 'annotations'])
+        expected_meta = {
+            'article_title': 'HIV/AIDS knowledge among men who have sex with men: applying the item response theory',
+            'issue_year': '2014',
+            'journal_title': u'Revista de Sa\xfade P\xfablica',
+            'journal_pissn': '0034-8910',
+            'journal_eissn': '1518-8787',
+            'issue_number': '2',
+            'issue_volume': '48'
+        }
+        self.assertEqual(results['meta'], expected_meta)
+        self.assertEqual(len(results['validation_errors']), 1)
+        self.assertEqual(results['annotations'], "some annotations in xml string")
