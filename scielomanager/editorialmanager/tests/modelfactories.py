@@ -34,4 +34,6 @@ class EditorialMemberFactory(factory.Factory):
     city = factory.Sequence(lambda n: 'city_%s' % n)
     state = factory.Sequence(lambda n: 'state_%s' % n)
     country = factory.Sequence(lambda n: 'country_%s' % n)
+    research_id = factory.Sequence(lambda n: '%01s-%04d-%04d' % n)
+    orcid = factory.Sequence(lambda n: '%04d-%04d-%04d-%04d' % n)
 
