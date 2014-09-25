@@ -36,8 +36,8 @@ from scielomanager.utils import base28
 from scielomanager.custom_fields import ContentTypeRestrictedFileField
 from . import modelmanagers
 
-User.__bases__ = (caching.base.CachingMixin, models.Model)
-User.add_to_class('objects', caching.base.CachingManager())
+#User.__bases__ = (caching.base.CachingMixin, models.Model)
+#User.add_to_class('objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
 
@@ -306,6 +306,14 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     user = models.OneToOneField(User)
 
     @property
+    def is_editor(self):
+        return self.user.groups.filter(name__iexact='Editors').exists()
+
+    @property
+    def is_librarian(self):
+        return self.user.groups.filter(name__iexact='Librarian').exists()
+
+    @property
     def gravatar_id(self):
         return hashlib.md5(self.user.email.lower().strip()).hexdigest()
 
@@ -385,6 +393,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
             return (False, _("User can't SEND checkins TO CHECKOUT, because doesn\'t have enough permissions"))
 
         return (True, None)
+
 
 class Collection(caching.base.CachingMixin, models.Model):
     # objects = CollectionCustomManager()
@@ -582,6 +591,7 @@ class Journal(caching.base.CachingMixin, models.Model):
     userobjects = modelmanagers.JournalManager()
 
     # Relation fields
+    editor = models.ForeignKey(User, verbose_name=_('Editor'), related_name='editor_journal', null=True, blank=True)
     creator = models.ForeignKey(User, related_name='enjoy_creator', editable=False)
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'), related_name='journal_sponsor', null=True, blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'), related_name='prev_title', null=True, blank=True)
@@ -592,7 +602,6 @@ class Journal(caching.base.CachingMixin, models.Model):
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
-    editors = models.ManyToManyField(User, related_name='user_editors', null=True, blank=True)
 
     # Fields
     current_ahead_documents = models.IntegerField(_('Total of ahead of print documents for the current year'), max_length=3, default=0, blank=True, null=True)
@@ -660,7 +669,20 @@ class Journal(caching.base.CachingMixin, models.Model):
     class Meta:
         ordering = ('title', 'id')
         permissions = (("list_journal", "Can list Journals"),
-                       ("list_editor_journal", "Can list editor Journals"))
+                       ("list_editor_journal", "Can list editor Journal"),
+                       ("change_editor", "Can change editor of the journal"))
+
+    def get_last_issue(self):
+        """
+        Return the latest issue based on descending ordering of parameters:
+        ``publication_year``, ``volume`` and ``number``
+
+        Return a issue instance otherwise ``None``
+        """
+        try:
+            return self.issue_set.order_by('-publication_year', '-volume', '-number')[0]
+        except IndexError:
+            return None
 
     def issues_as_grid(self, is_available=True):
         objects_all = self.issue_set.available(is_available).order_by(
@@ -723,19 +745,6 @@ class Journal(caching.base.CachingMixin, models.Model):
                 issue = issues.get(pk=pk)
                 issue.order = order
                 issue.save()
-
-    def is_editor(self, user):
-        """
-        Returns a boolean value depending if the given user is an editor
-        of the current journal.
-        """
-
-        try:
-            self.editors.get(id=user.id)
-        except ObjectDoesNotExist:
-            return False
-
-        return True
 
     @property
     def scielo_pid(self):

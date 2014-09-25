@@ -249,7 +249,7 @@ table._listings h4 {
     margin: 5px 0 5px 20px;
 }
 
-.force-no-margin { 
+.force-no-margin {
   margin:0 !important;
 }
 
@@ -441,7 +441,7 @@ table._listings h4 {
 }
 
 .log-item {
-  border-left: 2px solid #DDDDDD; 
+  border-left: 2px solid #DDDDDD;
   padding-left: 5px;
   padding-top: 0;
 }
@@ -458,4 +458,83 @@ table._listings h4 {
   border-radius: 10px;
   padding: 0;
   margin: 0;
+}
+
+.longer-tab {
+  /*width: 178px;*/
+  width: auto;
+}
+
+#search-form {
+  margin-bottom:0;
+  padding-top:5px;
+}
+
+#search-form-wrapper {
+  margin-bottom: 0;
+}
+
+.link-list{
+  float: left;
+  display: block;
+  color: #999;
+  padding: 8px 10px;
+}
+
+.link-list-action:hover {
+  color: #4183c4;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.list-muted {
+  color: #999;
+}
+
+.table-journal-detail-td{
+  text-align:right;
+  vertical-align:right
+}
+
+.accordion-group{
+  border: 0px;
+}
+
+.search-query:focus + button {
+    z-index: 3;
+}
+.search-query:focus{
+    width: 500px;
+}
+
+/*
+  bootstrap modal custom styles to be wider and larger
+  simple add the class .wide @ .modal node, to make modal wider
+  or add the class .large @ .modal node, to make modal larger
+  for responsive behavior, will require some @media queries
+*/
+.modal.large {
+  top: 5%;
+  bottom: 5%;
+}
+
+.modal.large .modal-body {
+  min-height: 85%;
+}
+
+.modal.wide {
+  width: 80%;
+  margin-left:-40%; /* width/2) */
+}
+
+/* board members list (accordions) */
+.accordion-board-members li>div {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.accordion-board-members li div.btn-group .btn {
+  margin-top: 25px;
+}
+.accordion-board-members li div:hover {
+  background-color: #f5f5f5;
 }

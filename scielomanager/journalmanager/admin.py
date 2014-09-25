@@ -113,6 +113,7 @@ class IssueAdmin(admin.ModelAdmin):
     def queryset(self, request):
         return Issue.nocacheobjects
 
+    search_fields = ('publication_year', 'volume', 'number', 'journal__title')
     list_display = ('journal', 'volume', 'number', 'is_trashed', 'is_marked_up', '__unicode__',)
 
 admin.site.register(Issue, IssueAdmin)

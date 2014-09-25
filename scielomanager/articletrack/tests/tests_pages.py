@@ -14,6 +14,7 @@ from journalmanager.tests.modelfactories import UserFactory, CollectionFactory
 from articletrack.tests.tests_models import create_notices
 from . import modelfactories
 from . import doubles
+from validator.tests import doubles as packtools_double
 
 
 def _makePermission(perm, model, app_label='articletrack'):
@@ -262,10 +263,10 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         response.mustcontain('<a href="%s">' % url_to_checkin_index)
 
     def test_annotations_ok_if_xml_is_valid(self):
+        # with
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
         target_xml = "valid.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
@@ -280,29 +281,28 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        # MOCK/REPLACE/FAKE/PIMP MY STYLECHECKER!!!
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(mocker.ANY)
-        self.mocker.result(doubles.StylecheckerDouble(mocker.ANY))
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(mocker.ANY)
+        self.mocker.result(packtools_double.XMLValidatorDouble(mocker.ANY))
 
         self.mocker.replay()
+        # when
         response = self.app.get(
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
+        # then
         xml_data = response.context['xml_data']
-
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNone(xml_data['annotations'])
+        self.assertIsNone(response.context['results'])
+        self.assertIsNone(response.context['xml_exception'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
-        self.assertIsNone(xml_data['validation_errors'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
 
     def test_annotations_warning_if_balaio_breaks(self):
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        # MOCK/REPLACE/FAKE/PIMP MY BALAIO!!!
         target_xml = "error.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
@@ -324,11 +324,17 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
+        # check "could not be analyzed" message
         self.assertFalse(xml_data['can_be_analyzed'][0])
-        self.assertIsNone(xml_data['annotations'])
+        self.assertEqual(
+            xml_data['can_be_analyzed'][1],
+            'Could not obtain the XML with this file name %s' % expected_response['filename']
+        )
+
         self.assertEqual(xml_data['uri'], None)
-        self.assertIsNone(xml_data['validation_errors'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
+        from validator.tests.tests_pages import PACKTOOLS_VERSION
+        self.assertEqual(response.context['packtools_version'], PACKTOOLS_VERSION)
 
     def test_annotations_of_error(self):
         self._addWaffleFlag()
@@ -348,9 +354,12 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(mocker.ANY)
-        self.mocker.result(doubles.StylecheckerAnnotationsDouble(mocker.ANY))
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(mocker.ANY)
+        self.mocker.result(packtools_double.XMLValidatorAnnotationsDouble(mocker.ANY))
+        lxml_tostring = self.mocker.replace('lxml.etree.tostring')
+        lxml_tostring(mocker.ANY, mocker.KWARGS)
+        self.mocker.result("some annotations in xml string")
 
         self.mocker.replay()
 
@@ -362,18 +371,14 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNotNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual('', xml_data['validation_errors']['error_lines'])
-        self.assertEqual(1, len(xml_data['validation_errors']['results']))
-        self.assertEqual(
-                xml_data['validation_errors']['results'],
-                [{'column': '--',
-                  'line': '--',
-                  'message': u"Element 'funding-group': This element is not filled-in correctly.",
-                  'level': u'ERROR'}])
+        results = response.context['results']
+        self.assertIsNotNone(results)
+        self.assertIsNotNone(results['annotations'])
+        validation_errors = results['validation_errors']
+        self.assertIsNotNone(validation_errors)
+        self.assertEqual(1, len(validation_errors))
 
     def test_xml_not_found(self):
         self._addWaffleFlag()
@@ -393,8 +398,8 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(expected_response['uri'])
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(expected_response['uri'])
         self.mocker.throw(IOError)
         self.mocker.replay()
 
@@ -405,12 +410,15 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_data = response.context['xml_data']
 
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(xml_data['can_be_analyzed'][0])
-        self.assertEqual(xml_data['can_be_analyzed'][1], "Error while starting Stylechecker.XML()")
-        self.assertIsNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        self.assertIsNone(xml_data['validation_errors'])
+        self.assertTrue(xml_data['can_be_analyzed'][0])
+        # previous version display a IOError exception custom messsage
+        expected_results = None
+        expected_xml_exception = ''
+
+        self.assertEqual(response.context['results'], expected_results)
+        self.assertEqual(response.context['xml_exception'], expected_xml_exception)
 
     def test_annotations_of_syntax_error(self):
         self._addWaffleFlag()
@@ -437,8 +445,8 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
             'code': 77,
         }
 
-        XML = self.mocker.replace('packtools.stylechecker.XML')
-        XML(expected_response['uri'])
+        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
+        XMLValidator(expected_response['uri'])
         self.mocker.throw(
             lxml.etree.XMLSyntaxError(
                 syntax_error_data['message'],
@@ -458,23 +466,15 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNotNone(xml_data['annotations'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
-        self.assertIsNotNone(xml_data['validation_errors'])
-        self.assertEqual('1', xml_data['validation_errors']['error_lines'])
-        self.assertEqual(1, len(xml_data['validation_errors']['results']))
-        self.assertEqual(
-            xml_data['validation_errors']['results'],
-            [
-                {
-                    'column': syntax_error_data['column'],
-                    'line': syntax_error_data['line'],
-                    'message': syntax_error_data['message'],
-                    'level': 'ERROR',
-                }
-            ]
-        )
+
+        results = response.context['results']
+        xml_exception = response.context['xml_exception']
+        self.assertIsNone(results)
+        self.assertIsNotNone(xml_exception)
+        self.assertEqual(xml_exception, syntax_error_data['message'])
+
 
 
 class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
@@ -559,6 +559,9 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         checkin = self._makeOne()
         create_notices('ok', checkin)
 
+        # mock balaio for request checkin files
+        self._mock_balaio_disabled()
+
         response = self.app.get(reverse('checkin_send_to_review', args=[checkin.pk, ]), user=self.user)
         response = response.follow() #  "checkin_send_to_review" redirects to: "notice_detail"
 
@@ -614,7 +617,6 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         # can be sent to pending
         self.assertTrue(response_checkin.can_be_send_to_pending)
 
-
     def test_checkin_send_to_pending(self):
         """ Create a checkin and call the view: checkin_send_to_pending """
         self._addWaffleFlag()
@@ -626,6 +628,9 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         checkin.send_to_review(self.user)
         # reject
         checkin.do_reject(self.user_qal_1, rejection_text)
+
+        # mock balaio for request checkin files
+        self._mock_balaio_disabled()
 
         response = self.app.get(reverse('checkin_send_to_pending', args=[checkin.pk, ]), user=self.user)
         response = response.follow() #  "checkin_send_to_pending" redirects to: "notice_detail"
@@ -655,6 +660,9 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         create_notices('ok', checkin)
         # send to review
         checkin.send_to_review(self.user)
+
+        # mock balaio for request checkin files
+        self._mock_balaio_disabled()
 
         # do review by QAL1
         response = self.app.get(reverse('checkin_review', args=[checkin.pk, 1]), user=self.user_qal_1)
@@ -688,7 +696,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review_by_level_1(self.user_qal_1)
 
-        # mock balaio for checkout step
+        # mock balaio for request checkin files
         self._mock_balaio_disabled()
 
         # do review by user_qal2
@@ -719,22 +727,23 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         expected_message = 'Checkin ACCEPTED succesfully.'
         self.assertIn(expected_message, response.body)
 
-        expected_message = "Unable to communicate with the server to proceed to checkout. Please try again later."
+        expected_message = "Checkin will proceed to checkout soon!"
         self.assertIn(expected_message, response.body)
 
         response_checkin = response.context['checkin']
-        self.assertTrue(response_checkin.status, 'review')
-        # is reviewed at level 1, level 2, and accepted
+        # is reviewed at level 1, level 2, accepted and scheduled to checkout
+        # normally the final status now is: checkout_scheduled.
+        # 'cause "review l2" -[ redirect to ]-> "accepted"  -[ redirect to ]-> "scheduled to checkout"
         self.assertTrue(response_checkin.is_level1_reviewed)
         self.assertTrue(response_checkin.is_level2_reviewed)
-        self.assertTrue(response_checkin.is_accepted)
+        self.assertFalse(response_checkin.is_accepted)
+        self.assertTrue(response_checkin.is_scheduled_to_checkout)
+        self.assertEqual(response_checkin.status, 'checkout_scheduled')
         # can't be rejected, reviewed, or send_to_review, or send_to_pending
         self.assertFalse(response_checkin.can_be_send_to_review)
         self.assertFalse(response_checkin.can_be_send_to_pending)
         self.assertFalse(response_checkin.can_be_rejected)
         self.assertFalse(response_checkin.can_be_reviewed)
-        # checkin can't be checked out, so:
-        self.assertFalse(response_checkin.checked_out)
 
     def test_checkin_accept(self):
         """ Create a checkin and call the view: checkin_accept """
@@ -752,7 +761,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(checkin.can_be_reviewed)
         checkin.do_review_by_level_2(self.user_qal_2)
 
-        # mock balaio for checkout step
+        # mock balaio for request checkin files
         self._mock_balaio_disabled()
 
         # do accept with QAL2
@@ -773,28 +782,27 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         expected_message = 'Checkin ACCEPTED succesfully.'
         self.assertIn(expected_message, response.body)
 
-        expected_message = "Unable to communicate with the server to proceed to checkout. Please try again later."
+        expected_message = "Checkin will proceed to checkout soon!"
         self.assertIn(expected_message, response.body)
 
-
         response_checkin = response.context['checkin']
-        self.assertTrue(response_checkin.status, 'accepted')
-        # is reviewed at level 1, level 2, and accepted
+        # is reviewed at level 1, level 2, accepted and scheduled to checkout
+        # normally the final status now is: checkout_scheduled.
+        # 'cause "review l2" -[ redirect to ]-> "accepted"  -[ redirect to ]-> "scheduled to checkout"
         self.assertTrue(response_checkin.is_level1_reviewed)
         self.assertTrue(response_checkin.is_level2_reviewed)
-        self.assertTrue(response_checkin.is_accepted)
+        self.assertFalse(response_checkin.is_accepted)
+        self.assertTrue(response_checkin.is_scheduled_to_checkout)
+        self.assertEqual(response_checkin.status, 'checkout_scheduled')
         # can't be rejected, reviewed, or send_to_review, or send_to_pending
         self.assertFalse(response_checkin.can_be_send_to_review)
         self.assertFalse(response_checkin.can_be_send_to_pending)
         self.assertFalse(response_checkin.can_be_rejected)
         self.assertFalse(response_checkin.can_be_reviewed)
-        # checkin can't be checked out, so:
-        self.assertFalse(response_checkin.checked_out)
 
     def test_checkin_send_to_checkout(self):
         """
         Create a checkin and call the view: checkin_send_to_checkout.
-        Balalio API will be down, so must test that user can possible to call again this view.
         """
         self._addWaffleFlag()
         checkin = self._makeOne()
@@ -815,7 +823,7 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(checkin.can_be_accepted)
         checkin.accept(self.user_qal_2)
 
-        # mock balaio for checkout step
+        # mock balaio for request checkin files
         self._mock_balaio_disabled()
 
         # try to do send to checkout:
@@ -828,3 +836,21 @@ class CheckinWorkflowTests(WebTest, mocker.MockerTestCase):
         # finally get response and check status
         response = response.follow()
         self.assertEqual(response.status_code, 200)
+
+        expected_message = "Checkin will proceed to checkout soon!"
+        self.assertIn(expected_message, response.body)
+
+        response_checkin = response.context['checkin']
+        # is reviewed at level 1, level 2, accepted and scheduled to checkout
+        # normally the final status now is: checkout_scheduled.
+        # 'cause "review l2" -[ redirect to ]-> "accepted"  -[ redirect to ]-> "scheduled to checkout"
+        self.assertTrue(response_checkin.is_level1_reviewed)
+        self.assertTrue(response_checkin.is_level2_reviewed)
+        self.assertFalse(response_checkin.is_accepted)
+        self.assertTrue(response_checkin.is_scheduled_to_checkout)
+        self.assertEqual(response_checkin.status, 'checkout_scheduled')
+        # can't be rejected, reviewed, or send_to_review, or send_to_pending
+        self.assertFalse(response_checkin.can_be_send_to_review)
+        self.assertFalse(response_checkin.can_be_send_to_pending)
+        self.assertFalse(response_checkin.can_be_rejected)
+        self.assertFalse(response_checkin.can_be_reviewed)

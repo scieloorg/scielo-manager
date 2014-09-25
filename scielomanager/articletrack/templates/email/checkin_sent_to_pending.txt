@@ -1,0 +1,4 @@
+Your package was sent to pending.
+<br/>
+<br/>
+Check: http://{{domain}}{% url notice_detail checkin.id %}

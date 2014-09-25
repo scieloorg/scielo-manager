@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load modal %}
+<a data-target='#modal' data-toggle="modal" href="{% url editorial.journal.detail journal.pk %}">
+  <h4>{{ journal.title }}</h4>
+</a>
+<ul class="inline">
+  <li>
+    <span class="muted">{% trans "On-line version ISSN" %}:</span>
+    <strong>{{ journal.scielo_pid }}</strong>
+  </li>
+  <li>
+    <span class="muted">{% trans "Editor" %}:</span>
+    {% if journal.editor %}
+      <strong>{{ journal.editor.get_full_name }}</strong>
+    {% else %}
+      <em>{% trans "Not assigned yet" %}</em>
+    {% endif %}
+  </li>
+  <li>
+    <span class="muted">{% trans "Managed by the collections" %}: </span>
+    <strong>{{ journal.collections.all|join:', ' }}</strong>
+  </li>
+</ul>
+{% modal 'Journal Details' %}

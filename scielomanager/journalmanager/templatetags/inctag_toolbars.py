@@ -12,7 +12,6 @@ def journaldash_toolbar(context, page, journal, user):
     # journal attribute represents a empty journal instance.
     if journal.id:
         perms = context['perms']
-        is_editor = journal.is_editor(user)
-        ret.update({'journal_id': journal.id, 'is_editor': is_editor, 'perms': perms})
+        ret.update({'journal_id': journal.id, 'perms': perms})
 
     return ret

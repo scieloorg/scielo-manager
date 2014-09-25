@@ -1,0 +1,27 @@
+{% load i18n static %}
+
+<div id="{{ modal_id }}" class="modal hide fade">
+  <div class="modal-header">
+    <div class="btn-group pull-right">
+      <button class="btn-resize-small btn btn-mini hide">
+        <i class="icon-resize-small"></i>
+      </button>
+      <button class="btn-resize-full btn btn-mini">
+        <i class="icon-resize-full"></i>
+      </button>
+      <button class="btn btn-mini" data-dismiss="modal">
+        <i class="icon-remove"></i>
+      </button>
+    </div>
+    <h3>{{title}}</h3>
+  </div>
+  <div class="modal-body">
+    <p class="text-center">
+      <img src="{% static 'img/select2-spinner.gif' %}" alt="">
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a class="btn btn-danger pull-left" data-dismiss="modal">{% trans "Close" %}</a>
+    <button class="btn-submit btn btn-success pull-right">{% trans "Proceed" %}</button>
+  </div>
+</div>

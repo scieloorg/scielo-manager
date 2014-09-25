@@ -90,6 +90,31 @@ class AheadForm(ModelForm):
            }
 
 
+class RestrictedJournalForm(ModelForm):
+
+    class Meta:
+        model = models.Journal
+        fields = ['use_license', 'is_indexed_scie', 'is_indexed_ssci',
+                'is_indexed_aehci', 'index_coverage', 'editor_name',
+                'editor_address', 'editor_address_city', 'editor_address_state',
+                'editor_address_zip', 'editor_address_country', 'editor_phone1',
+                'editor_phone2', 'editor_email', 'publisher_name', 'publisher_country',
+                'publisher_state', 'publication_city']
+
+        widgets = {
+            'index_coverage': forms.Textarea(attrs={'class': 'span12', 'rows': '6'}),
+            'editor_name': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_address': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_address_city': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_address_state': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_address_zip': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_address_country': forms.Select(attrs={'class': 'chzn-select span12'}),
+            'editor_phone1': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_phone2': forms.TextInput(attrs={'class': 'span12'}),
+            'editor_email': forms.TextInput(attrs={'class': 'span12'}),
+        }
+
+
 class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)

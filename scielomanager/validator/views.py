@@ -7,18 +7,12 @@ from waffle.decorators import waffle_flag
 from . import forms
 from . import utils
 
-# "http://192.168.1.162:7000/api/v1/article?code=S1516-635X2014000100012&format=xmlrsps"
-
-def __prepare_and_analyze(data_type, data_input):
-    """ Normalize input to feed the stylechecker and obtain results """
-    results = utils.stylechecker_analyze(data_type, data_input)
-    return results
-
 
 @waffle_flag('packtools_validator')
 def packtools_home(request, template_name='validator/packtools.html'):
     context = {
         'SETTINGS_MAX_UPLOAD_SIZE' : settings.VALIDATOR_MAX_UPLOAD_SIZE,
+        'packtools_version': utils.PACKTOOLS_VERSION,
     }
 
     form = forms.StyleCheckerForm()
@@ -27,12 +21,14 @@ def packtools_home(request, template_name='validator/packtools.html'):
         if form.is_valid():
             type = form.cleaned_data['type']
             if type == 'url':
-                url = form.cleaned_data['url']
-                results = __prepare_and_analyze(type, url)
+                xml_file = form.cleaned_data['url']
             else:
                 xml_file = request.FILES['file']
-                results = __prepare_and_analyze(type, xml_file)
+
+            results, exc = utils.analyze_xml(xml_file)
             context['results'] = results
+            context['xml_exception'] = getattr(exc, 'message', None)
+
     else:
         form = forms.StyleCheckerForm()
 

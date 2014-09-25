@@ -28,17 +28,15 @@
           <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>
         {% endif %}
-        {% flag 'editor_manager' %}
-          {% if perms.journalmanager.change_journal %}
-          <li {% if page == 'editors' %}class="active activedash" {% endif %}>
-            <a href="{% url journal_editors.index journal_id %}">{% trans 'Editors' %}</a>
-          </li>      
-          {% endif %}
-          {% if perms.editormanager.list_news %}
-            <li {% if page == 'news' %}class="active activedash" {% endif %}>
-              <a href="#">{% trans 'News' %}</a>
+        {% flag 'editorialmanager' %}
+          {% if perms.journalmanager.change_editor %}
+            <li {% if page == 'editor' %}class="active activedash" {% endif %}>
+              <a href="{% url editor.index journal_id %}">{% trans 'Editor' %}</a>
             </li>
           {% endif %}
+          <li {% if page == 'editorial_board' %}class="active activedash" {% endif %}>
+            <a href="{% url editorial.board journal_id %}">{% trans 'Board' %}</a>
+          </li>
         {% endflag %}
       </ul>
     </div>

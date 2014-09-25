@@ -2,7 +2,8 @@
 
 {% load i18n %}
 {% load field_attrs %}
-
+{% load static %}
+{% block page_title %}{% trans "Packtools - Style Checker" %}{% endblock %}
 {% block main_content %}
 <style type="text/css">
   .tab-pane {
@@ -35,17 +36,17 @@
         <ul class="nav nav-tabs">
           <li class="active">
             <a href="#URL" data-toggle="tab">
-              {% trans "Remote URL" %}
+              <i class="icon-globe"></i> {% trans "Remote URL" %}
             </a>
           </li>
           <li>
             <a href="#XML" data-toggle="tab">
-              {% trans "Upload XML" %}
+              <i class="icon-upload"></i> {% trans "Upload XML" %}
             </a>
           </li>
           <li>
             <a href="#HELP" data-toggle="tab">
-              {% trans "Help?" %}
+              <i class="icon-question-sign"></i> {% trans "Help?" %}
             </a>
           </li>
         </ul>
@@ -115,7 +116,7 @@
     </div>
   </div>
 
-  {% if results %}
+  {% if results or xml_exception %}
 
     <div class="row-fluid">
       <div class="span12">
@@ -128,6 +129,8 @@
     </div>
 
   {% endif %}
+
+  <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ packtools_version }}</strong></small></p>
 
 {% endblock main_content %}
 {% block extrafooter %}

@@ -1,0 +1,117 @@
+{% load i18n %}
+
+<table class="table table-bordered table-hover table-condensed">
+  <tbody>
+    <tr>
+      <td class="table-journal-detail-td span2"><b>{% trans 'Journal title' %}:</b></td>
+      <td>{{ journal.title }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'ISO abbreviated title' %}:</b></td>
+      <td>{{ journal.title_iso }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Short title' %}:</b></td>
+      <td>{{ journal.short_title }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Medline title' %}:</b></td>
+      <td>{{ journal.medline_title }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Previous title' %}:</b></td>
+      <td>{{ journal.previous_title }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'ISSN(s)' %}:</b></td>
+      <td>
+        <dl>
+          {% if journal.print_issn %}
+            <dt>{% trans "Print ISSN" %}:</dt>
+            <dd>{{ journal.print_issn }}</dd>
+          {% endif %}
+
+          {% if journal.eletronic_issn %}
+            <dt>{% trans "Electronic ISSN" %}:</dt>
+            <dd>{{ journal.eletronic_issn }}</dd>
+          {% endif %}
+        </dl>
+      </td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Missions' %}:</b></td>
+      <td>
+        <dl>
+          {% for mission in journal.missions.all %}
+            <dt>{{ mission.language}}</dt>
+            <dd>{{ mission.description}}</dd>
+          {% endfor %}
+        </dl>
+      </td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Lanaguages' %}:</b></td>
+      <td>
+        <ul>
+          {% for lang in journal.languages.all %}
+            <li>{{lang}}</li>
+          {% endfor %}
+        </ul>
+
+      </td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Acronym' %}:</b></td>
+      <td>{{ journal.acronym }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Index Coverage' %}:</b></td>
+      <td>{{ journal.index_coverage|linebreaksbr }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'License' %}:</b></td>
+      <td>{{ journal.use_license }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Initial Year' %}:</b></td>
+      <td>{{ journal.init_year }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Final Year' %}:</b></td>
+      <td>{{ journal.final_year }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Frequency' %}:</b></td>
+      <td>{{ journal.get_frequency_display }}</td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Publisher' %}:</b></td>
+      <td>
+        <dl>
+          <dt>{% trans "Name" %}:</dt>
+          <dd>{{ journal.publisher_name }}</dd>
+          <dt>{% trans "Country" %}:</dt>
+          <dd>{{ journal.publisher_country }}</dd>
+          <dt>{% trans "State/Province/Region" %}:</dt>
+          <dd>{{ journal.publisher_state }}</dd>
+          <dt>{% trans "City" %}:</dt>
+          <dd>{{ journal.publication_city }}</dd>
+        </dl>
+      </td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Sponsor' %}:</b></td>
+      <td>
+        <ul>
+          {% for sponsor in journal.sponsor.all %}
+            <li>{{sponsor}}</li>
+          {% endfor %}
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="table-journal-detail-td"><b>{% trans 'Editor' %}:</b></td>
+      <td>{{ journal.editor.get_full_name }}</td>
+    </tr>
+  </tbody>
+</table>

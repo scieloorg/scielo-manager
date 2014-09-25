@@ -42,25 +42,25 @@
   </li>
 </ul>
 <div class="tab-content">
-  <div class="tab-pane active" id="PENDING">
+  <div class="tab-pane {% if prefered_tab == 'pending' %}active {% endif %}" id="PENDING">
     {# PENDING LIST #}
     {% with status="pending" icon_class="icon-time" list_title="Pending" checkins_collection=checkins_pending pagination_prefix="pending_page" filter_form=pending_filter_form  %}
       {% include "articletrack/includes/checkin_list_and_filterform.html" %}
     {% endwith %}
   </div>
-  <div class="tab-pane" id="REJECTED">
+  <div class="tab-pane {% if prefered_tab == 'rejected' %}active {% endif %}" id="REJECTED">
     {# REJECTED LIST #}
     {% with status="rejected" icon_class="icon-eye-close" list_title="Rejected" checkins_collection=checkins_rejected pagination_prefix="rejected_page" filter_form=rejected_filter_form  %}
       {% include "articletrack/includes/checkin_list_and_filterform.html" %}
     {% endwith %}
   </div>
-  <div class="tab-pane" id="REVIEW">
+  <div class="tab-pane {% if prefered_tab == 'review' %}active {% endif %}" id="REVIEW">
     {# REVIEW LIST #}
     {% with status="review" icon_class="icon-eye-open" list_title="Review" checkins_collection=checkins_review pagination_prefix="review_page" filter_form=review_filter_form  %}
       {% include "articletrack/includes/checkin_list_and_filterform.html" %}
     {% endwith %}
   </div>
-  <div class="tab-pane" id="ACCEPTED">
+  <div class="tab-pane {% if prefered_tab == 'accepted' %}active {% endif %}" id="ACCEPTED">
     {# ACCEPTED LIST #}
     {% with status="accepted" icon_class="icon-ok-circle" list_title="Accepted" checkins_collection=checkins_accepted pagination_prefix="accepted_page" filter_form=accepted_filter_form  %}
       {% include "articletrack/includes/checkin_list_and_filterform.html" %}

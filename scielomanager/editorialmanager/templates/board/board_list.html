@@ -1,0 +1,19 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+{% load inctag_toolbars %}
+
+{% block page_title %}{% trans "Journal Editorial Board" %}{% endblock %}
+{% block content %}
+
+  {% if request.user.get_profile.is_editor %}
+    <ul class="breadcrumb">
+      <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+      <li class="active">{% trans 'Editorial Board' %}</li>
+    </ul>
+  {% else %}
+    {% journaldash_toolbar 'editorial_board' journal user %}
+  {% endif %}
+
+  {% include "board/board_list_data.html" %}
+
+{% endblock %}

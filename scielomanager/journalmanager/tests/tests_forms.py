@@ -15,6 +15,8 @@ from django.contrib.auth.models import User
 from waffle import Flag
 
 from journalmanager.tests import modelfactories
+from editorialmanager.tests.modelfactories import EditorialBoardFactory, EditorialMemberFactory
+
 from journalmanager import forms
 from journalmanager import models
 
@@ -3444,6 +3446,26 @@ class IssueFormTests(WebTest):
     def tearDown(self):
         pass
 
+    def _makeOneWithEditorialBoard(self):
+        #Create any issue in this journal
+        issue = modelfactories.IssueFactory(journal=self.journal)
+
+        #Create a board to the issue
+        ed_board = EditorialBoardFactory(issue=issue)
+
+        #Add members to the board
+        member = EditorialMemberFactory(board=ed_board)
+        member = EditorialMemberFactory(board=ed_board)
+
+        return issue
+
+    def _makeOneWithoutEditorialBoard(self):
+        #Create any issue in this journal
+        issue = modelfactories.IssueFactory(journal=self.journal)
+
+        return issue
+
+
     def test_basic_struture(self):
         """
         Just to make sure that the required hidden fields are all
@@ -3488,6 +3510,125 @@ class IssueFormTests(WebTest):
         permissions: ``journalmanager.add_issue`` and
         ``journalmanager.list_issue``.
         """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
+
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+
+    def test_POST_with_valid_formdata_and_check_copy_of_editorial_board(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the issue's list and the new user must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.add_issue`` and
+        ``journalmanager.list_issue``.
+
+        This test check if editorial board of this issue was created
+        """
+
+        #create an issue with editorial board
+        issue = self._makeOneWithEditorialBoard()
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
+
+            new_issue = models.Issue.objects.get(publication_year='2012', number='3', volume='29')
+
+            #Members of the recent IssueFormTests
+            new_members = new_issue.editorialboard.editorialmember_set.all()
+            last_members = issue.editorialboard.editorialmember_set.all()
+
+            #comparing first names
+            last_first_names = [member.first_name for member in last_members]
+            new_first_names = [member.first_name for member in new_members]
+
+            self.assertItemsEqual(last_first_names, new_first_names)
+            self.assertEqual(len(last_first_names), len(new_first_names))
+
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+
+    def test_POST_with_valid_formdata_and_check_editorial_board_without_issue(self):
+        """
+        When a valid form is submited, the user is redirected to
+        the issue's list and the new user must be part
+        of the list.
+
+        In order to take this action, the user needs the following
+        permissions: ``journalmanager.add_issue`` and
+        ``journalmanager.list_issue``.
+
+        This test check if editorial board of this issue was created
+        """
+
+        #create an issue
+        issue = self._makeOneWithoutEditorialBoard()
+
         perm_issue_change = _makePermission(perm='add_issue',
             model='issue', app_label='journalmanager')
         perm_issue_list = _makePermission(perm='list_issue',
@@ -3932,87 +4073,6 @@ class SectionTitleFormValidationTests(TestCase):
 
         self.assertTrue(section_forms['section_form'].is_valid())
         self.assertTrue(section_forms['section_title_formset'].is_valid())
-
-
-class JournalEditorsTests(WebTest):
-
-    def setUp(self):
-        self.user = modelfactories.UserFactory(is_active=True)
-
-        self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
-
-        self.journal = modelfactories.JournalFactory.create()
-        self.journal.join(self.collection, self.user)
-
-        perm_journal_list = _makePermission(perm='list_journal',
-                                            model='journal',
-                                            app_label='journalmanager')
-        self.user.user_permissions.add(perm_journal_list)
-
-    def test_form_ectype_must_be_urlencoded(self):
-        Flag.objects.create(name='editor_manager', everyone=True)
-
-        form = self.app.get(reverse('journal_editors.index',
-            args=[self.journal.pk]), user=self.user).forms['add-editor']
-
-        self.assertEqual(form.enctype, 'application/x-www-form-urlencoded')
-
-    def test_form_method_must_be_post(self):
-        """
-        Asserts that the method attribute of the ahead form is
-        ``POST``.
-        """
-        Flag.objects.create(name='editor_manager', everyone=True)
-
-        form = self.app.get(reverse('journal_editors.index',
-            args=[self.journal.pk]), user=self.user).forms['add-editor']
-
-        self.assertEqual(form.method.lower(), 'post')
-
-    def test_form_action_must_not_be_empty(self):
-        Flag.objects.create(name='editor_manager', everyone=True)
-
-        form = self.app.get(reverse('journal_editors.index',
-            args=[self.journal.pk]), user=self.user).forms['add-editor']
-
-        r = reverse('journal_editors.add', args=[self.journal.pk])
-
-        self.assertEqual(form.action, r)
-
-    def test_form_adding_an_editor_with_a_valid_username(self):
-        Flag.objects.create(name='editor_manager', everyone=True)
-
-        perm_journal_change = _makePermission(perm='change_journal',
-                                              model='journal',
-                                              app_label='journalmanager')
-        self.user.user_permissions.add(perm_journal_change)
-
-        form = self.app.get(reverse('journal_editors.index',
-            args=[self.journal.pk]), user=self.user).forms['add-editor']
-
-        form['query'] = self.user.username
-
-        response = form.submit()
-
-        self.assertIn('Now, %s is an editor of this journal.' % self.user.username, response.body)
-
-    def test_form_adding_an_editor_with_a_invalid_username(self):
-        Flag.objects.create(name='editor_manager', everyone=True)
-
-        perm_journal_change = _makePermission(perm='change_journal',
-                                              model='journal',
-                                              app_label='journalmanager')
-        self.user.user_permissions.add(perm_journal_change)
-
-        form = self.app.get(reverse('journal_editors.index',
-            args=[self.journal.pk]), user=self.user).forms['add-editor']
-
-        form['query'] = 'fakeuser'
-
-        response = form.submit()
-
-        self.assertIn('User fakeuser does not exists', response.body)
 
 
 class AheadFormTests(WebTest):

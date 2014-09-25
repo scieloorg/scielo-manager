@@ -7,7 +7,6 @@
 {% block page_title %}{% trans "Details of checkin" %}: {{ checkin.pk }}{% endblock %}
 
 {% block content %}
-<link href="{% static 'css/prism.css' %}" rel="stylesheet" />
 <style type="text/css">
 .tab_add_ticket:hover { background-color: #51A351 !important; }
 </style>
@@ -20,7 +19,7 @@
         <a href="{% url checkin_index %}"><i class="icon-chevron-left"></i> {% trans "List of Checkins" %}</a>
       </li>
       <li class="divider-vertical"></li>
-        {% if not checkin.is_accepted or checkin.can_be_send_to_checkout %}
+        {% if not checkin.is_accepted or checkin.can_be_scheduled_to_checkout %}
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <strong>{% trans "Actions" %}:</strong>
@@ -58,12 +57,12 @@
 
               {# DO REVIEW #}
               {% if checkin.can_be_reviewed %}
-                
+
                 {# LEVEL 1 #}
-                {% if user.get_profile.can_review_l1_checkins and not checkin.is_level1_reviewed %}  
+                {% if user.get_profile.can_review_l1_checkins and not checkin.is_level1_reviewed %}
                   <li>
                     <a href="{% url checkin_review checkin.pk 1 %}">
-                      <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Review" %}</span>
+                      <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Editorial Review" %}</span>
                     </a>
                   </li>
                 {% endif %}
@@ -85,11 +84,11 @@
                     <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Accept" %}</span>
                   </a>
                 </li>
-              {% elif checkin.can_be_send_to_checkout and user.get_profile.can_send_checkins_to_checkout %}
-                {# DO CHECKOUT #}
+              {% elif checkin.can_be_scheduled_to_checkout and user.get_profile.can_send_checkins_to_checkout %}
+                {# DO SEND TO CHECKOUT #}
                 <li>
                   <a href="{% url checkin_send_to_checkout checkin.pk %}">
-                    <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Checkout!" %}</span>
+                    <i class='icon-ok-circle'></i> <span class="label label-success">{% trans "Send to Checkout!" %}</span>
                   </a>
                 </li>
               {% endif %}
@@ -118,8 +117,6 @@
     </ul>
   </div>
 </div>
-
-{% include "articletrack/includes/checkin_status_notice_block.html" %}
 
 {% if not checkin.is_newest_checkin %}
   <div class="row-fluid show-grid">
@@ -151,20 +148,17 @@
         </li>
         <li class="longer-tab">
           <a href="#annotations" data-toggle="tab">
-            {% trans "Style Checking" %}
-            {% if not xml_data.can_be_analyzed.0 %}
+            {% trans "Style Checking" %} &nbsp;
+            {% if xml_exception or not xml_data.can_be_analyzed.0 %}
               {# could not be analyzed #}
-              &nbsp;
-              <span class="badge badge-warning"></span>
-            {% elif not xml_data.annotations %}
+              <span class="label label-warning">{% trans "Exception" %}</span>
+            {% elif results.validation_errors|length == 0 %}
               {# xml without annotations #}
-              &nbsp;
-              <span class="badge badge-success"></span>
+              <span class="label label-success">{% trans "No errors" %}</span>
             {% else %}
               {# xml analyzed and with annotations #}
-              &nbsp;
-              <span class="badge badge-important">
-                {{ xml_data.validation_errors.results|length }}
+              <span class="label label-important">
+                {{ results.validation_errors|length }} {% trans "Errors" %}
               </span>
             {% endif %}
           </a>
@@ -216,7 +210,17 @@
         </div>
         <div class="tab-pane" id="annotations">
           {# annotations #}
-          {% include "validator/includes/xml_annotated.html" %}
+          {% if not xml_data.can_be_analyzed.0 %}
+            {# could not be analyzed #}
+            <div class="alert alert-warning">
+              <h4><i class="icon-minus-sign"></i> {% trans "The XML could not be analyzed" %}</h4>
+              <p>{% trans "Detail:"%} <strong>{{ xml_data.can_be_analyzed.1 }}</strong></p>
+            </div>
+          {% elif results or xml_exception %}
+            {% with results as xml_data %}
+              {% include "validator/includes/xml_annotated.html" %}
+            {% endwith %}
+          {% endif %}
           {# /annotations #}
         </div>
       </div>

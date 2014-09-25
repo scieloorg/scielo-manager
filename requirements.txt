@@ -13,11 +13,12 @@ webassets==0.7.1
 yuicompressor
 pymongo
 jsonfield
-django-tastypie==0.9.14
+django-tastypie==0.9.16
 django-waffle==0.9.1
-git+git://github.com/scieloorg/django-htmlmin.git
+-e git+git://github.com/scieloorg/django-htmlmin.git#egg=django-htmlmin
 -e git+git://github.com/scieloorg/django-cache-machine.git#egg=django-cache-machine
-git+git://github.com/scieloorg/packtools.git#egg=packtools
+packtools==0.5dev-20140924
 Celery
 django-celery
 django-kombu
+defusedxml==0.4.1

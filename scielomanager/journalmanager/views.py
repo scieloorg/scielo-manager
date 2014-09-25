@@ -1,3 +1,4 @@
+#coding: utf-8
 import json
 import urlparse
 from datetime import datetime
@@ -15,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import resolve
@@ -40,11 +42,11 @@ from scielomanager.tools import (
     get_referer_view,
     asbool,
 )
-
+from audit_log import helpers
+from editorialmanager.models import EditorialBoard, EditorialMember
 
 from waffle.decorators import waffle_flag
 
-AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
 MSG_FORM_MISSING = _('There are some errors or missing data.')
@@ -57,37 +59,101 @@ def get_first_letter(objects_all):
     """
     Returns a set of first letters from names in `objects_all`
     """
-    letters_set = set(unicode(letter)[0].upper().strip() for letter in objects_all)
+    letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
 
 
+def get_users_by_group(group):
+    """
+    Get all users from a group or raise a ObjectDoesNotExist
+    """
+
+    editor_group = Group.objects.get(name=group)
+
+    return editor_group.user_set.all()
+
+
+@permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
+def get_editor(request, journal_id):
+    """
+    Get the editor of the journal.
+    """
+    users_editor = None
+
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    if not journal.editor:
+        try:
+            users_editor = get_users_by_group('Editors')
+        except ObjectDoesNotExist:
+            messages.error(request, _("Does not exist the group 'Editors'"))
+
+    return render_to_response('journalmanager/editor.html',
+                             {'editor': journal.editor,
+                              'journal': journal,
+                              'users_editor': users_editor},
+                              context_instance=RequestContext(request))
+
+
+@permission_required('journalmanager.change_editor', login_url=settings.AUTHZ_REDIRECT_URL)
+def add_editor(request, journal_id):
+    """
+    Set any user from Editors as editor of any journal.
+    """
+    journal = get_object_or_404(models.Journal, id=journal_id)
+
+    if request.method == "POST":
+        editor_pk = request.POST.get('editor', None)
+        if editor_pk:
+            editor = User.objects.get(pk=editor_pk)
+            journal.editor = editor
+            journal.save()
+            messages.success(request, _("Successfully selected %s as editor of this Journal" % editor.get_full_name()))
+        else:
+            #Remove editor
+            journal.editor = None
+            journal.save()
+            messages.success(request, _("No user selected as editor of this journal!"))
+    else:
+        try:
+            users_editor = get_users_by_group('Editors')
+        except ObjectDoesNotExist:
+            messages.error(request, _("Does not exist the group 'Editors'"))
+
+        return render_to_response('journalmanager/includes/form_add_editor.html',
+                                 {'journal': journal,
+                                  'users_editor': users_editor},
+                                 context_instance=RequestContext(request))
+
+    return HttpResponseRedirect(reverse('editor.index', args=[journal.id]))
+
+
 def index(request):
+
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('journalmanager.user_login'))
 
-    if 'editor' in [i.name.lower() for i in request.user.groups.all()]:
-        landing_page = 'journalmanager/home_editor.html'
-        editor_journals = request.user.user_editors.all()
-        context = {'editor_journals': editor_journals}
-    else:
-        pending_journals = models.PendedForm.objects.filter(
-            user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
+    #Redirect user when it`s is editor
+    if request.user.get_profile().is_editor:
+        return HttpResponseRedirect(reverse('editorial.index'))
 
-        # recent activities
-        recent_journals = models.Journal.objects.recents_by_user(request.user)
+    pending_journals = models.PendedForm.objects.filter(
+        user=request.user.id).filter(view_name='journal.add').order_by('-created_at')
 
-        context = {
-            'pending_journals': pending_journals,
-            'recent_activities': recent_journals,
+    # recent activities
+    recent_journals = models.Journal.objects.recents_by_user(request.user)
+
+    context = {
+        'pending_journals': pending_journals,
+        'recent_activities': recent_journals,
         }
 
-        landing_page = 'journalmanager/home_journal.html'
-    return render_to_response(landing_page,
+    return render_to_response('journalmanager/home_journal.html',
         context, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def journal_index(request):
     """
     Journal list by active collection
@@ -114,7 +180,7 @@ def journal_index(request):
         context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def dash_journal(request, journal_id=None):
     """
     Handles new and existing journals
@@ -127,7 +193,7 @@ def dash_journal(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def issue_index(request, journal_id):
     journal = get_object_or_404(models.Journal.userobjects.active(), pk=journal_id)
 
@@ -158,7 +224,7 @@ def issue_index(request, journal_id):
     )
 
 
-@permission_required('journalmanager.list_section', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def section_index(request, journal_id=None):
     """
     Section list by active collection
@@ -176,7 +242,7 @@ def section_index(request, journal_id=None):
            context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_sponsor', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_sponsor', login_url=settings.AUTHZ_REDIRECT_URL)
 def sponsor_index(request):
     """
     Sponsor list by active collection
@@ -199,7 +265,7 @@ def sponsor_index(request):
            context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.list_article', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_article', login_url=settings.AUTHZ_REDIRECT_URL)
 def article_index(request, issue_id):
 
     issue = get_object_or_404(models.Issue.userobjects.active(), pk=issue_id)
@@ -215,7 +281,7 @@ def article_index(request, issue_id):
     )
 
 
-@permission_required('journalmanager.list_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.list_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
@@ -306,13 +372,13 @@ def generic_bulk_action(request, model_name, action_name, value=None):
     return HttpResponseRedirect(get_referer_view(request))
 
 
-@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
 def user_index(request):
 
     collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     col_users = models.User.objects.filter(
         usercollections__collection__in=[collection]).distinct('username').order_by('username')
@@ -326,7 +392,7 @@ def user_index(request):
     return HttpResponse(t.render(c))
 
 
-@permission_required('auth.change_user', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_user(request, user_id=None):
     """
     Handles new and existing users
@@ -334,7 +400,7 @@ def add_user(request, user_id=None):
     collection = models.Collection.userobjects.active()
 
     if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if user_id is None:
         user = User()
@@ -400,7 +466,7 @@ def add_user(request, user_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_journaltimeline', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journaltimeline', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_journal_status(request, journal_id=None):
     """
     Handles Journal Status.
@@ -433,99 +499,7 @@ def edit_journal_status(request, journal_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.list_editor_journal', login_url=AUTHZ_REDIRECT_URL)
-def editor_journal(request):
-    """
-    Initial editor page, containing a list of all journals related to the user.
-    """
-    editor_journals = request.user.user_editors.all()
-
-    return render_to_response('journalmanager/home_editor.html', {
-                              'editor_journals': editor_journals,
-                              }, context_instance=RequestContext(request))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.list_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_editors(request, journal_id=None):
-    """
-    Handle the users that have an editor profile for a specific journal
-    """
-
-    journal = get_object_or_404(models.Journal, id=journal_id)
-    editors = journal.editors.all()
-
-    return render_to_response('journalmanager/journal_editors_list.html', {
-                              'journal': journal,
-                              'editors': editors,
-                              }, context_instance=RequestContext(request))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_editors_add(request, journal_id):
-
-    journal = get_object_or_404(models.Journal, pk=journal_id)
-
-    if request.method == 'POST':
-        username = request.POST.get('query')
-        try:
-            user = User.objects.get(username=username)
-            try:
-                journal.editors.add(user)
-                messages.error(request, _('Now, %s is an editor of this journal.' % user.username))
-            except IntegrityError:
-                messages.error(request, _('%s is already an editor of this journal.' % user.username))
-        except ObjectDoesNotExist:
-            messages.error(request, _('User %s does not exists' % username))
-
-    editors = journal.editors.all()
-
-    t = loader.get_template('journalmanager/journal_editors_list.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'editors': editors,
-                       })
-    return HttpResponse(t.render(c))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
-def journal_editors_remove(request, journal_id, user_id):
-
-    journal = models.Journal.objects.get(pk=journal_id)
-    user2remove = models.User.objects.get(pk=user_id)
-
-    journal.editors.remove(user2remove)
-
-    messages.error(request, _('The user %s was removed from this journal.' % user2remove.username))
-
-    editors = journal.editors.all()
-
-    t = loader.get_template('journalmanager/journal_editors_list.html')
-    c = RequestContext(request, {
-                       'journal': journal,
-                       'editors': editors,
-                       })
-    return HttpResponse(t.render(c))
-
-
-@waffle_flag('editor_manager')
-@permission_required('journalmanager.list_editor_journal', login_url=AUTHZ_REDIRECT_URL)
-def dash_editor_journal(request, journal_id=None):
-    """
-    Handles new and existing journals
-    """
-
-    journal = get_object_or_404(models.Journal, id=journal_id)
-
-    return render_to_response('journalmanager/journal_dash.html', {
-                              'journal': journal,
-                              }, context_instance=RequestContext(request))
-
-
-@permission_required('journalmanager.change_journal', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_journal', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_journal(request, journal_id=None):
     """
     Handles new and existing journals
@@ -536,7 +510,9 @@ def add_journal(request, journal_id=None):
     previous_journal_logo = None
     has_cover_url = has_logo_url = False
 
-    if journal_id is None:
+    is_new_journal = journal_id is None
+
+    if is_new_journal:
         journal = models.Journal()
     else:
         journal = get_object_or_404(models.Journal, id=journal_id)
@@ -561,6 +537,11 @@ def add_journal(request, journal_id=None):
         journalform = JournalForm(request.POST, request.FILES, instance=journal, prefix='journal')
         titleformset = JournalTitleFormSet(request.POST, instance=journal, prefix='title')
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
+
+        if not is_new_journal:
+            audit_old_values = helpers.collect_old_values(journal, journalform, [titleformset, missionformset,])
+        else:
+            audit_old_values = None
 
         if 'pend' in request.POST:
             journal_form_hash = PendingPostData(request.POST).pend(resolve(request.get_full_path()).url_name, request.user)
@@ -588,6 +569,20 @@ def add_journal(request, journal_id=None):
 
                     titleformset.save()
                     missionformset.save()
+
+                    audit_data = {
+                        'user': request.user,
+                        'obj': saved_journal,
+                        'old_values': audit_old_values,
+                        'new_values': helpers.collect_new_values(journalform, [titleformset, missionformset,]),
+                    }
+                    if is_new_journal:
+                        audit_data['message'] = helpers.construct_create_message(journalform, [titleformset, missionformset,])
+                        helpers.log_create(**audit_data)
+                    else:
+                        audit_data['message'] = helpers.construct_change_message(journalform, [titleformset, missionformset,])
+                        helpers.log_change(**audit_data)
+
                     messages.info(request, MSG_FORM_SAVED)
 
                     if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
@@ -661,7 +656,7 @@ def del_pended(request, form_hash):
     return HttpResponseRedirect(reverse('index'))
 
 
-@permission_required('journalmanager.add_sponsor', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_sponsor', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_sponsor(request, sponsor_id=None):
     """
     Handles new and existing sponsors
@@ -701,7 +696,7 @@ def add_sponsor(request, sponsor_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.change_collection', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_collection', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_collection(request, collection_id):
     """
     Handles existing collections
@@ -710,7 +705,7 @@ def add_collection(request, collection_id):
     collection = get_object_or_404(models.Collection, id=collection_id)
 
     if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(AUTHZ_REDIRECT_URL)
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if request.method == "POST":
         collectionform = CollectionForm(request.POST, request.FILES, instance=collection, prefix='collection')
@@ -737,7 +732,7 @@ def add_collection(request, collection_id):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_issue(request, journal_id, issue_id=None):
     """
     Handles edition of existing issues
@@ -786,6 +781,8 @@ def edit_issue(request, journal_id, issue_id=None):
         form = get_issue_form_by_type(issue.type, request, issue.journal, issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
+        audit_old_values = helpers.collect_old_values(issue, form, [titleformset, ])
+
         if form.is_valid():
             saved_issue = form.save(commit=False)
             saved_issue.journal = issue.journal
@@ -794,6 +791,15 @@ def edit_issue(request, journal_id, issue_id=None):
 
             if titleformset.is_valid():
                 titleformset.save()
+
+            audit_data = {
+                'user': request.user,
+                'obj': issue,
+                'message': helpers.construct_change_message(form, [titleformset, ]),
+                'old_values': audit_old_values,
+                'new_values': helpers.collect_new_values(form, [titleformset, ]),
+            }
+            helpers.log_change(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
 
@@ -830,7 +836,7 @@ def edit_issue(request, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.add_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_issue(request, issue_type, journal_id, issue_id=None):
     """
     Handles new and existing issues
@@ -871,6 +877,9 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                      'editorial_standard': journal.editorial_standard,
                      'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
+
+        #get last issue of the journal
+        last_issue = journal.get_last_issue()
     else:
         data_dict = None
         issue = models.Issue.objects.get(pk=issue_id)
@@ -892,6 +901,32 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             # if title is given.
             if titleformset.is_valid():
                 titleformset.save()
+
+            #if is a new issue copy editorial board from the last issue
+            if issue_id is None and last_issue:
+                try:
+                    members = last_issue.editorialboard.editorialmember_set.all()
+                except ObjectDoesNotExist:
+                    messages.info(request,
+                        _("Issue created successfully, however we can not create the editorial board."))
+                else:
+                    ed_board = EditorialBoard()
+                    ed_board.issue = saved_issue
+                    ed_board.save()
+
+                    for member in members:
+                        member.board = ed_board
+                        member.pk = None
+                        member.save()
+
+            audit_data = {
+                'user': request.user,
+                'obj': issue,
+                'message': helpers.construct_create_message(add_form, [titleformset, ]),
+                'old_values': '',
+                'new_values': helpers.collect_new_values(add_form, [titleformset, ]),
+            }
+            helpers.log_create(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
 
@@ -926,7 +961,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.reorder_issue', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.reorder_issue', login_url=settings.AUTHZ_REDIRECT_URL)
 def issue_reorder(request, journal_id):
     """
     Handles issues reordering based on ajax interactions.
@@ -975,7 +1010,7 @@ def issue_reorder(request, journal_id):
     return HttpResponse(status=200)
 
 
-@permission_required('journalmanager.change_section', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.change_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_section(request, journal_id, section_id=None):
     """
     Handles new and existing sections
@@ -1020,7 +1055,7 @@ def add_section(request, journal_id, section_id=None):
                               }, context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.delete_section', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.delete_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def del_section(request, journal_id, section_id):
     section = get_object_or_404(models.Section, pk=section_id)
 
@@ -1243,7 +1278,7 @@ def ajx_lookup_for_section_translation(request):
     return HttpResponse(response_data, mimetype="application/json")
 
 
-@permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_pressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
@@ -1286,7 +1321,7 @@ def add_pressrelease(request, journal_id, prelease_id=None):
     )
 
 
-@permission_required('journalmanager.add_pressrelease', login_url=AUTHZ_REDIRECT_URL)
+@permission_required('journalmanager.add_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_aheadpressrelease(request, journal_id, prelease_id=None):
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
