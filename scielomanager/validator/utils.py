@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 try:
     PACKTOOLS_VERSION = pkg_resources.get_distribution('packtools').version
-except DistributionNotFound:
+except pkg_resources.DistributionNotFound:
     PACKTOOLS_VERSION = None
 
 
