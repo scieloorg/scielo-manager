@@ -3,8 +3,8 @@ $(function() {
   /* hack to reload ajax content, and avoid caching trap */
   $('.modal').on('hidden', function() { $(this).removeData(); })
   $('.modal').on('shown', function () {
-    $('input').addClass('span12');
-    $(".chzn-select").chosen({
+    $(this).find('input').addClass('span12');
+    $(this).find(".chzn-select").chosen({
       no_results_text: "{% trans 'No results found for' %}:",
       width: "100%",
     });

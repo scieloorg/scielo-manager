@@ -24,6 +24,7 @@ from journalmanager.models import (
     PressReleaseTranslation,
     PressReleaseArticle,
     Article,
+    SubjectCategory,
 )
 
 from scielomanager.utils import usercontext
@@ -160,13 +161,17 @@ class CollectionResource(ModelResource):
         resource_name = 'collections'
         allowed_methods = ['get', ]
 
+class SubjectCategoryResource(ModelResource):
+    class Meta(ApiKeyAuthMeta):
+        queryset = SubjectCategory.objects.all()
+        resource_name = 'subjectcategory'
+        allowed_methods = ['get', ]
 
 class SponsorResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
         queryset = Sponsor.objects.all()
         resource_name = 'sponsors'
         allowed_methods = ['get', ]
-
 
 class UseLicenseResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
@@ -200,6 +205,7 @@ class JournalResource(ModelResource):
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
+    subject_categories = fields.ManyToManyField(SubjectCategoryResource, 'subject_categories', readonly=True)
     pub_status_history = fields.ListField(readonly=True)
     contact = fields.DictField(readonly=True)
     study_areas = fields.ListField(readonly=True)
@@ -274,6 +280,10 @@ class JournalResource(ModelResource):
     def dehydrate_languages(self, bundle):
         return [language.iso_code
             for language in bundle.obj.languages.all()]
+
+    def dehydrate_subject_categories(self, bundle):
+        return [subject_category.term
+            for subject_category in bundle.obj.subject_categories.all()]
 
     def dehydrate_pub_status_history(self, bundle):
         return [{'date': event.since,
