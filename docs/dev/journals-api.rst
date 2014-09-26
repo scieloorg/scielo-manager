@@ -187,6 +187,11 @@ Response:
           "study_areas": [
             "Biological Sciences"
           ],
+          subject_categories: [
+          "Humanities, Multidisciplinary",
+          "Social Sciences, Interdisciplinary",
+          "Sociology"
+          ],
           "subject_descriptors": "biologia\nbotanica",
           "succeeding_title": null,
           "title": "Acta bot\u00c3\u00a1nica mexicana",
