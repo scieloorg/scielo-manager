@@ -181,6 +181,7 @@ class JournalRestAPITest(WebTest):
             u'editor_name',
             u'other_previous_title',
             u'study_areas',
+            u'subject_categories',
             u'medline_code',
             u'is_trashed',
             u'init_num',
