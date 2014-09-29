@@ -188,9 +188,9 @@ Response:
             "Biological Sciences"
           ],
           subject_categories: [
-          "Humanities, Multidisciplinary",
-          "Social Sciences, Interdisciplinary",
-          "Sociology"
+            "Humanities, Multidisciplinary",
+            "Social Sciences, Interdisciplinary",
+            "Sociology"
           ],
           "subject_descriptors": "biologia\nbotanica",
           "succeeding_title": null,
@@ -631,6 +631,11 @@ Response:
       "study_areas": [
 
       ],
+      subject_categories: [
+        "Humanities, Multidisciplinary",
+        "Social Sciences, Interdisciplinary",
+        "Sociology"
+      ],
       "subject_descriptors": "public health",
       "succeeding_title": null,
       "title": "Annali dell'Istituto Superiore di Sanit\u00c3 ",
@@ -651,131 +656,136 @@ Response:
 
   **Example of version 2 with multiple collections**::
 
+    {
+      "abstract_keyword_languages": null,
+      "acronym": "RSP",
+      "collections": [
+        "Saude Publica"
+      ],
+      "contact": null,
+      "copyrighter": "Faculdade de Sa\u00c3\u00bade P\u00c3\u00bablica da Universidade de S\u00c3\u00a3o Paulo",
+      "cover": null,
+      "created": "1998-04-30T00:00:00",
+      "creator": "/api/v2/users/1/",
+      "ctrl_vocabulary": "decs",
+      "current_ahead_documents": 0,
+      "editor_address": "Avenida Dr. Arnaldo, 715, 01246-904 S\u00c3\u00a3o Paulo SP Brazil, Tel./Fax: +55 11 3068-0539",
+      "editor_address_city": "",
+      "editor_address_country": "",
+      "editor_address_state": "",
+      "editor_address_zip": "",
+      "editor_email": "",
+      "editor_name": "",
+      "editor_phone1": "",
+      "editor_phone2": null,
+      "editorial_standard": "vancouv",
+      "eletronic_issn": "",
+      "final_num": "",
+      "final_vol": "",
+      "final_year": null,
+      "frequency": "B",
+      "id": 20,
+      "index_coverage": "cab-health\nembase\npopline\nlilacs\nadsa\u00c3\u00bade\ndocpal\nabstracts on hygiene and communicable diseases\nabstracts on zooparasitology\nbiological abstracts\ncurrent contents/social & behavioral science\nentomology abstracts\nexcerpta medica\nindex medicus\nmicrobiology abstracts\nnutrition abstracts and reviews-seriesb\nreview medical veterinary entomology\nsafety science abstracts journal\nsocial science citation index\ntropical diseases bulletin\nveterinary bulletin\nvirology abstracts\nisi \npubmed",
+      "init_num": "1",
+      "init_vol": "1",
+      "init_year": "1967",
+      "is_indexed_aehci": false,
+      "is_indexed_scie": false,
+      "is_indexed_ssci": false,
+      "is_trashed": false,
+      "issues": [
+        "/api/v2/issues/184/",
+        "/api/v2/issues/186/",
+        "/api/v2/issues/187/",
+        "/api/v2/issues/188/",
+      ],
+      "languages": [
+        "en",
+        "pt",
+        "es"
+      ],
+      "logo": null,
+      "medline_code": null,
+      "medline_title": null,
+      "missions": {
+        "en": "To publish and divulge scientific production on subjects of relevance to Public Health",
+        "es": "Publicar y diseminar productos del trabajo cient\u00c3\u00adfico relevantes para la Salud P\u00c3\u00bablica",
+        "pt": "Publicar e disseminar produtos do trabalho cient\u00c3\u00adfico que sejam relevantes para a Sa\u00c3\u00bade P\u00c3\u00bablica"
+      },
+      "national_code": "068227-6",
+      "notes": "",
+      "other_previous_title": "",
+      "other_titles": {
+        "other": "Rev Saude Publica",
+        "paralleltitle": "Journal of Public Health"
+      },
+      "previous_ahead_documents": 0,
+      "previous_title": null,
+      "print_issn": "0034-8910",
+      "pub_level": "CT",
+      "pub_status": {
+        "Saude Publica": "deceased"
+      },
+      "pub_status_history": [
         {
-          "abstract_keyword_languages": null,
-          "acronym": "RSP",
-          "collections": [
-            "Saude Publica"
-          ],
-          "contact": null,
-          "copyrighter": "Faculdade de Sa\u00c3\u00bade P\u00c3\u00bablica da Universidade de S\u00c3\u00a3o Paulo",
-          "cover": null,
-          "created": "1998-04-30T00:00:00",
-          "creator": "/api/v2/users/1/",
-          "ctrl_vocabulary": "decs",
-          "current_ahead_documents": 0,
-          "editor_address": "Avenida Dr. Arnaldo, 715, 01246-904 S\u00c3\u00a3o Paulo SP Brazil, Tel./Fax: +55 11 3068-0539",
-          "editor_address_city": "",
-          "editor_address_country": "",
-          "editor_address_state": "",
-          "editor_address_zip": "",
-          "editor_email": "",
-          "editor_name": "",
-          "editor_phone1": "",
-          "editor_phone2": null,
-          "editorial_standard": "vancouv",
-          "eletronic_issn": "",
-          "final_num": "",
-          "final_vol": "",
-          "final_year": null,
-          "frequency": "B",
-          "id": 20,
-          "index_coverage": "cab-health\nembase\npopline\nlilacs\nadsa\u00c3\u00bade\ndocpal\nabstracts on hygiene and communicable diseases\nabstracts on zooparasitology\nbiological abstracts\ncurrent contents/social & behavioral science\nentomology abstracts\nexcerpta medica\nindex medicus\nmicrobiology abstracts\nnutrition abstracts and reviews-seriesb\nreview medical veterinary entomology\nsafety science abstracts journal\nsocial science citation index\ntropical diseases bulletin\nveterinary bulletin\nvirology abstracts\nisi \npubmed",
-          "init_num": "1",
-          "init_vol": "1",
-          "init_year": "1967",
-          "is_indexed_aehci": false,
-          "is_indexed_scie": false,
-          "is_indexed_ssci": false,
-          "is_trashed": false,
-          "issues": [
-            "/api/v2/issues/184/",
-            "/api/v2/issues/186/",
-            "/api/v2/issues/187/",
-            "/api/v2/issues/188/",
-          ],
-          "languages": [
-            "en",
-            "pt",
-            "es"
-          ],
-          "logo": null,
-          "medline_code": null,
-          "medline_title": null,
-          "missions": {
-            "en": "To publish and divulge scientific production on subjects of relevance to Public Health",
-            "es": "Publicar y diseminar productos del trabajo cient\u00c3\u00adfico relevantes para la Salud P\u00c3\u00bablica",
-            "pt": "Publicar e disseminar produtos do trabalho cient\u00c3\u00adfico que sejam relevantes para a Sa\u00c3\u00bade P\u00c3\u00bablica"
-          },
-          "national_code": "068227-6",
-          "notes": "",
-          "other_previous_title": "",
-          "other_titles": {
-            "other": "Rev Saude Publica",
-            "paralleltitle": "Journal of Public Health"
-          },
-          "previous_ahead_documents": 0,
-          "previous_title": null,
-          "print_issn": "0034-8910",
-          "pub_level": "CT",
-          "pub_status": {
-            "Saude Publica": "deceased"
-          },
-          "pub_status_history": [
-            {
-              "date": "2014-08-14T14:57:05.940893",
-              "status": "deceased"
-            },
-            {
-              "date": "2014-04-23T10:30:29.470427",
-              "status": "current"
-            }
-          ],
-          "pub_status_reason": {
-            "Saude Publica": "teste"
-          },
-          "publication_city": "S\u00c3\u00a3o Paulo",
-          "publisher_country": "BR",
-          "publisher_name": "Faculdade de Sa\u00c3\u00bade P\u00c3\u00bablica da Universidade de S\u00c3\u00a3o Paulo",
-          "publisher_state": "SP",
-          "resource_uri": "/api/v2/journals/20/",
-          "scielo_issn": "print",
-          "secs_code": "",
-          "sections": [
-            "/api/v2/sections/44/",
-            "/api/v2/sections/45/",
-            "/api/v2/sections/46/",
-            "/api/v2/sections/47/",
-            "/api/v2/sections/48/",
-            "/api/v2/sections/49/",
-            "/api/v2/sections/50/",
-            "/api/v2/sections/51/",
-            "/api/v2/sections/52/",
-            "/api/v2/sections/53/",
-            "/api/v2/sections/54/",
-            "/api/v2/sections/55/",
-          ],
-          "short_title": "Rev. Sa\u00c3\u00bade P\u00c3\u00bablica",
-          "sponsors": [
-
-          ],
-          "study_areas": [
-
-          ],
-          "subject_descriptors": "saude coletiva\nsaude publica\nmicrobiologia",
-          "succeeding_title": null,
-          "title": "Revista de Sa\u00c3\u00bade P\u00c3\u00bablica",
-          "title_iso": "Rev. sa\u00c3\u00bade p\u00c3\u00bablica",
-          "twitter_user": null,
-          "updated": "2014-04-03T15:08:35.586311",
-          "url_journal": null,
-          "url_online_submission": null,
-          "use_license": {
-            "disclaimer": "<p> </p>",
-            "id": 4,
-            "is_default": false,
-            "license_code": "nd",
-            "reference_url": null,
-            "resource_uri": "/api/v2/uselicenses/4/"
-          }
+          "date": "2014-08-14T14:57:05.940893",
+          "status": "deceased"
+        },
+        {
+          "date": "2014-04-23T10:30:29.470427",
+          "status": "current"
         }
+      ],
+      "pub_status_reason": {
+        "Saude Publica": "teste"
+      },
+      "publication_city": "S\u00c3\u00a3o Paulo",
+      "publisher_country": "BR",
+      "publisher_name": "Faculdade de Sa\u00c3\u00bade P\u00c3\u00bablica da Universidade de S\u00c3\u00a3o Paulo",
+      "publisher_state": "SP",
+      "resource_uri": "/api/v2/journals/20/",
+      "scielo_issn": "print",
+      "secs_code": "",
+      "sections": [
+        "/api/v2/sections/44/",
+        "/api/v2/sections/45/",
+        "/api/v2/sections/46/",
+        "/api/v2/sections/47/",
+        "/api/v2/sections/48/",
+        "/api/v2/sections/49/",
+        "/api/v2/sections/50/",
+        "/api/v2/sections/51/",
+        "/api/v2/sections/52/",
+        "/api/v2/sections/53/",
+        "/api/v2/sections/54/",
+        "/api/v2/sections/55/",
+      ],
+      "short_title": "Rev. Sa\u00c3\u00bade P\u00c3\u00bablica",
+      "sponsors": [
+
+      ],
+      "study_areas": [
+
+      ],
+      subject_categories: [
+        "Humanities, Multidisciplinary",
+        "Social Sciences, Interdisciplinary",
+        "Sociology"
+      ],
+      "subject_descriptors": "saude coletiva\nsaude publica\nmicrobiologia",
+      "succeeding_title": null,
+      "title": "Revista de Sa\u00c3\u00bade P\u00c3\u00bablica",
+      "title_iso": "Rev. sa\u00c3\u00bade p\u00c3\u00bablica",
+      "twitter_user": null,
+      "updated": "2014-04-03T15:08:35.586311",
+      "url_journal": null,
+      "url_online_submission": null,
+      "use_license": {
+        "disclaimer": "<p> </p>",
+        "id": 4,
+        "is_default": false,
+        "license_code": "nd",
+        "reference_url": null,
+        "resource_uri": "/api/v2/uselicenses/4/"
+      }
+    }

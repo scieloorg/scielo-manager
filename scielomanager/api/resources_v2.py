@@ -81,6 +81,13 @@ class CollectionResource(ModelResource):
         allowed_methods = ['get', ]
 
 
+class SubjectCategoryResource(ModelResource):
+    class Meta(ApiKeyAuthMeta):
+        queryset = models.SubjectCategory.objects.all()
+        resource_name = 'subjectcategory'
+        allowed_methods = ['get', ]
+
+
 class SectionResource(ModelResource):
     journal = fields.ForeignKey('api.resources_v2.JournalResource',
         'journal')
@@ -235,6 +242,8 @@ class JournalResource(ModelResource):
     collections = fields.ManyToManyField(CollectionResource, 'collections')
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
+    subject_categories = fields.ManyToManyField(SubjectCategoryResource,
+                                            'subject_categories', readonly=True)
 
     #Recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
@@ -303,6 +312,10 @@ class JournalResource(ModelResource):
 
     def dehydrate_collections(self, bundle):
         return [col.name for col in bundle.obj.collections.all()]
+
+    def dehydrate_subject_categories(self, bundle):
+        return [subject_category.term
+            for subject_category in bundle.obj.subject_categories.all()]
 
 
 class DataChangeEventResource(ModelResource):
