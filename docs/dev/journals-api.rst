@@ -660,7 +660,8 @@ Response:
       "abstract_keyword_languages": null,
       "acronym": "RSP",
       "collections": [
-        "Saude Publica"
+        "Saude Publica",
+        "Brasil"
       ],
       "contact": null,
       "copyrighter": "Faculdade de Sa\u00c3\u00bade P\u00c3\u00bablica da Universidade de S\u00c3\u00a3o Paulo",
