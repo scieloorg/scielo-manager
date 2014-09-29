@@ -10,11 +10,6 @@
 {% block content %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
-<!--
-  <div class="span1">
-    <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
-  </div>
--->
   <div class="span6">
     {% include 'journalmanager/includes/form_add_user_to_collection.html' %}
   </div>
