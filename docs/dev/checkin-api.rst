@@ -1,18 +1,18 @@
-Notices API
+Checkins API
 ===============
 
-List all notices
+List all checkins
 --------------------
 
 Request:
 
   **API version 1**
 
-  *GET /api/v1/notices*
+  *GET /api/v1/checkins*
 
   **API version 2**
 
-  *GET /api/v2/notices*
+  *GET /api/v2/checkins*
 
 Parameters:
 
@@ -60,18 +60,18 @@ Response:
     }
 
 
-Get a single notice
+Get a single checkin
 ------------------------------
 
 Request:
 
   **API version 1**
 
-  *GET /api/v1/notices/:id/*
+  *GET /api/v1/checkins/:id/*
 
   **API version 2**
 
-  *GET /api/v2/notices/:id/*
+  *GET /api/v2/checkins/:id/*
 
 
 Parameters:
