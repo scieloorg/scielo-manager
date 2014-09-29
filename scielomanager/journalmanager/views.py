@@ -32,9 +32,13 @@ from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.conf import settings
 from django.db.models import Q
+from django.contrib.sites.models import Site
+from django.template.loader import render_to_string
+
 
 from . import models
 from .forms import *
+from scielomanager import tasks
 from scielomanager.utils.pendingform import PendingPostData
 from scielomanager.utils import usercontext
 from scielomanager.tools import (
@@ -918,6 +922,18 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                         member.board = ed_board
                         member.pk = None
                         member.save()
+
+                    #send e-mail to editor of the related journal
+                    if issue.journal.editor:
+                        editor = issue.journal.editor
+                        domain = Site.objects.get_current().domain
+                        context = {'domain':domain,
+                                   'issue': issue,
+                                   'editor': editor,}
+
+                        content = render_to_string('email/review_editorial_board.txt', context)
+
+                        tasks.send_mail.delay('Review Editorial Board Issue %s' % issue, content, [editor.email,])
 
             audit_data = {
                 'user': request.user,
