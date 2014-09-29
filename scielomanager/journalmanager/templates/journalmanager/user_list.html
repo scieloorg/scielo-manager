@@ -10,10 +10,10 @@
 {% block content %}
 {% if perms.auth.add_user %}
 <div class="row-fluid">
-  <div class="span9">
-    <a href="{% url user.add %}" class="btn btn-primary">{% trans 'New' %}</a>
+  <div class="span6">
+    {% include 'journalmanager/includes/form_add_user_to_collection.html' %}
   </div>
-  <div class="span3">
+  <div class="span6">
     <div class="pull-right">
       {% simple_pagination users %}
     </div>
@@ -66,6 +66,11 @@
             {% endif %}
           </li>
           {% endif %}
+          <li>
+            <a href="{% url user.exclude_user_from_collection user.pk %}" class="btn btn-mini btn-warning">
+              {% trans 'Exclude from this collection' %}
+            </a>
+          </li>
         </ul>
       </td>
     </tr>
@@ -73,4 +78,25 @@
   <tbody>
 </table>
 {% pagination users %}
+{% endblock %}
+
+{% block extrafooter %}
+  <script>
+
+    $('#close_btn').click(function(){
+
+      $('#modal').modal('hide');
+
+     });
+
+    $(".chzn-select").chosen({no_results_text: "No users found for:"})
+
+    $('#modal').on('shown', function () {
+
+      $("select[name='user']").attr('class', 'chzn-select span12');
+      $(".chzn-select").chosen({no_results_text: "No users found for:"});
+
+    });
+
+  </script>
 {% endblock %}

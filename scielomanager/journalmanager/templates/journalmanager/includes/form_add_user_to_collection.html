@@ -1,0 +1,13 @@
+{% load i18n %}
+<h4>{% trans 'Choose a user to be part of this collection' %}:</h4>
+<form method="POST" action="{% url user.add_user_to_collection %}" enctype="application/x-www-form-urlencoded">
+  {% csrf_token %}
+    <span class="add-on"><i class="icon-user"></i></span>
+    <select name="user_id" class="chzn-select flat">
+      <option value="">{% trans 'Select an existing user' %}</option>
+      {% for user in elegible_users %}  
+        <option value="{{ user.pk }}">{{ user.get_full_name }}</option>
+      {% endfor %}
+    </select>
+    <input class="btn" type="submit" value="Add">
+</form>

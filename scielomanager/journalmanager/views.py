@@ -385,11 +385,55 @@ def user_index(request):
 
     users = get_paginated(col_users, request.GET.get('page', 1))
 
+    elegible_users = models.User.objects.filter(
+        ~Q(usercollections__collection__in=[collection])).distinct('username').order_by('username')
+
     t = loader.get_template('journalmanager/user_list.html')
     c = RequestContext(request, {
                        'users': users,
+                       'elegible_users': elegible_users
                        })
     return HttpResponse(t.render(c))
+
+
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+def add_user_to_collection(request, user_id=None):
+    """
+    Add a existing user to the active collection
+    """
+
+    collection = models.Collection.userobjects.active()
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id', None)
+        if user_id:
+            user = get_object_or_404(User, id=user_id)
+            collection.add_user(user)
+            return HttpResponseRedirect(reverse('user.index'))
+        else:
+            return HttpResponseRedirect(reverse('user.add'))
+
+
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+def exclude_user_from_collection(request, user_id=None):
+    """
+    Add a existing user to the active collection
+    """
+
+    collection = models.Collection.userobjects.active()
+
+    if not collection.is_managed_by_user(request.user):
+        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
+
+    if user_id:
+        user = get_object_or_404(User, id=user_id)
+        
+        collection.remove_user(user)
+
+    return HttpResponseRedirect(reverse('user.index'))
 
 
 @permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
@@ -461,7 +505,7 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
-                              'user': user,
+                              'user': user
                               },
                               context_instance=RequestContext(request))
 
