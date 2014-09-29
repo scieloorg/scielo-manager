@@ -8,11 +8,11 @@ Request:
 
   **API version 1**
 
-  *GET /api/v1/collections*
+  *GET /api/v1/notices*
 
   **API version 2**
 
-  *GET /api/v2/collections*
+  *GET /api/v2/notices*
 
 Parameters:
 
@@ -48,23 +48,14 @@ Response:
       },
       "objects": [
         {
-          "acronym": "scl",
-          "address": "Rua Machado Bitencourt",
-          "address_complement": "",
-          "address_number": "430",
-          "city": "São Paulo",
-          "country": "Brasil",
-          "email": "",
-          "fax": "",
-          "id": "1",
-          "logo": null,
-          "name": "Brasil",
-          "name_slug": "brasil",
-          "phone": "",
-          "resource_uri": "/api/v1/collections/1/",
-          "state": "São Paulo",
-          "url": "http://www.scielo.br",
-          "zip_code": null
+        checkin: "/api/v1/checkins/1/",
+        checkpoint: "validation",
+        created_at: "2014-07-30T15:09:50.720126",
+        id: 34,
+        message: "",
+        resource_uri: "/api/v2/notices/34/",
+        stage: "",
+        status: "SERV_END"
         }
       ]
     }
@@ -75,7 +66,7 @@ Get a single notices
 
 Request::
 
-  GET /api/v1/collections/:id/
+  GET /api/v1/notices/:id/
 
 Parameters:
 
@@ -98,21 +89,12 @@ Response:
   **API version 1, version 2**::
 
     {
-      "acronym": "scl",
-      "address": "Rua Machado Bitencourt",
-      "address_complement": "",
-      "address_number": "430",
-      "city": "São Paulo",
-      "country": "Brasil",
-      "email": "",
-      "fax": "",
-      "id": "1",
-      "logo": null,
-      "name": "Brasil",
-      "name_slug": "brasil",
-      "phone": "",
-      "resource_uri": "/api/v1/collections/1/",
-      "state": "São Paulo",
-      "url": "http://www.scielo.br",
-      "zip_code": null
+      checkin: "/api/v2/checkins/2/",
+      checkpoint: "validation",
+      created_at: "2014-07-30T15:09:50.720126",
+      id: 34,
+      message: "",
+      resource_uri: "/api/v2/notices/34/",
+      stage: "",
+      status: "SERV_END"
     }
