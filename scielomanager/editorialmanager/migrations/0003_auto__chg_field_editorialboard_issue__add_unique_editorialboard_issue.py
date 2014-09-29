@@ -82,7 +82,8 @@ class Migration(SchemaMigration):
         'editorialmanager.roletype': {
             'Meta': {'object_name': 'RoleType'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'weight': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '10'})
         },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
