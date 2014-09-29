@@ -49,6 +49,8 @@ urlpatterns = patterns('',
     # Users Tools
     url(r'^user/$', views.user_index, name="user.index"),
     url(r'^user/new/$', views.add_user, name="user.add"),
+    url(r'^user/add_to_collection/$', views.add_user_to_collection, name="user.add_user_to_collection"),
+    url(r'^user/exclude_from_collection/(?P<user_id>\d+)$', views.exclude_user_from_collection, name="user.exclude_user_from_collection"),
     url(r'^user/(?P<user_id>\d+)/edit/$', views.add_user, name="user.edit"),
     url(r'^user/(?P<user_id>\d+)/toggle_availability/$', views.toggle_user_availability, name='user.toggle_availability'),
     url(r'^user/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$',
