@@ -51,21 +51,21 @@ def analyze_xml(file):
 
     else:
         status, errors = xml.validate_all()
+        err_xml = lxml.etree.tostring(xml.annotate_errors(),
+                pretty_print=True, encoding='utf-8', xml_declaration=True)
+
+        result = {
+            'annotations': err_xml,
+            'validation_errors': None,
+            'meta': xml.meta,
+        }
 
         if not status:
-            err_xml = lxml.etree.tostring(xml.annotate_errors(),
-                    pretty_print=True, encoding='utf-8', xml_declaration=True)
+            err_filter = make_error_filter(lambda x: x.message)
+            unique_err_list = filter(err_filter, errors)
+            err_list = [(error, count(error, errors, lambda x: x.message)) for error in unique_err_list]
 
-            err_list = ((error, count(error, errors, lambda x: x.message)) for error in errors)
-
-            err_filter = make_error_filter(lambda x: x[0].message)
-            unique_err_list = filter(err_filter, err_list)
-
-            result = {
-                'annotations': err_xml,
-                'validation_errors': unique_err_list,
-                'meta': xml.meta,
-            }
+            result['validation_errors'] = err_list
 
     return result, err
 

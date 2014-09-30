@@ -40,3 +40,38 @@ class XMLValidatorAnnotationsDouble(XMLValidatorDouble):
             error_list.append(DummyError())
 
         return False, error_list
+
+
+#------------------
+# utils.analyze_xml
+#------------------
+def make_stub_analyze_xml(type):
+    """Factory for utils.analyze_xml stub functions.
+
+    `type` can be: 'valid' or 'invalid'.
+    """
+    sample_xml = "<article>foo</article>"
+    sample_meta = {}
+
+    if type == 'valid':
+        result = {
+            'annotations': sample_xml,
+            'validation_errors': None,
+            'meta': sample_meta,
+        }
+        err = None
+    elif type == 'invalid':
+        result = {
+            'annotations': sample_xml,
+            'validation_errors': [],
+            'meta': sample_meta,
+        }
+        err = None
+    else:
+        raise ValueError('Unknown type value')
+
+    def stub__analyze_xml(f):
+        return result, err
+
+    return stub__analyze_xml
+
