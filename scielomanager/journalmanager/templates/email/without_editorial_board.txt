@@ -1,0 +1,4 @@
+Your Journal: <b>{{ issue.journal }}</b> has a new issue {{ issue }}.
+<br/>
+<br/>
+We can`t copied the latest editorial board for this new issue, please access the SciELO System by link: http://{{site.domain}} and create the editorial board for your journal.

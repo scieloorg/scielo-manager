@@ -5,6 +5,7 @@ except:
     from md5 import new as md5
 import re
 
+from django.contrib.sites.models import Site
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
@@ -19,6 +20,13 @@ class NullPaginator(object):
     """
     def __getattr__(self, name):
         return None
+
+
+def get_site():
+    """
+    Return the current django site
+    """
+    return Site.objects.get_current()
 
 
 def has_changed(instance, field):

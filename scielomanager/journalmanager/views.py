@@ -908,11 +908,22 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
 
             #if is a new issue copy editorial board from the last issue
             if issue_id is None and last_issue:
+
+                editor = issue.journal.editor
+
                 try:
                     members = last_issue.editorialboard.editorialmember_set.all()
                 except ObjectDoesNotExist:
                     messages.info(request,
                         _("Issue created successfully, however we can not create the editorial board."))
+
+                    #send e-mail to editor of the related journal
+                    if editor:
+                        tasks.send_mail_by_template.delay(
+                            'Review Editorial Board Issue %s' % issue,
+                            [editor.email,], 'email/without_editorial_board.txt',
+                            {'issue': issue, 'editor': editor})
+
                 else:
                     ed_board = EditorialBoard()
                     ed_board.issue = saved_issue
@@ -924,16 +935,11 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                         member.save()
 
                     #send e-mail to editor of the related journal
-                    if issue.journal.editor:
-                        editor = issue.journal.editor
-                        domain = Site.objects.get_current().domain
-                        context = {'domain':domain,
-                                   'issue': issue,
-                                   'editor': editor,}
-
-                        content = render_to_string('email/review_editorial_board.txt', context)
-
-                        tasks.send_mail.delay('Review Editorial Board Issue %s' % issue, content, [editor.email,])
+                    if editor:
+                        tasks.send_mail_by_template.delay(
+                            'Review Editorial Board Issue %s' % issue,
+                            [editor.email,], 'email/review_editorial_board.txt',
+                            {'issue': issue, 'editor': editor})
 
             audit_data = {
                 'user': request.user,
