@@ -1,0 +1,1 @@
+Your journal has a new issue {{issue}}, you must review the editorial board of this issue clicking on the link: http://{{domain}}{% url editorial.board issue.journal.id %}
