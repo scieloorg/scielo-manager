@@ -161,7 +161,13 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         """
         # with
         self._addWaffleFlag()
-        self._mocker_replace_stylechecker()
+
+        stub_analyze_xml = doubles.make_stub_analyze_xml('valid')
+        mock_utils = self.mocker.replace('validator.utils')
+        mock_utils.analyze_xml
+        self.mocker.result(stub_analyze_xml)
+        self.mocker.replay()
+
         # when
         page = self.app.get(
             reverse('validator.packtools.stylechecker',),
@@ -170,19 +176,10 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         form['type'] = 'url'
         form['url'] = 'http://example.com/foo/bar/valid.xml'
         response = form.submit()
+
         # then
         self.assertTemplateUsed(response, 'validator/packtools.html')
-        self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['form'].is_valid())
-
-        expected_results = {
-            'results': None,
-            'xml_exception': None,
-            'packtools_version': PACKTOOLS_VERSION
-        }
-        self.assertEqual(response.context['results'], expected_results['results'])
-        self.assertEqual(response.context['xml_exception'], expected_results['xml_exception'])
-        self.assertEqual(response.context['packtools_version'], expected_results['packtools_version'])
 
     def test_submit_text_file_then_form_not_valid(self):
         """
@@ -200,7 +197,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
             }
         )
         # then
-        self.assertEqual(200, response.status_code)
         form = response.context['form']
         self.assertFalse(response.context['form'].is_valid())
         expected_errors = {
@@ -225,7 +221,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
             }
         )
         # then
-        self.assertEqual(200, response.status_code)
         form = response.context['form']
         self.assertFalse(response.context['form'].is_valid())
         expected_errors = {
@@ -241,9 +236,17 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         """
         # with
         self._addWaffleFlag()
-        self._mocker_replace_stylechecker(with_annotations=True)
+
+        stub_analyze_xml = doubles.make_stub_analyze_xml('valid')
+        mock_utils = self.mocker.replace('validator.utils')
+        mock_utils.analyze_xml
+        self.mocker.result(stub_analyze_xml)
+
+        self.mocker.replay()
+
         test_file_path = _get_test_xml_abspath('with_style_errors.xml')
         test_file = get_temporary_xml_file(test_file_path)
+
         # when
         response = self.client.post(
             reverse('validator.packtools.stylechecker',),
@@ -252,26 +255,16 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
                 'file': test_file
             }
         )
+
         # then
         form = response.context['form']
         xml_exception = response.context['xml_exception']
         results = response.context['results']
 
-        self.assertEqual(200, response.status_code)
-        self.assertTrue(response.context['form'].is_valid())
+        self.assertTrue(form.is_valid())
         self.assertTemplateUsed('validator/packtools.html')
 
-        self.assertIsNotNone(results) # have some results
-        self.assertEqual(results.keys(), ['validation_errors', 'meta', 'annotations'])
-        expected_meta = {
-            'article_title': 'HIV/AIDS knowledge among men who have sex with men: applying the item response theory',
-            'issue_year': '2014',
-            'journal_title': u'Revista de Sa\xfade P\xfablica',
-            'journal_pissn': '0034-8910',
-            'journal_eissn': '1518-8787',
-            'issue_number': '2',
-            'issue_volume': '48'
-        }
-        self.assertEqual(results['meta'], expected_meta)
-        self.assertEqual(len(results['validation_errors']), 1)
-        self.assertEqual(results['annotations'], "some annotations in xml string")
+        # the template cares about this keys
+        self.assertEqual(results.keys(),
+                ['validation_errors', 'meta', 'annotations'])
+
