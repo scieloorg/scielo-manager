@@ -34,6 +34,8 @@ class EditorialMember(models.Model):
     city = models.CharField(_('City'), max_length=256, null=True, blank=True)
     state = models.CharField(_('State'), max_length=256, null=True, blank=True)
     country = models.CharField(_('Country'), max_length=256, null=True, blank=True)
+    research_id = models.CharField(_('ResearchID'), max_length=256, null=True, blank=True)
+    orcid = models.CharField(_('ORCID'), max_length=256, null=True, blank=True)
 
     def __unicode__(self):
         return self.get_full_name()
