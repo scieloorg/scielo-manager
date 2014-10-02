@@ -54,6 +54,14 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 user_request_context = usercontext.get_finder()
 
+def _user_has_access(user):
+
+    collection = models.Collection.userobjects.active()
+
+    if not collection.is_managed_by_user(user):
+        return False
+
+    return True
 
 def get_first_letter(objects_all):
     """
@@ -397,15 +405,13 @@ def user_index(request):
 
 
 @permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
-def add_user_to_collection(request, user_id=None):
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
+def add_user_to_collection(request):
     """
     Add a existing user to the active collection
     """
 
     collection = models.Collection.userobjects.active()
-
-    if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if request.method == 'POST':
         user_id = request.POST.get('user_id', None)
@@ -418,15 +424,13 @@ def add_user_to_collection(request, user_id=None):
 
 
 @permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def exclude_user_from_collection(request, user_id=None):
     """
-    Add a existing user to the active collection
+    Remove a user from the active collection
     """
 
     collection = models.Collection.userobjects.active()
-
-    if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if user_id:
         user = get_object_or_404(User, id=user_id)
@@ -437,14 +441,12 @@ def exclude_user_from_collection(request, user_id=None):
 
 
 @permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
     collection = models.Collection.userobjects.active()
-
-    if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if user_id is None:
         user = User()

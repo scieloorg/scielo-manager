@@ -82,21 +82,6 @@
 
 {% block extrafooter %}
   <script>
-
-    $('#close_btn').click(function(){
-
-      $('#modal').modal('hide');
-
-     });
-
     $(".chzn-select").chosen({no_results_text: "No users found for:"})
-
-    $('#modal').on('shown', function () {
-
-      $("select[name='user']").attr('class', 'chzn-select span12');
-      $(".chzn-select").chosen({no_results_text: "No users found for:"});
-
-    });
-
   </script>
 {% endblock %}
