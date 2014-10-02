@@ -1,6 +1,6 @@
 {% load show_field i18n %}
 
-<form action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
+<form id="member-form" action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
     {% csrf_token %}
     {% for field in form %}
         {% show_field field %}
