@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<form action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
+<form id="member-form" action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
     {% csrf_token %}
     <div class="alert alert-error">
         <h4>{% trans "This operation cannot be undone" %}</h4>

@@ -203,7 +203,6 @@ def collect_new_values(form, formsets=None, as_json_string=False):
         "formsets_data": [],
     }
 
-    new_values = []
     for field_name in get_auditable_fields(form):
         field_value = form.cleaned_data[field_name]
         result["form_data"][field_name] = field_serializer(field_serializer(field_value))

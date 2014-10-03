@@ -364,6 +364,21 @@ class UserIndexPageTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/user_list.html')
 
+    def test_remove_user_from_collection(self):
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        other_user = auth.UserF(is_active=True)
+        self.collection.add_user(other_user)
+
+        response = self.app.get(reverse('user.index'), user=self.user)
+
+        self.assertTrue(other_user.username in response.body)
+
+        response = self.app.get(reverse('user.exclude_user_from_collection', args=[other_user.pk]), user=self.user)
+
+        self.assertFalse(other_user.username in response.body)
+
     def test_logged_user_access_users_not_being_manager_of_the_collection(self):
         user = auth.UserF(is_active=True)
         response = self.app.get(reverse('user.index'), user=user).follow()

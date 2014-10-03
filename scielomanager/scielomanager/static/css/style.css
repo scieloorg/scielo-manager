@@ -538,3 +538,7 @@ table._listings h4 {
 .accordion-board-members li div:hover {
   background-color: #f5f5f5;
 }
+
+.flat {
+  color: red;
+}

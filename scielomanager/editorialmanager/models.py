@@ -27,13 +27,15 @@ class EditorialMember(models.Model):
 
     first_name = models.CharField(_('First Name'), max_length=256)
     last_name = models.CharField(_('Last Name'), max_length=256)
-    email = models.EmailField(_('E-mail'))
 
+    email = models.EmailField(_('E-mail'), null=True, blank=True)
     institution = models.CharField(_('institution'), max_length=256, null=True, blank=True)
     link_cv = models.URLField(_('Link CV'), null=True, blank=True)
     city = models.CharField(_('City'), max_length=256, null=True, blank=True)
     state = models.CharField(_('State'), max_length=256, null=True, blank=True)
     country = models.CharField(_('Country'), max_length=256, null=True, blank=True)
+    research_id = models.CharField(_('ResearchID'), max_length=256, null=True, blank=True)
+    orcid = models.CharField(_('ORCID'), max_length=256, null=True, blank=True)
 
     def __unicode__(self):
         return self.get_full_name()

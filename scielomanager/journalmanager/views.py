@@ -54,6 +54,14 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 user_request_context = usercontext.get_finder()
 
+def _user_has_access(user):
+
+    collection = models.Collection.userobjects.active()
+
+    if not collection.is_managed_by_user(user):
+        return False
+
+    return True
 
 def get_first_letter(objects_all):
     """
@@ -385,22 +393,60 @@ def user_index(request):
 
     users = get_paginated(col_users, request.GET.get('page', 1))
 
+    elegible_users = models.User.objects.filter(
+        ~Q(usercollections__collection__in=[collection])).distinct('username').order_by('username')
+
     t = loader.get_template('journalmanager/user_list.html')
     c = RequestContext(request, {
                        'users': users,
+                       'elegible_users': elegible_users
                        })
     return HttpResponse(t.render(c))
 
 
 @permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
+def add_user_to_collection(request):
+    """
+    Add a existing user to the active collection
+    """
+
+    collection = models.Collection.userobjects.active()
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id', None)
+        if user_id:
+            user = get_object_or_404(User, id=user_id)
+            collection.add_user(user)
+            return HttpResponseRedirect(reverse('user.index'))
+        else:
+            return HttpResponseRedirect(reverse('user.add'))
+
+
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
+def exclude_user_from_collection(request, user_id=None):
+    """
+    Remove a user from the active collection
+    """
+
+    collection = models.Collection.userobjects.active()
+
+    if user_id:
+        user = get_object_or_404(User, id=user_id)
+
+        collection.remove_user(user)
+
+    return HttpResponseRedirect(reverse('user.index'))
+
+
+@permission_required('auth.change_user', login_url=settings.AUTHZ_REDIRECT_URL)
+@user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def add_user(request, user_id=None):
     """
     Handles new and existing users
     """
     collection = models.Collection.userobjects.active()
-
-    if not collection.is_managed_by_user(request.user):
-        return HttpResponseRedirect(settings.AUTHZ_REDIRECT_URL)
 
     if user_id is None:
         user = User()
@@ -461,7 +507,7 @@ def add_user(request, user_id=None):
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
-                              'user': user,
+                              'user': user
                               },
                               context_instance=RequestContext(request))
 
@@ -783,7 +829,7 @@ def edit_issue(request, journal_id, issue_id=None):
 
         audit_old_values = helpers.collect_old_values(issue, form, [titleformset, ])
 
-        if form.is_valid():
+        if form.is_valid() and titleformset.is_valid():
             saved_issue = form.save(commit=False)
             saved_issue.journal = issue.journal
             saved_issue.save()
@@ -891,7 +937,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
         add_form = get_issue_form_by_type(issue_type, request, journal, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
-        if add_form.is_valid():
+        if add_form.is_valid() and titleformset.is_valid():
             saved_issue = add_form.save(commit=False)
             saved_issue.journal = journal
             saved_issue.type = issue_type

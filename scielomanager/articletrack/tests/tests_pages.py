@@ -281,20 +281,21 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
-        XMLValidator(mocker.ANY)
-        self.mocker.result(packtools_double.XMLValidatorDouble(mocker.ANY))
+        stub_analyze_xml = packtools_double.make_stub_analyze_xml('valid')
+        mock_utils = self.mocker.replace('validator.utils')
+        mock_utils.analyze_xml
+        self.mocker.result(stub_analyze_xml)
 
         self.mocker.replay()
+
         # when
         response = self.app.get(
             reverse('notice_detail', args=[notice.checkin.pk]),
             user=self.user)
+
         # then
         xml_data = response.context['xml_data']
-        self.assertEqual(response.status_code, 200)
         self.assertTrue(xml_data['can_be_analyzed'][0])
-        self.assertIsNone(response.context['results'])
         self.assertIsNone(response.context['xml_exception'])
         self.assertEqual(xml_data['uri'], expected_response['uri'])
         self.assertEqual(xml_data['file_name'], expected_response['filename'])
@@ -376,9 +377,6 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         results = response.context['results']
         self.assertIsNotNone(results)
         self.assertIsNotNone(results['annotations'])
-        validation_errors = results['validation_errors']
-        self.assertIsNotNone(validation_errors)
-        self.assertEqual(1, len(validation_errors))
 
     def test_xml_not_found(self):
         self._addWaffleFlag()
