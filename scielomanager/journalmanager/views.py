@@ -434,7 +434,7 @@ def exclude_user_from_collection(request, user_id=None):
 
     if user_id:
         user = get_object_or_404(User, id=user_id)
-        
+
         collection.remove_user(user)
 
     return HttpResponseRedirect(reverse('user.index'))
@@ -829,7 +829,7 @@ def edit_issue(request, journal_id, issue_id=None):
 
         audit_old_values = helpers.collect_old_values(issue, form, [titleformset, ])
 
-        if form.is_valid():
+        if form.is_valid() and titleformset.is_valid():
             saved_issue = form.save(commit=False)
             saved_issue.journal = issue.journal
             saved_issue.save()
@@ -937,7 +937,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
         add_form = get_issue_form_by_type(issue_type, request, journal, instance=issue)
         titleformset = IssueTitleFormSet(request.POST, instance=issue, prefix='title')
 
-        if add_form.is_valid():
+        if add_form.is_valid() and titleformset.is_valid():
             saved_issue = add_form.save(commit=False)
             saved_issue.journal = journal
             saved_issue.type = issue_type
