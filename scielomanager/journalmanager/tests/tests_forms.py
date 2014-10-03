@@ -2081,6 +2081,7 @@ class SponsorFormTests(WebTest):
 
 
 class IssueBaseFormClassTests(unittest.TestCase):
+
     def test_basic_structure(self):
         issue_form = forms.IssueBaseForm()
 
@@ -3918,6 +3919,98 @@ class IssueFormTests(WebTest):
 
             self.assertRaises(ValueError,
                 lambda: form.set('section', str(trashed_section.pk)))
+
+    def test_ADD_issues_with_valid_form_and_invalid_formset_raise_validation_error(self):
+        """
+        TEST BUG #1018.
+        Is the form submitted, are valid, but, title formset is invalid, the submittion
+        must not raise any exception, only notify the wrong input message to user
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t,
+                args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'nd')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+            # inline title formset
+            form.set('title-0-language', '')
+            form.set('title-0-id', '')
+            form.set('title-0-title', 'La mexicanidad y el neoindianismo hoy')
+            response = form.submit()
+            self.assertTrue(response.context['add_form'].is_valid())
+            self.assertFalse(response.context['titleformset'].is_valid())
+            self.assertIn('There are some errors or missing data.', response.body)
+
+    def test_EDIT_issues_with_valid_form_and_invalid_formset_raise_validation_error(self):
+        """
+        TEST BUG #1018.
+        Is the form submitted, are valid, but, title formset is invalid, the submittion
+        must not raise any exception, only notify the wrong input message to user
+        """
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+        for t in ['regular', 'supplement', 'special']:
+            issue = modelfactories.IssueFactory(journal=self.journal, suppl_text='', type=t)
+            form = self.app.get(reverse('issue.edit', args=[self.journal.pk, issue.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'nd')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+            # inline title formset
+            form.set('title-0-language', '')
+            form.set('title-0-id', '')
+            form.set('title-0-title', 'La mexicanidad y el neoindianismo hoy')
+            response = form.submit()
+            self.assertTrue(response.context['add_form'].is_valid())
+            self.assertFalse(response.context['titleformset'].is_valid())
+            self.assertIn('There are some errors or missing data.', response.body)
 
 
 class SearchFormTests(WebTest):
