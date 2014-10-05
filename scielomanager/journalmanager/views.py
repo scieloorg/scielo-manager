@@ -32,9 +32,13 @@ from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.conf import settings
 from django.db.models import Q
+from django.contrib.sites.models import Site
+from django.template.loader import render_to_string
+
 
 from . import models
 from .forms import *
+from scielomanager import tasks
 from scielomanager.utils.pendingform import PendingPostData
 from scielomanager.utils import usercontext
 from scielomanager.tools import (
@@ -950,11 +954,22 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
 
             #if is a new issue copy editorial board from the last issue
             if issue_id is None and last_issue:
+
+                editor = issue.journal.editor
+
                 try:
                     members = last_issue.editorialboard.editorialmember_set.all()
                 except ObjectDoesNotExist:
                     messages.info(request,
                         _("Issue created successfully, however we can not create the editorial board."))
+
+                    #send e-mail to editor of the related journal
+                    if editor:
+                        tasks.send_mail_by_template.delay(
+                            'Review Editorial Board Issue %s' % issue,
+                            [editor.email,], 'email/without_editorial_board.txt',
+                            {'issue': issue, 'editor': editor})
+
                 else:
                     ed_board = EditorialBoard()
                     ed_board.issue = saved_issue
@@ -964,6 +979,13 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                         member.board = ed_board
                         member.pk = None
                         member.save()
+
+                    #send e-mail to editor of the related journal
+                    if editor:
+                        tasks.send_mail_by_template.delay(
+                            'Review Editorial Board Issue %s' % issue,
+                            [editor.email,], 'email/review_editorial_board.txt',
+                            {'issue': issue, 'editor': editor})
 
             audit_data = {
                 'user': request.user,

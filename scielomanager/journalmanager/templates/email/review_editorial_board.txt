@@ -1,0 +1,5 @@
+Your Journal: <b>{{ issue.journal }}</b> has a new issue {{ issue }}.
+<br/>
+<br/>
+The editorial board of the last issue was copied, please review the current Editorial Board assigned by clicking this link: http://{{site.domain}}{% url editorial.board issue.journal.id %}
+
