@@ -16,6 +16,7 @@ from waffle import Flag
 
 from journalmanager.tests import modelfactories
 from editorialmanager.tests.modelfactories import EditorialBoardFactory, EditorialMemberFactory
+from editorialmanager.models import EditorialBoard
 
 from journalmanager import forms
 from journalmanager import models
@@ -3548,6 +3549,55 @@ class IssueFormTests(WebTest):
             self.assertIn('Saved.', response.body)
             self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
 
+    def test_POST_with_valid_formdata_without_editorialmanager_waffle(self):
+        """
+        TEST: #1021 - Corregir vazamento da funcionalidade de "Editorial Manager"
+        Submitting valid data in form, without 'editorialmanager' waffle, MUST NOT broke!
+        and process correctly the form. And NOT editorial members were created.
+        """
+        # create an issue with editorial board
+        issue = self._makeOneWithEditorialBoard()
+
+        perm_issue_change = _makePermission(perm='add_issue',
+            model='issue', app_label='journalmanager')
+        perm_issue_list = _makePermission(perm='list_issue',
+            model='issue', app_label='journalmanager')
+        self.user.user_permissions.add(perm_issue_change)
+        self.user.user_permissions.add(perm_issue_list)
+
+        for t in ['regular', 'supplement', 'special']:
+            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
+
+            if t == 'supplement':
+                form['number'] = ''
+                form['volume'] = '29'
+                form['suppl_type'] = 'volume'
+                form['suppl_text'] = 'suppl.X'
+            elif t == 'special':
+                form['number'] = '3'
+                form['spe_type'] = 'number'
+                form['spe_text'] = 'X'
+            else: # regular
+                form['number'] = '3'
+                form['volume'] = '29'
+
+            form['total_documents'] = '16'
+            form.set('ctrl_vocabulary', 'decs')
+
+            form['publication_start_month'] = '9'
+            form['publication_end_month'] = '11'
+            form['publication_year'] = '2012'
+            form['is_marked_up'] = False
+            form['editorial_standard'] = 'other'
+
+            response = form.submit().follow()
+
+            new_issue = models.Issue.objects.get(publication_year='2012', number='3', volume='29')
+            self.assertIn('Saved.', response.body)
+            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
+            # check: editorial board must not be created, because flag is not created
+            self.assertRaises(EditorialBoard.DoesNotExist, lambda: new_issue.editorialboard)
+
     def test_POST_with_valid_formdata_and_check_copy_of_editorial_board(self):
         """
         When a valid form is submited, the user is redirected to
@@ -3560,8 +3610,8 @@ class IssueFormTests(WebTest):
 
         This test check if editorial board of this issue was created
         """
-
-        #create an issue with editorial board
+        Flag.objects.create(name='editorialmanager', everyone=True)
+        # create an issue with editorial board
         issue = self._makeOneWithEditorialBoard()
 
         perm_issue_change = _makePermission(perm='add_issue',
