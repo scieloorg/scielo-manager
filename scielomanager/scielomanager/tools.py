@@ -5,6 +5,8 @@ except:
     from md5 import new as md5
 import re
 
+from django.contrib.sites.models import Site
+from django.contrib.auth.models import Group
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
@@ -19,6 +21,23 @@ class NullPaginator(object):
     """
     def __getattr__(self, name):
         return None
+
+
+def get_site():
+    """
+    Return the current django site
+    """
+    return Site.objects.get_current()
+
+
+def get_users_by_group(group):
+    """
+    Get all users from a group or raise a ObjectDoesNotExist
+    """
+
+    editor_group = Group.objects.get(name=group)
+
+    return editor_group.user_set.all()
 
 
 def has_changed(instance, field):
