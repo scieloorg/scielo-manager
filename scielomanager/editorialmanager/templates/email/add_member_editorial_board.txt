@@ -1,0 +1,4 @@
+The user <b>{{ user.get_full_name }}</b> added a new member on the editorial board of journal {{ issue.journal }}, issue {{ issue.publication_year }} {{ issue }}, see the new user accessing the system: http://{{site.domain}}
+<br/>
+<br/>
+{{message}}

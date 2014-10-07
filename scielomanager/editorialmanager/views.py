@@ -9,12 +9,14 @@ from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 
 from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
 
-from scielomanager.tools import get_paginated
+from scielomanager.tools import get_paginated, get_users_by_group
+from scielomanager import tasks
 from audit_log import helpers
 
 from . import forms
@@ -170,6 +172,21 @@ def edit_board_member(request, journal_id, member_id):
             # this view only handle existing editorial board member, so always log changes.
             helpers.log_change(**audit_data)
 
+            if form.has_changed():
+                try:
+                    users_librarian = get_users_by_group('Librarian')
+                except ObjectDoesNotExist:
+                    messages.error(request, _("We can not send e-mail to Librarians group"))
+                else:
+                    tasks.send_mail_by_template.delay(
+                        _('Editorial board of %s changed') % saved_obj.board.issue.journal,
+                        [user.email for user in users_librarian], 'email/change_editorial_board.txt',
+                        {
+                            'message': audit_data['message'],
+                            'issue': saved_obj.board.issue,
+                            'user': request.user
+                        })
+
             messages.success(request, _('Board Member updated successfully.'))
             return HttpResponseRedirect(board_url)
         else:
@@ -237,6 +254,22 @@ def add_board_member(request, journal_id, issue_id):
             # this view only handle NEW editorial board member, so always log create.
             helpers.log_create(**audit_data)
 
+            if form.has_changed():
+                try:
+                    users_librarian = get_users_by_group('Librarian')
+                except ObjectDoesNotExist:
+                    messages.error(request, _("We can not send e-mail to Librarians group"))
+                else:
+                    tasks.send_mail_by_template.delay(
+                        _('New member added to journal %s') % new_member.board.issue.journal,
+                        [user.email for user in users_librarian], 'email/add_member_editorial_board.txt',
+                        {
+                            'message': audit_data['message'],
+                            'issue': new_member.board.issue,
+                            'user': request.user
+                        })
+
+
             messages.success(request, _('Board Member created successfully.'))
             return HttpResponseRedirect(board_url)
         else:
@@ -274,8 +307,27 @@ def delete_board_member(request, journal_id, member_id):
         # save the audit log
         audit_message = helpers.construct_delete_message(board_member)
         helpers.log_delete(request.user, board_member, audit_message)
+
+        try:
+            users_librarian = get_users_by_group('Librarian')
+        except ObjectDoesNotExist:
+            messages.error(request, _("We can not send e-mail to Librarians group"))
+        else:
+
+            issue = board_member.board.issue
+
+            tasks.send_mail_by_template.delay(
+                _('Editorial member removed from journal %s, issue %s') % (issue.journal, issue),
+                [user.email for user in users_librarian], 'email/add_member_editorial_board.txt',
+                {
+                    'message': "The user %s was deleted from issue %s" % (board_member.get_full_name(), issue),
+                    'issue': issue,
+                    'user': request.user
+                })
+
         # delete member!
         board_member.delete()
+
         messages.success(request, _('Board Member DELETED successfully.'))
         return HttpResponseRedirect(board_url)
 

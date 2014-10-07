@@ -16,7 +16,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import resolve
@@ -38,6 +37,7 @@ from .forms import *
 from scielomanager.utils.pendingform import PendingPostData
 from scielomanager.utils import usercontext
 from scielomanager.tools import (
+    get_users_by_group,
     get_paginated,
     get_referer_view,
     asbool,
@@ -70,16 +70,6 @@ def get_first_letter(objects_all):
     letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
-
-
-def get_users_by_group(group):
-    """
-    Get all users from a group or raise a ObjectDoesNotExist
-    """
-
-    editor_group = Group.objects.get(name=group)
-
-    return editor_group.user_set.all()
 
 
 @permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
