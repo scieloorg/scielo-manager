@@ -3,6 +3,24 @@
 
 {% include "includes/journal_detail_info.html" %}
 
+<style>
+  .accordion-heading-btn-toolbar-wrapper {
+    float: right;
+    padding-right:5px;
+    max-height: 36px;
+  }
+  .accordion-heading-btn-toolbar-wrapper .form_move_role .btn-toolbar {
+    margin: 0 auto;
+    padding: 0 auto;
+  }
+  .accordion-heading-btn-toolbar-wrapper .form_move_role .btn-toolbar .btn{
+    height: 23px;
+    padding-top: 8px;
+  }
+  .accordion-heading-btn-toolbar-wrapper .form_move_role .btn.btn-move-role.disabled {
+    margin: 0;
+  }
+</style>
 <div id="accordion-issues" class="accordion">
 
     {% for issue in issues %}
@@ -39,7 +57,7 @@
           <div class="span10">
             <h5>{% trans "Editorial Board" %}:</h5>
             {% if issue.editorialboard %}
-              <div class="accordion" id="accordion_members_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}">
+              <div class="accordion" id="accordion_members_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.counter }}">
                 {% with issue.editorialboard.editorialmember_set.all as board_members  %}
 
                     {% regroup board_members by role as role_list %}
@@ -48,14 +66,50 @@
 
                       <div class="accordion-group">
                         <div class="accordion-heading">
-                          <a class="accordion-toggle" data-toggle="collapse"
-                             data-parent="#accordion_members_{{ issue.pk }}_{{ board.pk }}_{{ forloop.parentloop.counter }}"
-                             href="#collpase_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}">
-                            {{ role.grouper }}
-                          </a>
+
+                          <span>
+                            <span class="accordion-heading-btn-toolbar-wrapper">
+                              <form id="form_move_role_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.counter }}"
+                                    class="form_move_role" action="{% url editorial.board.move issue.journal.pk %}" method="POST">
+                                {# hidden data to post #}
+                                {% csrf_token %}
+                                <input type="hidden" name="journal_pk" class="journal_pk" value="{{ issue.journal.pk }}">
+                                <input type="hidden" name="issue_pk" class="issue_pk" value="{{ issue.pk }}">
+                                <input type="hidden" name="board_pk" class="board_pk" value="{{ issue.editorialboard.pk }}">
+                                <input type="hidden" name="role_name" class="role_name" value="{{ role.grouper }}">
+                                <input type="hidden" name="role_position" class="role_position" value="{{ role.list.0.order }}">
+                                <input type="hidden" name="direction" class="direction" value="">
+                                {# 'direction' field, indicates if goes up or down, must be filled by js code, when the '.btn-move-role' is clicked #}
+
+                                <div class="btn-toolbar">
+                                  <div class="btn-group">
+                                    <a href="#"
+                                       class="btn btn-move-role {% if forloop.last %} disabled {% endif %}"
+                                       data-direction="down"
+                                       title="{% trans 'move DOWN this block' %}: {{ role.grouper }}">
+                                      <i class="icon-arrow-down"></i>
+                                    </a>
+                                    <a href="#"
+                                       class="btn btn-move-role {% if forloop.first %} disabled{% endif %}"
+                                       data-direction="up"
+                                       title="{% trans 'move UP this block' %}: {{ role.grouper }}">
+                                      <i class="icon-arrow-up"></i>
+                                    </a>
+                                  </div>
+                                </div>
+                              </form>
+                            </span>
+
+                            <a class="accordion-toggle" data-toggle="collapse"
+                               data-parent="#accordion_members_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.parentloop.counter }}"
+                               href="#collpase_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.counter }}">
+                              {{ forloop.counter }} - {{ role.grouper }}
+                            </a>
+                          </span>
                         </div>
 
-                        <div id="collpase_{{ issue.pk }}_{{ board.pk }}_{{ forloop.counter }}" class="accordion-body collapse {% if forloop.first %} in{% endif %}">
+                        <div id="collpase_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.counter }}"
+                             class="accordion-body collapse {% if forloop.first %} in{% endif %}">
                           <div class="accordion-inner">
 
                             <ul class="unstyled accordion-board-members">
@@ -66,7 +120,7 @@
                                     <div class="span12">
                                       <div class="span10">
 
-                                        <h4><strong>{{ member.get_full_name }}</strong></h4>
+                                        <h4><strong>{{ member.get_full_name }}</strong> (order: {{ member.order }} )</h4>
                                         <p>
                                           {% if member.email %}
                                             <a href="mailto:{{ member.email }}">

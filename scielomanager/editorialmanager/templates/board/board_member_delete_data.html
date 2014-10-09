@@ -17,18 +17,20 @@
                 <td>{{ board_member.last_name }}</td>
             </tr>
             <tr>
-                <td class="span2"><strong>{% trans "Email" %}:</strong></td>
-                <td>
-                    <a href="mailto:{{ board_member.email }}">
-                       <i class="icon-envelope"></i> {{ board_member.email }}
-                    </a>
-                </td>
-            </tr>
-            <tr>
                 <td class="span2"><strong>{% trans "Role" %}:</strong></td>
                 <td>{{ board_member.role.name }}</td>
             </tr>
             {# optional fields #}
+            {% if board_member.email %}
+                <tr>
+                    <td class="span2"><strong>{% trans "Email" %}:</strong></td>
+                    <td>
+                        <a href="mailto:{{ board_member.email }}">
+                           <i class="icon-envelope"></i> {{ board_member.email }}
+                        </a>
+                    </td>
+                </tr>
+            {% endif %}
             {% if board_member.institution %}
                 <tr>
                     <td class="span2"><strong>{% trans "Institution" %}:</strong></td>
