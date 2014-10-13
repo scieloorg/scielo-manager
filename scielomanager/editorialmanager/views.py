@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-
+from django.db.models import Max
 from waffle.decorators import waffle_flag
 
 from journalmanager.models import Journal, JournalMission, Issue
@@ -26,28 +26,78 @@ from . import models
 logger = logging.getLogger(__name__)
 
 
-def _get_order_from_board_and_role(board, new_role_pk, old_role_pk=None):
+def _get_order_for_new_members(board, role_pk, new_member_pk):
     """
-    return a integer, that is the members order associated with the members of the ``board`` and with this ``role``
+    return the value for new members order field.
+    - if does not exist other members in board, return 1 (first board member)
+    - if does not exist other members with the same role of the new member, return the max order of board + 1 (member with a new role on board)
+    - if exist members with the same role, return the order field value of those members.
     """
-    board_members = board.editorialmember_set.all()
-    if board_members.count() > 0:
-        members_with_role = board_members.filter(role__pk=new_role_pk)
-        if old_role_pk:
-            members_with_role.exclude(role__pk=old_role_pk)
+    # collect all board members except the new one
+    board_members = board.editorialmember_set.all().exclude(pk=new_member_pk)
+    if board_members.count() > 0:  # already exist others members on this board
+        # collect all others board members with the same role as the new members
+        members_with_role = board_members.filter(role__pk=role_pk)
         if members_with_role.count() > 0:
-            # already exists members, in this board, with this role. so get the first member's order value
+            # already exist others members with the same role as the new member
+            # the result will be the same order field that those members found
             return members_with_role[0].order
         else:
-            # no members in this board, with this role,
-            # so count the roles asosciated with this board + 1
-
-            # obs 1: as recomended in docs, always use order_by before distinct.
-            # obs 2: if use simple .order_by('role').distinct('role') sometimes raise a database error because query is malformed (?)
-            return board_members.order_by('role__pk').distinct('role__pk').count() + 1
+            # no members with this role, so return the maximum order found + 1
+            max_order_of_board = board_members.aggregate(Max('order'))
+            return max_order_of_board['order__max'] + 1
     else:
         # no members with this board, this should be the first one
         return 1
+
+
+def _update_member_order(member, old_role):
+    """
+    update the @param ``member``'s order attribute, depending on this situations:
+    - (A) more than one user with role == ``old_role``, ``member`` is moved to a new role that DOES NOT have any members yet.
+    - (B) more than one user with role == ``old_role``, ``member`` is moved to a new role that ALREADY have other members.
+    - (C) ``member`` is the last one with role == ``old_role``, ``member`` is moved to a new role that DOES NOT have any members yet.
+    - (D) ``member`` is the last one with role == ``old_role``, ``member`` is moved to a new role that ALREADY have other members.
+    """
+    board = member.board
+    board_members = board.editorialmember_set.all()
+    members_of_old_role = board_members.filter(role__pk=old_role.pk).exclude(pk=member.pk)
+    members_of_new_role = board_members.filter(role__pk=member.role.pk).exclude(pk=member.pk)
+    new_order_value = None
+
+    if members_of_old_role.count() == 0:
+        # ``member`` WAS the only member with role == old_role
+        previous_order = member.order
+        if members_of_new_role.count() == 0:
+            # ``member`` IS the FIRST member with role == new_role -----> (C)
+            max_order_of_board = board_members.aggregate(Max('order'))
+            new_order_value = max_order_of_board['order__max'] + 1
+        else:
+            # there are more members with role == new_role -----> (D)
+            new_order_value = members_of_new_role[0].order
+
+        # update member.order to: new_order_value
+        member.order = new_order_value
+        member.save()
+
+        # decrease order by one, to avoid the empty "bucket" of old_role let by the change
+        for m in board.editorialmember_set.filter(order__gte=previous_order):
+            m.order = m.order - 1
+            m.save()
+    else:
+        # there are more members with role == old_role
+        if members_of_new_role.count() == 0:
+            # ``member`` IS the FIRST member with role == new_role -----> (A)
+            max_order_of_board = board_members.aggregate(Max('order'))
+            new_order_value = max_order_of_board['order__max'] + 1
+        else:
+            # there are more members with role == new_role  -----> (B)
+            new_order_value = members_of_new_role[0].order
+
+        # update member.order to: new_order_value
+        member.order = new_order_value
+        member.save()
+
 
 def _update_members_order_when_delete(member_deleted):
     """
@@ -64,6 +114,7 @@ def _update_members_order_when_delete(member_deleted):
         for member in board.editorialmember_set.filter(order__gt=member_deleted.order):
             member.order -= 1
             member.save()
+
 
 def _do_move_board_block(board_pk, position, direction):
     """
@@ -224,7 +275,6 @@ def edit_board_member(request, journal_id, member_id):
         return HttpResponseRedirect(reverse('editorial.index'))
 
     board_member = get_object_or_404(models.EditorialMember, id=member_id)
-    member_pre_save_role_pk = board_member.role.pk
     post_url = reverse('editorial.board.edit', args=[journal_id, member_id, ])
     board_url = reverse('editorial.board', args=[journal_id, ])
     context = {
@@ -234,19 +284,15 @@ def edit_board_member(request, journal_id, member_id):
     }
 
     if request.method == "POST":
+        old_role = board_member.role
         form = forms.EditorialMemberForm(request.POST, instance=board_member)
         # this view only handle existing editorial board member, so always exist previous values.
         audit_old_values = helpers.collect_old_values(board_member, form)
 
         if form.is_valid():
             board_member = form.save()
-            member_post_save_role_pk = board_member.role.pk
-            if member_pre_save_role_pk != member_post_save_role_pk:
-                board_member.order = _get_order_from_board_and_role(board_member.board, member_post_save_role_pk, member_pre_save_role_pk)
-            else: # no role_changed
-                board_member.order = _get_order_from_board_and_role(board_member.board, member_post_save_role_pk)
-
-            board_member.save()
+            if 'role' in form.changed_data: # change role -> change order
+                _update_member_order(board_member, old_role)
 
             audit_data = {
                 'user': request.user,
@@ -313,7 +359,7 @@ def add_board_member(request, journal_id, issue_id):
             new_member = form.save(commit=False)
             new_member.board = board
             new_member.save()
-            new_member.order = _get_order_from_board_and_role(new_member.board, new_member.role.pk)
+            new_member.order = _get_order_for_new_members(new_member.board, new_member.role.pk, new_member.pk)
             new_member.save()
 
             audit_data = {
