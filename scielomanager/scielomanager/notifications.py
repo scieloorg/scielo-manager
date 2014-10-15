@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 
-from scielomanager import tasks
+from . import tasks
 
 EMAIL_DATA_BY_ACTION =  {
     'checkin_reject': {
