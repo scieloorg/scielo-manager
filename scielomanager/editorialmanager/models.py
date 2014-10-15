@@ -46,7 +46,7 @@ class EditorialMember(models.Model):
         return ' '.join([self.first_name, self.last_name])
 
     class Meta:
-        ordering = ('board', 'order')
+        ordering = ('board', 'order', 'pk')
 
 
 class RoleType(models.Model):

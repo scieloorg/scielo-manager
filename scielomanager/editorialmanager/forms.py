@@ -72,8 +72,8 @@ class BoardMoveForm(forms.Form):
             raise forms.ValidationError(u"Board (pk=%s) and Issue (pk=%s) submitted are not related" % (board_pk, issue_pk))
 
         # direction of move is possible?
-        if members.count > 0:
-            if role_position == '1' and direction == "up": # nope nope nope, error
+        if members.count() > 0:
+            if role_position == 1 and direction == "up": # nope nope nope, error
                 raise forms.ValidationError(u"These members are at top, cannot move it upper")
             if role_position == members.count() and direction == "down": # nope nope nope, error
                 raise forms.ValidationError(u"These members are at bottom, cannot move it down")
