@@ -55,6 +55,14 @@ EMAIL_DATA_BY_ACTION =  {
         'subject_sufix': 'Comment edited',
         'template_path': 'email/comment_modify.txt',
     },
+    'issue_add_no_replicated_board': {
+        'subject_sufix': "Issue Board can't be replicated",
+        'template_path': 'email/issue_add_no_replicated_board.txt',
+    },
+    'issue_add_replicated_board': {
+        'subject_sufix': "Issue has a new replicated board",
+        'template_path': 'email/issue_add_replicated_board.txt',
+    },
 }
 
 
@@ -162,6 +170,14 @@ class TicketMessage(Message):
         self.recipients = list(send_to)
 
 
+class IssueBoardMessage(Message):
+
+    def set_recipients(self, issue):
+        editor = getattr(issue.journal, 'editor', None)
+        if editor:
+            self.recipients = [editor,]
+
+
 def checkin_send_email_by_action(checkin, action):
 
     message = CheckinMessage(action=action, subject=checkin.package_name)
@@ -186,5 +202,12 @@ def comment_send_mail_by_action(comment, action):
     message = TicketMessage(action=action)
     message.set_recipients(ticket)
     extra_context = {'ticket': ticket, 'comment': comment, }
+    message.render_body(extra_context)
+    return message.send_mail()
+
+def issue_board_replica(issue, action):
+    message = IssueBoardMessage(action=action,)
+    message.set_recipients(issue)
+    extra_context = {'issue': issue,}
     message.render_body(extra_context)
     return message.send_mail()

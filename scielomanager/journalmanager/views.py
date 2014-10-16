@@ -46,6 +46,7 @@ from audit_log import helpers
 from editorialmanager.models import EditorialBoard, EditorialMember
 
 from waffle.decorators import waffle_flag
+from scielomanager import notifications
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -955,6 +956,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                 except ObjectDoesNotExist:
                     messages.info(request,
                         _("Issue created successfully, however we can not create the editorial board."))
+                    notifications.issue_board_replica(issue, 'issue_add_no_replicated_board')
                 else:
                     ed_board = EditorialBoard()
                     ed_board.issue = saved_issue
@@ -964,6 +966,8 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                         member.board = ed_board
                         member.pk = None
                         member.save()
+
+                    notifications.issue_board_replica(issue, 'issue_add_replicated_board')
 
             audit_data = {
                 'user': request.user,
