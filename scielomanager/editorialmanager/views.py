@@ -11,6 +11,8 @@ from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 
+from waffle.decorators import waffle_flag
+
 from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
 
@@ -42,6 +44,7 @@ def _get_journal_or_404_by_user_access(user, journal_id):
 
 
 @login_required
+@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def index(request):
     journals = _get_journals_by_user_access(request.user)
@@ -54,6 +57,7 @@ def index(request):
 
 
 @login_required
+@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def journal_detail(request, journal_id):
     journal = _get_journal_or_404_by_user_access(request.user, journal_id)
@@ -64,6 +68,7 @@ def journal_detail(request, journal_id):
 
 
 @login_required
+@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_journal(request, journal_id):
     """
@@ -115,6 +120,7 @@ def edit_journal(request, journal_id):
 
 
 @login_required
+@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def board(request, journal_id):
     journal = _get_journal_or_404_by_user_access(request.user, journal_id)
@@ -127,6 +133,7 @@ def board(request, journal_id):
 
 
 @login_required
+@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.change_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_board_member(request, journal_id, member_id):
     """
@@ -184,6 +191,7 @@ def edit_board_member(request, journal_id, member_id):
 
 
 @login_required
+@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.add_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_board_member(request, journal_id, issue_id):
     """
@@ -250,6 +258,8 @@ def add_board_member(request, journal_id, issue_id):
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
+@login_required
+@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.delete_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def delete_board_member(request, journal_id, member_id):
     # check if user have correct access to view the journal:

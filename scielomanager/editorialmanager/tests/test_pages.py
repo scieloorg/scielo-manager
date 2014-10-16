@@ -3,6 +3,7 @@
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from waffle import Flag
 from journalmanager.tests import modelfactories
 from . import modelfactories as editorial_modelfactories
 from .test_forms import _makePermission
@@ -17,6 +18,8 @@ def _set_permission_to_group(perm, group):
 class PagesAsEditorTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         self.group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -41,6 +44,47 @@ class PagesAsEditorTests(WebTest):
 
     def tearDown(self):
         pass
+
+    def test_status_code_editorial_index_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        target_url = reverse('editorial.index')
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_journal_detail_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        target_url = reverse("editorial.journal.detail", args=[self.journal.pk])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_editorial_board_add_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        target_url = reverse("editorial.board.add", args=[self.journal.id, self.issue.id])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_editorial_board_edit_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        member.board = EditorialBoard.objects.create(issue=self.issue)
+        member.save()
+        target_url = reverse("editorial.board.edit", args=[self.journal.id, member.id])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_editorial_board_delete_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        member.board = EditorialBoard.objects.create(issue=self.issue)
+        member.save()
+        target_url = reverse("editorial.board.delete", args=[self.journal.id, member.id])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
 
     def test_logged_user_access_to_index(self):
         """

@@ -45,7 +45,7 @@ from scielomanager.tools import (
 from audit_log import helpers
 from editorialmanager.models import EditorialBoard, EditorialMember
 
-from waffle.decorators import waffle_flag
+import waffle
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -948,31 +948,32 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             if titleformset.is_valid():
                 titleformset.save()
 
-            #if is a new issue copy editorial board from the last issue
-            if issue_id is None and last_issue:
-                try:
-                    members = last_issue.editorialboard.editorialmember_set.all()
-                except ObjectDoesNotExist:
-                    messages.info(request,
-                        _("Issue created successfully, however we can not create the editorial board."))
-                else:
-                    ed_board = EditorialBoard()
-                    ed_board.issue = saved_issue
-                    ed_board.save()
+            if waffle.flag_is_active(request, 'editorialmanager'):
+                # if is a new issue copy editorial board from the last issue
+                if issue_id is None and last_issue:
+                    try:
+                        members = last_issue.editorialboard.editorialmember_set.all()
+                    except ObjectDoesNotExist:
+                        messages.info(request,
+                            _("Issue created successfully, however we can not create the editorial board."))
+                    else:
+                        ed_board = EditorialBoard()
+                        ed_board.issue = saved_issue
+                        ed_board.save()
 
-                    for member in members:
-                        member.board = ed_board
-                        member.pk = None
-                        member.save()
+                        for member in members:
+                            member.board = ed_board
+                            member.pk = None
+                            member.save()
 
-            audit_data = {
-                'user': request.user,
-                'obj': issue,
-                'message': helpers.construct_create_message(add_form, [titleformset, ]),
-                'old_values': '',
-                'new_values': helpers.collect_new_values(add_form, [titleformset, ]),
-            }
-            helpers.log_create(**audit_data)
+                audit_data = {
+                    'user': request.user,
+                    'obj': issue,
+                    'message': helpers.construct_create_message(add_form, [titleformset, ]),
+                    'old_values': '',
+                    'new_values': helpers.collect_new_values(add_form, [titleformset, ]),
+                }
+                helpers.log_create(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
 

@@ -2,6 +2,7 @@
 
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
+from waffle import Flag
 
 from journalmanager.tests import modelfactories
 
@@ -35,6 +36,8 @@ def _add_required_permission_to_group(group):
 class RestrictedJournalFormTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
         #create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
 
@@ -97,6 +100,8 @@ class RestrictedJournalFormTests(WebTest):
 class AddUserAsEditorFormTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
 
         perm1 = _makePermission(perm='list_editor_journal', model='journal', app_label='journalmanager')
         perm2 = _makePermission(perm='change_editor', model='journal', app_label='journalmanager')
@@ -144,6 +149,8 @@ class AddUserAsEditorFormTests(WebTest):
 class EditorialMemberFormAsEditorTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
