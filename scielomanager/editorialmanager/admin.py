@@ -5,6 +5,17 @@ from . import models
 
 class EditorialMemberInline(admin.StackedInline):
     model = models.EditorialMember
+    fieldsets = (
+        (None,
+            {'fields':('role', 'first_name', 'last_name', 'order')}
+        ),
+        ('Optional fields',
+            {
+                'fields':  ('email', 'institution', 'link_cv', 'city', 'state', 'country', 'research_id', 'orcid'),
+                'classes':('collapse',),
+            }
+        ),
+    )
 
 
 class EditorialBoardAdmin(admin.ModelAdmin):
