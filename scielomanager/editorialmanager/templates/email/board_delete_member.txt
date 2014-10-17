@@ -1,0 +1,8 @@
+The user <b>{{ user.get_full_name }}</b> DELETED member: {{ member.get_full_name }}, of board related to journal: {{ issue.journal.title }}, issue: {{ issue.publication_year }} {{ issue }}.<br/>
+To see the current editorial board, follow this link:
+<br/>
+<br/>
+http://{{ domain }}{% url editorial.board issue.journal.id %}
+<br/>
+<br/>
+{{ message }}

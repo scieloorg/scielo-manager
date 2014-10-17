@@ -15,6 +15,7 @@ from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
 
 from scielomanager.tools import get_paginated
+from scielomanager import notifications
 from audit_log import helpers
 
 from . import forms
@@ -169,6 +170,8 @@ def edit_board_member(request, journal_id, member_id):
             }
             # this view only handle existing editorial board member, so always log changes.
             helpers.log_change(**audit_data)
+            # notify librarians
+            notifications.board_members_send_email_by_action(saved_obj, request.user, audit_data['message'], 'board_edit_member')
 
             messages.success(request, _('Board Member updated successfully.'))
             return HttpResponseRedirect(board_url)
@@ -236,6 +239,8 @@ def add_board_member(request, journal_id, issue_id):
             }
             # this view only handle NEW editorial board member, so always log create.
             helpers.log_create(**audit_data)
+            # notify librarians
+            notifications.board_members_send_email_by_action(new_member, request.user, audit_data['message'], 'board_add_member')
 
             messages.success(request, _('Board Member created successfully.'))
             return HttpResponseRedirect(board_url)
@@ -274,6 +279,8 @@ def delete_board_member(request, journal_id, member_id):
         # save the audit log
         audit_message = helpers.construct_delete_message(board_member)
         helpers.log_delete(request.user, board_member, audit_message)
+        # notify librarians
+        notifications.board_members_send_email_by_action(board_member, request.user, audit_message, 'board_delete_member')
         # delete member!
         board_member.delete()
         messages.success(request, _('Board Member DELETED successfully.'))
