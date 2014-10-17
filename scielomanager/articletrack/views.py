@@ -24,7 +24,7 @@ from . import models
 from .forms import CommentMessageForm, TicketForm, CheckinListFilterForm, CheckinRejectForm
 from .balaio import BalaioAPI, BalaioRPC
 from validator import utils as stylechecker_utils
-from .utils import checkin_send_email_by_action, ticket_send_mail_by_action, comment_send_mail_by_action
+from scielomanager.notifications import checkin_send_email_by_action, ticket_send_mail_by_action, comment_send_mail_by_action
 
 AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 MSG_FORM_SAVED = _('Saved.')

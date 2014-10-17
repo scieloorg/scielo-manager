@@ -17,3 +17,93 @@
   {% include "board/board_list_data.html" %}
 
 {% endblock %}
+{% block extrafooter %}
+  {{ block.super }}
+  <script>
+    $(function() {
+
+      function display_error(message){
+        var template = '<div class="sys-msgs">' +
+                          '<div class="sys-msgs-wrapper">' +
+                            '<div class="alert alert-error">'+
+                              '<i class="icon-exclamation-sign"></i> ' + message +
+                              '<button class="close" data-dismiss="alert" type="button">&times;</button>' +
+                            '</div>' +
+                          '</div>'+
+                        '</div>';
+        $('div.mainContent').prepend(template).show();
+      }
+
+      $('form.form_move_role').submit(function(event) {
+        {# basic validation before submittion #}
+        var form = $(this);
+        var f_issue_pk = form.find('.issue_pk').val();
+        var f_board_pk = form.find('.board_pk').val();
+        var f_role_name = form.find('.role_name').val();
+        var f_role_position = form.find('.role_position').val();
+        var f_direction = form.find('.direction').val();
+
+        var validation_results = {
+          has_error: false,
+          error_msg: "" {# this message is only for debug, not displayed to user #}
+        }
+
+        if ($.trim(f_issue_pk) === "") {
+          validation_results = {
+            has_error: true,
+            error_msg: "issue_pk field is empty"
+          }
+        }
+
+        if ($.trim(f_board_pk) === "") {
+          validation_results = {
+            has_error: true,
+            error_msg: "board_pk field is empty"
+          }
+        }
+
+        if ($.trim(f_role_name) === "") {
+          validation_results = {
+            has_error: true,
+            error_msg: "role_name field is empty"
+          }
+        }
+
+        if ($.trim(f_role_position) === "") {
+          validation_results = {
+            has_error: true,
+            error_msg: "role_position field is empty"
+          }
+        }
+
+        if ($.trim(f_direction) === "") {
+          validation_results = {
+            has_error: true,
+            error_msg: "direction field is empty"
+          }
+        }
+        if (validation_results.has_error) {
+          display_error("{% trans 'Can not move this block, please try again later' %}");
+          console.log("validation errors when submit form", form, validation_results);
+          return false;
+        }
+      });
+
+      $('.btn-move-role').click(function(event) {
+        event.preventDefault();
+        var $this = $(this);
+
+        if ($this.hasClass('disabled')) {
+          return; {# disabled buttons must be ignored #}
+        }
+
+        {# update 'direction' field, depending on which btn clicked: up or down #}
+        var direction = $this.data('direction');
+        var form = $this.parents('.form_move_role');
+        form.find('.direction').val(direction);
+        form.submit();
+
+      });
+    });
+  </script>
+{% endblock %}

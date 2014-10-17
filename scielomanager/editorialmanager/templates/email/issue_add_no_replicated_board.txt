@@ -1,0 +1,5 @@
+Could not replicate the latest editorial board because the journal ({{ issue.journal.title }}) does'n have one.
+Please access SciELO Manager and register the right Editorial Board, following this link:
+<br>
+<br>
+http://{{domain}}{% url editorial.board issue.journal.id %}
