@@ -8,14 +8,16 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding field 'EditorialMember.order'
+        db.add_column('editorialmanager_editorialmember', 'order',
+                      self.gf('django.db.models.fields.IntegerField')(default=1),
+                      keep_default=False)
 
-        # Changing field 'EditorialMember.email'
-        db.alter_column('editorialmanager_editorialmember', 'email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True))
 
     def backwards(self, orm):
+        # Deleting field 'EditorialMember.order'
+        db.delete_column('editorialmanager_editorialmember', 'order')
 
-        # Changing field 'EditorialMember.email'
-        db.alter_column('editorialmanager_editorialmember', 'email', self.gf('django.db.models.fields.EmailField')(default=None, max_length=75))
 
     models = {
         'auth.group': {
@@ -60,7 +62,7 @@ class Migration(SchemaMigration):
             'issue': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Issue']", 'unique': 'True'})
         },
         'editorialmanager.editorialmember': {
-            'Meta': {'ordering': "('board', 'role__weight')", 'object_name': 'EditorialMember'},
+            'Meta': {'ordering': "('board', 'role__name', 'order')", 'object_name': 'EditorialMember'},
             'board': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['editorialmanager.EditorialBoard']"}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
@@ -71,6 +73,7 @@ class Migration(SchemaMigration):
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'link_cv': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'orcid': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'research_id': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['editorialmanager.RoleType']"}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'})

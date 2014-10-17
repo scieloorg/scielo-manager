@@ -1,5 +1,5 @@
 #coding: utf-8
-
+import logging
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -10,6 +10,8 @@ from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.db.models import Max
+from waffle.decorators import waffle_flag
 
 from waffle.decorators import waffle_flag
 
@@ -21,6 +23,135 @@ from audit_log import helpers
 
 from . import forms
 from . import models
+
+
+logger = logging.getLogger(__name__)
+
+
+def _get_order_for_new_members(board, role_pk, new_member_pk):
+    """
+    return the value for new members order field.
+    - if does not exist other members in board, return 1 (first board member)
+    - if does not exist other members with the same role of the new member, return the max order of board + 1 (member with a new role on board)
+    - if exist members with the same role, return the order field value of those members.
+    """
+    # collect all board members except the new one
+    board_members = board.editorialmember_set.all().exclude(pk=new_member_pk)
+    if board_members.count() > 0:  # already exist others members on this board
+        # collect all others board members with the same role as the new members
+        members_with_role = board_members.filter(role__pk=role_pk)
+        if members_with_role.count() > 0:
+            # already exist others members with the same role as the new member
+            # the result will be the same order field that those members found
+            return members_with_role[0].order
+        else:
+            # no members with this role, so return the maximum order found + 1
+            max_order_of_board = board_members.aggregate(Max('order'))
+            return max_order_of_board['order__max'] + 1
+    else:
+        # no members with this board, this should be the first one
+        return 1
+
+
+def _update_member_order(member, old_role):
+    """
+    update the @param ``member``'s order attribute, depending on this situations:
+    - (A) more than one user with role == ``old_role``, ``member`` is moved to a new role that DOES NOT have any members yet.
+    - (B) more than one user with role == ``old_role``, ``member`` is moved to a new role that ALREADY have other members.
+    - (C) ``member`` is the last one with role == ``old_role``, ``member`` is moved to a new role that DOES NOT have any members yet.
+    - (D) ``member`` is the last one with role == ``old_role``, ``member`` is moved to a new role that ALREADY have other members.
+    """
+    board = member.board
+    board_members = board.editorialmember_set.all()
+    members_of_old_role = board_members.filter(role__pk=old_role.pk).exclude(pk=member.pk)
+    members_of_new_role = board_members.filter(role__pk=member.role.pk).exclude(pk=member.pk)
+    new_order_value = None
+
+    if members_of_old_role.count() == 0:
+        # ``member`` WAS the only member with role == old_role
+        previous_order = member.order
+        if members_of_new_role.count() == 0:
+            # ``member`` IS the FIRST member with role == new_role -----> (C)
+            max_order_of_board = board_members.aggregate(Max('order'))
+            new_order_value = max_order_of_board['order__max'] + 1
+        else:
+            # there are more members with role == new_role -----> (D)
+            new_order_value = members_of_new_role[0].order
+
+        # update member.order to: new_order_value
+        member.order = new_order_value
+        member.save()
+
+        # decrease order by one, to avoid the empty "bucket" of old_role let by the change
+        for m in board.editorialmember_set.filter(order__gte=previous_order):
+            m.order = m.order - 1
+            m.save()
+    else:
+        # there are more members with role == old_role
+        if members_of_new_role.count() == 0:
+            # ``member`` IS the FIRST member with role == new_role -----> (A)
+            max_order_of_board = board_members.aggregate(Max('order'))
+            new_order_value = max_order_of_board['order__max'] + 1
+        else:
+            # there are more members with role == new_role  -----> (B)
+            new_order_value = members_of_new_role[0].order
+
+        # update member.order to: new_order_value
+        member.order = new_order_value
+        member.save()
+
+
+def _update_members_order_when_delete(member_deleted):
+    """
+    Checks if ``member_deleted`` is the last one of this board member with this role,
+    and if any members with an order bigger than ``member_deleted.order`` then update it,
+    to decrease the order value by one
+    """
+    board = member_deleted.board
+    other_board_members = board.editorialmember_set.filter(role=member_deleted.role).exclude(pk=member_deleted.pk)
+    # after member delete, still more members with this role ?
+    if other_board_members.count() == 0:
+        # the ``member_deleted`` was the last one of this role, so
+        # update all members other greater than ``member_deleted.order`` to decrease 1
+        for member in board.editorialmember_set.filter(order__gt=member_deleted.order):
+            member.order -= 1
+            member.save()
+
+
+def _do_move_board_block(board_pk, position, direction):
+    """
+    moves de members the board with pk == board_pk), and with order == position, to direction ``direction`` (up, or down).
+    * when direction is up, and have more members above, make a swap, updating member's order attribute.
+    * when direction is down, and have more members below, make a swap, updating member's order attribute.
+    """
+    board = models.EditorialBoard.objects.get(pk=board_pk)
+
+    # creating a list of members to reallocate, becasue simply querysets are lazy
+    target_members = [m for m in board.editorialmember_set.filter(order=position)]
+
+    if direction.upper() == "UP":
+        position_above = int(position) - 1
+        if position_above > 0:
+            # move members above to target_members's current position
+            board.editorialmember_set.filter(order=position_above).update(order=position)
+            # move target_members's position to a higher one
+            for m in target_members:
+                m.order = position_above
+                m.save()
+
+    elif direction.upper() == "DOWN":
+        lowest_position_possible = board.editorialmember_set.all().order_by('role__pk').distinct('role__pk').count()
+        position_below = int(position) + 1
+        if position_below <= lowest_position_possible:
+            # move members above to target_members's current position
+            board.editorialmember_set.filter(order=position_below).update(order=position)
+            # move target_members's position to a lower one
+            for m in target_members:
+                m.order = position_below
+                m.save()
+    else:
+        # direction is not UP nor DOWN, so, ignore it, do nothing, skip it
+        logger.error("Trying to move a board (pk: %s) block (position: %s) in this direction: %s is not possible, so doing nothing!" %  (board_pk, position, direction))
 
 
 def _user_has_access(user):
@@ -160,23 +291,25 @@ def edit_board_member(request, journal_id, member_id):
     }
 
     if request.method == "POST":
+        old_role = board_member.role
         form = forms.EditorialMemberForm(request.POST, instance=board_member)
         # this view only handle existing editorial board member, so always exist previous values.
         audit_old_values = helpers.collect_old_values(board_member, form)
 
         if form.is_valid():
-            saved_obj = form.save()
+            board_member = form.save()
+            if 'role' in form.changed_data: # change role -> change order
+                _update_member_order(board_member, old_role)
 
             audit_data = {
                 'user': request.user,
-                'obj': saved_obj,
+                'obj': board_member,
                 'message': helpers.construct_change_message(form),
                 'old_values': audit_old_values,
                 'new_values': helpers.collect_new_values(form),
             }
             # this view only handle existing editorial board member, so always log changes.
             helpers.log_change(**audit_data)
-
             messages.success(request, _('Board Member updated successfully.'))
             return HttpResponseRedirect(board_url)
         else:
@@ -234,6 +367,8 @@ def add_board_member(request, journal_id, issue_id):
             new_member = form.save(commit=False)
             new_member.board = board
             new_member.save()
+            new_member.order = _get_order_for_new_members(new_member.board, new_member.role.pk, new_member.pk)
+            new_member.save()
 
             audit_data = {
                 'user': request.user,
@@ -284,9 +419,46 @@ def delete_board_member(request, journal_id, member_id):
         # save the audit log
         audit_message = helpers.construct_delete_message(board_member)
         helpers.log_delete(request.user, board_member, audit_message)
+        _update_members_order_when_delete(board_member)
         # delete member!
         board_member.delete()
         messages.success(request, _('Board Member DELETED successfully.'))
         return HttpResponseRedirect(board_url)
 
     return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+@waffle_flag('editorialmanager')
+@permission_required('editorialmanager.change_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
+def board_move_block(request, journal_id):
+    board_url = reverse('editorial.board', args=[journal_id, ])
+
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(board_url)
+
+    if request.method == "POST":
+        # gather data and validate with a form
+        data = {
+            'journal_pk': request.POST.get("journal_pk", None),
+            'issue_pk': request.POST.get("issue_pk", None),
+            'board_pk': request.POST.get("board_pk", None),
+            'role_name': request.POST.get("role_name", None),
+            'role_position': request.POST.get("role_position", None),
+            'direction': request.POST.get("direction", None),
+        }
+        form = forms.BoardMoveForm(data)
+
+        if form.is_valid():
+            _do_move_board_block(
+                board_pk=data['board_pk'],
+                position=data['role_position'],
+                direction=data['direction'])
+
+            messages.success(request, _('Board block moved successfully.'))
+        else:
+            messages.error(request, _('Board block can not be moved'))
+            logger.error("Board block can not be moved. form is not valid. Errors: %s" %  form.errors)
+
+    return HttpResponseRedirect(board_url)
