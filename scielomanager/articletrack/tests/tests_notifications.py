@@ -8,12 +8,13 @@ from django.test.utils import override_settings
 from django_factory_boy import auth
 
 from articletrack.tests import modelfactories
-from articletrack import utils, models
+from articletrack import models
+from scielomanager import notifications
 
 
 def generate_subject(action, subject=''):
     subject_prefix = settings.EMAIL_SUBJECT_PREFIX
-    subject_suffix = utils.EMAIL_DATA_BY_ACTION[action]['subject_sufix']
+    subject_suffix = notifications.EMAIL_DATA_BY_ACTION[action]['subject_sufix']
     return ' '.join([subject_prefix, subject, subject_suffix])
 
 
@@ -53,7 +54,7 @@ class CheckinMessageTests(TestCase):
         for action in self.ACTIONS:
             email_count += 1
             # when
-            result = utils.checkin_send_email_by_action(checkin=self.checkin, action=action)
+            result = notifications.checkin_send_email_by_action(checkin=self.checkin, action=action)
             # then
             expected_subject = generate_subject(action=action, subject=self.checkin.package_name)
 
@@ -99,7 +100,7 @@ class TicketMessageTests(TestCase):
         for action in self.ACTIONS:
             email_count += 1
             # when
-            result = utils.ticket_send_mail_by_action(ticket=self.ticket, action=action)
+            result = notifications.ticket_send_mail_by_action(ticket=self.ticket, action=action)
             # then
             expected_subject = generate_subject(action=action)
 
@@ -145,7 +146,7 @@ class CommentMessageTests(TestCase):
         for action in self.ACTIONS:
             email_count += 1
             # when
-            result = utils.comment_send_mail_by_action(comment=self.comment, action=action)
+            result = notifications.comment_send_mail_by_action(comment=self.comment, action=action)
             # then
             expected_subject = generate_subject(action=action)
 
