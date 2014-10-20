@@ -6,78 +6,6 @@ from django.template.loader import render_to_string
 
 from . import tasks
 
-EMAIL_DATA_BY_ACTION =  {
-    'checkin_reject': {
-        'subject_sufix': 'Package rejected',
-        'template_path': 'email/checkin_rejected.txt',
-    },
-    'checkin_review': {
-        'subject_sufix': 'Package reviewed',
-        'template_path': 'email/checkin_reviewed.txt',
-    },
-    'checkin_accept': {
-        'subject_sufix': 'Package accepted',
-        'template_path': 'email/checkin_accepted.txt',
-    },
-    'checkin_send_to_pending': {
-        'subject_sufix': 'Package send to pending',
-        'template_path': 'email/checkin_sent_to_pending.txt',
-    },
-    'checkin_send_to_review': {
-        'subject_sufix': 'Package sent to review',
-        'template_path': 'email/checkin_sent_to_review.txt',
-    },
-    'checkin_send_to_checkout': {
-        'subject_sufix': 'Package sent to checkout',
-        'template_path': 'email/checkin_sent_to_checkout.txt',
-    },
-    'checkout_confirmed': {
-        'subject_sufix': 'Package checkout confirmed',
-        'template_path': 'email/checkout_confirmed.txt',
-    },
-    'ticket_add': {
-        'subject_sufix': 'Ticket created',
-        'template_path': 'email/ticket_created.txt',
-    },
-    'ticket_edit': {
-        'subject_sufix': 'Ticket edited',
-        'template_path': 'email/ticket_modify.txt',
-    },
-    'ticket_close': {
-        'subject_sufix': 'Ticket closed',
-        'template_path': 'email/ticket_closed.txt',
-    },
-    'comment_created': {
-        'subject_sufix': 'New comment',
-        'template_path': 'email/comment_created.txt',
-    },
-    'comment_edit': {
-        'subject_sufix': 'Comment edited',
-        'template_path': 'email/comment_modify.txt',
-    },
-    'issue_add_no_replicated_board': {
-        'subject_sufix': "Issue Board can't be replicated",
-        'template_path': 'email/issue_add_no_replicated_board.txt',
-    },
-    'issue_add_replicated_board': {
-        'subject_sufix': "Issue has a new replicated board",
-        'template_path': 'email/issue_add_replicated_board.txt',
-    },
-    'board_add_member': {
-        'subject_sufix': "Member of the journal board, was added",
-        'template_path': 'email/board_add_member.txt',
-    },
-    'board_edit_member': {
-        'subject_sufix': "Member of the journal board, was edited",
-        'template_path': 'email/board_edit_member.txt',
-    },
-    'board_delete_member': {
-        'subject_sufix': "Member of the journal board, was deleted",
-        'template_path': 'email/board_delete_member.txt',
-    }
-}
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -86,23 +14,24 @@ class Message(object):
     recipients = []
     template_path = ''
     body = ''
+    EMAIL_DATA_BY_ACTION = None # dict must be defined for each subclass mapping action's name (key), and a dict with keys: 'subject_sufix' and 'template_path'
 
     def __init__(self, action, subject='', recipients=[], template_path=None):
         """
-        @param ``action``: key of EMAIL_DATA_BY_ACTION dict, will define some message presets
+        @param ``action``: key of self.EMAIL_DATA_BY_ACTION dict, will define some message presets
         @param ``subject``: middle text of the message subject, prepended by:
-            settings.EMAIL_SUBJECT_PREFIX, appended by EMAIL_DATA_BY_ACTION[action]['subject_sufix']
+            settings.EMAIL_SUBJECT_PREFIX, appended by self.EMAIL_DATA_BY_ACTION[action]['subject_sufix']
         @param ``recipients`` (optional), set the list of recipients of the message
         @param ``template_path`` (optional), is the path of the templated used to render the message body,
-            if not provided, the template defined in EMAIL_DATA_BY_ACTION[action]['template_path'] will be used.
+            if not provided, the template defined in self.EMAIL_DATA_BY_ACTION[action]['template_path'] will be used.
         """
-        if not EMAIL_DATA_BY_ACTION.has_key(action):
-            raise ValueError("This action: %s is not available. Please use one of this: %s " % (action, EMAIL_DATA_BY_ACTION.keys()))
+        if not self.EMAIL_DATA_BY_ACTION.has_key(action):
+            raise ValueError("This action: %s is not available. Please use one of this: %s " % (action, self.EMAIL_DATA_BY_ACTION.keys()))
 
         subject_sequence = [
             settings.EMAIL_SUBJECT_PREFIX,
             subject,
-            EMAIL_DATA_BY_ACTION[action]['subject_sufix'],
+            self.EMAIL_DATA_BY_ACTION[action]['subject_sufix'],
         ]
         self.subject = ' '.join(subject_sequence)
         self.recipients = recipients
@@ -110,7 +39,7 @@ class Message(object):
         if template_path:
             self.template_path = template_path
         else:
-            self.template_path = EMAIL_DATA_BY_ACTION[action]['template_path']
+            self.template_path = self.EMAIL_DATA_BY_ACTION[action]['template_path']
 
     def render_body(self, context=None):
         """
@@ -144,111 +73,3 @@ class Message(object):
             return tasks.send_mail.delay(self.subject, self.body, self.recipients)
         else:
             logger.info("[Message.send_mail] Can't send a message without recipients, did you call 'set_recipients(...)'?")
-
-
-class CheckinMessage(Message):
-
-    def set_recipients(self, checkin):
-        """
-        Set the list of emails that will receive the message.
-        In case of checkins actions, the recipients will be the members of the team that include the user: checkin.submitted_by
-        and the submitter (checkin.submitted_by).
-        """
-        if checkin.team_members:
-            send_to = set([member.email for member in checkin.team_members])
-            # the submitter already belong to a related team
-            self.recipients = list(send_to)
-        else:
-            logger.info("[CheckinMessage.set_recipients] Can't prepare a message, checkin.team_members is empty. Checkin pk == %s" % checkin.pk)
-
-
-class TicketMessage(Message):
-
-    def set_recipients(self, ticket):
-        """
-        Set the list of emails that will receive the message.
-        In case of tickets or comments, the recipients will be:
-        the each member of a team, of each checkin related with the ticket,
-        and the submitter (checkin.submitted_by, already belong to a team) of each checkin,
-        and the author to the ticket related.
-        """
-        send_to = set([ticket.author.email, ])
-        for checkin in ticket.article.checkins.all():
-            # the submitter already belong to a related team
-            if checkin.team_members:
-                send_to.update([member.email for member in checkin.team_members])
-            else:
-                logger.info("[TicketMessage.set_recipients] Can't prepare a message, checkin.team_members is empty. Checkin pk == %s" % checkin.pk)
-        self.recipients = list(send_to)
-
-
-class IssueBoardMessage(Message):
-
-    def set_recipients(self, issue):
-        editor = getattr(issue.journal, 'editor', None)
-        if editor:
-            self.recipients = [editor,]
-        else:
-            logger.info("[IssueBoardMessage.set_recipients] Can't prepare a message, issue.journal.editor is None or empty. Issue pk == %s" % issue.pk)
-
-
-class BoardMembersMessage(Message):
-
-    def set_recipients(self, member):
-        from scielomanager.tools import get_users_by_group
-        from django.core.exceptions import ObjectDoesNotExist
-        try:
-            self.recipients = get_users_by_group('Librarian')
-        except ObjectDoesNotExist:
-            logger.info("[BoardMembersMessage.set_recipients] Can't prepare a message, Can't retrieve a list of Librarian Users.")
-
-
-def checkin_send_email_by_action(checkin, action):
-
-    message = CheckinMessage(action=action, subject=checkin.package_name)
-    message.set_recipients(checkin)
-    extra_context = {'checkin': checkin, }
-    if checkin.rejected_cause:
-        extra_context['reason'] = checkin.rejected_cause
-    message.render_body(extra_context)
-    return message.send_mail()
-
-
-def ticket_send_mail_by_action(ticket, action):
-
-    message = TicketMessage(action=action)
-    message.set_recipients(ticket)
-    extra_context = {'ticket': ticket,}
-    message.render_body(extra_context)
-    return message.send_mail()
-
-
-def comment_send_mail_by_action(comment, action):
-
-    ticket = comment.ticket
-    message = TicketMessage(action=action)
-    message.set_recipients(ticket)
-    extra_context = {'ticket': ticket, 'comment': comment, }
-    message.render_body(extra_context)
-    return message.send_mail()
-
-
-def issue_board_replica(issue, action):
-    message = IssueBoardMessage(action=action,)
-    message.set_recipients(issue)
-    extra_context = {'issue': issue,}
-    message.render_body(extra_context)
-    return message.send_mail()
-
-
-def board_members_send_email_by_action(member, user, message, action):
-    message = BoardMembersMessage(action=action)
-    message.set_recipients(member)
-    extra_context = {
-        'user': user,
-        'member': member,
-        'issue': member.board.issue,
-        'message': message,
-    }
-    message.render_body(extra_context)
-    return message.send_mail()

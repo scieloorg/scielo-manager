@@ -45,7 +45,7 @@ from scielomanager.tools import (
 from audit_log import helpers
 from editorialmanager.models import EditorialBoard
 
-from scielomanager import notifications
+from editorialmanager import notifications
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
