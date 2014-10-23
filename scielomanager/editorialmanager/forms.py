@@ -3,8 +3,10 @@
 from django import forms
 from . import models
 from django.utils.translation import ugettext_lazy as _
+from django.forms.models import BaseInlineFormSet
+
 from journalmanager.models import Issue, Journal
-from editorialmanager.models import RoleType, EditorialBoard
+from editorialmanager.models import RoleType, EditorialBoard, OTHER_ROLE_DEFAULT_NAME
 
 
 class EditorialMemberForm(forms.ModelForm):
@@ -84,3 +86,30 @@ class BoardMoveForm(forms.Form):
             raise forms.ValidationError(u"Board (pk=%s) and Role (name='%s') submitted aren't related" % (board_pk, role_name))
 
         return cleaned_data
+
+
+class OtherRoleForm(forms.ModelForm):
+    class Meta:
+        model = models.OtherRoleType
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'span12'}),
+        }
+
+    def clean(self):
+        cleaned_data = super(OtherRoleForm, self).clean()
+        member = cleaned_data.get("member")
+        if member.role.name != OTHER_ROLE_DEFAULT_NAME:
+            raise forms.ValidationError(u"The related member must have set: '%s' in the Role field" % OTHER_ROLE_DEFAULT_NAME)
+
+        return cleaned_data
+
+
+class BaseOtherRoleFormSet(BaseInlineFormSet):
+    def clean(self):
+      for form in self.initial_forms:
+        if not form.is_valid() or not (self.can_delete and form.cleaned_data.get('DELETE')):
+            return
+      for form in self.extra_forms:
+        if form.has_changed():
+          return
+      raise forms.ValidationError("At least one row is required, or change the Member Role field")

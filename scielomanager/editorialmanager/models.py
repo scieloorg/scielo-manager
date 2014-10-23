@@ -3,7 +3,11 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from journalmanager.models import Issue
+from journalmanager.models import Issue, Language
+
+
+OTHER_ROLE_DEFAULT_NAME = 'other'
+
 
 
 class EditorialBoard(models.Model):
@@ -50,9 +54,6 @@ class EditorialMember(models.Model):
 
 
 class RoleType(models.Model):
-    """
-    Represents the editor category
-    """
     name = models.CharField(_('Role Name'), max_length=256)
     weight = models.PositiveSmallIntegerField(_('role weight'), default=10)
 
@@ -62,3 +63,11 @@ class RoleType(models.Model):
     class Meta:
         ordering = ('weight', 'name')
 
+
+class OtherRoleType(models.Model):
+    member = models.ForeignKey(EditorialMember)
+    name = models.CharField(_('Other Role Name'), max_length=256)
+    language = models.ForeignKey(Language)
+
+    def __unicode__(self):
+        return u"%s [%s]" % (self.name, self.language.iso_code)

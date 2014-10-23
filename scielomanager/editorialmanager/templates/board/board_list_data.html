@@ -103,7 +103,7 @@
                             <a class="accordion-toggle" data-toggle="collapse"
                                data-parent="#accordion_members_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.parentloop.counter }}"
                                href="#collpase_{{ issue.pk }}_{{ issue.editorialboard.pk }}_{{ forloop.counter }}">
-                              {{ forloop.counter }} - {{ role.grouper }}
+                              {{ forloop.counter }} - {{ role.grouper|title }}
                             </a>
                           </span>
                         </div>

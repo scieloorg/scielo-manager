@@ -14,7 +14,7 @@ from django.db.models import Max
 from waffle.decorators import waffle_flag
 
 from journalmanager.models import Journal, JournalMission, Issue
-from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
+from journalmanager.forms import RestrictedJournalForm, JournalMissionForm, FirstFieldRequiredFormSet
 
 from scielomanager import notifications
 from scielomanager.tools import get_paginated
@@ -283,29 +283,43 @@ def edit_board_member(request, journal_id, member_id):
     board_member = get_object_or_404(models.EditorialMember, id=member_id)
     post_url = reverse('editorial.board.edit', args=[journal_id, member_id, ])
     board_url = reverse('editorial.board', args=[journal_id, ])
+
+    # other role formset
+    OtherRoleFormSet = inlineformset_factory(
+                        models.EditorialMember,
+                        models.OtherRoleType,
+                        form=forms.OtherRoleForm,
+                        formset=forms.BaseOtherRoleFormSet,
+                        extra=1, can_delete=True)
+    other_role_pk, created = models.RoleType.objects.get_or_create(name=models.OTHER_ROLE_DEFAULT_NAME)
+
     context = {
         'board_member': board_member,
         'post_url': post_url,
         'board_url': board_url,
+        'other_role_pk': other_role_pk.pk,
     }
 
     if request.method == "POST":
         old_role = board_member.role
         form = forms.EditorialMemberForm(request.POST, instance=board_member)
+        other_role_formset = OtherRoleFormSet(request.POST, instance=board_member, prefix='other_role')
         # this view only handle existing editorial board member, so always exist previous values.
-        audit_old_values = helpers.collect_old_values(board_member, form)
+        audit_old_values = helpers.collect_old_values(board_member, form, [other_role_formset, ])
 
-        if form.is_valid():
+        if form.is_valid() and other_role_formset.is_valid():
             board_member = form.save()
             if 'role' in form.changed_data: # change role -> change order
                 _update_member_order(board_member, old_role)
 
+            other_role_formset.save()
+
             audit_data = {
                 'user': request.user,
                 'obj': board_member,
-                'message': helpers.construct_change_message(form),
+                'message': helpers.construct_change_message(form, [other_role_formset, ]),
                 'old_values': audit_old_values,
-                'new_values': helpers.collect_new_values(form),
+                'new_values': helpers.collect_new_values(form, [other_role_formset, ]),
             }
             # this view only handle existing editorial board member, so always log changes.
             helpers.log_change(**audit_data)
@@ -317,11 +331,14 @@ def edit_board_member(request, journal_id, member_id):
         else:
             messages.error(request, _('Check mandatory fields.'))
             context['form'] = form
+            context['other_role_formset'] = other_role_formset
             return render_to_response(template_name, context, context_instance=RequestContext(request))
     else:
         form = forms.EditorialMemberForm(instance=board_member)
+        other_role_formset = OtherRoleFormSet(instance=board_member, prefix='other_role')
 
     context['form'] = form
+    context['other_role_formset'] = other_role_formset
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
@@ -359,25 +376,39 @@ def add_board_member(request, journal_id, issue_id):
     board_url = reverse('editorial.board', args=[journal_id, ])
     post_url = reverse('editorial.board.add', args=[journal_id, issue_id, ])
 
+    # other role formset
+    new_member = models.EditorialMember()
+    OtherRoleFormSet = inlineformset_factory(
+                            models.EditorialMember,
+                            models.OtherRoleType,
+                            form=forms.OtherRoleForm,
+                            formset=forms.BaseOtherRoleFormSet,
+                            extra=1, can_delete=True)
+    other_role_pk, created = models.RoleType.objects.get_or_create(name=models.OTHER_ROLE_DEFAULT_NAME)
     context = {
         'post_url': post_url,
         'board_url': board_url,
+        'other_role_pk': other_role_pk.pk,
     }
     if request.method == "POST":
-        form = forms.EditorialMemberForm(request.POST)
-        if form.is_valid():
+        form = forms.EditorialMemberForm(request.POST, instance=new_member)
+        other_role_formset = OtherRoleFormSet(request.POST, instance=new_member, prefix='other_role')
+
+        if form.is_valid() and other_role_formset.is_valid():
             new_member = form.save(commit=False)
             new_member.board = board
             new_member.save()
             new_member.order = _get_order_for_new_members(new_member.board, new_member.role.pk, new_member.pk)
             new_member.save()
 
+            other_role_formset.save()
+
             audit_data = {
                 'user': request.user,
                 'obj': new_member,
-                'message': helpers.construct_create_message(form),
+                'message': helpers.construct_create_message(form, [other_role_formset, ]),
                 'old_values': None,
-                'new_values': helpers.collect_new_values(form),
+                'new_values': helpers.collect_new_values(form, [other_role_formset, ]),
             }
             # this view only handle NEW editorial board member, so always log create.
             helpers.log_create(**audit_data)
@@ -389,11 +420,14 @@ def add_board_member(request, journal_id, issue_id):
         else:
             messages.error(request, _('Check mandatory fields.'))
             context['form'] = form
+            context['other_role_formset'] = other_role_formset
             return render_to_response(template_name, context, context_instance=RequestContext(request))
     else:
-        form = forms.EditorialMemberForm()
+        form = forms.EditorialMemberForm(instance=new_member)
+        other_role_formset = OtherRoleFormSet(instance=new_member, prefix='other_role')
 
     context['form'] = form
+    context['other_role_formset'] = other_role_formset
     return render_to_response(template_name, context, context_instance=RequestContext(request))
 
 
