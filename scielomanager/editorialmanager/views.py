@@ -468,3 +468,103 @@ def board_move_block(request, journal_id):
             logger.error("Board block can not be moved. form is not valid. Errors: %s" %  form.errors)
 
     return HttpResponseRedirect(board_url)
+
+
+@login_required
+@waffle_flag('editorialmanager')
+@permission_required('editorialmanager.add_roletype', login_url=settings.AUTHZ_REDIRECT_URL)
+def add_role_type(request, journal_id):
+    """
+    Handles only NEW editorial Role Types
+    """
+    if request.is_ajax():
+        template_name = 'board/role_type_edit_form.html'
+    else:
+        template_name = 'board/role_type_edit.html'
+
+    board_url = reverse('editorial.board', args=[journal_id, ])
+    post_url = reverse('editorial.role.add', args=[journal_id, ])
+    context = {
+        'post_url': post_url,
+        'board_url': board_url,
+    }
+
+    if request.method == "POST":
+        form = forms.RoleTypeForm(request.POST)
+        if form.is_valid():
+            new_role = form.save()
+            audit_data = {
+                'user': request.user,
+                'obj': new_role,
+                'message': helpers.construct_create_message(form),
+                'old_values': None,
+                'new_values': helpers.collect_new_values(form),
+            }
+            # this view only handle NEW editorial board member, so always log create.
+            helpers.log_create(**audit_data)
+            messages.success(request, _('Role created successfully.'))
+            return HttpResponseRedirect(board_url)
+        else:
+            messages.error(request, _('Check mandatory fields.'))
+            context['form'] = form
+            return render_to_response(template_name, context, context_instance=RequestContext(request))
+    else:
+        form = forms.RoleTypeForm()
+
+    context['form'] = form
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+@waffle_flag('editorialmanager')
+@permission_required('editorialmanager.change_roletype', login_url=settings.AUTHZ_REDIRECT_URL)
+def edit_role_type(request, journal_id, role_id):
+    """
+    Handle only existing editorial Role Types
+    """
+    if request.is_ajax():
+        template_name = 'board/role_type_edit_form.html'
+    else:
+        template_name = 'board/role_type_edit.html'
+
+    # check if user have correct access to view the journal:
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(reverse('editorial.index'))
+
+    role_type = get_object_or_404(models.RoleType, id=role_id)
+    post_url = reverse('editorial.role.edit', args=[journal_id, role_id, ])
+    board_url = reverse('editorial.board', args=[journal_id, ])
+    context = {
+        'role_type': role_type,
+        'post_url': post_url,
+        'board_url': board_url,
+    }
+
+    if request.method == "POST":
+        form = forms.RoleTypeForm(request.POST, instance=role_type)
+        audit_old_values = helpers.collect_old_values(role_type, form)
+
+        if form.is_valid():
+            role_type = form.save()
+            # audit
+            audit_data = {
+                'user': request.user,
+                'obj': role_type,
+                'message': helpers.construct_change_message(form),
+                'old_values': audit_old_values,
+                'new_values': helpers.collect_new_values(form),
+            }
+            # this view only handle existing roles, so always log changes.
+            helpers.log_change(**audit_data)
+            messages.success(request, _('Role updated successfully.'))
+            return HttpResponseRedirect(board_url)
+        else:
+            messages.error(request, _('Check mandatory fields.'))
+            context['form'] = form
+            return render_to_response(template_name, context, context_instance=RequestContext(request))
+    else:
+        form = forms.RoleTypeForm(instance=role_type)
+
+    context['form'] = form
+    return render_to_response(template_name, context, context_instance=RequestContext(request))

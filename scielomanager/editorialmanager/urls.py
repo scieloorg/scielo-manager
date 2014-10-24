@@ -16,4 +16,6 @@ urlpatterns = patterns('',
     url(r'^board/(?P<journal_id>\d+)/members/(?P<issue_id>\d+)/add/$', views.add_board_member, name="editorial.board.add"),
     url(r'^board/(?P<journal_id>\d+)/members/(?P<member_id>\d+)/edit/$', views.edit_board_member, name="editorial.board.edit"),
     url(r'^board/(?P<journal_id>\d+)/members/(?P<member_id>\d+)/delete/$', views.delete_board_member, name="editorial.board.delete"),
+    url(r'^board/(?P<journal_id>\d+)/roles/add/$', views.add_role_type, name="editorial.role.add"),
+    url(r'^board/(?P<journal_id>\d+)/roles/(?P<role_id>\d+)/edit/$', views.edit_role_type, name="editorial.role.edit"),
 )

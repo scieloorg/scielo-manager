@@ -294,3 +294,98 @@ class PagesAsLibrarianTests(PagesAsEditorTests):
 
     def tearDown(self):
         super(PagesAsLibrarianTests, self).tearDown()
+
+
+
+class RoleType(WebTest):
+
+    def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
+        # create a group 'Editors'
+        group = modelfactories.GroupFactory(name="Editors")
+        # create a user and set group 'Editors'
+        self.user = modelfactories.UserFactory(is_active=True)
+        self.user.groups.add(group)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+
+        # set the user as editor of the journal
+        self.journal.editor = self.user
+
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def test_access_to_ADD_ROLE_button_is_DISABLED(self):
+        """
+        User must have the permission: editorialmanager.add_roletype to see the button
+        """
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        add_role_url = reverse("editorial.role.add", args=[self.journal.id])
+        self.assertNotIn(add_role_url, response.body)
+
+    def test_access_to_ADD_ROLE_button_is_ENABLE(self):
+        """
+        User must have the permission: editorialmanager.add_roletype to see the button
+        """
+        # with
+        perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
+        self.user.user_permissions.add(perm_add_roletype)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        add_role_url = reverse("editorial.role.add", args=[self.journal.id])
+        self.assertIn(add_role_url, response.body)
+
+    def test_access_to_EDIT_ROLE_button_is_DISABLED(self):
+        """
+        User must have the permission: editorialmanager.change_roletype to see the button
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertNotIn(edit_role_url, response.body)
+
+    def test_access_to_EDIT_ROLE_button_is_ENABLE(self):
+        """
+        User must have the permission: editorialmanager.change_roletype to see the button
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertIn(edit_role_url, response.body)
