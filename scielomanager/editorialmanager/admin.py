@@ -30,5 +30,14 @@ class EditorialBoardAdmin(admin.ModelAdmin):
     search_fields = ('issue__journal__title', 'issue__volume', 'issue__publication_year')
     list_display = ('__unicode__', 'issue_publication_year', 'issue', 'journal')
 
+
+class OtherRoleTypeAdmin(admin.ModelAdmin):
+    model = models.OtherRoleType
+    list_display = ('member', 'name', 'language')
+    search_fields = ('member', 'name', 'language')
+    list_filter = ('language', )
+
+
 admin.site.register(models.EditorialBoard, EditorialBoardAdmin)
 admin.site.register(models.RoleType)
+admin.site.register(models.OtherRoleType, OtherRoleTypeAdmin)

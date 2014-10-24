@@ -2,6 +2,7 @@
 
 <form id="member-form" action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
     {% csrf_token %}
+    {% include "includes/board_member_edit_other_role.html" %}
     {% for field in form %}
         {% show_field field %}
     {% endfor %}
