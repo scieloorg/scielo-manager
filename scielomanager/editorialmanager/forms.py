@@ -106,10 +106,12 @@ class OtherRoleForm(forms.ModelForm):
 
 class BaseOtherRoleFormSet(BaseInlineFormSet):
     def clean(self):
-      for form in self.initial_forms:
-        if not form.is_valid() or not (self.can_delete and form.cleaned_data.get('DELETE')):
+        if self.instance.role.name != OTHER_ROLE_DEFAULT_NAME:
             return
-      for form in self.extra_forms:
-        if form.has_changed():
-          return
-      raise forms.ValidationError("At least one row is required, or change the Member Role field")
+        for form in self.initial_forms:
+            if not form.is_valid() or not (self.can_delete and form.cleaned_data.get('DELETE')):
+                return
+        for form in self.extra_forms:
+            if form.has_changed():
+                return
+        raise forms.ValidationError("At least one row is required, or change the Member Role field")
