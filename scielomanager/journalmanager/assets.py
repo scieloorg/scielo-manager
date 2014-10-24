@@ -23,7 +23,6 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/bootstrap.js',
                     '../static/js/chosen.jquery.js',
                     '../static/js/modal.js',
-                    '../static/js/editorialmanager.boardmember.formsets.js',
                     )
 
 
