@@ -16,7 +16,7 @@ from waffle.decorators import waffle_flag
 from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
 
-from scielomanager import notifications
+from editorialmanager import notifications
 from scielomanager.tools import get_paginated
 from audit_log import helpers
 

@@ -5,7 +5,7 @@ import logging
 from .balaio import BalaioRPC
 from .models import Checkin
 from scielomanager.celery import app
-from scielomanager.notifications import checkin_send_email_by_action
+from articletrack.notifications import checkin_send_email_by_action
 logger = logging.getLogger(__name__)
 
 
