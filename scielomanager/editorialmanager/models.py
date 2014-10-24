@@ -54,11 +54,10 @@ class RoleType(models.Model):
     Represents the editor category
     """
     name = models.CharField(_('Role Name'), max_length=256)
-    weight = models.PositiveSmallIntegerField(_('role weight'), default=10)
 
     def __unicode__(self):
         return self.name
 
     class Meta:
-        ordering = ('weight', 'name')
+        ordering = ('name', )
 
