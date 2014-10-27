@@ -92,20 +92,20 @@
                                 <div class="btn-toolbar">
                                   <div class="btn-group">
                                     {% if perms.editorialmanager.change_roletype %}
-                                      <a class="btn" data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.role.edit journal.pk role.list.0.role.pk %}">
+                                      <a class="btn btn-small" data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.role.edit journal.pk role.list.0.role.pk %}">
                                         <i class="icon-pencil"></i> {% trans "Edit Role" %}
                                       </a>
                                     {% endif %}
 
                                     {% if perms.editorialmanager.change_editorialmember %}
                                       <a href="#"
-                                         class="btn btn-move-role {% if forloop.last %} disabled {% endif %}"
+                                         class="btn btn-small btn-move-role {% if forloop.last %} disabled {% endif %}"
                                          data-direction="down"
                                          title="{% trans 'move DOWN this block' %}: {{ role.grouper }}">
                                         <i class="icon-arrow-down"></i>
                                       </a>
                                       <a href="#"
-                                         class="btn btn-move-role {% if forloop.first %} disabled{% endif %}"
+                                         class="btn btn-small btn-move-role {% if forloop.first %} disabled{% endif %}"
                                          data-direction="up"
                                          title="{% trans 'move UP this block' %}: {{ role.grouper }}">
                                         <i class="icon-arrow-up"></i>
