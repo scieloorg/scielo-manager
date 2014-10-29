@@ -9,6 +9,7 @@ from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.db.models import Max
 from waffle.decorators import waffle_flag
@@ -567,4 +568,82 @@ def edit_role_type(request, journal_id, role_id):
         form = forms.RoleTypeForm(instance=role_type)
 
     context['form'] = form
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+@waffle_flag('editorialmanager')
+def list_role_type(request, journal_id):
+    if request.is_ajax():
+        template_name = 'board/role_type_list_data.html'
+    else:
+        template_name = 'board/role_type_list.html'
+
+    # check if user have correct access to view the journal:
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(reverse('editorial.index'))
+
+    board_url = reverse('editorial.board', args=[journal_id, ])
+    roles = models.RoleType.objects.all().order_by('name')
+    context = {
+        'board_url': board_url,
+        'journal_id': journal_id,
+        'roles': roles,
+    }
+    return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+@waffle_flag('editorialmanager')
+@permission_required('editorialmanager.change_roletype', login_url=settings.AUTHZ_REDIRECT_URL)
+def translate_role_type(request, journal_id, role_id):
+    template_name = 'board/role_type_translate.html'
+    # check if user have correct access to view the journal:
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(reverse('editorial.index'))
+
+    role_type = get_object_or_404(models.RoleType, id=role_id)
+    post_url = reverse('editorial.role.translate', args=[journal_id, role_id, ])
+    board_url = reverse('editorial.board', args=[journal_id, ])
+
+    context = {
+        'journal_id': journal_id,
+        'role_type': role_type,
+        'post_url': post_url,
+        'board_url': board_url,
+    }
+
+    RoleTypeTranslationFormSet = inlineformset_factory(
+                                    models.RoleType, models.RoleTypeTranslation,
+                                    form=forms.RoleTypeForm, formset=forms.RoleTypeTranslationFormSet,
+                                    extra=3, can_delete=True)
+
+    if request.method == "POST":
+        formset = RoleTypeTranslationFormSet(request.POST, instance=role_type, prefix="role-translations-formset")
+        audit_old_values = helpers.collect_old_values(role_type, form=None, formsets=[formset, ])
+
+        if formset.is_valid():
+            formset.save()
+
+            # audit
+            audit_data = {
+                'user': request.user,
+                'obj': role_type,
+                'message': helpers.construct_change_message(form=None, formsets=[formset, ]),
+                'old_values': audit_old_values,
+                'new_values': helpers.collect_new_values(form=None, formsets=[formset, ]),
+            }
+            # this view only handle existing roles, so always log changes.
+            helpers.log_change(**audit_data)
+
+            messages.success(request, _('Role updated successfully.'))
+            return HttpResponseRedirect(board_url)
+        else:
+            messages.error(request, _('Check mandatory fields.'))
+    else:
+        formset = RoleTypeTranslationFormSet(instance=role_type, prefix="role-translations-formset")
+
+    context['formset'] = formset
     return render_to_response(template_name, context, context_instance=RequestContext(request))

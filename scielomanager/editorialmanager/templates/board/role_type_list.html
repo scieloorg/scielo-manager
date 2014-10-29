@@ -1,0 +1,17 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li><a href="{{ board_url }}">{% trans 'Editorial Board' %}</a><span class="divider">/</span></li>
+    <li class="active">{% trans 'Roles List' %}</li>
+  </ul>
+
+
+  <h2>{% trans "Roles" %}:</h2>
+  {% include "board/role_type_list_data.html" %}
+
+{% endblock content %}

@@ -389,3 +389,61 @@ class RoleType(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
         self.assertIn(edit_role_url, response.body)
+
+    def test_access_to_role_list_link(self):
+        """
+        User must not have any particular permission, only the waffle must be activated
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        list_role_url = reverse("editorial.role.list", args=[self.journal.id,])
+        self.assertIn(list_role_url, response.body)
+
+    def test_access_to_EDIT_and_TRANSLATE_from_role_list_DISABLE(self):
+        """
+        User must not have any particular permission, but cant see the edit nor translate buttons
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
+        # when
+        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/role_type_list.html')
+        self.assertIn(role.name, response.body)
+        self.assertIn(role, response.context['roles'])
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertNotIn(edit_role_url, response.body)
+        translate_role_url = reverse('editorial.role.translate', args=[self.journal.id, role.id])
+        self.assertNotIn(translate_role_url, response.body)
+
+    def test_access_to_EDIT_and_TRANSLATE_from_role_list_ENABLE(self):
+        """
+        If user have permissions to change_roletype, must see EDIT and TRANSLATE buttons in role's list
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        # when
+        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/role_type_list.html')
+        self.assertIn(role.name, response.body)
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertIn(edit_role_url, response.body)
+        translate_role_url = reverse('editorial.role.translate', args=[self.journal.id, role.id])
+        self.assertIn(translate_role_url, response.body)
+

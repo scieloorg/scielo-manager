@@ -89,7 +89,7 @@ def field_serializer(field_value):
     return field_value
 
 
-def collect_old_values(obj, form, formsets=None, as_json_string=False):
+def collect_old_values(obj, form=None, formsets=None, as_json_string=False):
     """
     Collect the "pre save" data into a JSON-compatible structure.
     returns something like this:
@@ -130,9 +130,10 @@ def collect_old_values(obj, form, formsets=None, as_json_string=False):
     # request the object from DB, to get the object as persisted in DB
     unsaved_object = obj.__class__.objects.get(pk=obj.pk)
 
-    for field_name in get_auditable_fields(form):
-        field_value = getattr(unsaved_object, field_name)
-        result["form_data"][field_name] = field_serializer(field_value)
+    if form:
+        for field_name in get_auditable_fields(form):
+            field_value = getattr(unsaved_object, field_name)
+            result["form_data"][field_name] = field_serializer(field_value)
 
     if formsets:
         model_related_objects = {}
@@ -154,7 +155,7 @@ def collect_old_values(obj, form, formsets=None, as_json_string=False):
         return result
 
 
-def collect_new_values(form, formsets=None, as_json_string=False):
+def collect_new_values(form=None, formsets=None, as_json_string=False):
     """
     Collect the "post save" data into a JSON-compatible structure.
     returns something like this:
@@ -202,10 +203,10 @@ def collect_new_values(form, formsets=None, as_json_string=False):
         "form_data": {},
         "formsets_data": [],
     }
-
-    for field_name in get_auditable_fields(form):
-        field_value = form.cleaned_data[field_name]
-        result["form_data"][field_name] = field_serializer(field_serializer(field_value))
+    if form:
+        for field_name in get_auditable_fields(form):
+            field_value = form.cleaned_data[field_name]
+            result["form_data"][field_name] = field_serializer(field_serializer(field_value))
 
     if formsets:
         for formset in formsets:
@@ -285,12 +286,12 @@ def construct_message_from_formset(formsets):
     return message
 
 
-def construct_change_message(form, formsets=None):
+def construct_change_message(form=None, formsets=None):
     """
     Construct a description text message with a brief explanation of the changes.
     """
     message = []
-    if form.changed_data:
+    if form and form.changed_data:
         message.append(_(u'Changed fields: %s.') % get_text_list(form.changed_data, _('and')))
 
     if formsets:
@@ -300,11 +301,11 @@ def construct_change_message(form, formsets=None):
     return message or _(u'No fields changed.')
 
 
-def construct_create_message(form, formsets=None):
+def construct_create_message(form=None, formsets=None):
     """
     Construct a "created record" data into a message from a new object.
     """
-    message = [u'%s' % force_unicode(field) for field in form.cleaned_data]
+    message = [u'%s' % force_unicode(field) for field in form.cleaned_data if form]
 
     if formsets:
         message.extend(construct_message_from_formset(formsets))

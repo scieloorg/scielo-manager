@@ -7,7 +7,7 @@ from waffle import Flag
 from journalmanager.tests import modelfactories
 
 from . import modelfactories as editorial_modelfactories
-from editorialmanager.models import EditorialMember, EditorialBoard, RoleType
+from editorialmanager.models import EditorialMember, EditorialBoard, RoleType, RoleTypeTranslation
 from audit_log.models import AuditLogEntry, ADDITION, CHANGE, DELETION
 
 
@@ -1636,6 +1636,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertEqual(m3.pk, member3.pk)
         self.assertEqual(m3.order, 3)
 
+
 class EditRoleTypeForm(WebTest):
 
     def setUp(self):
@@ -1795,3 +1796,138 @@ class EditRoleTypeForm(WebTest):
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
 
+    def test_TRANSLATE_ROLE_valid_POST_is_valid(self):
+        """
+        Submit a valid POST of a set of translation,
+        languages: "pt", and "es", must be required
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
+        l1 = modelfactories.LanguageFactory.create(iso_code='pt', name='portuguese')
+        l2 = modelfactories.LanguageFactory.create(iso_code='es', name='spanish')
+        l3 = modelfactories.LanguageFactory.create(iso_code='fr', name='french')
+
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        data = [
+            {'name': u'Os Picles', 'language': l1},
+            {'name': u'Los Picles', 'language': l2},
+            {'name': u'Le Piclé', 'language': l3},
+        ]
+
+        # when
+        response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-translations-form']
+        for x in xrange(0,3):
+            form['role-translations-formset-%s-name' % x] = data[x]['name']
+            form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
+
+        response = form.submit().follow()
+        # then
+
+        # check frontend:
+        self.assertIn('Role updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check db:
+        translations = RoleTypeTranslation.objects.filter(role=role)
+        self.assertEqual(translations.count(), 3)
+        for x in xrange(0,3):
+            t = translations.get(language=data[x]['language'])
+            self.assertEqual(t.name, data[x]['name'])
+
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 1)
+        entry = audit_entries[0]
+        self.assertEqual(entry.action_flag, CHANGE) # Flag correspond with ADD action
+        self.assertEqual(entry.content_type.model_class(), RoleType)
+        audited_obj = entry.get_audited_object()
+        self.assertEqual(audited_obj._meta.object_name, 'RoleType')
+        self.assertEqual(audited_obj.pk, role.pk)
+
+    def test_TRANSLATE_ROLE_invalid_POST_without_lang_PT_is_invalid(self):
+        """
+        Submit a invalid POST of a set of translation,
+        languages: "pt", and "es", must be required
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
+        l1 = modelfactories.LanguageFactory.create(iso_code='it', name='italian')
+        l2 = modelfactories.LanguageFactory.create(iso_code='es', name='spanish')
+        l3 = modelfactories.LanguageFactory.create(iso_code='fr', name='french')
+
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        data = [
+            {'name': u'Il Picolo', 'language': l1},
+            {'name': u'Los Picles', 'language': l2},
+            {'name': u'Le Piclé', 'language': l3},
+        ]
+
+        # when
+        response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-translations-form']
+        for x in xrange(0,3):
+            form['role-translations-formset-%s-name' % x] = data[x]['name']
+            form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
+
+        response = form.submit()
+        # then
+        self.assertTemplateUsed(response, 'board/role_type_translate.html')
+        self.assertFalse(response.context['formset'].is_valid())
+        expected_errors = [u'At least Portuguese and Spanish translations are required']
+        self.assertEqual(response.context['formset'].non_form_errors(), expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 0)
+
+    def test_TRANSLATE_ROLE_invalid_POST_without_lang_ES_is_invalid(self):
+        """
+        Submit a invalid POST of a set of translation,
+        languages: "pt", and "es", must be required
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
+        l1 = modelfactories.LanguageFactory.create(iso_code='pt', name='portuguese')
+        l2 = modelfactories.LanguageFactory.create(iso_code='ar', name='arabic')
+        l3 = modelfactories.LanguageFactory.create(iso_code='fr', name='french')
+
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+
+        data = [
+            {'name': u'Os Picles', 'language': l1},
+            {'name': u'Ahmet Al Picle', 'language': l2},
+            {'name': u'Le Piclé', 'language': l3},
+        ]
+
+        # when
+        response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-translations-form']
+        for x in xrange(0,3):
+            form['role-translations-formset-%s-name' % x] = data[x]['name']
+            form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
+
+        response = form.submit()
+        # then
+        self.assertTemplateUsed(response, 'board/role_type_translate.html')
+        self.assertFalse(response.context['formset'].is_valid())
+        expected_errors = [u'At least Portuguese and Spanish translations are required']
+        self.assertEqual(response.context['formset'].non_form_errors(), expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 0)
