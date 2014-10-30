@@ -12,6 +12,7 @@ from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from journalmanager import models
+from editorialmanager import models as em_models
 
 from articletrack.models import (
     Checkin,
@@ -564,3 +565,32 @@ class AheadPressReleaseResource(ModelResource):
 
         return orm_filters
 
+
+class EditorialBoardResource(ModelResource):
+    issue = fields.ToOneField(IssueResource, 'issue')
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'editorialboard'
+        queryset = em_models.EditorialBoard.objects.all()
+        allowed_methods = ['get', ]
+
+
+class RoleTypeResource(ModelResource):
+    weight = fields.IntegerField('weight')   #TODO: shall be removed when accepted PR: #1033
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'roletype'
+        queryset = em_models.RoleType.objects.all()
+        allowed_methods = ['get', ]
+        ordering = ('weight', 'name')
+
+
+class EditorialMemberResource(ModelResource):
+    role = fields.ForeignKey(RoleTypeResource, 'role')
+    board = fields.ForeignKey(EditorialBoardResource, 'board')
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'editorialmember'
+        queryset = em_models.EditorialMember.objects.all()
+        allowed_methods = ['get', ]
+        ordering = ('board', 'order', 'pk')
