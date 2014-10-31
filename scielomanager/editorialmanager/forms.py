@@ -4,7 +4,6 @@ from django import forms
 from . import models
 from django.utils.translation import ugettext_lazy as _
 from journalmanager.models import Issue, Journal
-from editorialmanager.models import RoleType, EditorialBoard
 
 
 class EditorialMemberForm(forms.ModelForm):
@@ -45,11 +44,11 @@ class BoardMoveForm(forms.Form):
 
     def clean_board_pk(self):
         board_pk = self.cleaned_data['board_pk']
-        return self._obj_exists(EditorialBoard, lookup={'pk': board_pk})
+        return self._obj_exists(models.EditorialBoard, lookup={'pk': board_pk})
 
     def clean_role_name(self):
         role_name = self.cleaned_data['role_name']
-        return self._obj_exists(RoleType, lookup={'name': role_name})
+        return self._obj_exists(models.RoleType, lookup={'name': role_name})
 
     def clean(self):
         cleaned_data = super(BoardMoveForm, self).clean()
@@ -66,7 +65,7 @@ class BoardMoveForm(forms.Form):
             raise forms.ValidationError(u"Journal (pk=%s) and Issue (pk=%s) submitted are not related" % (journal_pk, issue_pk))
 
         # check issue and board are related correctly
-        board = EditorialBoard.objects.get(pk=board_pk)
+        board = models.EditorialBoard.objects.get(pk=board_pk)
         members = board.editorialmember_set.all()
         if issue.pk != board.issue.pk:
             raise forms.ValidationError(u"Board (pk=%s) and Issue (pk=%s) submitted are not related" % (board_pk, issue_pk))
@@ -84,3 +83,8 @@ class BoardMoveForm(forms.Form):
             raise forms.ValidationError(u"Board (pk=%s) and Role (name='%s') submitted aren't related" % (board_pk, role_name))
 
         return cleaned_data
+
+
+class RoleTypeForm(forms.ModelForm):
+    class Meta:
+        model = models.RoleType

@@ -50,6 +50,14 @@
                   </a>
                 </li>
               {% endif %}
+              {% if perms.editorialmanager.add_roletype %}
+                <li>
+                  <a data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.role.add journal.pk %}">
+                    <i class="icon-plus-sign"></i> {% trans "Add New Role" %}
+                  </a>
+                </li>
+              {% endif %}
+
             </ul>
           </div>
           {# /left sidebar menu #}
@@ -83,18 +91,26 @@
 
                                 <div class="btn-toolbar">
                                   <div class="btn-group">
-                                    <a href="#"
-                                       class="btn btn-move-role {% if forloop.last %} disabled {% endif %}"
-                                       data-direction="down"
-                                       title="{% trans 'move DOWN this block' %}: {{ role.grouper }}">
-                                      <i class="icon-arrow-down"></i>
-                                    </a>
-                                    <a href="#"
-                                       class="btn btn-move-role {% if forloop.first %} disabled{% endif %}"
-                                       data-direction="up"
-                                       title="{% trans 'move UP this block' %}: {{ role.grouper }}">
-                                      <i class="icon-arrow-up"></i>
-                                    </a>
+                                    {% if perms.editorialmanager.change_roletype %}
+                                      <a class="btn btn-small" data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.role.edit journal.pk role.list.0.role.pk %}">
+                                        <i class="icon-pencil"></i> {% trans "Edit Role" %}
+                                      </a>
+                                    {% endif %}
+
+                                    {% if perms.editorialmanager.change_editorialmember %}
+                                      <a href="#"
+                                         class="btn btn-small btn-move-role {% if forloop.last %} disabled {% endif %}"
+                                         data-direction="down"
+                                         title="{% trans 'move DOWN this block' %}: {{ role.grouper }}">
+                                        <i class="icon-arrow-down"></i>
+                                      </a>
+                                      <a href="#"
+                                         class="btn btn-small btn-move-role {% if forloop.first %} disabled{% endif %}"
+                                         data-direction="up"
+                                         title="{% trans 'move UP this block' %}: {{ role.grouper }}">
+                                        <i class="icon-arrow-up"></i>
+                                      </a>
+                                    {% endif %}
                                   </div>
                                 </div>
                               </form>
@@ -180,7 +196,6 @@
         <i class="icon-exclamation-sign"></i> {% trans "Cannot retrieve the Editorial Board because this journal has no Issues" %}
       </div>
     {% endfor %}
-  </div>
 </div>
 
 {% modal_form title="Edit Member" %}
