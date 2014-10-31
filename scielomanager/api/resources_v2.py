@@ -576,13 +576,12 @@ class EditorialBoardResource(ModelResource):
 
 
 class RoleTypeResource(ModelResource):
-    weight = fields.IntegerField('weight')   #TODO: shall be removed when accepted PR: #1033
 
     class Meta(ApiKeyAuthMeta):
         resource_name = 'roletype'
         queryset = em_models.RoleType.objects.all()
         allowed_methods = ['get', ]
-        ordering = ('weight', 'name')
+        ordering = ('name', )
 
 
 class EditorialMemberResource(ModelResource):
@@ -594,3 +593,22 @@ class EditorialMemberResource(ModelResource):
         queryset = em_models.EditorialMember.objects.all()
         allowed_methods = ['get', ]
         ordering = ('board', 'order', 'pk')
+
+
+class LanguageResource(ModelResource):
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'language'
+        queryset = models.Language.objects.all()
+        allowed_methods = ['get', ]
+        ordering = ('name', )
+
+
+class RoleTypeTranslationResource(ModelResource):
+    role = fields.ForeignKey(RoleTypeResource, 'role')
+    language = fields.ForeignKey(LanguageResource, 'language')
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'roletypetranslation'
+        queryset = em_models.RoleTypeTranslation.objects.all()
+        allowed_methods = ['get', ]

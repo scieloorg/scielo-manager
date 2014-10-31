@@ -59,6 +59,8 @@ v2_api_resources = [
     resources_v2.EditorialBoardResource(),
     resources_v2.RoleTypeResource(),
     resources_v2.EditorialMemberResource(),
+    resources_v2.LanguageResource(),
+    resources_v2.RoleTypeTranslationResource(),
 ]
 
 for res in v2_api_resources:
