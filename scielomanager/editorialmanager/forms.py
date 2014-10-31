@@ -2,6 +2,7 @@
 
 from django import forms
 from . import models
+from django.forms.models import BaseInlineFormSet
 from django.utils.translation import ugettext_lazy as _
 from journalmanager.models import Issue, Journal
 
@@ -88,3 +89,35 @@ class BoardMoveForm(forms.Form):
 class RoleTypeForm(forms.ModelForm):
     class Meta:
         model = models.RoleType
+
+
+class RoleTypeTranslationForm(forms.ModelForm):
+    class Meta:
+        model = models.RoleTypeTranslation
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'span12'}),
+        }
+
+
+class RoleTypeTranslationFormSet(BaseInlineFormSet):
+
+    def clean(self):
+        """
+        check that Portuguese and Spanish translations are submited.
+        https://docs.djangoproject.com/en/1.4/topics/forms/formsets/#custom-formset-validation
+        """
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+
+        langs_submitted = []
+        for i in range(0, self.total_form_count()):
+            form = self.forms[i]
+            is_mark_for_delete = self.can_delete and form.cleaned_data.get('DELETE')
+            if 'language' in form.cleaned_data and not is_mark_for_delete:
+                language = form.cleaned_data['language']
+                langs_submitted.append(language.iso_code)
+
+        has_required_langs = ('pt' in langs_submitted) and ('es' in langs_submitted)
+        if not has_required_langs:
+            raise forms.ValidationError("At least Portuguese and Spanish translations are required")

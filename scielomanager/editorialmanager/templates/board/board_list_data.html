@@ -50,9 +50,16 @@
                   </a>
                 </li>
               {% endif %}
+
+              <li>
+                <a data-target='#id_modal_roles' data-toggle="modal" href="{% url editorial.role.list journal.pk %}">
+                  <i class="icon-th-list"></i> {% trans "List Roles" %}
+                </a>
+              </li>
+
               {% if perms.editorialmanager.add_roletype %}
                 <li>
-                  <a data-target='#id_modal_form' data-toggle="modal" href="{% url editorial.role.add journal.pk %}">
+                  <a data-target='#id_modal_roles' data-toggle="modal" href="{% url editorial.role.add journal.pk %}">
                     <i class="icon-plus-sign"></i> {% trans "Add New Role" %}
                   </a>
                 </li>
@@ -200,3 +207,4 @@
 
 {% modal_form title="Edit Member" %}
 {% modal_form title="Confirm to delete this Member" modal_id="id_modal_delete_member" %}
+{% modal_form title="Roles" modal_id="id_modal_roles" %}

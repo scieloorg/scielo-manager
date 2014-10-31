@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from journalmanager.models import Issue
+from journalmanager.models import Issue, Language
 
 
 class EditorialBoard(models.Model):
@@ -51,7 +51,7 @@ class EditorialMember(models.Model):
 
 class RoleType(models.Model):
     """
-    Represents the editor category
+    Represents the board member's roles
     """
     name = models.CharField(_('Role Name'), max_length=256)
 
@@ -61,3 +61,17 @@ class RoleType(models.Model):
     class Meta:
         ordering = ('name', )
 
+
+class RoleTypeTranslation(models.Model):
+    """
+    Represents the role's translations
+    """
+    role = models.ForeignKey(RoleType, related_name='translations')
+    name = models.CharField(_('Role Name'), max_length=256, default='')
+    language = models.ForeignKey(Language)
+
+    def __unicode__(self):
+        return u"%s [%s]" % (self.name, self.language.iso_code)
+
+    class Meta:
+        unique_together = ("role", "language")
