@@ -6,6 +6,7 @@ from django_webtest import WebTest
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
+from editorialmanager.tests import modelfactories as editorial_modelfactories
 from articletrack.tests import modelfactories as articletrack_modelfactories
 from api.resources_v2 import (
     JournalResource,
@@ -1612,4 +1613,317 @@ class CommentRestAPITest(WebTest):
             u'resource_uri',
         ]
 
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+
+class EditorialBoardRestAPITest(WebTest):
+
+    def setUp(self):
+        self.api_path = '/api/v2/editorialboard/'
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
+        # setup collection
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+        # journal
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+        #set the user as editor of the journal
+        self.journal.editor = self.user
+        self.journal.save()
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        """ method POST not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        """ method PUT not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        """ method DELETE not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get(self.api_path, status=401)
+        self.assertEqual(response.status_code, 401)
+
+    def test_editorialboard_index(self):
+        # with
+        board = editorial_modelfactories.EditorialBoardFactory.create(issue=self.issue)
+        # when
+        response = self.app.get(self.api_path, extra_environ=self.extra_environ)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v2_data_editorialboard(self):
+        # with
+        board = editorial_modelfactories.EditorialBoardFactory.create(issue=self.issue)
+        target_url = "%s%s/" % (self.api_path, board.pk)
+        # when
+        response = self.app.get(target_url, extra_environ=self.extra_environ)
+        # then
+        expected_keys = [
+            u'id',
+            u'issue',
+            u'resource_uri',
+        ]
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+
+class RoleTypeRestAPITest(WebTest):
+
+    def setUp(self):
+        self.api_path = '/api/v2/roletype/'
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
+
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        """ method POST not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        """ method PUT not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        """ method DELETE not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get(self.api_path, status=401)
+        self.assertEqual(response.status_code, 401)
+
+    def test_roletype_index(self):
+        # with
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        # when
+        response = self.app.get(self.api_path, extra_environ=self.extra_environ)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v2_data_roletype(self):
+        # with
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        target_url = "%s%s/" % (self.api_path, role.pk)
+        # when
+        response = self.app.get(target_url, extra_environ=self.extra_environ)
+        # then
+        expected_keys = [
+            u'id',
+            u'name',
+            u'resource_uri',
+        ]
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+
+class RoleTypeTranslationRestAPITest(WebTest):
+
+    def setUp(self):
+        self.api_path = '/api/v2/roletypetranslation/'
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
+
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        """ method POST not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        """ method PUT not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        """ method DELETE not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get(self.api_path, status=401)
+        self.assertEqual(response.status_code, 401)
+
+    def test_roletypetranslation_index(self):
+        # with
+        role_i18n = editorial_modelfactories.RoleTypeTranslationFactory.create()
+        # when
+        response = self.app.get(self.api_path, extra_environ=self.extra_environ)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v2_data_roletypetranslation(self):
+        # with
+        role_i18n = editorial_modelfactories.RoleTypeTranslationFactory.create()
+        target_url = "%s%s/" % (self.api_path, role_i18n.pk)
+        # when
+        response = self.app.get(target_url, extra_environ=self.extra_environ)
+        # then
+        expected_keys = [
+            u'id',
+            u'language',
+            u'name',
+            u'resource_uri',
+            u'role',
+        ]
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+
+
+class EditorialMemberRestAPITest(WebTest):
+
+    def setUp(self):
+        self.api_path = '/api/v2/editorialmember/'
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
+        # setup collection
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+        # journal
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+        #set the user as editor of the journal
+        self.journal.editor = self.user
+        self.journal.save()
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        """ method POST not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        """ method PUT not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        """ method DELETE not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get(self.api_path, status=401)
+        self.assertEqual(response.status_code, 401)
+
+    def test_editorialmember_index(self):
+        # with
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        # when
+        response = self.app.get(self.api_path, extra_environ=self.extra_environ)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v2_data_editorialmember(self):
+        # with
+        board = editorial_modelfactories.EditorialBoardFactory.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role, order=1)
+        target_url = "%s%s/" % (self.api_path, member.pk)
+        # when
+        response = self.app.get(target_url, extra_environ=self.extra_environ)
+        # then
+        expected_keys = [
+            u'board',
+            u'city',
+            u'country',
+            u'email',
+            u'first_name',
+            u'id',
+            u'institution',
+            u'last_name',
+            u'link_cv',
+            u'orcid',
+            u'order',
+            u'research_id',
+            u'resource_uri',
+            u'role',
+            u'state'
+        ]
+        self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
+
+
+class LanguageRestAPITest(WebTest):
+
+    def setUp(self):
+        self.api_path = '/api/v2/language/'
+        self.user = auth.UserF(is_active=True)
+        self.extra_environ = _make_auth_environ(self.user.username, self.user.api_key.key)
+
+    def tearDown(self):
+        pass
+
+    def test_post_data(self):
+        """ method POST not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_put_data(self):
+        """ method PUT not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_del_data(self):
+        """ method DELETE not allowed """
+        response = self.app.delete(self.api_path, extra_environ=self.extra_environ, status=405)
+        self.assertEqual(response.status_code, 405)
+
+    def test_access_denied_for_unauthenticated_users(self):
+        response = self.app.get(self.api_path, status=401)
+        self.assertEqual(response.status_code, 401)
+
+    def test_language_index(self):
+        # with
+        language = modelfactories.LanguageFactory.create()
+        # when
+        response = self.app.get(self.api_path, extra_environ=self.extra_environ)
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('objects' in response.content)
+
+    def test_api_v2_data_language(self):
+        # with
+        language = modelfactories.LanguageFactory.create()
+        target_url = "%s%s/" % (self.api_path, language.pk)
+        # when
+        response = self.app.get(target_url, extra_environ=self.extra_environ)
+        # then
+        expected_keys = [
+            u'id',
+            u'iso_code',
+            u'name',
+            u'resource_uri',
+        ]
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

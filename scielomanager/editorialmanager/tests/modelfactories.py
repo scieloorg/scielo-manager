@@ -3,7 +3,7 @@
 import factory
 
 from editorialmanager import models
-from journalmanager.tests.modelfactories import IssueFactory
+from journalmanager.tests.modelfactories import IssueFactory, LanguageFactory
 
 
 class EditorialBoardFactory(factory.Factory):
@@ -16,6 +16,14 @@ class RoleTypeFactory(factory.Factory):
     FACTORY_FOR = models.RoleType
 
     name = factory.Sequence(lambda n: "Role_%s" % n)
+
+
+class RoleTypeTranslationFactory(factory.Factory):
+    FACTORY_FOR = models.RoleTypeTranslation
+
+    role = factory.SubFactory(RoleTypeFactory)
+    name = factory.Sequence(lambda n: "Role_%s" % n)
+    language = factory.SubFactory(LanguageFactory)
 
 
 class EditorialMemberFactory(factory.Factory):
