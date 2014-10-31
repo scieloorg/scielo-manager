@@ -17,7 +17,7 @@ django-tastypie==0.9.16
 django-waffle==0.9.1
 -e git+git://github.com/scieloorg/django-htmlmin.git#egg=django-htmlmin
 -e git+git://github.com/scieloorg/django-cache-machine.git#egg=django-cache-machine
-packtools==0.5
+packtools
 Celery
 django-celery
 django-kombu
