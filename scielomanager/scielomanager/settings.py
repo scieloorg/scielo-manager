@@ -172,11 +172,11 @@ INSTALLED_APPS = (
     'journalmanager',
     'editorialmanager',
     'audit_log',
-
     'validator',
     'accounts',
     'export',
     'health',
+    'thrift',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -295,6 +295,12 @@ if 'djcelery' in INSTALLED_APPS:
     CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
     CELERY_IMPORTS = ('scielomanager.tasks')
 
+if 'thrift' in INSTALLED_APPS:
+    THRIFT_CONFIG = {
+        'HOST': '0.0.0.0',
+        'PORT': '6000',
+    }
+
 
 # ----------------------------------------------------
 # Endereços de enlace para comunicação inter-processos
@@ -303,6 +309,13 @@ if 'djcelery' in INSTALLED_APPS:
 # `IPC_`, para sinalizar que é um endpoint da aplicação.
 # ----------------------------------------------------
 IPC_HEALTHD_BIND_ADDR = 'tcp://0.0.0.0:11711'
+
+
+ELASTICSEARCH_NODES = (
+    'esa.scielo.org:9200',
+    'esb.scielo.org:9200',
+    'esc.scielo.org:9200',
+)
 
 
 # Checkin expiration time span (in days)

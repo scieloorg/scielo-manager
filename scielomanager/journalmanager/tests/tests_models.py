@@ -1,4 +1,6 @@
 # coding: utf-8
+import os
+
 from django.test import TestCase
 from mocker import MockerTestCase
 from django.utils import unittest
@@ -156,7 +158,7 @@ class IssueTests(TestCase):
 
     def test_publication_date(self):
         issue = IssueFactory.create()
-        expected = '9 / 11 - 2012'
+        expected = 'Sep/Nov 2012'
 
         self.assertEqual(issue.publication_date, expected)
 
@@ -797,3 +799,303 @@ class UseLicenseTests(TestCase):
         #  and then license.is_default must be False
         license = models.UseLicense.objects.get(license_code='XXX')
         self.assertFalse(license.is_default)
+
+
+class ArticleTests(TestCase):
+    sample = u"""<article specific-use="sps-1.2">
+                   <front>
+                     <journal-meta>
+                       <journal-title-group>
+                         <journal-title>Revista de Saúde Pública</journal-title>
+                       </journal-title-group>
+                       <issn pub-type="ppub">1032-289X</issn>
+                     </journal-meta>
+                     <article-meta>
+                       <volume>1</volume>
+                       <issue>10</issue>
+                       <pub-date>
+                         <year>2014</year>
+                       </pub-date>
+                       <fpage>10</fpage>
+                       <lpage>15</lpage>
+                     </article-meta>
+                   </front>
+                 </article>"""
+
+    def test_fields_are_created_on_save(self):
+        article = models.Article(xml=self.sample)
+
+        self.assertEqual(article.journal_title, '')
+        self.assertEqual(article.domain_key, '')
+        self.assertEqual(article.aid, '')
+
+        article.save()
+
+        self.assertTrue(article.journal_title)
+        self.assertTrue(article.domain_key)
+        self.assertTrue(article.aid)
+
+    def test_is_visible_defaults_to_true(self):
+        article = models.Article()
+        self.assertTrue(article.is_visible)
+
+    def test_articles_are_unique(self):
+        from django.db import IntegrityError
+        article = models.Article(xml=self.sample)
+        article.save()
+
+        dup_article = models.Article(xml=self.sample)
+        self.assertRaises(IntegrityError, lambda: dup_article.save())
+
+    def test_either_pissn_or_eissn_must_be_present(self):
+        sample = u"""<article>
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                         </journal-meta>
+                         <article-meta>
+                           <volume>1</volume>
+                           <issue>10</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>10</fpage>
+                           <lpage>15</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertRaises(ValueError, lambda: article.save())
+
+    def test_journal_title_must_be_present(self):
+        sample = u"""<article>
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                           </journal-title-group>
+                           <issn pub-type="ppub">1032-289X</issn>
+                         </journal-meta>
+                         <article-meta>
+                           <volume>1</volume>
+                           <issue>10</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>10</fpage>
+                           <lpage>15</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertRaises(ValueError, lambda: article.save())
+
+    def test_get_value_for_element_text(self):
+        article = models.Article(xml=self.sample)
+        self.assertEqual(article.get_value(article.XPaths.YEAR), '2014')
+
+    def test_get_value_for_attribute_value(self):
+        article = models.Article(xml=self.sample)
+        self.assertEqual(article.get_value(article.XPaths.SPS_VERSION), 'sps-1.2')
+
+    def test_get_value_for_empty_element(self):
+        sample = u"""<article>
+                       <front>
+                         <empty-element></empty-element>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article.get_value('/article/front/empty-element'), None)
+
+    def test_get_value_for_enclosed_element(self):
+        sample = u"""<article>
+                       <front>
+                         <enclosed-element />
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article.get_value('/article/front/enclosed-element'), None)
+
+    def test_get_value_for_missing_element(self):
+        article = models.Article(xml=self.sample)
+        self.assertEqual(article.get_value('/article/foo'), None)
+
+    def test_get_value_for_missing_attribute(self):
+        article = models.Article(xml=self.sample)
+        self.assertEqual(article.get_value('/article/@foo'), None)
+
+    def test_get_value_returns_stripped_strings(self):
+        sample = u"""<article>
+                       <front>
+                         <foo>    foobar                         </foo>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article.get_value('/article/front/foo'), 'foobar')
+
+    def test_get_value_returns_first_occurence(self):
+        sample = u"""<article>
+                       <front>
+                         <occ>first</occ>
+                         <occ>second</occ>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article.get_value('/article/front/occ'), 'first')
+
+
+class ArticleXpathsTests(TestCase):
+
+    def setUp(self):
+        here = os.path.abspath(os.path.dirname(__file__))
+        path_to_sample_xml = os.path.join(
+                here, 'xml_samples', '0034-8910-rsp-48-2-0216.xml')
+        with open(path_to_sample_xml) as fp:
+            sample = fp.read()
+
+        self.article = models.Article(xml=sample)
+
+    def test_sps_version(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.SPS_VERSION)[0],
+                'sps-1.2')
+
+    def test_abbrev_journal_title(self):
+        self.assertEqual(
+                self.article.xml.xpath(
+                    models.Article.XPaths.ABBREV_JOURNAL_TITLE)[0].text,
+                u'Rev. Saúde Pública')
+
+    def test_journal_title(self):
+        self.assertEqual(
+                self.article.xml.xpath(
+                    models.Article.XPaths.JOURNAL_TITLE)[0].text,
+                u'Revista de Saúde Pública')
+
+    def test_issn_ppub(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.ISSN_PPUB)[0].text,
+                '0034-8910')
+
+    def test_issn_epub(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.ISSN_EPUB)[0].text,
+                '1518-8787')
+
+    def test_article_title(self):
+        self.assertEqual(
+                self.article.xml.xpath(
+                    models.Article.XPaths.ARTICLE_TITLE)[0].text,
+                'Depressive symptoms in institutionalized older adults')
+
+    def test_year(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.YEAR)[0].text,
+                u'2014')
+
+    def test_volume(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.VOLUME)[0].text,
+                u'48')
+
+    def test_issue(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.ISSUE)[0].text,
+                u'2')
+
+    def test_fpage(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.FPAGE)[0].text,
+                u'216')
+
+    def test_lpage(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.LPAGE)[0].text,
+                u'224')
+
+    def test_elocationid(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.ELOCATION_ID),
+                [])
+
+    def test_head_subject(self):
+        self.assertEqual(
+                self.article.xml.xpath(
+                    models.Article.XPaths.HEAD_SUBJECT)[0].text,
+                u'Artigos Originais')
+
+    def test_doi(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.DOI)[0].text,
+                u'10.1590/S0034-8910.2014048004965')
+
+    def test_pid(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.PID)[0].text,
+                u'S0034-8910.2014048004965')
+
+    def test_article_type(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.ARTICLE_TYPE)[0],
+                u'research-article')
+
+
+class ArticleDomainKeyTests(TestCase):
+    """ Domain key (chave de domínio) é uma chave candidata formada pelo uso
+    de dados do objeto de domínio. É um sinônimo de Natural key.
+    """
+
+    def test_all_fields_but_elocationid_are_present(self):
+        sample = u"""<article>
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                         </journal-meta>
+                         <article-meta>
+                           <volume>1</volume>
+                           <issue>10</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>10</fpage>
+                           <lpage>15</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article._get_domain_key(),
+                'revista-de-saude-publica_1_10_2014_10_15_none')
+
+    def test_all_fields_but_fpage_and_lpage_are_present(self):
+        sample = u"""<article>
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                         </journal-meta>
+                         <article-meta>
+                           <volume>1</volume>
+                           <issue>10</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <elocation-id>1038KGX</elocation-id>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article._get_domain_key(),
+                'revista-de-saude-publica_1_10_2014_none_none_1038kgx')
+

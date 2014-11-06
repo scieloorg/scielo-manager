@@ -6,7 +6,8 @@ import choices
 import caching.base
 from pytz import all_timezones
 from scielomanager import tools
-
+import datetime
+from uuid import uuid4
 try:
     from collections import OrderedDict
 except ImportError:
@@ -31,10 +32,10 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
-import jsonfield
+import celery
 
 from scielomanager.utils import base28
-from scielomanager.custom_fields import ContentTypeRestrictedFileField
+from scielomanager.custom_fields import ContentTypeRestrictedFileField, XMLSPSField
 from . import modelmanagers
 
 #User.__bases__ = (caching.base.CachingMixin, models.Model)
@@ -1084,9 +1085,26 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     @property
     def publication_date(self):
-        return '{0} / {1} - {2}'.format(self.publication_start_month,
-                                        self.publication_end_month,
-                                        self.publication_year)
+        start = self.get_publication_start_month_display()
+        end =  self.get_publication_end_month_display()
+        if start and end:
+            return '{0}/{1} {2}'.format(start[:3], end[:3], self.publication_year)
+        elif start:
+            return '{0} {1}'.format(start[:3], self.publication_year)
+        elif end:
+            return '{0} {1}'.format(end[:3], self.publication_year)
+        else:
+            return self.publication_year
+
+    @property
+    def verbose_identification(self):
+        if self.type == 'supplement':
+            prefixed_number = 'suppl.%s' % self.suppl_text
+        elif self.type == 'special':
+            prefixed_number = 'spe.%s' % self.spe_text
+        else: # regular
+            prefixed_number = 'n.%s' % self.number
+        return 'vol.%s %s' % (self.volume, prefixed_number)
 
     @property
     def suppl_type(self):
@@ -1110,7 +1128,15 @@ class Issue(caching.base.CachingMixin, models.Model):
                 return 'volume'
 
         else:
-            raise AttributeError('Issues of type %s do not have an attribute named: esp_type' % self.get_type_display())
+            raise AttributeError('Issues of type %s do not have an attribute named: spe_type' % self.get_type_display())
+
+    @property
+    def bibliographic_legend(self):
+        abrev_title = self.journal.title_iso
+        issue = self.verbose_identification
+        city = self.journal.publication_city
+        dates = self.publication_date
+        return '%s %s %s %s'% (abrev_title, issue, city, dates)
 
     def _suggest_order(self, force=False):
         """
@@ -1317,12 +1343,208 @@ class AheadPressRelease(PressRelease):
 
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
-# ---- SIGNALS ------
-models.signals.post_save.connect(create_api_key, sender=User)
+
+class Article(caching.base.CachingMixin, models.Model):
+    """
+    Artigo associado ou não a um periódico ou fascículo.
+
+    Obs:
+        Na versão 1.8 do Django, tem incorporado um novo tipo de campo no core: UUIDField, que seria
+        a solucão ideal para o campo ``aid``, incluido otimização no banco de dados.
+        Mais informação em:
+        - https://code.djangoproject.com/ticket/19463
+        - https://github.com/django/django/commit/ed7821231b7dbf34a6c8ca65be3b9bcbda4a0703
+    """
+    objects = caching.base.CachingManager()
+    nocacheobjects = models.Manager()
+    userobjects = modelmanagers.ArticleManager()
+
+    created_at = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
+    updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
+
+    aid = models.CharField(max_length=32, unique=True, editable=False)
+    domain_key = models.SlugField(max_length=2048, unique=True, db_index=False, editable=False)
+    is_visible = models.BooleanField(default=True)
+    is_aop = models.BooleanField(default=False)
+    xml = XMLSPSField()
+    xml_version = models.CharField(max_length=9)
+
+    # artigo pode estar temporariamente desassociado de seu periódico e fascículo
+    journal = models.ForeignKey(Journal, related_name='articles', blank=True, null=True)
+    issue = models.ForeignKey(Issue, related_name='articles', blank=True, null=True)
+    journal_title = models.CharField(_('Journal title'), max_length=512, db_index=True)
+    issn_ppub = models.CharField(max_length=9, db_index=True, null=True)
+    issn_epub = models.CharField(max_length=9, db_index=True, null=True)
+
+    class Meta:
+        permissions = (("list_article", "Can list Article"),)
+
+    class XPaths:
+        """ A classe XPaths serve apenas como um namespace para constantes
+        que representam expressões xpath para elementos do XML comumente
+        acessados. Importante: As expressões são para os elementos e não para
+        seus textos.
+        """
+        SPS_VERSION = '/article/@specific-use'
+        ABBREV_JOURNAL_TITLE = '/article/front/journal-meta/journal-title-group/abbrev-journal-title[@abbrev-type="publisher"]'
+        JOURNAL_TITLE = '/article/front/journal-meta/journal-title-group/journal-title'
+        ISSN_PPUB = '/article/front/journal-meta/issn[@pub-type="ppub"]'
+        ISSN_EPUB = '/article/front/journal-meta/issn[@pub-type="epub"]'
+        ARTICLE_TITLE = '/article/front/article-meta/title-group/article-title'
+        YEAR = '/article/front/article-meta/pub-date/year'
+        VOLUME = '/article/front/article-meta/volume'
+        ISSUE = '/article/front/article-meta/issue'
+        FPAGE = '/article/front/article-meta/fpage'
+        LPAGE = '/article/front/article-meta/lpage'
+        ELOCATION_ID = '/article/front/article-meta/elocation-id'
+        HEAD_SUBJECT = '/article/front/article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject'
+        DOI = '/article/front/article-meta/article-id[@pub-id-type="doi"]'
+        PID = '/article/front/article-meta/article-id[@pub-id-type="publisher-id"]'
+        ARTICLE_TYPE = '/article/@article-type'
+
+    def save(self, *args, **kwargs):
+        """
+        Ao salvar a entidade `Article`, alguns atributos são definidos
+        automaticamente: `journal_title`, `issn_ppub`, `issn_epub`, `is_aop`,
+        `domain_key`, `xml_version` e `aid`. Caso algum dos atributos
+        `journal-title`, `issn_ppub` ou `issn_epub` não sejam encontrados no
+        `xml`, a exceção `ValueError` é levantada.
+
+        Os valores `is_aop` e `domain_key` são atualizados sempre que a
+        instância é salva.
+        """
+        self.is_aop = self._get_is_aop()
+        self.domain_key = self._get_domain_key()
+
+        if not self.pk:
+            self.journal_title = self.get_value(self.XPaths.JOURNAL_TITLE)
+            self.issn_ppub = self.get_value(self.XPaths.ISSN_PPUB)
+            self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB)
+            self.xml_version = self.get_value(self.XPaths.SPS_VERSION) or 'pre-sps'
+            self.aid = str(uuid4().hex)
+
+            if not any([self.issn_ppub, self.issn_epub]):
+                raise ValueError('Either issn_ppub or issn_epub must be set')
+
+            if not self.journal_title:
+                raise ValueError('Could not get journal-title from %s' % self)
+
+        super(Article, self).save(*args, **kwargs)
+
+    def get_value(self, expression):
+        """ Busca `expression` em `self.xml` e retorna o resultado da primeira ocorrência.
+
+        Espaços em branco no início ou fim são removidos. Retorna `None` caso
+        `expression` não encontre elementos, ou o elemento esteja vazio.
+
+        :param expression: expressão xpath para elemento ou atributo.
+        """
+        try:
+            first_occ = self.xml.xpath(expression)[0]
+        except IndexError:
+            return None
+
+        try:
+            value = first_occ.text
+        except AttributeError:
+            # valor de atributo
+            value = first_occ
+
+        try:
+            return value.strip()
+        except AttributeError:
+            return value
+
+    def _get_is_aop(self):
+        """ Acessa os elementos volume e issue do xml para inferir se é um AOP.
+        """
+        volume = self.get_value(self.XPaths.VOLUME)
+        issue = self.get_value(self.XPaths.ISSUE)
+
+        return volume == '00' and issue == '00'
+
+    def _get_domain_key(self):
+        """ Produz uma chave de domínio (Domain key ou Natural key)
+
+        A chave é utilizada na detecção de duplicidades. Os metadados
+        que a compõem e não estão presentes são substituídos pela string
+        `None`, para que a estrutura seja mantida.
+
+        A chave é composta pela concatenação dos metadados por meio do
+        separador `_`:
+
+          * ``//journal-meta/journal-title-group/journal-title``
+          * ``//article-meta/volume``
+          * ``//article-meta/issue``
+          * ``//article-meta/pub-date/year``
+          * ``//article-meta/fpage``
+          * ``//article-meta/lpage``
+          * ``//article-meta/elocation-id``
+
+        Após a concatenação, é normalizada por meio da função `slugify`.
+
+        E.g.: revista-foobar_2_7_2015_32_35_none
+        """
+        id_fields = [
+                self.XPaths.JOURNAL_TITLE,
+                self.XPaths.VOLUME,
+                self.XPaths.ISSUE,
+                self.XPaths.YEAR,
+                self.XPaths.FPAGE,
+                self.XPaths.LPAGE,
+                self.XPaths.ELOCATION_ID,
+        ]
+
+        values = (self.get_value(path) for path in id_fields)
+        text_values = (value if value else 'none' for value in values)
+        joined_values = '_'.join(text_values)
+        return slugify(joined_values)
 
 
+# --------------------
+# Callbacks de signals
+# --------------------
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
-    """Create a matching profile whenever a user object is created."""
+    """ Create a matching profile whenever a user object is created.
+    """
     if created:
         profile, new = UserProfile.objects.get_or_create(user=instance)
+
+
+def create_index(sender, instance, created, **kwargs):
+    """ Indexa o artigo no Elasticsearch sempre que houver alteração.
+    """
+    celery.current_app.send_task(
+            'journalmanager.tasks.submit_to_elasticsearch',
+            args=[instance.pk])
+
+
+def link_article_to_journal(sender, instance, created, **kwargs):
+    """ Tenta encontrar o periódico e o fascículo do artigo recém criado.
+
+    A busca pelo fascículo é disparada automaticamente após a associação
+    bem-sucedida com o periódico.
+    """
+    if created:
+        celery.current_app.send_task(
+                'journalmanager.tasks.link_article_to_journal',
+                args=[instance.pk])
+
+
+def connect_article_post_save_signals():
+    models.signals.post_save.connect(create_index, sender=Article)
+    models.signals.post_save.connect(link_article_to_journal, sender=Article)
+
+
+connect_article_post_save_signals()
+
+
+def disconnect_article_post_save_signals():
+    models.signals.post_save.disconnect(create_index, sender=Article)
+    models.signals.post_save.disconnect(link_article_to_journal, sender=Article)
+
+
+# Callback da tasty-pie para a geração de token para os usuários
+models.signals.post_save.connect(create_api_key, sender=User)
+
