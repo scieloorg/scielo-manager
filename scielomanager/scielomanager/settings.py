@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'waffle',
     'export',
     'south',
+    'thrift',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -287,6 +288,12 @@ if 'djcelery' in INSTALLED_APPS:
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
     CELERY_IMPORTS = ('scielomanager.tasks')
+
+if 'thrift' in INSTALLED_APPS:
+    THRIFT_CONFIG = {
+        'HOST': '127.0.0.1',
+        'PORT': '6000',
+    }
 
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
