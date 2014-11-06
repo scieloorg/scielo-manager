@@ -7,22 +7,6 @@ from journalmanager import models
 from django.contrib.auth.models import Group
 
 
-class ArticleFactory(factory.Factory):
-    FACTORY_FOR = models.Article
-
-    front = {
-        'default-language': 'en',
-        'title-group': {
-            'en': u'Article Title',
-            'pt': u'Título do Artigo',
-        }
-    }
-
-    xml_url = 'http://xml.url/'
-    pdf_url = 'http://pdf.url/'
-    images_url = 'http://img.url/'
-
-
 class UserFactory(factory.Factory):
     FACTORY_FOR = models.User
 

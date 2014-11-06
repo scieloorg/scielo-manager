@@ -22,4 +22,5 @@ Celery
 django-celery
 django-kombu
 defusedxml==0.4.1
+thriftpy
 django-countries
