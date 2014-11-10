@@ -355,12 +355,11 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
-        XMLValidator(mocker.ANY)
-        self.mocker.result(packtools_double.XMLValidatorAnnotationsDouble(mocker.ANY))
-        lxml_tostring = self.mocker.replace('lxml.etree.tostring')
-        lxml_tostring(mocker.ANY, mocker.KWARGS)
-        self.mocker.result("some annotations in xml string")
+        stub_analyze_xml = packtools_double.make_stub_analyze_xml('invalid')
+        mock_utils = self.mocker.replace('validator.utils')
+        mock_utils.analyze_xml
+        self.mocker.result(stub_analyze_xml)
+        self.mocker.replay()
 
         self.mocker.replay()
 
@@ -396,9 +395,10 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
-        XMLValidator(expected_response['uri'])
-        self.mocker.throw(IOError)
+        stub_analyze_xml = packtools_double.make_stub_analyze_xml('throw_io_error')
+        mock_utils = self.mocker.replace('validator.utils')
+        mock_utils.analyze_xml
+        self.mocker.result(stub_analyze_xml)
         self.mocker.replay()
 
         response = self.app.get(
@@ -413,7 +413,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self.assertTrue(xml_data['can_be_analyzed'][0])
         # previous version display a IOError exception custom messsage
         expected_results = None
-        expected_xml_exception = ''
+        expected_xml_exception = u'Error reading file foo.xml'
 
         self.assertEqual(response.context['results'], expected_results)
         self.assertEqual(response.context['xml_exception'], expected_xml_exception)
@@ -422,7 +422,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         self._addWaffleFlag()
         notice = self._makeOne()
 
-        target_xml = "with_syntax_error.xml"
+        target_xml = "error.xml"
         expected_response = {
             "filename": "1415-4757-gmb-37-0210.xml",
             "uri": self._get_path_of_test_xml(target_xml)
@@ -436,24 +436,12 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         balaio()
         self.mocker.result(BalaioTest())
 
-        syntax_error_data = {
-            'message': u'Premature end of data in tag xml line 1, line 1, column 6',
-            'line': 1,
-            'column': 6,
-            'code': 77,
-        }
+        expected_xml_exception = u'Premature end of data in tag unclosed_tag line 5, line 5, column 17'
 
-        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
-        XMLValidator(expected_response['uri'])
-        self.mocker.throw(
-            lxml.etree.XMLSyntaxError(
-                syntax_error_data['message'],
-                syntax_error_data['code'],
-                syntax_error_data['line'],
-                syntax_error_data['column'],
-            )
-        )
-
+        stub_analyze_xml = packtools_double.make_stub_analyze_xml('syntax_error')
+        mock_utils = self.mocker.replace('validator.utils')
+        mock_utils.analyze_xml
+        self.mocker.result(stub_analyze_xml)
         self.mocker.replay()
 
         response = self.app.get(
@@ -471,7 +459,7 @@ class CheckinDetailTests(WebTest, mocker.MockerTestCase):
         xml_exception = response.context['xml_exception']
         self.assertIsNone(results)
         self.assertIsNotNone(xml_exception)
-        self.assertEqual(xml_exception, syntax_error_data['message'])
+        self.assertEqual(xml_exception, expected_xml_exception)
 
 
 

@@ -67,6 +67,12 @@ def make_stub_analyze_xml(type):
             'meta': sample_meta,
         }
         err = None
+    elif type == 'throw_io_error':
+        result = None
+        err = IOError(u'Error reading file foo.xml')
+    elif type == 'syntax_error':
+        result = None
+        err = Exception(u'Premature end of data in tag unclosed_tag line 5, line 5, column 17')
     else:
         raise ValueError('Unknown type value')
 
