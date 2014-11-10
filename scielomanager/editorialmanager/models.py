@@ -3,7 +3,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from journalmanager.models import Issue
+from journalmanager.models import Issue, Language
 
 
 class EditorialBoard(models.Model):
@@ -37,6 +37,8 @@ class EditorialMember(models.Model):
     research_id = models.CharField(_('ResearchID'), max_length=256, null=True, blank=True)
     orcid = models.CharField(_('ORCID'), max_length=256, null=True, blank=True)
 
+    order = models.IntegerField(_('board order'), default=1)
+
     def __unicode__(self):
         return self.get_full_name()
 
@@ -44,19 +46,32 @@ class EditorialMember(models.Model):
         return ' '.join([self.first_name, self.last_name])
 
     class Meta:
-        ordering = ('board', 'role__weight')
+        ordering = ('board', 'order', 'pk')
 
 
 class RoleType(models.Model):
     """
-    Represents the editor category
+    Represents the board member's roles
     """
     name = models.CharField(_('Role Name'), max_length=256)
-    weight = models.PositiveSmallIntegerField(_('role weight'), default=10)
 
     def __unicode__(self):
         return self.name
 
     class Meta:
-        ordering = ('weight', 'name')
+        ordering = ('name', )
 
+
+class RoleTypeTranslation(models.Model):
+    """
+    Represents the role's translations
+    """
+    role = models.ForeignKey(RoleType, related_name='translations')
+    name = models.CharField(_('Role Name'), max_length=256, default='')
+    language = models.ForeignKey(Language)
+
+    def __unicode__(self):
+        return u"%s [%s]" % (self.name, self.language.iso_code)
+
+    class Meta:
+        unique_together = ("role", "language")

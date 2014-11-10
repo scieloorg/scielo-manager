@@ -1,0 +1,104 @@
+{% extends "base_lv1.html" %}
+{% load show_field %}
+{% load i18n %}
+
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li><a href="{{ board_url }}">{% trans 'Editorial Board' %}</a><span class="divider">/</span></li>
+    <li><a href="{% url editorial.role.list journal_id %}">{% trans 'Roles' %}</a><span class="divider">/</span></li>
+    <li class="active">{% trans 'Role Translations' %}</li>
+  </ul>
+
+  <h2>
+    {% trans 'Role Translation for' %}:
+    <span class="pull-right">
+      <em>
+        {% if perms.editorialmanager.change_roletype %}
+          <a href="{% url editorial.role.edit journal_id role_type.pk %}">
+            {{ role_type.name }}
+          </a>
+        {% else %}
+          {{ role_type.name }}
+        {% endif %}
+      </em>
+    </span>
+  </h2>
+  <div class="well">
+
+    <form id="role-translations-form" action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
+      {% csrf_token %}
+      {% if formset.non_form_errors %}
+        <div class="alert alert-block alert-error">
+          {{ formset.non_form_errors }}
+        </div>
+      {% endif %}
+      <table id="{{ formset.prefix }}" class="table table-striped">
+        <thead>
+          <tr>
+            <th>{% trans "Translated name" %}:</th>
+            <th class='span3'>{% trans "Language" %}:</th>
+            <th class='span1'></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in formset.forms %}
+            {% if form.non_field_errors %}
+              <div class="alert alert-block alert-error">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
+            <tr>
+              <td>
+                {{ form.name }}
+                {% if form.name.errors %}
+                  <div class="alert alert-error">
+                    {{ form.name.errors }}
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {{ form.language }}
+                {% if form.language.errors %}
+                  <div class="alert alert-error">
+                    {{ form.language.errors }}
+                  </div>
+                {% endif %}
+              </td>
+              <td>
+                {% for field in form.hidden_fields %}
+                  {{ field }}
+                {% endfor %}
+                {% if form.instance.pk %}
+                  {{ form.DELETE }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p>{{ formset.management_form }}</p>
+
+      <div class="row-fluid">
+          <a class="btn btn-danger pull-left" href="{{ board_url }}">{% trans "Back to Board" %}</a>
+          <input type="submit" class="btn btn-success pull-right" value='{% trans "Save" %}' />
+      </div>
+    </form>
+  </div>
+
+{% endblock content %}
+{% block extrafooter %}
+{{ block.super }}
+  <script>
+    $(document).ready(function() {
+      $('#{{ formset.prefix }} tbody tr input').addClass('span12');
+      //multiple-formsets
+      $('#{{ formset.prefix }} tbody tr').formset({
+        formCssClass: 'dynamic-{{ formset.prefix }}-form',
+        prefix: '{{ formset.prefix }}'
+      });
+    });
+  </script>
+{% endblock %}

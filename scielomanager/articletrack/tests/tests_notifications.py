@@ -8,13 +8,7 @@ from django.test.utils import override_settings
 from django_factory_boy import auth
 
 from articletrack.tests import modelfactories
-from articletrack import utils, models
-
-
-def generate_subject(action, subject=''):
-    subject_prefix = settings.EMAIL_SUBJECT_PREFIX
-    subject_suffix = utils.EMAIL_DATA_BY_ACTION[action]['subject_sufix']
-    return ' '.join([subject_prefix, subject, subject_suffix])
+from articletrack import models, notifications
 
 
 class CheckinMessageTests(TestCase):
@@ -41,11 +35,25 @@ class CheckinMessageTests(TestCase):
         self.team.join(self.submitter)
         self.expected_recipients = [user.email for user in [member1, member2, member3, self.submitter, ]]
         self.expected_recipients = list(set(self.expected_recipients))
+        self.expected_subject_sufix_by_action = {
+            'checkin_reject': 'Package rejected',
+            'checkin_review': 'Package reviewed',
+            'checkin_accept': 'Package accepted',
+            'checkin_send_to_pending': 'Package send to pending',
+            'checkin_send_to_review': 'Package sent to review',
+            'checkin_send_to_checkout': 'Package sent to checkout',
+            'checkout_confirmed': 'Package checkout confirmed',
+        }
 
     def tearDown(self):
         """
         Restore the default values.
         """
+
+    def _make_subject(self, action, subject=''):
+        subject_prefix = settings.EMAIL_SUBJECT_PREFIX
+        subject_suffix = self.expected_subject_sufix_by_action[action]
+        return ' '.join([subject_prefix, subject, subject_suffix])
 
     @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_each_action(self):
@@ -53,9 +61,9 @@ class CheckinMessageTests(TestCase):
         for action in self.ACTIONS:
             email_count += 1
             # when
-            result = utils.checkin_send_email_by_action(checkin=self.checkin, action=action)
+            result = notifications.checkin_send_email_by_action(checkin=self.checkin, action=action)
             # then
-            expected_subject = generate_subject(action=action, subject=self.checkin.package_name)
+            expected_subject = self._make_subject(action, subject=self.checkin.package_name)
 
             self.assertTrue(result)
             self.assertEqual(len(mail.outbox), email_count)
@@ -87,6 +95,16 @@ class TicketMessageTests(TestCase):
         self.team.join(self.submitter)
         self.expected_recipients = [user.email for user in [member1, member2, member3, self.submitter, self.ticket.author]]
         self.expected_recipients = list(set(self.expected_recipients))
+        self.expected_subject_sufix_by_action = {
+            'ticket_add': 'Ticket created',
+            'ticket_edit': 'Ticket edited',
+            'ticket_close': 'Ticket closed',
+        }
+
+    def _make_subject(self, action, subject=''):
+        subject_prefix = settings.EMAIL_SUBJECT_PREFIX
+        subject_suffix = self.expected_subject_sufix_by_action[action]
+        return ' '.join([subject_prefix, subject, subject_suffix])
 
     def tearDown(self):
         """
@@ -99,9 +117,9 @@ class TicketMessageTests(TestCase):
         for action in self.ACTIONS:
             email_count += 1
             # when
-            result = utils.ticket_send_mail_by_action(ticket=self.ticket, action=action)
+            result = notifications.ticket_send_mail_by_action(ticket=self.ticket, action=action)
             # then
-            expected_subject = generate_subject(action=action)
+            expected_subject = self._make_subject(action)
 
             self.assertTrue(result)
             self.assertEqual(len(mail.outbox), email_count)
@@ -133,21 +151,31 @@ class CommentMessageTests(TestCase):
         self.team.join(self.submitter)
         self.expected_recipients = [user.email for user in [member1, member2, member3, self.submitter, self.ticket.author]]
         self.expected_recipients = list(set(self.expected_recipients))
+        self.expected_subject_sufix_by_action = {
+            'comment_created': 'New comment',
+            'comment_edit': 'Comment edited',
+        }
 
     def tearDown(self):
         """
         Restore the default values.
         """
 
+    def _make_subject(self, action, subject=''):
+        subject_prefix = settings.EMAIL_SUBJECT_PREFIX
+        subject_suffix = self.expected_subject_sufix_by_action[action]
+        return ' '.join([subject_prefix, subject, subject_suffix])
+
     @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_each_action(self):
         email_count = 0
+        message_class = notifications.TicketMessage
         for action in self.ACTIONS:
             email_count += 1
             # when
-            result = utils.comment_send_mail_by_action(comment=self.comment, action=action)
+            result = notifications.comment_send_mail_by_action(comment=self.comment, action=action)
             # then
-            expected_subject = generate_subject(action=action)
+            expected_subject = self._make_subject(action)
 
             self.assertTrue(result)
             self.assertEqual(len(mail.outbox), email_count)

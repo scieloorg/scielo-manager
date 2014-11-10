@@ -8,6 +8,7 @@ import re
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
+from django.contrib.auth.models import Group
 
 from scielomanager import settings
 
@@ -112,3 +113,12 @@ def asbool(s):
         return s
     s = str(s).strip()
     return s.lower() in truthy
+
+
+def get_users_by_group(group):
+    """
+    Get all users from a Group with name:``group`` or raise a ObjectDoesNotExist
+    """
+    traget_group = Group.objects.get(name=group)
+    return traget_group.user_set.all()
+

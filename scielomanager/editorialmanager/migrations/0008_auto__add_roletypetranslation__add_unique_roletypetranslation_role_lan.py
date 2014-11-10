@@ -8,14 +8,26 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'RoleTypeTranslation'
+        db.create_table('editorialmanager_roletypetranslation', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('role', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', to=orm['editorialmanager.RoleType'])),
+            ('name', self.gf('django.db.models.fields.CharField')(default='', max_length=256)),
+            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'])),
+        ))
+        db.send_create_signal('editorialmanager', ['RoleTypeTranslation'])
 
-        # Changing field 'EditorialMember.email'
-        db.alter_column('editorialmanager_editorialmember', 'email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True))
+        # Adding unique constraint on 'RoleTypeTranslation', fields ['role', 'language']
+        db.create_unique('editorialmanager_roletypetranslation', ['role_id', 'language_id'])
+
 
     def backwards(self, orm):
+        # Removing unique constraint on 'RoleTypeTranslation', fields ['role', 'language']
+        db.delete_unique('editorialmanager_roletypetranslation', ['role_id', 'language_id'])
 
-        # Changing field 'EditorialMember.email'
-        db.alter_column('editorialmanager_editorialmember', 'email', self.gf('django.db.models.fields.EmailField')(default=None, max_length=75))
+        # Deleting model 'RoleTypeTranslation'
+        db.delete_table('editorialmanager_roletypetranslation')
+
 
     models = {
         'auth.group': {
@@ -60,7 +72,7 @@ class Migration(SchemaMigration):
             'issue': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Issue']", 'unique': 'True'})
         },
         'editorialmanager.editorialmember': {
-            'Meta': {'ordering': "('board', 'role__weight')", 'object_name': 'EditorialMember'},
+            'Meta': {'ordering': "('board', 'order', 'pk')", 'object_name': 'EditorialMember'},
             'board': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['editorialmanager.EditorialBoard']"}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'country': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
@@ -71,15 +83,22 @@ class Migration(SchemaMigration):
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'link_cv': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'orcid': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
+            'order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'research_id': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             'role': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['editorialmanager.RoleType']"}),
             'state': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'})
         },
         'editorialmanager.roletype': {
-            'Meta': {'ordering': "('weight', 'name')", 'object_name': 'RoleType'},
+            'Meta': {'ordering': "('name',)", 'object_name': 'RoleType'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'weight': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '10'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+        },
+        'editorialmanager.roletypetranslation': {
+            'Meta': {'unique_together': "(('role', 'language'),)", 'object_name': 'RoleTypeTranslation'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
+            'name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '256'}),
+            'role': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'to': "orm['editorialmanager.RoleType']"})
         },
         'journalmanager.collection': {
             'Meta': {'ordering': "['name']", 'object_name': 'Collection'},

@@ -528,10 +528,7 @@ table._listings h4 {
 }
 
 /* board members list (accordions) */
-.accordion-board-members li>div {
-  padding-left: 10px;
-  padding-right: 10px;
-}
+
 .accordion-board-members li div.btn-group .btn {
   margin-top: 25px;
 }

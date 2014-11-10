@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load modal %}
+
+<table class="table table-hover table-striped">
+  <thead>
+      <tr>
+        <th>{% trans "Role Name" %}:</th>
+        <th class="span1">{% trans "Action" %}:</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for role in roles %}
+      <tr>
+        <td>{{ role.name }}</td>
+        <td>
+          <div class="btn-group">
+            {% if perms.editorialmanager.change_roletype %}
+              <a href="{% url editorial.role.edit journal_id role.pk %}" class="btn btn-mini btn-primary">
+                <i class="icon-pencil"></i> {% trans "Edit" %}
+              </a>
+              <a href="{% url editorial.role.translate journal_id role.pk %}" class="btn btn-mini">
+                <i class="icon-globe"></i> {% trans "Translate" %}
+              </a>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

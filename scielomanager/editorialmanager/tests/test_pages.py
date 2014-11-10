@@ -3,6 +3,7 @@
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from waffle import Flag
 from journalmanager.tests import modelfactories
 from . import modelfactories as editorial_modelfactories
 from .test_forms import _makePermission
@@ -17,6 +18,8 @@ def _set_permission_to_group(perm, group):
 class PagesAsEditorTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         self.group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -41,6 +44,47 @@ class PagesAsEditorTests(WebTest):
 
     def tearDown(self):
         pass
+
+    def test_status_code_editorial_index_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        target_url = reverse('editorial.index')
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_journal_detail_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        target_url = reverse("editorial.journal.detail", args=[self.journal.pk])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_editorial_board_add_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        target_url = reverse("editorial.board.add", args=[self.journal.id, self.issue.id])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_editorial_board_edit_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        member.board = EditorialBoard.objects.create(issue=self.issue)
+        member.save()
+        target_url = reverse("editorial.board.edit", args=[self.journal.id, member.id])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
+
+    def test_status_code_editorial_board_delete_without_waffle_flag(self):
+        # delete waffle:
+        Flag.objects.filter(name='editorialmanager').delete()
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        member.board = EditorialBoard.objects.create(issue=self.issue)
+        member.save()
+        target_url = reverse("editorial.board.delete", args=[self.journal.id, member.id])
+        response = self.app.get(target_url, user=self.user, expect_errors=True)
+        self.assertEqual(response.status_code, 404)
 
     def test_logged_user_access_to_index(self):
         """
@@ -250,3 +294,156 @@ class PagesAsLibrarianTests(PagesAsEditorTests):
 
     def tearDown(self):
         super(PagesAsLibrarianTests, self).tearDown()
+
+
+
+class RoleType(WebTest):
+
+    def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
+        # create a group 'Editors'
+        group = modelfactories.GroupFactory(name="Editors")
+        # create a user and set group 'Editors'
+        self.user = modelfactories.UserFactory(is_active=True)
+        self.user.groups.add(group)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+
+        # set the user as editor of the journal
+        self.journal.editor = self.user
+
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def test_access_to_ADD_ROLE_button_is_DISABLED(self):
+        """
+        User must have the permission: editorialmanager.add_roletype to see the button
+        """
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        add_role_url = reverse("editorial.role.add", args=[self.journal.id])
+        self.assertNotIn(add_role_url, response.body)
+
+    def test_access_to_ADD_ROLE_button_is_ENABLE(self):
+        """
+        User must have the permission: editorialmanager.add_roletype to see the button
+        """
+        # with
+        perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
+        self.user.user_permissions.add(perm_add_roletype)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        add_role_url = reverse("editorial.role.add", args=[self.journal.id])
+        self.assertIn(add_role_url, response.body)
+
+    def test_access_to_EDIT_ROLE_button_is_DISABLED(self):
+        """
+        User must have the permission: editorialmanager.change_roletype to see the button
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertNotIn(edit_role_url, response.body)
+
+    def test_access_to_EDIT_ROLE_button_is_ENABLE(self):
+        """
+        User must have the permission: editorialmanager.change_roletype to see the button
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create()
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertIn(edit_role_url, response.body)
+
+    def test_access_to_role_list_link(self):
+        """
+        User must not have any particular permission, only the waffle must be activated
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        list_role_url = reverse("editorial.role.list", args=[self.journal.id,])
+        self.assertIn(list_role_url, response.body)
+
+    def test_access_to_EDIT_and_TRANSLATE_from_role_list_DISABLE(self):
+        """
+        User must not have any particular permission, but cant see the edit nor translate buttons
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
+        # when
+        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/role_type_list.html')
+        self.assertIn(role.name, response.body)
+        self.assertIn(role, response.context['roles'])
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertNotIn(edit_role_url, response.body)
+        translate_role_url = reverse('editorial.role.translate', args=[self.journal.id, role.id])
+        self.assertNotIn(translate_role_url, response.body)
+
+    def test_access_to_EDIT_and_TRANSLATE_from_role_list_ENABLE(self):
+        """
+        If user have permissions to change_roletype, must see EDIT and TRANSLATE buttons in role's list
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        # when
+        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
+
+        # then
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'board/role_type_list.html')
+        self.assertIn(role.name, response.body)
+        edit_role_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        self.assertIn(edit_role_url, response.body)
+        translate_role_url = reverse('editorial.role.translate', args=[self.journal.id, role.id])
+        self.assertIn(translate_role_url, response.body)
+

@@ -2,11 +2,12 @@
 
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
+from waffle import Flag
 
 from journalmanager.tests import modelfactories
 
 from . import modelfactories as editorial_modelfactories
-from editorialmanager.models import EditorialMember, EditorialBoard
+from editorialmanager.models import EditorialMember, EditorialBoard, RoleType, RoleTypeTranslation
 from audit_log.models import AuditLogEntry, ADDITION, CHANGE, DELETION
 
 
@@ -35,6 +36,8 @@ def _add_required_permission_to_group(group):
 class RestrictedJournalFormTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
         #create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
 
@@ -97,6 +100,8 @@ class RestrictedJournalFormTests(WebTest):
 class AddUserAsEditorFormTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
 
         perm1 = _makePermission(perm='list_editor_journal', model='journal', app_label='journalmanager')
         perm2 = _makePermission(perm='change_editor', model='journal', app_label='journalmanager')
@@ -144,6 +149,8 @@ class AddUserAsEditorFormTests(WebTest):
 class EditorialMemberFormAsEditorTests(WebTest):
 
     def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -171,7 +178,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
     def tearDown(self):
         pass
 
-    def test_ADD_board_memeber_valid_POST_is_valid(self):
+    def test_ADD_board_member_valid_POST_is_valid(self):
         """
         User of the group "Editors" successfully ADD a new board member
         """
@@ -248,7 +255,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         for field_name in member_data.keys():
             self.assertIn(field_name, entry.change_message)
 
-    def test_ADD_board_memeber_invalid_POST_is_invalid(self):
+    def test_ADD_board_member_invalid_POST_is_invalid(self):
         """
         User of the group "Editors" UNsuccessfully ADD a new board member with a invalid email
         """
@@ -301,8 +308,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
 
-
-    def test_EDIT_board_memeber_valid_POST_is_valid(self):
+    def test_EDIT_board_member_valid_POST_is_valid(self):
         """
         User of the group "Editors" successfully EDIT a board member
         """
@@ -381,7 +387,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         for field_name in member_data_update.keys():
             self.assertIn(field_name, entry.change_message)
 
-    def test_EDIT_board_memeber_invalid_POST_is_invalid(self):
+    def test_EDIT_board_member_invalid_POST_is_invalid(self):
         """
         User of the group "Editors" UNsuccessfully EDIT a board member with a invalid email
         """
@@ -449,7 +455,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
 
-    def test_DELETE_board_memeber_valid_POST_is_valid(self):
+    def test_DELETE_board_member_valid_POST_is_valid(self):
         """
         User of the group "Editors" successfully DELETE a board member
         """
@@ -510,3 +516,1418 @@ class EditorialMemberFormAsLibrarianTests(EditorialMemberFormAsEditorTests):
 
     def tearDown(self):
         super(EditorialMemberFormAsLibrarianTests, self).tearDown()
+
+
+class MembersSortingOnActionTests(WebTest):
+
+    def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
+        # create a group 'Editors'
+        group = modelfactories.GroupFactory(name="Editors")
+        # create a user and set group 'Editors'
+        self.user = modelfactories.UserFactory(is_active=True)
+        self.user.groups.add(group)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+
+        # set the user as editor of the journal
+        self.journal.editor = self.user
+
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+        _add_required_permission_to_group(group)
+
+    # next tests DELETE one member on each role
+    def test_three_roles_delete_first_member_of_three_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles: [a1(1), a2(2), a3(3), ]
+        Delete the first one (order: 1), the other will remain in sequence: [a2(1), a3(2), ]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        # delete member 1
+        response = self.app.get(reverse("editorial.board.delete", args=[self.journal.id, member1.id]), user=self.user)
+        form = response.forms['member-form']
+        response = form.submit().follow()
+
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member DELETED successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2])
+        m1, m2 = [m for m in board.editorialmember_set.all()]
+        self.assertEqual(m1.pk, member2.pk)
+        self.assertEqual(m1.order, 1)
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+    def test_three_roles_delete_second_member_of_three_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. [a1(1), a2(2), a3(3), ]
+        Delete the SECOND member (order: 2), the other will remain in sequence:  [a1(1), a3(2), ]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        # delete member 1
+        response = self.app.get(reverse("editorial.board.delete", args=[self.journal.id, member2.id]), user=self.user)
+        form = response.forms['member-form']
+        response = form.submit().follow()
+
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member DELETED successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2])
+        m1, m2 = [m for m in board.editorialmember_set.all()]
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+    def test_three_roles_delete_third_member_of_three_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. [a1(1), a2(2), a3(3), ]
+        Delete the THIRD member (order: 3), the other will remain in sequence: [a1(1), a2(2),]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        # delete member 1
+        response = self.app.get(reverse("editorial.board.delete", args=[self.journal.id, member3.id]), user=self.user)
+        form = response.forms['member-form']
+        response = form.submit().follow()
+
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member DELETED successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2])
+        m1, m2 = [m for m in board.editorialmember_set.all()]
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 2)
+
+    # next tests DELETE with MORE THAN one member on each role
+    def test_three_roles_six_members_delete_second_member_must_keep_sequence(self):
+        """
+        Create 6 board members, 3 pairs with 3 different roles. [a1(1), a2(1), a3(2), a4(2), a5(3), a6(3), ]
+        Delete the second member (a2, order: 1, role: 1), the other will remain in sequence: [a1(1), a3(2), a4(2), a5(3), a6(3), ]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        # delete member 1
+        response = self.app.get(reverse("editorial.board.delete", args=[self.journal.id, member2.id]), user=self.user)
+        form = response.forms['member-form']
+        response = form.submit().follow()
+
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member DELETED successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, ])
+
+        m1, m2, m3, m4, m5 = [m for m in board.editorialmember_set.all()]
+
+        # must match members and orders:
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member4.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member5.pk)
+        self.assertEqual(m4.order, 3)
+
+        self.assertEqual(m5.pk, member6.pk)
+        self.assertEqual(m5.order, 3)
+
+    def test_three_roles_six_members_delete_fourth_member_must_keep_sequence(self):
+        """
+        Create 6 board members, 3 pairs with 3 different roles. [a1(1), a2(1), a3(2), a4(2), a5(3), a6(3), ]
+        Delete the fourth member (a4, order: 2, role: 2), the other will remain in sequence: [a1(1), a2(1), a3(2), a5(3), a6(3), ]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        # delete member 1
+        response = self.app.get(reverse("editorial.board.delete", args=[self.journal.id, member4.id]), user=self.user)
+        form = response.forms['member-form']
+        response = form.submit().follow()
+
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member DELETED successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, 3, ])
+
+        m1, m2, m3, m4, m5 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 1)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member5.pk)
+        self.assertEqual(m4.order, 3)
+
+        self.assertEqual(m5.pk, member6.pk)
+        self.assertEqual(m5.order, 3)
+
+    # next tests ADD one member on each role
+    def test_three_roles_three_members_add_member_to_first_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        ADD a new member (AX) with the FIRST role (order: 1), then all 4 members must keep in sequence: a1(1), AX(1), a2(2), a3(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        member_data = {
+            'role': role1,
+            'first_name': 'first name',
+            'last_name': 'last name',
+            'email': 'email@example.com',
+            'institution': 'institution name',
+            'link_cv': 'http://scielo.org/php/index.php',
+            'state': 'SP',
+            'country': 'Brasil',
+        }
+        # when
+        response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
+
+        form = response.forms['member-form']
+        form.set('role',  member_data['role'].pk)
+        form['first_name'] = member_data['first_name']
+        form['last_name'] = member_data['last_name']
+        form['email'] = member_data['email']
+        form['institution'] = member_data['institution']
+        form['link_cv'] = member_data['link_cv']
+        form['state'] = member_data['state']
+        form['country'] = member_data['country']
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member created successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # retrieve new member from db:
+        new_member = EditorialMember.objects.get(
+            role=member_data['role'],
+            first_name=member_data['first_name'],
+            last_name=member_data['last_name'],
+            email=member_data['email'],
+            institution=member_data['institution'],
+            link_cv=member_data['link_cv'],
+            state=member_data['state'],
+            country=member_data['country'],
+        )
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, ])
+        m1, m2, m3, m4 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, new_member.pk)
+        self.assertEqual(m2.order, 1)
+
+        self.assertEqual(m3.pk, member2.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member3.pk)
+        self.assertEqual(m4.order, 3)
+
+    def test_three_roles_three_members_add_member_to_second_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        ADD a new member (AX) with the SECOND role (order: 2), then all 4 members must keep in sequence: a1(1), a2(2), AX(2), a3(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        member_data = {
+            'role': role2,
+            'first_name': 'first name',
+            'last_name': 'last name',
+            'email': 'email@example.com',
+            'institution': 'institution name',
+            'link_cv': 'http://scielo.org/php/index.php',
+            'state': 'SP',
+            'country': 'Brasil',
+        }
+        # when
+        response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
+
+        form = response.forms['member-form']
+        form.set('role',  member_data['role'].pk)
+        form['first_name'] = member_data['first_name']
+        form['last_name'] = member_data['last_name']
+        form['email'] = member_data['email']
+        form['institution'] = member_data['institution']
+        form['link_cv'] = member_data['link_cv']
+        form['state'] = member_data['state']
+        form['country'] = member_data['country']
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member created successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # retrieve new member from db:
+        new_member = EditorialMember.objects.get(
+            role=member_data['role'],
+            first_name=member_data['first_name'],
+            last_name=member_data['last_name'],
+            email=member_data['email'],
+            institution=member_data['institution'],
+            link_cv=member_data['link_cv'],
+            state=member_data['state'],
+            country=member_data['country'],
+        )
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, ])
+        m1, m2, m3, m4 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, new_member.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member3.pk)
+        self.assertEqual(m4.order, 3)
+
+    def test_three_roles_three_members_add_member_with_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        ADD a new member (AX) with the NEW role, then all 4 members must keep in sequence: a1(1), a2(2), a3(3), AX(4)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        member_data = {
+            'role': new_role,
+            'first_name': 'first name',
+            'last_name': 'last name',
+            'email': 'email@example.com',
+            'institution': 'institution name',
+            'link_cv': 'http://scielo.org/php/index.php',
+            'state': 'SP',
+            'country': 'Brasil',
+        }
+        # when
+        response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
+
+        form = response.forms['member-form']
+        form.set('role',  member_data['role'].pk)
+        form['first_name'] = member_data['first_name']
+        form['last_name'] = member_data['last_name']
+        form['email'] = member_data['email']
+        form['institution'] = member_data['institution']
+        form['link_cv'] = member_data['link_cv']
+        form['state'] = member_data['state']
+        form['country'] = member_data['country']
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board Member created successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # retrieve new member from db:
+        new_member = EditorialMember.objects.get(
+            role=member_data['role'],
+            first_name=member_data['first_name'],
+            last_name=member_data['last_name'],
+            email=member_data['email'],
+            institution=member_data['institution'],
+            link_cv=member_data['link_cv'],
+            state=member_data['state'],
+            country=member_data['country'],
+        )
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, 4, ])
+        m1, m2, m3, m4 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 3)
+
+        self.assertEqual(m4.pk, new_member.pk)
+        self.assertEqual(m4.order, 4)
+
+    # next tests with ONLY one member on each role
+    def test_three_roles_three_members_edit_1st_member_role_to_a_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        EDIT a member (a1) changing to a NEW role, then all members must keep in sequence: a2(1), a3(2), a1(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member1.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  new_role.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member2.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member1.pk)
+        self.assertEqual(m3.order, 3)
+
+    def test_three_roles_three_members_edit_2nd_member_role_to_a_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        EDIT a member (a2) changing to a NEW role, then all members must keep in sequence: a1(1), a3(2), a2(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member2.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  new_role.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member2.pk)
+        self.assertEqual(m3.order, 3)
+
+    def test_three_roles_three_members_edit_3rd_member_role_to_a_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        EDIT a member (a3) changing to a NEW role, then all members must keep in sequence: a1(1), a2(2), a3(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member3.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  new_role.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 3)
+
+    def test_three_roles_three_members_edit_1st_member_role_to_the_2nd_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1, a2, a3,)
+        EDIT a member (a1) changing to the 2nd role, then all members must keep in sequence: a2(1), a1(1), a3(2)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member1.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  role2.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 1)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 2)
+
+    # next tests with MORE THAN one member on each role
+    def test_three_roles_six_members_edit_1st_member_role_to_a_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[1], a3[2], a4[2], a5[3], a6[3])
+        EDIT a member (a1) changing to a NEW role, then all members must keep in sequence: a2[1], a3[2], a4[2], a5[3], a6[3], a1[4]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member1.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  new_role.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4,])
+        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member2.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member4.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member5.pk)
+        self.assertEqual(m4.order, 3)
+
+        self.assertEqual(m5.pk, member6.pk)
+        self.assertEqual(m5.order, 3)
+
+        self.assertEqual(m6.pk, member1.pk)
+        self.assertEqual(m6.order, 4)
+
+    def test_three_roles_six_members_edit_2nd_member_role_to_a_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[1], a3[2], a4[2], a5[3], a6[3])
+        EDIT a member (a2) changing to a NEW role, then all members must keep in sequence: a1[1], a3[2], a4[2], a5[3], a6[3], a2[4]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member2.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  new_role.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4,])
+        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member4.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member5.pk)
+        self.assertEqual(m4.order, 3)
+
+        self.assertEqual(m5.pk, member6.pk)
+        self.assertEqual(m5.order, 3)
+
+        self.assertEqual(m6.pk, member2.pk)
+        self.assertEqual(m6.order, 4)
+
+    def test_three_roles_six_members_edit_3rd_member_role_to_a_new_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[1], a3[2], a4[2], a5[3], a6[3])
+        EDIT a member (a3) changing to a NEW role, then all members must keep in sequence: a1[1], a2[1], a4[2], a5[3], a6[3], a3[4]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        new_role = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member3.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  new_role.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, 3, 4,])
+        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 1)
+
+        self.assertEqual(m3.pk, member4.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member5.pk)
+        self.assertEqual(m4.order, 3)
+
+        self.assertEqual(m5.pk, member6.pk)
+        self.assertEqual(m5.order, 3)
+
+        self.assertEqual(m6.pk, member3.pk)
+        self.assertEqual(m6.order, 4)
+
+    def test_three_roles_six_members_edit_1st_member_role_to_the_2nd_role_must_keep_sequence(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[1], a3[2], a4[2], a5[3], a6[3])
+        EDIT a member (a3) changing to a NEW role, then all members must keep in sequence: a2[1], a1[2], a3[2], a4[2], a5[3], a6[3]
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        # when
+        response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member1.id]), user=self.user)
+        form = response.forms['member-form']
+        form.set('role',  role2.pk)
+        response = form.submit().follow()
+        # check we landed in the correct place :)
+        self.assertIn('Board Member updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 2, 3, 3,])
+        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member2.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member1.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member4.pk)
+        self.assertEqual(m4.order, 2)
+
+        self.assertEqual(m5.pk, member5.pk)
+        self.assertEqual(m5.order, 3)
+
+        self.assertEqual(m6.pk, member6.pk)
+        self.assertEqual(m6.order, 3)
+
+    # next tests MOVE UP a member (ONLY one member on each role)
+    def test_three_roles_three_members_move_up_2nd_member(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[2], a3[3],)
+        MOVE UP the 2nd member (a2), then all members must keep in sequence: a2(1), a1(2), a3(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+        # get the move form and indicates to move it UP!
+        form = response.forms['form_move_role_%s_%s_%s' % (self.issue.pk, board.pk, member2.order)]
+        form['direction'] = "up"
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board block moved successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member2.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member1.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 3)
+
+    # next tests MOVE UP a member (MORE THAN ONE member on each role)
+    def test_three_roles_six_members_move_up_2nd_block_members(self):
+        """
+        Create 3 board members, in pairs with different roles. (a1[1], a2[1]), (a3[2], a4[2]), (a5[3], a6[3])
+        MOVE UP the 2nd block members (a3, a4), then all members must keep in sequence: (a3[1], a4[1]), (a1[2], a2[2]), (a5[3], a6[3])
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+        # get the move form and indicates to move it UP!
+        form = response.forms['form_move_role_%s_%s_%s' % (self.issue.pk, board.pk, member3.order)]
+        form['direction'] = "up"
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board block moved successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 2, 3, 3])
+        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member3.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member4.pk)
+        self.assertEqual(m2.order, 1)
+
+        self.assertEqual(m3.pk, member1.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member2.pk)
+        self.assertEqual(m4.order, 2)
+
+        self.assertEqual(m5.pk, member5.pk)
+        self.assertEqual(m5.order, 3)
+
+        self.assertEqual(m6.pk, member6.pk)
+        self.assertEqual(m6.order, 3)
+
+    # next tests MOVE DOWN a member (ONLY one member on each role)
+    def test_three_roles_three_members_move_down_2nd_member(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[2], a3[3],)
+        MOVE DOWN the 2nd member (a2), then all members must keep in sequence: a1(1), a3(2), a1(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+        # get the move form and indicates to move it UP!
+        form = response.forms['form_move_role_%s_%s_%s' % (self.issue.pk, board.pk, member2.order)]
+        form['direction'] = "down"
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board block moved successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member3.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member2.pk)
+        self.assertEqual(m3.order, 3)
+
+    # next tests MOVE DOWN a member (MORE THAN ONE member on each role)
+    def test_three_roles_six_members_move_down_2nd_block_members(self):
+        """
+        Create 3 board members, in pairs with different roles. (a1[1], a2[1]), (a3[2], a4[2]), (a5[3], a6[3])
+        MOVE DOWN the 2nd block members (a3, a4), then all members must keep in sequence: (a1[2], a2[2]), (a5[3], a6[3]), (a3[1], a4[1])
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member4 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member5 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        member6 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+        # get the move form and indicates to move it DOWN!
+        form = response.forms['form_move_role_%s_%s_%s' % (self.issue.pk, board.pk, member3.order)]
+        form['direction'] = "down"
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn('Board block moved successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 2, 3, 3])
+        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 1)
+
+        self.assertEqual(m3.pk, member5.pk)
+        self.assertEqual(m3.order, 2)
+
+        self.assertEqual(m4.pk, member6.pk)
+        self.assertEqual(m4.order, 2)
+
+        self.assertEqual(m5.pk, member3.pk)
+        self.assertEqual(m5.order, 3)
+
+        self.assertEqual(m6.pk, member4.pk)
+        self.assertEqual(m6.order, 3)
+
+    # tests first member cant be moved UP (ONLY one member on each role)
+    def test_move_up_first_block_must_raise_validation_error(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[2], a3[3],)
+        Try to MOVE UP the 1st member (a1), will raise validaton error,
+        then all members must keep in sequence: a1(1), a2(2), a3(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+        # get the move form and indicates to move it UP!
+        form = response.forms['form_move_role_%s_%s_%s' % (self.issue.pk, board.pk, member1.order)]
+        form['direction'] = "up"
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn("Board block can not be moved", response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 3)
+
+    # tests last member cant be moved DOWN (ONLY one member on each role)
+    def test_move_up_last_block_must_raise_validation_error(self):
+        """
+        Create 3 board members, each one with different roles. (a1[1], a2[2], a3[3],)
+        Try to MOVE DOWN the last member (a3), will raise validaton error,
+        then all members must keep in sequence: a1(1), a2(2), a3(3)
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+
+        role1 = editorial_modelfactories.RoleTypeFactory.create()
+        role2 = editorial_modelfactories.RoleTypeFactory.create()
+        role3 = editorial_modelfactories.RoleTypeFactory.create()
+        # need to specify the correct order, otherwise will be = 1
+        # usually users will use de add view, that handle the correct order
+        member1 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role1, order=1)
+        member2 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role2, order=2)
+        member3 = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role3, order=3)
+
+        # when
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
+        # get the move form and indicates to move it UP!
+        form = response.forms['form_move_role_%s_%s_%s' % (self.issue.pk, board.pk, member3.order)]
+        form['direction'] = "down"
+
+        response = form.submit().follow()
+        # then
+        # check we landed in the correct place :)
+        self.assertIn("Board block can not be moved", response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check the order of the board members
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
+        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
+
+        # must match orders and PK: memberX == mY
+        self.assertEqual(m1.pk, member1.pk)
+        self.assertEqual(m1.order, 1)
+
+        self.assertEqual(m2.pk, member2.pk)
+        self.assertEqual(m2.order, 2)
+
+        self.assertEqual(m3.pk, member3.pk)
+        self.assertEqual(m3.order, 3)
+
+
+class EditRoleTypeForm(WebTest):
+
+    def setUp(self):
+        # create waffle:
+        Flag.objects.create(name='editorialmanager', everyone=True)
+        # create a group 'Editors'
+        group = modelfactories.GroupFactory(name="Editors")
+        # create a user and set group 'Editors'
+        self.user = modelfactories.UserFactory(is_active=True)
+        self.user.groups.add(group)
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+
+        # set the user as editor of the journal
+        self.journal.editor = self.user
+
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def test_ADD_ROLE_valid_POST_is_valid(self):
+        """
+        Users with permissions: editorialmanager.add_roletype can add new roles
+        """
+        # with
+        perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
+        self.user.user_permissions.add(perm_add_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        # when
+        response = self.app.get(reverse("editorial.role.add", args=[self.journal.id]), user=self.user)
+        new_role_name = "Blaus!"
+        # when
+        form = response.forms['role-form']
+        form['name'] = new_role_name
+        response = form.submit().follow()
+        # then
+
+        # check frontend:
+        self.assertIn('Role created successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check db:
+        self.assertEqual(RoleType.objects.all().count(), 1)
+        new_role_from_db = RoleType.objects.all()[0]
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 1)
+        entry = audit_entries[0]
+        self.assertEqual(entry.action_flag, ADDITION) # Flag correspond with ADD action
+        self.assertEqual(entry.content_type.model_class(), RoleType)
+        audited_obj = entry.get_audited_object()
+        self.assertEqual(audited_obj._meta.object_name, 'RoleType')
+        self.assertEqual(audited_obj.pk, new_role_from_db.pk)
+
+    def test_ADD_ROLE_invalid_POST_is_invalid(self):
+        """
+        Users with permissions: editorialmanager.add_roletype can add new roles
+        """
+        # with
+        perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
+        self.user.user_permissions.add(perm_add_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        # when
+        response = self.app.get(reverse("editorial.role.add", args=[self.journal.id]), user=self.user)
+        new_role_name = "" # empty name for a mandatory field is invalid
+        # when
+        form = response.forms['role-form']
+        form['name'] = new_role_name
+        response = form.submit()
+        # then
+        # check output
+        self.assertTemplateUsed(response, 'board/role_type_edit.html')
+        self.assertFalse(response.context['form'].is_valid())
+        expected_errors = {'name': [u'This field is required.']}
+        self.assertEqual(response.context['form'].errors, expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # expected extra context data
+        expected_post_url = reverse('editorial.role.add', args=[self.journal.pk, ])
+        expected_board_url = reverse('editorial.board', args=[self.journal.pk, ])
+        self.assertEqual(response.context['post_url'], expected_post_url)
+        self.assertEqual(response.context['board_url'], expected_board_url)
+
+        # check audit logs: no logs generated
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        self.assertEqual(AuditLogEntry.objects.all().count(), 0)
+
+    def test_EDIT_ROLE_valid_POST_is_valid(self):
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="Pickles")
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        new_role_name = "Blaus!"
+        # when
+        response = self.app.get(reverse("editorial.role.edit", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-form']
+        form['name'] = new_role_name
+        response = form.submit().follow()
+        # then
+
+        # check frontend:
+        self.assertIn('Role updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check db:
+        self.assertEqual(RoleType.objects.all().count(), 1)
+        role_from_db = RoleType.objects.all()[0]
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 1)
+        entry = audit_entries[0]
+        self.assertEqual(entry.action_flag, CHANGE) # Flag correspond with ADD action
+        self.assertEqual(entry.content_type.model_class(), RoleType)
+        audited_obj = entry.get_audited_object()
+        self.assertEqual(audited_obj._meta.object_name, 'RoleType')
+        self.assertEqual(audited_obj.pk, role_from_db.pk)
+
+    def test_EDIT_ROLE_invalid_POST_is_invalid(self):
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="Pickles")
+        member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        new_role_name = ""
+        # when
+        response = self.app.get(reverse("editorial.role.edit", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-form']
+        form['name'] = new_role_name
+        response = form.submit()
+        # then
+        # check output
+        self.assertTemplateUsed(response, 'board/role_type_edit.html')
+        self.assertFalse(response.context['form'].is_valid())
+        expected_errors = {'name': [u'This field is required.']}
+        self.assertEqual(response.context['form'].errors, expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # expected extra context data
+        expected_post_url = reverse("editorial.role.edit", args=[self.journal.id, role.id])
+        expected_board_url = reverse('editorial.board', args=[self.journal.pk, ])
+        self.assertEqual(response.context['post_url'], expected_post_url)
+        self.assertEqual(response.context['board_url'], expected_board_url)
+
+        # check audit logs: no logs generated
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        self.assertEqual(AuditLogEntry.objects.all().count(), 0)
+
+    def test_TRANSLATE_ROLE_valid_POST_is_valid(self):
+        """
+        Submit a valid POST of a set of translation,
+        languages: "pt", and "es", must be required
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
+        l1 = modelfactories.LanguageFactory.create(iso_code='pt', name='portuguese')
+        l2 = modelfactories.LanguageFactory.create(iso_code='es', name='spanish')
+        l3 = modelfactories.LanguageFactory.create(iso_code='fr', name='french')
+
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        data = [
+            {'name': u'Os Picles', 'language': l1},
+            {'name': u'Los Picles', 'language': l2},
+            {'name': u'Le Piclé', 'language': l3},
+        ]
+
+        # when
+        response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-translations-form']
+        for x in xrange(0,3):
+            form['role-translations-formset-%s-name' % x] = data[x]['name']
+            form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
+
+        response = form.submit().follow()
+        # then
+
+        # check frontend:
+        self.assertIn('Role updated successfully.', response.body)
+        self.assertTemplateUsed(response, 'board/board_list.html')
+        # check db:
+        translations = RoleTypeTranslation.objects.filter(role=role)
+        self.assertEqual(translations.count(), 3)
+        for x in xrange(0,3):
+            t = translations.get(language=data[x]['language'])
+            self.assertEqual(t.name, data[x]['name'])
+
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 1)
+        entry = audit_entries[0]
+        self.assertEqual(entry.action_flag, CHANGE) # Flag correspond with ADD action
+        self.assertEqual(entry.content_type.model_class(), RoleType)
+        audited_obj = entry.get_audited_object()
+        self.assertEqual(audited_obj._meta.object_name, 'RoleType')
+        self.assertEqual(audited_obj.pk, role.pk)
+
+    def test_TRANSLATE_ROLE_invalid_POST_without_lang_PT_is_invalid(self):
+        """
+        Submit a invalid POST of a set of translation,
+        languages: "pt", and "es", must be required
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
+        l1 = modelfactories.LanguageFactory.create(iso_code='it', name='italian')
+        l2 = modelfactories.LanguageFactory.create(iso_code='es', name='spanish')
+        l3 = modelfactories.LanguageFactory.create(iso_code='fr', name='french')
+
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        data = [
+            {'name': u'Il Picolo', 'language': l1},
+            {'name': u'Los Picles', 'language': l2},
+            {'name': u'Le Piclé', 'language': l3},
+        ]
+
+        # when
+        response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-translations-form']
+        for x in xrange(0,3):
+            form['role-translations-formset-%s-name' % x] = data[x]['name']
+            form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
+
+        response = form.submit()
+        # then
+        self.assertTemplateUsed(response, 'board/role_type_translate.html')
+        self.assertFalse(response.context['formset'].is_valid())
+        expected_errors = [u'At least Portuguese and Spanish translations are required']
+        self.assertEqual(response.context['formset'].non_form_errors(), expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 0)
+
+    def test_TRANSLATE_ROLE_invalid_POST_without_lang_ES_is_invalid(self):
+        """
+        Submit a invalid POST of a set of translation,
+        languages: "pt", and "es", must be required
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
+        l1 = modelfactories.LanguageFactory.create(iso_code='pt', name='portuguese')
+        l2 = modelfactories.LanguageFactory.create(iso_code='ar', name='arabic')
+        l3 = modelfactories.LanguageFactory.create(iso_code='fr', name='french')
+
+        # add perms
+        perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
+        self.user.user_permissions.add(perm_change_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+
+        data = [
+            {'name': u'Os Picles', 'language': l1},
+            {'name': u'Ahmet Al Picle', 'language': l2},
+            {'name': u'Le Piclé', 'language': l3},
+        ]
+
+        # when
+        response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
+        form = response.forms['role-translations-form']
+        for x in xrange(0,3):
+            form['role-translations-formset-%s-name' % x] = data[x]['name']
+            form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
+
+        response = form.submit()
+        # then
+        self.assertTemplateUsed(response, 'board/role_type_translate.html')
+        self.assertFalse(response.context['formset'].is_valid())
+        expected_errors = [u'At least Portuguese and Spanish translations are required']
+        self.assertEqual(response.context['formset'].non_form_errors(), expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # check audit log
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        audit_entries = AuditLogEntry.objects.all()
+        self.assertEqual(audit_entries.count(), 0)

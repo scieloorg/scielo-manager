@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
 from tastypie.api import Api
+import waffle
 
 from journalmanager import views, models
 from api import resources_v1, resources_v2
@@ -53,7 +54,13 @@ v2_api_resources = [
     resources_v2.CheckinArticleResource(),
     resources_v2.TicketResource(),
     resources_v2.CommentResource(),
-    resources_v2.PressReleaseTranslationResource()
+    resources_v2.PressReleaseTranslationResource(),
+    # editorialmanager
+    resources_v2.EditorialBoardResource(),
+    resources_v2.RoleTypeResource(),
+    resources_v2.EditorialMemberResource(),
+    resources_v2.LanguageResource(),
+    resources_v2.RoleTypeTranslationResource(),
 ]
 
 for res in v2_api_resources:

@@ -12,6 +12,7 @@ from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from journalmanager import models
+from editorialmanager import models as em_models
 
 from articletrack.models import (
     Checkin,
@@ -564,3 +565,50 @@ class AheadPressReleaseResource(ModelResource):
 
         return orm_filters
 
+
+class EditorialBoardResource(ModelResource):
+    issue = fields.ToOneField(IssueResource, 'issue')
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'editorialboard'
+        queryset = em_models.EditorialBoard.objects.all()
+        allowed_methods = ['get', ]
+
+
+class RoleTypeResource(ModelResource):
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'roletype'
+        queryset = em_models.RoleType.objects.all()
+        allowed_methods = ['get', ]
+        ordering = ('name', )
+
+
+class EditorialMemberResource(ModelResource):
+    role = fields.ForeignKey(RoleTypeResource, 'role')
+    board = fields.ForeignKey(EditorialBoardResource, 'board')
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'editorialmember'
+        queryset = em_models.EditorialMember.objects.all()
+        allowed_methods = ['get', ]
+        ordering = ('board', 'order', 'pk')
+
+
+class LanguageResource(ModelResource):
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'language'
+        queryset = models.Language.objects.all()
+        allowed_methods = ['get', ]
+        ordering = ('name', )
+
+
+class RoleTypeTranslationResource(ModelResource):
+    role = fields.ForeignKey(RoleTypeResource, 'role')
+    language = fields.ForeignKey(LanguageResource, 'language')
+
+    class Meta(ApiKeyAuthMeta):
+        resource_name = 'roletypetranslation'
+        queryset = em_models.RoleTypeTranslation.objects.all()
+        allowed_methods = ['get', ]

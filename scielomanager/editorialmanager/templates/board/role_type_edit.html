@@ -1,0 +1,38 @@
+{% extends "base_lv1.html" %}
+{% load show_field %}
+{% load i18n %}
+
+
+{% block content %}
+
+  <ul class="breadcrumb">
+    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li><a href="{{ board_url }}">{% trans 'Editorial Board' %}</a><span class="divider">/</span></li>
+    <li class="active">{% trans 'Edit Role' %}</li>
+  </ul>
+
+
+  <h2>{% trans "Edit Role" %}:</h2>
+  <div  id="edit-role-form" class="well">
+
+    {% include "board/role_type_edit_form.html" %}
+
+    <div class="row-fluid">
+        <a class="btn btn-danger pull-left" href="{{ board_url }}">{% trans "Back to Board" %}</a>
+        <button class="btn-submit btn btn-success pull-right">{% trans "Save" %}</button>
+    </div>
+  </div>
+
+{% endblock content %}
+
+{% block extrafooter %}
+  {{ block.super }}
+  <script>
+    $(function() {
+      $('.btn-submit').click(function(event) {
+        $('#edit-role-form').find('form').submit();
+      });
+      $('input').addClass('span12');
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,5 @@
+The journal ({{ issue.journal.title }}) and has the most recent board replicated.
+Please access SciELO Manager and take a look at the new board, to see if it's right or edit it, following this link:
+<br>
+<br>
+http://{{domain}}{% url editorial.board issue.journal.id %}
