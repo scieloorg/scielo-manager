@@ -41,10 +41,10 @@ from scielomanager.tools import (
     get_paginated,
     get_referer_view,
     asbool,
+    get_users_by_group,
 )
 from audit_log import helpers
 from editorialmanager.models import EditorialBoard
-
 from editorialmanager import notifications
 
 MSG_FORM_SAVED = _('Saved.')
@@ -70,16 +70,6 @@ def get_first_letter(objects_all):
     letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
-
-
-def get_users_by_group(group):
-    """
-    Get all users from a group or raise a ObjectDoesNotExist
-    """
-
-    editor_group = Group.objects.get(name=group)
-
-    return editor_group.user_set.all()
 
 
 @permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)

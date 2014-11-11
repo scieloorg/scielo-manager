@@ -119,6 +119,6 @@ def get_users_by_group(group):
     """
     Get all users from a Group with name:``group`` or raise a ObjectDoesNotExist
     """
-    traget_group = Group.objects.get(name=group)
-    return traget_group.user_set.all()
+    target_group = Group.objects.get(name=group)
+    return target_group.user_set.all()
 

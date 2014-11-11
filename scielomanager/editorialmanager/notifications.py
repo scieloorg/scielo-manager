@@ -24,7 +24,7 @@ class IssueBoardMessage(notifications.Message):
     def set_recipients(self, issue):
         editor = getattr(issue.journal, 'editor', None)
         if editor:
-            self.recipients = [editor,]
+            self.recipients = [editor.email, ]
         else:
             logger.info("[IssueBoardMessage.set_recipients] Can't prepare a message, issue.journal.editor is None or empty. Issue pk == %s" % issue.pk)
 
@@ -50,7 +50,8 @@ class BoardMembersMessage(notifications.Message):
         from scielomanager.tools import get_users_by_group
         from django.core.exceptions import ObjectDoesNotExist
         try:
-            self.recipients = get_users_by_group('Librarian')
+            librarians = get_users_by_group('Librarian')
+            self.recipients = [user.email for user in librarians if user.email]
         except ObjectDoesNotExist:
             logger.info("[BoardMembersMessage.set_recipients] Can't prepare a message, Can't retrieve a list of Librarian Users.")
 

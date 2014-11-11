@@ -53,7 +53,7 @@ class IssueBoardMessageTests(TestCase):
             self.assertEqual(new_email.subject, expected_subject)
             self.assertEqual(len(self.expected_recipients), len(new_email.to))
             for recipient in self.expected_recipients:
-                self.assertIn(recipient, new_email.to)
+                self.assertIn(recipient.email, new_email.to)
 
 
 class BoardMembersMessageTests(TestCase):
@@ -110,4 +110,4 @@ class BoardMembersMessageTests(TestCase):
             self.assertEqual(new_email.subject, expected_subject)
             self.assertEqual(len(self.expected_recipients), len(new_email.to))
             for recipient in self.expected_recipients:
-                self.assertIn(recipient, new_email.to)
+                self.assertIn(recipient.email, new_email.to)

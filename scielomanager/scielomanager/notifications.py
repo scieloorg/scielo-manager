@@ -62,8 +62,11 @@ class Message(object):
     def set_recipients(self, *args, **kwargs):
         """
         Implement this method to update the recipients list, based in args and kwargs data.
+        *************************************************
+        * the list MUST contains a list o email strings *
+        *************************************************
         """
-        raise NotImplementedError("Please Implement this method")
+        raise NotImplementedError("Please Implement this method and remember to set a list of (emails) strings!")
 
     def send_mail(self):
         """
