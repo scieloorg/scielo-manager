@@ -13,6 +13,7 @@ class EditorialMemberForm(forms.ModelForm):
         exclude = ('board', 'order', )
         widgets = {
             'role': forms.Select(attrs={'class': 'chzn-select'}),
+            'country': forms.Select(attrs={'class': 'chzn-select'}),
         }
 
 

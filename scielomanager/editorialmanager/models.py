@@ -3,6 +3,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from django_countries.fields import CountryField
+
 from journalmanager.models import Issue, Language
 
 
@@ -29,11 +31,11 @@ class EditorialMember(models.Model):
     last_name = models.CharField(_('Last Name'), max_length=256)
 
     email = models.EmailField(_('E-mail'), null=True, blank=True)
-    institution = models.CharField(_('institution'), max_length=256, null=True, blank=True)
+    institution = models.CharField(_('institution'), max_length=256, default='')
     link_cv = models.URLField(_('Link CV'), null=True, blank=True)
     city = models.CharField(_('City'), max_length=256, null=True, blank=True)
     state = models.CharField(_('State'), max_length=256, null=True, blank=True)
-    country = models.CharField(_('Country'), max_length=256, null=True, blank=True)
+    country = CountryField(_('Country'), default='')
     research_id = models.CharField(_('ResearchID'), max_length=256, null=True, blank=True)
     orcid = models.CharField(_('ORCID'), max_length=256, null=True, blank=True)
 
