@@ -53,7 +53,7 @@ class RoleType(models.Model):
     """
     Represents the board member's roles
     """
-    name = models.CharField(_('Role Name'), max_length=256)
+    name = models.CharField(_('Role Name'), max_length=256, unique=True)
 
     def __unicode__(self):
         return self.name

@@ -57,18 +57,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
     def _addWaffleFlag(self):
         Flag.objects.create(name='packtools_validator', everyone=True)
 
-    def _mocker_replace_stylechecker(self, with_annotations=False):
-        XMLValidator = self.mocker.replace('packtools.stylechecker.XMLValidator')
-        XMLValidator(mocker.ANY)
-        if with_annotations:
-            self.mocker.result(doubles.XMLValidatorAnnotationsDouble(mocker.ANY))
-            lxml_tostring = self.mocker.replace('lxml.etree.tostring')
-            lxml_tostring(mocker.ANY, mocker.KWARGS)
-            self.mocker.result("some annotations in xml string")
-        else:
-            self.mocker.result(doubles.XMLValidatorDouble(mocker.ANY))
-        self.mocker.replay()
-
     def test_status_code_stylechecker_without_waffle_flag(self):
         response = self.app.get(
             reverse('validator.packtools.stylechecker',),
