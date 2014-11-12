@@ -195,7 +195,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         form = response.forms['member-form']
@@ -273,7 +273,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'institution name',
             'link_cv': '@invalid_url/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         form = response.forms['member-form']
@@ -325,7 +325,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'Universidad de la Republica - Facultad de Ingenieria',
             'link_cv': 'http://scielo.org.uy/',
             'state': 'Montevideo',
-            'country': 'Uruguay',
+            'country': 'UY',
         }
         response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member.id]), user=self.user)
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
@@ -404,7 +404,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'Universidad de la Republica - Facultad de Ingenieria',
             'link_cv': 'http://scielo.org.uy/',
             'state': 'Montevideo',
-            'country': 'Uruguay',
+            'country': 'UY',
         }
         response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member.id]), user=self.user)
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
@@ -787,7 +787,7 @@ class MembersSortingOnActionTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
@@ -860,7 +860,7 @@ class MembersSortingOnActionTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
@@ -935,7 +935,7 @@ class MembersSortingOnActionTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
