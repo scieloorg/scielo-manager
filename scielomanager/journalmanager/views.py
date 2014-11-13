@@ -10,7 +10,6 @@ except ImportError:
 
 import operator
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import user_passes_test
@@ -46,6 +45,7 @@ from scielomanager.tools import (
 from audit_log import helpers
 from editorialmanager.models import EditorialBoard
 from editorialmanager import notifications
+from accounts import forms as accounts_forms
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -476,7 +476,7 @@ def add_user(request, user_id=None):
             # if it is a new user, mail him
             # requesting for password change
             if not user_id:
-                password_form = auth_forms.PasswordResetForm({'email': new_user.email})
+                password_form = accounts_forms.PasswordResetForm({'email': new_user.email})
                 if password_form.is_valid():
                     opts = {
                         'use_https': request.is_secure(),

@@ -11,7 +11,7 @@ from django.core import mail
 from django.test import TestCase
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
-
+from django.test.utils import override_settings
 from waffle import Flag
 
 from journalmanager.tests import modelfactories
@@ -590,6 +590,7 @@ class UserFormTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/user_list.html')
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_new_users_must_receive_an_email_to_define_their_password(self):
         perm = _makePermission(perm='change_user',
                                model='user', app_label='auth')
@@ -609,6 +610,27 @@ class UserFormTests(WebTest):
         # check if an email has been sent to the new user
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
+
+    def test_new_users_must_receive_an_email_to_define_their_password_with_a_task(self):
+        perm = _makePermission(perm='change_user',
+                               model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'),
+                            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['user-email'] = 'bazz@spam.org'
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        # email must not be sent directly,
+        # must wait until celery process the send_mail task
+        # so outbox MUST be empty
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_emails_are_not_sent_when_users_data_are_modified(self):
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
