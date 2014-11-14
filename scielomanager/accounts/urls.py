@@ -5,6 +5,7 @@ from django.conf import settings
 from django.views.generic.base import TemplateView
 
 from . import views
+from . import forms
 
 
 urlpatterns = patterns('',
@@ -23,6 +24,7 @@ urlpatterns = patterns('',
             'template_name': 'registration/password_reset_form.html',
             'email_template_name':  'registration/password_reset_email.html',
             'post_reset_redirect': '/accounts/password/reset/done/',
+            'password_reset_form': forms.PasswordResetForm,
         },
         name='registration.password_reset'),
 
