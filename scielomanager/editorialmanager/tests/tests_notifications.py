@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.utils import override_settings
 from django_factory_boy import auth
-
+from journalmanager import models as jmodels
 from journalmanager.tests import modelfactories
 from editorialmanager import notifications
 from . import modelfactories as editorial_modelfactories
@@ -75,13 +75,22 @@ class BoardMembersMessageTests(TestCase):
         self.librarian2.groups.add(self.librarian_group)
         self.librarian2.save()
 
+        self.collection = modelfactories.CollectionFactory.create()
         self.editor = auth.UserF(is_active=True)
         self.journal = modelfactories.JournalFactory.create(editor=self.editor)
         self.issue = modelfactories.IssueFactory(journal=self.journal)
         self.board = editorial_modelfactories.EditorialBoardFactory.create(issue=self.issue)
         self.member = editorial_modelfactories.EditorialMemberFactory.create(board=self.board)
 
-        self.expected_recipients = [self.librarian1, self.librarian2, ]
+        # link journal to collection
+        jmodels.Membership.objects.create(journal=self.journal, collection=self.collection, created_by=auth.UserF(is_active=True))
+
+        # link librarians and collection
+        self.collection.add_user(self.librarian1)
+        self.collection.add_user(self.librarian2)
+
+        self.expected_recipients = []
+        self.expected_bcc_recipients = [self.librarian1, self.librarian2, ]
         self.expected_subject_sufix_by_action = {
             'board_add_member': "Member of the journal board, was added",
             'board_edit_member': "Member of the journal board, was edited",
@@ -99,7 +108,7 @@ class BoardMembersMessageTests(TestCase):
         for action in self.ACTIONS:
             # with
             expected_subject = self._make_subject(action)
-            message = ''
+            message = 'Audit Log change message goes here!'
             email_count += 1
             # when
             result = notifications.board_members_send_email_by_action(self.member, self.editor, message, action)
@@ -109,5 +118,6 @@ class BoardMembersMessageTests(TestCase):
             new_email = mail.outbox[-1]
             self.assertEqual(new_email.subject, expected_subject)
             self.assertEqual(len(self.expected_recipients), len(new_email.to))
+            self.assertEqual(len(self.expected_bcc_recipients), len(new_email.bcc))
             for recipient in self.expected_recipients:
-                self.assertIn(recipient.email, new_email.to)
+                self.assertIn(recipient.email, new_email.bcc)
