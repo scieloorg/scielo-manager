@@ -840,6 +840,37 @@ class UserFormTests(WebTest):
         # check if basic state has been set
         self.assertTrue(response.context['user'].user_collection.get(pk=self.collection.pk))
 
+    def test_add_form_can_edit_profile_email_notifications(self):
+        # with
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+        # when
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+        # then
+        self.assertIn(u'userprofile-0-email_notifications', form.fields)
+
+    def test_edit_form_can_edit_profile_email_notifications(self):
+        # with
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+        # when
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]), user=self.user).forms['user-form']
+        # then
+        self.assertIn(u'userprofile-0-email_notifications', form.fields)
+
+    def test_change_profile_notifications(self):
+        # with
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+        previous_email_notifications = self.user.get_profile().email_notifications
+        # when
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]), user=self.user).forms['user-form']
+        form['userprofile-0-email_notifications'] = False
+        response = form.submit().follow()
+        # then
+        current_email_notifications = User.objects.get(pk=self.user.pk).get_profile().email_notifications
+        self.assertTrue(previous_email_notifications)
+        self.assertFalse(current_email_notifications)
 
 class UserCollectionsFormSetTests(TestCase):
 

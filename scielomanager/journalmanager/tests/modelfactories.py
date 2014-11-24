@@ -35,9 +35,9 @@ class UserFactory(factory.Factory):
             return 0
 
     username = factory.Sequence(lambda n: "jmanager_username%s" % n)
-    first_name = factory.Sequence(lambda n: "first_name%s" % n)
-    last_name = factory.Sequence(lambda n: "last_name%s" % n)
-    email = factory.Sequence(lambda n: "email%s@example.com" % n)
+    first_name = factory.Sequence(lambda n: "jmanager_first_name%s" % n)
+    last_name = factory.Sequence(lambda n: "jmanager_last_name%s" % n)
+    email = factory.Sequence(lambda n: "jmanager_email%s@example.com" % n)
     password = 'sha1$caffc$30d78063d8f2a5725f60bae2aca64e48804272c3'
     is_staff = False
     is_active = True
@@ -179,6 +179,7 @@ class UserProfileFactory(factory.Factory):
     FACTORY_FOR = models.UserProfile
 
     user = factory.SubFactory(UserFactory)
+    email_notifications = True
 
 
 class SectionTitleFactory(factory.Factory):

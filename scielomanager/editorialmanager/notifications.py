@@ -2,7 +2,7 @@
 
 import logging
 from django.core.exceptions import ObjectDoesNotExist
-from scielomanager.tools import get_users_by_group_by_collections
+from scielomanager.tools import get_users_by_group_by_collections, user_receive_emails
 from scielomanager import notifications
 
 
@@ -25,7 +25,10 @@ class IssueBoardMessage(notifications.Message):
     def set_recipients(self, issue):
         editor = getattr(issue.journal, 'editor', None)
         if editor:
-            self.recipients = [editor.email, ]
+            if user_receive_emails(editor):
+                self.recipients = [editor.email, ]
+            else:
+                logger.info("[IssueBoardMessage.set_recipients] editor (user.pk: %s) does not have a profile or decides to not receive emails." % editor.pk)
         else:
             logger.error("[IssueBoardMessage.set_recipients] Can't prepare a message, issue.journal.editor is None or empty. Issue pk == %s" % issue.pk)
 
@@ -62,7 +65,8 @@ class BoardMembersMessage(notifications.Message):
             return
 
         if librarians:
-            self.bcc_recipients = map(lambda u: u.email, [u for u in librarians])
+            filtered_librarians = [librarian for librarian in librarians if user_receive_emails(librarian)]
+            self.bcc_recipients = map(lambda u: u.email, filtered_librarians)
         else:
             logger.error("[BoardMembersMessage.set_bcc_recipients] Can't prepare a message, Can't retrieve a list of Librarian Users.")
 

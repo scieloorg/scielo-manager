@@ -304,6 +304,7 @@ class UserProfile(caching.base.CachingMixin, models.Model):
     nocacheobjects = models.Manager()
 
     user = models.OneToOneField(User)
+    email_notifications = models.BooleanField("Manager Email Notifications?", default=True)
 
     @property
     def is_editor(self):

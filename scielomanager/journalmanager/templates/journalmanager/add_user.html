@@ -110,11 +110,32 @@
       </div>
     </div>
   </div>
+  {# user profile formset #}
+  {% if userprofileformset.non_form_errors %}
+    {# non form errors #}
+    <div class="alert alert-error">
+      <button class="close" data-dismiss="alert" type="button">&times;</button>
+      {% for non_form_error in userprofileformset.non_form_errors %}
+        {{ non_form_error }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h2>{% trans "User Notifications" %}:</h2>
+  <div class="well">
+    {% for form in userprofileformset %}
+      {{ form }}
+    {% endfor %}
+    <p>
+      {{ userprofileformset.management_form }}
+    </p>
+  </div>
+  {# /user profile formset #}
 
 {% if usercollectionsformset.non_form_errors %}
   {# non form errors #}
   <div class="alert alert-error">
-    <button class="close" data-dismiss="alert" type="button">×</button>
+    <button class="close" data-dismiss="alert" type="button">&times;</button>
     {% for non_form_error in usercollectionsformset.non_form_errors %}
       {{ non_form_error }}
     {% endfor %}

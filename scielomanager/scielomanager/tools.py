@@ -131,3 +131,8 @@ def get_users_by_group_by_collections(group_name, collections):
     users = User.objects.filter(groups__name=group_name, user_collection__in=collections)
     return users
 
+def user_receive_emails(user):
+    if user.get_profile():
+        return user.get_profile().email_notifications
+    else:
+        return False
