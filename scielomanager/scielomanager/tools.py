@@ -8,7 +8,7 @@ import re
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
 from scielomanager import settings
 
@@ -122,3 +122,17 @@ def get_users_by_group(group):
     target_group = Group.objects.get(name=group)
     return target_group.user_set.all()
 
+def get_users_by_group_by_collections(group_name, collections):
+    """
+    return a list of users that belong to a group with name:
+    @param: group_name and associated with ANY collection in:
+    @param: collections list
+    """
+    users = User.objects.filter(groups__name=group_name, user_collection__in=collections)
+    return users
+
+def user_receive_emails(user):
+    if user.get_profile():
+        return user.get_profile().email_notifications
+    else:
+        return False
