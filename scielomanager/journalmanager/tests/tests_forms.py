@@ -872,6 +872,33 @@ class UserFormTests(WebTest):
         self.assertTrue(previous_email_notifications)
         self.assertFalse(current_email_notifications)
 
+    def test_bug_1053_create_user_but_without_email_notificatinos(self):
+        """ TO FIX BUG #1053 """
+        new_user = {
+            'username': 'bazz',
+            'first_name': 'foo',
+            'last_name': 'bar',
+            'email': 'bazz@spam.org',
+            'email_notifications':  False, # email notifications must be unchecked
+        }
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+        form['user-username'] = new_user['username']
+        form['user-first_name'] = new_user['first_name']
+        form['user-last_name'] = new_user['last_name']
+        form['user-email'] = new_user['email']
+        form['userprofile-0-email_notifications'] = new_user['email_notifications']
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
+        response.mustcontain('bazz', 'bazz@spam.org')
+        current_email_notifications = User.objects.get(email=new_user['email']).get_profile().email_notifications
+        self.assertFalse(current_email_notifications)
+
 class UserCollectionsFormSetTests(TestCase):
 
     def setUp(self):
