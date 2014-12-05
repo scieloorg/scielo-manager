@@ -129,6 +129,36 @@ class TicketMessageTests(TestCase):
             for recipient in self.expected_recipients:
                 self.assertIn(recipient, new_email.to)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
+    def test_each_action_with_disable_notifications_for_one_team_member(self):
+        """
+        for each action, test notifications are sent, but for one team member will have disable notifications
+        """
+        # disable email notifications for one team member (excludes submitter)
+        non_exclusion_users_pk = [self.ticket.author.pk , self.submitter.pk, ]
+        target_team_member_profile = self.team.member.all().exclude(pk__in=non_exclusion_users_pk)[0].get_profile()
+        target_team_member_profile.email_notifications = False
+        target_team_member_profile.save()
+
+        # update self.expected_recipients
+        self.expected_recipients.remove(target_team_member_profile.user.email)
+
+        email_count = 0
+        for action in self.ACTIONS:
+            email_count += 1
+            # when
+            result = notifications.ticket_send_mail_by_action(ticket=self.ticket, action=action)
+            # then
+            expected_subject = self._make_subject(action)
+
+            self.assertTrue(result)
+            self.assertEqual(len(mail.outbox), email_count)
+            new_email = mail.outbox[-1]
+            self.assertEqual(new_email.subject, expected_subject)
+            self.assertEqual(len(self.expected_recipients), len(new_email.to))
+            for recipient in self.expected_recipients:
+                self.assertIn(recipient, new_email.to)
+
 
 class CommentMessageTests(TestCase):
     ACTIONS = [
@@ -170,6 +200,36 @@ class CommentMessageTests(TestCase):
     def test_each_action(self):
         email_count = 0
         message_class = notifications.TicketMessage
+        for action in self.ACTIONS:
+            email_count += 1
+            # when
+            result = notifications.comment_send_mail_by_action(comment=self.comment, action=action)
+            # then
+            expected_subject = self._make_subject(action)
+
+            self.assertTrue(result)
+            self.assertEqual(len(mail.outbox), email_count)
+            new_email = mail.outbox[-1]
+            self.assertEqual(new_email.subject, expected_subject)
+            self.assertEqual(len(self.expected_recipients), len(new_email.to))
+            for recipient in self.expected_recipients:
+                self.assertIn(recipient, new_email.to)
+
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
+    def test_each_action_with_disable_notifications_for_one_team_member(self):
+        """
+        for each action, test notifications are sent, but for one team member will have disable notifications
+        """
+        # disable email notifications for one team member (excludes submitter and author for no particular reason)
+        non_exclusion_users_pk = [self.ticket.author.pk , self.submitter.pk, ]
+        target_team_member_profile = self.team.member.all().exclude(pk__in=non_exclusion_users_pk)[0].get_profile()
+        target_team_member_profile.email_notifications = False
+        target_team_member_profile.save()
+
+        # update self.expected_recipients
+        self.expected_recipients.remove(target_team_member_profile.user.email)
+
+        email_count = 0
         for action in self.ACTIONS:
             email_count += 1
             # when

@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.admin.templatetags.admin_static import static
 from tastypie.models import ApiAccess
 
 from .models import *
@@ -91,6 +92,22 @@ class UserProfileInline(admin.StackedInline):
 
 
 class UserAdmin(UserAdmin):
+    def profile_email_notifications(self, user):
+        """
+        display a green/red icon if user accepts or not email notifications.
+        if for some reason, the user don't have a UserProfile, it returns a (?) icon.
+        """
+        if user.get_profile():
+            email_notifications = user.get_profile().email_notifications
+            icon_url = static('admin/img/icon-%s.gif' % {True: 'yes', False: 'no', None: 'unknown'}[email_notifications])
+            return '<img src="{0}" alt="{1}" />'.format(icon_url, email_notifications)
+        else:
+            icon_url = static('admin/img/icon-icon-unknown.gif')
+            return '<img src="{0}" alt="NO PROFILE" />no profile!' % icon_url
+    profile_email_notifications.short_description = 'Email Notifications'
+    profile_email_notifications.allow_tags = True
+
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'profile_email_notifications', )
     inlines = (UserProfileInline, UserCollectionsInline)
     form = UserChangeForm
     add_form = UserCreationForm

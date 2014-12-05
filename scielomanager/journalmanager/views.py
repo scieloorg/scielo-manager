@@ -28,6 +28,7 @@ from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 from django.conf import settings
 from django.db.models import Q
 import waffle
@@ -452,12 +453,15 @@ def add_user(request, user_id=None):
 
     # filter the collections the user is manager.
     UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
+    # user profile fomrset
+    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, form=UserProfileForm, extra=1, max_num=1, can_delete=False)
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
+        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile')
 
-        if userform.is_valid() and usercollectionsformset.is_valid():
+        if userform.is_valid() and usercollectionsformset.is_valid() and userprofileformset.is_valid():
             new_user = userform.save()
 
             # Clear cache when changes in UserCollections
@@ -472,6 +476,9 @@ def add_user(request, user_id=None):
                     instance.is_default = True
                     has_set_as_default = True
                 instance.save()
+
+            # save userprofile formset forms
+            userprofileformset.save()
 
             # if it is a new user, mail him
             # requesting for password change
@@ -491,12 +498,14 @@ def add_user(request, user_id=None):
     else:
         userform = UserForm(instance=user, prefix='user')
         usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
+        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile')
 
     return render_to_response('journalmanager/add_user.html', {
                               'add_form': userform,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
+                              'userprofileformset': userprofileformset,
                               'user': user
                               },
                               context_instance=RequestContext(request))

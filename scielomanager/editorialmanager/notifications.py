@@ -1,7 +1,8 @@
 # coding: utf-8
 
 import logging
-
+from django.core.exceptions import ObjectDoesNotExist
+from scielomanager.tools import get_users_by_group_by_collections, user_receive_emails
 from scielomanager import notifications
 
 
@@ -24,9 +25,12 @@ class IssueBoardMessage(notifications.Message):
     def set_recipients(self, issue):
         editor = getattr(issue.journal, 'editor', None)
         if editor:
-            self.recipients = [editor.email, ]
+            if user_receive_emails(editor):
+                self.recipients = [editor.email, ]
+            else:
+                logger.info("[IssueBoardMessage.set_recipients] editor (user.pk: %s) does not have a profile or decides to not receive emails." % editor.pk)
         else:
-            logger.info("[IssueBoardMessage.set_recipients] Can't prepare a message, issue.journal.editor is None or empty. Issue pk == %s" % issue.pk)
+            logger.error("[IssueBoardMessage.set_recipients] Can't prepare a message, issue.journal.editor is None or empty. Issue pk == %s" % issue.pk)
 
 
 class BoardMembersMessage(notifications.Message):
@@ -46,14 +50,25 @@ class BoardMembersMessage(notifications.Message):
         }
     }
 
-    def set_recipients(self, member):
-        from scielomanager.tools import get_users_by_group
-        from django.core.exceptions import ObjectDoesNotExist
-        try:
-            librarians = get_users_by_group('Librarian')
-            self.recipients = [user.email for user in librarians if user.email]
-        except ObjectDoesNotExist:
-            logger.info("[BoardMembersMessage.set_recipients] Can't prepare a message, Can't retrieve a list of Librarian Users.")
+    def set_recipients(self):
+        """ emails must be sent as BCC """
+        self.recipients = []
+
+    def set_bcc_recipients(self, member):
+        """ recipients must belong to the same collection as member """
+        collections_of_board_member = member.board.issue.journal.collections.all()
+
+        if collections_of_board_member:
+            librarians = get_users_by_group_by_collections('Librarian', collections_of_board_member)
+        else:
+            logger.error("[BoardMembersMessage.set_bcc_recipients] Can't define the collection of member (pk: %s), to filter bcc_recipients" % member.pk)
+            return
+
+        if librarians:
+            filtered_librarians = [librarian for librarian in librarians if user_receive_emails(librarian)]
+            self.bcc_recipients = map(lambda u: u.email, filtered_librarians)
+        else:
+            logger.error("[BoardMembersMessage.set_bcc_recipients] Can't prepare a message, Can't retrieve a list of Librarian Users.")
 
 
 def issue_board_replica(issue, action):
@@ -64,14 +79,15 @@ def issue_board_replica(issue, action):
     return message.send_mail()
 
 
-def board_members_send_email_by_action(member, user, message, action):
+def board_members_send_email_by_action(member, user, audit_log_msg, action):
     message = BoardMembersMessage(action=action)
-    message.set_recipients(member)
+    message.set_recipients()
+    message.set_bcc_recipients(member)
     extra_context = {
         'user': user,
         'member': member,
         'issue': member.board.issue,
-        'message': message,
+        'message': audit_log_msg,
     }
     message.render_body(extra_context)
     return message.send_mail()
