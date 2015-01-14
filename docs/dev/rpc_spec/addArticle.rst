@@ -26,7 +26,15 @@ identificação, a exceção ``ValueError`` é levantada. Os elementos de identi
 
   Para identificar o artigo (duplicidade):
 
-    * ``//article-meta/article-id[@pub-id-type="doi"]``
+    Devem ser concatenados os campos abaixo seguindo a ordem.
+
+    * ``//article-meta/title-group/article-title``
+    * ``//article-meta/contrib-group/contrib[@contrib-type="author" or 
+                                             @contrib-type="compiler" or 
+                                             @contrib-type="editor" or 
+                                             @contrib-type="translator"]/name[1]/surname``
+    * ``//article-meta/pub-date/year``
+
 
 A associação da entidade com ``journalmanager.models.Issue`` deve ser realizada de maneira
 assíncrona, a fim de aumentar a capacidade de atendimento de requisições do sistema. 
