@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.db.models import FileField
+from django.db import models
+from django.db.models.fields import TextField
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
+from lxml import etree
 
 
-class ContentTypeRestrictedFileField(FileField):
+class ContentTypeRestrictedFileField(models.FileField):
     """
     Same as FileField, but you can specify:
         * content_types - list containing allowed content_types.
@@ -48,5 +50,38 @@ class ContentTypeRestrictedFileField(FileField):
 
         return data
 
+
+class XMLSPS(object):
+    def __init__(self, xml_root_string):
+        root =  etree.XML(xml_root_string)
+        self.root_etree = etree.ElementTree(root)
+
+    def __repr__(self):
+        return etree.tostring(self.root_etree)
+
+    def query_xpath(self, xpath_string):
+        return self.root_etree.xpath(xpath_string)
+
+
+class XMLSPSField(TextField):
+    description = 'A xml sps field'
+
+    __metaclass__ = models.SubfieldBase
+
+    def to_python(self, value):
+        if not value:
+            return None
+        elif isinstance(value, XMLSPS):
+            return value
+        else:
+            return XMLSPS(value)
+
+    def get_prep_value(self, value):
+        return str(value)
+
+
 from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^scielomanager\.custom_fields\.ContentTypeRestrictedFileField"])
+add_introspection_rules([],[
+        "^scielomanager\.custom_fields\.ContentTypeRestrictedFileField",
+        "^scielomanager\.custom_fields\.XMLSPSField",
+    ])
