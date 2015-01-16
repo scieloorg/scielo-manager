@@ -8,6 +8,23 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Deleting field 'Article.pdf_url'
+        db.delete_column('journalmanager_article', 'pdf_url')
+
+        # Deleting field 'Article.xml_url'
+        db.delete_column('journalmanager_article', 'xml_url')
+
+        # Deleting field 'Article.images_url'
+        db.delete_column('journalmanager_article', 'images_url')
+
+        # Deleting field 'Article.front'
+        db.delete_column('journalmanager_article', 'front')
+
+        # Adding field 'Article.xml'
+        db.add_column('journalmanager_article', 'xml',
+                      self.gf('scielomanager.custom_fields.XMLSPSField')(null=True, blank=True),
+                      keep_default=False)
+
         # Adding field 'Article.created_at'
         db.add_column('journalmanager_article', 'created_at',
                       self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now_add=True, blank=True),
@@ -35,11 +52,37 @@ class Migration(SchemaMigration):
 
         # Adding field 'Article.article_id_slug'
         db.add_column('journalmanager_article', 'article_id_slug',
-                      self.gf('django.db.models.fields.SlugField')(default='', unique=True, max_length=512),
+                      self.gf('django.db.models.fields.SlugField')(default='', unique=True, max_length=2048),
                       keep_default=False)
 
 
+        # Changing field 'Article.issue'
+        db.alter_column('journalmanager_article', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['journalmanager.Issue']))
+
     def backwards(self, orm):
+        # Adding field 'Article.pdf_url'
+        db.add_column('journalmanager_article', 'pdf_url',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=256),
+                      keep_default=False)
+
+        # Adding field 'Article.xml_url'
+        db.add_column('journalmanager_article', 'xml_url',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=256),
+                      keep_default=False)
+
+        # Adding field 'Article.images_url'
+        db.add_column('journalmanager_article', 'images_url',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=256),
+                      keep_default=False)
+
+        # Adding field 'Article.front'
+        db.add_column('journalmanager_article', 'front',
+                      self.gf('jsonfield.fields.JSONField')(default=''),
+                      keep_default=False)
+
+        # Deleting field 'Article.xml'
+        db.delete_column('journalmanager_article', 'xml')
+
         # Deleting field 'Article.created_at'
         db.delete_column('journalmanager_article', 'created_at')
 
@@ -58,6 +101,9 @@ class Migration(SchemaMigration):
         # Deleting field 'Article.article_id_slug'
         db.delete_column('journalmanager_article', 'article_id_slug')
 
+
+        # Changing field 'Article.issue'
+        db.alter_column('journalmanager_article', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(default='', to=orm['journalmanager.Issue']))
 
     models = {
         'auth.group': {
@@ -104,7 +150,7 @@ class Migration(SchemaMigration):
         'journalmanager.article': {
             'Meta': {'object_name': 'Article'},
             'aid': ('django.db.models.fields.CharField', [], {'max_length': '32', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'article_id_slug': ('django.db.models.fields.SlugField', [], {'default': "''", 'unique': 'True', 'max_length': '512'}),
+            'article_id_slug': ('django.db.models.fields.SlugField', [], {'default': "''", 'unique': 'True', 'max_length': '2048'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_generated': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -399,7 +445,6 @@ class Migration(SchemaMigration):
         },
         'journalmanager.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
-            'email_notifications': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         }
