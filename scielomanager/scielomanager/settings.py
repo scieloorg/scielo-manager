@@ -171,7 +171,6 @@ INSTALLED_APPS = (
     'export',
     'south',
     'thrift',
-    'haystack',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
