@@ -16,9 +16,9 @@ logger = logging.getLogger(__file__)
 
 class RPCHandler(object):
 
-    def addArticle(self, xml_string):
+    def addArticle(self, xml_string, raw):
         try:
-            return services.article.add_from_string(xml_string)
+            return services.article.add_from_string(xml_string, raw)
 
         except IntegrityError as exc:
             logger.info(exc)
