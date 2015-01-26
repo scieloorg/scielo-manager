@@ -22,7 +22,7 @@ metadata_sch = isoschematron.Schematron(file=BASIC_ARTICLE_META)
 logger = logging.getLogger(__name__)
 
 
-def add_from_string(xml_string):
+def add_from_string(xml_string, raw=True):
     u""" Cria uma instância de `journalmanager.models.Article`.
 
     Pode levantar `django.db.IntegrityError` no caso de artigos duplicados,
@@ -31,6 +31,7 @@ def add_from_string(xml_string):
     presentes.
 
     :param xml_string: String de texto unicode.
+    :param raw: Bool que indica que `xml_string` ingressou no sistema como XML SciELO PS.
     :return: aid (article-id) comprised of 32-byte string.
     """
     if not isinstance(xml_string, unicode):
@@ -51,7 +52,9 @@ def add_from_string(xml_string):
     if not metadata_sch.validate(parsed_xml):
         raise ValueError('Missing identification elements')
 
-    new_article = models.Article(xml=xml_bstring)
+    # O valor de Article.is_generated ficou invertido em relação à interface
+    # pública. Acontece nas melhores famílias.
+    new_article = models.Article(xml=xml_bstring, is_generated=not raw)
     new_article.save()
 
     logger.info('New Article added: %s' % (new_article,))

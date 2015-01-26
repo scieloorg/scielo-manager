@@ -1318,7 +1318,7 @@ class Article(caching.base.CachingMixin, models.Model):
         - ``created_at``: data de criação (adicionado no SciELO Manager).
         - ``changed_at``: data de ultima modificação.
         - ``is_visible``: visibilidade do artigo (bool: True == pode ser publicado/disponible no sistema)
-        - ``is_generated``: Indica se a origem do artigo (False: articlemeta, True: processamento XML)
+        - ``is_generated``: Indica se a origem do artigo (True: articlemeta, False: processamento XML)
         - ``aid``: article id. Identificador universal unico do artigo. O valor é gerado no save().
 
     * Outros (extraidos do XML, properties):

@@ -7,6 +7,6 @@ exception ValueError {
 }
 
 service JournalManagerServices {
-    string addArticle(1:string xml_string) throws (1:DuplicationError dup_err, 2:ValueError val_err);
+    string addArticle(1:string xml_string, 2:bool raw) throws (1:DuplicationError dup_err, 2:ValueError val_err);
 }
 

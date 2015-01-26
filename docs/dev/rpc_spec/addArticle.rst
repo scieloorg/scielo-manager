@@ -1,5 +1,5 @@
-``string addArticle(1:string xml_string) throws (1:DuplicationError dup_err, 2:ValueError val_err);``
-=====================================================================================================
+``string addArticle(1:string xml_string, 2:bool raw) throws (1:DuplicationError dup_err, 2:ValueError val_err);``
+=================================================================================================================
 
 Cadastra uma nova entidade ``journalmanager.models.Article``. 
 
@@ -35,6 +35,9 @@ identificação, a exceção ``ValueError`` é levantada. Os elementos de identi
                                              @contrib-type="translator"]/name[1]/surname``
     * ``//article-meta/pub-date/year``
 
+O segundo argumento posicional, ``raw``, indica que o valor de ``xml_string`` não 
+deriva de registros das bases legadas em ISIS, e sim de registros já produzidos de 
+acordo com a especificação SciELO PS.
 
 A associação da entidade com ``journalmanager.models.Issue`` deve ser realizada de maneira
 assíncrona, a fim de aumentar a capacidade de atendimento de requisições do sistema. 
