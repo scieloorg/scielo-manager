@@ -291,9 +291,14 @@ if 'djcelery' in INSTALLED_APPS:
 
 if 'thrift' in INSTALLED_APPS:
     THRIFT_CONFIG = {
-        'HOST': '127.0.0.1',
+        'HOST': '0.0.0.0',
         'PORT': '6000',
     }
+
+ELASTICSEARCH_CONFIG = {
+    'HOST': '127.0.0.1',
+    'PORT': '9200',
+}
 
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
