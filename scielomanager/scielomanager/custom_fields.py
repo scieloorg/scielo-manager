@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import io
+
 from django.db import models
 from django.db.models.fields import TextField
 from django.forms import forms
@@ -53,14 +55,13 @@ class ContentTypeRestrictedFileField(models.FileField):
 
 class XMLSPS(object):
     def __init__(self, xml_root_string):
-        root =  etree.XML(xml_root_string)
-        self.root_etree = etree.ElementTree(root)
+        self.root_etree = etree.parse(io.BytesIO(xml_root_string.encode('utf-8')))
 
     def __repr__(self):
-        return etree.tostring(self.root_etree)
+        return etree.tostring(self.root_etree, encoding='utf-8', xml_declaration=True)
 
-    def query_xpath(self, xpath_string):
-        return self.root_etree.xpath(xpath_string)
+    def __getattr__(self, name):
+        return getattr(self.root_etree, name)
 
 
 class XMLSPSField(TextField):
