@@ -1322,11 +1322,7 @@ class Article(caching.base.CachingMixin, models.Model):
         - ``aid``: article id. Identificador universal unico do artigo. O valor é gerado no save().
 
     * Outros (extraidos do XML, properties):
-        - xml_abbrev_journal_title: //journal-meta/journal-title-group/abbrev-journal-title[@abbrev-type="publisher"]
-        - xml_volume:               //article-meta/volume
-        - xml_issue:                //article-meta/issue
-          (em processamento posterior serve para associar com o a entidade models.Issue.)
-        - xml_year:                 //article-meta/pub-date/year
+        - xml_*
 
     * Para identificar o artigo (duplicidade):
         - article_id_slug = string para identificar o artigo. recuperando informação dos seguintes xpaths:
@@ -1363,37 +1359,98 @@ class Article(caching.base.CachingMixin, models.Model):
     class Meta:
         permissions = (("list_article", "Can list Article"),)
 
-    @property
-    def get_article_id_fields(self):
-        article_title = self.xml.query_xpath('//article-meta/title-group/article-title')[0].text
-        contrib_surname = self.xml.query_xpath('//article-meta/contrib-group/contrib[@contrib-type="author" or @contrib-type="compiler" or @contrib-type="editor" or @contrib-type="translator"]/name[1]/surname')[0].text
-        year = self.xml.query_xpath('//article-meta/pub-date/year')[0].text
-        return u'%s_%s_%s' % (article_title.strip(), contrib_surname.strip(), year.strip())
-
     def save(self, *args, **kwargs):
         if not self.article_id_slug:
             self.article_id_slug = slugify(self.get_article_id_fields)
         super(Article, self).save(*args, **kwargs)
 
     @property
+    def get_article_id_fields(self):
+        article_title = self.xml.xpath('//article-meta/title-group/article-title')[0].text
+        contrib_surname = self.xml.xpath('//article-meta/contrib-group/contrib[@contrib-type="author" or @contrib-type="compiler" or @contrib-type="editor" or @contrib-type="translator"]/name[1]/surname')[0].text
+        year = self.xml.xpath('//article-meta/pub-date/year')[0].text
+        return u'%s_%s_%s' % (article_title.strip(), contrib_surname.strip(), year.strip())
+
+    @property
     def xml_abbrev_journal_title(self):
-        title = self.xml.query_xpath('//journal-meta/journal-title-group/abbrev-journal-title[@abbrev-type="publisher"]')
+        title = self.xml.xpath('//journal-meta/journal-title-group/abbrev-journal-title[@abbrev-type="publisher"]')
         return title[0].text
 
     @property
     def xml_volume(self):
-        volume = self.xml.query_xpath('//article-meta/volume')
+        volume = self.xml.xpath('//article-meta/volume')
         return volume[0].text
 
     @property
     def xml_issue(self):
-        issue = self.xml.query_xpath('//article-meta/issue')
+        issue = self.xml.xpath('//article-meta/issue')
         return issue[0].text
 
     @property
     def xml_year(self):
-        year = self.xml.query_xpath('//article-meta/pub-date/year')
+        year = self.xml.xpath('//article-meta/pub-date/year')
         return year[0].text
+
+    @property
+    def xml_epub(self):
+        value = self.xml.xpath('//journal-meta/issn[@pub-type="ppub"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_ppub(self):
+        value = self.xml.xpath('//journal-meta/issn[@pub-type="epub"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_head_subject(self):
+        value = self.xml.xpath('//article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_doi(self):
+        value = self.xml.xpath('//article-meta/article-id[@pub-id-type="doi"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_pid(self):
+        value = self.xml.xpath('//article-meta/article-id[@pub-id-type="publisher-id"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_is_aop(self):
+        return self.xml_volume == '00' and self.xml_issue == '00'
+
+    @property
+    def xml_article_type(self):
+        value = self.xml.xpath('/article/@article-type')
+        try:
+            return value[0]
+        except IndexError:
+            return None
+
+    @property
+    def xml_version(self):
+        value = self.xml.xpath('/article/@specific-use')
+        try:
+            return value[0]
+        except IndexError:
+            return None
+
 
 # ---- SIGNALS ------
 
