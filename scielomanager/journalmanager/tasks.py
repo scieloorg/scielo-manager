@@ -4,14 +4,14 @@ import logging
 import base64
 from elasticsearch import Elasticsearch
 from django.conf import settings
-from .models import Article
+from django.db.models import get_model
 from scielomanager.celery import app
 
 
 logger = logging.getLogger(__name__)
 ARTICLE_INDEX_NAME = 'icatman'
 ARTICLE_DOC_TYPE = 'article'
-
+Article = get_model('journalmanager', 'Article') # to avoid import models.Article then circular import hell!!!
 
 def _get_es_client():
     return Elasticsearch([{
