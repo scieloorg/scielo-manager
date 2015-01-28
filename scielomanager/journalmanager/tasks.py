@@ -11,7 +11,6 @@ from scielomanager.celery import app
 logger = logging.getLogger(__name__)
 ARTICLE_INDEX_NAME = 'icatman'
 ARTICLE_DOC_TYPE = 'article'
-Article = get_model('journalmanager', 'Article') # to avoid import models.Article then circular import hell!!!
 
 def _get_es_client():
     return Elasticsearch([{
@@ -27,7 +26,7 @@ def new_article_create_es_index(self, article_aid):
     must submit relevant data to the Elasticsearch instance.
     """
     logger.debug('[new_article_create_es_index] START task to CREATE index on ES (aid=%s) at %s' % (article_aid, datetime.datetime.now()))
-
+    Article = get_model('journalmanager', 'Article') # to avoid import models.Article then circular import hell!!!
     try:
         article = Article.objects.get(aid=article_aid)
     except Article.DoesNotExist as e:
