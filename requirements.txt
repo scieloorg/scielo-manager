@@ -24,3 +24,5 @@ django-kombu
 defusedxml==0.4.1
 thriftpy
 django-countries
+# https://github.com/elasticsearch/elasticsearch-py - Official Python low-level client for Elasticsearch
+elasticsearch>=1.0.0,<2.0.0

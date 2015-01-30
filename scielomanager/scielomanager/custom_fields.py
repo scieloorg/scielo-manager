@@ -55,7 +55,14 @@ class ContentTypeRestrictedFileField(models.FileField):
 
 class XMLSPS(object):
     def __init__(self, xml_root_string):
-        self.root_etree = etree.parse(io.BytesIO(xml_root_string.encode('utf-8')))
+        if isinstance(xml_root_string, str):
+            xml_string = xml_root_string
+        elif isinstance(xml_root_string, unicode):
+            xml_string = xml_root_string.encode('utf-8')
+        else:
+            raise TypeError('xml must be str or unicode')
+
+        self.root_etree = etree.parse(io.BytesIO(xml_string))
 
     def __repr__(self):
         return etree.tostring(self.root_etree, encoding='utf-8', xml_declaration=True)

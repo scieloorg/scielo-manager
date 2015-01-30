@@ -35,6 +35,7 @@ from tastypie.models import create_api_key
 from scielomanager.utils import base28
 from scielomanager.custom_fields import ContentTypeRestrictedFileField, XMLSPSField
 from . import modelmanagers
+from journalmanager import tasks
 
 #User.__bases__ = (caching.base.CachingMixin, models.Model)
 #User.add_to_class('objects', caching.base.CachingManager())
@@ -1460,6 +1461,14 @@ def generate_article_aid(sender, instance, **kwargs):
     if not instance.aid:
         instance.aid = str(uuid4().hex)
 
+@receiver(post_save, sender=Article)
+def create_index(sender, instance, created, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if created:
+        tasks.new_article_create_es_index.delay(article_aid=instance.aid)
+
+
+models.signals.post_save.connect(create_index, sender=Article)
 models.signals.pre_save.connect(generate_article_aid, sender=Article)
 models.signals.post_save.connect(create_api_key, sender=User)
 
