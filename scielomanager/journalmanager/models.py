@@ -1474,8 +1474,17 @@ def create_index(sender, instance, created, **kwargs):
         tasks.new_article_create_es_index.delay(article_aid=instance.aid)
 
 
+@receiver(post_save, sender=Article)
+def link_issue_article(sender, instance, created, **kwargs):
+    """when saved try to link article to correct issue if no issue was linked yet"""
+    if instance.issue is None:
+        tasks.link_article_to_issue.delay(article_pk=instance.pk)
+
+# article:
 models.signals.post_save.connect(create_index, sender=Article)
+models.signals.post_save.connect(link_issue_article, sender=Article)
 models.signals.pre_save.connect(generate_article_aid, sender=Article)
+# user:
 models.signals.post_save.connect(create_api_key, sender=User)
 
 

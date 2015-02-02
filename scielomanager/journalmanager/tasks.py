@@ -53,3 +53,58 @@ def new_article_create_es_index(self, article_aid):
         result = es.index(index=ARTICLE_INDEX_NAME, doc_type=ARTICLE_DOC_TYPE, id=article_aid, body=article_data)
         logger.info('[new_article_create_es_index] RESULT: %s' % result)
     logger.debug('[new_article_create_es_index] FINISH task at %s' % datetime.datetime.now())
+
+
+@app.task(bind=True)
+def link_article_to_issue(self, article_pk):
+    """
+    Retrieve an article (by pk). then pick the article metadata to look for an issue to match.
+    """
+    logger.debug('[link_article_to_issue] START task (pk=%s) at %s' % (article_pk, datetime.datetime.now()))
+    # use of get_model to avoid circular import
+    Article = get_model('journalmanager', 'Article')
+    Issue = get_model('journalmanager', 'Issue')
+
+    # retrieve article
+    try:
+        article = Article.objects.get(pk=article_pk)
+    except Article.DoesNotExist as e:
+        logger.error('[link_article_to_issue] FAIL while retrieving ARTICLE (pk: %s): %s' % (article_pk, e))
+    else:
+        if article.issue is None:
+            # retrieve issue
+            try:
+                issue = Issue.objects.get(journal__title_iso=article.xml_abbrev_journal_title, volume=article.xml_volume, number=article.xml_issue)
+            except Issue.DoesNotExist as e:
+                logger.error('[link_article_to_issue] FAIL while retrieving ISSUE (pk: %s, xml_volume: %s, xml_issue: %s): %s' % (article_pk, article.xml_volume, article.xml_issue, e))
+            except Issue.MultipleObjectsReturned as e:
+                logger.error('[link_article_to_issue] FAIL Multiple ISSUES Returned for (pk: %s, xml_volume: %s, xml_issue: %s): %s' % (article_pk, article.xml_volume, article.xml_issue, e))
+            else:
+                # link issue and article:
+                article.issue = issue
+                article.save()
+                logger.info('[link_article_to_issue] article has an issue now!: (pk: %s) -> (issue: %s)' % (article_pk, article.issue))
+        else:
+            logger.info('[link_article_to_issue] article has an issue already!: (pk: %s) -> (issue: %s)' % (article_pk, article.issue))
+
+    logger.debug('[link_article_to_issue] FINISH task at %s' % datetime.datetime.now())
+
+
+@app.task(bind=True)
+def process_orphan_articles(self):
+    """
+    collect every orphan articles (orphan == articles without an issue related), and for each call: link_article_to_issue.
+    This task is scheduled to run daily.
+    """
+    logger.debug("[process_orphan_articles] START process at %s" % datetime.datetime.now())
+    # use of get_model to avoid circular import
+    Article = get_model('journalmanager', 'Article')
+    articles = Article.objects.filter(issue=None)
+    logger.info('[process_orphan_articles] Found %s articles matching conditions' % articles.count())
+
+    for article in articles:
+        logger.info('[process_orphan_articles] Processing article (pk=%s, aid=%s)' % (article.pk, article.aid))
+        link_article_to_issue.apply_async(args=[article.pk, ])
+
+    logger.debug('[process_orphan_articles] FINISH process at %s' % datetime.datetime.now())
+
