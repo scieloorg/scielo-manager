@@ -278,6 +278,19 @@ def article_index(request, issue_id):
         context_instance=RequestContext(request)
     )
 
+@permission_required('journalmanager.list_article', login_url=settings.AUTHZ_REDIRECT_URL)
+def article_detail(request, article_pk):
+
+    article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
+
+    return render_to_response(
+        'journalmanager/article_detail.html',
+        {
+            'article': article,
+        },
+        context_instance=RequestContext(request)
+    )
+
 
 @permission_required('journalmanager.list_pressrelease', login_url=settings.AUTHZ_REDIRECT_URL)
 def pressrelease_index(request, journal_id):

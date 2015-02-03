@@ -1341,6 +1341,7 @@ class Article(caching.base.CachingMixin, models.Model):
     """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.ArticleManager()
 
     issue = models.ForeignKey(Issue, related_name='articles', blank=True, null=True)
     xml = XMLSPSField(blank=True, null=True)
@@ -1366,8 +1367,12 @@ class Article(caching.base.CachingMixin, models.Model):
         super(Article, self).save(*args, **kwargs)
 
     @property
+    def get_article_title(self):
+        return self.xml.xpath('//article-meta/title-group/article-title')[0].text
+
+    @property
     def get_article_id_fields(self):
-        article_title = self.xml.xpath('//article-meta/title-group/article-title')[0].text
+        article_title = self.get_article_title
         contrib_surname = self.xml.xpath('//article-meta/contrib-group/contrib[@contrib-type="author" or @contrib-type="compiler" or @contrib-type="editor" or @contrib-type="translator"]/name[1]/surname')[0].text
         year = self.xml.xpath('//article-meta/pub-date/year')[0].text
         return u'%s_%s_%s' % (article_title.strip(), contrib_surname.strip(), year.strip())

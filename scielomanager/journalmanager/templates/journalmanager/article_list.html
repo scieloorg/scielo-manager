@@ -8,24 +8,52 @@
 
 {% journaldash_toolbar 'issue' journal user %}
 
-<h4>{% trans 'Issue'%}: {{ issue }}</h4> 
-<h4>{% trans 'Publication date'%}: {{ issue.publication_date }}</h4>
+<h4>
+  {% trans 'Issue'%}: {{ issue }}
+  {% if issue.publication_start_month and issue.publication_end_month and issue.publication_year %}
+    &bull; {% trans 'Publication date'%}: {{ issue.publication_date }}
+  {% elif issue.publication_year %}
+    &bull; {% trans 'Publication year'%}: {{ issue.publication_year }}
+  {% endif %}
+</h4>
 
-<h4>{% trans 'Articles' %}</h4>
+<h5>{% trans 'Articles' %}:</h5>
 <table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th>{% trans "Title" %}:</th>
+      <th class="span3">{% trans "Created at / Updated at" %}:</th>
+      <th class="span2">{% trans "epub / ppub" %}:</th>
+      <th class="span2">{% trans "Is Visible" %}:</th>
+      <th class="span2">{% trans "Is Generated" %}:</th>
+    </tr>
+  </thead>
   <tbody>
     {% for article in articles %}
     <tr>
+      <td><a href="{% url article.detail article.pk %}">{{ article.get_article_title }}</a></td>
+      <td>{{ article.created_at }} /<br>{{ article.updated_at }}</td>
+      <td>{{ article.xml_epub|default:"--" }} /<br>{{ article.xml_ppub|default:"--" }}</td>
       <td>
-        {{ article.title }}
+        {% if article.is_visible %}
+          <span class="label label-success">{% trans "Yes" %}</span>
+        {% else %}
+          <span class="label label-important">{% trans "No" %}</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if article.is_generated %}
+          <span class="label label-success">{% trans "Yes" %}</span>
+        {% else %}
+          <span class="label label-important">{% trans "No" %}</span>
+        {% endif %}
       </td>
     </tr>
     {% empty %}
       <tr>
         <td colspan="5">
           <div class="alert alert-info">
-            <i class="icon-info-sign"></i>
-            {% trans 'There are no items.' %}
+            <i class="icon-info-sign"></i> {% trans 'There are no items.' %}
           </div>
         </td>
       </tr>
