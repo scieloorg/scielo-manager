@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load tz %}
 {% load static %}
-{% load waffle_tags %}
+
 {% load pagination_tags %}
 {% load inctag_toolbars %}
 
@@ -43,6 +43,47 @@
   {% endif %}
 </div>
 
+
+<div class="accordion" id="accordion-aop">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-aop" href="#collapse_aop">
+        {% trans "Ahead of print" %}: <span class="label">{{ aop_articles|length }}</span> {% trans "Articles" %}
+      </a>
+    </div>
+    <div id="collapse_aop" class="accordion-body collapse {% if aop_articles|length > 0 %} in {% endif %}">
+      <div class="accordion-inner">
+        <table class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th>{% trans "Title" %}:</th>
+              <th>{% trans "DOI" %}:</th>
+              <th>{% trans "Type" %}:</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in aop_articles %}
+              <tr>
+                  <td>
+                    <a href="{% url article.detail a.pk %}">
+                      {{ a.get_article_title|default:"--" }}
+                    </a>
+                  </td>
+                  <td>{{ a.xml_doi|default:"--" }}</td>
+                  <td>{{ a.xml_article_type|default:"--" }}</td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="4">{% trans 'There are no items.' %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="accordion" id="accordion-issues">
   <div class="accordion-group">
     {% for year, vols in issue_grid.items %}
@@ -61,9 +102,7 @@
               <thead>
                 <tr>
                   <th>{% trans "Number" %}:</th>
-                  {% flag 'articletrack' %}
-                    <th>{% trans "Articles" %}:</th>
-                  {% endflag %}
+                  <th>{% trans "Articles" %}:</th>
                   <th>{% trans "Total documents" %}:</th>
                   <th>{% trans "Publication months" %}:</th>
                   <th>{% trans "Updated" %}:</th>
@@ -74,7 +113,7 @@
                 {% for num in nums %}
                   <tr>
                       <td>
-                        <a href="{% url issue.edit journal.pk num.id %}">
+                        <a href="{% url article.index num.id %}">
                           {% if num.type == 'regular' and not num.number %}
                             {% trans 'volume issue' %}
                           {% else %}
@@ -82,12 +121,9 @@
                           {% endif %}
                         </a>
                       </td>
-                      {% flag 'articletrack' %}
-                        <td>
-                          <span class="label">{{ num.articles.all|length }} {% trans "articles" %}</span>
-                          <a  class='btn btn-mini' href="{% url article.index num.id %}">{% trans "view articles" %}</a>
-                        </td>
-                      {% endflag %}
+                      <td>
+                        <span class="label">{{ num.articles.all|length }} {% trans "articles" %}</span>
+                      </td>
                       <td>
                         <span class="badge {% if num.total_documents == num.articles.all|length %} badge-success {% endif %}">
                           {{ num.total_documents }}

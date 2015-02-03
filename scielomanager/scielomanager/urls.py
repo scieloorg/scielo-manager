@@ -74,6 +74,7 @@ urlpatterns = patterns('',
 
     # Article APP
     url(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),
+    url(r'^articles/(?P<article_pk>\d+)/$', views.article_detail, name='article.detail'),
 
     # Journal Manager APP
     url(r'^journal/', include('journalmanager.urls')),
