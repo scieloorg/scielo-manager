@@ -178,6 +178,18 @@ class IssueManager(UserObjectManager):
         return IssueQuerySet(self.model, using=self._db)
 
 
+class ArticleQuerySet(UserObjectQuerySet):
+    def all(self, get_all_collections=user_request_context.get_current_user_collections):
+        return self.filter(issue__journal__collections__in=get_all_collections())
+
+    def active(self, get_active_collection=user_request_context.get_current_user_active_collection):
+        return self.filter(issue__journal__collections=get_active_collection())
+
+
+class ArticleManager(UserObjectManager):
+    def get_query_set(self):
+        return ArticleQuerySet(self.model, using=self._db)
+
 class InstitutionQuerySet(UserObjectQuerySet):
     def all(self, get_all_collections=user_request_context.get_current_user_collections):
         return self.filter(

@@ -156,7 +156,7 @@ class IssueTests(TestCase):
 
     def test_publication_date(self):
         issue = IssueFactory.create()
-        expected = '9 / 11 - 2012'
+        expected = 'Sep/Nov 2012'
 
         self.assertEqual(issue.publication_date, expected)
 

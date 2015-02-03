@@ -217,6 +217,7 @@ def issue_index(request, journal_id):
             'issue_grid': journal.issues_as_grid(
                 request.GET.get('is_available')
             ),
+            'aop_articles': journal.get_articles_ahead_of_print
         },
         context_instance=RequestContext(request)
     )
@@ -274,6 +275,20 @@ def article_index(request, issue_id):
             'journal': issue.journal,
             'issue': issue,
             'articles': issue.articles.all()
+        },
+        context_instance=RequestContext(request)
+    )
+
+@permission_required('journalmanager.list_article', login_url=settings.AUTHZ_REDIRECT_URL)
+def article_detail(request, article_pk):
+
+    article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
+
+    return render_to_response(
+        'journalmanager/article_detail.html',
+        {
+            'article': article,
+            'journal': article.issue.journal, # necessario para o journal title + edit do journal no topo
         },
         context_instance=RequestContext(request)
     )
