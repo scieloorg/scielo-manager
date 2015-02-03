@@ -13,13 +13,37 @@
             <dd>{{ article.get_article_title|default:"--" }}</dd>
 
             <dt>{% trans "Journal title" %}:</dt>
-            <dd>{{ article.xml_abbrev_journal_title|default:"--" }}</dd>
+            <dd>
+                {% if article.issue %}
+                    <a href="{% url journal.dash article.issue.journal.pk %}">
+                        {{ article.xml_abbrev_journal_title|default:"--" }}
+                    </a>
+                {% else %}
+                    {{ article.xml_abbrev_journal_title|default:"--" }}
+                {% endif %}
+            </dd>
 
             <dt>{% trans "Issue volume" %}:</dt>
-            <dd>{{ article.xml_volume|default:"--" }}</dd>
+            <dd>
+                {% if article.issue %}
+                    <a href="{% url issue.index article.issue.pk %}">
+                        {{ article.xml_volume|default:"--" }}
+                    </a>
+                {% else %}
+                    {{ article.xml_volume|default:"--" }}
+                {% endif %}
+            </dd>
 
             <dt>{% trans "Issue number" %}:</dt>
-            <dd>{{ article.xml_issue|default:"--" }}</dd>
+            <dd>
+                {% if article.issue %}
+                    <a href="{% url issue.index article.issue.pk %}">
+                        {{ article.xml_issue|default:"--" }}
+                    </a>
+                {% else %}
+                    {{ article.xml_issue|default:"--" }}
+                {% endif %}
+            </dd>
 
             <dt>{% trans "Year" %}:</dt>
             <dd>{{ article.xml_year|default:"--" }}</dd>
