@@ -56,46 +56,36 @@ def new_article_create_es_index(self, article_aid):
 
 
 @app.task(bind=True)
-def link_article_to_issue(self, article_aid):
+def link_article_to_issue(self, article_pk):
     """
-    Retrieve an article (by aid). then pick the article metadata to look for an issue to match.
+    Retrieve an article (by pk). then pick the article metadata to look for an issue to match.
     """
-    logger.debug('[link_article_to_issue] START task (aid=%s) at %s' % (article_aid, datetime.datetime.now()))
+    logger.debug('[link_article_to_issue] START task (pk=%s) at %s' % (article_pk, datetime.datetime.now()))
     # use of get_model to avoid circular import
     Article = get_model('journalmanager', 'Article')
-    Journal = get_model('journalmanager', 'Journal')
     Issue = get_model('journalmanager', 'Issue')
 
     # retrieve article
     try:
-        article = Article.objects.get(aid=article_aid)
+        article = Article.objects.get(pk=article_pk)
     except Article.DoesNotExist as e:
-        logger.error('[link_article_to_issue] FAIL while retrieving ARTICLE (aid: %s): %s' % (article_aid, e))
+        logger.error('[link_article_to_issue] FAIL while retrieving ARTICLE (pk: %s): %s' % (article_pk, e))
     else:
         if article.issue is None:
-            # retrieve journal
+            # retrieve issue
             try:
-                journal = Journal.objects.get(title_iso=article.xml_abbrev_journal_title)
-            except Journal.DoesNotExist as e:
-                logger.error('[link_article_to_issue] FAIL while retrieving JOURNAL (aid: %s, xml_abbrev_journal_title: %s): %s' % (article_aid, article.xml_abbrev_journal_title, e))
-            except Journal.MultipleObjectsReturned as e:
-                logger.error('[link_article_to_issue] FAIL Multiple JOURNALS Returned for (aid: %s, xml_abbrev_journal_title: %s): %s' % (article_aid, article.xml_abbrev_journal_title, e))
+                issue = Issue.objects.get(journal__title_iso=article.xml_abbrev_journal_title, volume=article.xml_volume, number=article.xml_issue)
+            except Issue.DoesNotExist as e:
+                logger.error('[link_article_to_issue] FAIL while retrieving ISSUE (pk: %s, xml_volume: %s, xml_issue: %s): %s' % (article_pk, article.xml_volume, article.xml_issue, e))
+            except Issue.MultipleObjectsReturned as e:
+                logger.error('[link_article_to_issue] FAIL Multiple ISSUES Returned for (pk: %s, xml_volume: %s, xml_issue: %s): %s' % (article_pk, article.xml_volume, article.xml_issue, e))
             else:
-
-                # retrieve issue
-                try:
-                    issue = Issue.objects.get(journal=journal, volume=article.xml_volume, number=article.xml_issue)
-                except Issue.DoesNotExist as e:
-                    logger.error('[link_article_to_issue] FAIL while retrieving ISSUE (aid: %s, xml_volume: %s, xml_issue: %s): %s' % (article_aid, article.xml_volume, article.xml_issue, e))
-                except Issue.MultipleObjectsReturned as e:
-                    logger.error('[link_article_to_issue] FAIL Multiple ISSUES Returned for (aid: %s, xml_volume: %s, xml_issue: %s): %s' % (article_aid, article.xml_volume, article.xml_issue, e))
-                else:
-                    # link issue and article:
-                    article.issue = issue
-                    article.save()
-                    logger.info('[link_article_to_issue] article has an issue now!: (aid: %s) -> (issue: %s)' % (article.aid, article.issue))
+                # link issue and article:
+                article.issue = issue
+                article.save()
+                logger.info('[link_article_to_issue] article has an issue now!: (pk: %s) -> (issue: %s)' % (article_pk, article.issue))
         else:
-            logger.info('[link_article_to_issue] article has an issue already!: (aid: %s) -> (issue: %s)' % (article.aid, article.issue))
+            logger.info('[link_article_to_issue] article has an issue already!: (pk: %s) -> (issue: %s)' % (article_pk, article.issue))
 
     logger.debug('[link_article_to_issue] FINISH task at %s' % datetime.datetime.now())
 
@@ -114,7 +104,7 @@ def process_orphan_articles(self):
 
     for article in articles:
         logger.info('[process_orphan_articles] Processing article (pk=%s, aid=%s)' % (article.pk, article.aid))
-        link_article_to_issue.apply_async(args=[article.aid, ])
+        link_article_to_issue.apply_async(args=[article.pk, ])
 
     logger.debug('[process_orphan_articles] FINISH process at %s' % datetime.datetime.now())
 
