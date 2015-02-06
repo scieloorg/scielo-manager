@@ -2,56 +2,50 @@
 {% load i18n %}
 {% load inctag_toolbars %}
 
-{% block page_title %}{% trans "Journals" %}{% endblock %}
+{% block page_title %}{% trans "Articles" %}{% endblock %}
 
 {% block content %}
 
+<style>
+  .grey_bg {background-color: #f9f9f9;}
+  .article_title { margin-left: 20px;}
+</style>
+
 {% journaldash_toolbar 'issue' journal user %}
+<h4>{{ issue.bibliographic_legend }}</h4>
 
-<h4>
-  {% trans 'Issue'%}: {{ issue }}
-  {% if issue.publication_start_month and issue.publication_end_month and issue.publication_year %}
-    &bull; {% trans 'Publication date'%}: {{ issue.publication_date }}
-  {% elif issue.publication_year %}
-    &bull; {% trans 'Publication year'%}: {{ issue.publication_year }}
-  {% endif %}
-</h4>
-
-<h5>{% trans 'Articles' %}:</h5>
-<table class="table table-striped _listings">
+<table class="table _listings">
   <thead>
     <tr>
-      <th>{% trans "Title" %}:</th>
-      <th class="span3">{% trans "Created at / Updated at" %}:</th>
-      <th class="span2">{% trans "epub / ppub" %}:</th>
-      <th class="span2">{% trans "Is Visible" %}:</th>
-      <th class="span2">{% trans "Is Generated" %}:</th>
+      <th>&nbsp;</th>
+      <th class="span3">&nbsp;</th>
+      <th class="span2">&nbsp;</th>
     </tr>
   </thead>
   <tbody>
-    {% for article in articles %}
-    <tr>
-      <td><a href="{% url article.detail article.pk %}">{{ article.get_article_title }}</a></td>
-      <td>{{ article.created_at }} /<br>{{ article.updated_at }}</td>
-      <td>{{ article.xml_epub|default:"--" }} /<br>{{ article.xml_ppub|default:"--" }}</td>
-      <td>
-        {% if article.is_visible %}
-          <span class="label label-success">{% trans "Yes" %}</span>
-        {% else %}
-          <span class="label label-important">{% trans "No" %}</span>
-        {% endif %}
-      </td>
-      <td>
-        {% if article.is_generated %}
-          <span class="label label-success">{% trans "Yes" %}</span>
-        {% else %}
-          <span class="label label-important">{% trans "No" %}</span>
-        {% endif %}
-      </td>
-    </tr>
+    {% regroup articles by xml_head_subject as articles_list %}
+    {% for article_set in articles_list %}
+      <tr class="grey_bg">
+        <td>
+          <h4>{{ article_set.grouper }}</h4>
+        </td>
+        <td><strong>{% trans "Updated at" %}:</strong></td>
+        <td><strong>{% trans "Is Visible" %}:</strong></td>
+      </tr>
+      <tr>
+        {% for item in article_set.list %}
+          <td>
+            <a class="article_title" href="{% url article.detail item.pk %}">
+              {{ item.get_article_title }}
+            </a>
+          </td>
+          <td>{{ item.updated_at }}</td>
+          <td>{{ item.is_visible }}</td>
+        {% endfor %}
+      <tr>
     {% empty %}
       <tr>
-        <td colspan="5">
+        <td colspan="3">
           <div class="alert alert-info">
             <i class="icon-info-sign"></i> {% trans 'There are no items.' %}
           </div>

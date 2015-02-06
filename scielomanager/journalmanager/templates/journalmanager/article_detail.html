@@ -1,58 +1,19 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
 {% load assets %}
+{% load inctag_toolbars %}
 
 {% block page_title %}{% trans "Article: " %}{{ article.get_article_title }} {% endblock %}
 
 {% block content %}
+{% journaldash_toolbar 'issue' article.issue.journal user %}
+<h4>{{ article.issue.bibliographic_legend }}</h4>
 <div class="row-fluid">
     <h4>{% trans "XML Meta" %}:</h4>
     <div class="well well-small">
         <dl class="dl-horizontal">
             <dt>{% trans "Article title" %}:</dt>
             <dd>{{ article.get_article_title|default:"--" }}</dd>
-
-            <dt>{% trans "Journal title" %}:</dt>
-            <dd>
-                {% if article.issue %}
-                    <a href="{% url journal.dash article.issue.journal.pk %}">
-                        {{ article.xml_abbrev_journal_title|default:"--" }}
-                    </a>
-                {% else %}
-                    {{ article.xml_abbrev_journal_title|default:"--" }}
-                {% endif %}
-            </dd>
-
-            <dt>{% trans "Issue volume" %}:</dt>
-            <dd>
-                {% if article.issue %}
-                    <a href="{% url issue.index article.issue.pk %}">
-                        {{ article.xml_volume|default:"--" }}
-                    </a>
-                {% else %}
-                    {{ article.xml_volume|default:"--" }}
-                {% endif %}
-            </dd>
-
-            <dt>{% trans "Issue number" %}:</dt>
-            <dd>
-                {% if article.issue %}
-                    <a href="{% url issue.index article.issue.pk %}">
-                        {{ article.xml_issue|default:"--" }}
-                    </a>
-                {% else %}
-                    {{ article.xml_issue|default:"--" }}
-                {% endif %}
-            </dd>
-
-            <dt>{% trans "Year" %}:</dt>
-            <dd>{{ article.xml_year|default:"--" }}</dd>
-
-            <dt>{% trans "Epub" %}:</dt>
-            <dd>{{ article.xml_epub|default:"--" }}</dd>
-
-            <dt>{% trans "Ppub" %}:</dt>
-            <dd>{{ article.xml_ppub|default:"--" }}</dd>
 
             <dt>{% trans "Head Subject" %}:</dt>
             <dd>{{ article.xml_head_subject|default:"--" }}</dd>
@@ -62,15 +23,6 @@
 
             <dt>{% trans "PID" %}:</dt>
             <dd>{{ article.xml_pid|default:"--" }}</dd>
-
-            <dt>{% trans "is Ahead of Print" %}:</dt>
-            <dd>
-                {% if article.xml_is_aop %}
-                    <span class="label label-success">{% trans "Yes" %}</span>
-                {% else %}
-                    <span class="label label-important">{% trans "No" %}</span>
-                {% endif %}
-            </dd>
 
             <dt>{% trans "Article Type" %}:</dt>
             <dd>{{ article.xml_article_type|default:"--" }}</dd>

@@ -703,6 +703,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         return grid
 
     @property
+    def get_articles_ahead_of_print(self):
+        orphan_articles = Article.objects.filter(issue=None, abbrev_journal_title=self.title_iso)
+        result = [article for article in orphan_articles if article.xml_is_aop]
+        return result
+
+    @property
     def succeeding_title(self):
         try:
             return self.prev_title.get()
@@ -1075,9 +1081,26 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     @property
     def publication_date(self):
-        return '{0} / {1} - {2}'.format(self.publication_start_month,
-                                        self.publication_end_month,
-                                        self.publication_year)
+        start = self.get_publication_start_month_display()
+        end =  self.get_publication_end_month_display()
+        if start and end:
+            return '{0}/{1} {2}'.format(start[:3], end[:3], self.publication_year)
+        elif start:
+            return '{0} {1}'.format(start[:3], self.publication_year)
+        elif end:
+            return '{0} {1}'.format(end[:3], self.publication_year)
+        else:
+            return self.publication_year
+
+    @property
+    def verbose_identification(self):
+        if self.type == 'supplement':
+            prefixed_number = 'suppl.%s' % self.suppl_text
+        elif self.type == 'special':
+            prefixed_number = 'spe.%s' % self.spe_text
+        else: # regular
+            prefixed_number = 'n.%s' % self.number
+        return 'vol.%s %s' % (self.volume, prefixed_number)
 
     @property
     def suppl_type(self):
@@ -1101,7 +1124,15 @@ class Issue(caching.base.CachingMixin, models.Model):
                 return 'volume'
 
         else:
-            raise AttributeError('Issues of type %s do not have an attribute named: esp_type' % self.get_type_display())
+            raise AttributeError('Issues of type %s do not have an attribute named: spe_type' % self.get_type_display())
+
+    @property
+    def bibliographic_legend(self):
+        abrev_title = self.journal.title_iso
+        issue = self.verbose_identification
+        city = self.journal.publication_city
+        dates = self.publication_date
+        return '%s %s %s %s'% (abrev_title, issue, city, dates)
 
     def _suggest_order(self, force=False):
         """
@@ -1350,8 +1381,8 @@ class Article(caching.base.CachingMixin, models.Model):
     updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
     is_visible = models.BooleanField(default=True)
     is_generated = models.BooleanField(default=True)
-    aid = models.CharField(max_length=32, unique=True, null=True, blank=True, editable=False)
-
+    aid = models.CharField(max_length=32, unique=True, null=True, blank=True, editable=False, db_index=True)
+    abbrev_journal_title = models.CharField(_('ISO abbreviated title'), max_length=256, null=True, blank=False, db_index=True)
     # article identification field:
     article_id_slug = models.SlugField(max_length=2048, unique=True, default='')
 
@@ -1362,6 +1393,8 @@ class Article(caching.base.CachingMixin, models.Model):
         permissions = (("list_article", "Can list Article"),)
 
     def save(self, *args, **kwargs):
+        if not self.abbrev_journal_title:
+            self.abbrev_journal_title = self.xml_abbrev_journal_title
         if not self.article_id_slug:
             self.article_id_slug = slugify(self.get_article_id_fields)
         super(Article, self).save(*args, **kwargs)

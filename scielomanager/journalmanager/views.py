@@ -217,6 +217,7 @@ def issue_index(request, journal_id):
             'issue_grid': journal.issues_as_grid(
                 request.GET.get('is_available')
             ),
+            'aop_articles': journal.get_articles_ahead_of_print
         },
         context_instance=RequestContext(request)
     )
@@ -287,6 +288,7 @@ def article_detail(request, article_pk):
         'journalmanager/article_detail.html',
         {
             'article': article,
+            'journal': article.issue.journal, # necessario para o journal title + edit do journal no topo
         },
         context_instance=RequestContext(request)
     )
