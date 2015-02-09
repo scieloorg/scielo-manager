@@ -71,7 +71,7 @@ def link_article_to_issue(self, article_pk):
     except Article.DoesNotExist as e:
         logger.error('[link_article_to_issue] FAIL while retrieving ARTICLE (pk: %s): %s' % (article_pk, e))
     else:
-        if article.issue is None:
+        if article.issue is None and not article.xml_is_aop:
             # retrieve issue
             try:
                 issue = Issue.objects.get(journal__title_iso=article.xml_abbrev_journal_title, volume=article.xml_volume, number=article.xml_issue)
@@ -85,7 +85,7 @@ def link_article_to_issue(self, article_pk):
                 article.save()
                 logger.info('[link_article_to_issue] article has an issue now!: (pk: %s) -> (issue: %s)' % (article_pk, article.issue))
         else:
-            logger.info('[link_article_to_issue] article has an issue already!: (pk: %s) -> (issue: %s)' % (article_pk, article.issue))
+            logger.info('[link_article_to_issue] article is Ahead of Print or it has an issue already!: (pk: %s, is_aop: %s) -> (issue: %s)' % (article_pk, article.is_aop, article.issue))
 
     logger.debug('[link_article_to_issue] FINISH task at %s' % datetime.datetime.now())
 
