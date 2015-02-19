@@ -84,6 +84,10 @@
 <script type="text/javascript">
 
   function qry_data(journal, is_all) {
+    if (!journal || journal === "") {
+      alert("{% trans 'Please select a Journal' %}");
+      return false;
+    }
     $('#loading').show();
     $.ajax({
       url: "{% url ajx.list_issues_for_markup_files %}?j=" + journal + "&all=" + is_all,
@@ -98,6 +102,10 @@
         $("#{{form.issue.auto_id}}").append('<option value="ahead:2013">' + '2013 - Ahead' + '</option>');
         $('#loading').hide();
       }
+    }).fail(function() {
+      alert( "Unexpected error when retrieving issues for markup files." );
+    }).always(function() {
+      $('#loading').hide();
     });
   }
 
