@@ -1261,6 +1261,11 @@ def ajx_list_issues_for_markup_files(request):
         return HttpResponse(status=400)
 
     journal_id = request.GET.get('j', None)
+
+    if journal_id is None:
+        # journal id is required is None -> Raise Bad Request
+        return HttpResponse(status=400)
+
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     all_issues = asbool(request.GET.get('all', True))
