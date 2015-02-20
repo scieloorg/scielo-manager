@@ -1,5 +1,6 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
+{% load tz %}
 {% load static %}
 {% load trans_status %}
 {% load user_avatar %}
@@ -192,7 +193,7 @@
                     {{ notice.message }}
                   </td>
                   <td>
-                    {{ notice.created_at|date:"d/m/Y - H:i" }}
+                    {{ notice.created_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}
                   </td>
                 </tr>
               {% empty %}
@@ -356,7 +357,7 @@
       <tr {% if check.pk == checkin.pk %}class="current_attempt"{% endif %}>
         <td>{{ forloop.revcounter }}</td>
         <td>
-          {{ check.created_at|date:"d/m/Y - H:i"  }}
+          {{ check.created_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i"  }}
           {% if check.pk == checkin.pk %}
             <span class="label">{% trans "current" %}</span>
           {% endif %}
