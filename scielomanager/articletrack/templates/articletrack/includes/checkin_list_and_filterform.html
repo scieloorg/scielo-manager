@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load tz %}
 {% load pagination_tags %}
 {% load trans_status %}
 
@@ -43,7 +44,7 @@
         <td>{{ checkin.article.article_title }}</td>
         <td>{{ checkin.article.journal_title }}</td>
         <td>{{ checkin.article.issue_label }}</td>
-        <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
+        <td>{{ checkin.created_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</td>
         <td>
           {% if checkin.get_error_level == 'in progress' %}
             <span class="label label-info">
@@ -55,13 +56,13 @@
         </td>
         {% if status == "review" %}
           <td>{{ checkin.reviewed_by.get_full_name|default:"--" }}</td>
-          <td>{{ checkin.reviewed_at|date:"d/m/Y - H:i"|default:"--" }}</td>
+          <td>{{ checkin.reviewed_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i"|default:"--" }}</td>
         {% elif status == "accepted" %}
           <td>{{ checkin.accepted_by.get_full_name|default:"--" }}</td>
-          <td>{{ checkin.accepted_at|date:"d/m/Y - H:i"|default:"--" }}</td>
+          <td>{{ checkin.accepted_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i"|default:"--" }}</td>
         {% elif status == "rejected" %}
           <td>{{ checkin.rejected_by.get_full_name|default:"--" }}</td>
-          <td>{{ checkin.rejected_at|date:"d/m/Y - H:i"|default:"--" }}</td>
+          <td>{{ checkin.rejected_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i"|default:"--" }}</td>
         {% endif %}
         <td>
           <div class="btn-group">

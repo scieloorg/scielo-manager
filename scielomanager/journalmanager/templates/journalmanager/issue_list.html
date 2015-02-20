@@ -1,5 +1,6 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
+{% load tz %}
 {% load static %}
 {% load waffle_tags %}
 {% load pagination_tags %}
@@ -93,7 +94,7 @@
                         </span>
                       </td>
                       <td>{{ num.get_publication_start_month_display }}/{{ num.get_publication_end_month_display }}</td>
-                      <td>{{ num.updated|date:"d/m/Y - H:i"  }}</td>
+                      <td>{{ num.updated|timezone:user.get_profile.tz|date:"d/m/Y - H:i"  }}</td>
                       <td>
                         <a href="{% url issue.edit journal.pk num.id %}" class="btn btn-mini">
                           {% trans "Edit" %}

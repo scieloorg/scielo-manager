@@ -1,5 +1,6 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
+{% load tz %}
 {% load pagination_tags %}
 
 {% block page_title %}{% trans "List of Tickets" %}{% endblock %}
@@ -40,7 +41,7 @@
         {{ ticket.title }}
       </td>
       <td>
-        {{ ticket.started_at|date:"d/m/Y - H:i" }}
+        {{ ticket.started_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}
       </td>
       <td>
       	{% if ticket.is_open %}

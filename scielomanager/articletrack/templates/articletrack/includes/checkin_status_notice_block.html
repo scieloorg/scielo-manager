@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load tz %}
 <div class="row-fluid show-grid">
   <div class="span12">
 
@@ -11,7 +12,7 @@
           {% with checkin.rejected_by as user %}
             {% include "articletrack/includes/gravatar_tooltip.html" %}
           {% endwith %}
-          {% trans "at" %} {{ checkin.rejected_at|date:"d/m/Y - H:i" }}
+          {% trans "at" %} {{ checkin.rejected_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}
         </p>
       </div>
 
@@ -24,7 +25,7 @@
           {% with checkin.accepted_by as user %}
             {% include "articletrack/includes/gravatar_tooltip.html" %}
           {% endwith %}
-          {% trans "at" %} {{ checkin.accepted_at|date:"d/m/Y - H:i" }}
+          {% trans "at" %} {{ checkin.accepted_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}
         </p>
       </div>
 
@@ -53,7 +54,7 @@
         <h4><i class="icon-ok-circle"></i> {% trans "THIS CHECKIN WILL EXPIRE TODAY" %}:</h4>
         <p>
           {% trans "This checkin will expire at: " %}
-          {% trans "at" %} {{ checkin.expiration_at|date:"d/m/Y - H:i" }}
+          {% trans "at" %} {{ checkin.expiration_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}
         </p>
         <p>
           {% trans "After that date, the checkin will be unreachable." %}

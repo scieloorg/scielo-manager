@@ -222,6 +222,7 @@
 {{ block.super }}
  <script>
     $(document).ready(function() {
+      $('.chosen-select').chosen()
       $( "#id_user-collection" ).combobox({ autoFocus: true });
       $(".help-text").popover('hide');
       $( "#toggle" ).click(function() {

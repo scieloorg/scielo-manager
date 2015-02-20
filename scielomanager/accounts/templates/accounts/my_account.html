@@ -1,28 +1,148 @@
 {% extends "base_lv1.html" %}
 {% load i18n %}
+{% load user_avatar %}
+{% block content %}
+<style>
+    #accountTabContent { min-height: 470px; }
+    .avatar-rounded{ border-radius: 6px 6px 0 0; }
+</style>
 
-{% block breadcrumb %}
-<ul class="breadcrumb">
-    <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
-    <li class="active">{% trans 'My Account' %}</li>
-</ul>
+<div class="row-fluid">
+    <div class="span9 offset2">
+        <div class="row-fluid">
+            <div class="span12">
+                <h4>{% trans "User information" %}:</h4>
+                <div class="span8 well">
+                    <dl>
+                        <dt>{% trans "First name" %}:</dt>
+                        <dd>{{ user.first_name }}</dd>
+                        <dt>{% trans "Last name" %}:</dt>
+                        <dd>{{ user.last_name }}</dd>
+                        <dt>{% trans "Username" %}:</dt>
+                        <dd>{{ user.username }}</dd>
+                        <dt>{% trans "Email" %}:</dt>
+                        <dd>{{ user.email }}</dd>
+                    </dl>
+                    <br>
+                </div>
+                <div class="span3">
+                    <img class="avatar-rounded" src="{% user_avatar_url request.user '192' %}" alt="">
+                    <div class="alert alert-info">
+                        <small>
+                            <em>
+                                Change your avatar at:
+                                <a href="https://secure.gravatar.com">
+                                    https://secure.gravatar.com
+                                </a>
+                            </em>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <ul class="nav nav-tabs" id="accountTab">
+                <li class="active">
+                    <a data-toggle="tab" href="#profile">
+                        <i class="icon icon-user"></i> {% trans "Profile" %}:
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#collections">
+                        <i class="icon icon-book"></i> {% trans "My Collections" %}:
+                    </a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#api_keys">
+                        <i class="icon icon-lock"></i> {% trans "API token" %}:
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="accountTabContent">
+                <div id="profile" class="tab-pane in active">
+                    <div class="span6">
+                        <h4>{% trans "Change Password" %}:</h4>
+                        <div class="well">
+                            <form id="change_password_form" action="{% url journalmanager.password_change %}" method="POST">
+                                {% with password_form as form %}
+                                    {% include "articletrack/includes/form_snippet.html" %}
+                                {% endwith %}
+                            </form>
+                            <br>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <h4>{% trans "Notifications & Other preferences" %}:</h4>
+                        <div class="well">
+                            <form id="profile_form" action="." method="POST">
+                                {% with profile_form as form %}
+                                    {% include "articletrack/includes/form_snippet.html" %}
+                                {% endwith %}
+                            </form>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <div id="collections" class="tab-pane">
+                    <div class="span12">
+                        <h4>{% trans "My collections" %}:</h4>
+                        <div class="well">
+                            <table class="table table-condensed table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="span1">#</th>
+                                        <th>{% trans "Collection" %}:</th>
+                                        <th class="span2">{% trans "Am I manager?" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for collection in my_collecttions %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ collection.name }}</td>
+                                            <td>
+                                                {% if collection.is_manager %}
+                                                    <i class="icon icon-ok"></i>
+                                                {% else %}
+                                                    <i class="icon icon-remove"></i>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="2">{% trans "No collections related yet!" %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="api_keys" class="tab-pane">
+                    <div class="span12">
+                        <h4>{% trans "API Token" %}:</h4>
+                        <div class="well">
+                            <p>{% trans "This is your token" %}: <code>{{user.api_key.key}}</code></p>
+                            <p>
+                                <a href="http://docs.scielo.org/projects/scielo-manager/en/latest/dev/api.html" target="_blank">
+                                    {% trans 'Read more about the API usage' %}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
-{% block content %}
-    <div class="span8">
-        <ul>
-            <li><a href="{% url journalmanager.password_change %}">Change my password</a></li>
-            <li>Update my personal information</li>
-        </ul>
-    </div>
-    <div class="span4 alert alert-info">
-        <h4>API Token</h4>
-        <p>{{user.api_key.key}}</p>
-        <p>
-            <a href="http://docs.scielo.org/projects/scielo-manager/en/latest/dev/api.html"
-               target="_blank">
-                {% trans 'Read more about the API usage' %}
-            </a>
-        </p>
-    </div>
+{% block extrafooter %}
+{{ block.super }}
+ <script>
+    $(document).ready(function() {
+      $('input', '#change_password_form').removeClass('span3').addClass('span12');
+      $('select', '#profile_form').addClass('span12').chosen();
+    });
+  </script>
 {% endblock %}
