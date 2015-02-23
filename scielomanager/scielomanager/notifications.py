@@ -12,11 +12,12 @@ logger = logging.getLogger(__name__)
 class Message(object):
     subject = ''
     recipients = []
+    bcc_recipients = []
     template_path = ''
     body = ''
     EMAIL_DATA_BY_ACTION = None # dict must be defined for each subclass mapping action's name (key), and a dict with keys: 'subject_sufix' and 'template_path'
 
-    def __init__(self, action, subject='', recipients=[], template_path=None):
+    def __init__(self, action, subject='', recipients=[], bcc_recipients=[], template_path=None):
         """
         @param ``action``: key of self.EMAIL_DATA_BY_ACTION dict, will define some message presets
         @param ``subject``: middle text of the message subject, prepended by:
@@ -35,6 +36,7 @@ class Message(object):
         ]
         self.subject = ' '.join(subject_sequence)
         self.recipients = recipients
+        self.bcc_recipients = bcc_recipients
 
         if template_path:
             self.template_path = template_path
@@ -62,14 +64,26 @@ class Message(object):
     def set_recipients(self, *args, **kwargs):
         """
         Implement this method to update the recipients list, based in args and kwargs data.
+        *************************************************
+        * the list MUST contains a list o email strings *
+        *************************************************
         """
-        raise NotImplementedError("Please Implement this method")
+        raise NotImplementedError("Please Implement this method and remember to set a list of (emails) strings!")
+
+    def set_bcc_recipients(self, *args, **kwargs):
+        """
+        Implement this method to update the BCC recipients list, based in args and kwargs data.
+        *************************************************
+        * the list MUST contains a list o email strings *
+        *************************************************
+        """
+        raise NotImplementedError("Please Implement this method and remember to set a list of (emails) strings!")
 
     def send_mail(self):
         """
         if self.recipients is not empty, will call task.send_mail
         """
-        if self.recipients:
-            return tasks.send_mail.delay(self.subject, self.body, self.recipients)
+        if self.recipients or self.bcc_recipients:
+            return tasks.send_mail.delay(self.subject, self.body, self.recipients, self.bcc_recipients)
         else:
             logger.info("[Message.send_mail] Can't send a message without recipients, did you call 'set_recipients(...)'?")

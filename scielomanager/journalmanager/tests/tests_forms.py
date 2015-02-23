@@ -11,7 +11,7 @@ from django.core import mail
 from django.test import TestCase
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
-
+from django.test.utils import override_settings
 from waffle import Flag
 
 from journalmanager.tests import modelfactories
@@ -590,6 +590,7 @@ class UserFormTests(WebTest):
 
         self.assertTemplateUsed(response, 'journalmanager/user_list.html')
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_new_users_must_receive_an_email_to_define_their_password(self):
         perm = _makePermission(perm='change_user',
                                model='user', app_label='auth')
@@ -609,6 +610,27 @@ class UserFormTests(WebTest):
         # check if an email has been sent to the new user
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
+
+    def test_new_users_must_receive_an_email_to_define_their_password_with_a_task(self):
+        perm = _makePermission(perm='change_user',
+                               model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'),
+                            user=self.user).forms['user-form']
+
+        form['user-username'] = 'bazz'
+        form['user-first_name'] = 'foo'
+        form['user-last_name'] = 'bar'
+        form['user-email'] = 'bazz@spam.org'
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        # email must not be sent directly,
+        # must wait until celery process the send_mail task
+        # so outbox MUST be empty
+        self.assertEqual(len(mail.outbox), 0)
 
     def test_emails_are_not_sent_when_users_data_are_modified(self):
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
@@ -818,6 +840,64 @@ class UserFormTests(WebTest):
         # check if basic state has been set
         self.assertTrue(response.context['user'].user_collection.get(pk=self.collection.pk))
 
+    def test_add_form_can_edit_profile_email_notifications(self):
+        # with
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+        # when
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+        # then
+        self.assertIn(u'userprofile-0-email_notifications', form.fields)
+
+    def test_edit_form_can_edit_profile_email_notifications(self):
+        # with
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+        # when
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]), user=self.user).forms['user-form']
+        # then
+        self.assertIn(u'userprofile-0-email_notifications', form.fields)
+
+    def test_change_profile_notifications(self):
+        # with
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+        previous_email_notifications = self.user.get_profile().email_notifications
+        # when
+        form = self.app.get(reverse('user.edit', args=[self.user.pk]), user=self.user).forms['user-form']
+        form['userprofile-0-email_notifications'] = False
+        response = form.submit().follow()
+        # then
+        current_email_notifications = User.objects.get(pk=self.user.pk).get_profile().email_notifications
+        self.assertTrue(previous_email_notifications)
+        self.assertFalse(current_email_notifications)
+
+    def test_bug_1053_create_user_but_without_email_notificatinos(self):
+        """ TO FIX BUG #1053 """
+        new_user = {
+            'username': 'bazz',
+            'first_name': 'foo',
+            'last_name': 'bar',
+            'email': 'bazz@spam.org',
+            'email_notifications':  False, # email notifications must be unchecked
+        }
+        perm = _makePermission(perm='change_user', model='user', app_label='auth')
+        self.user.user_permissions.add(perm)
+
+        form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
+        form['user-username'] = new_user['username']
+        form['user-first_name'] = new_user['first_name']
+        form['user-last_name'] = new_user['last_name']
+        form['user-email'] = new_user['email']
+        form['userprofile-0-email_notifications'] = new_user['email_notifications']
+        form.set('usercollections-0-collection', self.collection.pk)
+
+        response = form.submit().follow()
+
+        self.assertTemplateUsed(response, 'journalmanager/user_list.html')
+        response.mustcontain('bazz', 'bazz@spam.org')
+        current_email_notifications = User.objects.get(email=new_user['email']).get_profile().email_notifications
+        self.assertFalse(current_email_notifications)
 
 class UserCollectionsFormSetTests(TestCase):
 

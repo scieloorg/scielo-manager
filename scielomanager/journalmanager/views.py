@@ -10,7 +10,6 @@ except ImportError:
 
 import operator
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import user_passes_test
@@ -29,6 +28,7 @@ from django.utils.translation import ugettext as _
 from django.utils.functional import curry
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
+from django.forms.formsets import formset_factory
 from django.conf import settings
 from django.db.models import Q
 import waffle
@@ -41,11 +41,12 @@ from scielomanager.tools import (
     get_paginated,
     get_referer_view,
     asbool,
+    get_users_by_group,
 )
 from audit_log import helpers
 from editorialmanager.models import EditorialBoard
-
 from editorialmanager import notifications
+from accounts import forms as accounts_forms
 
 MSG_FORM_SAVED = _('Saved.')
 MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
@@ -70,16 +71,6 @@ def get_first_letter(objects_all):
     letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
-
-
-def get_users_by_group(group):
-    """
-    Get all users from a group or raise a ObjectDoesNotExist
-    """
-
-    editor_group = Group.objects.get(name=group)
-
-    return editor_group.user_set.all()
 
 
 @permission_required('journalmanager.list_editor_journal', login_url=settings.AUTHZ_REDIRECT_URL)
@@ -462,12 +453,15 @@ def add_user(request, user_id=None):
 
     # filter the collections the user is manager.
     UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
+    # user profile fomrset
+    UserProfileFormSet = inlineformset_factory(User, models.UserProfile, form=UserProfileForm, extra=1, max_num=1, can_delete=False)
 
     if request.method == 'POST':
         userform = UserForm(request.POST, instance=user, prefix='user')
         usercollectionsformset = UserCollectionsFormSet(request.POST, instance=user, prefix='usercollections',)
+        userprofileformset = UserProfileFormSet(request.POST, instance=user, prefix='userprofile')
 
-        if userform.is_valid() and usercollectionsformset.is_valid():
+        if userform.is_valid() and usercollectionsformset.is_valid() and userprofileformset.is_valid():
             new_user = userform.save()
 
             # Clear cache when changes in UserCollections
@@ -483,10 +477,20 @@ def add_user(request, user_id=None):
                     has_set_as_default = True
                 instance.save()
 
+            # work-around to solve bug: #1053
+            new_user_profile = new_user.get_profile()
+            profile_form = userprofileformset.forms[0] # only one form must exist (User <- OneToOne -> Profile)
+            if profile_form.has_changed():
+                for field in profile_form.changed_data:
+                    changed_field_value = profile_form.cleaned_data[field]
+                    if hasattr(new_user_profile, field):
+                        setattr(new_user_profile, field, changed_field_value)
+                        new_user_profile.save()
+
             # if it is a new user, mail him
             # requesting for password change
             if not user_id:
-                password_form = auth_forms.PasswordResetForm({'email': new_user.email})
+                password_form = accounts_forms.PasswordResetForm({'email': new_user.email})
                 if password_form.is_valid():
                     opts = {
                         'use_https': request.is_secure(),
@@ -501,12 +505,14 @@ def add_user(request, user_id=None):
     else:
         userform = UserForm(instance=user, prefix='user')
         usercollectionsformset = UserCollectionsFormSet(instance=user, prefix='usercollections',)
+        userprofileformset = UserProfileFormSet(instance=user, prefix='userprofile')
 
     return render_to_response('journalmanager/add_user.html', {
                               'add_form': userform,
                               'mode': 'user_journal',
                               'user_name': request.user.pk,
                               'usercollectionsformset': usercollectionsformset,
+                              'userprofileformset': userprofileformset,
                               'user': user
                               },
                               context_instance=RequestContext(request))
@@ -1262,6 +1268,11 @@ def ajx_list_issues_for_markup_files(request):
         return HttpResponse(status=400)
 
     journal_id = request.GET.get('j', None)
+
+    if journal_id is None:
+        # journal id is required is None -> Raise Bad Request
+        return HttpResponse(status=400)
+
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     all_issues = asbool(request.GET.get('all', True))

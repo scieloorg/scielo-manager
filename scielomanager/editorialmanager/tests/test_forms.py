@@ -195,7 +195,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         form = response.forms['member-form']
@@ -273,7 +273,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'institution name',
             'link_cv': '@invalid_url/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         form = response.forms['member-form']
@@ -325,7 +325,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'Universidad de la Republica - Facultad de Ingenieria',
             'link_cv': 'http://scielo.org.uy/',
             'state': 'Montevideo',
-            'country': 'Uruguay',
+            'country': 'UY',
         }
         response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member.id]), user=self.user)
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
@@ -404,7 +404,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
             'institution': 'Universidad de la Republica - Facultad de Ingenieria',
             'link_cv': 'http://scielo.org.uy/',
             'state': 'Montevideo',
-            'country': 'Uruguay',
+            'country': 'UY',
         }
         response = self.app.get(reverse("editorial.board.edit", args=[self.journal.id, member.id]), user=self.user)
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
@@ -787,7 +787,7 @@ class MembersSortingOnActionTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
@@ -860,7 +860,7 @@ class MembersSortingOnActionTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
@@ -935,7 +935,7 @@ class MembersSortingOnActionTests(WebTest):
             'institution': 'institution name',
             'link_cv': 'http://scielo.org/php/index.php',
             'state': 'SP',
-            'country': 'Brasil',
+            'country': 'BR',
         }
         # when
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
@@ -1729,6 +1729,43 @@ class EditRoleTypeForm(WebTest):
         # check audit logs: no logs generated
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
+
+    def test_ADD_ROLE_that_already_exist_POST_is_invalid(self):
+        """
+        Role.name must be unique.
+        Users with permissions: editorialmanager.add_roletype can add new roles
+        """
+        # with
+        board =  EditorialBoard.objects.create(issue=self.issue)
+        role = editorial_modelfactories.RoleTypeFactory.create(name="Pickles")
+
+        perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
+        self.user.user_permissions.add(perm_add_roletype)
+        pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
+        # when
+        response = self.app.get(reverse("editorial.role.add", args=[self.journal.id]), user=self.user)
+        # when
+        form = response.forms['role-form']
+        form['name'] = role.name
+        response = form.submit()
+        # then
+        # check output
+        self.assertTemplateUsed(response, 'board/role_type_edit.html')
+        self.assertFalse(response.context['form'].is_valid())
+        expected_errors = {'name': [u'Role type with this Role Name already exists.']}
+        self.assertEqual(response.context['form'].errors, expected_errors)
+        self.assertIn('Check mandatory fields.', response.body)
+        # expected extra context data
+        expected_post_url = reverse('editorial.role.add', args=[self.journal.pk, ])
+        expected_board_url = reverse('editorial.board', args=[self.journal.pk, ])
+        self.assertEqual(response.context['post_url'], expected_post_url)
+        self.assertEqual(response.context['board_url'], expected_board_url)
+
+        # check audit logs: no logs generated
+        self.assertEqual(pre_submittion_audit_logs_count, 0)
+        self.assertEqual(AuditLogEntry.objects.all().count(), 0)
+
+
 
     def test_EDIT_ROLE_valid_POST_is_valid(self):
         # with

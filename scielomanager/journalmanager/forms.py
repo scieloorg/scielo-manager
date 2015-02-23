@@ -755,6 +755,14 @@ def get_all_ahead_pressrelease_forms(post_dict, journal, pressrelease):
     return d
 
 
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = models.UserProfile
+        fields = ('email_notifications', 'tz', )
+        widgets = {
+            'tz': forms.Select(attrs={'class': 'chosen-select',}),
+        }
+
 class UserCollectionsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         """

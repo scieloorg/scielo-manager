@@ -1,5 +1,6 @@
 {% extends "base_list_lv0.html" %}
 {% load i18n %}
+{% load tz %}
 
 {% block page_title %}{% trans "Add a Ticket" %}{% endblock %}
 
@@ -19,7 +20,7 @@
       <tr>
         <td>{{ checkin.package_name }}</td>
         <td>{{ checkin.attempt_ref }}</td>
-        <td>{{ checkin.created_at|date:"d/m/Y - H:i" }}</td>
+        <td>{{ checkin.created_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</td>
       </tr>
     </table>
   </div>

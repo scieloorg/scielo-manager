@@ -8,8 +8,8 @@
 
 {% journaldash_toolbar 'issue' journal user %}
 
-<h4>{% trans 'Issue'%}: {{ issue }}</h4> 
-<h4>{% trans 'Publication date'%}: {{ issue.publication_date }}</h4>
+<h4>{% trans 'Issue'%}: {{ issue }}</h4>
+<h4>{% trans 'Publication date'%}: {{ issue.publication_date }}</h4>{# no timezone conversion requiered #}
 
 <h4>{% trans 'Articles' %}</h4>
 <table class="table table-striped _listings">

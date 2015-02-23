@@ -4,6 +4,7 @@ import hashlib
 import logging
 import choices
 import caching.base
+from pytz import all_timezones
 from scielomanager import tools
 
 try:
@@ -299,11 +300,16 @@ class Language(caching.base.CachingMixin, models.Model):
         ordering = ['name']
 
 
+PROFILE_TIMEZONES_CHOICES = zip(all_timezones, all_timezones)
+
+
 class UserProfile(caching.base.CachingMixin, models.Model):
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
 
     user = models.OneToOneField(User)
+    email_notifications = models.BooleanField("Want to receive email notifications?", default=True)
+    tz = models.CharField("Time Zone",  max_length=150, choices=PROFILE_TIMEZONES_CHOICES, default=settings.TIME_ZONE)
 
     @property
     def is_editor(self):

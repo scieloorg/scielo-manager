@@ -3,6 +3,7 @@
 import logging
 
 from scielomanager import notifications
+from scielomanager.tools import user_receive_emails
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ class CheckinMessage(notifications.Message):
         and the submitter (checkin.submitted_by).
         """
         if checkin.team_members:
-            send_to = set([member.email for member in checkin.team_members])
+            send_to = set([member.email for member in checkin.team_members if user_receive_emails(member)])
             # the submitter already belong to a related team
             self.recipients = list(send_to)
         else:
@@ -88,11 +89,14 @@ class TicketMessage(notifications.Message):
         and the submitter (checkin.submitted_by, already belong to a team) of each checkin,
         and the author to the ticket related.
         """
-        send_to = set([ticket.author.email, ])
+        send_to = set()
+        if user_receive_emails(ticket.author):
+            send_to.update([unicode(ticket.author.email), ])
+
         for checkin in ticket.article.checkins.all():
             # the submitter already belong to a related team
             if checkin.team_members:
-                send_to.update([member.email for member in checkin.team_members])
+                send_to.update([member.email for member in checkin.team_members if user_receive_emails(member)])
             else:
                 logger.info("[TicketMessage.set_recipients] Can't prepare a message, checkin.team_members is empty. Checkin pk == %s" % checkin.pk)
         self.recipients = list(send_to)
