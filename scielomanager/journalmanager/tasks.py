@@ -74,7 +74,7 @@ def link_article_to_issue(self, article_pk):
         if article.issue is None and not article.xml_is_aop:
             # retrieve issue
             try:
-                issue = Issue.objects.get(journal__title_iso=article.xml_abbrev_journal_title, volume=article.xml_volume, number=article.xml_issue)
+                issue = Issue.objects.get(journal__title_iso__iexact=article.abbrev_journal_title, volume=article.xml_volume, number=article.xml_issue)
             except Issue.DoesNotExist as e:
                 logger.error('[link_article_to_issue] FAIL while retrieving ISSUE (pk: %s, xml_volume: %s, xml_issue: %s): %s' % (article_pk, article.xml_volume, article.xml_issue, e))
             except Issue.MultipleObjectsReturned as e:

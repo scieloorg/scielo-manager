@@ -11,13 +11,8 @@
   .article_title { margin-left: 20px;}
 </style>
 
-<<<<<<< HEAD
-<h4>{% trans 'Issue'%}: {{ issue }}</h4>
-<h4>{% trans 'Publication date'%}: {{ issue.publication_date }}</h4>{# no timezone conversion requiered #}
-=======
 {% journaldash_toolbar 'issue' journal user %}
 <h4>{{ issue.bibliographic_legend }}</h4>
->>>>>>> - models.Article agora tem custom manager: ``userobjects = modelmanagers.ArticleManager()``
 
 <table class="table _listings">
   <thead>
