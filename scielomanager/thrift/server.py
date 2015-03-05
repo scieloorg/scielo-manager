@@ -5,17 +5,26 @@ from thriftpy.protocol import TCyBinaryProtocolFactory
 from thriftpy.transport import TCyBufferedTransportFactory
 from thriftpy.rpc import make_server
 from django.conf import settings
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from thrift import spec
 from journalmanager import services
 
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
+
+
+def commit_on_success(method):
+    def wrapper(*args, **kwargs):
+        with transaction.commit_on_success():
+            return method(*args, **kwargs)
+
+    return wrapper
 
 
 class RPCHandler(object):
 
+    @commit_on_success
     def addArticle(self, xml_string, raw):
         try:
             return services.article.add_from_string(xml_string, raw)
