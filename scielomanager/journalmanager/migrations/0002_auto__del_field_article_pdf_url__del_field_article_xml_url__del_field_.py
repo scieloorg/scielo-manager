@@ -47,7 +47,12 @@ class Migration(SchemaMigration):
 
         # Adding field 'Article.aid'
         db.add_column('journalmanager_article', 'aid',
-                      self.gf('django.db.models.fields.CharField')(max_length=32, unique=True, null=True, blank=True),
+                      self.gf('django.db.models.fields.CharField')(db_index=True, max_length=32, unique=True, null=True, blank=True),
+                      keep_default=False)
+
+        # Adding field 'Article.abbrev_journal_title'
+        db.add_column('journalmanager_article', 'abbrev_journal_title',
+                      self.gf('django.db.models.fields.CharField')(max_length=256, null=True, db_index=True),
                       keep_default=False)
 
         # Adding field 'Article.article_id_slug'
@@ -98,12 +103,19 @@ class Migration(SchemaMigration):
         # Deleting field 'Article.aid'
         db.delete_column('journalmanager_article', 'aid')
 
+        # Deleting field 'Article.abbrev_journal_title'
+        db.delete_column('journalmanager_article', 'abbrev_journal_title')
+
         # Deleting field 'Article.article_id_slug'
         db.delete_column('journalmanager_article', 'article_id_slug')
 
 
+        # User chose to not deal with backwards NULL issues for 'Article.issue'
+        raise RuntimeError("Cannot reverse this migration. 'Article.issue' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration
         # Changing field 'Article.issue'
-        db.alter_column('journalmanager_article', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(default='', to=orm['journalmanager.Issue']))
+        db.alter_column('journalmanager_article', 'issue_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue']))
 
     models = {
         'auth.group': {
@@ -149,7 +161,8 @@ class Migration(SchemaMigration):
         },
         'journalmanager.article': {
             'Meta': {'object_name': 'Article'},
-            'aid': ('django.db.models.fields.CharField', [], {'max_length': '32', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
+            'abbrev_journal_title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'db_index': 'True'}),
+            'aid': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '32', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
             'article_id_slug': ('django.db.models.fields.SlugField', [], {'default': "''", 'unique': 'True', 'max_length': '2048'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -445,7 +458,9 @@ class Migration(SchemaMigration):
         },
         'journalmanager.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
+            'email_notifications': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'tz': ('django.db.models.fields.CharField', [], {'default': "'America/Sao_Paulo'", 'max_length': '150'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
         }
     }
