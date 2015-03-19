@@ -22,6 +22,7 @@ dbsetup:
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
 
 loaddata:
+	@python $(MANAGE) loaddata $(APP_PATH)/journalmanager/fixtures/use_licenses.json --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/subject_categories.json --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/study_area.json --settings=$(SETTINGS)
 
