@@ -154,22 +154,29 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+# Third-party apps
+    'django_assets',
     'kombu.transport.django',
-    'maintenancewindow',
+    'widget_tweaks',
+    'djcelery',
+    'tastypie',
+    'waffle',
+    'south',
+
+# SciELO shared apps
     'scielo_extensions',
+
+# SciELO Manager apps
+    'maintenancewindow',
     'journalmanager',
     'editorialmanager',
     'audit_log',
-    'widget_tweaks',
-    'django_assets',
     'articletrack',
     'validator',
-    'djcelery',
-    'tastypie',
     'accounts',
-    'waffle',
     'export',
-    'south',
+    'health',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -287,6 +294,16 @@ if 'djcelery' in INSTALLED_APPS:
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
     CELERY_IMPORTS = ('scielomanager.tasks')
+
+
+# ----------------------------------------------------
+# Endereços de enlace para comunicação inter-processos
+#
+# Todos os endereços de IPC devem ser prefixados com
+# `IPC_`, para sinalizar que é um endpoint da aplicação.
+# ----------------------------------------------------
+IPC_HEALTHD_BIND_ADDR = 'tcp://0.0.0.0:11711'
+
 
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
