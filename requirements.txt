@@ -23,3 +23,4 @@ django-celery
 django-kombu
 defusedxml==0.4.1
 django-countries
+zerorpc>=0.4.4   
