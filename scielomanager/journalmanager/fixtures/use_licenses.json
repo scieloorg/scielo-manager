@@ -5,29 +5,12 @@
     "fields": {
       "reference_url": null, 
       "is_default": false, 
-<<<<<<< HEAD
-      "disclaimer": null, 
-      "license_code": ""
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "journalmanager.uselicense", 
-    "fields": {
-      "reference_url": null, 
-      "is_default": false, 
-=======
->>>>>>> 797b505cb8933df731d6048daf0b85fe476dbe1a
       "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/3.0/deed.es\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"http://i.creativecommons.org/l/by/3.0/80x15.png\" /></a> Todo el contenido de la revista, excepto d\u00f3nde est\u00e1 identificado, est\u00e1 bajo una <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/3.0/deed.es\">Licencia Creative Commons</a>", 
       "license_code": "BY"
     }
   }, 
   {
-<<<<<<< HEAD
-    "pk": 3, 
-=======
     "pk": 2, 
->>>>>>> 797b505cb8933df731d6048daf0b85fe476dbe1a
     "model": "journalmanager.uselicense", 
     "fields": {
       "reference_url": null, 
@@ -37,11 +20,7 @@
     }
   }, 
   {
-<<<<<<< HEAD
-    "pk": 4, 
-=======
     "pk": 3, 
->>>>>>> 797b505cb8933df731d6048daf0b85fe476dbe1a
     "model": "journalmanager.uselicense", 
     "fields": {
       "reference_url": null, 
