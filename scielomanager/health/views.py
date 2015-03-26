@@ -11,8 +11,7 @@ def home(request):
     try:
         statuses = status_checker.overall_status()
         is_fully_operational = status_checker.is_fully_operational
-        elapsed_time = status_checker.elapsed_time
-
+        elapsed_time = status_checker.elapsed_time[2:7]
     except domain.BackendUnavailable as e:
         statuses = None
         is_fully_operational = None
@@ -32,4 +31,3 @@ def home(request):
         },
         context_instance=RequestContext(request)
     )
-

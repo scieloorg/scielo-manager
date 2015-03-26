@@ -10,12 +10,14 @@
     <div class="span12">
       <div class="page-header">
         <h2>
-          {% trans "SciELO Manager Status" %} 
-          <small class="pull-right">
-            {% blocktrans %}
-              Updated about {{ elapsed_time|default_if_none:"0:00" }} ago
-            {% endblocktrans %}
-          </small>
+          {% trans "SciELO Manager Status" %}
+          {% if elapsed_time %}
+            <small class="pull-right">
+              {% blocktrans %}
+                Updated about {{ elapsed_time }} ago
+              {% endblocktrans %}
+            </small>
+          {% endif %}
         </h2>
       </div>
 
@@ -28,7 +30,7 @@
           We are having some outages on our backend services
         {% endif %}
         </div>
-        
+
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -55,11 +57,11 @@
         </table>
 
       {% else %}
-        <p>
+        <div class="alert alert-warning">
         {% blocktrans %}
-          Could not reach the health monitor. Keep calm and try again later.
+          Could not reach the health monitor. Keep calm and <strong>try again later.</strong>
         {% endblocktrans %}
-        </p>
+        </div>
       {% endif %}
 
     </div>
