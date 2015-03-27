@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 def get_checklist():
     checklist = health.CheckList()
     checklist.add_check(checks.PGConnection())
+    checklist.add_check(checks.CeleryConnection())
+    checklist.add_check(checks.RabbitConnection())
 
     return checklist
 
