@@ -41,15 +41,18 @@
           </thead>
           <tbody>
             {% for service, status in statuses.items %}
-            <tr{% if not status.status %} class="error"{% endif %}>
+            <tr {% if status.status == None %} class="warning" {% elif not status.status %} class="error" {% endif %} >
               <td>{{ service }}</td>
               <td>{{ status.description }}</td>
               <td>
                 {% if status.status %}
                   {% trans "Operational" %}
+                {% elif status.status == None %}
+                  {% trans "Unknown" %}
                 {% else %}
                   {% trans "Offline" %}
                 {% endif %}
+
               </td>
             </tr>
             {% endfor %}
