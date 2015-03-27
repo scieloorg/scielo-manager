@@ -4,8 +4,9 @@ import uuid
 
 import psycopg2
 from django.db import connections, DatabaseError
-from django.conf import settings
 from django.core.cache import cache
+from celery import current_app
+from kombu import Connection
 
 from . import CheckItem
 
@@ -67,3 +68,55 @@ class CachingBackend(CheckItem):
         finally:
             cache.delete(key)
 
+
+class CeleryConnection(CheckItem):
+    """
+    Connection with celery backend.
+    """
+    def __init__(self):
+        self.broker_url = current_app.conf.BROKER_URL
+
+    def __call__(self):
+        """
+        If backend is "django://" will return None
+        Else: return if is connected or not
+        """
+        if self.broker_url == 'django://':
+            return None
+        else:
+            try:
+                ping_response = current_app.control.ping(timeout=1)[0]
+                ping_key = ping_response.keys()[0]
+                status = ping_response[ping_key]['ok'] == u'pong'
+            except Exception as exc:
+                logger.exception(exc)
+                status = False
+            return status
+
+
+class RabbitConnection(CheckItem):
+    """
+    Connection with RabbitMQ server.
+    """
+    def __init__(self):
+        self.broker_url = current_app.conf.BROKER_URL
+
+    def __call__(self):
+        """
+        Broker URL must start with "amqp://" else return None
+        Return True if can establish connection or not.
+        """
+        if self.broker_url.startswith("amqp://"):
+            try:
+                connection = Connection(self.broker_url, connection_timeout=1)
+                try:
+                    connection.connect()
+                    status = connection.connected
+                finally:
+                    connection.release()
+            except Exception as exc:
+                logger.exception(exc)
+                status = False
+            return status
+        else:
+            return None
