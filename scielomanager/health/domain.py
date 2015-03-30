@@ -18,7 +18,7 @@ class StatusChecker(object):
     """ Realiza e agrupa as verificações de saúde do sistema.
     """
     def __init__(self, client=health.Client):
-        self.client = client(timeout=1)
+        self.client = client(timeout=5)
 
     @property
     def is_fully_operational(self):

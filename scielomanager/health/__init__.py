@@ -19,10 +19,6 @@ def Server(health_endpoint):
     return server
 
 
-<<<<<<< HEAD
-def Client():
-    client = zerorpc.Client()
-=======
 def Client(**kwargs):
     """ Cria um cliente, já conectado ao serviço de monitoramento de
     saúde do sistema.
@@ -31,7 +27,6 @@ def Client(**kwargs):
     do objeto `zerorpc.Client`.
     """
     client = zerorpc.Client(**kwargs)
->>>>>>> 98ce79c0bb727c5870971699b4b9c14b3c9c1326
     client.connect(BIND_ADDR)
     logger.info('healthd client is connected to %s', BIND_ADDR)
 
