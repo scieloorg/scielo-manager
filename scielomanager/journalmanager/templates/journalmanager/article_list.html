@@ -32,8 +32,8 @@
         <td><strong>{% trans "Updated at" %}:</strong></td>
         <td><strong>{% trans "Is Visible" %}:</strong></td>
       </tr>
-      <tr>
-        {% for item in article_set.list %}
+      {% for item in article_set.list %}
+        <tr>
           <td>
             <a class="article_title" href="{% url article.detail item.pk %}">
               {{ item.get_article_title }}
@@ -41,8 +41,8 @@
           </td>
           <td>{{ item.updated_at }}</td>
           <td>{{ item.is_visible }}</td>
-        {% endfor %}
-      <tr>
+        </tr>
+      {% endfor %}
     {% empty %}
       <tr>
         <td colspan="3">
