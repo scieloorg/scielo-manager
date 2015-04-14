@@ -23,8 +23,7 @@ django-kombu
 defusedxml==0.4.1
 cython
 thriftpy
-gunicorn_thrift
 django-countries
-# https://github.com/elasticsearch/elasticsearch-py - Official Python low-level client for Elasticsearch
+-e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
 elasticsearch>=1.0.0,<2.0.0
 
