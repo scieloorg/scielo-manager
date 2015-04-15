@@ -6,8 +6,13 @@ from . import CheckItem
 
 
 class PGConnection(CheckItem):
+<<<<<<< HEAD
     u"""
     Conexão com o banco de dados Postgres.
+=======
+    """
+    Connection with the data backend
+>>>>>>> 98ce79c0bb727c5870971699b4b9c14b3c9c1326
     """
     working_status = (
             psycopg2.extensions.STATUS_READY,
