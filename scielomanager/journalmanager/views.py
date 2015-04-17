@@ -477,8 +477,15 @@ def add_user(request, user_id=None):
                     has_set_as_default = True
                 instance.save()
 
-            # save userprofile formset forms
-            userprofileformset.save()
+            # work-around to solve bug: #1053
+            new_user_profile = new_user.get_profile()
+            profile_form = userprofileformset.forms[0] # only one form must exist (User <- OneToOne -> Profile)
+            if profile_form.has_changed():
+                for field in profile_form.changed_data:
+                    changed_field_value = profile_form.cleaned_data[field]
+                    if hasattr(new_user_profile, field):
+                        setattr(new_user_profile, field, changed_field_value)
+                        new_user_profile.save()
 
             # if it is a new user, mail him
             # requesting for password change
@@ -1261,6 +1268,11 @@ def ajx_list_issues_for_markup_files(request):
         return HttpResponse(status=400)
 
     journal_id = request.GET.get('j', None)
+
+    if journal_id is None:
+        # journal id is required is None -> Raise Bad Request
+        return HttpResponse(status=400)
+
     journal = get_object_or_404(models.Journal, pk=journal_id)
 
     all_issues = asbool(request.GET.get('all', True))

@@ -8,13 +8,32 @@ from django.template.context import RequestContext
 from django.utils.translation import ugettext as _
 from django.contrib.auth import authenticate
 from django.conf import settings
+from journalmanager.forms import UserProfileForm
 
 from . import forms
 
 
 @login_required
 def my_account(request):
-    return render_to_response('accounts/my_account.html', {},
+    profile_form = UserProfileForm(instance=request.user.get_profile())
+    password_form = forms.PasswordChangeForm()
+    # password_form faz post na view: password_change, então não deve ser tratado aqui
+    if request.method == "POST":
+        profile_form = UserProfileForm(request.POST, instance=request.user.get_profile())
+        if profile_form.is_valid():
+            profile_form.save()
+            messages.success(request, _('Saved successfully'))
+        else:
+            messages.error(request, _('There are some errors or missing data.'))
+
+    my_collecttions = [{'name': c.name, 'is_manager': c.is_managed_by_user(request.user)} for c in request.user.user_collection.all()]
+
+    context = {
+        'profile_form': profile_form,
+        'password_form': password_form,
+        'my_collecttions': my_collecttions,
+    }
+    return render_to_response('accounts/my_account.html', context,
         context_instance=RequestContext(request))
 
 

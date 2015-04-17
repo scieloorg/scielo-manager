@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load tz %}
 <div class="row-fluid show-grid">
   <div class="span12">
 
@@ -51,7 +52,7 @@
           <dt>{% trans "Package name" %}:</dt>
           <dd>{{ checkin.package_name }}</dd>
           <dt>{% trans "Updated at" %}:</dt>
-          <dd>{{ checkin.created_at|date:"d/m/Y - H:i" }}</dd>
+          <dd>{{ checkin.created_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</dd>
           <dt>{% trans "Submitted by" %}:</dt>
           {% if checkin.submitted_by %}
             <dd>
@@ -75,7 +76,7 @@
                 {% endwith %}
               </dd>
               <dt>{% trans "Reviewed at" %}:</dt>
-              <dd>{{ checkin.reviewed_at|date:"d/m/Y - H:i" }}</dd>
+              <dd>{{ checkin.reviewed_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</dd>
             {% endif %}
 
             {%if checkin.scielo_reviewed_by %}
@@ -88,7 +89,7 @@
                 {% endwith %}
               </dd>
               <dt>{% trans "Reviewed at" %}:</dt>
-              <dd>{{ checkin.scielo_reviewed_at|date:"d/m/Y - H:i" }}</dd>
+              <dd>{{ checkin.scielo_reviewed_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</dd>
             {% endif %}
 
           {% endif %}
@@ -103,7 +104,7 @@
                 {% endwith %}
               </dd>
               <dt>{% trans "Accepted at" %}:</dt>
-              <dd>{{ checkin.accepted_at|date:"d/m/Y - H:i" }}</dd>
+              <dd>{{ checkin.accepted_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</dd>
 
           {% elif checkin.is_rejected %}
               <dt style="text-align: left;"><em>{% trans "Rejection info" %}:</em></dt>
@@ -115,7 +116,7 @@
                 {% endwith %}
               </dd>
               <dt>{% trans "Rejected at" %}:</dt>
-              <dd>{{ checkin.rejected_at|date:"d/m/Y - H:i" }}</dd>
+              <dd>{{ checkin.rejected_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}</dd>
               <dt>{% trans "Rejected reason" %}:</dt>
               <dd>{{ checkin.rejected_cause }}</dd>
 
@@ -125,7 +126,7 @@
               <dt>{% trans "Will Expire at" %}:</dt>
               <dd>
                 <span class="label label-important">
-                  {{ checkin.expiration_at|date:"d/m/Y - H:i" }}
+                  {{ checkin.expiration_at|timezone:user.get_profile.tz|date:"d/m/Y - H:i" }}
                 </span>
               </dd>
           {% endif %}

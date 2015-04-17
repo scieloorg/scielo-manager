@@ -1,5 +1,6 @@
 {% extends "base_lv1.html" %}
 {% load i18n %}
+{% load tz %}
 {% load static %}
 {% load get_title_for_pended %}
 {% load inctag_toolbars %}
@@ -23,7 +24,7 @@
                  class="tip-bottom"
                  rel="tooltip"
                  data-original-title="{% get_title_for_pended pending_journal %}">
-                {{pending_journal.created_at|date:"D, d \de F \de Y - H:i"}}
+                {{pending_journal.created_at|timezone:user.get_profile.tz|date:"D, d \de F \de Y - H:i:s"}}
               </a>
             </td>
             <td>
@@ -72,7 +73,9 @@
                    rel="tooltip"
                    data-original-title="{{ activity.title }}">{{ activity.short_title }}</a>
             </td>
-            <td>{{ activity.updated|date:"r" }}</td>
+            <td>
+              {{ activity.updated|timezone:user.get_profile.tz|date:"d/m/Y - H:i:s"}}
+            </td>
           </tr>
           {% empty %}
           <tr>
