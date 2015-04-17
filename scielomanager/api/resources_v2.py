@@ -120,7 +120,6 @@ class SectionResource(ModelResource):
             param_filters['journal__eletronic_issn'] = filters['journal_eissn']
 
         if 'journal_pissn' in filters:
-            import pdb; pdb.set_trace()
             param_filters['journal__print_issn'] = filters['journal_pissn']
 
         sections = models.Section.objects.filter(**param_filters)
