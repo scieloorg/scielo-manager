@@ -9,7 +9,7 @@ install:
   - pip install -r requirements.txt --use-mirrors
   - pip install -r requirements-test.txt --use-mirrors
 before_script:
-  - cp scielomanager/scielomanager/settings_local.include-TEMPLATE scielomanager/scielomanager/settings_local.include
+  - cp scielomanager/scielomanager/settings/scielomanager.conf.template scielomanager/scielomanager/settings/99-scielomanager.conf
   - psql -c 'create database journalmanager;' -U postgres
 script:
   - make test
