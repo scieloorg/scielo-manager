@@ -4,7 +4,8 @@ import json
 import os
 import difflib
 import subfield
-from datetime import datetime
+import datetime
+
 from django.core.management import setup_environ
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -97,7 +98,7 @@ class SectionImport:
                 section.title = ''
             section.legacy_code = sec_key
             section.journal = journal
-            section.creation_date = datetime.now()
+            section.creation_date = datetime.datetime.now()
             section.save(force_insert=True)
             self.charge_summary('sections')
 
