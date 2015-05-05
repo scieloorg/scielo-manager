@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 
 
 class StyleCheckerForm(forms.Form):
-    file = forms.FileField(label=_("File"), required=False)
+    file = forms.FileField(label=_("File"))
 
     def clean_file(self):
         _file = self.cleaned_data.get('file', None)

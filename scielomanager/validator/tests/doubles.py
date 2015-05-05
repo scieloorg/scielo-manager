@@ -36,15 +36,15 @@ class XMLValidatorAnnotationsDouble(XMLValidatorDouble):
             message = u'Premature end of data in tag xml line 1, line 1, column 6'
             level_name = 'ERROR'
 
-        for x in xrange(0,6):
+        for x in xrange(0, 6):
             error_list.append(DummyError())
 
         return False, error_list
 
 
-#------------------
+# ------------------
 # utils.analyze_xml
-#------------------
+# ------------------
 def make_stub_analyze_xml(type):
     """Factory for utils.analyze_xml stub functions.
 
@@ -80,4 +80,3 @@ def make_stub_analyze_xml(type):
         return result, err
 
     return stub__analyze_xml
-

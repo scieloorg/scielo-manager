@@ -33,15 +33,17 @@ def get_temporary_text_file():
     text_file.seek(0)
     return text_file
 
+
 def get_temporary_image_file():
     io = StringIO.StringIO()
-    size = (200,200)
-    color = (255,0,0,0)
+    size = (200, 200)
+    color = (255, 0, 0, 0)
     image = Image.new("RGBA", size, color)
     image.save(io, format='PNG')
     image_file = InMemoryUploadedFile(io, field_name='file', name='foo.png', content_type='png', size=io.len, charset=None)
     image_file.seek(0)
     return image_file
+
 
 def get_temporary_xml_file(xml_abs_path):
     fp = open(xml_abs_path)
@@ -115,59 +117,9 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertTemplateUsed(response, 'validator/packtools.html')
         self.assertFalse(response.context['form'].is_valid())
         form_errors = response.context['form'].errors
-        expected_errors = {
-            '__all__': [u'if trying to validate via URL, please submit a valid URL']
-        }
+        expected_errors = {'file': [u'This field is required.']}
         self.assertEqual(form_errors, expected_errors)
         self.assertFalse(hasattr(response.context, 'results'))
-
-    def test_submit_invalid_url_then_form_is_not_valid(self):
-        # with
-        self._addWaffleFlag()
-        page = self.app.get(
-            reverse('validator.packtools.stylechecker',),
-        )
-        form = page.forms['stylechecker']
-        form['type'] = 'url'
-        form['url'] = 'file:///abc.123'
-        # when
-        response = form.submit()
-        # then
-        self.assertTemplateUsed(response, 'validator/packtools.html')
-        self.assertFalse(response.context['form'].is_valid())
-        form_errors = response.context['form'].errors
-        expected_errors = {
-            'url': [u'Enter a valid URL.'],
-            '__all__': [u'if trying to validate via URL, please submit a valid URL']
-        }
-        self.assertEqual(form_errors, expected_errors)
-        self.assertFalse(hasattr(response.context, 'results'))
-
-    def test_submit_valid_url_then_form_is_valid(self):
-        """
-        Submitting a valid url, will not raise a validation error of the form.
-        """
-        # with
-        self._addWaffleFlag()
-
-        stub_analyze_xml = doubles.make_stub_analyze_xml('valid')
-        mock_utils = self.mocker.replace('validator.utils')
-        mock_utils.analyze_xml
-        self.mocker.result(stub_analyze_xml)
-        self.mocker.replay()
-
-        # when
-        page = self.app.get(
-            reverse('validator.packtools.stylechecker',),
-        )
-        form = page.forms['stylechecker']
-        form['type'] = 'url'
-        form['url'] = 'http://example.com/foo/bar/valid.xml'
-        response = form.submit()
-
-        # then
-        self.assertTemplateUsed(response, 'validator/packtools.html')
-        self.assertTrue(response.context['form'].is_valid())
 
     def test_submit_text_file_then_form_not_valid(self):
         """
@@ -180,7 +132,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         response = self.client.post(
             reverse('validator.packtools.stylechecker',),
             {
-                'type': 'file',
                 'file': test_file
             }
         )
@@ -188,7 +139,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         form = response.context['form']
         self.assertFalse(response.context['form'].is_valid())
         expected_errors = {
-            '__all__': [u'if trying to validate a File, please upload a valid XML file'],
             'file': [u'This type of file is not allowed! Please select another file.']
         }
         self.assertEqual(form.errors, expected_errors)
@@ -204,17 +154,13 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         response = self.client.post(
             reverse('validator.packtools.stylechecker',),
             {
-                'type': 'file',
                 'file': test_file
             }
         )
         # then
         form = response.context['form']
         self.assertFalse(response.context['form'].is_valid())
-        expected_errors = {
-            '__all__': [u'if trying to validate a File, please upload a valid XML file'],
-            'file': [u'This type of file is not allowed! Please select another file.']
-        }
+        expected_errors = {'file': [u'This type of file is not allowed! Please select another file.']}
         self.assertEqual(form.errors, expected_errors)
 
     def test_submit_valid_xml_file_then_get_annotations_form_valid(self):
@@ -239,7 +185,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         response = self.client.post(
             reverse('validator.packtools.stylechecker',),
             {
-                'type': 'file',
                 'file': test_file
             }
         )
@@ -253,6 +198,4 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertTemplateUsed('validator/packtools.html')
 
         # the template cares about this keys
-        self.assertEqual(results.keys(),
-                ['validation_errors', 'meta', 'annotations'])
-
+        self.assertEqual(results.keys(), ['validation_errors', 'meta', 'annotations'])
