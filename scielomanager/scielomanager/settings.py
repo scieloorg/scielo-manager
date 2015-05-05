@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'accounts',
     'export',
     'health',
+    'thrift',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
