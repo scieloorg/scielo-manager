@@ -6,36 +6,37 @@ FIXTURES_DIR = $(APP_PATH)/scielomanager/fixtures
 
 deps:
 	@pip install -r requirements.txt
-	@pip install -r requirements-test.txt
 
 clean:
+	@echo "Removing all .pyc files..."
 	@find . -name "*.pyc" -delete
 
-test: clean
+test: 
 	@python $(MANAGE) test --settings=$(SETTINGS_TEST)
 
-testfast: clean
+testfast:
 	@python $(MANAGE) test --settings=$(SETTINGS_TEST) --failfast
 
 dbsetup:
 	@python $(MANAGE) syncdb --settings=$(SETTINGS)
-	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
 
 loaddata:
+	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(APP_PATH)/journalmanager/fixtures/use_licenses.json --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/subject_categories.json --settings=$(SETTINGS)
 	@python $(MANAGE) loaddata $(FIXTURES_DIR)/study_area.json --settings=$(SETTINGS)
+	@python $(MANAGE) sync_perms --settings=$(SETTINGS)
 
 dbmigrate:
 	@python $(MANAGE) migrate --settings=$(SETTINGS)
 
 compilemessages:
-	@cd $(APP_PATH) && python manage.py compilemessages --settings=$(SETTINGS)
+	@python $(MANAGE) compilemessages --settings=$(SETTINGS)
 
-setup: deps dbsetup dbmigrate loaddata compilemessages test refreshsecretkey
+compile: 
+	@echo "Compiling all source files..."
+	@cd $(APP_PATH) && for PYMOD in $$(find . -name '*.py'); do python -m compileall $$PYMOD; done
 
-upgrade: deps dbmigrate compilemessages test
-	@python $(MANAGE) sync_perms --settings=$(SETTINGS)
+setup: clean compile deps dbsetup dbmigrate loaddata compilemessages test 
 
-refreshsecretkey:
-	@sed -e 's:^\(SECRET_KEY\).*$$:\1 = '" '`openssl rand -base64 32`' "':g' -i $(APP_PATH)/settings.py
+upgrade: clean compile deps dbmigrate compilemessages
