@@ -18,11 +18,3 @@ class StyleCheckerForm(forms.Form):
                 raise forms.ValidationError(_(u"The file's size is too large! Please select a smaller file."))
 
         return _file
-
-    def clean(self):
-        file = self.cleaned_data.get('file', None)
-
-        if type == 'file' and not file:
-            raise forms.ValidationError('if trying to validate a File, please upload a valid XML file')
-
-        return self.cleaned_data
