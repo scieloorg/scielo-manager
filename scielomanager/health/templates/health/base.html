@@ -1,0 +1,36 @@
+{% extends "base_lv0.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block base_struture %}
+<style type="text/css">
+	body { margin: 8px !important;}
+	.container-base {padding-top: 40px;}
+</style>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="brand" href="/">SciELO Manager</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li class="active"><a href="{% url health.home %}">System Status</a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container container-base">
+	{% block main_content %}
+		
+	{% endblock main_content %}
+</div> <!-- /container -->
+
+{% endblock base_struture %}

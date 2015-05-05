@@ -1,11 +1,12 @@
-#!/usr/bin/env python
 #coding: utf-8
+
 import json
 import os
 import re
 import difflib
 import subfield
-from datetime import datetime
+import datetime
+
 from django.core.management import setup_environ
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -209,7 +210,7 @@ class IssueImport:
             issue.publication_end_month = 0
             issue.publication_year = 0000
 
-        current_year = datetime.date(datetime.now()).year
+        current_year = datetime.datetime.date(datetime.datetime.now()).year
         previous_year = current_year - 1
         if issue.number.lower() == 'ahead':
             if int(issue.publication_year) == int(current_year):
@@ -223,7 +224,7 @@ class IssueImport:
             return False
 
         issue.journal = journal
-        issue.creation_date = datetime.now()
+        issue.creation_date = datetime.datetime.now()
 
         if '33' in record:
             issue.title = record['33'][0]
@@ -256,7 +257,7 @@ class IssueImport:
 
         if '91' in record:
             created = u'%s-%s-01T01:01:01' % (record['91'][0][0:4], record['91'][0][4:6])
-            issue.created = datetime.strptime(created, "%Y-%m-%dT%H:%M:%S")
+            issue.created = datetime.datetime.strptime(created, "%Y-%m-%dT%H:%M:%S")
 
         issue.save()
 

@@ -154,23 +154,29 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+# Third-party apps
+    'django_assets',
     'kombu.transport.django',
-    'maintenancewindow',
+    'widget_tweaks',
+    'djcelery',
+    'tastypie',
+    'waffle',
+    'south',
+
+# SciELO shared apps
     'scielo_extensions',
+
+# SciELO Manager apps
+    'maintenancewindow',
     'journalmanager',
     'editorialmanager',
     'audit_log',
-    'widget_tweaks',
-    'django_assets',
     'articletrack',
     'validator',
-    'djcelery',
-    'tastypie',
     'accounts',
-    'waffle',
     'export',
-    'south',
-    'thrift',
+    'health',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -300,6 +306,16 @@ ELASTICSEARCH_CONFIG = {
     'PORT': '9200',
 }
 
+
+# ----------------------------------------------------
+# Endereços de enlace para comunicação inter-processos
+#
+# Todos os endereços de IPC devem ser prefixados com
+# `IPC_`, para sinalizar que é um endpoint da aplicação.
+# ----------------------------------------------------
+IPC_HEALTHD_BIND_ADDR = 'tcp://0.0.0.0:11711'
+
+
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
 
@@ -307,14 +323,18 @@ CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
 #################################################################
 
 # Local deployment settings: there *must* be an unversioned
-# 'settings_local.include' file in the current directory.
+# 'scielomanager.conf' file in /etc/scieloapps/.
 # See sample file at settings_local-SAMPLE.include.
 # NOTE: in the next line we do not use a simple...
 # try: from settings_local import * except ImportError: pass
 # ...because (1) we want to be able to add to settings in this file, and
 # not only overwrite them, and (2) we do not want the app to launch if the
-# 'settings_local.include' file is not provided
-execfile(os.path.join(HERE, 'settings_local.include'))
+# config file cannot be loaded.
+SCIELOMANAGER_SETTINGS_FILE = os.environ.get('SCIELOMANAGER_SETTINGS_FILE')
+if SCIELOMANAGER_SETTINGS_FILE:
+    execfile(SCIELOMANAGER_SETTINGS_FILE)
+else:
+    raise RuntimeError('Missing settings file. Make sure SCIELOMANAGER_SETTINGS_FILE is configured.')
 
 # Always minify the HTML when the DEBUG mode is False
 HTML_MINIFY = not DEBUG

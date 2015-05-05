@@ -26,4 +26,4 @@ thriftpy
 django-countries
 -e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
 elasticsearch>=1.0.0,<2.0.0
-
+zerorpc>=0.4.4
