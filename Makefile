@@ -35,7 +35,7 @@ compilemessages:
 
 compile: 
 	@echo "Compiling all source files..."
-	@cd $(APP_PATH) && for PYMOD in $$(find . -name '*.py'); do python -m compileall $$PYMOD; done
+	@cd $(APP_PATH) && python -m compileall .
 
 setup: clean compile deps dbsetup dbmigrate loaddata compilemessages test 
 
