@@ -1,10 +1,9 @@
 language: python
 python:
   - 2.7
-services: 
-  - mongodb
 env:
   - DJANGO_VERSION=1.4
+  - SCIELOMANAGER_SETTINGS_FILE=`pwd`/scielomanager/scielomanager/settings_local.include
 install:
   - pip install -r requirements.txt --use-mirrors
   - pip install -r requirements-test.txt --use-mirrors
