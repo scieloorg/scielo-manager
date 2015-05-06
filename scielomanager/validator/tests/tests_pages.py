@@ -22,7 +22,7 @@ PACKTOOLS_VERSION = pkg_resources.get_distribution('packtools').version
 def _get_test_xml_abspath(filename):
     folder_path = settings.PROJECT_PATH
     folder_path = settings.PROJECT_PATH.split('/')
-    folder_path.extend(['articletrack', 'tests', 'xml_tests_files', filename])
+    folder_path.extend(['validator', 'tests', 'xml_tests_files', filename])
     return '/'.join(folder_path)
 
 
