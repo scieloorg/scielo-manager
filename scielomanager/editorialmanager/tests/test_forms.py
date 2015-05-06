@@ -2,6 +2,7 @@
 
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
+from django.test.utils import override_settings
 from waffle import Flag
 
 from journalmanager.tests import modelfactories
@@ -38,10 +39,10 @@ class RestrictedJournalFormTests(WebTest):
     def setUp(self):
         # create waffle:
         Flag.objects.create(name='editorialmanager', everyone=True)
-        #create a group 'Editors'
+        # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
 
-        #create a user and set group 'Editors'
+        # create a user and set group 'Editors'
         self.user = modelfactories.UserFactory(is_active=True)
         self.user.groups.add(group)
 
@@ -52,7 +53,7 @@ class RestrictedJournalFormTests(WebTest):
         self.journal = modelfactories.JournalFactory.create()
         self.journal.join(self.collection, self.user)
 
-        #set the user as editor of the journal
+        # set the user as editor of the journal
         self.journal.editor = self.user
         self.journal.save()
 
@@ -68,7 +69,7 @@ class RestrictedJournalFormTests(WebTest):
 
         use_license = modelfactories.UseLicenseFactory.create()
 
-        form = self.app.get(reverse('editorial.journal.edit', args=[self.journal.id,]), user=self.user).forms['journal-form']
+        form = self.app.get(reverse('editorial.journal.edit', args=[self.journal.id, ]), user=self.user).forms['journal-form']
 
         form['journal-use_license'] = use_license.pk
         form['journal-publisher_name'] = 'Colégio Brasileiro de Cirurgia Digestiva'
@@ -106,12 +107,12 @@ class AddUserAsEditorFormTests(WebTest):
         perm1 = _makePermission(perm='list_editor_journal', model='journal', app_label='journalmanager')
         perm2 = _makePermission(perm='change_editor', model='journal', app_label='journalmanager')
 
-        #create a group 'Librarian'
+        # create a group 'Librarian'
         group = modelfactories.GroupFactory(name="Librarian")
         group.permissions.add(perm1)
         group.permissions.add(perm2)
 
-        #create a user and set group 'Editors'
+        # create a user and set group 'Editors'
         self.user = modelfactories.UserFactory(is_active=True)
         self.user.groups.add(group)
 
@@ -133,11 +134,11 @@ class AddUserAsEditorFormTests(WebTest):
 
         group = modelfactories.GroupFactory(name="Editors")
 
-        #create a user with group 'Editors'
+        # create a user with group 'Editors'
         user_editor = modelfactories.UserFactory(is_active=True)
         user_editor.groups.add(group)
 
-        form = self.app.get(reverse('editor.add', args=[self.journal.id,]), user=self.user).forms[0]
+        form = self.app.get(reverse('editor.add', args=[self.journal.id, ]), user=self.user).forms[0]
 
         form['editor'] = user_editor.pk
 
@@ -178,6 +179,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
     def tearDown(self):
         pass
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_ADD_board_member_valid_POST_is_valid(self):
         """
         User of the group "Editors" successfully ADD a new board member
@@ -308,6 +310,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_EDIT_board_member_valid_POST_is_valid(self):
         """
         User of the group "Editors" successfully EDIT a board member
@@ -455,6 +458,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_DELETE_board_member_valid_POST_is_valid(self):
         """
         User of the group "Editors" successfully DELETE a board member
@@ -554,7 +558,7 @@ class MembersSortingOnActionTests(WebTest):
         Delete the first one (order: 1), the other will remain in sequence: [a2(1), a3(2), ]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -590,7 +594,7 @@ class MembersSortingOnActionTests(WebTest):
         Delete the SECOND member (order: 2), the other will remain in sequence:  [a1(1), a3(2), ]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -626,7 +630,7 @@ class MembersSortingOnActionTests(WebTest):
         Delete the THIRD member (order: 3), the other will remain in sequence: [a1(1), a2(2),]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -663,7 +667,7 @@ class MembersSortingOnActionTests(WebTest):
         Delete the second member (a2, order: 1, role: 1), the other will remain in sequence: [a1(1), a3(2), a4(2), a5(3), a6(3), ]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -715,7 +719,7 @@ class MembersSortingOnActionTests(WebTest):
         Delete the fourth member (a4, order: 2, role: 2), the other will remain in sequence: [a1(1), a2(1), a3(2), a5(3), a6(3), ]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -768,7 +772,7 @@ class MembersSortingOnActionTests(WebTest):
         ADD a new member (AX) with the FIRST role (order: 1), then all 4 members must keep in sequence: a1(1), AX(1), a2(2), a3(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -841,7 +845,7 @@ class MembersSortingOnActionTests(WebTest):
         ADD a new member (AX) with the SECOND role (order: 2), then all 4 members must keep in sequence: a1(1), a2(2), AX(2), a3(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -914,7 +918,7 @@ class MembersSortingOnActionTests(WebTest):
         ADD a new member (AX) with the NEW role, then all 4 members must keep in sequence: a1(1), a2(2), a3(3), AX(4)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -990,7 +994,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a1) changing to a NEW role, then all members must keep in sequence: a2(1), a3(2), a1(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1031,7 +1035,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a2) changing to a NEW role, then all members must keep in sequence: a1(1), a3(2), a2(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1070,7 +1074,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a3) changing to a NEW role, then all members must keep in sequence: a1(1), a2(2), a3(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1111,7 +1115,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a1) changing to the 2nd role, then all members must keep in sequence: a2(1), a1(1), a3(2)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1151,7 +1155,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a1) changing to a NEW role, then all members must keep in sequence: a2[1], a3[2], a4[2], a5[3], a6[3], a1[4]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1204,7 +1208,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a2) changing to a NEW role, then all members must keep in sequence: a1[1], a3[2], a4[2], a5[3], a6[3], a2[4]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1257,7 +1261,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a3) changing to a NEW role, then all members must keep in sequence: a1[1], a2[1], a4[2], a5[3], a6[3], a3[4]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1309,7 +1313,7 @@ class MembersSortingOnActionTests(WebTest):
         EDIT a member (a3) changing to a NEW role, then all members must keep in sequence: a2[1], a1[2], a3[2], a4[2], a5[3], a6[3]
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1332,7 +1336,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertIn('Board Member updated successfully.', response.body)
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
-        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 2, 3, 3,])
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 2, 3, 3, ])
         m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
 
         # must match orders and PK: memberX == mY
@@ -1361,7 +1365,7 @@ class MembersSortingOnActionTests(WebTest):
         MOVE UP the 2nd member (a2), then all members must keep in sequence: a2(1), a1(2), a3(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1404,7 +1408,7 @@ class MembersSortingOnActionTests(WebTest):
         MOVE UP the 2nd block members (a3, a4), then all members must keep in sequence: (a3[1], a4[1]), (a1[2], a2[2]), (a5[3], a6[3])
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1458,7 +1462,7 @@ class MembersSortingOnActionTests(WebTest):
         MOVE DOWN the 2nd member (a2), then all members must keep in sequence: a1(1), a3(2), a1(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1501,7 +1505,7 @@ class MembersSortingOnActionTests(WebTest):
         MOVE DOWN the 2nd block members (a3, a4), then all members must keep in sequence: (a1[2], a2[2]), (a5[3], a6[3]), (a3[1], a4[1])
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1556,7 +1560,7 @@ class MembersSortingOnActionTests(WebTest):
         then all members must keep in sequence: a1(1), a2(2), a3(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1600,7 +1604,7 @@ class MembersSortingOnActionTests(WebTest):
         then all members must keep in sequence: a1(1), a2(2), a3(3)
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
 
         role1 = editorial_modelfactories.RoleTypeFactory.create()
         role2 = editorial_modelfactories.RoleTypeFactory.create()
@@ -1736,7 +1740,7 @@ class EditRoleTypeForm(WebTest):
         Users with permissions: editorialmanager.add_roletype can add new roles
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name="Pickles")
 
         perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
@@ -1769,7 +1773,7 @@ class EditRoleTypeForm(WebTest):
 
     def test_EDIT_ROLE_valid_POST_is_valid(self):
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name="Pickles")
         member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
         # add perms
@@ -1803,7 +1807,7 @@ class EditRoleTypeForm(WebTest):
 
     def test_EDIT_ROLE_invalid_POST_is_invalid(self):
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name="Pickles")
         member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
         # add perms
@@ -1839,7 +1843,7 @@ class EditRoleTypeForm(WebTest):
         languages: "pt", and "es", must be required
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
         l1 = modelfactories.LanguageFactory.create(iso_code='pt', name='portuguese')
         l2 = modelfactories.LanguageFactory.create(iso_code='es', name='spanish')
@@ -1892,7 +1896,7 @@ class EditRoleTypeForm(WebTest):
         languages: "pt", and "es", must be required
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
         l1 = modelfactories.LanguageFactory.create(iso_code='it', name='italian')
         l2 = modelfactories.LanguageFactory.create(iso_code='es', name='spanish')
@@ -1933,7 +1937,7 @@ class EditRoleTypeForm(WebTest):
         languages: "pt", and "es", must be required
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name="The Pickles")
         l1 = modelfactories.LanguageFactory.create(iso_code='pt', name='portuguese')
         l2 = modelfactories.LanguageFactory.create(iso_code='ar', name='arabic')

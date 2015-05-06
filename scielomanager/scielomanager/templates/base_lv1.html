@@ -35,11 +35,6 @@
               <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
             </li>
           {% endif %}
-          {% flag 'articletrack' %}
-            <li id="articletrack-link" class="{% active '/arttrack/' %}">
-              <a href="{% url checkin_index %}">{% trans 'Articles in submission' %}</a>
-            </li>
-          {% endflag %}
           {% if perms.journalmanager.list_sponsor %}
             <li id="sponsors-link" class="{% active '/journal/sponsor/' %}">
               <a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
