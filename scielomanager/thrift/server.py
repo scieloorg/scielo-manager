@@ -31,14 +31,14 @@ class RPCHandler(object):
             return services.article.add_from_string(xml_string, raw)
 
         except IntegrityError as exc:
-            logger.info(exc)
+            logger.exception(exc)
             raise spec.DuplicationError(message=u'Article already registered')
 
         except ValueError as exc:
-            logger.info(exc)
+            logger.exception(exc)
             raise spec.ValueError(message=exc.message)
 
         except Exception as exc:
-            logger.error(exc)
-            raise
+            logger.exception(exc)
+            raise spec.ServerError(message='Something bad happened')
 
