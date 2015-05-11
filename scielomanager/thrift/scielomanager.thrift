@@ -8,14 +8,6 @@ exception ServerError {
     1: string message;
 }
 
-exception DuplicationError {
-    1: string message;
-}
-
-exception ValueError {
-    1: string message;
-}
-
 /*
  * Manuseio de requisições assíncronas.
  */
