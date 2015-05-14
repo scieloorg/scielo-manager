@@ -27,11 +27,12 @@ def make_error_filter(key):
     :param key: callable to get the filtering value
     """
     known_errors = set()
+
     def err_filter(err):
         _err = key(err)
 
         is_known = _err in known_errors
-        if is_known == False:
+        if is_known is False:
             known_errors.add(_err)
 
         return not is_known
@@ -51,8 +52,9 @@ def analyze_xml(file):
 
     else:
         status, errors = xml.validate_all()
-        err_xml = lxml.etree.tostring(xml.annotate_errors(),
-                pretty_print=True, encoding='utf-8', xml_declaration=True)
+        err_xml = lxml.etree.tostring(
+                    xml.annotate_errors(), pretty_print=True,
+                    encoding='utf-8', xml_declaration=True)
 
         result = {
             'annotations': err_xml,
@@ -68,4 +70,3 @@ def analyze_xml(file):
             result['validation_errors'] = err_list
 
     return result, err
-

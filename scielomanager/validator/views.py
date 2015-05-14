@@ -11,7 +11,7 @@ from . import utils
 @waffle_flag('packtools_validator')
 def packtools_home(request, template_name='validator/packtools.html'):
     context = {
-        'SETTINGS_MAX_UPLOAD_SIZE' : settings.VALIDATOR_MAX_UPLOAD_SIZE,
+        'SETTINGS_MAX_UPLOAD_SIZE': settings.VALIDATOR_MAX_UPLOAD_SIZE,
         'packtools_version': utils.PACKTOOLS_VERSION,
     }
 
@@ -19,11 +19,7 @@ def packtools_home(request, template_name='validator/packtools.html'):
     if request.method == 'POST':
         form = forms.StyleCheckerForm(request.POST, request.FILES)
         if form.is_valid():
-            type = form.cleaned_data['type']
-            if type == 'url':
-                xml_file = form.cleaned_data['url']
-            else:
-                xml_file = request.FILES['file']
+            xml_file = request.FILES['file']
 
             results, exc = utils.analyze_xml(xml_file)
             context['results'] = results
