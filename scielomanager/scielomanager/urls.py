@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
@@ -23,12 +23,6 @@ v1_api_resources = [
     resources_v1.DataChangeEventResource(),
     resources_v1.PressReleaseResource(),
     resources_v1.AheadPressReleaseResource(),
-    resources_v1.CheckinResource(),
-    resources_v1.CheckinNoticeResource(),
-    resources_v1.ArticleResource(),
-    resources_v1.CheckinArticleResource(),
-    resources_v1.TicketResource(),
-    resources_v1.CommentResource()
 ]
 
 for res in v1_api_resources:
@@ -48,12 +42,6 @@ v2_api_resources = [
     resources_v2.DataChangeEventResource(),
     resources_v2.PressReleaseResource(),
     resources_v2.AheadPressReleaseResource(),
-    resources_v2.CheckinResource(),
-    resources_v2.CheckinNoticeResource(),
-    resources_v2.ArticleResource(),
-    resources_v2.CheckinArticleResource(),
-    resources_v2.TicketResource(),
-    resources_v2.CommentResource(),
     resources_v2.PressReleaseTranslationResource(),
     # editorialmanager
     resources_v2.EditorialBoardResource(),
@@ -68,9 +56,6 @@ for res in v2_api_resources:
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
-
-    # Article Tracking APP
-    url(r'^arttrack/', include('articletrack.urls')),
 
     # Article APP
     url(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),

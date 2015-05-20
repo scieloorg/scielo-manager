@@ -29,13 +29,6 @@ from journalmanager.models import (
 
 from scielomanager.utils import usercontext
 
-from articletrack.models import (
-    Checkin,
-    Notice,
-    Article as CheckinArticle,
-    Ticket,
-    Comment
-)
 
 logger = logging.getLogger(__name__)
 
@@ -463,95 +456,6 @@ class AheadPressReleaseResource(ModelResource):
             orm_filters['pk__in'] = preleases
 
         return orm_filters
-
-
-class CheckinResource(ModelResource):
-    article = fields.ForeignKey('api.resources_v1.CheckinArticleResource', 'article')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Checkin.objects.all()
-        resource_name = 'checkins'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
-    def obj_create(self, bundle, **kwargs):
-        bundle = super(CheckinResource, self).obj_create(bundle, **kwargs)
-
-        submitted_by = bundle.data.get('submitted_by','')
-
-        try:
-            user = User.objects.get(email=submitted_by)
-        except ObjectDoesNotExist:
-            message = u"""Could not find the right User that submitted this checkin
-                          %s.""".strip()
-            logger.error(message % repr(bundle.obj))
-        else:
-            bundle.obj.submitted_by = user
-            bundle.obj.save()
-
-        return bundle
-
-
-class CheckinNoticeResource(ModelResource):
-    checkin = fields.ForeignKey(CheckinResource, 'checkin')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Notice.objects.all()
-        resource_name = 'notices'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
-class CheckinArticleResource(ModelResource):
-    journals = fields.ToManyField(JournalResource, 'journals', null=True)
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = CheckinArticle.objects.all()
-        resource_name = 'checkins_articles'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-    def obj_create(self, bundle, **kwargs):
-        bundle = super(CheckinArticleResource, self).obj_create(bundle, **kwargs)
-
-        pissn = bundle.data.get('pissn', '')
-        eissn = bundle.data.get('eissn', '')
-
-        try:
-            journal = Journal.objects.get(
-                Q(print_issn=pissn) | Q(eletronic_issn=eissn)
-            )
-        except ObjectDoesNotExist:
-            message = u"""Could not find the right Journal instance to bind with
-                          %s. The Journal instance will stay in an orphan state.""".strip()
-            logger.error(message % repr(bundle.obj))
-        else:
-            bundle.obj.journals.add(journal)
-
-        return bundle
-
-
-class TicketResource(ModelResource):
-    author = fields.ForeignKey(UserResource, 'author')
-    article = fields.ForeignKey(CheckinArticleResource, 'article')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Ticket.objects.all()
-        resource_name = 'tickets'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
-class CommentResource(ModelResource):
-    author = fields.ForeignKey(UserResource, 'author')
-    ticket = fields.ForeignKey(TicketResource, 'ticket')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Comment.objects.all()
-        resource_name = 'comments'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
 
 
 class ArticleResource(ModelResource):

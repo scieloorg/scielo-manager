@@ -155,7 +155,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-# Third-party apps
+    # Third-party apps
     'django_assets',
     'kombu.transport.django',
     'widget_tweaks',
@@ -164,15 +164,15 @@ INSTALLED_APPS = (
     'waffle',
     'south',
 
-# SciELO shared apps
+    # SciELO shared apps
     'scielo_extensions',
 
-# SciELO Manager apps
+    # SciELO Manager apps
     'maintenancewindow',
     'journalmanager',
     'editorialmanager',
     'audit_log',
-    'articletrack',
+
     'validator',
     'accounts',
     'export',
@@ -271,7 +271,7 @@ IMAGE_SIZE = 300 * 1024
 IMAGE_MAX_UPLOAD_SIZE = 5242880  # must be an integer of bytes allowed, see comment on custom_fields.ContentTypeRestrictedFileField for reference
 JOURNAL_COVER_MAX_SIZE = IMAGE_MAX_UPLOAD_SIZE
 JOURNAL_LOGO_MAX_SIZE = IMAGE_MAX_UPLOAD_SIZE
-VALIDATOR_MAX_UPLOAD_SIZE = 512 * 1024 # max size in byte to upload xml to validator
+VALIDATOR_MAX_UPLOAD_SIZE = 512 * 1024  # max size in byte to upload xml to validator
 
 FILE_UPLOAD_HANDLERS = (
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
@@ -308,7 +308,7 @@ IPC_HEALTHD_BIND_ADDR = 'tcp://0.0.0.0:11711'
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
 
-### END App customization settings
+# ## END App customization settings
 #################################################################
 
 # Local deployment settings: there *must* be an unversioned
