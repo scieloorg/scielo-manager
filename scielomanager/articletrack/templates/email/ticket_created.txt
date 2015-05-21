@@ -1,4 +1,0 @@
-A ticket was created for article: {{ticket.article}}
-<br/>
-<br/>
-Check: http://{{domain}}{% url ticket_detail ticket.id %}

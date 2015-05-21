@@ -14,14 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from journalmanager import models
 from editorialmanager import models as em_models
 
-from articletrack.models import (
-    Checkin,
-    Notice,
-    Article as CheckinArticle,
-    Ticket,
-    Comment
-)
-
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +53,6 @@ class UserResource(ModelResource):
             'is_superuser',
         ]
 
-
     def dehydrate_collections(self, bundle):
         return [{'name': col.collection.name,
                  'is_default': col.is_default,
@@ -90,10 +81,8 @@ class SubjectCategoryResource(ModelResource):
 
 
 class SectionResource(ModelResource):
-    journal = fields.ForeignKey('api.resources_v2.JournalResource',
-        'journal')
-    issues = fields.OneToManyField('api.resources_v2.IssueResource',
-        'issue_set')
+    journal = fields.ForeignKey('api.resources_v2.JournalResource', 'journal')
+    issues = fields.OneToManyField('api.resources_v2.IssueResource', 'issue_set')
     titles = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
@@ -134,8 +123,7 @@ class SectionResource(ModelResource):
 
 
 class IssueResource(ModelResource):
-    journal = fields.ForeignKey('api.resources_v2.JournalResource',
-        'journal')
+    journal = fields.ForeignKey('api.resources_v2.JournalResource', 'journal')
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
     suppl_volume = fields.CharField(attribute='volume', readonly=True)
@@ -192,8 +180,7 @@ class IssueResource(ModelResource):
         return orm_filters
 
     def dehydrate_thematic_titles(self, bundle):
-        return dict([title.language.iso_code, title.title]
-            for title in bundle.obj.issuetitle_set.all())
+        return dict([title.language.iso_code, title.title] for title in bundle.obj.issuetitle_set.all())
 
     def dehydrate_is_press_release(self, bundle):
         return False
@@ -216,12 +203,11 @@ class IssueResource(ModelResource):
         for section in bundle.obj.section.all():
             section_list.append(
                 {'code': section.code,
-                 'titles': [{'lang':ti.language.iso_code, 'title':ti.title} for ti in section.titles.all()]
+                 'titles': [{'lang': ti.language.iso_code, 'title': ti.title} for ti in section.titles.all()]
                  }
             )
 
         return section_list
-
 
 
 class JournalResource(ModelResource):
@@ -235,7 +221,7 @@ class JournalResource(ModelResource):
     pub_status = fields.CharField(readonly=True)
     pub_status_reason = fields.CharField(readonly=True)
 
-    #Relation fields
+    # Relation fields
     creator = fields.ForeignKey(UserResource, 'creator')
     use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
     sponsors = fields.ManyToManyField(SponsorResource, 'sponsor')
@@ -243,9 +229,9 @@ class JournalResource(ModelResource):
     issues = fields.OneToManyField(IssueResource, 'issue_set')
     sections = fields.OneToManyField(SectionResource, 'section_set')
     subject_categories = fields.ManyToManyField(SubjectCategoryResource,
-                                            'subject_categories', readonly=True)
+                                                'subject_categories', readonly=True)
 
-    #Recursive field
+    # Recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
     succeeding_title = fields.ForeignKey('self', 'succeeding_title', null=True)
 
@@ -352,96 +338,6 @@ class DataChangeEventResource(ModelResource):
         orm_filters['pk__in'] = models.DataChangeEvent.objects.filter(**query_filters)
 
         return orm_filters
-
-
-class CheckinResource(ModelResource):
-    article = fields.ForeignKey('api.resources_v2.CheckinArticleResource', 'article')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Checkin.objects.all()
-        resource_name = 'checkins'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
-    def obj_create(self, bundle, **kwargs):
-        bundle = super(CheckinResource, self).obj_create(bundle, **kwargs)
-
-        submitted_by = bundle.data.get('submitted_by','')
-
-        try:
-            user = User.objects.get(email=submitted_by)
-        except ObjectDoesNotExist:
-            message = u"""Could not find the right User that submitted this checkin
-                          %s.""".strip()
-            logger.error(message % repr(bundle.obj))
-        else:
-            bundle.obj.submitted_by = user
-            bundle.obj.save()
-
-        return bundle
-
-
-class CheckinNoticeResource(ModelResource):
-    checkin = fields.ForeignKey(CheckinResource, 'checkin')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Notice.objects.all()
-        resource_name = 'notices'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
-class CheckinArticleResource(ModelResource):
-    journals = fields.ToManyField(JournalResource, 'journals', null=True)
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = CheckinArticle.objects.all()
-        resource_name = 'checkins_articles'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-    def obj_create(self, bundle, **kwargs):
-        bundle = super(CheckinArticleResource, self).obj_create(bundle, **kwargs)
-
-        # Using NOISSN to avoid get journal with empty pissn or eissn attribute
-        pissn = bundle.data.get('pissn', 'NOISSN')
-        eissn = bundle.data.get('eissn', 'NOISSN')
-
-        try:
-            journal = models.Journal.objects.get(
-                Q(print_issn=pissn) | Q(eletronic_issn=eissn)
-            )
-        except ObjectDoesNotExist:
-            message = u"""Could not find the right Journal instance to bind with
-                          %s. The Journal instance will stay in an orphan state.""".strip()
-            logger.error(message % repr(bundle.obj))
-        else:
-            bundle.obj.journals.add(journal)
-
-        return bundle
-
-
-class TicketResource(ModelResource):
-    author = fields.ForeignKey(UserResource, 'author')
-    article = fields.ForeignKey(CheckinArticleResource, 'article')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Ticket.objects.all()
-        resource_name = 'tickets'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
-class CommentResource(ModelResource):
-    author = fields.ForeignKey(UserResource, 'author')
-    ticket = fields.ForeignKey(TicketResource, 'ticket')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Comment.objects.all()
-        resource_name = 'comments'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
 
 
 class ArticleResource(ModelResource):

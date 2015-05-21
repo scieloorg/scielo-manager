@@ -65,7 +65,7 @@
                         <div class="well">
                             <form id="change_password_form" action="{% url journalmanager.password_change %}" method="POST">
                                 {% with password_form as form %}
-                                    {% include "articletrack/includes/form_snippet.html" %}
+                                    {% include "journalmanager/includes/form_snippet.html" %}
                                 {% endwith %}
                             </form>
                             <br>
@@ -76,7 +76,7 @@
                         <div class="well">
                             <form id="profile_form" action="." method="POST">
                                 {% with profile_form as form %}
-                                    {% include "articletrack/includes/form_snippet.html" %}
+                                    {% include "journalmanager/includes/form_snippet.html" %}
                                 {% endwith %}
                             </form>
                             <br>

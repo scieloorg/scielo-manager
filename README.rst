@@ -13,8 +13,9 @@ See more information about this project in http://docs.scielo.org
 Build status
 ============
 
-.. image:: https://travis-ci.org/scieloorg/scielo-manager.png?branch=master :target: https://travis-ci.org/scieloorg/scielo-manager
-`See Build details <https://travis-ci.org/scieloorg/scielo-manager>`_
+.. image:: https://travis-ci.org/scieloorg/scielo-manager.svg?branch=beta
+    :target: https://travis-ci.org/scieloorg/scielo-manager
+
 
 i18n status
 ===========

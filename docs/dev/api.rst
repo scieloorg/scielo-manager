@@ -41,9 +41,6 @@ Available endpoints
   users-api
   changes-api
   pressreleases-api
-  checkin-api
-  notices-api
-  checkins_articles-api
 
 
 .. note::

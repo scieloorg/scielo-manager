@@ -437,40 +437,6 @@ class UserFormTests(WebTest):
         response.mustcontain('not authorized to access')
         self.assertTemplateUsed(response, 'accounts/unauthorized.html')
 
-    def test_new_user_have_not_any_team(self):
-        Flag.objects.create(name='teams', everyone=True)
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
-        self.user.user_permissions.add(perm)
-
-        page = self.app.get(reverse('user.add'), user=self.user)
-        page.mustcontain('No team associated')
-
-    def test_user_without_teams_message(self):
-        Flag.objects.create(name='teams', everyone=True)
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
-        self.user.user_permissions.add(perm)
-
-        page = self.app.get(reverse('user.edit', args=[self.user.id, ]), user=self.user)
-        page.mustcontain('No team associated')
-
-    def test_user_with_teams_message(self):
-        Flag.objects.create(name='teams', everyone=True)
-        perm = _makePermission(perm='change_user', model='user', app_label='auth')
-        self.user.user_permissions.add(perm)
-
-        from articletrack.tests import modelfactories as alt_factories
-        team_list = []
-        for x in xrange(0, 10):
-            team = alt_factories.TeamFactory()
-            team.save()
-            team.member.add(self.user)
-            team_list.append(team)
-
-        page = self.app.get(reverse('user.edit', args=[self.user.id, ]), user=self.user)
-        self.assertNotIn('No team associated', page.body)
-        for team in team_list:
-            self.assertIn(str(team.name), page.body)
-
     def test_access_without_being_manager(self):
         """
         Asserts that authenticated users that are not managers of the
@@ -515,6 +481,7 @@ class UserFormTests(WebTest):
             'usercollections-MAX_NUM_FORMS',
         )
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_POST_workflow_with_valid_formdata(self):
         """
         When a valid form is submited, the user is redirected to
@@ -610,27 +577,6 @@ class UserFormTests(WebTest):
         # check if an email has been sent to the new user
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('bazz@spam.org', mail.outbox[0].recipients())
-
-    def test_new_users_must_receive_an_email_to_define_their_password_with_a_task(self):
-        perm = _makePermission(perm='change_user',
-                               model='user', app_label='auth')
-        self.user.user_permissions.add(perm)
-
-        form = self.app.get(reverse('user.add'),
-                            user=self.user).forms['user-form']
-
-        form['user-username'] = 'bazz'
-        form['user-first_name'] = 'foo'
-        form['user-last_name'] = 'bar'
-        form['user-email'] = 'bazz@spam.org'
-        form.set('usercollections-0-collection', self.collection.pk)
-
-        response = form.submit().follow()
-
-        # email must not be sent directly,
-        # must wait until celery process the send_mail task
-        # so outbox MUST be empty
-        self.assertEqual(len(mail.outbox), 0)
 
     def test_emails_are_not_sent_when_users_data_are_modified(self):
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
@@ -797,6 +743,7 @@ class UserFormTests(WebTest):
         self.assertTemplateUsed(response, 'journalmanager/add_user.html')
         self.assertEqual([u'Please fill in at least one form'], response.context['usercollectionsformset'].non_form_errors())
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_create_user_with_coll_must_set_a_default(self):
         """ When create a new user, one collecttion must be set as default """
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
@@ -819,6 +766,7 @@ class UserFormTests(WebTest):
             self.user.usercollections_set.get(is_default=True).collection.pk
         )
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_create_user_with_only_one_default_coll_must_succeed(self):
         """ When create a new user, if only one collecttion is selected setted as default, must run OK """
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
@@ -872,6 +820,7 @@ class UserFormTests(WebTest):
         self.assertTrue(previous_email_notifications)
         self.assertFalse(current_email_notifications)
 
+    @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_bug_1053_create_user_but_without_email_notificatinos(self):
         """ TO FIX BUG #1053 """
         new_user = {
@@ -898,6 +847,7 @@ class UserFormTests(WebTest):
         response.mustcontain('bazz', 'bazz@spam.org')
         current_email_notifications = User.objects.get(email=new_user['email']).get_profile().email_notifications
         self.assertFalse(current_email_notifications)
+
 
 class UserCollectionsFormSetTests(TestCase):
 
