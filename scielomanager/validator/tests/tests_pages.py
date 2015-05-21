@@ -11,8 +11,6 @@ from django.conf import settings
 from django_factory_boy import auth
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from waffle import Flag
-
 from . import doubles
 import pkg_resources
 
@@ -59,22 +57,7 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
     def _addWaffleFlag(self):
         Flag.objects.create(name='packtools_validator', everyone=True)
 
-    def test_status_code_stylechecker_without_waffle_flag(self):
-        response = self.app.get(
-            reverse('validator.packtools.stylechecker',),
-            expect_errors=True
-        )
-        self.assertEqual(response.status_code, 404)
-
-    def test_status_code_stylechecker_with_waffle_flag(self):
-        self._addWaffleFlag()
-        response = self.app.get(
-            reverse('validator.packtools.stylechecker',),
-        )
-        self.assertEqual(response.status_code, 200)
-
     def test_access_unauthenticated_user(self):
-        self._addWaffleFlag()
         response = self.app.get(
             reverse('validator.packtools.stylechecker',),
         )
@@ -82,7 +65,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertTemplateUsed(response, 'validator/packtools.html')
 
     def test_access_authenticated_user(self):
-        self._addWaffleFlag()
         self.user = auth.UserF(is_active=True)
         response = self.app.get(
             reverse('validator.packtools.stylechecker',),
@@ -92,7 +74,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         self.assertTemplateUsed(response, 'validator/packtools.html')
 
     def test_link_is_present_at_homepage(self):
-        self._addWaffleFlag()
         response = self.app.get(
             reverse('index',),
         )
@@ -106,7 +87,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
 
     def test_submit_empty_form_is_not_valid(self):
         # with
-        self._addWaffleFlag()
         page = self.app.get(
             reverse('validator.packtools.stylechecker',),
         )
@@ -126,7 +106,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         Submitting a text file will raise a from validation error
         """
         # with
-        self._addWaffleFlag()
         test_file = get_temporary_text_file()
         # when
         response = self.client.post(
@@ -148,7 +127,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         Submitting a image file will raise a from validation error
         """
         # with
-        self._addWaffleFlag()
         test_file = get_temporary_image_file()
         # when
         response = self.client.post(
@@ -169,7 +147,6 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         and xml validation will return annotations
         """
         # with
-        self._addWaffleFlag()
 
         stub_analyze_xml = doubles.make_stub_analyze_xml('valid')
         mock_utils = self.mocker.replace('validator.utils')
