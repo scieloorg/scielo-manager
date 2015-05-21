@@ -30,14 +30,12 @@
     </ul>
   </div>
   <div class="span2">
-    {% flag 'packtools_validator' %}
     <h4>{% trans "Tools" %}</h4>
     <ul>
       <li>
         <a href="{% url validator.packtools.stylechecker %}">{% trans "Packtools StyleChecker" %}</a>
       </li>
     </ul>
-    {% endflag %}
   </div>
   <div class="span2">
     <form name="form_language" id="form_language" action="/i18n/setlang/" method="post">
