@@ -6,7 +6,8 @@ import choices
 import caching.base
 from pytz import all_timezones
 from scielomanager import tools
-
+import datetime
+from uuid import uuid4
 try:
     from collections import OrderedDict
 except ImportError:
@@ -31,11 +32,11 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
-import jsonfield
 
 from scielomanager.utils import base28
-from scielomanager.custom_fields import ContentTypeRestrictedFileField
+from scielomanager.custom_fields import ContentTypeRestrictedFileField, XMLSPSField
 from . import modelmanagers
+from journalmanager import tasks
 
 #User.__bases__ = (caching.base.CachingMixin, models.Model)
 #User.add_to_class('objects', caching.base.CachingManager())
@@ -708,6 +709,12 @@ class Journal(caching.base.CachingMixin, models.Model):
         return grid
 
     @property
+    def get_articles_ahead_of_print(self):
+        orphan_articles = Article.objects.filter(issue=None, abbrev_journal_title=self.title_iso)
+        result = [article for article in orphan_articles if article.xml_is_aop]
+        return result
+
+    @property
     def succeeding_title(self):
         try:
             return self.prev_title.get()
@@ -1080,9 +1087,26 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     @property
     def publication_date(self):
-        return '{0} / {1} - {2}'.format(self.publication_start_month,
-                                        self.publication_end_month,
-                                        self.publication_year)
+        start = self.get_publication_start_month_display()
+        end =  self.get_publication_end_month_display()
+        if start and end:
+            return '{0}/{1} {2}'.format(start[:3], end[:3], self.publication_year)
+        elif start:
+            return '{0} {1}'.format(start[:3], self.publication_year)
+        elif end:
+            return '{0} {1}'.format(end[:3], self.publication_year)
+        else:
+            return self.publication_year
+
+    @property
+    def verbose_identification(self):
+        if self.type == 'supplement':
+            prefixed_number = 'suppl.%s' % self.suppl_text
+        elif self.type == 'special':
+            prefixed_number = 'spe.%s' % self.spe_text
+        else: # regular
+            prefixed_number = 'n.%s' % self.number
+        return 'vol.%s %s' % (self.volume, prefixed_number)
 
     @property
     def suppl_type(self):
@@ -1106,7 +1130,15 @@ class Issue(caching.base.CachingMixin, models.Model):
                 return 'volume'
 
         else:
-            raise AttributeError('Issues of type %s do not have an attribute named: esp_type' % self.get_type_display())
+            raise AttributeError('Issues of type %s do not have an attribute named: spe_type' % self.get_type_display())
+
+    @property
+    def bibliographic_legend(self):
+        abrev_title = self.journal.title_iso
+        issue = self.verbose_identification
+        city = self.journal.publication_city
+        dates = self.publication_date
+        return '%s %s %s %s'% (abrev_title, issue, city, dates)
 
     def _suggest_order(self, force=False):
         """
@@ -1315,43 +1347,182 @@ class AheadPressRelease(PressRelease):
 
 
 class Article(caching.base.CachingMixin, models.Model):
+    """
+    Este modelo representa um artigo. Contém os seguintes campos:
+    - issue: ForeignKey para associar o article com o models.Issue.
+    - xml: contém o XML ()
+
+    * Campos de controle:
+        - ``created_at``: data de criação (adicionado no SciELO Manager).
+        - ``changed_at``: data de ultima modificação.
+        - ``is_visible``: visibilidade do artigo (bool: True == pode ser publicado/disponible no sistema)
+        - ``is_generated``: Indica se a origem do artigo (True: articlemeta, False: processamento XML)
+        - ``aid``: article id. Identificador universal unico do artigo. O valor é gerado no save().
+
+    * Outros (extraidos do XML, properties):
+        - xml_*
+
+    * Para identificar o artigo (duplicidade):
+        - article_id_slug = string para identificar o artigo. recuperando informação dos seguintes xpaths:
+        * * //article-meta/title-group/article-title
+        * * //article-meta/contrib-group/contrib[@contrib-type="author" or @contrib-type="compiler" or @contrib-type="editor" or @contrib-type="translator"]/name[1]/surname
+        * * //article-meta/pub-date/year
+        esses 3 valores são concantenados e salvos (no evento save() do modelo) no campo do tipo slug.
+
+    Obs:
+        Na versão 1.8 do Django, tem incorporado um novo tipo de campo no core: UUIDField, que seria
+        a solucão ideal para o campo ``aid``, incluido otimização no banco de dados.
+        Mais informação em:
+        - https://code.djangoproject.com/ticket/19463
+        - https://github.com/django/django/commit/ed7821231b7dbf34a6c8ca65be3b9bcbda4a0703
+    """
     objects = caching.base.CachingManager()
     nocacheobjects = models.Manager()
+    userobjects = modelmanagers.ArticleManager()
 
-    issue = models.ForeignKey(Issue, related_name='articles')
-    front = jsonfield.JSONField()
-    xml_url = models.CharField(_('XML URL'), max_length=256)
-    pdf_url = models.CharField(_('PDF URL'), max_length=256)
-    images_url = models.CharField(_('Images URL'), max_length=256)
+    issue = models.ForeignKey(Issue, related_name='articles', blank=True, null=True)
+    xml = XMLSPSField(blank=True, null=True)
+    # control fields:
+    created_at = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
+    updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
+    is_visible = models.BooleanField(default=True)
+    is_generated = models.BooleanField(default=True)
+    aid = models.CharField(max_length=32, unique=True, null=True, blank=True, editable=False, db_index=True)
+    abbrev_journal_title = models.CharField(_('ISO abbreviated title'), max_length=256, null=True, blank=False, db_index=True)
+    # article identification field:
+    article_id_slug = models.SlugField(max_length=2048, unique=True, default='')
 
     def __unicode__(self):
-        return u' - '.join([self.title, str(self.issue)])
+        return u'%s - %s' % (self.aid, self.article_id_slug)
 
     class Meta:
         permissions = (("list_article", "Can list Article"),)
 
-    @property
-    def title(self):
-
-        if not 'title-group' in self.front:
-            return None
-
-        default_language = self.front.get('default-language', None)
-
-        if default_language in self.front['title-group']:
-            return self.front['title-group'][default_language]
-
-        return self.front['title-group'].values()[0]
+    def save(self, *args, **kwargs):
+        if not self.abbrev_journal_title:
+            self.abbrev_journal_title = self.xml_abbrev_journal_title
+        if not self.article_id_slug:
+            self.article_id_slug = slugify(self.get_article_id_fields)
+        super(Article, self).save(*args, **kwargs)
 
     @property
-    def titles(self):
+    def get_article_title(self):
+        return self.xml.xpath('//article-meta/title-group/article-title')[0].text
 
-        if not 'title-group' in self.front:
+    @property
+    def get_article_id_fields(self):
+        article_title = self.get_article_title
+        contrib_surname = self.xml.xpath('//article-meta/contrib-group/contrib[@contrib-type="author" or @contrib-type="compiler" or @contrib-type="editor" or @contrib-type="translator"]/name[1]/surname')[0].text
+        year = self.xml.xpath('//article-meta/pub-date/year')[0].text
+        return u'%s_%s_%s' % (article_title.strip(), contrib_surname.strip(), year.strip())
+
+    @property
+    def xml_abbrev_journal_title(self):
+        title = self.xml.xpath('//journal-meta/journal-title-group/abbrev-journal-title[@abbrev-type="publisher"]')
+        return title[0].text
+
+    @property
+    def xml_volume(self):
+        volume = self.xml.xpath('//article-meta/volume')
+        return volume[0].text
+
+    @property
+    def xml_issue(self):
+        issue = self.xml.xpath('//article-meta/issue')
+        return issue[0].text
+
+    @property
+    def xml_year(self):
+        year = self.xml.xpath('//article-meta/pub-date/year')
+        return year[0].text
+
+    @property
+    def xml_epub(self):
+        value = self.xml.xpath('//journal-meta/issn[@pub-type="ppub"]')
+        try:
+            return value[0].text
+        except IndexError:
             return None
 
-        return self.front['title-group']
+    @property
+    def xml_ppub(self):
+        value = self.xml.xpath('//journal-meta/issn[@pub-type="epub"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_head_subject(self):
+        value = self.xml.xpath('//article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_doi(self):
+        value = self.xml.xpath('//article-meta/article-id[@pub-id-type="doi"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_pid(self):
+        value = self.xml.xpath('//article-meta/article-id[@pub-id-type="publisher-id"]')
+        try:
+            return value[0].text
+        except IndexError:
+            return None
+
+    @property
+    def xml_is_aop(self):
+        return self.xml_volume == '00' and self.xml_issue == '00'
+
+    @property
+    def xml_article_type(self):
+        value = self.xml.xpath('/article/@article-type')
+        try:
+            return value[0]
+        except IndexError:
+            return None
+
+    @property
+    def xml_version(self):
+        value = self.xml.xpath('/article/@specific-use')
+        try:
+            return value[0]
+        except IndexError:
+            return None
+
 
 # ---- SIGNALS ------
+
+@receiver(pre_save, sender=Article)
+def generate_article_aid(sender, instance, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if not instance.aid:
+        instance.aid = str(uuid4().hex)
+
+@receiver(post_save, sender=Article)
+def create_index(sender, instance, created, **kwargs):
+    """Create a matching profile whenever a user object is created."""
+    if created:
+        tasks.new_article_create_es_index.delay(article_aid=instance.aid)
+
+
+@receiver(post_save, sender=Article)
+def link_issue_article(sender, instance, created, **kwargs):
+    """when saved try to link article to correct issue if no issue was linked yet"""
+    if instance.issue is None:
+        tasks.link_article_to_issue.delay(article_pk=instance.pk)
+
+# article:
+models.signals.post_save.connect(create_index, sender=Article)
+models.signals.post_save.connect(link_issue_article, sender=Article)
+models.signals.pre_save.connect(generate_article_aid, sender=Article)
+# user:
 models.signals.post_save.connect(create_api_key, sender=User)
 
 

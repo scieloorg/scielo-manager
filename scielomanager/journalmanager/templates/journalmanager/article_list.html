@@ -2,30 +2,52 @@
 {% load i18n %}
 {% load inctag_toolbars %}
 
-{% block page_title %}{% trans "Journals" %}{% endblock %}
+{% block page_title %}{% trans "Articles" %}{% endblock %}
 
 {% block content %}
 
+<style>
+  .grey_bg {background-color: #f9f9f9;}
+  .article_title { margin-left: 20px;}
+</style>
+
 {% journaldash_toolbar 'issue' journal user %}
+<h4>{{ issue.bibliographic_legend }}</h4>
 
-<h4>{% trans 'Issue'%}: {{ issue }}</h4>
-<h4>{% trans 'Publication date'%}: {{ issue.publication_date }}</h4>{# no timezone conversion requiered #}
-
-<h4>{% trans 'Articles' %}</h4>
-<table class="table table-striped _listings">
-  <tbody>
-    {% for article in articles %}
+<table class="table _listings">
+  <thead>
     <tr>
-      <td>
-        {{ article.title }}
-      </td>
+      <th>&nbsp;</th>
+      <th class="span3">&nbsp;</th>
+      <th class="span2">&nbsp;</th>
     </tr>
+  </thead>
+  <tbody>
+    {% regroup articles by xml_head_subject as articles_list %}
+    {% for article_set in articles_list %}
+      <tr class="grey_bg">
+        <td>
+          <h4>{{ article_set.grouper }}</h4>
+        </td>
+        <td><strong>{% trans "Updated at" %}:</strong></td>
+        <td><strong>{% trans "Is Visible" %}:</strong></td>
+      </tr>
+      {% for item in article_set.list %}
+        <tr>
+          <td>
+            <a class="article_title" href="{% url article.detail item.pk %}">
+              {{ item.get_article_title }}
+            </a>
+          </td>
+          <td>{{ item.updated_at }}</td>
+          <td>{{ item.is_visible }}</td>
+        </tr>
+      {% endfor %}
     {% empty %}
       <tr>
-        <td colspan="5">
+        <td colspan="3">
           <div class="alert alert-info">
-            <i class="icon-info-sign"></i>
-            {% trans 'There are no items.' %}
+            <i class="icon-info-sign"></i> {% trans 'There are no items.' %}
           </div>
         </td>
       </tr>

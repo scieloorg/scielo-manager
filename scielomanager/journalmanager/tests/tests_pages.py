@@ -20,53 +20,6 @@ from scielomanager.utils.modelmanagers.helpers import (
     )
 
 
-class ArticleTests(WebTest):
-
-    def setUp(self):
-        self.user = auth.UserF(is_active=True)
-
-        self.collection = modelfactories.CollectionFactory.create()
-        self.collection.add_user(self.user, is_manager=True)
-
-    def test_list_without_articles(self):
-        perm_article_list = _makePermission(perm='list_article',
-                                            model='article',
-                                            app_label='journalmanager')
-        self.user.user_permissions.add(perm_article_list)
-
-        journal = modelfactories.JournalFactory()
-        journal.join(self.collection, self.user)
-
-        issue = modelfactories.IssueFactory(journal=journal)
-
-        response = self.app.get(reverse('article.index', args=[issue.pk]), user=self.user)
-
-        self.assertTrue('There are no items.' in response.body)
-
-    def test_list_with_articles(self):
-        perm_article_list = _makePermission(perm='list_article',
-                                            model='article',
-                                            app_label='journalmanager')
-        self.user.user_permissions.add(perm_article_list)
-
-        journal = modelfactories.JournalFactory()
-        journal.join(self.collection, self.user)
-
-        issue = modelfactories.IssueFactory(journal=journal)
-
-        front = {
-            'title-group': {
-                'en': u'Article Title 1',
-                'pt': u'Título do Artigo 1'
-            }
-        }
-
-        article = modelfactories.ArticleFactory.create(issue=issue, front=front)
-        response = self.app.get(reverse('article.index', args=[issue.pk]), user=self.user)
-
-        self.assertTrue('Article Title 1' in response.body)
-
-
 class UserCollectionsSelectorTests(WebTest):
 
     def test_auto_define_a_collection_as_default_when_it_is_the_unique(self):

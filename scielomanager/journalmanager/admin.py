@@ -7,6 +7,7 @@ from tastypie.models import ApiAccess
 
 from .models import *
 from .forms import UserChangeForm, UserCreationForm
+from . import tasks
 
 
 admin.site.register(ApiAccess)
@@ -178,9 +179,36 @@ class PressReleaseAdmin(admin.ModelAdmin):
 admin.site.register(PressRelease, PressReleaseAdmin)
 
 
+#--------
+# Article
+#--------
+def is_linked_to_the_issue(article):
+    return bool(article.issue)
+is_linked_to_the_issue.boolean = True
+
+
 class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('xml_doi', 'aid', 'abbrev_journal_title', 'issue',
+                    'updated_at', is_linked_to_the_issue)
+    list_filter = ('issue__journal',)
+    date_hierarchy = 'updated_at'
+    actions = ['link_to_issue',]
+    readonly_fields = ('article_id_slug', 'xml', 'is_generated',)
 
     def queryset(self, request):
         return Article.nocacheobjects
+
+    def link_to_issue(self, request, queryset):
+        for article in queryset:
+            tasks.link_article_to_issue.delay(article.pk)
+
+        count = queryset.count()
+        if count >= 2:
+            message = u'%s tasks were scheduled' % (count,)
+        else:
+            message = u'%s task was scheduled' % (count,)
+        self.message_user(request, message)
+
+    link_to_issue.short_description = u'Try to link with its issue'
 
 admin.site.register(Article, ArticleAdmin)
