@@ -8,7 +8,10 @@ from waffle import Flag
 from journalmanager.tests import modelfactories
 
 from . import modelfactories as editorial_modelfactories
-from editorialmanager.models import EditorialMember, EditorialBoard, RoleType, RoleTypeTranslation
+from editorialmanager.models import (EditorialMember,
+                                     EditorialBoard,
+                                     RoleType,
+                                     RoleTypeTranslation)
 from audit_log.models import AuditLogEntry, ADDITION, CHANGE, DELETION
 
 
@@ -64,7 +67,7 @@ class RestrictedJournalFormTests(WebTest):
         of the list.
 
         In order to take this action, the user needs be part of this group:
-        ``superuser`` or ``editors`` or ``librarian``
+        ``superuser`` or ``editors`` or ``librarian`` or ``trainee``
         """
 
         use_license = modelfactories.UseLicenseFactory.create()
@@ -129,7 +132,7 @@ class AddUserAsEditorFormTests(WebTest):
         the editor area and journal have a new editor of the journal
 
         In order to take this action, the user needs be part of this group:
-        ``superuser`` or ``librarian``
+        ``superuser`` or ``librarian`` or ``trainee``
         """
 
         group = modelfactories.GroupFactory(name="Editors")
@@ -505,8 +508,9 @@ class EditorialMemberFormAsEditorTests(WebTest):
 
 class EditorialMemberFormAsLibrarianTests(EditorialMemberFormAsEditorTests):
     """
-    Excecute the same tests that an Editors (EditorialMemberFormAsEditorTests), the setUp is almost the same.
-    Only change is that the self.user is assigned as a member of "Librarian" group instead of "Editors" group.
+    Excecute the same tests that an Editors (EditorialMemberFormAsEditorTests),
+    the setUp is almost the same.Only change is that the self.user is assigned
+    as a member of "Librarian" group instead of "Editors" group.
     """
     def setUp(self):
         super(EditorialMemberFormAsLibrarianTests, self).setUp()
@@ -520,6 +524,26 @@ class EditorialMemberFormAsLibrarianTests(EditorialMemberFormAsEditorTests):
 
     def tearDown(self):
         super(EditorialMemberFormAsLibrarianTests, self).tearDown()
+
+
+class EditorialMemberFormAsTraineeTests(EditorialMemberFormAsEditorTests):
+    """
+    Excecute the same tests that an Editors (EditorialMemberFormAsEditorTests),
+    the setUp is almost the same. Only change is that the self.user is assigned
+    as a member of "Trainee" group instead of "Editors" group.
+    """
+    def setUp(self):
+        super(EditorialMemberFormAsTraineeTests, self).setUp()
+        # change user group to belong to Trainee group
+        self.user.groups.clear()
+        group = modelfactories.GroupFactory(name="Trainee")
+        self.user.groups.add(group)
+        self.user.save()
+
+        _add_required_permission_to_group(group)
+
+    def tearDown(self):
+        super(EditorialMemberFormAsTraineeTests, self).tearDown()
 
 
 class MembersSortingOnActionTests(WebTest):

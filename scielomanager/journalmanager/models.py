@@ -320,6 +320,10 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         return self.user.groups.filter(name__iexact='Librarian').exists()
 
     @property
+    def is_trainee(self):
+        return self.user.groups.filter(name__iexact='Trainee').exists()
+
+    @property
     def gravatar_id(self):
         return hashlib.md5(self.user.email.lower().strip()).hexdigest()
 
