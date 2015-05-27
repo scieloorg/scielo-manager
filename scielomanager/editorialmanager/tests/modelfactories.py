@@ -32,7 +32,7 @@ class EditorialMemberFactory(factory.Factory):
     role = factory.SubFactory(RoleTypeFactory)
     board = factory.SubFactory(EditorialBoardFactory)
 
-    #Required fields
+    # Required fields
     first_name = factory.Sequence(lambda n: "first_name_%s" % n)
     last_name = factory.Sequence(lambda n: "last_name_%s" % n)
     email = factory.Sequence(lambda n: "email%s@example.com" % n)

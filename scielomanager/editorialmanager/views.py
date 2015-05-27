@@ -155,14 +155,14 @@ def _do_move_board_block(board_pk, position, direction):
 
 
 def _user_has_access(user):
-    return user.is_superuser or user.get_profile().is_editor or user.get_profile().is_librarian
+    return user.is_superuser or user.get_profile().is_editor or user.get_profile().is_librarian or user.get_profile().is_trainee
 
 
 def _get_journals_by_user_access(user):
     user_profile = user.get_profile()
     if user_profile.is_editor:
         journals = Journal.userobjects.active().filter(editor=user)
-    elif user_profile.is_librarian or user.is_superuser:
+    elif user_profile.is_librarian or user.is_superuser or user_profile.is_trainee:
         journals = Journal.userobjects.active()
     else:
         journals = []
@@ -236,7 +236,11 @@ def edit_journal(request, journal_id):
             helpers.log_change(**audit_data)
 
             messages.success(request, _('Journal updated successfully.'))
-            return HttpResponseRedirect(reverse('editorial.index'))
+
+            if request.user.get_profile().is_editor:
+                return HttpResponseRedirect(reverse('editorial.index'))
+            else:
+                return HttpResponseRedirect(reverse('journal.dash', args=[journal.id]))
         else:
             messages.error(request, _('Check mandatory fields.'))
 
