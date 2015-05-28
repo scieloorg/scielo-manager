@@ -23,7 +23,6 @@ from journalmanager.models import (
     AheadPressRelease,
     PressReleaseTranslation,
     PressReleaseArticle,
-    Article,
     SubjectCategory,
 )
 
@@ -456,13 +455,3 @@ class AheadPressReleaseResource(ModelResource):
             orm_filters['pk__in'] = preleases
 
         return orm_filters
-
-
-class ArticleResource(ModelResource):
-    issue = fields.ForeignKey(IssueResource, 'issue')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = Article.objects.all()
-        resource_name = 'articles'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']

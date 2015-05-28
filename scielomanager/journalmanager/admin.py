@@ -176,11 +176,3 @@ class PressReleaseAdmin(admin.ModelAdmin):
         return PressRelease.nocacheobjects
 
 admin.site.register(PressRelease, PressReleaseAdmin)
-
-
-class ArticleAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Article.nocacheobjects
-
-admin.site.register(Article, ArticleAdmin)
