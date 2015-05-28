@@ -1317,44 +1317,6 @@ class AheadPressRelease(PressRelease):
 
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
-
-class Article(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
-    issue = models.ForeignKey(Issue, related_name='articles')
-    front = jsonfield.JSONField()
-    xml_url = models.CharField(_('XML URL'), max_length=256)
-    pdf_url = models.CharField(_('PDF URL'), max_length=256)
-    images_url = models.CharField(_('Images URL'), max_length=256)
-
-    def __unicode__(self):
-        return u' - '.join([self.title, str(self.issue)])
-
-    class Meta:
-        permissions = (("list_article", "Can list Article"),)
-
-    @property
-    def title(self):
-
-        if not 'title-group' in self.front:
-            return None
-
-        default_language = self.front.get('default-language', None)
-
-        if default_language in self.front['title-group']:
-            return self.front['title-group'][default_language]
-
-        return self.front['title-group'].values()[0]
-
-    @property
-    def titles(self):
-
-        if not 'title-group' in self.front:
-            return None
-
-        return self.front['title-group']
-
 # ---- SIGNALS ------
 models.signals.post_save.connect(create_api_key, sender=User)
 

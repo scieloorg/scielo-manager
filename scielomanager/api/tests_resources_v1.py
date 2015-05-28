@@ -16,11 +16,6 @@ from api.resources_v1 import (
     IssueResource,
     SectionResource,
     JournalResource,
-    # CheckinResource,
-    # CheckinNoticeResource,
-    # CheckinArticleResource,
-    # TicketResource,
-    # CommentResource,
     )
 
 from scielomanager.utils.modelmanagers.helpers import (

@@ -340,16 +340,6 @@ class DataChangeEventResource(ModelResource):
         return orm_filters
 
 
-class ArticleResource(ModelResource):
-    issue = fields.ForeignKey(IssueResource, 'issue')
-
-    class Meta(ApiKeyAuthMeta):
-        queryset = models.Article.objects.all()
-        resource_name = 'articles'
-        default_format = "application/json"
-        allowed_methods = ['get', 'post', 'put']
-
-
 class PressReleaseTranslationResource(ModelResource):
     language = fields.CharField(readonly=True)
 
