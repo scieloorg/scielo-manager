@@ -17,8 +17,28 @@ class BackendUnavailable(Exception):
 class StatusChecker(object):
     """ Realiza e agrupa as verificações de saúde do sistema.
     """
-    def __init__(self, client=health.Client):
-        self.client = client(timeout=5)
+
+    def __init__(self):
+        self.Client = health.Client
+        self.client = None
+
+    def __enter__(self, **kwargs):
+        self.dial(**kwargs)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def dial(self, timeout=5):
+        self.client = self.Client(timeout=timeout)
+
+    def close(self):
+        try:
+            self.client.close()
+        except AttributeError as exc:
+            logger.exception(exc)
+
+        return None
 
     @property
     def is_fully_operational(self):
