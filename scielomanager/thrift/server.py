@@ -5,7 +5,8 @@ import json
 from django.db import close_connection
 from celery.result import AsyncResult
 
-from thrift import spec, tasks
+from journalmanager import tasks
+from thrift import spec
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class RPCHandler(object):
     @resource_cleanup
     def addArticle(self, xml_string):
         try:
-            delayed_task = tasks.add_article.delay(xml_string)
+            delayed_task = tasks.create_article_from_string.delay(xml_string)
             return delayed_task.id
 
         except Exception as exc:

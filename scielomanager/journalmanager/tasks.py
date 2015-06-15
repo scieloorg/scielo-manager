@@ -1,22 +1,41 @@
 # coding: utf-8
+""" Tasks do celery para a aplicação `journalmanager`.
+
+  - Todas as tasks que executam `Article.save` devem tomar cuidado com
+    problemas de concorrência, haja vista que os callbacks de post save
+    devem ser desabilitados em alguns casos, por meio do contexto
+    `avoid_circular_signals`.
+"""
+import os
+import io
 import logging
 import base64
 import threading
 import contextlib
+from copy import deepcopy
 
+from lxml import isoschematron, etree
 from elasticsearch import Elasticsearch
 from django.conf import settings
 from django.db.models import Q
+from django.db import IntegrityError
 
 from scielomanager.celery import app
 from . import models
 
 
 logger = logging.getLogger(__name__)
-thread_lock = threading.Lock()
+
 
 ARTICLE_INDEX_NAME = 'icatman'
 ARTICLE_DOC_TYPE = 'article'
+ARTICLE_SAVE_MUTEX = threading.Lock()
+BASIC_ARTICLE_META_PATH = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), 'basic_article_meta.sch')
+
+
+# instâncias de isoschematron.Schematron não são thread-safe
+ARTICLE_META_SCHEMATRON = isoschematron.Schematron(file=BASIC_ARTICLE_META_PATH)
 
 
 def get_elasticsearch():
@@ -73,7 +92,7 @@ def _gen_es_struct_from_article(article):
 
 
 @contextlib.contextmanager
-def avoid_circular_signals():
+def avoid_circular_signals(mutex):
     """ Garante a execução de um bloco de código sem o disparo de signals.
 
     A finalidade deste gerenciador de contexto é de permitir que entidades
@@ -82,12 +101,12 @@ def avoid_circular_signals():
     I.e. evita loop de signals.
     """
     try:
-        thread_lock.acquire()
+        mutex.acquire()
         models.disconnect_article_post_save_signals()
         yield
         models.connect_article_post_save_signals()
     finally:
-        thread_lock.release()
+        mutex.release()
 
 
 @app.task(ignore_result=True)
@@ -123,7 +142,7 @@ def link_article_to_journal(article_pk):
         return None
 
     article.journal = journal
-    with avoid_circular_signals():
+    with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
         article.save()
 
     logger.info('Article "%s" is now linked to journal "%s".',
@@ -156,7 +175,7 @@ def link_article_to_issue(article_pk):
             logger.info('Cannot find Issue for Article with pk: %s. Skipping the linking task.', article_pk)
         else:
             article.issue = issue
-            with avoid_circular_signals():
+            with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
                 article.save()
 
             logger.info('Article "%s" is now linked to issue "%s".',
@@ -176,4 +195,41 @@ def process_orphan_articles():
             link_article_to_journal.delay(orphan.pk)
         else:
             link_article_to_issue.delay(orphan.pk)
+
+
+@app.task(throws=(IntegrityError, ValueError))
+def create_article_from_string(xml_string):
+    """ Cria uma instância de `journalmanager.models.Article`.
+
+    Pode levantar `django.db.IntegrityError` no caso de artigos duplicados,
+    TypeError no caso de argumento com tipo diferente de unicode ou
+    ValueError no caso de artigos cujos elementos identificadores não estão
+    presentes.
+
+    :param xml_string: String de texto unicode.
+    :return: aid (article-id) formado por uma string de 32 bytes.
+    """
+    if not isinstance(xml_string, unicode):
+        raise TypeError('Only unicode strings are accepted')
+
+    xml_bstring = xml_string.encode('utf-8')
+
+    try:
+        parsed_xml = etree.parse(io.BytesIO(xml_bstring))
+
+    except etree.XMLSyntaxError as exc:
+        raise ValueError(u"Syntax error: %s.", exc.message)
+
+    metadata_sch = deepcopy(ARTICLE_META_SCHEMATRON)
+    if not metadata_sch.validate(parsed_xml):
+        logger.debug('Schematron validation error log: %s.', metadata_sch.error_log)
+        raise ValueError('Missing identification elements')
+
+    new_article = models.Article(xml=xml_bstring)
+    with ARTICLE_SAVE_MUTEX:
+        new_article.save()
+
+    logger.info('New Article added with aid: %s.', new_article.aid)
+
+    return new_article.aid
 

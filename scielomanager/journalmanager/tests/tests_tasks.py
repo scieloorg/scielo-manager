@@ -6,10 +6,10 @@ import unittest
 from lxml import isoschematron, etree
 from django.test import TestCase
 
-from journalmanager.services import article
+from journalmanager import tasks
 
 
-SCH = etree.parse(article.BASIC_ARTICLE_META)
+SCH = etree.parse(tasks.BASIC_ARTICLE_META_PATH)
 
 
 def TestPhase(phase_name, cache):
@@ -631,21 +631,24 @@ class FunctionAddFromStringTests(TestCase):
                  </article>"""
 
     def test_byte_strings(self):
-        self.assertRaises(TypeError, article.add_from_string, self.sample.encode('utf-8'))
+        self.assertRaises(TypeError,
+                tasks.create_article_from_string, self.sample.encode('utf-8'))
 
     def test_unicode_strings_and_valid_xml(self):
-        new_aid = article.add_from_string(self.sample)
+        new_aid = tasks.create_article_from_string(self.sample)
         # aid is a 32-byte string
         self.assertTrue(len(new_aid), 32)
 
     def test_duplicated_articles_are_not_allowed(self):
         from django.db import IntegrityError
 
-        new_aid = article.add_from_string(self.sample)
+        new_aid = tasks.create_article_from_string(self.sample)
         self.assertTrue(new_aid)
-        self.assertRaises(IntegrityError, article.add_from_string, self.sample)
+        self.assertRaises(IntegrityError,
+                tasks.create_article_from_string, self.sample)
 
     def test_xml_with_syntax_error(self):
         err_xml = u"<article></articlezzzz>"
-        self.assertRaises(ValueError, article.add_from_string, err_xml)
+        self.assertRaises(ValueError,
+                tasks.create_article_from_string, err_xml)
 
