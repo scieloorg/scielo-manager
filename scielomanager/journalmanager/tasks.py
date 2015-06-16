@@ -12,6 +12,7 @@ import logging
 import base64
 import threading
 import contextlib
+import datetime
 from copy import deepcopy
 
 from lxml import isoschematron, etree
@@ -49,14 +50,15 @@ def get_elasticsearch():
     return get_elasticsearch.client
 
 
-def index_article(id, struct):
+def index_article(id, struct, **kwargs):
     """Indexa `struct` no índice de artigos do catman no Elasticsearch.
     """
     client = get_elasticsearch()
     result = client.index(
             index=ARTICLE_INDEX_NAME, doc_type=ARTICLE_DOC_TYPE,
-            id=id, body=struct
-    )
+            id=id, body=struct, **kwargs)
+
+    return result
 
 
 def _gen_es_struct_from_article(article):
@@ -121,7 +123,16 @@ def submit_to_elasticsearch(article_pk):
         return None
 
     struct = _gen_es_struct_from_article(article)
-    index_article(article.aid, struct)
+    result = index_article(article.aid, struct)
+
+    logger.info('Elasticsearch indexing result for article "%s": %s.',
+            article.domain_key, result)
+
+    if result.get('_version') > 0:
+        article.es_updated_at = datetime.datetime.now()
+        article.es_is_dirty = False
+        with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
+            article.save()
 
 
 @app.task(ignore_result=True)
@@ -227,7 +238,7 @@ def create_article_from_string(xml_string):
 
     new_article = models.Article(xml=xml_bstring)
     with ARTICLE_SAVE_MUTEX:
-        new_article.save()
+        new_article.save_dirty()
 
     logger.info('New Article added with aid: %s.', new_article.aid)
 

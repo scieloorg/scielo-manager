@@ -312,9 +312,10 @@ IPC_HEALTHD_BIND_ADDR = 'tcp://0.0.0.0:11711'
 
 
 ELASTICSEARCH_NODES = (
-    'esa.scielo.org:9200',
-    'esb.scielo.org:9200',
-    'esc.scielo.org:9200',
+    'localhost:9200',
+    #'esa.scielo.org:9200',
+    #'esb.scielo.org:9200',
+    #'esc.scielo.org:9200',
 )
 
 

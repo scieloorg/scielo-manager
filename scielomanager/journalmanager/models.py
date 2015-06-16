@@ -1361,6 +1361,8 @@ class Article(caching.base.CachingMixin, models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
     updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
+    es_updated_at = models.DateTimeField(null=True, blank=True)  # elasticsearch
+    es_is_dirty = models.BooleanField(default=True)
 
     aid = models.CharField(max_length=32, unique=True, editable=False)
     domain_key = models.SlugField(max_length=2048, unique=True, db_index=False, editable=False)
@@ -1373,8 +1375,8 @@ class Article(caching.base.CachingMixin, models.Model):
     journal = models.ForeignKey(Journal, related_name='articles', blank=True, null=True)
     issue = models.ForeignKey(Issue, related_name='articles', blank=True, null=True)
     journal_title = models.CharField(_('Journal title'), max_length=512, db_index=True)
-    issn_ppub = models.CharField(max_length=9, db_index=True, null=True)
-    issn_epub = models.CharField(max_length=9, db_index=True, null=True)
+    issn_ppub = models.CharField(max_length=9, db_index=True)
+    issn_epub = models.CharField(max_length=9, db_index=True)
 
     class Meta:
         permissions = (("list_article", "Can list Article"),)
@@ -1418,8 +1420,8 @@ class Article(caching.base.CachingMixin, models.Model):
 
         if not self.pk:
             self.journal_title = self.get_value(self.XPaths.JOURNAL_TITLE)
-            self.issn_ppub = self.get_value(self.XPaths.ISSN_PPUB)
-            self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB)
+            self.issn_ppub = self.get_value(self.XPaths.ISSN_PPUB) or ''
+            self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB) or ''
             self.xml_version = self.get_value(self.XPaths.SPS_VERSION) or 'pre-sps'
             self.aid = str(uuid4().hex)
 
@@ -1430,6 +1432,13 @@ class Article(caching.base.CachingMixin, models.Model):
                 raise ValueError('Could not get journal-title from %s' % self)
 
         super(Article, self).save(*args, **kwargs)
+
+    def save_dirty(self, *args, **kwargs):
+        """ Salva a instância marcando-a como pendente de indexação no
+        Elasticsearch.
+        """
+        self.es_is_dirty = True
+        self.save(*args, **kwargs)
 
     def get_value(self, expression):
         """ Busca `expression` em `self.xml` e retorna o resultado da primeira ocorrência.
@@ -1512,12 +1521,13 @@ def create_profile(sender, instance, created, **kwargs):
         profile, new = UserProfile.objects.get_or_create(user=instance)
 
 
-def create_index(sender, instance, created, **kwargs):
+def submit_to_elasticsearch(sender, instance, created, **kwargs):
     """ Indexa o artigo no Elasticsearch sempre que houver alteração.
     """
-    celery.current_app.send_task(
-            'journalmanager.tasks.submit_to_elasticsearch',
-            args=[instance.pk])
+    if instance.es_is_dirty:
+        celery.current_app.send_task(
+                'journalmanager.tasks.submit_to_elasticsearch',
+                args=[instance.pk])
 
 
 def link_article_to_journal(sender, instance, created, **kwargs):
@@ -1533,7 +1543,7 @@ def link_article_to_journal(sender, instance, created, **kwargs):
 
 
 def connect_article_post_save_signals():
-    models.signals.post_save.connect(create_index, sender=Article)
+    models.signals.post_save.connect(submit_to_elasticsearch, sender=Article)
     models.signals.post_save.connect(link_article_to_journal, sender=Article)
 
 
@@ -1541,7 +1551,7 @@ connect_article_post_save_signals()
 
 
 def disconnect_article_post_save_signals():
-    models.signals.post_save.disconnect(create_index, sender=Article)
+    models.signals.post_save.disconnect(submit_to_elasticsearch, sender=Article)
     models.signals.post_save.disconnect(link_article_to_journal, sender=Article)
 
 
