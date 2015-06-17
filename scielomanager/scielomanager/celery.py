@@ -33,6 +33,11 @@ CELERYBEAT_SCHEDULE = {
         'task': 'articletrack.tasks.process_checkins_scheduled_to_checkout',
         'schedule': timedelta(hours=1),
         'args': ()
+    },
+    'process-orphan-articles-daily': {
+        'task': 'journalmanager.tasks.process_orphan_articles',
+        'schedule': crontab(minute=0, hour=0),
+        'args': ()
     }
 }
 app.conf.update(
