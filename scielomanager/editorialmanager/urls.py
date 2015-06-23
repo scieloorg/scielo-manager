@@ -20,4 +20,9 @@ urlpatterns = patterns('',
     url(r'^board/(?P<journal_id>\d+)/roles/add/$', views.add_role_type, name="editorial.role.add"),
     url(r'^board/(?P<journal_id>\d+)/roles/(?P<role_id>\d+)/edit/$', views.edit_role_type, name="editorial.role.edit"),
     url(r'^board/(?P<journal_id>\d+)/roles/(?P<role_id>\d+)/translate/$', views.translate_role_type, name="editorial.role.translate"),
+
+    # Export board members CSV
+    url(r'^board/(?P<journal_id>\d+)/export/csv/$', views.export_csv, name="editorial.export_csv"),
+    url(r'^board/(?P<journal_id>\d+)/export/csv/(?P<issue_id>\d+)/$', views.export_csv, name="editorial.export_csv"),
+
 )

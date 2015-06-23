@@ -1,13 +1,17 @@
 # coding: utf-8
+import csv
 import logging
 from django.conf import settings
 from django.contrib import messages
+from django.http import HttpResponse
+from django.template import loader, Context
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
+from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
@@ -638,3 +642,40 @@ def translate_role_type(request, journal_id, role_id):
 
     context['formset'] = formset
     return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+def export_csv(request, journal_id, issue_id=None):
+    '''
+    Export a list of members following this format:
+
+    journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number,
+    role_name, first_name, last_name, full_name, email, institution, link_cv,
+    state, country, country_code, research_id, orcid
+
+    19 fields separeted by comma.
+
+    '''
+
+    # check if user have correct access to view the journal:
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(reverse('editorial.index'))
+
+    filters = {}
+
+    if issue_id:
+        filters['pk'] = issue_id
+
+    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
+    issues = journal.issue_set.filter(**filters).order_by('-publication_year', '-volume', '-number')
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="edboard-%s.csv"' % slugify(journal.title)
+
+    template = loader.get_template('board/export_member_csv.txt')
+    context = Context({'journal': journal, 'issues': issues})
+
+    response.write(template.render(context))
+
+    return response

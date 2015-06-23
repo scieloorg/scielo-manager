@@ -49,6 +49,7 @@ class PagesAsEditorTests(WebTest):
         """
         # when
         response = self.app.get(reverse('editorial.index'), user=self.user)
+
         # then
         self.assertTrue(self.user.get_profile().is_editor or self.user.get_profile().is_librarian)
         self.assertTemplateUsed(response, 'journal/journal_list.html')
@@ -311,7 +312,7 @@ class RoleType(WebTest):
         User must have the permission: editorialmanager.change_roletype to see the button
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create()
         member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
         # when
@@ -328,7 +329,7 @@ class RoleType(WebTest):
         User must have the permission: editorialmanager.change_roletype to see the button
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create()
         member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
         # add perms
@@ -399,3 +400,60 @@ class RoleType(WebTest):
         self.assertIn(edit_role_url, response.body)
         translate_role_url = reverse('editorial.role.translate', args=[self.journal.id, role.id])
         self.assertIn(translate_role_url, response.body)
+
+
+class DownloadMemberCSVFileTests(WebTest):
+
+    def setUp(self):
+        # create a group 'Librarian'
+        self.group = modelfactories.GroupFactory(name="Librarian")
+        # create a user and set group 'Librarian'
+        self.user = modelfactories.UserFactory(is_active=True)
+        self.user.groups.add(self.group)
+        self.user.save()
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def test_non_authenticated_users_are_redirected_to_login_page(self):
+        response = self.app.get(
+            reverse('editorial.export_csv', args=[self.journal.id]),
+            status=302
+        ).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_authenticated_users_can_access(self):
+        from django.template.defaultfilters import slugify
+
+        response = self.app.get(
+            reverse('editorial.export_csv', args=[self.journal.id, self.issue.id]),
+            user=self.user
+        )
+
+        self.assertEquals(response.content_disposition,
+                          'attachment; filename="edboard-%s.csv"' % slugify(self.journal.title))
+
+    def test_authenticated_users_download_content(self):
+
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        member.board = EditorialBoard.objects.create(issue=self.issue)
+        member.save()
+
+        response = self.app.get(
+            reverse('editorial.export_csv', args=[self.journal.id, self.issue.id]),
+            user=self.user
+        )
+
+        self.maxDiff = None
+        self.assertEqual(response.content.decode('utf-8'), 'journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number, role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code, research_id, orcid\r\n\r\n"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"\r\n\r\n' % (self.journal.title, self.journal.print_issn, self.journal.eletronic_issn, self.issue.publication_year, self.issue.volume, self.issue.number, member.role.name, member.first_name, member.last_name, member.first_name + ' ' + member.last_name, member.email, member.institution, member.link_cv, member.state, member.country.name, member.country, member.country.alpha3, member.research_id, member.orcid))

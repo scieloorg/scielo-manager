@@ -20,5 +20,8 @@
     <span class="muted">{% trans "Managed by the collections" %}: </span>
     <strong>{{ journal.collections.all|join:', ' }}</strong>
   </li>
+  <li class="pull-right">
+    <a href="{% url editorial.export_csv journal.id %}" class="tip-bottom" data-original-title="{% trans 'Download CSV format of all members to journal' %}: {{ journal.title }}"> Export csv <i class="icon-download-alt"></i></a>
+  </li>
 </ul>
 {% modal 'Journal Details' %}

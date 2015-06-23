@@ -29,8 +29,8 @@
 
       $('#search-form').attr('action', $('#list_model :selected').val());
 
-      options = {placement:'bottom'}
-      $(".tip-bottom").tooltip(options);
+      $(".tip-bottom").tooltip({placement:'bottom'});
+      $(".tip-right").tooltip({placement:'right'});
       $(".popover-bottom").popover(options)
 
       $('.search_filter').click(function(event){
