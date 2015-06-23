@@ -149,8 +149,13 @@ def link_article_to_journal(article_pk):
         journal = models.Journal.objects.get(
                 Q(print_issn=article.issn_ppub) | Q(eletronic_issn=article.issn_epub))
     except models.Journal.DoesNotExist:
-        logger.info('Cannot find parent Journal for Article with pk: %s. Skipping the linking task.', article_pk)
-        return None
+        # Pode ser que os ISSNs do XML estejam invertidos...
+        try:
+            journal = models.Journal.objects.get(
+                    Q(print_issn=article.issn_epub) | Q(eletronic_issn=article.issn_ppub))
+        except models.Journal.DoesNotExist:
+            logger.info('Cannot find parent Journal for Article with pk: %s. Skipping the linking task.', article_pk)
+            return None
 
     article.journal = journal
     with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
