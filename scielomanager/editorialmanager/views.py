@@ -676,6 +676,6 @@ def export_csv(request, journal_id, issue_id=None):
     template = loader.get_template('board/export_member_csv.txt')
     context = Context({'journal': journal, 'issues': issues})
 
-    response.write(template.render(context))
+    response.write(template.render(context).encode('utf-8'))
 
     return response
