@@ -65,7 +65,7 @@
                 </li>
               {% endif %}
                 <li>
-                  <a href="{% url editorial.export_csv journal.id issue.id %}" class="tip-right" data-original-title="{% trans 'Download CSV format of all members to issue' %}: {{ issue.publication_year }} &raquo; {{ issue }}  ">
+                  <a href="{% url editorial.export.csv.issue journal.id issue.id %}" class="tip-right" data-original-title="{% trans 'Download full list as CSV file.' %}">
                     <i class="icon-download-alt"></i> {% trans "Export csv " %}
                   </a>
                 </li>

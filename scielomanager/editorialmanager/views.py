@@ -1,5 +1,4 @@
 # coding: utf-8
-import csv
 import logging
 from django.conf import settings
 from django.contrib import messages
@@ -651,7 +650,7 @@ def export_csv(request, journal_id, issue_id=None):
 
     journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number,
     role_name, first_name, last_name, full_name, email, institution, link_cv,
-    state, country, country_code, research_id, orcid
+    state, country, country_code, country_code_alpha3, research_id, orcid
 
     19 fields separeted by comma.
 
@@ -676,6 +675,6 @@ def export_csv(request, journal_id, issue_id=None):
     template = loader.get_template('board/export_member_csv.txt')
     context = Context({'journal': journal, 'issues': issues})
 
-    response.write(template.render(context).encode('utf-8'))
+    response.write(template.render(context))
 
     return response

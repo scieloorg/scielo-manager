@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from django.conf.urls.defaults import *
 
 from . import views
@@ -22,7 +22,7 @@ urlpatterns = patterns('',
     url(r'^board/(?P<journal_id>\d+)/roles/(?P<role_id>\d+)/translate/$', views.translate_role_type, name="editorial.role.translate"),
 
     # Export board members CSV
-    url(r'^board/(?P<journal_id>\d+)/export/csv/$', views.export_csv, name="editorial.export_csv"),
-    url(r'^board/(?P<journal_id>\d+)/export/csv/(?P<issue_id>\d+)/$', views.export_csv, name="editorial.export_csv"),
+    url(r'^board/(?P<journal_id>\d+)/export/csv/$', views.export_csv, name="editorial.export.csv.journal"),
+    url(r'^board/(?P<journal_id>\d+)/export/csv/(?P<issue_id>\d+)/$', views.export_csv, name="editorial.export.csv.issue"),
 
 )

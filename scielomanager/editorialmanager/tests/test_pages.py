@@ -427,7 +427,7 @@ class DownloadMemberCSVFileTests(WebTest):
 
     def test_non_authenticated_users_are_redirected_to_login_page(self):
         response = self.app.get(
-            reverse('editorial.export_csv', args=[self.journal.id]),
+            reverse('editorial.export.csv.journal', args=[self.journal.id]),
             status=302
         ).follow()
 
@@ -437,7 +437,7 @@ class DownloadMemberCSVFileTests(WebTest):
         from django.template.defaultfilters import slugify
 
         response = self.app.get(
-            reverse('editorial.export_csv', args=[self.journal.id, self.issue.id]),
+            reverse('editorial.export.csv.issue', args=[self.journal.id, self.issue.id]),
             user=self.user
         )
 
@@ -451,8 +451,10 @@ class DownloadMemberCSVFileTests(WebTest):
         member.save()
 
         response = self.app.get(
-            reverse('editorial.export_csv', args=[self.journal.id, self.issue.id]),
+            reverse('editorial.export.csv.issue', args=[self.journal.id, self.issue.id]),
             user=self.user
         )
 
-        self.assertEqual(response.content.decode('utf-8'), 'journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number, role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code, research_id, orcid\r\n"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"\r\n' % (self.journal.title, self.journal.print_issn, self.journal.eletronic_issn, self.issue.publication_year, self.issue.volume, self.issue.number, member.role.name, member.first_name, member.last_name, member.first_name + ' ' + member.last_name, member.email, member.institution, member.link_cv, member.state, member.country.name, member.country, member.country.alpha3, member.research_id, member.orcid))
+        expected = u'journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number, role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code_alpha3, research_id, orcid\r\n"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"\r\n' % (self.journal.title, self.journal.print_issn, self.journal.eletronic_issn, self.issue.publication_year, self.issue.volume, self.issue.number, member.role.name, member.first_name, member.last_name, member.first_name + ' ' + member.last_name, member.email, member.institution, member.link_cv, member.state, member.country.name, member.country, member.country.alpha3, member.research_id, member.orcid)
+
+        self.assertEqual(response.content, expected.encode('utf-8'))
