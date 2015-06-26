@@ -1,7 +1,8 @@
-#coding: utf-8
+# coding: utf-8
 from django import template
 
 register = template.Library()
+
 
 @register.inclusion_tag('modal.html')
 def modal(title):
@@ -9,6 +10,7 @@ def modal(title):
     Return a modal bootstrap html
     """
     return {'title': title}
+
 
 @register.inclusion_tag('modal_form.html')
 def modal_form(title='', modal_id='id_modal_form', form_tag_id='id_modal_form_tag'):
