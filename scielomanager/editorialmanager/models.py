@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -48,7 +48,7 @@ class EditorialMember(models.Model):
         return ' '.join([self.first_name, self.last_name])
 
     class Meta:
-        ordering = ('board', 'order', 'pk')
+        ordering = ('board', 'order', 'first_name')
 
 
 class RoleType(models.Model):

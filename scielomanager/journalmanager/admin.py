@@ -7,6 +7,7 @@ from tastypie.models import ApiAccess
 
 from .models import *
 from .forms import UserChangeForm, UserCreationForm
+from . import tasks
 
 
 admin.site.register(ApiAccess)
@@ -176,3 +177,57 @@ class PressReleaseAdmin(admin.ModelAdmin):
         return PressRelease.nocacheobjects
 
 admin.site.register(PressRelease, PressReleaseAdmin)
+
+
+#--------
+# Article
+#--------
+def is_linked_to_issue(article):
+    return bool(article.issue)
+is_linked_to_issue.boolean = True
+
+def is_linked_to_journal(article):
+    return bool(article.journal)
+is_linked_to_issue.boolean = True
+
+
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = (
+            'aid', 'xml_version', 'domain_key','updated_at',
+            is_linked_to_issue, is_linked_to_journal,
+    )
+    list_filter = ('issue__journal',)
+    date_hierarchy = 'updated_at'
+    actions = ['link_to_issue', 'link_to_journal']
+    readonly_fields = ('domain_key', 'xml', 'is_aop', 'xml_version', )
+
+    def queryset(self, request):
+        return Article.nocacheobjects
+
+    def link_to_issue(self, request, queryset):
+        for article in queryset:
+            tasks.link_article_to_issue.delay(article.pk)
+
+        count = queryset.count()
+        if count >= 2:
+            message = u'%s tasks were scheduled' % (count,)
+        else:
+            message = u'%s task was scheduled' % (count,)
+        self.message_user(request, message)
+
+    link_to_issue.short_description = u'Try to link with its issue'
+
+    def link_to_journal(self, request, queryset):
+        for article in queryset:
+            tasks.link_article_to_journal.delay(article.pk)
+
+        count = queryset.count()
+        if count >= 2:
+            message = u'%s tasks were scheduled' % (count,)
+        else:
+            message = u'%s task was scheduled' % (count,)
+        self.message_user(request, message)
+
+    link_to_journal.short_description = u'Try to link with its journal'
+
+admin.site.register(Article, ArticleAdmin)

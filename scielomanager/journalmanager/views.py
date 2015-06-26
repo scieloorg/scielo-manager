@@ -55,6 +55,22 @@ MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 user_request_context = usercontext.get_finder()
 
+
+class ArticleAttrGetter(object):
+    """ Adapta a interface de instâncias de Article para a recuperação
+    de valores do XML via sintaxe de acesso à atributos.
+    """
+    def __init__(self, article):
+        self.article = article
+
+    def __getattr__(self, name):
+        xpath = getattr(self.article.XPaths, name, None)
+        if xpath is not None:
+            return self.article.get_value(xpath)
+        else:
+            return getattr(self.article, name)
+
+
 def _user_has_access(user):
 
     collection = models.Collection.userobjects.active()
@@ -63,6 +79,7 @@ def _user_has_access(user):
         return False
 
     return True
+
 
 def get_first_letter(objects_all):
     """
@@ -208,6 +225,10 @@ def issue_index(request, journal_id):
     else:
         aheadform = AheadForm(instance=journal, prefix='journal')
 
+
+    aop_articles = [ArticleAttrGetter(art)
+                    for art in journal.articles.filter(is_aop=True)]
+
     return render_to_response(
         'journalmanager/issue_list.html',
         {
@@ -216,8 +237,8 @@ def issue_index(request, journal_id):
             'current_year': current_year,
             'previous_year': previous_year,
             'issue_grid': journal.issues_as_grid(
-                request.GET.get('is_available')
-            ),
+                request.GET.get('is_available')),
+            'aop_articles': aop_articles,
         },
         context_instance=RequestContext(request)
     )
@@ -269,12 +290,29 @@ def article_index(request, issue_id):
 
     issue = get_object_or_404(models.Issue.userobjects.active(), pk=issue_id)
 
+    articles = (ArticleAttrGetter(art) for art in issue.articles.all())
+
     return render_to_response(
         'journalmanager/article_list.html',
         {
             'journal': issue.journal,
             'issue': issue,
-            'articles': issue.articles.all()
+            'articles': articles,
+        },
+        context_instance=RequestContext(request)
+    )
+
+
+@permission_required('journalmanager.list_article', login_url=settings.AUTHZ_REDIRECT_URL)
+def article_detail(request, article_pk):
+
+    article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
+
+    return render_to_response(
+        'journalmanager/article_detail.html',
+        {
+            'article': ArticleAttrGetter(article),
+            'journal': article.journal,
         },
         context_instance=RequestContext(request)
     )

@@ -11,7 +11,6 @@ lxml
 pyyaml
 webassets==0.7.1
 yuicompressor
-pymongo
 jsonfield
 django-tastypie==0.9.16
 django-waffle==0.9.1
@@ -22,5 +21,9 @@ Celery
 django-celery
 django-kombu
 defusedxml==0.4.1
+cython
+thriftpy
 django-countries
+-e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
+elasticsearch>=1.0.0,<2.0.0
 zerorpc>=0.4.4   

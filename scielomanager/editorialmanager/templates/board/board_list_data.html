@@ -64,6 +64,11 @@
                   </a>
                 </li>
               {% endif %}
+                <li>
+                  <a href="{% url editorial.export.csv.issue journal.id issue.id %}" class="tip-right" data-original-title="{% trans 'Download full list as CSV file.' %}">
+                    <i class="icon-download-alt"></i> {% trans "Export csv " %}
+                  </a>
+                </li>
 
             </ul>
           </div>
@@ -145,15 +150,15 @@
 
                                         <h4><strong>{{ member.get_full_name }}</strong></h4>
                                         <p>
+                                          {% if member.institution %} &bull; {{ member.institution }}{% endif %}
+                                          {% if member.city %} &bull; {{ member.city }} {% endif %}
+                                          {% if member.state %} &bull; {{ member.state }} {% endif %}
+                                          {% if member.country %} &bull; {{ member.country }} {% endif %}
                                           {% if member.email %}
                                             <a href="mailto:{{ member.email }}">
                                               <i class="icon-envelope"></i> {{ member.email }}
                                             </a>
                                           {% endif %}
-                                          {% if member.institution %} &bull; {{ member.institution }}{% endif %}
-                                          {% if member.city %} &bull; {{ member.city }} {% endif %}
-                                          {% if member.state %} &bull; {{ member.state }} {% endif %}
-                                          {% if member.country %} &bull; {{ member.country }} {% endif %}
                                         </p>
                                       </div>
                                     {# actions: edit, delete #}

@@ -3,7 +3,6 @@
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
-from waffle import Flag
 
 from journalmanager.tests import modelfactories
 
@@ -40,8 +39,6 @@ def _add_required_permission_to_group(group):
 class RestrictedJournalFormTests(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
 
@@ -104,8 +101,6 @@ class RestrictedJournalFormTests(WebTest):
 class AddUserAsEditorFormTests(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
 
         perm1 = _makePermission(perm='list_editor_journal', model='journal', app_label='journalmanager')
         perm2 = _makePermission(perm='change_editor', model='journal', app_label='journalmanager')
@@ -153,8 +148,6 @@ class AddUserAsEditorFormTests(WebTest):
 class EditorialMemberFormAsEditorTests(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -549,8 +542,6 @@ class EditorialMemberFormAsTraineeTests(EditorialMemberFormAsEditorTests):
 class MembersSortingOnActionTests(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -606,11 +597,6 @@ class MembersSortingOnActionTests(WebTest):
 
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2])
-        m1, m2 = [m for m in board.editorialmember_set.all()]
-        self.assertEqual(m1.pk, member2.pk)
-        self.assertEqual(m1.order, 1)
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
 
     def test_three_roles_delete_second_member_of_three_must_keep_sequence(self):
         """
@@ -642,11 +628,6 @@ class MembersSortingOnActionTests(WebTest):
 
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2])
-        m1, m2 = [m for m in board.editorialmember_set.all()]
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
 
     def test_three_roles_delete_third_member_of_three_must_keep_sequence(self):
         """
@@ -678,11 +659,6 @@ class MembersSortingOnActionTests(WebTest):
 
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2])
-        m1, m2 = [m for m in board.editorialmember_set.all()]
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 2)
 
     # next tests DELETE with MORE THAN one member on each role
     def test_three_roles_six_members_delete_second_member_must_keep_sequence(self):
@@ -719,23 +695,6 @@ class MembersSortingOnActionTests(WebTest):
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, ])
 
-        m1, m2, m3, m4, m5 = [m for m in board.editorialmember_set.all()]
-
-        # must match members and orders:
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member4.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member5.pk)
-        self.assertEqual(m4.order, 3)
-
-        self.assertEqual(m5.pk, member6.pk)
-        self.assertEqual(m5.order, 3)
 
     def test_three_roles_six_members_delete_fourth_member_must_keep_sequence(self):
         """
@@ -770,24 +729,6 @@ class MembersSortingOnActionTests(WebTest):
 
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, 3, ])
-
-        m1, m2, m3, m4, m5 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 1)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member5.pk)
-        self.assertEqual(m4.order, 3)
-
-        self.assertEqual(m5.pk, member6.pk)
-        self.assertEqual(m5.order, 3)
 
     # next tests ADD one member on each role
     def test_three_roles_three_members_add_member_to_first_role_must_keep_sequence(self):
@@ -848,20 +789,7 @@ class MembersSortingOnActionTests(WebTest):
         )
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, ])
-        m1, m2, m3, m4 = [m for m in board.editorialmember_set.all()]
 
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, new_member.pk)
-        self.assertEqual(m2.order, 1)
-
-        self.assertEqual(m3.pk, member2.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member3.pk)
-        self.assertEqual(m4.order, 3)
 
     def test_three_roles_three_members_add_member_to_second_role_must_keep_sequence(self):
         """
@@ -921,20 +849,6 @@ class MembersSortingOnActionTests(WebTest):
         )
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, ])
-        m1, m2, m3, m4 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, new_member.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member3.pk)
-        self.assertEqual(m4.order, 3)
 
     def test_three_roles_three_members_add_member_with_new_role_must_keep_sequence(self):
         """
@@ -996,20 +910,6 @@ class MembersSortingOnActionTests(WebTest):
         )
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, 4, ])
-        m1, m2, m3, m4 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 3)
-
-        self.assertEqual(m4.pk, new_member.pk)
-        self.assertEqual(m4.order, 4)
 
     # next tests with ONLY one member on each role
     def test_three_roles_three_members_edit_1st_member_role_to_a_new_role_must_keep_sequence(self):
@@ -1041,17 +941,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member2.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member1.pk)
-        self.assertEqual(m3.order, 3)
 
     def test_three_roles_three_members_edit_2nd_member_role_to_a_new_role_must_keep_sequence(self):
         """
@@ -1080,17 +969,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertIn('Board Member updated successfully.', response.body)
         self.assertTemplateUsed(response, 'board/board_list.html')
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
 
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member2.pk)
-        self.assertEqual(m3.order, 3)
 
     def test_three_roles_three_members_edit_3rd_member_role_to_a_new_role_must_keep_sequence(self):
         """
@@ -1121,17 +1000,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
 
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 3)
 
     def test_three_roles_three_members_edit_1st_member_role_to_the_2nd_role_must_keep_sequence(self):
         """
@@ -1160,17 +1029,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 1)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 2)
 
     # next tests with MORE THAN one member on each role
     def test_three_roles_six_members_edit_1st_member_role_to_a_new_role_must_keep_sequence(self):
@@ -1205,26 +1063,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4,])
-        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
 
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member2.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member4.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member5.pk)
-        self.assertEqual(m4.order, 3)
-
-        self.assertEqual(m5.pk, member6.pk)
-        self.assertEqual(m5.order, 3)
-
-        self.assertEqual(m6.pk, member1.pk)
-        self.assertEqual(m6.order, 4)
 
     def test_three_roles_six_members_edit_2nd_member_role_to_a_new_role_must_keep_sequence(self):
         """
@@ -1258,26 +1097,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4,])
-        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
 
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member4.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member5.pk)
-        self.assertEqual(m4.order, 3)
-
-        self.assertEqual(m5.pk, member6.pk)
-        self.assertEqual(m5.order, 3)
-
-        self.assertEqual(m6.pk, member2.pk)
-        self.assertEqual(m6.order, 4)
 
     def test_three_roles_six_members_edit_3rd_member_role_to_a_new_role_must_keep_sequence(self):
         """
@@ -1310,26 +1130,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, 3, 4,])
-        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
 
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 1)
-
-        self.assertEqual(m3.pk, member4.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member5.pk)
-        self.assertEqual(m4.order, 3)
-
-        self.assertEqual(m5.pk, member6.pk)
-        self.assertEqual(m5.order, 3)
-
-        self.assertEqual(m6.pk, member3.pk)
-        self.assertEqual(m6.order, 4)
 
     def test_three_roles_six_members_edit_1st_member_role_to_the_2nd_role_must_keep_sequence(self):
         """
@@ -1361,26 +1162,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 2, 3, 3, ])
-        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member2.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member1.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member4.pk)
-        self.assertEqual(m4.order, 2)
-
-        self.assertEqual(m5.pk, member5.pk)
-        self.assertEqual(m5.order, 3)
-
-        self.assertEqual(m6.pk, member6.pk)
-        self.assertEqual(m6.order, 3)
 
     # next tests MOVE UP a member (ONLY one member on each role)
     def test_three_roles_three_members_move_up_2nd_member(self):
@@ -1413,17 +1194,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member2.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member1.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 3)
 
     # next tests MOVE UP a member (MORE THAN ONE member on each role)
     def test_three_roles_six_members_move_up_2nd_block_members(self):
@@ -1458,26 +1228,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 2, 3, 3])
-        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member3.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member4.pk)
-        self.assertEqual(m2.order, 1)
-
-        self.assertEqual(m3.pk, member1.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member2.pk)
-        self.assertEqual(m4.order, 2)
-
-        self.assertEqual(m5.pk, member5.pk)
-        self.assertEqual(m5.order, 3)
-
-        self.assertEqual(m6.pk, member6.pk)
-        self.assertEqual(m6.order, 3)
 
     # next tests MOVE DOWN a member (ONLY one member on each role)
     def test_three_roles_three_members_move_down_2nd_member(self):
@@ -1510,17 +1260,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member3.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member2.pk)
-        self.assertEqual(m3.order, 3)
 
     # next tests MOVE DOWN a member (MORE THAN ONE member on each role)
     def test_three_roles_six_members_move_down_2nd_block_members(self):
@@ -1555,26 +1294,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 2, 3, 3])
-        m1, m2, m3, m4, m5, m6 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 1)
-
-        self.assertEqual(m3.pk, member5.pk)
-        self.assertEqual(m3.order, 2)
-
-        self.assertEqual(m4.pk, member6.pk)
-        self.assertEqual(m4.order, 2)
-
-        self.assertEqual(m5.pk, member3.pk)
-        self.assertEqual(m5.order, 3)
-
-        self.assertEqual(m6.pk, member4.pk)
-        self.assertEqual(m6.order, 3)
 
     # tests first member cant be moved UP (ONLY one member on each role)
     def test_move_up_first_block_must_raise_validation_error(self):
@@ -1608,17 +1327,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 3)
 
     # tests last member cant be moved DOWN (ONLY one member on each role)
     def test_move_up_last_block_must_raise_validation_error(self):
@@ -1652,24 +1360,11 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-        m1, m2, m3 = [m for m in board.editorialmember_set.all()]
-
-        # must match orders and PK: memberX == mY
-        self.assertEqual(m1.pk, member1.pk)
-        self.assertEqual(m1.order, 1)
-
-        self.assertEqual(m2.pk, member2.pk)
-        self.assertEqual(m2.order, 2)
-
-        self.assertEqual(m3.pk, member3.pk)
-        self.assertEqual(m3.order, 3)
 
 
 class EditRoleTypeForm(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
