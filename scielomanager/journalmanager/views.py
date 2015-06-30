@@ -1245,19 +1245,15 @@ def ajx_search_journal(request):
                                                  Q(eletronic_issn__icontains=query) |
                                                  Q(acronym__icontains=query))
 
-        return HttpResponse(json.dumps({'data':
-                               [
-                                  {'id': journal.id,
-                                   'title': journal.title,
-                                   'print_issn': journal.print_issn,
-                                   'eletronic_issn': journal.eletronic_issn,
-                                   'short_title': journal.short_title,
-                                   'acronym': journal.acronym,
-                                   'collections': [collection.name for collection in journal.collections.all()],
-                                  } for journal in journals
-                                ]
-                               })
-                           )
+        data = [{'id': journal.id, 'title': journal.title, 'print_issn': journal.print_issn,
+                 'eletronic_issn': journal.eletronic_issn, 'short_title': journal.short_title,
+                 'acronym': journal.acronym, 'collections': [collection.name
+                     for collection in journal.collections.all()]}
+                 for journal in journals]
+
+        return HttpResponse(json.dumps({'data': data}),
+                            mimetype='application/json')
+
 
 @login_required
 def ajx_add_journal_to_user_collection(request, journal_id):
@@ -1273,20 +1269,25 @@ def ajx_add_journal_to_user_collection(request, journal_id):
     journal = models.Journal.objects.get(id=journal_id)
 
     if journal.is_member(user_collection):
-        return HttpResponse(json.dumps({
-                                    'journal': journal.title,
-                                    'collection': user_collection.name,
-                                    'assignment': False,
-                                    }))
+        response = {
+            'journal': journal.title,
+            'collection': user_collection.name,
+            'assignment': False,
+        }
+
     else:
         #The journal is join to new collection with status ``inprogress``
         journal.join(user_collection, request.user)
         messages.error(request, _('%s add to collection %s') % (journal, user_collection))
-        return HttpResponse(json.dumps({
-                                    'journal': journal.title,
-                                    'collection': user_collection.name,
-                                    'assignment': True,
-                                    }))
+
+        response = {
+            'journal': journal.title,
+            'collection': user_collection.name,
+            'assignment': True,
+        }
+
+    return HttpResponse(json.dumps(response), mimetype='application/json')
+
 
 @login_required
 def ajx_list_issues_for_markup_files(request):
