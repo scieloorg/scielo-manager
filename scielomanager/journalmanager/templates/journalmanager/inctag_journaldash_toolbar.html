@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load waffle_tags %}
 
 {% if journal_id %}
   <div class="navbar">
@@ -28,16 +27,14 @@
           <a href="{% url journal_status.edit journal_id %}">{% trans 'Status' %}</a>
         </li>
         {% endif %}
-        {% flag 'editorialmanager' %}
-          {% if perms.journalmanager.change_editor %}
-            <li {% if page == 'editor' %}class="active activedash" {% endif %}>
-              <a href="{% url editor.index journal_id %}">{% trans 'Editor' %}</a>
-            </li>
-          {% endif %}
-          <li {% if page == 'editorial_board' %}class="active activedash" {% endif %}>
-            <a href="{% url editorial.board journal_id %}">{% trans 'Board' %}</a>
+        {% if perms.journalmanager.change_editor %}
+          <li {% if page == 'editor' %}class="active activedash" {% endif %}>
+            <a href="{% url editor.index journal_id %}">{% trans 'Editor' %}</a>
           </li>
-        {% endflag %}
+        {% endif %}
+        <li {% if page == 'editorial_board' %}class="active activedash" {% endif %}>
+          <a href="{% url editorial.board journal_id %}">{% trans 'Board' %}</a>
+        </li>
       </ul>
     </div>
   </div>
