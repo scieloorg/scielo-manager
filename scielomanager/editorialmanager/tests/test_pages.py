@@ -123,7 +123,7 @@ class PagesAsEditorTests(WebTest):
         # then
 
         # have no link to ADD, EDIT or DELETE a board member
-        self.assertNotIn(delete_url,response.body)
+        self.assertNotIn(delete_url, response.body)
 
         # when gain permission to DELETE editorial member, the link is shown
         _set_permission_to_group('delete_editorialmember', self.group)
@@ -283,7 +283,7 @@ class RoleType(WebTest):
         User must have the permission: editorialmanager.add_roletype to see the button
         """
         # when
-        response = self.app.get(reverse("editorial.board", args=[self.journal.id,]), user=self.user)
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
 
         # then
         self.assertEqual(response.status_code, 200)
@@ -299,7 +299,7 @@ class RoleType(WebTest):
         perm_add_roletype = _makePermission(perm='add_roletype', model='roletype')
         self.user.user_permissions.add(perm_add_roletype)
         # when
-        response = self.app.get(reverse("editorial.board", args=[self.journal.id,]), user=self.user)
+        response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
 
         # then
         self.assertEqual(response.status_code, 200)
@@ -356,7 +356,7 @@ class RoleType(WebTest):
         # then
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'board/board_list.html')
-        list_role_url = reverse("editorial.role.list", args=[self.journal.id,])
+        list_role_url = reverse("editorial.role.list", args=[self.journal.id, ])
         self.assertIn(list_role_url, response.body)
 
     def test_access_to_EDIT_and_TRANSLATE_from_role_list_DISABLE(self):
@@ -367,7 +367,7 @@ class RoleType(WebTest):
         board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
         # when
-        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
+        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id, ]), user=self.user)
 
         # then
         self.assertEqual(response.status_code, 200)
@@ -390,7 +390,7 @@ class RoleType(WebTest):
         perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
         self.user.user_permissions.add(perm_change_roletype)
         # when
-        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
+        response = self.app.get(reverse("editorial.role.list", args=[self.journal.id, ]), user=self.user)
 
         # then
         self.assertEqual(response.status_code, 200)
