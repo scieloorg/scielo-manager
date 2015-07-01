@@ -28,8 +28,6 @@ from . import models
 logger = logging.getLogger(__name__)
 
 
-ARTICLE_INDEX_NAME = 'icatman'
-ARTICLE_DOC_TYPE = 'article'
 ARTICLE_SAVE_MUTEX = threading.Lock()
 BASIC_ARTICLE_META_PATH = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), 'basic_article_meta.sch')
@@ -55,7 +53,8 @@ def index_article(id, struct, **kwargs):
     """
     client = get_elasticsearch()
     result = client.index(
-            index=ARTICLE_INDEX_NAME, doc_type=ARTICLE_DOC_TYPE,
+            index=settings.ES_ARTICLE_INDEX_NAME,
+            doc_type=settings.ES_ARTICLE_DOC_TYPE,
             id=id, body=struct, **kwargs)
 
     return result
