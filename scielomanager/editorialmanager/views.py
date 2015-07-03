@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 import logging
 from django.conf import settings
 from django.contrib import messages
@@ -337,6 +337,7 @@ def add_board_member(request, journal_id, issue_id):
     """
     Handles only NEW editorial board member
     """
+
     if request.is_ajax():
         template_name = 'board/board_member_edit_form.html'
     else:
@@ -399,7 +400,8 @@ def add_board_member(request, journal_id, issue_id):
         form = forms.EditorialMemberForm()
 
     context['form'] = form
-    return render_to_response(template_name, context, context_instance=RequestContext(request))
+    return render_to_response(template_name, context,
+                              context_instance=RequestContext(request))
 
 
 @login_required
