@@ -2,17 +2,19 @@
 import logging
 from django.conf import settings
 from django.contrib import messages
+from django.http import HttpResponse
+from django.template import loader, Context
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.utils.translation import ugettext as _
 from django.template.context import RequestContext
+from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.db.models import Max
-from waffle.decorators import waffle_flag
 
 from journalmanager.models import Journal, JournalMission, Issue
 from journalmanager.forms import RestrictedJournalForm, JournalMissionForm
@@ -175,7 +177,6 @@ def _get_journal_or_404_by_user_access(user, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def index(request):
     journals = _get_journals_by_user_access(request.user)
@@ -188,7 +189,6 @@ def index(request):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def journal_detail(request, journal_id):
     journal = _get_journal_or_404_by_user_access(request.user, journal_id)
@@ -199,7 +199,6 @@ def journal_detail(request, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_journal(request, journal_id):
     """
@@ -255,7 +254,6 @@ def edit_journal(request, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @user_passes_test(_user_has_access, login_url=settings.AUTHZ_REDIRECT_URL)
 def board(request, journal_id):
     journal = _get_journal_or_404_by_user_access(request.user, journal_id)
@@ -268,7 +266,6 @@ def board(request, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.change_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_board_member(request, journal_id, member_id):
     """
@@ -331,7 +328,6 @@ def edit_board_member(request, journal_id, member_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.add_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_board_member(request, journal_id, issue_id):
     """
@@ -405,7 +401,6 @@ def add_board_member(request, journal_id, issue_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.delete_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def delete_board_member(request, journal_id, member_id):
     # check if user have correct access to view the journal:
@@ -442,7 +437,6 @@ def delete_board_member(request, journal_id, member_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.change_editorialmember', login_url=settings.AUTHZ_REDIRECT_URL)
 def board_move_block(request, journal_id):
     board_url = reverse('editorial.board', args=[journal_id, ])
@@ -478,7 +472,6 @@ def board_move_block(request, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.add_roletype', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_role_type(request, journal_id):
     """
@@ -523,7 +516,6 @@ def add_role_type(request, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.change_roletype', login_url=settings.AUTHZ_REDIRECT_URL)
 def edit_role_type(request, journal_id, role_id):
     """
@@ -578,7 +570,6 @@ def edit_role_type(request, journal_id, role_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 def list_role_type(request, journal_id):
     if request.is_ajax():
         template_name = 'board/role_type_list_data.html'
@@ -601,7 +592,6 @@ def list_role_type(request, journal_id):
 
 
 @login_required
-@waffle_flag('editorialmanager')
 @permission_required('editorialmanager.change_roletype', login_url=settings.AUTHZ_REDIRECT_URL)
 def translate_role_type(request, journal_id, role_id):
     template_name = 'board/role_type_translate.html'
@@ -653,3 +643,45 @@ def translate_role_type(request, journal_id, role_id):
 
     context['formset'] = formset
     return render_to_response(template_name, context, context_instance=RequestContext(request))
+
+
+@login_required
+def export_csv(request, journal_id, issue_id=None):
+    '''
+    Export a list of members following this format:
+
+    journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number,
+    role_name, first_name, last_name, full_name, email, institution, link_cv,
+    state, country, country_code, country_code_alpha3, research_id, orcid
+
+    19 fields separeted by comma.
+
+    '''
+
+    # check if user have correct access to view the journal:
+    if not Journal.userobjects.active().filter(pk=journal_id).exists():
+        messages.error(request, _('The journal is not available for you.'))
+        return HttpResponseRedirect(reverse('editorial.index'))
+
+    filters = {}
+
+    if issue_id:
+        filters['pk'] = issue_id
+
+    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
+    issues = journal.issue_set.filter(**filters).order_by('-publication_year', '-volume', '-number')
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="edboard-%s.csv"' % slugify(journal.title)
+
+    template = loader.get_template('board/export_member_csv.txt')
+    context = Context({'journal': journal, 'issues': issues})
+
+    def gen_csv_data_windows_line():
+        csv_data = template.render(context)
+        for line in csv_data.splitlines():
+            yield line.rstrip() + u'\r\n'
+
+    response.write(u''.join(gen_csv_data_windows_line()))
+
+    return response

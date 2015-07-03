@@ -3,7 +3,6 @@
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from waffle import Flag
 from journalmanager.tests import modelfactories
 from . import modelfactories as editorial_modelfactories
 from .test_forms import _makePermission
@@ -18,8 +17,6 @@ def _set_permission_to_group(perm, group):
 class PagesAsEditorTests(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         self.group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -45,47 +42,6 @@ class PagesAsEditorTests(WebTest):
     def tearDown(self):
         pass
 
-    def test_status_code_editorial_index_without_waffle_flag(self):
-        # delete waffle:
-        Flag.objects.filter(name='editorialmanager').delete()
-        target_url = reverse('editorial.index')
-        response = self.app.get(target_url, user=self.user, expect_errors=True)
-        self.assertEqual(response.status_code, 404)
-
-    def test_status_code_journal_detail_without_waffle_flag(self):
-        # delete waffle:
-        Flag.objects.filter(name='editorialmanager').delete()
-        target_url = reverse("editorial.journal.detail", args=[self.journal.pk])
-        response = self.app.get(target_url, user=self.user, expect_errors=True)
-        self.assertEqual(response.status_code, 404)
-
-    def test_status_code_editorial_board_add_without_waffle_flag(self):
-        # delete waffle:
-        Flag.objects.filter(name='editorialmanager').delete()
-        target_url = reverse("editorial.board.add", args=[self.journal.id, self.issue.id])
-        response = self.app.get(target_url, user=self.user, expect_errors=True)
-        self.assertEqual(response.status_code, 404)
-
-    def test_status_code_editorial_board_edit_without_waffle_flag(self):
-        # delete waffle:
-        Flag.objects.filter(name='editorialmanager').delete()
-        member = editorial_modelfactories.EditorialMemberFactory.create()
-        member.board = EditorialBoard.objects.create(issue=self.issue)
-        member.save()
-        target_url = reverse("editorial.board.edit", args=[self.journal.id, member.id])
-        response = self.app.get(target_url, user=self.user, expect_errors=True)
-        self.assertEqual(response.status_code, 404)
-
-    def test_status_code_editorial_board_delete_without_waffle_flag(self):
-        # delete waffle:
-        Flag.objects.filter(name='editorialmanager').delete()
-        member = editorial_modelfactories.EditorialMemberFactory.create()
-        member.board = EditorialBoard.objects.create(issue=self.issue)
-        member.save()
-        target_url = reverse("editorial.board.delete", args=[self.journal.id, member.id])
-        response = self.app.get(target_url, user=self.user, expect_errors=True)
-        self.assertEqual(response.status_code, 404)
-
     def test_logged_user_access_to_index(self):
         """
         User loggin and access 'editorial.index' page,
@@ -93,6 +49,7 @@ class PagesAsEditorTests(WebTest):
         """
         # when
         response = self.app.get(reverse('editorial.index'), user=self.user)
+
         # then
         self.assertTrue(self.user.get_profile().is_editor or self.user.get_profile().is_librarian)
         self.assertTemplateUsed(response, 'journal/journal_list.html')
@@ -296,12 +253,9 @@ class PagesAsLibrarianTests(PagesAsEditorTests):
         super(PagesAsLibrarianTests, self).tearDown()
 
 
-
 class RoleType(WebTest):
 
     def setUp(self):
-        # create waffle:
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create a group 'Editors'
         group = modelfactories.GroupFactory(name="Editors")
         # create a user and set group 'Editors'
@@ -358,7 +312,7 @@ class RoleType(WebTest):
         User must have the permission: editorialmanager.change_roletype to see the button
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create()
         member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
         # when
@@ -375,7 +329,7 @@ class RoleType(WebTest):
         User must have the permission: editorialmanager.change_roletype to see the button
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create()
         member = editorial_modelfactories.EditorialMemberFactory.create(board=board, role=role)
         # add perms
@@ -392,10 +346,10 @@ class RoleType(WebTest):
 
     def test_access_to_role_list_link(self):
         """
-        User must not have any particular permission, only the waffle must be activated
+        User must not have any particular permission
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         # when
         response = self.app.get(reverse("editorial.board", args=[self.journal.id, ]), user=self.user)
 
@@ -410,7 +364,7 @@ class RoleType(WebTest):
         User must not have any particular permission, but cant see the edit nor translate buttons
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
         # when
         response = self.app.get(reverse("editorial.role.list", args=[self.journal.id,]), user=self.user)
@@ -430,7 +384,7 @@ class RoleType(WebTest):
         If user have permissions to change_roletype, must see EDIT and TRANSLATE buttons in role's list
         """
         # with
-        board =  EditorialBoard.objects.create(issue=self.issue)
+        board = EditorialBoard.objects.create(issue=self.issue)
         role = editorial_modelfactories.RoleTypeFactory.create(name='blaus!!!')
         # add perms
         perm_change_roletype = _makePermission(perm='change_roletype', model='roletype')
@@ -447,3 +401,60 @@ class RoleType(WebTest):
         translate_role_url = reverse('editorial.role.translate', args=[self.journal.id, role.id])
         self.assertIn(translate_role_url, response.body)
 
+
+class DownloadMemberCSVFileTests(WebTest):
+
+    def setUp(self):
+        # create a group 'Librarian'
+        self.group = modelfactories.GroupFactory(name="Librarian")
+        # create a user and set group 'Librarian'
+        self.user = modelfactories.UserFactory(is_active=True)
+        self.user.groups.add(self.group)
+        self.user.save()
+
+        self.collection = modelfactories.CollectionFactory.create()
+        self.collection.add_user(self.user, is_manager=False)
+        self.collection.make_default_to_user(self.user)
+
+        self.journal = modelfactories.JournalFactory.create()
+        self.journal.join(self.collection, self.user)
+
+        # create an issue
+        self.issue = modelfactories.IssueFactory.create()
+        self.issue.journal = self.journal
+        self.journal.save()
+        self.issue.save()
+
+    def test_non_authenticated_users_are_redirected_to_login_page(self):
+        response = self.app.get(
+            reverse('editorial.export.csv.journal', args=[self.journal.id]),
+            status=302
+        ).follow()
+
+        self.assertTemplateUsed(response, 'registration/login.html')
+
+    def test_authenticated_users_can_access(self):
+        from django.template.defaultfilters import slugify
+
+        response = self.app.get(
+            reverse('editorial.export.csv.issue', args=[self.journal.id, self.issue.id]),
+            user=self.user
+        )
+
+        self.assertEquals(response.content_disposition,
+                          'attachment; filename="edboard-%s.csv"' % slugify(self.journal.title))
+
+    def test_authenticated_users_download_content(self):
+
+        member = editorial_modelfactories.EditorialMemberFactory.create()
+        member.board = EditorialBoard.objects.create(issue=self.issue)
+        member.save()
+
+        response = self.app.get(
+            reverse('editorial.export.csv.issue', args=[self.journal.id, self.issue.id]),
+            user=self.user
+        )
+
+        expected = u'journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number, role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code_alpha3, research_id, orcid\r\n"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"\r\n' % (self.journal.title, self.journal.print_issn, self.journal.eletronic_issn, self.issue.publication_year, self.issue.volume, self.issue.number, member.role.name, member.first_name, member.last_name, member.first_name + ' ' + member.last_name, member.email, member.institution, member.link_cv, member.state, member.country.name, member.country, member.country.alpha3, member.research_id, member.orcid)
+
+        self.assertEqual(response.content, expected.encode('utf-8'))
