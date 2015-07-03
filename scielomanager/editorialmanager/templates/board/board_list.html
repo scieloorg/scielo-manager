@@ -25,7 +25,7 @@
   <script>
 
     //Register autocomplete when model made visible to the user
-    $('#id_modal_form').on('shown', function(){
+    $('#id_modal_form').on('loaded', function(){
 
       $('#id_institution').devbridgeAutocomplete({
         serviceUrl: "{{SETTINGS.WAYTA_URL}}{{SETTINGS.WAYTA_PATH}}institution",
