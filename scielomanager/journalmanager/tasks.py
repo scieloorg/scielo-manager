@@ -212,6 +212,16 @@ def process_orphan_articles():
             link_article_to_issue.delay(orphan.pk)
 
 
+@app.task(ignore_result=True)
+def process_dirty_articles():
+    """ Task (periódica) que garanta a indexação dos artigos sujos.
+    """
+    dirties = models.Article.objects.filter(es_is_dirty=True)
+
+    for dirty in dirties:
+        submit_to_elasticsearch.delay(dirty.pk)
+
+
 @app.task(throws=(IntegrityError, ValueError))
 def create_article_from_string(xml_string):
     """ Cria uma instância de `journalmanager.models.Article`.

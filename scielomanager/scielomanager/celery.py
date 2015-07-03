@@ -38,6 +38,11 @@ CELERYBEAT_SCHEDULE = {
         'task': 'journalmanager.tasks.process_orphan_articles',
         'schedule': crontab(minute=0, hour=0),
         'args': ()
+    },
+    'process-dirty-articles-daily': {
+        'task': 'journalmanager.tasks.process_dirty_articles',
+        'schedule': crontab(minute=0, hour=2),
+        'args': ()
     }
 }
 app.conf.update(
