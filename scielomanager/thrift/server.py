@@ -12,6 +12,13 @@ from thrift import spec
 logger = logging.getLogger(__name__)
 
 
+ERRNO_NS = {
+        'DuplicationError': 1,
+        'IntegrityError': 1,
+        'ValueError': 2,
+}
+
+
 def resource_cleanup(tocall):
     """ O Celery vaza recursos de conexão com o BD quando utiliza o ORM como
     backend de tarefas. Além disso, o próprio ORM do Django utiliza o signal
@@ -50,7 +57,14 @@ class RPCHandler(object):
             try:
                 result = async_result.result
                 if isinstance(result, Exception):
-                    value = result.message
+                    result_cls_name = result.__class__.__name__
+                    try:
+                        errno = ERRNO_NS[result_cls_name]
+                    except KeyError:
+                        logger.error('Undefined errno: %s', result_cls_name)
+                        raise spec.ServerError()
+
+                    value = [errno, result.message]
                 else:
                     value = result
 
