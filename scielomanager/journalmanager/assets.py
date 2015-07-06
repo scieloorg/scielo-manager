@@ -14,7 +14,8 @@ plugins_bundle = Bundle('../static/js/jquery/jquery.asmselect.js',
                         '../static/js/jquery/jquery.popupwindow.js',
                         '../static/js/jquery/jquery.formset.js',
                         '../static/js/angular/ui-bootstrap-tpls-0.4.0.js',
-                        '../static/js/jquery/select2.js')
+                        '../static/js/jquery/select2.js',
+                        '../static/js/jquery/jquery.autocomplete.js')
 
 app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/languages.js',

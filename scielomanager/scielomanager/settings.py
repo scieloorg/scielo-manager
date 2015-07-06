@@ -321,6 +321,10 @@ ELASTICSEARCH_NODES = (
 ES_ARTICLE_INDEX_NAME = 'icatman'
 ES_ARTICLE_DOC_TYPE = 'article'
 
+# URL wayta
+WAYTA_URL = "http://wayta.scielo.org"
+WAYTA_PATH = "/api/v1/"
+
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
 
