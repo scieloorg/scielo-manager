@@ -65,8 +65,8 @@
                 </li>
               {% endif %}
                 <li>
-                  <a href="{% url editorial.export.csv.issue journal.id issue.id %}" class="tip-right" data-original-title="{% trans 'Download full list as CSV file.' %}">
-                    <i class="icon-download-alt"></i> {% trans "Export csv " %}
+                  <a href="{% url editorial.export.csv.issue journal.id issue.id %}">
+                    <i class="icon-download-alt"></i> {% trans "Download this board as CSV file" %}
                   </a>
                 </li>
 

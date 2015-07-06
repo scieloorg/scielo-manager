@@ -440,9 +440,13 @@ class DownloadMemberCSVFileTests(WebTest):
             reverse('editorial.export.csv.issue', args=[self.journal.id, self.issue.id]),
             user=self.user
         )
-
+        journal_slug = slugify(self.journal.title)
+        issue_year = self.issue.publication_year
+        issue_volume = self.issue.volume
+        issue_number = self.issue.number
+        filename = u'board_%s_%s_v%s_n%s' % (journal_slug, issue_year, issue_volume, issue_number)
         self.assertEquals(response.content_disposition,
-                          'attachment; filename="edboard-%s.csv"' % slugify(self.journal.title))
+                          'attachment; filename="%s.csv"' % filename)
 
     def test_authenticated_users_download_content(self):
 

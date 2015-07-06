@@ -84,7 +84,6 @@
         }
         if (validation_results.has_error) {
           display_error("{% trans 'Can not move this block, please try again later' %}");
-          console.log("validation errors when submit form", form, validation_results);
           return false;
         }
       });
