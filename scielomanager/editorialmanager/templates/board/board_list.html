@@ -85,6 +85,7 @@
     }
 
     $('form.form_move_role').submit(function(event) {
+
       {# basic validation before submittion #}
       var form = $(this);
       var f_issue_pk = form.find('.issue_pk').val();
@@ -131,10 +132,13 @@
           has_error: true,
           error_msg: "direction field is empty"
         }
-        if (validation_results.has_error) {
+      }
+
+      if (validation_results.has_error) {
           display_error("{% trans 'Can not move this block, please try again later' %}");
           return false;
         }
+
       });
 
     $('.btn-move-role').click(function(event) {
