@@ -26,51 +26,8 @@
 
     //Register autocomplete when model made visible to the user
     $('#id_modal_form').on('loaded', function(){
-
-      $('#id_institution').devbridgeAutocomplete({
-        serviceUrl: "{{SETTINGS.WAYTA_URL}}{{SETTINGS.WAYTA_PATH}}institution",
-        dataType: 'jsonp',
-        paramName: 'q',
-        noCache: true,
-        params: {'accuracy': 3},
-        minChars: 3,
-        transformResult: function(response) {
-                return {
-                    query:'q',
-                    suggestions: $.map(response.choices, function(dataItem) {
-                        return { value: dataItem.value, data:
-                                                        {'country': dataItem.country,
-                                                         'city': dataItem.city,
-                                                         'state': dataItem.state,
-                                                         'iso3166': dataItem.iso3166 }};
-                    })
-                }
-        },
-
-        formatResult: function (suggestion, currentValue) {
-          return '<b>{% trans 'Institution' %}:</b> ' + suggestion.value + '</br>' +
-                 '<b>{% trans 'City' %}:</b> ' + suggestion.data.city + '</br>' +
-                 '<b>{% trans 'State' %}:</b> ' + suggestion.data.state + '</br>' +
-                 '<b>{% trans 'Country' %}:</b> ' + suggestion.data.country;
-        },
-
-        onSelect: function (suggestion) {
-          $('#id_city').val(suggestion.data.city)
-          $('#id_state').val(suggestion.data.state)
-
-          $('#id_country option').each(function() {
-            if (this.value == suggestion.data.iso3166){
-                this.selected = this.text;
-                $(".chzn-select").trigger("chosen:updated");
-            }
-          });
-        },
-
-        appendTo: $('#selection')
-
-      });//devbridgeAutocomplete
-
-    });//shown
+      {% include "includes/add_member_form_loaded_callbacks.js" %}
+    });//loaded
 
     function display_error(message){
       var template = '<div class="sys-msgs">' +

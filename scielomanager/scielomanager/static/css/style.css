@@ -579,3 +579,14 @@ table._listings h4 {
   border-bottom: 1px solid #000;
 }
 
+.valid-input-icon {
+  background-image: url("/static/admin/img/admin/icon_success.gif");
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.invalid-input-icon {
+  background-image: url("/static/admin/img/admin/icon_error.gif");
+  background-position: right center;
+  background-repeat: no-repeat;
+}
