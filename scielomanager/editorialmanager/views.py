@@ -2,7 +2,7 @@
 import logging
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.template import loader, Context
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -218,7 +218,7 @@ def edit_journal(request, journal_id):
         missionformset = JournalMissionFormSet(request.POST, instance=journal, prefix='mission')
 
         # this view only handle existing journals, so always exist previous values.
-        audit_old_values = helpers.collect_old_values(journal, journalform, [missionformset,])
+        audit_old_values = helpers.collect_old_values(journal, journalform, [missionformset, ])
 
         if journalform.is_valid() and missionformset.is_valid():
             journal = journalform.save()
@@ -299,7 +299,7 @@ def edit_board_member(request, journal_id, member_id):
 
         if form.is_valid():
             board_member = form.save()
-            if 'role' in form.changed_data: # change role -> change order
+            if 'role' in form.changed_data:  # change role -> change order
                 _update_member_order(board_member, old_role)
 
             audit_data = {
@@ -464,7 +464,7 @@ def board_move_block(request, journal_id):
             messages.success(request, _('Board block moved successfully.'))
         else:
             messages.error(request, _('Board block can not be moved'))
-            logger.error("Board block can not be moved. form is not valid. Errors: %s" %  form.errors)
+            logger.error("Board block can not be moved. form is not valid. Errors: %s" % form.errors)
 
     return HttpResponseRedirect(board_url)
 
@@ -662,15 +662,24 @@ def export_csv(request, journal_id, issue_id=None):
         return HttpResponseRedirect(reverse('editorial.index'))
 
     filters = {}
+    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
+    journal_slug = slugify(journal.title)
 
     if issue_id:
         filters['pk'] = issue_id
+        try:
+            issue_year, issue_volume, issue_number = models.Issue.objects.filter(pk=issue_id).values_list(
+                'publication_year', 'volume', 'number')[0]
+        except models.Issue.DoesNotExist:
+            raise Http404("Requested Issue does not exist")
+        filename = 'board_%s_%s_v%s_n%s' % (journal_slug, issue_year, issue_volume, issue_number)
+    else:
+        filename = 'full_board_%s' % journal_slug
 
-    journal = _get_journal_or_404_by_user_access(request.user, journal_id)
     issues = journal.issue_set.filter(**filters).order_by('-publication_year', '-volume', '-number')
 
     response = HttpResponse(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="edboard-%s.csv"' % slugify(journal.title)
+    response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
 
     template = loader.get_template('board/export_member_csv.txt')
     context = Context({'journal': journal, 'issues': issues})

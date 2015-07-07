@@ -131,13 +131,11 @@
           has_error: true,
           error_msg: "direction field is empty"
         }
-      }
-      if (validation_results.has_error) {
-        display_error("{% trans 'Can not move this block, please try again later' %}");
-        console.log("validation errors when submit form", form, validation_results);
-        return false;
-      }
-    });
+        if (validation_results.has_error) {
+          display_error("{% trans 'Can not move this block, please try again later' %}");
+          return false;
+        }
+      });
 
     $('.btn-move-role').click(function(event) {
       event.preventDefault();
