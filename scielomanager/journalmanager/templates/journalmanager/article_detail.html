@@ -5,6 +5,13 @@
 
 {% block page_title %}{% trans "Article: " %}{{ article.ARTICLE_TITLE }}{% endblock %}
 
+{% block extrahead %}
+    {{ block.super }}
+    {% assets "codemirror_css" %}
+      <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+{% endblock %}
+
 {% block content %}
 {% journaldash_toolbar 'issue' journal user %}
 <h4>{{ article.issue.bibliographic_legend }}</h4>
@@ -12,6 +19,7 @@
     <h4>{% trans "XML Meta" %}:</h4>
     <div class="well well-small">
         <dl class="dl-horizontal">
+
             <dt>{% trans "Article title" %}:</dt>
             <dd>{{ article.ARTICLE_TITLE|default:"--" }}</dd>
 
@@ -34,49 +42,76 @@
     </div>
     <div class="row-fluid">
         <div class="span12">
-            <h4>{% trans "XML content" %}:</h4>
-            <div class="codemirror_wrapper">
-                {% if article.xml %}
-                    <textarea id="code" name="code">{{ article.xml }}</textarea>
-                {% else %}
-                    <textarea id="code" name="code">{% trans "This article don't have XML" %}</textarea>
-                {% endif %}
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#xml_content">
+                        {% trans "XML content" %}:
+                    </a>
+                </li>
+                {# adiciono uma tab para cada linguagem/html gerado #}
+                {% for preview in previews %}
+                    <li>
+                        <a data-toggle="tab" href="#preview_{{ preview.lang }}">
+                            {% trans "Preview HTML" %} ({{ preview.lang|upper }})
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="xml_content">
+                    <div class="codemirror_wrapper">
+                        {% if article.xml %}
+                            <textarea id="code" name="code">{{ article.xml }}</textarea>
+                        {% else %}
+                            <textarea id="code" name="code">{% trans "This article don't have XML" %}</textarea>
+                        {% endif %}
+                    </div>
+                </div>
+                {# adiciono uma tab-pane para cada linguagem/html gerado #}
+                {% for preview in previews %}
+                    <div class="tab-pane" id="preview_{{ preview.lang }}">
+                        <div class="html_container_preview">
+                            {{ preview.html|safe }}
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
+        </div>
+        <div class="span12">
+            <p class="text-center">
+                <small>packtools version: <strong>{{ packtools_version }}</strong></small>
+            </p>
         </div>
     </div>
 </div>
 
-{% assets "codemirror_css" %}
-  <link rel="stylesheet" href="{{ ASSET_URL }}">
-{% endassets %}
-
 {% assets "codemirror_js" %}
-    <link rel="stylesheet" href="{{ ASSET_URL }}">
     <script src="{{ ASSET_URL }}"></script>
     <script>
-        var editor = CodeMirror.fromTextArea(
-            document.getElementById("code"),
-            {
-                lineNumbers: true,
-                lineWrapping: true,
-                mode: "application/xml",
-                styleActiveLine: true,
-                foldGutter: true,
-                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-                matchTags: { bothTags: true },
-            });
-        {# ---- read only hack ---- listen for the beforeChange event, and cancel #}
-        editor.on('beforeChange',function(cm,change) { change.cancel(); });
+        $(function() {
+            var editor = CodeMirror.fromTextArea(
+                document.getElementById("code"),
+                {
+                    lineNumbers: true,
+                    lineWrapping: true,
+                    mode: "application/xml",
+                    styleActiveLine: true,
+                    foldGutter: true,
+                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                    matchTags: { bothTags: true },
+                });
+            {# ---- read-only hack ---- listen for the beforeChange event, and cancel #}
+            editor.on('beforeChange',function(cm,change) { change.cancel(); });
 
-        {# ---- render line hack ---- #}
-        var charWidth = editor.defaultCharWidth(), basePadding = 4;
-        editor.on("renderLine", function(cm, line, elt) {
-            var off = CodeMirror.countColumn(line.text, null, cm.getOption("tabSize")) * charWidth;
-            elt.style.textIndent = "-" + off + "px";
-            elt.style.paddingLeft = (basePadding + off) + "px";
+            {# ---- render line hack ---- #}
+            var charWidth = editor.defaultCharWidth(), basePadding = 4;
+            editor.on("renderLine", function(cm, line, elt) {
+                var off = CodeMirror.countColumn(line.text, null, cm.getOption("tabSize")) * charWidth;
+                elt.style.textIndent = "-" + off + "px";
+                elt.style.paddingLeft = (basePadding + off) + "px";
+            });
+            editor.refresh();
         });
-        editor.refresh();
     </script>
 {% endassets %}
-
 {% endblock %}

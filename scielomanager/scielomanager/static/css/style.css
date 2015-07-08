@@ -541,6 +541,11 @@ table._listings h4 {
   color: red;
 }
 
+.html_container_preview {
+  border: 1px solid black;
+  padding: 5px 10px;
+}
+
 .autocomplete-suggestions {
   border: 1px solid #999;
   background: #FFF;

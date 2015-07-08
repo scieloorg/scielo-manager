@@ -9,6 +9,7 @@ except ImportError:
     from ordereddict import OrderedDict
 
 import operator
+import packtools
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
@@ -307,12 +308,23 @@ def article_index(request, issue_id):
 def article_detail(request, article_pk):
 
     article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
+    previews = []
+
+    if article.xml:
+        try:
+            for lang, html_output in packtools.HTMLGenerator(article.xml.root_etree, valid_only=False):
+                previews.append({'lang': lang, 'html': html_output})
+        except Exception:
+            # qualquer exeção aborta a pre-visualização mas continua com o resto
+            previews = []
 
     return render_to_response(
         'journalmanager/article_detail.html',
         {
             'article': ArticleAttrGetter(article),
             'journal': article.journal,
+            'packtools_version': packtools.__version__,
+            'previews': previews,
         },
         context_instance=RequestContext(request)
     )
