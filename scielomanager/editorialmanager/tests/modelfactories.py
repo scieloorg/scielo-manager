@@ -43,5 +43,4 @@ class EditorialMemberFactory(factory.Factory):
     state = factory.Sequence(lambda n: 'state_%s' % n)
     country = 'BR'
     research_id = factory.Sequence(lambda n: 'A-%04d-2014' % int(n))
-    orcid = factory.Sequence(lambda n: '0000-0001-0002-%04d' % int(n))
-
+    orcid = factory.Sequence(lambda n: '0000-0002-4668-7157')  # por padrão um orcid válido

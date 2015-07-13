@@ -1,5 +1,5 @@
 # coding: utf-8
-
+import re
 from django import forms
 from . import models
 from django.forms.models import BaseInlineFormSet
@@ -15,6 +15,56 @@ class EditorialMemberForm(forms.ModelForm):
             'role': forms.Select(attrs={'class': 'chzn-select'}),
             'country': forms.Select(attrs={'class': 'chzn-select'}),
         }
+
+    def clean_orcid(self):
+        """
+        Validação do formato do campo: "orcid" segundo os criterios:
+        - verifica se o tamanho esta certo (19 chars contando os 3 "-")
+        - verifica se atende a regex em ``is_valid_format(...)``
+          (o ultimo digito pode ser um "X", ver referencia)
+        - verifica se o checksum é valido com a função: ``is_valid_checksum(...)``
+
+        Se atende as 3 condições retorna true.
+        Se o campo é vazio, também é considerado como válido.
+        """
+
+        def is_valid_checksum(orcid):
+            """
+            Calcula o checksum a partir do orcid
+            Referencia:
+                http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
+            """
+            total = 0
+            cleaned_orcid = orcid.replace('-', '')  # removo '-'
+            last_digit = cleaned_orcid[-1]
+            sliced_orcid = cleaned_orcid[:-1]  # todos os digitos, menos o último
+            for ch in sliced_orcid:
+                if not ch.isdigit():
+                    return False
+                else:
+                    digit = int(ch)
+                    total = (total + digit) * 2
+            reminder = total % 11
+            calculated_checksum = (12 - reminder) % 11
+
+            if calculated_checksum == 10:
+                calculated_checksum = 'X'
+            return str(calculated_checksum) == str(last_digit)
+
+        def is_valid_format(orcid):
+            """
+            Retorna True se o formato respeita a regex:
+            Referencia:
+                http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
+            """
+            matches = re.match('\d{4}-\d{4}-\d{4}-\d{3}[\d|X]', orcid)
+            return matches is not None and matches.group() == orcid
+
+        orcid = self.cleaned_data['orcid'].strip()
+        if orcid:
+            if not (len(orcid) == 19) or not is_valid_format(orcid) or not is_valid_checksum(orcid):
+                raise forms.ValidationError(_('This field is not valid!'))
+        return orcid
 
 
 DIRECTION_CHOICES = (
