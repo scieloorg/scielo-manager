@@ -2,7 +2,39 @@
 
 <form id="member-form" action="{{ post_url|default:'' }}" method="POST" class="form-horizontal">
     {% csrf_token %}
-    {% for field in form %}
-        {% show_field field %}
-    {% endfor %}
+
+    {% show_field form.role %}
+    {% show_field form.first_name %}
+    {% show_field form.last_name %}
+    {% show_field form.email %}
+        <div class="control-group {% if form.institution.errors %}error{% endif %}">
+            <label for="{{ form.institution.auto_id }}" class="{% if form.institution.field.required %} req-field {% endif %} control-label">
+
+                {% trans form.institution.label %}
+
+                {% if form.institution.help_text %}
+                    <i rel="popover" data-toggle="popover" data-trigger="hover" data-content="{{ form.institution.help_text }}" class="icon-question-sign"></i>
+                {% endif %}
+
+            </label>
+            <div class="controls">
+
+              {{ form.institution }}
+
+              <div id="selection"></div>
+
+              {% if form.institution.errors %}
+                <div class="alert alert-error">
+                    {{ form.institution.errors }}
+                </div>
+              {% endif %}
+
+            </div>
+        </div>
+    {% show_field form.link_cv %}
+    {% show_field form.city %}
+    {% show_field form.state %}
+    {% show_field form.country %}
+    {% show_field form.research_id %}
+    {% show_field form.orcid %}
 </form>

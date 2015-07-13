@@ -1,8 +1,36 @@
+// include onetime, somewhere
+// this patch trigger a new event "loaded" when jquery.load function receive the ajax response
+// more context about the fix: https://github.com/twbs/bootstrap/pull/6846
+
+(function(){
+    $.fn.jqueryLoad = $.fn.load;
+
+    $.fn.load = function(url, params, callback) {
+        var $this = $(this);
+        var cb = $.isFunction(params) ? params: callback || $.noop;
+        var wrapped = function(responseText, textStatus, XMLHttpRequest) {
+            cb(responseText, textStatus, XMLHttpRequest);
+            $this.trigger('loaded');
+        };
+
+        if ($.isFunction(params)) {
+            params = wrapped;
+        } else {
+            callback = wrapped;
+        }
+
+        $this.jqueryLoad(url, params, callback);
+
+        return this;
+    };
+})();
+
+
 $(function() {
 
   /* hack to reload ajax content, and avoid caching trap */
   $('.modal').on('hidden', function() { $(this).removeData(); })
-  $('.modal').on('shown', function () {
+  $('.modal').on('loaded', function () {
     $(this).find('input').addClass('span12');
     $(this).find(".chzn-select").chosen({
       no_results_text: "{% trans 'No results found for' %}:",
