@@ -7,6 +7,9 @@ from django.utils.translation import ugettext_lazy as _
 from journalmanager.models import Issue, Journal
 
 
+orcid_pattern = re.compile(r'^\d{4}-\d{4}-\d{4}-\d{3}[\d|X]$')
+
+
 class EditorialMemberForm(forms.ModelForm):
     class Meta:
         model = models.EditorialMember
@@ -39,13 +42,10 @@ class EditorialMemberForm(forms.ModelForm):
             last_digit = cleaned_orcid[-1]
             sliced_orcid = cleaned_orcid[:-1]  # todos os digitos, menos o último
             for ch in sliced_orcid:
-                if not ch.isdigit():
-                    return False
-                else:
-                    digit = int(ch)
-                    total = (total + digit) * 2
-            reminder = total % 11
-            calculated_checksum = (12 - reminder) % 11
+                digit = int(ch)
+                total = (total + digit) * 2
+            remainder = total % 11
+            calculated_checksum = (12 - remainder) % 11
 
             if calculated_checksum == 10:
                 calculated_checksum = 'X'
@@ -57,12 +57,12 @@ class EditorialMemberForm(forms.ModelForm):
             Referencia:
                 http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
             """
-            matches = re.match('\d{4}-\d{4}-\d{4}-\d{3}[\d|X]', orcid)
-            return matches is not None and matches.group() == orcid
+            matches = orcid_pattern.match(orcid)
+            return bool(matches)
 
         orcid = self.cleaned_data['orcid'].strip()
         if orcid:
-            if not (len(orcid) == 19) or not is_valid_format(orcid) or not is_valid_checksum(orcid):
+            if not is_valid_format(orcid) or not is_valid_checksum(orcid):
                 raise forms.ValidationError(_('This field is not valid!'))
         return orcid
 

@@ -111,7 +111,7 @@ function display_validation_result(field, is_valid){
 function display_orcid_link(field, orcid_id){
   /* Adiciona um link para que o usurário acesse o perfil no site orchid.org
    */
-  var target_url = 'http://orcid.org/' + orcid_id + '/';
+  var target_url = 'http://orcid.org/' + orcid_id; /* sem barra no final, porque se não manda pro login */
   var link = $('<a />').attr({
     'href': target_url,
     'title': target_url,
@@ -148,8 +148,8 @@ function has_valid_orcid(orcid_id){
    * referencias:
    * - http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
    */
-  var re = /\d{4}-\d{4}-\d{4}-\d{3}[\d|X]/;
-  return orcid_id.length < 20 && re.test(orcid_id) && is_valid_orcid_checksum(orcid_id);
+  var re = /^\d{4}-\d{4}-\d{4}-\d{3}[\d|X]$/;
+  return re.test(orcid_id) && is_valid_orcid_checksum(orcid_id);
 }
 
 $('#id_orcid').on('input', function(event) {
