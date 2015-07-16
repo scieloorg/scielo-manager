@@ -12,7 +12,6 @@ from django.test import TestCase
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
 from django.test.utils import override_settings
-from waffle import Flag
 
 from journalmanager.tests import modelfactories
 from editorialmanager.tests.modelfactories import EditorialBoardFactory, EditorialMemberFactory
@@ -828,7 +827,7 @@ class UserFormTests(WebTest):
             'first_name': 'foo',
             'last_name': 'bar',
             'email': 'bazz@spam.org',
-            'email_notifications':  False, # email notifications must be unchecked
+            'email_notifications':  False,  # email notifications must be unchecked
         }
         perm = _makePermission(perm='change_user', model='user', app_label='auth')
         self.user.user_permissions.add(perm)
@@ -1758,8 +1757,7 @@ class JournalFormTests(WebTest):
         response = form.submit().follow()
 
         self.assertIn('Saved.', response.body)
-        self.assertIn('ABCD.(São Paulo)',
-            response.body)
+        self.assertIn('ABCD.(São Paulo)', response.body)
         self.assertTemplateUsed(response, 'journalmanager/journal_dash.html')
 
     def test_user_add_journal_but_this_journal_already_exists(self):
@@ -2010,8 +2008,7 @@ class SponsorFormTests(WebTest):
 
         response = form.submit().follow()
 
-        self.assertTemplateUsed(response,
-            'journalmanager/sponsor_list.html')
+        self.assertTemplateUsed(response, 'journalmanager/sponsor_list.html')
         self.assertIn('Saved.', response.body)
         self.assertIn('Funda\xc3\xa7\xc3\xa3o de Amparo a Pesquisa do Estado de S\xc3\xa3o Paulo', response.body)
 
@@ -2157,7 +2154,6 @@ class IssueBaseFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2201,7 +2197,6 @@ class IssueBaseFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
@@ -2247,7 +2242,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2276,7 +2270,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
@@ -2307,7 +2300,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2336,7 +2328,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
@@ -2367,7 +2358,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
@@ -2402,7 +2392,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'cover': '',
         }
 
-
         issue_form = forms.RegularIssueForm(POST,
                                             params={'journal': journal},
                                             querysets={
@@ -2433,7 +2422,6 @@ class RegularIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.RegularIssueForm(POST,
                                             instance=issue,
@@ -2470,7 +2458,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum',
-            'suppl_type' : 'volume',
+            'suppl_type': 'volume',
             'volume': '1',
             'number': '',
             'publication_start_month': '1',
@@ -2483,7 +2471,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2502,7 +2489,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum',
-            'suppl_type' : 'number',
+            'suppl_type': 'number',
             'volume': '',
             'number': '1',
             'publication_start_month': '1',
@@ -2515,7 +2502,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2534,7 +2520,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum',
-            'suppl_type' : 'number',
+            'suppl_type': 'number',
             'volume': '1',
             'number': '1',
             'publication_start_month': '1',
@@ -2547,7 +2533,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2566,7 +2551,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'suppl_type' : 'volume',
+            'suppl_type': 'volume',
             'volume': '1',
             'number': '1',
             'publication_start_month': '1',
@@ -2579,7 +2564,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2598,7 +2582,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'suppl_type' : 'number',
+            'suppl_type': 'number',
             'volume': '1',
             'number': '',
             'publication_start_month': '1',
@@ -2611,7 +2595,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2630,7 +2613,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'suppl_type' : 'number',
+            'suppl_type': 'number',
             'volume': '1',
             'number': '',
             'publication_start_month': '1',
@@ -2643,7 +2626,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2662,7 +2644,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'suppl_type' : 'number',
+            'suppl_type': 'number',
             'volume': '',
             'number': '',
             'publication_start_month': '1',
@@ -2675,7 +2657,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2694,7 +2675,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'suppl_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'suppl_type' : 'volume',
+            'suppl_type': 'volume',
             'volume': '',
             'number': '',
             'publication_start_month': '1',
@@ -2707,7 +2688,6 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'editorial_standard': 'iso690',
             'cover': '',
         }
-
 
         issue_form = forms.SupplementIssueForm(POST,
                                             params={'journal': journal},
@@ -2739,7 +2719,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':'number',
+            'suppl_type': 'number',
             'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -2782,7 +2762,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':'volume',
+            'suppl_type': 'volume',
             'suppl_text': issue.suppl_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -2883,7 +2863,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':issue.suppl_type,
+            'suppl_type': issue.suppl_type,
             'suppl_text': issue.suppl_text,
             'publication_start_month': '2',
             'publication_end_month': '2',
@@ -2921,7 +2901,7 @@ class SupplementIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'suppl_type':issue.suppl_type,
+            'suppl_type': issue.suppl_type,
             'suppl_text': issue.suppl_text,
             'publication_start_month': '2',
             'publication_end_month': '2',
@@ -3093,7 +3073,7 @@ class SpecialIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'spe_type' : 'number',
+            'spe_type': 'number',
             'volume': '1',
             'number': '',
             'publication_start_month': '1',
@@ -3155,7 +3135,7 @@ class SpecialIssueFormClassTests(unittest.TestCase):
         POST = {
             'section': [section.pk],
             'spe_text': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod',
-            'spe_type' : 'number',
+            'spe_type': 'number',
             'volume': '',
             'number': '',
             'publication_start_month': '1',
@@ -3230,7 +3210,7 @@ class SpecialIssueFormClassTests(unittest.TestCase):
             'section': [section.pk],
             'volume': issue.volume,
             'number': issue.number,
-            'spe_type':'number',
+            'spe_type': 'number',
             'spe_text': issue.spe_text,
             'publication_start_month': '1',
             'publication_end_month': '2',
@@ -3408,12 +3388,12 @@ class SpecialIssueFormClassTests(unittest.TestCase):
         }
 
         issue_form = forms.SpecialIssueForm(POST,
-                                                instance=issue,
-                                                params={'journal': journal},
-                                                querysets={
-                                                    'section': journal.section_set.all(),
-                                                    'use_license': models.UseLicense.objects.all(),
-                                                })
+                                            instance=issue,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
 
         self.assertTrue(issue_form.is_valid())
 
@@ -3449,12 +3429,12 @@ class SpecialIssueFormClassTests(unittest.TestCase):
         }
 
         issue_form = forms.SpecialIssueForm(POST,
-                                                instance=issue,
-                                                params={'journal': journal},
-                                                querysets={
-                                                    'section': journal.section_set.all(),
-                                                    'use_license': models.UseLicense.objects.all(),
-                                                })
+                                            instance=issue,
+                                            params={'journal': journal},
+                                            querysets={
+                                                'section': journal.section_set.all(),
+                                                'use_license': models.UseLicense.objects.all(),
+                                            })
 
         self.assertTrue(issue_form.is_valid())
 
@@ -3479,24 +3459,22 @@ class IssueFormTests(WebTest):
         pass
 
     def _makeOneWithEditorialBoard(self):
-        #Create any issue in this journal
+        # Create any issue in this journal
         issue = modelfactories.IssueFactory(journal=self.journal)
 
-        #Create a board to the issue
+        # Create a board to the issue
         ed_board = EditorialBoardFactory(issue=issue)
 
-        #Add members to the board
+        # Add members to the board
         member = EditorialMemberFactory(board=ed_board)
         member = EditorialMemberFactory(board=ed_board)
 
         return issue
 
     def _makeOneWithoutEditorialBoard(self):
-        #Create any issue in this journal
+        # Create any issue in this journal
         issue = modelfactories.IssueFactory(journal=self.journal)
-
         return issue
-
 
     def test_basic_struture(self):
         """
@@ -3561,7 +3539,7 @@ class IssueFormTests(WebTest):
                 form['number'] = '3'
                 form['spe_type'] = 'number'
                 form['spe_text'] = 'X'
-            else: # regular
+            else:  # regular
                 form['number'] = '3'
                 form['volume'] = '29'
 
@@ -3578,55 +3556,6 @@ class IssueFormTests(WebTest):
 
             self.assertIn('Saved.', response.body)
             self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
-
-    def test_POST_with_valid_formdata_without_editorialmanager_waffle(self):
-        """
-        TEST: #1021 - Corregir vazamento da funcionalidade de "Editorial Manager"
-        Submitting valid data in form, without 'editorialmanager' waffle, MUST NOT broke!
-        and process correctly the form. And NOT editorial members were created.
-        """
-        # create an issue with editorial board
-        issue = self._makeOneWithEditorialBoard()
-
-        perm_issue_change = _makePermission(perm='add_issue',
-            model='issue', app_label='journalmanager')
-        perm_issue_list = _makePermission(perm='list_issue',
-            model='issue', app_label='journalmanager')
-        self.user.user_permissions.add(perm_issue_change)
-        self.user.user_permissions.add(perm_issue_list)
-
-        for t in ['regular', 'supplement', 'special']:
-            form = self.app.get(reverse('issue.add_%s' % t, args=[self.journal.pk]), user=self.user).forms['issue-form']
-
-            if t == 'supplement':
-                form['number'] = ''
-                form['volume'] = '29'
-                form['suppl_type'] = 'volume'
-                form['suppl_text'] = 'suppl.X'
-            elif t == 'special':
-                form['number'] = '3'
-                form['spe_type'] = 'number'
-                form['spe_text'] = 'X'
-            else: # regular
-                form['number'] = '3'
-                form['volume'] = '29'
-
-            form['total_documents'] = '16'
-            form.set('ctrl_vocabulary', 'decs')
-
-            form['publication_start_month'] = '9'
-            form['publication_end_month'] = '11'
-            form['publication_year'] = '2012'
-            form['is_marked_up'] = False
-            form['editorial_standard'] = 'other'
-
-            response = form.submit().follow()
-
-            new_issue = models.Issue.objects.get(publication_year='2012', number='3', volume='29')
-            self.assertIn('Saved.', response.body)
-            self.assertTemplateUsed(response, 'journalmanager/issue_list.html')
-            # check: editorial board must not be created, because flag is not created
-            self.assertRaises(EditorialBoard.DoesNotExist, lambda: new_issue.editorialboard)
 
     def test_POST_with_valid_formdata_and_check_copy_of_editorial_board(self):
         """
@@ -3640,7 +3569,6 @@ class IssueFormTests(WebTest):
 
         This test check if editorial board of this issue was created
         """
-        Flag.objects.create(name='editorialmanager', everyone=True)
         # create an issue with editorial board
         issue = self._makeOneWithEditorialBoard()
 
@@ -3663,7 +3591,7 @@ class IssueFormTests(WebTest):
                 form['number'] = '3'
                 form['spe_type'] = 'number'
                 form['spe_text'] = 'X'
-            else: # regular
+            else:  # regular
                 form['number'] = '3'
                 form['volume'] = '29'
 
@@ -3680,11 +3608,11 @@ class IssueFormTests(WebTest):
 
             new_issue = models.Issue.objects.get(publication_year='2012', number='3', volume='29')
 
-            #Members of the recent IssueFormTests
+            # Members of the recent IssueFormTests
             new_members = new_issue.editorialboard.editorialmember_set.all()
             last_members = issue.editorialboard.editorialmember_set.all()
 
-            #comparing first names
+            # comparing first names
             last_first_names = [member.first_name for member in last_members]
             new_first_names = [member.first_name for member in new_members]
 
@@ -3707,7 +3635,7 @@ class IssueFormTests(WebTest):
         This test check if editorial board of this issue was created
         """
 
-        #create an issue
+        # create an issue
         issue = self._makeOneWithoutEditorialBoard()
 
         perm_issue_change = _makePermission(perm='add_issue',
@@ -3729,7 +3657,7 @@ class IssueFormTests(WebTest):
                 form['number'] = '3'
                 form['spe_type'] = 'number'
                 form['spe_text'] = 'X'
-            else: # regular
+            else:  # regular
                 form['number'] = '3'
                 form['volume'] = '29'
 
@@ -4025,7 +3953,7 @@ class IssueFormTests(WebTest):
                 form['number'] = '3'
                 form['spe_type'] = 'number'
                 form['spe_text'] = 'X'
-            else: # regular
+            else:  # regular
                 form['number'] = '3'
                 form['volume'] = '29'
 
@@ -4071,7 +3999,7 @@ class IssueFormTests(WebTest):
                 form['number'] = '3'
                 form['spe_type'] = 'number'
                 form['spe_text'] = 'X'
-            else: # regular
+            else:  # regular
                 form['number'] = '3'
                 form['volume'] = '29'
 

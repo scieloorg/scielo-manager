@@ -54,9 +54,6 @@ def get_temporary_xml_file(xml_abs_path):
 
 class ValidatorTests(WebTest, mocker.MockerTestCase):
 
-    def _addWaffleFlag(self):
-        Flag.objects.create(name='packtools_validator', everyone=True)
-
     def test_access_unauthenticated_user(self):
         response = self.app.get(
             reverse('validator.packtools.stylechecker',),

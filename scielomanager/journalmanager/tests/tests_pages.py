@@ -9,7 +9,6 @@ from django.conf import settings
 from django_webtest import WebTest
 from django.core.urlresolvers import reverse
 from django_factory_boy import auth
-from waffle import Flag
 
 from journalmanager.tests import modelfactories
 from journalmanager.tests.tests_forms import _makePermission
@@ -282,7 +281,6 @@ class IndexPageTests(WebTest):
         self.assertTemplateUsed(response, 'journalmanager/home_journal.html')
 
     def test_logged_editor_user_access_to_list_journal(self):
-        Flag.objects.create(name='editorialmanager', everyone=True)
         editors_group = modelfactories.GroupFactory.create(name='Editors')
         perm = _makePermission(perm='list_editor_journal', model='journal', app_label='journalmanager')
         editors_group.permissions.add(perm)
