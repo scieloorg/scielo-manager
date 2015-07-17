@@ -66,7 +66,5 @@ urlpatterns = patterns('',
     url(r'^ajx/ajx3/$', views.ajx_search_journal, name="ajx.ajx_search_journal"),
     url(r'^ajx/ajx4/(?P<journal_id>\d+)$', views.ajx_add_journal_to_user_collection, name="ajx.ajx_add_journal_to_user_collection"),
 
-    # Reports
-    # url(r'^reports/$', views.report_index, name="report.index"),
 
 )
