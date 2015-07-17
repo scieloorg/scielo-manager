@@ -34,7 +34,7 @@ def my_account(request):
         'my_collecttions': my_collecttions,
     }
     return render_to_response('accounts/my_account.html', context,
-        context_instance=RequestContext(request))
+                              context_instance=RequestContext(request))
 
 
 @login_required

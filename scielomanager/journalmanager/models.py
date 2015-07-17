@@ -1086,7 +1086,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     @property
     def publication_date(self):
         start = self.get_publication_start_month_display()
-        end =  self.get_publication_end_month_display()
+        end = self.get_publication_end_month_display()
         if start and end:
             return '{0}/{1} {2}'.format(start[:3], end[:3], self.publication_year)
         elif start:

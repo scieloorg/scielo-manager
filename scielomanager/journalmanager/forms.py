@@ -60,8 +60,8 @@ class UserCollectionContext(ModelForm):
     """
 
     collections = forms.ModelMultipleChoiceField(models.Collection.objects.none(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more collections')}),
-        required=True)
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more collections'),
+                                           'class': 'asmselect'}), required=True)
 
     def __init__(self, *args, **kwargs):
         """
@@ -119,20 +119,20 @@ class JournalForm(ModelForm):
     print_issn = fields.ISSNField(max_length=9, required=False)
     eletronic_issn = fields.ISSNField(max_length=9, required=False)
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
-        required=True)
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages'),
+                                           'class': 'asmselect'}), required=True)
     abstract_keyword_languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
-        required=True)
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages'),
+                                           'class': 'asmselect'}), required=True)
     sponsor = forms.ModelMultipleChoiceField(models.Sponsor.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsors')}),
-        required=True)
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsors'),
+                                           'class': 'asmselect'}), required=True)
     subject_categories = forms.ModelMultipleChoiceField(models.SubjectCategory.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories')}),
-        required=False)
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories'),
+                                           'class': 'asmselect'}), required=False)
     study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
-        required=True)
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area'),
+                                           'class': 'asmselect'}), required=True)
     regex = re.compile(r'^(1|2)\d{3}$')
 
     def save_all(self, creator):
@@ -287,7 +287,8 @@ class LoginForm(forms.Form):
 class UserForm(ModelForm):
     email = forms.EmailField(label=_("E-mail"), max_length=75, required=True)
     groups = forms.ModelMultipleChoiceField(Group.objects.all(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more groups')}),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more groups'),
+                                           'class': 'asmselect'}),
         required=False)
 
     class Meta:
@@ -333,7 +334,8 @@ class MembershipForm(ModelForm):
 class IssueBaseForm(forms.ModelForm):
     section = forms.ModelMultipleChoiceField(
         models.Section.objects.none(),
-        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sections')}),
+        widget=forms.SelectMultiple(attrs={'title': _('Select one or more sections'),
+                                           'class': 'asmselect'}),
         required=False)
 
     class Meta:

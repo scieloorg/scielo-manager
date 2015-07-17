@@ -23,9 +23,11 @@ def easy_tag(func):
     inner.__doc__ = inner.__doc__
     return inner
 
+
 def full_path(context, page_param_name='page', **params):
-    
+
     url_path = ''
+    key_list = []
     url_get = context['request'].GET.copy()
 
     if 'PATH_INFO' in context['request'].META:
@@ -38,7 +40,13 @@ def full_path(context, page_param_name='page', **params):
 
     if len(url_get):
         url_path += '&' if '?' in url_get else '?'
-        url_path += "%s" % "&".join(("%s=%s" % (key, value) for key, value in url_get.items() if value))
+
+        for key, value_list in url_get.lists():
+            for value in value_list:
+                if value:
+                    key_list.append((key, value))
+
+        url_path += "%s" % "&".join(("%s=%s" % (key, value) for key, value in key_list if value))
 
     return url_path.encode('utf8')
 
@@ -71,10 +79,12 @@ class NamedPagination(template.Node):
 
         return html_snippet
 
+
 @register.tag()
 @easy_tag
 def named_pagination(_tag_name, *params):
     return NamedPagination(*params)
+
 
 class Pagination(template.Node):
 
@@ -120,10 +130,12 @@ class Pagination(template.Node):
         else:
             return ''
 
+
 @register.tag()
 @easy_tag
 def pagination(_tag_name, params, page_param_name='page'):
     return Pagination(params, page_param_name)
+
 
 class SimplePagination(template.Node):
 
@@ -171,10 +183,12 @@ class SimplePagination(template.Node):
         else:
             return ''
 
+
 @register.tag()
 @easy_tag
 def simple_pagination(_tag_name, params, page_param_name='page'):
     return SimplePagination(params, page_param_name)
+
 
 class FieldHelpText(template.Node):
 
@@ -209,6 +223,7 @@ class FieldHelpText(template.Node):
 
         return html_snippet
 
+
 @register.tag()
 @easy_tag
 def field_help(_tag_name, *params):
@@ -218,6 +233,3 @@ def field_help(_tag_name, *params):
     Usage: {% field_help field_label help_text %}
     """
     return FieldHelpText(*params)
-
-
-

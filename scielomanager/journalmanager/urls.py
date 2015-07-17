@@ -56,7 +56,7 @@ urlpatterns = patterns('',
     url(r'^user/(?P<user_id>\d+)/toggle_active_collection/(?P<collection_id>\d+)$',
         views.toggle_active_collection, name='usercollection.toggle_active'),
 
-    #Editor
+    # Editor
     url(r'^(?P<journal_id>\d+)/editor/$', views.get_editor, name="editor.index"),
     url(r'^(?P<journal_id>\d+)/editor/add/$', views.add_editor, name="editor.add"),
 
@@ -65,4 +65,8 @@ urlpatterns = patterns('',
     url(r'^ajx/ajx2/$', views.ajx_lookup_for_section_translation, name="ajx.lookup_for_section_translation"),
     url(r'^ajx/ajx3/$', views.ajx_search_journal, name="ajx.ajx_search_journal"),
     url(r'^ajx/ajx4/(?P<journal_id>\d+)$', views.ajx_add_journal_to_user_collection, name="ajx.ajx_add_journal_to_user_collection"),
+
+    # Reports
+    # url(r'^reports/$', views.report_index, name="report.index"),
+
 )
