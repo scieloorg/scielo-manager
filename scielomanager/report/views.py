@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import json
+from time import strftime
 from django.conf import settings
 from django.http import HttpResponse
 from django.template import loader, Context
@@ -81,7 +82,7 @@ def member_list(request):
         context = Context({'members': members})
         res = tasks.export_csv.delay(context,
                                      'editorialmanager/member/export_member_csv.txt',
-                                     'download.csv')
+                                     'board_%s.csv' % strftime("%Y-%m-%d-%H:%M:%S"))
 
         response_data = json.dumps({"task_id": str(res.id)})
 
