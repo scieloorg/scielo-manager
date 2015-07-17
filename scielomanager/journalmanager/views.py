@@ -31,7 +31,6 @@ from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.conf import settings
 from django.db.models import Q
-import waffle
 
 from . import models
 from .forms import *
@@ -752,7 +751,7 @@ def add_sponsor(request, sponsor_id=None):
     Handles new and existing sponsors
     """
 
-    if  sponsor_id is None:
+    if sponsor_id is None:
         sponsor = models.Sponsor()
     else:
         sponsor = get_object_or_404(models.Sponsor.userobjects.active(), id=sponsor_id)
@@ -833,14 +832,14 @@ def edit_issue(request, journal_id, issue_id=None):
             This method is useful to get the correct IssueForm based on issue_type.
         """
         form_kwargs = {
-            'params' : {
+            'params': {
                 'journal': journal,
             },
-            'querysets' : {
+            'querysets': {
                 'section': journal.section_set.filter(is_trashed=False),
                 'use_license': models.UseLicense.objects.all(),
             },
-            'instance' : instance,
+            'instance': instance,
         }
 
         form_args = []
@@ -968,7 +967,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                      'ctrl_vocabulary': journal.ctrl_vocabulary}
         issue = models.Issue()
 
-        #get last issue of the journal
+        # get last issue of the journal
         last_issue = journal.get_last_issue()
     else:
         data_dict = None
@@ -992,35 +991,34 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             if titleformset.is_valid():
                 titleformset.save()
 
-            if waffle.flag_is_active(request, 'editorialmanager'):
-                # if is a new issue copy editorial board from the last issue
-                if issue_id is None and last_issue:
-                    try:
-                        members = last_issue.editorialboard.editorialmember_set.all()
-                    except ObjectDoesNotExist:
-                        messages.info(request,
-                            _("Issue created successfully, however we can not create the editorial board."))
-                        notifications.issue_board_replica(issue, 'issue_add_no_replicated_board')
-                    else:
-                        ed_board = EditorialBoard()
-                        ed_board.issue = saved_issue
-                        ed_board.save()
+            # if is a new issue copy editorial board from the last issue
+            if issue_id is None and last_issue:
+                try:
+                    members = last_issue.editorialboard.editorialmember_set.all()
+                except ObjectDoesNotExist:
+                    messages.info(request,
+                        _("Issue created successfully, however we can not create the editorial board."))
+                    notifications.issue_board_replica(issue, 'issue_add_no_replicated_board')
+                else:
+                    ed_board = EditorialBoard()
+                    ed_board.issue = saved_issue
+                    ed_board.save()
 
-                        for member in members:
-                            member.board = ed_board
-                            member.pk = None
-                            member.save()
+                    for member in members:
+                        member.board = ed_board
+                        member.pk = None
+                        member.save()
 
-                        notifications.issue_board_replica(issue, 'issue_add_replicated_board')
+                    notifications.issue_board_replica(issue, 'issue_add_replicated_board')
 
-                audit_data = {
-                    'user': request.user,
-                    'obj': issue,
-                    'message': helpers.construct_create_message(add_form, [titleformset, ]),
-                    'old_values': '',
-                    'new_values': helpers.collect_new_values(add_form, [titleformset, ]),
-                }
-                helpers.log_create(**audit_data)
+            audit_data = {
+                'user': request.user,
+                'obj': issue,
+                'message': helpers.construct_create_message(add_form, [titleformset, ]),
+                'old_values': '',
+                'new_values': helpers.collect_new_values(add_form, [titleformset, ]),
+            }
+            helpers.log_create(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
 
@@ -1276,7 +1274,7 @@ def ajx_add_journal_to_user_collection(request, journal_id):
         }
 
     else:
-        #The journal is join to new collection with status ``inprogress``
+        # The journal is join to new collection with status ``inprogress``
         journal.join(user_collection, request.user)
         messages.error(request, _('%s add to collection %s') % (journal, user_collection))
 

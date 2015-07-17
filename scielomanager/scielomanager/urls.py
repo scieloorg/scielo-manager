@@ -3,7 +3,6 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
 from tastypie.api import Api
-import waffle
 
 from journalmanager import views, models
 from api import resources_v1, resources_v2

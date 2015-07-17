@@ -243,13 +243,13 @@ class EditorialMemberFormAsEditorTests(WebTest):
         audit_entries = AuditLogEntry.objects.all()
         self.assertEqual(audit_entries.count(), 1)
         entry = audit_entries[0]
-        self.assertEqual(entry.action_flag, ADDITION) # Flag correspond with ADDITION action
+        self.assertEqual(entry.action_flag, ADDITION)  # Flag correspond with ADDITION action
         self.assertEqual(entry.content_type.model_class(), EditorialMember)
         audited_obj = entry.get_audited_object()
         self.assertEqual(audited_obj._meta.object_name, 'EditorialMember')
         self.assertEqual(audited_obj.pk, members[0].pk)
 
-        self.assertIn(u'Added fields:', entry.change_message) # message starts with u'Added fields:'
+        self.assertIn(u'Added fields:', entry.change_message)  # message starts with u'Added fields:'
         for field_name in member_data.keys():
             self.assertIn(field_name, entry.change_message)
 
@@ -491,10 +491,10 @@ class EditorialMemberFormAsEditorTests(WebTest):
         audit_entries = AuditLogEntry.objects.all()
         self.assertEqual(audit_entries.count(), 1)
         entry = audit_entries[0]
-        self.assertEqual(entry.action_flag, DELETION) # Flag correspond with DELETE action
+        self.assertEqual(entry.action_flag, DELETION)  # Flag correspond with DELETE action
         self.assertEqual(entry.content_type.model_class(), EditorialMember)
         audited_obj = entry.get_audited_object()
-        self.assertIsNone(audited_obj) # audited object (member) was deleted, so, no referece to it
+        self.assertIsNone(audited_obj)  # audited object (member) was deleted, so, no referece to it
         expected_change_msg = u'Record DELETED (%s, pk: %s): %s' % (member.pk, member._meta.verbose_name, unicode(member))
         self.assertEqual(entry.change_message, expected_change_msg)
 
@@ -695,7 +695,6 @@ class MembersSortingOnActionTests(WebTest):
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, ])
 
-
     def test_three_roles_six_members_delete_fourth_member_must_keep_sequence(self):
         """
         Create 6 board members, 3 pairs with 3 different roles. [a1(1), a2(1), a3(2), a4(2), a5(3), a6(3), ]
@@ -789,7 +788,6 @@ class MembersSortingOnActionTests(WebTest):
         )
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, ])
-
 
     def test_three_roles_three_members_add_member_to_second_role_must_keep_sequence(self):
         """
@@ -970,7 +968,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
 
-
     def test_three_roles_three_members_edit_3rd_member_role_to_a_new_role_must_keep_sequence(self):
         """
         Create 3 board members, each one with different roles. (a1, a2, a3,)
@@ -1000,7 +997,6 @@ class MembersSortingOnActionTests(WebTest):
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
         self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 3, ])
-
 
     def test_three_roles_three_members_edit_1st_member_role_to_the_2nd_role_must_keep_sequence(self):
         """
@@ -1062,8 +1058,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertIn('Board Member updated successfully.', response.body)
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
-        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4,])
-
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4, ])
 
     def test_three_roles_six_members_edit_2nd_member_role_to_a_new_role_must_keep_sequence(self):
         """
@@ -1096,8 +1091,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertIn('Board Member updated successfully.', response.body)
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
-        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4,])
-
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 2, 2, 3, 3, 4, ])
 
     def test_three_roles_six_members_edit_3rd_member_role_to_a_new_role_must_keep_sequence(self):
         """
@@ -1129,8 +1123,7 @@ class MembersSortingOnActionTests(WebTest):
         self.assertIn('Board Member updated successfully.', response.body)
         self.assertTemplateUsed(response, 'board/board_list.html')
         # check the order of the board members
-        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, 3, 4,])
-
+        self.assertEqual([m.order for m in board.editorialmember_set.all()], [1, 1, 2, 3, 3, 4, ])
 
     def test_three_roles_six_members_edit_1st_member_role_to_the_2nd_role_must_keep_sequence(self):
         """
@@ -1415,7 +1408,7 @@ class EditRoleTypeForm(WebTest):
         audit_entries = AuditLogEntry.objects.all()
         self.assertEqual(audit_entries.count(), 1)
         entry = audit_entries[0]
-        self.assertEqual(entry.action_flag, ADDITION) # Flag correspond with ADD action
+        self.assertEqual(entry.action_flag, ADDITION)  # Flag correspond with ADD action
         self.assertEqual(entry.content_type.model_class(), RoleType)
         audited_obj = entry.get_audited_object()
         self.assertEqual(audited_obj._meta.object_name, 'RoleType')
@@ -1431,7 +1424,7 @@ class EditRoleTypeForm(WebTest):
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
         # when
         response = self.app.get(reverse("editorial.role.add", args=[self.journal.id]), user=self.user)
-        new_role_name = "" # empty name for a mandatory field is invalid
+        new_role_name = ""  # empty name for a mandatory field is invalid
         # when
         form = response.forms['role-form']
         form['name'] = new_role_name
@@ -1488,8 +1481,6 @@ class EditRoleTypeForm(WebTest):
         self.assertEqual(pre_submittion_audit_logs_count, 0)
         self.assertEqual(AuditLogEntry.objects.all().count(), 0)
 
-
-
     def test_EDIT_ROLE_valid_POST_is_valid(self):
         # with
         board = EditorialBoard.objects.create(issue=self.issue)
@@ -1518,7 +1509,7 @@ class EditRoleTypeForm(WebTest):
         audit_entries = AuditLogEntry.objects.all()
         self.assertEqual(audit_entries.count(), 1)
         entry = audit_entries[0]
-        self.assertEqual(entry.action_flag, CHANGE) # Flag correspond with ADD action
+        self.assertEqual(entry.action_flag, CHANGE)  # Flag correspond with ADD action
         self.assertEqual(entry.content_type.model_class(), RoleType)
         audited_obj = entry.get_audited_object()
         self.assertEqual(audited_obj._meta.object_name, 'RoleType')
@@ -1581,7 +1572,7 @@ class EditRoleTypeForm(WebTest):
         # when
         response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
         form = response.forms['role-translations-form']
-        for x in xrange(0,3):
+        for x in xrange(0, 3):
             form['role-translations-formset-%s-name' % x] = data[x]['name']
             form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
 
@@ -1594,7 +1585,7 @@ class EditRoleTypeForm(WebTest):
         # check db:
         translations = RoleTypeTranslation.objects.filter(role=role)
         self.assertEqual(translations.count(), 3)
-        for x in xrange(0,3):
+        for x in xrange(0, 3):
             t = translations.get(language=data[x]['language'])
             self.assertEqual(t.name, data[x]['name'])
 
@@ -1603,7 +1594,7 @@ class EditRoleTypeForm(WebTest):
         audit_entries = AuditLogEntry.objects.all()
         self.assertEqual(audit_entries.count(), 1)
         entry = audit_entries[0]
-        self.assertEqual(entry.action_flag, CHANGE) # Flag correspond with ADD action
+        self.assertEqual(entry.action_flag, CHANGE)  # Flag correspond with ADD action
         self.assertEqual(entry.content_type.model_class(), RoleType)
         audited_obj = entry.get_audited_object()
         self.assertEqual(audited_obj._meta.object_name, 'RoleType')
@@ -1634,7 +1625,7 @@ class EditRoleTypeForm(WebTest):
         # when
         response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
         form = response.forms['role-translations-form']
-        for x in xrange(0,3):
+        for x in xrange(0, 3):
             form['role-translations-formset-%s-name' % x] = data[x]['name']
             form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
 
@@ -1676,7 +1667,7 @@ class EditRoleTypeForm(WebTest):
         # when
         response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
         form = response.forms['role-translations-form']
-        for x in xrange(0,3):
+        for x in xrange(0, 3):
             form['role-translations-formset-%s-name' % x] = data[x]['name']
             form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
 
