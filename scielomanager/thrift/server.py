@@ -7,9 +7,11 @@ from celery.result import AsyncResult
 
 from journalmanager import tasks
 from thrift import spec
+from scielomanager import connectors
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+ARTICLE_ES_CLIENT = connectors.ArticleElasticsearch()
 
 
 ERRNO_NS = {
@@ -44,8 +46,8 @@ class RPCHandler(object):
             return delayed_task.id
 
         except Exception as exc:
-            logger.exception(exc)
-            raise spec.ServerError(message='Something bad happened')
+            LOGGER.exception(exc)
+            raise spec.ServerError()
 
     @resource_cleanup
     def getTaskResult(self, task_id):
@@ -60,7 +62,7 @@ class RPCHandler(object):
                     try:
                         errno = ERRNO_NS[result_cls_name]
                     except KeyError:
-                        logger.error('Undefined errno: %s', result_cls_name)
+                        LOGGER.error('Undefined errno: %s', result_cls_name)
                         raise spec.ServerError()
 
                     value = [errno, result.message]
@@ -68,7 +70,7 @@ class RPCHandler(object):
                     value = result
 
             except Exception as exc:
-                logger.exception(exc)
+                LOGGER.exception(exc)
                 raise spec.ServerError()
 
             status = getattr(spec.ResultStatus, async_result.status)
@@ -77,5 +79,43 @@ class RPCHandler(object):
         finally:
             if can_forget:
                 async_result.forget()
-                logger.info('Forgot the result of task %s', task_id)
+                LOGGER.info('Forgot the result of task %s', task_id)
+
+    def scanArticles(self, es_dsl_query):
+        try:
+            return ARTICLE_ES_CLIENT.scan(es_dsl_query)
+
+        except connectors.exceptions.BadRequestError:
+            raise spec.BadRequestError()
+
+        except connectors.exceptions.TimeoutError:
+            raise spec.TimeoutError()
+
+        except Exception as exc:
+            LOGGER.exception(exc)
+            raise spec.ServerError()
+
+    def getScanArticlesBatch(self, batch_id):
+        try:
+            next_id, batch = ARTICLE_ES_CLIENT.scroll(batch_id)
+
+        except connectors.exceptions.BadRequestError:
+            raise spec.BadRequestError()
+
+        except connectors.exceptions.TimeoutError:
+            raise spec.TimeoutError()
+
+        except Exception as exc:
+            LOGGER.exception(exc)
+            raise spec.ServerError()
+
+        articles = [spec.Article(**data) for data in batch]
+
+        results = spec.ScanArticlesResults()
+        if articles:
+            results.articles = articles
+        if next_id:
+            results.next_batch_id = next_id
+
+        return results
 

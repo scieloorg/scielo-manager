@@ -1,7 +1,7 @@
 # coding: utf-8
 try:
     from hashlib import md5
-except:
+except ImportError:
     from md5 import new as md5
 import re
 
@@ -9,8 +9,9 @@ from django.db.models.sql.datastructures import EmptyResultSet
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.contrib.auth.models import Group, User
+from django.core import exceptions
 
-from scielomanager import settings
+from django.conf import settings
 
 
 class NullPaginator(object):
@@ -136,3 +137,14 @@ def user_receive_emails(user):
         return user.get_profile().email_notifications
     else:
         return False
+
+
+def get_setting_or_raise(name):
+    """ Retorna a diretiva de configuração `name` ou levanta exceção.
+    """
+    try:
+        setting = getattr(settings, name)
+    except AttributeError:
+        raise exceptions.ImproperlyConfigured('Setting "%s" is missing' % name)
+
+    return setting
