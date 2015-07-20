@@ -3,7 +3,7 @@
 import json
 from time import strftime
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.template import loader, Context
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
@@ -13,10 +13,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from celery.task.control import revoke
 from djcelery import views as celery_views
 
-from django_countries.data import COUNTRIES
-
 from editorialmanager.models import EditorialMember
-from journalmanager.models import Collection, SubjectCategory
+from journalmanager.models import Collection, SubjectCategory, Journal
 from scielomanager.tools import get_paginated
 from journalmanager import choices
 
@@ -54,6 +52,9 @@ def member_list(request):
     if request.GET.get('collection'):
         filters['board__issue__journal__collections__in'] = request.GET.getlist('collection')
 
+    if request.GET.get('subject_category'):
+        filters['board__issue__journal__title__in'] = request.GET.getlist('journal')
+
     if request.GET.get('country'):
         filters['country__in'] = request.GET.getlist('country')
 
@@ -62,6 +63,12 @@ def member_list(request):
 
     if request.GET.get('subject_category'):
         filters['board__issue__journal__subject_categories__in'] = request.GET.getlist('subject_category')
+
+    if request.GET.get('city'):
+        filters['city__in'] = request.GET.getlist('city')
+
+    if request.GET.get('state'):
+        filters['state__in'] = request.GET.getlist('state')
 
     distinct_list = ['first_name', 'last_name', 'email', 'institution', 'city', 'state', 'country']
 
@@ -73,9 +80,17 @@ def member_list(request):
     # Get all itens of filters
     collections = Collection.objects.all()
 
+    journals = Journal.objects.all()
+
     study_area = choices.SUBJECTS
 
     subject_categories = SubjectCategory.objects.all()
+
+    cities = EditorialMember.objects.order_by().values('city').distinct()
+
+    states = EditorialMember.objects.order_by().values('state').distinct()
+
+    countries = EditorialMember.objects.order_by().values('country').distinct()
 
     # Start a task to export a CSV file with members
     if request.is_ajax() and request.GET.get('export_csv'):
@@ -92,12 +107,19 @@ def member_list(request):
 
     return render_to_response('editorialmanager/member/member_list.html',
                               {'members': objects,
+                               'has_filter': len(filters) > 0,
                                'collections': collections,
-                               'countries': COUNTRIES,
+                               'journal': journals,
+                               'cities': cities,
+                               'states': states,
                                'study_areas': study_area,
+                               'countries': countries,
                                'subject_categories': subject_categories,
                                'selc_collections': [int(i) for i in request.GET.getlist('collection')],
+                               'selc_journals': [int(i) for i in request.GET.getlist('journal')],
                                'selc_contries': request.GET.getlist('country'),
+                               'selc_cities': request.GET.getlist('city'),
+                               'selc_states': request.GET.getlist('state'),
                                'selc_study_areas': request.GET.getlist('study_area'),
                                'selc_subject_categories': [int(i) for i in request.GET.getlist('subject_category')]},
                               context_instance=RequestContext(request))
@@ -123,7 +145,7 @@ def task_status(request, task_id):
     if request.is_ajax():
         return celery_views.is_task_successful(request, task_id)
     else:
-        raise Http404("Requested Issue does not exist")
+        raise Http404()
 
 
 @login_required

@@ -28,7 +28,7 @@
           <i class="icon-download-alt"></i> {% trans 'Export CSV' %}
         </button>
         <a class="btn btn-small btn-primary drawer-toggle" href="javascript:void(0)">
-          <i class="icon-search icon-white"></i> {% if selc_collections|length > 0 or selc_contries|length > 0 or selc_study_areas|length > 0 or selc_subject_categories|length > 0 %} {% trans 'Update Filters' %} {% else %} {% trans 'Filters' %} {% endif %}
+          <i class="icon-search icon-white"></i> {% if has_filter %} {% trans 'Update Filters' %} {% else %} {% trans 'Filters' %} {% endif %}
         </a>
       </div>
 
@@ -112,22 +112,65 @@
                   </div>
                 </div>
 
+                <div class="control-group ">
+                  <div class="controls">
+                      <select name="journal" data-placeholder="{% trans 'Journal name' %}" class="chzn-select" multiple="">
+                        <option value=""></option>
+                        {% for journal in journal %}
+                          {% if journal.id in selc_journals %}
+                           <option selected value="{{journal.id}}">{{journal.title}}</option>
+                          {% else %}
+                           <option value="{{journal.id}}">{{journal.title}}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                  </div>
+                </div>
 
                 <div class="control-group ">
                   <div class="controls">
-                    <select name="country" data-placeholder="{% trans 'Country' %}" class="chzn-select" multiple="">
+                    <select name="city" data-placeholder="{% trans 'City' %}" class="chzn-select" multiple="">
                       <option value=""></option>
-                      {% for alpha, country in countries.iteritems %}
-                        {% if alpha in selc_contries %}
-                          <option selected value="{{alpha}}">{{country}}</option>
+                      {% for city in cities %}
+                        {% if city.city in selc_cities %}
+                          <option selected value="{{city.city}}">{{city.city}}</option>
                         {% else %}
-                          <option value="{{alpha}}">{{country}}</option>
+                          <option value="{{city.city}}">{{city.city}}</option>
                         {% endif %}
                       {% endfor %}
                     </select>
                   </div>
                 </div>
 
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="state" data-placeholder="{% trans 'State' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for state in states %}
+                        {% if state.state in selc_states %}
+                          <option selected value="{{state.state}}">{{state.state}}</option>
+                        {% else %}
+                          <option value="{{state.state}}">{{state.state}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="country" data-placeholder="{% trans 'Country' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for country in countries %}
+                        {% if country.country in selc_contries %}
+                          <option selected value="{{country.country}}">{{country.country}}</option>
+                        {% else %}
+                          <option value="{{country.country}}">{{country.country}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
 
                 <div class="control-group ">
                   <div class="controls">
