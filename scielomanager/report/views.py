@@ -52,8 +52,8 @@ def member_list(request):
     if request.GET.get('collection'):
         filters['board__issue__journal__collections__in'] = request.GET.getlist('collection')
 
-    if request.GET.get('subject_category'):
-        filters['board__issue__journal__title__in'] = request.GET.getlist('journal')
+    if request.GET.get('journal'):
+        filters['board__issue__journal_id__in'] = request.GET.getlist('journal')
 
     if request.GET.get('country'):
         filters['country__in'] = request.GET.getlist('country')

@@ -40,6 +40,7 @@
   <thead>
     <tr>
       <th>{% trans 'Role' %}</th>
+      <th>{% trans 'Journal' %}</th>
       <th>{% trans 'First Name' %}</th>
       <th>{% trans 'Last Name' %}</th>
       <th>{% trans 'E-mail' %}</th>
@@ -56,6 +57,9 @@
         {{ member.role }}
       </td>
       <td>
+        {{ member.board.issue.journal.title }}
+      </td>
+      <td>
         {{ member.first_name }}
       </td>
       <td>
@@ -64,7 +68,7 @@
       <td width="200">
         {{ member.email }}
       </td>
-      <td width="500">
+      <td width="300">
         {{ member.institution }}
       </td>
       <td>
@@ -79,7 +83,7 @@
     </tr>
     {% empty%}
     <tr>
-      <td colspan="8">{% trans 'No result found' %}</td>
+      <td colspan="9">{% trans 'No result found' %}</td>
     </tr>
     {% endfor %}
   </tbody>
