@@ -1,5 +1,6 @@
 {% extends "base_lv1.html" %}
 {% load pagination_tags %}
+{% load countries %}
 {% load i18n %}
 
 {% block content %}
@@ -167,9 +168,9 @@
                       <option value=""></option>
                       {% for country in countries %}
                         {% if country.country in selc_contries %}
-                          <option selected value="{{country.country}}">{{country.country}}</option>
+                          <option selected value="{{country.country}}">{% get_country_name country.country  %}</option>
                         {% else %}
-                          <option value="{{country.country}}">{{country.country}}</option>
+                          <option value="{{country.country}}">{% get_country_name country.country %}</option>
                         {% endif %}
                       {% endfor %}
                     </select>
