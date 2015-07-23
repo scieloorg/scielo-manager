@@ -154,7 +154,7 @@ function has_valid_orcid(orcid_id){
 
 $('#id_orcid').on('input', function(event) {
   /* Para cada mudança no campo '#id_orcid':
-   * Valida o fomarto do valor inserido no campo (has_valid_orcid(...)).
+   * Valida o formato do valor inserido no campo (has_valid_orcid(...)).
    * - Se for válido, é criado um link para que o usuário possa validar visualmente.
    * - Se o conteúdo do campo é vazio, então é considerado como válido também.
    */

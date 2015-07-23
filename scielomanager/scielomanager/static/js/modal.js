@@ -29,7 +29,10 @@
 $(function() {
 
   /* hack to reload ajax content, and avoid caching trap */
-  $('.modal').on('hidden', function() { $(this).removeData(); })
+  $('.modal').on('hidden', function() {
+    $(this).removeData();
+    $('.btn-resize-small').click();
+  });
   $('.modal').on('loaded', function () {
     $(this).find('input').addClass('span12');
     $(this).find(".chzn-select").chosen({
