@@ -36,7 +36,7 @@ class EditorialMember(models.Model):
     city = models.CharField(_('City'), max_length=256, null=True, blank=True)
     state = models.CharField(_('State'), max_length=256, null=True, blank=True)
     country = CountryField(_('Country'), blank_label="----------")
-    research_id = models.CharField(_('ResearchID'), max_length=256, null=True, blank=True)
+    research_id = models.CharField(_('ResearcherID'), max_length=256, null=True, blank=True)
     orcid = models.CharField(_('ORCID'), max_length=256, null=True, blank=True)
 
     order = models.IntegerField(_('board order'), default=1)
