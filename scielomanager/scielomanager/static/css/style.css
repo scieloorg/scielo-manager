@@ -541,6 +541,19 @@ table._listings h4 {
   color: red;
 }
 
+<<<<<<< 3347af0ba8e2767b65a8257826ea1552af4a7cd9
+=======
+.preview_container {
+  border: 1px solid #000;
+  width: 100%;
+  height: 1000px;
+}
+
+.tab-pane.tab-pane-preview {
+    overflow: hidden;
+}
+
+>>>>>>> Integração com a nova versão de HMTLGenerator do packtools
 .autocomplete-suggestions {
   border: 1px solid #999;
   background: #FFF;
