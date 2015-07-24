@@ -1,6 +1,5 @@
 {% load i18n %}
 {% load modal %}
-{% load countries %}
 
 {% include "includes/journal_detail_info.html" %}
 
@@ -154,7 +153,7 @@
                                           {% if member.institution %} &bull; {{ member.institution }}{% endif %}
                                           {% if member.city %} &bull; {{ member.city }} {% endif %}
                                           {% if member.state %} &bull; {{ member.state }} {% endif %}
-                                          {% if member.country %} &bull; {% get_country_name member.country %} {% endif %}
+                                          {% if member.country %} &bull; {{ member.country.name }} {% endif %}
                                           {% if member.email %}
                                             <a href="mailto:{{ member.email }}">
                                               <i class="icon-envelope"></i> {{ member.email }}

@@ -2,7 +2,7 @@
 
 /* Este codigo contém callbacks que pode ser executado em duas situações:
  * - Quando o formulario de adicionar um Board Member é carregado no modal (após ser disparado o evento: 'loaded')
- * - QUando o formulario de adicionar um Board Member é carregado numa página simples, (não no modal, nem com ajax.load)
+ * - Quando o formulario de adicionar um Board Member é carregado numa página simples, (não no modal, nem com ajax.load)
  */
 
 /*** campo Institution: AUTOCOMPLETE: ***/
