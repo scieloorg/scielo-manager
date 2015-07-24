@@ -35,7 +35,7 @@ class EditorialMember(models.Model):
     link_cv = models.URLField(_('Link CV'), null=True, blank=True)
     city = models.CharField(_('City'), max_length=256, null=True, blank=True)
     state = models.CharField(_('State'), max_length=256, null=True, blank=True)
-    country = CountryField(_('Country'), default='')
+    country = CountryField(_('Country'), blank_label="----------")
     research_id = models.CharField(_('ResearchID'), max_length=256, null=True, blank=True)
     orcid = models.CharField(_('ORCID'), max_length=256, null=True, blank=True)
 
