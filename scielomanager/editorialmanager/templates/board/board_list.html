@@ -27,6 +27,8 @@
     //Register autocomplete when model made visible to the user
     $('#id_modal_form').on('loaded', function(){
       {% include "includes/add_member_form_loaded_callbacks.js" %}
+
+      $('.btn-resize-full').click()
     });//loaded
 
     function display_error(message){
