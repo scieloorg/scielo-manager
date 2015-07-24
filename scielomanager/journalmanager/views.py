@@ -32,6 +32,7 @@ from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.conf import settings
 from django.db.models import Q
+from django.templatetags.static import static
 import waffle
 
 from . import models
@@ -310,9 +311,10 @@ def article_detail(request, article_pk):
     article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
     previews = []
 
-    if article.xml:
+    if article.xml and not article.is_aop:
         try:
-            for lang, html_output in packtools.HTMLGenerator(article.xml.root_etree, valid_only=False):
+            css_url = static('css/htmlgenerator/styles.css')
+            for lang, html_output in packtools.HTMLGenerator(article.xml.root_etree, valid_only=False, css=css_url):
                 previews.append({'lang': lang, 'html': html_output})
         except Exception:
             # qualquer exeção aborta a pre-visualização mas continua com o resto
