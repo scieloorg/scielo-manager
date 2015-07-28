@@ -1,0 +1,2 @@
+role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code_alpha3, research_id, orcid{% for member in members %}
+"{{member.role.name}}", "{{member.first_name}}", "{{member.last_name}}", "{{member.first_name}} {{member.last_name}}", "{{member.email}}", "{{member.institution|safe}}", "{{member.link_cv}}", "{{member.state}}", "{{member.country.name}}", "{{member.country}}", "{{member.country.alpha3}}", "{{member.research_id}}", "{{member.orcid}}"{% endfor %}

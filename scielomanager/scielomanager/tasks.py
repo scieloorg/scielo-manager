@@ -3,8 +3,15 @@ import logging
 
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.http import HttpResponse
+from django.template import loader
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+
 
 from scielomanager.celery import app
+
+from editorialmanager.models import EditorialMember
 
 logger = logging.getLogger(__name__)
 
@@ -41,4 +48,43 @@ def send_mail(self, subject, content, to_list=None, bcc_list=None, html=True):
         return ret
     except Exception as e:
         logger.error("Failed to send email message (to {0!r}) (bcc: {1!r}), traceback: {2!s}".format(to_list, bcc_list, e))
+        raise self.retry(exc=e)
+
+
+@app.task(bind=True)
+def export_csv(self, context, template, filename):
+    """
+    This task has the responsability to generate the CSV file based on parameters
+    context and template.
+
+    :param context: A django context object (django.template.Context)
+    :param template: path to template
+    :param filename: Name of the file
+
+    Return a HttpResponse object.
+
+    If any exception occurred the task will be re-executed in 3 minutes until
+    default max_retries 3 times, all are celery default params
+    """
+
+    try:
+        response = HttpResponse(mimetype='text/csv')
+
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+
+        tm = loader.get_template(template)
+
+        def gen_csv_data_windows_line():
+            csv_data = tm.render(context)
+            for line in csv_data.splitlines():
+                yield line.rstrip() + u'\r\n'
+
+        response.write(u''.join(gen_csv_data_windows_line()))
+
+        logger.info("Successfully gerenate CSV file.")
+
+        return response
+
+    except Exception as e:
+        logger.error("Failed to generate CSV file, traceback: {0!s}".format(e))
         raise self.retry(exc=e)

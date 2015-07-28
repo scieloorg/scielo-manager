@@ -5,7 +5,7 @@
  */
 
 $(document).ready(function() {
-    $("select[multiple]").asmSelect({
+    $(".asmselect").asmSelect({
         sortable: true,
         animate: true,
         addItemTarget: 'bottom',

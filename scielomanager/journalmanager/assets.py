@@ -15,6 +15,7 @@ plugins_bundle = Bundle('../static/js/jquery/jquery.asmselect.js',
                         '../static/js/jquery/jquery.formset.js',
                         '../static/js/angular/ui-bootstrap-tpls-0.4.0.js',
                         '../static/js/jquery/select2.js',
+                        '../static/js/jquery/jquery.drawer.js',
                         '../static/js/jquery/jquery.autocomplete.js')
 
 app_bundle = Bundle('../static/js/bulk_actions.js',
@@ -22,8 +23,10 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     '../static/js/multiselect.js',
                     '../static/js/combobox.js',
                     '../static/js/bootstrap.js',
+                    '../static/js/iscroll-lite.js',
                     '../static/js/chosen.jquery.js',
                     '../static/js/modal.js',
+                    '../static/js/utils.js',
                     )
 
 
@@ -38,6 +41,7 @@ css = Bundle('../static/css/bootstrap.css',
              '../static/css/jquery.asmselect.css',
              '../static/css/select2.css',
              '../static/css/chosen.css',
+             '../static/css/drawer.css',
              '../static/css/style.css', filters='yui_css', output='css/bundle.min.css')
 
 register('css', css)

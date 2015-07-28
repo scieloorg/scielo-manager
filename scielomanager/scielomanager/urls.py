@@ -92,6 +92,7 @@ urlpatterns = patterns('',
     url(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
         views.generic_bulk_action, name='trash.bulk_action'),
     url(r'^export/', include('export.urls')),
+    url(r'^report/', include('report.urls')),
     url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
     url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
 

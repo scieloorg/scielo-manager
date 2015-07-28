@@ -1,0 +1,334 @@
+{% extends "base_lv1.html" %}
+{% load pagination_tags %}
+{% load countries %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="row">
+
+  <div class="span6">
+    <h2>{% trans 'Editorial Member Report' %}</h2>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="span12">
+
+      <!-- Considerando que o primeiro pull right acontece primeiro, devemos
+      iniciar com a paginação e depois com os botões -->
+
+      <div class="pull-right">
+        {% simple_pagination members %}
+      </div>
+
+      <div class="pull-right">
+        <button id="export_csv" class="btn btn-small"  name="export_csv" type="submit">
+          <i class="icon-download-alt"></i> {% trans 'Export CSV' %}
+        </button>
+        <a class="btn btn-small btn-primary drawer-toggle" href="javascript:void(0)">
+          <i class="icon-search icon-white"></i> {% if has_filter %} {% trans 'Update Filters' %} {% else %} {% trans 'Filters' %} {% endif %}
+        </a>
+      </div>
+
+  </div>
+
+</div>
+
+<table class="table table-striped _listings">
+  <thead>
+    <tr>
+      <th>{% trans 'Role' %}</th>
+      <th>{% trans 'Journal' %}</th>
+      <th>{% trans 'First Name' %}</th>
+      <th>{% trans 'Last Name' %}</th>
+      <th>{% trans 'E-mail' %}</th>
+      <th>{% trans 'Institution' %}</th>
+      <th>{% trans 'City' %}</th>
+      <th>{% trans 'State' %}</th>
+      <th>{% trans 'Country' %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for member in members.object_list %}
+    <tr>
+      <td>
+        {{ member.role }}
+      </td>
+      <td>
+        {{ member.board.issue.journal.title }}
+      </td>
+      <td>
+        {{ member.first_name }}
+      </td>
+      <td>
+        {{ member.last_name}}
+      </td>
+      <td width="200">
+        {{ member.email }}
+      </td>
+      <td width="300">
+        {{ member.institution }}
+      </td>
+      <td>
+        {{ member.city }}
+      </td>
+      <td>
+        {{ member.state }}
+      </td>
+      <td>
+        {{ member.country.name }}
+      </td>
+    </tr>
+    {% empty%}
+    <tr>
+      <td colspan="9">{% trans 'No result found' %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<body class="drawer drawer-right">
+
+  <header role="banner">
+
+    <div class="drawer-main drawer-default">
+
+      <nav class="drawer-nav" role="navigation">
+          <div style="margin:10px">
+
+          <h3>{% trans 'Filters' %}</h3>
+              <form id="filter_form" method="get" action="{% url report.member_list %}">
+
+                <div class="control-group ">
+                  <div class="controls">
+                      <select name="collection" data-placeholder="{% trans 'Collection name' %}" class="chzn-select" multiple="">
+                        <option value=""></option>
+                        {% for collection in collections %}
+                          {% if collection.id in selc_collections %}
+                           <option selected value="{{collection.id}}">{{collection}}</option>
+                          {% else %}
+                           <option value="{{collection.id}}">{{collection}}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                      <select name="journal" data-placeholder="{% trans 'Journal name' %}" class="chzn-select" multiple="">
+                        <option value=""></option>
+                        {% for journal in journal %}
+                          {% if journal.id in selc_journals %}
+                           <option selected value="{{journal.id}}">{{journal.title}}</option>
+                          {% else %}
+                           <option value="{{journal.id}}">{{journal.title}}</option>
+                          {% endif %}
+                        {% endfor %}
+                      </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="city" data-placeholder="{% trans 'City' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for city in cities %}
+                        {% if city.city in selc_cities %}
+                          <option selected value="{{city.city}}">{{city.city}}</option>
+                        {% else %}
+                          <option value="{{city.city}}">{{city.city}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="state" data-placeholder="{% trans 'State' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for state in states %}
+                        {% if state.state in selc_states %}
+                          <option selected value="{{state.state}}">{{state.state}}</option>
+                        {% else %}
+                          <option value="{{state.state}}">{{state.state}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="country" data-placeholder="{% trans 'Country' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for country in countries %}
+                        {% if country.country in selc_contries %}
+                          <option selected value="{{country.country}}">{% get_country_name country.country  %}</option>
+                        {% else %}
+                          <option value="{{country.country}}">{% get_country_name country.country %}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="study_area" data-placeholder="{% trans 'Study Area' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for name, value in study_areas %}
+                        {% if name in selc_study_areas %}
+                          <option selected value="{{value}}">{{name}}</option>
+                        {% else %}
+                          <option value="{{value}}">{{name}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-group ">
+                  <div class="controls">
+                    <select name="subject_category" data-placeholder="{% trans 'Subject Area' %}" class="chzn-select" multiple="">
+                      <option value=""></option>
+                      {% for subject_category in subject_categories %}
+                        {% if subject_category.id in selc_subject_categories %}
+                          <option selected value="{{subject_category.id}}">{{subject_category}}</option>
+                        {% else %}
+                          <option value="{{subject_category.id}}">{{subject_category}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <div class="controls">
+                    <button class="btn btn-small btn-block btn-primary" type="submit">
+                      <i class="icon-search icon-white"></i>
+                      {% trans 'Filter' %}
+                    </button>
+                    <a href="." class="btn btn-small btn-block btn-danger">
+                      <i class="icon-trash icon-white"></i>
+                      {% trans 'Clear' %}
+                    </a>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+      </nav>
+
+    </div>
+
+  </header>
+
+<!-- Modal -->
+<div id="export_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="export_modal_label" aria-hidden="false">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="export_modal_label">{% trans 'Export CSV' %}</h3>
+  </div>
+  <div id="export_modal_body" class="modal-body">
+    <p id="export_body_label" class="text-center"></p>
+    <p id="export_body_text" class="muted text-center"></p>
+  </div>
+  <div class="modal-footer">
+    <div class="pull-left">
+      <a href="#" id="export_btn" class=""></a>
+      <button id="export_btn_close" class="btn" data-dismiss="modal" aria-hidden="true">{% trans 'Close' %}</button>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+</body>
+
+{% endblock %}
+
+{% block extrafooter %}
+
+<script>
+
+  var inter_id;
+
+  function check_status(data){
+
+    inter_id = setInterval(function(){
+      $.ajax({
+        type: 'GET',
+        url: '/report/editorialmanager/task/status/' + data.task_id,
+        contentType: "application/json",
+        cache: false,
+        success: function(data){
+          if (data.task.executed == true){
+              clearInterval(inter_id);
+              $('#export_btn').attr('class', 'btn btn-success');
+              $('#export_btn').text("{% trans 'Download' %}");
+              $('#export_body_label').text("{% trans 'Your export is now available!' %}");
+              $('#export_body_text').text("{% trans 'Click on the 'Download' button below to begin downloading your file.' %}");
+              $('#export_btn').attr('href', '/report/editorialmanager/task/export_csv/' +  data.task.id);
+          }
+        },
+        error: function(e){
+          $('#export_body_text').text("{% trans 'Something wrong happen while try to generate the CSV....' %}");
+          clearInterval(inter_id);
+        }
+      });
+    }, 2000);
+
+  }
+
+  $('#export_modal').on('shown', function(){
+
+    var path = updateQueryStringParameter('{{request.get_full_path}}', 'export_csv', 'true');
+
+    $('#export_btn').attr('class', 'btn disabled');
+    $('#export_btn').text("{% trans 'Please Wait...' %}");
+    $('#export_body_label').text("{% trans 'Preparing CSV export...' %}");
+    $('#export_body_text').text("{% trans 'Were currently crunching your data in the background. Depending on the size of the data set, this may take a few minutes, but we promise our servers are hard at work!' %}");
+    $('#export_btn').attr('href', '#');
+
+    $.ajax({
+      type: 'GET',
+      url: path,
+      cache: false,
+      contentType: "application/json",
+      success: function(data)
+        {
+          check_status(data);
+        },
+      error: function(e)
+        {
+          $('#export_body_text').text("{% trans 'Something wrong happen while try to generate the CSV....' %}");
+        }
+    });
+
+
+  });
+
+  $('#export_modal').on('hidden', function(){
+    clearInterval(inter_id);
+  });
+
+  $('#export_csv').click(function(){
+    $('#export_modal').modal({backdrop: 'static'})
+  });
+
+  $(".chzn-select").chosen({
+    no_results_text: "{% trans 'No results found for' %}:",
+    width: "100%",
+  });
+
+  $(document).ready(function() {
+    $(".drawer").drawer();
+  });
+
+</script>
+
+{% endblock %}
+

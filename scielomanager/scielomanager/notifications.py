@@ -60,7 +60,6 @@ class Message(object):
 
         self.body = render_to_string(self.template_path, context)
 
-
     def set_recipients(self, *args, **kwargs):
         """
         Implement this method to update the recipients list, based in args and kwargs data.

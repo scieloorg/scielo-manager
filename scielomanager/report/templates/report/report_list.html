@@ -1,0 +1,22 @@
+{% extends "base_lv1.html" %}
+{% load i18n %}
+
+{% block extrahead %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="span3">
+    <h5><i class="icon-list-alt"></i> {% trans 'Editorial Board' %}</h5>
+    <div style="margin-left:15px;">
+      <dl>
+        <dt><a href="{% url report.member_list %}">Editorial Member List</a></dt>
+        <dd>Listing of all basic editorial members information.</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

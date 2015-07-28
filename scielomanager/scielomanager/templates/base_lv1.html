@@ -44,6 +44,11 @@
               </li>
             {% endif %}
           {% endif %}
+          {% if user.get_profile.is_librarian %}
+            <li id="report-link" class="{% active '/report/list/'%}">
+              <a href="{% url report.index %}">{% trans 'Reports' %}</a>
+            </li>
+          {% endif %}
           {% if perms.journalmanager.list_journal and perms.journalmanager.list_issue %}
             <li id="downloads-link" class="dropdown {% active '/export/' %}">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
