@@ -1,0 +1,137 @@
+{% extends "validator/base.html" %}
+
+{% load i18n %}
+{% load field_attrs %}
+{% load static %}
+{% block page_title %}{% trans "Packtools - SciELO HTML Previewer" %}{% endblock %}
+{% block main_content %}
+  <div class="ribbon">
+    <a href="#">Beta</a>
+  </div>
+
+  <div class="row-fluid">
+    <div class="span12 well">
+      <h2>{% trans "SciELO HTML Previewer" %}</h2>
+      <p>{% trans "Use this tool to preview your XML file as an HTML" %}</p>
+      <p>{% trans "Browse to your local XML file and click 'Preview'. The results will be displayed below." %}</p>
+
+      <form id='xml_upload_form' enctype="multipart/form-data" method="post" action="">
+        {% csrf_token %}
+
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a href="#XML" data-toggle="tab">
+              <i class="icon-upload"></i> {% trans "Upload XML" %}
+            </a>
+          </li>
+          <li>
+            <a href="#HELP" data-toggle="tab">
+              <i class="icon-question-sign"></i> {% trans "Help?" %}
+            </a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="XML">
+            {# FILE FIELD #}
+            {% with form.file as field %}
+              <div class="control-group {% if field.errors|length > 0 %}error{% endif %}">
+                {{ field }} {# use of |attr doesnt work, 'cause bootstrap js plugin:filestyle create a new input #}
+                <em>{% trans "Max. upload size" %}: <span class="label label-warning">{{ SETTINGS_MAX_UPLOAD_SIZE|filesizeformat }}</span></em>
+                {# field errors #}
+                {% for error in field.errors %}
+                  <div class="alert alert-error">
+                    {{ error }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endwith %}
+
+            <div class='form-buttons clearfix'>
+              <input type="button" class="btn btn-danger pull-left" id='form_clear_btn' value="{% trans 'Clear' %}" />
+              <input type="submit" class="btn btn-success pull-right" value="{% trans 'Preview' %}" />
+            </div>
+          </div>
+          <div class="tab-pane" id="HELP">
+            <div class="alert alert-info">
+              <i class="icon-question-sign"></i>&nbsp;
+              {% blocktrans %}
+              If you have any problems with the tool or with the SPS Tagging Guidelines, please contact:
+              <strong><a href="mailto:scielo-xml@googlegroups.com">scielo-xml@googlegroups.com</a></strong>.
+              {% endblocktrans %}
+            </div>
+          </div>
+        </div>
+
+        {# NON FIELD ERRORS #}
+        {% for error in form.non_field_errors %}
+          <div class="alert alert-error">
+            {{ error }}
+          </div>
+        {% endfor %}
+        <div id='form_messages' style='display:none;'>
+          {# js validations messages goes here #}
+        </div>
+      </form>
+    </div>
+  </div>
+  {% if previews %}
+    <div class="row">
+      <div class="span12">
+        <ul class="nav nav-tabs">
+          {# adiciono uma tab para cada linguagem/html gerado #}
+          {% for preview in previews %}
+            <li class="{% if forloop.first %} active {% endif %}">
+              <a data-toggle="tab" href="#preview_{{ preview.lang }}">
+                {% trans "HTML preview" %} ({{ preview.lang|upper }})
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="tab-content">
+          {% for preview in previews %}
+            <div class="tab-pane tab-pane-preview {% if forloop.first %} active {% endif %}" id="preview_{{ preview.lang }}">
+              <div class="preview_container">
+                <iframe id="iframe_{{preview.lang}}" scrolling="auto" src='' width="100%" height="1000px" frameborder="0"></iframe>
+              </div>
+            </div>
+          {% empty %}
+            <div class="alert alert-warning">
+              {% trans "No HTML generated, is the XML file valid?" %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% include "validator/includes/packtools_version.html" %}
+
+  <div style="display:none">
+    {% for preview in previews %}
+      <script id="content_{{preview.lang}}" type="text/html">
+          {{ preview.html|safe }}
+      </script>
+    {% endfor %}
+  </div>
+
+{% endblock main_content %}
+
+{% block extrafooter %}
+  {{ block.super }}
+  {% include "validator/includes/xml_upload_form_validation.html" %}
+
+  <script type="text/javascript">
+    $(function () {
+      /* fill the iframes with the content of script#content_LANG tags */
+      $('.preview_container').each(function(index, el) {
+        var frame = $(el).find('iframe')[0];
+        var lang = frame.id.split('_')[1];
+        var content = $('#content_' + lang);
+        var iframeDoc = frame.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(content.html());
+        iframeDoc.close();
+      });
+    });
+  </script>
+{% endblock extrafooter %}
