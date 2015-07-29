@@ -124,14 +124,11 @@
 {% endassets %}
     <script type="text/javascript">
         $(function () {
-            /* fill the iframes */
+            /* fill the iframes with the content of script#content_LANG tags */
             $('.preview_container').each(function(index, el) {
-                console.log($(el));
                 var frame = $(el).find('iframe')[0];
-                console.log('frame', frame);
                 var lang = frame.id.split('_')[1];
                 var content = $('#content_' + lang);
-                console.log(frame, lang, content)
                 var iframeDoc = frame.contentWindow.document;
                 iframeDoc.open();
                 iframeDoc.write(content.html());

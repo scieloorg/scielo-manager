@@ -589,3 +589,27 @@ table._listings h4 {
   border-bottom: 1px solid #000;
 }
 
+/* packtools forms > xml upload field */
+.custom-filestyle {
+  margin: 0 !important;
+}
+.ribbon {
+    background-color: #a00;
+    box-shadow: 0 0 10px #888;
+    overflow: hidden;
+    position: absolute;
+    right: -40px;
+    top: 50px;
+    transform: rotate(45deg);
+    white-space: nowrap;
+}
+.ribbon a {
+    border: 1px solid #faa;
+    color: #fff;
+    display: block;
+    margin: 1px 0;
+    padding: 10px 50px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 0 5px #444;
+}

@@ -5,17 +5,6 @@
 {% load static %}
 {% block page_title %}{% trans "Packtools - Style Checker" %}{% endblock %}
 {% block main_content %}
-<style type="text/css">
-  .tab-pane {
-    min-height: 50px;
-  }
-  .custom-filestyle {
-    margin: 0 !important;
-  }
-  .form-buttons {
-    margin-bottom: 20px;
-  }
-</style>
   <div class="row-fluid">
     <div class="span12 well">
       <h2>{% trans "SciELO Style Checker" %}</h2>
@@ -30,7 +19,7 @@
       {% endblocktrans %}
       </p>
 
-      <form id='stylechecker' enctype="multipart/form-data" method="post" action="">
+      <form id='xml_upload_form' enctype="multipart/form-data" method="post" action="">
         {% csrf_token %}
 
         <ul class="nav nav-tabs">
@@ -91,7 +80,6 @@
   </div>
 
   {% if results or xml_exception %}
-
     <div class="row-fluid">
       <div class="span12">
         {# annotations #}
@@ -101,67 +89,13 @@
         {# /annotations #}
       </div>
     </div>
-
   {% endif %}
 
-  <p class="text-center"><small>{% trans "packtools version" %}: <strong>{{ packtools_version }}</strong></small></p>
+  {% include "validator/includes/packtools_version.html" %}
 
 {% endblock main_content %}
+
 {% block extrafooter %}
-
-    <script type="text/javascript">
-    $(function () {
-      var stylechecker_form = $('#stylechecker');
-      var form_buttons = $('.form-buttons', stylechecker_form);
-      var filestyle_field = $(":file", stylechecker_form);
-      var selected_tab = null;
-
-      function display_form_msg(msg, type, append){
-        var form_messages = $('#form_messages');
-        var html;
-        form_messages.hide();
-
-        html = '<div class="alert alert-'+ type +'">';
-        html += '<a class="close" data-dismiss="alert" href="#">&times;</a>';
-        html += msg;
-        html += '</div>';
-        if (append) {
-          form_messages.append(html);
-        } else {
-          form_messages.html(html);
-        }
-        form_messages.show();
-      }
-
-      /* resize button */
-      filestyle_field.filestyle('classInput', 'span11 custom-filestyle');
-
-      /* clear form */
-      var clear_btn = $('#form_clear_btn', form_buttons);
-      clear_btn.click(function(event){
-        filestyle_field.filestyle('clear');
-        $('#form_messages').html('');
-      });
-
-      /* control form submit */
-      stylechecker_form.submit(function(){
-        /* validate XML size and content type */
-        file_obj = $('#id_file')[0].files[0];
-        if (file_obj.type != "text/xml") {
-          msg = '{% trans "The file submitted is NOT XML" %}';
-          display_form_msg(msg, 'error', true);
-          return false
-        }
-        if (file_obj.size > {{ SETTINGS_MAX_UPLOAD_SIZE }}) {
-          msg = '{% trans "XML file excedes max upload size" %}';
-          display_form_msg(msg, 'error', true);
-          return false
-        }
-        return true;
-
-      });
-
-    });
-    </script>
-
-  {% endblock extrafooter %}
+  {{ block.super }}
+  {% include "validator/includes/xml_upload_form_validation.html" %}
+{% endblock extrafooter %}
