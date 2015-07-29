@@ -10,7 +10,6 @@ deps:
 clean:
 	@echo "Removing all .pyc files..."
 	@find . -name "*.pyc" -delete
-	@echo "Removing articletrack db structure..."
 	
 test: 
 	@python $(MANAGE) test --settings=$(SETTINGS_TEST)

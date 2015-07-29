@@ -12,6 +12,7 @@ from editorialmanager.models import (EditorialMember,
                                      RoleType,
                                      RoleTypeTranslation)
 from audit_log.models import AuditLogEntry, ADDITION, CHANGE, DELETION
+from django_countries import countries
 
 
 def _makePermission(perm, model, app_label='editorialmanager'):
@@ -180,6 +181,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         """
         User of the group "Editors" successfully ADD a new board member
         """
+
         # with
         role = editorial_modelfactories.RoleTypeFactory.create()
         response = self.app.get(reverse("editorial.board.add", args=[self.journal.id, self.issue.id]), user=self.user)
@@ -219,7 +221,8 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertIn(member_data['institution'], response.body)
         # the link_cv is not displayed in the frontend
         self.assertIn(member_data['state'], response.body)
-        self.assertIn(member_data['country'], response.body)
+
+        self.assertIn(str(dict(countries)[member_data['country']]), response.body)
 
         # check new member in DB
         members = EditorialMember.objects.filter(
@@ -311,6 +314,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         """
         User of the group "Editors" successfully EDIT a board member
         """
+
         # with
         member = editorial_modelfactories.EditorialMemberFactory.create()
         member.board = EditorialBoard.objects.create(issue=self.issue)
@@ -353,7 +357,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertIn(member_data_update['institution'], response.body)
         # the link_cv is not displayed in the frontend
         self.assertIn(member_data_update['state'], response.body)
-        self.assertIn(member_data_update['country'], response.body)
+        self.assertIn(str(dict(countries)[member_data_update['country']]), response.body)
 
         # check data from db
         member_from_db = EditorialMember.objects.get(pk=member.pk)

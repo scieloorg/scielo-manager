@@ -2,7 +2,7 @@
 
 /* Este codigo contém callbacks que pode ser executado em duas situações:
  * - Quando o formulario de adicionar um Board Member é carregado no modal (após ser disparado o evento: 'loaded')
- * - QUando o formulario de adicionar um Board Member é carregado numa página simples, (não no modal, nem com ajax.load)
+ * - Quando o formulario de adicionar um Board Member é carregado numa página simples, (não no modal, nem com ajax.load)
  */
 
 /*** campo Institution: AUTOCOMPLETE: ***/
@@ -154,7 +154,7 @@ function has_valid_orcid(orcid_id){
 
 $('#id_orcid').on('input', function(event) {
   /* Para cada mudança no campo '#id_orcid':
-   * Valida o fomarto do valor inserido no campo (has_valid_orcid(...)).
+   * Valida o formato do valor inserido no campo (has_valid_orcid(...)).
    * - Se for válido, é criado um link para que o usuário possa validar visualmente.
    * - Se o conteúdo do campo é vazio, então é considerado como válido também.
    */

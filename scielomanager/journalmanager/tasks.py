@@ -9,19 +9,17 @@
 import os
 import io
 import logging
-import base64
 import threading
 import contextlib
 import datetime
 from copy import deepcopy
 
 from lxml import isoschematron, etree
-from elasticsearch import Elasticsearch
-from django.conf import settings
 from django.db.models import Q
 from django.db import IntegrityError
 
 from scielomanager.celery import app
+from scielomanager import connectors
 from . import models
 
 
@@ -37,27 +35,7 @@ BASIC_ARTICLE_META_PATH = os.path.join(
 ARTICLE_META_SCHEMATRON = isoschematron.Schematron(file=BASIC_ARTICLE_META_PATH)
 
 
-def get_elasticsearch():
-    """Fábrica de clientes do Elasticsearch.
-
-    Essa função é um singleton.
-    """
-    if not hasattr(get_elasticsearch, 'client'):
-        get_elasticsearch.client = Elasticsearch(settings.ELASTICSEARCH_NODES)
-
-    return get_elasticsearch.client
-
-
-def index_article(id, struct, **kwargs):
-    """Indexa `struct` no índice de artigos do catman no Elasticsearch.
-    """
-    client = get_elasticsearch()
-    result = client.index(
-            index=settings.ES_ARTICLE_INDEX_NAME,
-            doc_type=settings.ES_ARTICLE_DOC_TYPE,
-            id=id, body=struct, **kwargs)
-
-    return result
+elasticsearch_client = connectors.ArticleElasticsearch()
 
 
 def _gen_es_struct_from_article(article):
@@ -78,13 +56,12 @@ def _gen_es_struct_from_article(article):
                  for attr, expr in values_to_struct_mapping}
 
     article_as_octets = str(article.xml)
-    base64_octets = base64.b64encode(article_as_octets)
 
     partial_struct = {
         'version': article.xml_version,
         'is_aop': article.is_aop,
-        'b64_source': base64_octets,
         'source': article_as_octets,
+        'aid': article.aid,
     }
 
     es_struct.update(partial_struct)
@@ -122,16 +99,14 @@ def submit_to_elasticsearch(article_pk):
         return None
 
     struct = _gen_es_struct_from_article(article)
-    result = index_article(article.aid, struct)
+    elasticsearch_client.add(article.aid, struct)
 
-    logger.info('Elasticsearch indexing result for article "%s": %s.',
-            article.domain_key, result)
+    logger.info('Article "%s" was indexed successfully.', article.domain_key)
 
-    if result.get('_version') > 0:
-        article.es_updated_at = datetime.datetime.now()
-        article.es_is_dirty = False
-        with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
-            article.save()
+    article.es_updated_at = datetime.datetime.now()
+    article.es_is_dirty = False
+    with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
+        article.save()
 
 
 @app.task(ignore_result=True)
