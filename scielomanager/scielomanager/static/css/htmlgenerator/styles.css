@@ -1,0 +1,151 @@
+body {
+  color: #403d39;
+  font-family: Arial,sans-serif;
+  font-size: 14px;
+}
+
+a:hover, a:focus {
+  color: #24407d;
+  text-decoration: none;
+}
+
+.article-title-top #bibliographic_legend,
+.article-title-top #issn,
+.article-title-bottom #doi,
+.article-title-bottom #doi-link {
+  font-size: 0.85em;
+  color: #a7a49e;
+  font-weight: normal;
+  margin: 0;
+}
+
+h1.article-title {
+  color: #00314c;
+  font-size: 1.9em;
+  margin: 0;
+}
+
+.content h1 {
+  color: #00314c;
+  font-size: 1.5em;
+  margin: 25px 0 12px;
+}
+
+.content h2 {
+  color: #00314c;
+  font-size: 1.2em;
+}
+
+/* dashed border line */
+.abstract-keywords-wrapper,
+.body-wrapper,
+.acknowledgement-wrapper,
+.references-wrapper,
+.ref-list li:not(:last-child),
+.foot-notes li:not(:last-child),
+.references-wrapper,
+.figures-wrapper,
+.tables-wrapper,
+.history-wrapper,
+.fn-group-wrapper {
+  border-bottom: 1px dashed #ddd;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+/* contrib-group */
+.contrib-group {
+  font-size: 1.1em;
+  margin: 15px 0;
+}
+
+.contrib-group li {
+  padding-left: 0;
+}
+
+/* xref links */
+a.xref_href sup,
+sup.xref {
+  background: #6789d3 none repeat scroll 0 0;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 10px;
+  line-height: 100%;
+  margin-top: 3px;
+  padding: 4px 6px 3px;
+  text-align: center;
+  vertical-align: top;
+}
+
+sup.xref.big {
+  font-size: 12px;
+  margin-top: 0;
+  vertical-align: middle;
+}
+
+/* references */
+.ref-list {
+  color: #403d39;
+  font-size: 0.8em;
+  margin: -10px 0 0;
+  padding: 0;
+  width: 100%;
+}
+
+.ref-list .xref.big {
+  cursor: default;
+  padding: 10px;
+  width: 33px;
+}
+
+.ref-list sup {
+  border-radius: 30px;
+}
+
+.ref-list .ref-mixed-citation {
+  display: inline-block;
+  font-size: 1.2em;
+  margin: -2px 0 0 1%;
+  vertical-align: top;
+  width: 90%;
+}
+
+/* footnotes */
+.fn-label > sup {
+    border-radius: 30px;
+    padding: 10px;
+    width: 33px;
+}
+
+.fn-block {
+  margin-bottom: 10px;
+}
+
+.fn-content {
+  display: inline-block;
+  margin: -2px 0 0 1%;
+  vertical-align: top;
+  width: 90%;
+}
+
+.fn-block-label {
+  width: 45px;
+}
+p.fn {
+  margin-bottom: 0px;
+}
+
+/* figures */
+.figures-wrapper .row {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+figcaption label {
+  font-weight: 700;
+  color: #6789d3;
+  font-size: 0.8em;
+  display: block;
+}

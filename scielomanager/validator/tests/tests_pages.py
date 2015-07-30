@@ -62,7 +62,7 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
             reverse('validator.packtools.stylechecker',),
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'validator/packtools.html')
+        self.assertTemplateUsed(response, 'validator/stylechecker.html')
 
     def test_access_authenticated_user(self):
         self.user = auth.UserF(is_active=True)
@@ -71,7 +71,7 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
             user=self.user
         )
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'validator/packtools.html')
+        self.assertTemplateUsed(response, 'validator/stylechecker.html')
 
     def test_link_is_present_at_homepage(self):
         response = self.app.get(
@@ -90,11 +90,11 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         page = self.app.get(
             reverse('validator.packtools.stylechecker',),
         )
-        form = page.forms['stylechecker']
+        form = page.forms['xml_upload_form']
         # when
         response = form.submit()
         # then
-        self.assertTemplateUsed(response, 'validator/packtools.html')
+        self.assertTemplateUsed(response, 'validator/stylechecker.html')
         self.assertFalse(response.context['form'].is_valid())
         form_errors = response.context['form'].errors
         expected_errors = {'file': [u'This field is required.']}
@@ -172,7 +172,7 @@ class ValidatorTests(WebTest, mocker.MockerTestCase):
         results = response.context['results']
 
         self.assertTrue(form.is_valid())
-        self.assertTemplateUsed('validator/packtools.html')
+        self.assertTemplateUsed('validator/stylechecker.html')
 
         # the template cares about this keys
         self.assertEqual(results.keys(), ['validation_errors', 'meta', 'annotations'])
