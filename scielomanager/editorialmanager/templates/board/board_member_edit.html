@@ -33,10 +33,9 @@
         $('#board-member-form').find('form').submit();
       });
       $('input').addClass('span12');
-      $(".chzn-select").chosen({
-        no_results_text: "{% trans 'No results found for' %}:",
-        width: "100%",
-      });
+      var chosenOptions = defaultChosenOptions;
+      chosenOptions['width'] = "100%";
+      $(".chzn-select").chosen(chosenOptions);
       {% include "includes/add_member_form_loaded_callbacks.js" %}
     });
   </script>

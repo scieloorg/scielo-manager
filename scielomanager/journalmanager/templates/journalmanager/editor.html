@@ -69,12 +69,12 @@
 
      });
 
-    $(".chzn-select").chosen({no_results_text: "Nenhum resultado encontrado para: "})
+    $(".chzn-select").chosen(defaultChosenOptions)
 
     $('#modal').on('shown', function () {
 
       $("select[name='editor']").attr('class', 'chzn-select span12');
-      $(".chzn-select").chosen({no_results_text: "Nenhum resultado encontrado para: "});
+      $(".chzn-select").chosen(defaultChosenOptions);
 
     });
 
