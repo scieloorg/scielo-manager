@@ -62,6 +62,7 @@ def _gen_es_struct_from_article(article):
         'is_aop': article.is_aop,
         'source': article_as_octets,
         'aid': article.aid,
+        'timestamp': datetime.datetime.now(),
     }
 
     es_struct.update(partial_struct)

@@ -35,10 +35,9 @@ $(function() {
   });
   $('.modal').on('loaded', function () {
     $(this).find('input').addClass('span12');
-    $(this).find(".chzn-select").chosen({
-      no_results_text: "{% trans 'No results found for' %}:",
-      width: "100%",
-    });
+    var chosenOptions = defaultChosenOptions;
+    chosenOptions['width'] = "100%";
+    $(this).find(".chzn-select").chosen(chosenOptions);
   })
 
   /* actions: */

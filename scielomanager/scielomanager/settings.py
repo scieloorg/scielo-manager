@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'export',
     'health',
     'thrift',
+    'scielomanager',  # apenas para management commands
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

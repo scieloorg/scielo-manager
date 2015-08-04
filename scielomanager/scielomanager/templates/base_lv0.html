@@ -22,6 +22,9 @@
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
   <script type="text/javascript">
+    var defaultChosenOptions = {
+      'no_results_text': "{% trans 'No results found for' %}:",
+    }
     $(document).ready(function(){
       $('#list_model').change(function(){
         $('#search-form').attr('action', $('#list_model :selected').val());

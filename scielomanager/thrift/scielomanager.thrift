@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "1.0.0"
+const string VERSION = "1.1.0"
 
 
 #
@@ -72,6 +72,7 @@ struct Article {
     12: required string version;
     13: optional bool is_aop;
     14: required string source;
+    15: required string timestamp;
 }
 
 /*
