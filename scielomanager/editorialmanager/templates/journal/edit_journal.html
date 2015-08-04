@@ -142,7 +142,7 @@
       prefix: '{{ missionformset.prefix }}'
     });
 
-    $(".chzn-select").chosen({no_results_text: "{% trans 'No results found for' %}:"});
+    $(".chzn-select").chosen(defaultChosenOptions);
 
   </script>
 {% endblock %}
