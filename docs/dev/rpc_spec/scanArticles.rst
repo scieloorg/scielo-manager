@@ -42,6 +42,8 @@ Os índices que podem ser utilizados na consulta são:
 +----------------------+------------------------------------------------------+
 | source               | O documento XML codificado em utf-8.                 |
 +----------------------+------------------------------------------------------+
+| timestamp            | Data e hora conforme ISO-8601 (combined).            |
++----------------------+------------------------------------------------------+
 
 
 .. note:: A quantidade de registros por lote não é definida pelo cliente, e 
@@ -51,8 +53,39 @@ Os índices que podem ser utilizados na consulta são:
 Exemplo::
 
     batch_id = client.scanArticles('{"query": {"match": {"year": "2013"}}}')
-    next_batch_id, articles = client.getScanArticlesBatch(batch_id)
+    results = client.getScanArticlesBatch(batch_id)
 
-    for article in articles:
+    for article in results.articles:
         ...
+
+
+Casos de uso
+------------
+
+1. Coleta incremental de lotes, com base na data e hora de modificação dos 
+   registros::
+
+    {
+        "query": {
+            "filtered": {
+                "query": {
+                    "match_all": {}
+                },
+                "filter": {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2015-08-04T02:04:37.993423",
+                            "lte": "now"
+                        }
+                    }
+                }
+            }
+        }     
+    }
+
+
+É importante notar que os resultados da consulta '''não''' são ordenados, mesmo 
+quando utilizada a instrução ``sort``. O cliente deverá identificar o maior 
+valor de ``timestamp`` entre os registros recuperados para a recuperação do 
+próximo incremento.
 

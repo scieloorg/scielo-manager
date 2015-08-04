@@ -31,3 +31,6 @@ Exemplo::
 
             batch_id = result.next_batch_id
 
+
+.. note:: A lista de resultados de um lote não é ordenada por data ou qualquer 
+          campo. 
