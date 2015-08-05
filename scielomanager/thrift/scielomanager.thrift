@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "1.1.1"
+const string VERSION = "1.2.0"
 
 
 #
@@ -150,5 +150,15 @@ service JournalManagerServices {
     ScanArticlesResults getScanArticlesBatch(1:string batch_id) throws (
             1:ServerError srv_err, 2:BadRequestError req_err, 
             3:TimeoutError tou_err); 
+
+
+    #
+    # Meta-API
+    #    
+
+    /*
+     * Obtém a versão da interface Thrift do servidor.
+     */
+    string getInterfaceVersion();
 }
 
