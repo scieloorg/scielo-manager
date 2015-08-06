@@ -119,3 +119,6 @@ class RPCHandler(object):
 
         return results
 
+    def getInterfaceVersion(self):
+        return spec.VERSION
+
