@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "1.1.0"
+const string VERSION = "1.2.0"
 
 
 #
@@ -56,6 +56,9 @@ exception TimeoutError {
  * Article representa um documento XML em conformidade com a especificação 
  * SciELO-PS, em qualquer uma das versões, ou pré-sps para os documentos 
  * mais antigos.
+ * 
+ * O campo `timestamp` é produzido pelo SciELO Manager e representa a data
+ * de modificação do registro.
  */
 struct Article {
     1: optional string abbrev_journal_title;
@@ -72,7 +75,7 @@ struct Article {
     12: required string version;
     13: optional bool is_aop;
     14: required string source;
-    15: required string timestamp;
+    15: optional string timestamp;
 }
 
 /*
@@ -147,5 +150,15 @@ service JournalManagerServices {
     ScanArticlesResults getScanArticlesBatch(1:string batch_id) throws (
             1:ServerError srv_err, 2:BadRequestError req_err, 
             3:TimeoutError tou_err); 
+
+
+    #
+    # Meta-API
+    #    
+
+    /*
+     * Obtém a versão da interface Thrift do servidor.
+     */
+    string getInterfaceVersion();
 }
 

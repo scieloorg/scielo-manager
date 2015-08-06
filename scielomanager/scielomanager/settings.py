@@ -131,7 +131,6 @@ MIDDLEWARE_CLASSES = (
     'scielomanager.utils.middlewares.threadlocal.ThreadLocalMiddleware',
     'maintenancewindow.middleware.MaintenanceMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'waffle.middleware.WaffleMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
 )
@@ -161,7 +160,6 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'djcelery',
     'tastypie',
-    'waffle',
     'south',
 
     # SciELO shared apps
