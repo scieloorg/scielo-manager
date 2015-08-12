@@ -1,9 +1,0 @@
-BEGIN;
-DROP TABLE IF EXISTS "waffle_sample" CASCADE;
-DROP TABLE IF EXISTS  "waffle_switch" CASCADE;
-ALTER TABLE IF EXISTS "waffle_flag_users" DROP CONSTRAINT IF EXISTS "flag_id_refs_id_8fef0c12" CASCADE;
-ALTER TABLE IF EXISTS "waffle_flag_groups" DROP CONSTRAINT IF EXISTS "flag_id_refs_id_8e6a807d" CASCADE;
-DROP TABLE IF EXISTS "waffle_flag" CASCADE;
-DROP TABLE IF EXISTS "waffle_flag_users" CASCADE;
-DROP TABLE IF EXISTS "waffle_flag_groups" CASCADE;
-COMMIT;
