@@ -950,6 +950,102 @@ class ArticleTests(TestCase):
         article = models.Article(xml=sample)
         self.assertEqual(article.get_value('/article/front/occ'), 'first')
 
+    def test_aop_detection(self):
+        sample = u"""<article specific-use="sps-1.2">
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                           <issn pub-type="ppub">1032-289X</issn>
+                         </journal-meta>
+                         <article-meta>
+                           <article-id pub-id-type="other">4809</article-id>
+                           <volume>00</volume>
+                           <issue>00</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>00</fpage>
+                           <lpage>00</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+        article = models.Article(xml=sample)
+        self.assertTrue(article._get_is_aop())
+
+    def test_aop_detection_when_issue_meta_is_set(self):
+        sample = u"""<article specific-use="sps-1.2">
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                           <issn pub-type="ppub">1032-289X</issn>
+                         </journal-meta>
+                         <article-meta>
+                           <article-id pub-id-type="other">4809</article-id>
+                           <volume>10</volume>
+                           <issue>20</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>01</fpage>
+                           <lpage>05</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+        article = models.Article(xml=sample)
+        self.assertTrue(article._get_is_aop())
+
+    def test_aop_detection_when_is_not_aop(self):
+        sample = u"""<article specific-use="sps-1.2">
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                           <issn pub-type="ppub">1032-289X</issn>
+                         </journal-meta>
+                         <article-meta>
+                           <article-id pub-id-type="publisher-id">4809</article-id>
+                           <volume>10</volume>
+                           <issue>20</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>01</fpage>
+                           <lpage>05</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+        article = models.Article(xml=sample)
+        self.assertFalse(article._get_is_aop())
+
+    def test_aop_detection_when_is_not_aop_and_issue_data_is_missing(self):
+        sample = u"""<article specific-use="sps-1.2">
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                           <issn pub-type="ppub">1032-289X</issn>
+                         </journal-meta>
+                         <article-meta>
+                           <article-id pub-id-type="publisher-id">4809</article-id>
+                           <volume>00</volume>
+                           <issue>00</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>00</fpage>
+                           <lpage>00</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+        article = models.Article(xml=sample)
+        self.assertFalse(article._get_is_aop())
+
 
 class ArticleXpathsTests(TestCase):
 
@@ -1046,6 +1142,26 @@ class ArticleXpathsTests(TestCase):
                 self.article.xml.xpath(models.Article.XPaths.ARTICLE_TYPE)[0],
                 u'research-article')
 
+    def test_fpage_seq(self):
+        self.assertEqual(
+                self.article.xml.xpath(models.Article.XPaths.FPAGE_SEQ)[0],
+                u'a')
+
+
+    def test_aop_id(self):
+        sample = u"""<article>
+                       <front>
+                         <article-meta>
+                           <article-id pub-id-type="other">xpto</article-id>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(
+                article.xml.xpath(models.Article.XPaths.AOP_ID)[0].text,
+                u'xpto')
+
 
 class ArticleDomainKeyTests(TestCase):
     """ Domain key (chave de domínio) é uma chave candidata formada pelo uso
@@ -1053,6 +1169,30 @@ class ArticleDomainKeyTests(TestCase):
     """
 
     def test_all_fields_but_elocationid_are_present(self):
+        sample = u"""<article>
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                         </journal-meta>
+                         <article-meta>
+                           <volume>1</volume>
+                           <issue>10</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage seq="a">10</fpage>
+                           <lpage>15</lpage>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        self.assertEqual(article._get_domain_key(),
+                'revista-de-saude-publica_1_10_2014_10_a_15_none_none')
+
+    def test_all_fields_except_seq_but_elocationid_are_present(self):
         sample = u"""<article>
                        <front>
                          <journal-meta>
@@ -1074,7 +1214,7 @@ class ArticleDomainKeyTests(TestCase):
 
         article = models.Article(xml=sample)
         self.assertEqual(article._get_domain_key(),
-                'revista-de-saude-publica_1_10_2014_10_15_none')
+                'revista-de-saude-publica_1_10_2014_10_none_15_none_none')
 
     def test_all_fields_but_fpage_and_lpage_are_present(self):
         sample = u"""<article>
@@ -1097,5 +1237,5 @@ class ArticleDomainKeyTests(TestCase):
 
         article = models.Article(xml=sample)
         self.assertEqual(article._get_domain_key(),
-                'revista-de-saude-publica_1_10_2014_none_none_1038kgx')
+                'revista-de-saude-publica_1_10_2014_none_none_none_1038kgx_none')
 

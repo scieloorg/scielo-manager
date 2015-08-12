@@ -1397,12 +1397,14 @@ class Article(caching.base.CachingMixin, models.Model):
         VOLUME = '/article/front/article-meta/volume'
         ISSUE = '/article/front/article-meta/issue'
         FPAGE = '/article/front/article-meta/fpage'
+        FPAGE_SEQ = '/article/front/article-meta/fpage/@seq'
         LPAGE = '/article/front/article-meta/lpage'
         ELOCATION_ID = '/article/front/article-meta/elocation-id'
         HEAD_SUBJECT = '/article/front/article-meta/article-categories/subj-group[@subj-group-type="heading"]/subject'
         DOI = '/article/front/article-meta/article-id[@pub-id-type="doi"]'
         PID = '/article/front/article-meta/article-id[@pub-id-type="publisher-id"]'
         ARTICLE_TYPE = '/article/@article-type'
+        AOP_ID = '/article/front/article-meta/article-id[@pub-id-type="other"]'
 
     def save(self, *args, **kwargs):
         """
@@ -1465,12 +1467,18 @@ class Article(caching.base.CachingMixin, models.Model):
             return value
 
     def _get_is_aop(self):
-        """ Acessa os elementos volume e issue do xml para inferir se é um AOP.
-        """
-        volume = self.get_value(self.XPaths.VOLUME)
-        issue = self.get_value(self.XPaths.ISSUE)
+        """ Infere se trata-se de um artigo AOP.
 
-        return volume == '00' and issue == '00'
+        Diferentemente das regras publicadas no SciELO PS, o SciELO Manager
+        considera AOP (ahead-of-print) os artigos que apresentam o número
+        identificador de AOP no elemento
+        ``//article-meta/article-id[pub-id-type="other"]``. O SciELO Manager
+        adota uma abordagem não-opinionada acerca da estrutura de publicação
+        do periódico, portanto não utiliza metadados do número na lógica de
+        inferência.
+        """
+        aop_id = self.get_value(self.XPaths.AOP_ID)
+        return bool(aop_id)
 
     def _get_domain_key(self):
         """ Produz uma chave de domínio (Domain key ou Natural key)
@@ -1487,12 +1495,16 @@ class Article(caching.base.CachingMixin, models.Model):
           * ``//article-meta/issue``
           * ``//article-meta/pub-date/year``
           * ``//article-meta/fpage``
+          * ``//article-meta/fpage/@seq``
           * ``//article-meta/lpage``
           * ``//article-meta/elocation-id``
+          * ``//article-meta/article-id[pub-id-type="other"]``
 
         Após a concatenação, é normalizada por meio da função `slugify`.
 
-        E.g.: revista-foobar_2_7_2015_32_35_none
+        Formato:
+
+          <journal-title>_<volume>_<issue>_<year>_<fpage>_<seq>_<lpage>_<elocation-id>_<article-id>
         """
         id_fields = [
                 self.XPaths.JOURNAL_TITLE,
@@ -1500,8 +1512,10 @@ class Article(caching.base.CachingMixin, models.Model):
                 self.XPaths.ISSUE,
                 self.XPaths.YEAR,
                 self.XPaths.FPAGE,
+                self.XPaths.FPAGE_SEQ,
                 self.XPaths.LPAGE,
                 self.XPaths.ELOCATION_ID,
+                self.XPaths.AOP_ID,
         ]
 
         values = (self.get_value(path) for path in id_fields)
