@@ -239,9 +239,6 @@ def create_article_from_string(xml_string):
 def rebuild_article_domain_key(article_pk):
     """ Reconstroi a chave de domínio do artigo.
 
-    Após reconstruir a chave, o artigo é marcado como sujo para indexação no
-    Elasticsearch.
-
     Atenção: Essa task não é utilizada pelo projeto e pode ser removida
     a qualquer momento.
     https://github.com/scieloorg/scielo-manager/issues/1183
@@ -252,8 +249,9 @@ def rebuild_article_domain_key(article_pk):
         logger.info('Cannot find Article with pk: %s.', article_pk)
         return None
 
-    # a chave é gerada automaticamente ao salvar o objeto
-    article.save_dirty()
+    # a chave é gerada automaticamente ao salvar o objeto e
+    # o artigo não precisa ser reindexado no Elasticsearch
+    article.save()
 
 
 @app.task(ignore_result=True)
