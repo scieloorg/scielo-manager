@@ -24,16 +24,6 @@ from celery.schedules import crontab
 from datetime import timedelta
 
 CELERYBEAT_SCHEDULE = {
-    'checkin-expire-daily': {
-        'task': 'articletrack.tasks.process_expirable_checkins',
-        'schedule': crontab(minute=0, hour=0),
-        'args': ()
-    },
-    'process-checkins-scheduled-to-checkout-hourly': {
-        'task': 'articletrack.tasks.process_checkins_scheduled_to_checkout',
-        'schedule': timedelta(hours=1),
-        'args': ()
-    },
     'process-orphan-articles-daily': {
         'task': 'journalmanager.tasks.process_orphan_articles',
         'schedule': crontab(minute=0, hour=0),

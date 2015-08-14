@@ -234,3 +234,36 @@ def create_article_from_string(xml_string):
 
     return new_article.aid
 
+
+@app.task(ignore_result=True)
+def rebuild_article_domain_key(article_pk):
+    """ Reconstroi a chave de domínio do artigo.
+
+    Atenção: Essa task não é utilizada pelo projeto e pode ser removida
+    a qualquer momento.
+    https://github.com/scieloorg/scielo-manager/issues/1183
+    """
+    try:
+        article = models.Article.nocacheobjects.get(pk=article_pk)
+    except models.Article.DoesNotExist:
+        logger.info('Cannot find Article with pk: %s.', article_pk)
+        return None
+
+    # a chave é gerada automaticamente ao salvar o objeto e
+    # o artigo não precisa ser reindexado no Elasticsearch
+    article.save()
+
+
+@app.task(ignore_result=True)
+def rebuild_articles_domain_key():
+    """ Dispara a tarefa de reconstrução da chave de domínio para todos artigos.
+
+    Atenção: Essa task não é utilizada pelo projeto e pode ser removida
+    a qualquer momento.
+    https://github.com/scieloorg/scielo-manager/issues/1183
+    """
+    articles = models.Article.objects.all()
+
+    for article in articles:
+        rebuild_article_domain_key.delay(article.pk)
+
