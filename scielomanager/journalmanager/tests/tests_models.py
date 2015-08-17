@@ -446,59 +446,6 @@ class JournalTests(TestCase):
 
         self.assertFalse(journal.has_issues(issues))
 
-    def test_issues_reordering(self):
-        journal = JournalFactory.create()
-        issues = []
-        for i in range(5):
-            issue = IssueFactory.create(volume=9, publication_year=2012)
-            journal.issue_set.add(issue)
-
-            issues.append(issue.pk)
-
-        issues[2], issues[3] = issues[3], issues[2]  # reordering
-        expected_order = issues
-
-        journal.reorder_issues(expected_order, volume=9, publication_year=2012)
-
-        ordered_issues = [issue.pk for issue in journal.issue_set.order_by('order')]
-
-        self.assertEqual(expected_order, ordered_issues)
-
-    def test_issues_reordering_must_accept_pks_as_string(self):
-        journal = JournalFactory.create()
-        issues = []
-        for i in range(5):
-            issue = IssueFactory.create(volume=9, publication_year=2012)
-            journal.issue_set.add(issue)
-
-            issues.append(issue.pk)
-
-        issues[2], issues[3] = issues[3], issues[2]  # reordering
-        expected_order = [str(i_pk) for i_pk in issues]
-
-        journal.reorder_issues(expected_order, volume=9, publication_year=2012)
-
-        ordered_issues = [str(issue.pk) for issue in journal.issue_set.order_by('order')]
-
-        self.assertEqual(expected_order, ordered_issues)
-
-    def test_issues_reordering_lenght_must_match(self):
-        journal = JournalFactory.create()
-        issues = []
-        for i in range(5):
-            issue = IssueFactory.create(volume=9, publication_year=2012)
-            journal.issue_set.add(issue)
-
-            issues.append(issue.pk)
-
-        expected_order = [1, 2, 4]
-
-        self.assertRaises(
-            ValueError,
-            lambda: journal.reorder_issues(expected_order,
-                                           volume=9,
-                                           publication_year=2012))
-
     def test_scielo_pid_when_print(self):
         journal = JournalFactory.create(scielo_issn=u'print',
                                         print_issn='1234-4321',

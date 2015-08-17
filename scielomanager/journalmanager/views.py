@@ -1053,55 +1053,6 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                               context_instance=RequestContext(request))
 
 
-@permission_required('journalmanager.reorder_issue', login_url=settings.AUTHZ_REDIRECT_URL)
-def issue_reorder(request, journal_id):
-    """
-    Handles issues reordering based on ajax interactions.
-    """
-    def _parse_data(data):
-        """
-        Parses the incoming request.GET::
-
-            ``numbers=num%5B%5D%3D8036%26num%5B%5D%3D8035&issues_set=numbers-2005%7CNone``
-
-        Returns::
-
-            ``({'year': 2005, 'vol': None}, [8036, 8035])``
-        """
-        issues_set = {}
-
-        parsed_data = urlparse.parse_qs(data.urlencode())
-        splitted_issues_set = parsed_data['issues_set'][0].split('|')
-
-        issues_set['year'] = splitted_issues_set[0][-4:]
-
-        if 'None' in splitted_issues_set[1]:
-            issues_set['vol'] = None
-        else:
-            issues_set['vol'] = splitted_issues_set[1]
-
-        numbers = urlparse.parse_qs(parsed_data['numbers'][0]).get('num[]', [])
-
-        return issues_set, numbers
-
-    # here starts the actual view code. sorry.
-    if request.is_ajax():
-        if not request.GET:
-            return HttpResponse(status=500)
-
-        journal = get_object_or_404(models.Journal, pk=journal_id)
-        issues_set, numbers = _parse_data(request.GET)
-
-        if not journal.has_issues(numbers):
-            return HttpResponse(status=500)
-
-        # check if the user has privileges in this journal
-        journal.reorder_issues(numbers,
-            publication_year=issues_set['year'], volume=issues_set['vol'])
-
-    return HttpResponse(status=200)
-
-
 @permission_required('journalmanager.change_section', login_url=settings.AUTHZ_REDIRECT_URL)
 def add_section(request, journal_id, section_id=None):
     """
