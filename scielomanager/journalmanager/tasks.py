@@ -130,6 +130,10 @@ def link_article_to_journal(article_pk):
         if article.issn_epub:
             query_params.append(Q(eletronic_issn=article.issn_epub))
 
+        if not query_params:
+            logger.error('Missing attributes issn_ppub and issn_epub in Article wit pk: %s.', article_pk)
+            return None
+
         query_expr = reduce(operator.or_, query_params)
         journal = models.Journal.objects.get(query_expr)
 
@@ -142,6 +146,10 @@ def link_article_to_journal(article_pk):
 
             if article.issn_epub:
                 query_params.append(Q(print_issn=article.issn_epub))
+
+            if not query_params:
+                logger.error('Missing attributes issn_ppub and issn_epub in Article wit pk: %s.', article_pk)
+                return None
 
             query_expr = reduce(operator.or_, query_params)
             journal = models.Journal.objects.get(query_expr)
