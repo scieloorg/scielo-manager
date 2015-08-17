@@ -6,7 +6,8 @@ import unittest
 from lxml import isoschematron, etree
 from django.test import TestCase
 
-from journalmanager import tasks
+from journalmanager import tasks, models
+from . import modelfactories
 
 
 SCH = etree.parse(tasks.BASIC_ARTICLE_META_PATH)
@@ -651,4 +652,98 @@ class FunctionAddFromStringTests(TestCase):
         err_xml = u"<article></articlezzzz>"
         self.assertRaises(ValueError,
                 tasks.create_article_from_string, err_xml)
+
+
+class LinkArticleToJournalTests(TestCase):
+    def test_many_journals_without_print_issn(self):
+        article = modelfactories.ArticleFactory.create()
+        article.issn_ppub = ''
+        article.issn_epub = '1518-8787'
+        article.save()
+
+        for _ in range(2):
+            journal = modelfactories.JournalFactory.create(print_issn='')
+            # o valor de `eletronic_issn` deve ser diferente para o teste ser
+            # válido
+            self.assertTrue(journal.eletronic_issn != article.issn_epub)
+
+        tasks.link_article_to_journal(article.pk)
+
+        fresh_article = models.Article.objects.get(pk=article.pk)
+        # não houve match.
+        self.assertEquals(fresh_article.journal, None)
+
+    def test_many_journals_without_electronic_issn(self):
+        article = modelfactories.ArticleFactory.create()
+        article.issn_epub = ''
+        article.issn_ppub = '1518-8787'
+        article.save()
+
+        for _ in range(2):
+            journal = modelfactories.JournalFactory.create(eletronic_issn='')
+            # o valor de `print_issn` deve ser diferente para o teste ser
+            # válido
+            self.assertTrue(journal.print_issn != article.issn_ppub)
+
+        tasks.link_article_to_journal(article.pk)
+
+        fresh_article = models.Article.objects.get(pk=article.pk)
+        # não houve match.
+        self.assertEquals(fresh_article.journal, None)
+
+    def test_match_based_on_print_issn(self):
+        article = modelfactories.ArticleFactory.create()
+        article.issn_epub = ''
+        article.issn_ppub = '1518-8787'
+        article.save()
+
+        journal = modelfactories.JournalFactory.create(print_issn='1518-8787')
+
+        tasks.link_article_to_journal(article.pk)
+
+        fresh_article = models.Article.objects.get(pk=article.pk)
+        self.assertEquals(fresh_article.journal.pk, journal.pk)
+
+    def test_match_based_on_crossed_print_issn(self):
+        """Quando issn_ppub está identificado como issn_epub
+        """
+        article = modelfactories.ArticleFactory.create()
+        article.issn_ppub = ''
+        article.issn_epub = '1518-8787'
+        article.save()
+
+        journal = modelfactories.JournalFactory.create(print_issn='1518-8787')
+
+        tasks.link_article_to_journal(article.pk)
+
+        fresh_article = models.Article.objects.get(pk=article.pk)
+        self.assertEquals(fresh_article.journal.pk, journal.pk)
+
+    def test_match_based_on_electronic_issn(self):
+        article = modelfactories.ArticleFactory.create()
+        article.issn_ppub = ''
+        article.issn_epub = '1518-8787'
+        article.save()
+
+        journal = modelfactories.JournalFactory.create(eletronic_issn='1518-8787')
+
+        tasks.link_article_to_journal(article.pk)
+
+        fresh_article = models.Article.objects.get(pk=article.pk)
+        self.assertEquals(fresh_article.journal.pk, journal.pk)
+
+    def test_match_based_on_crossed_electronic_issn(self):
+        """Quando issn_epub está identificado como issn_ppub
+        """
+        article = modelfactories.ArticleFactory.create()
+        article.issn_epub = ''
+        article.issn_ppub = '1518-8787'
+        article.save()
+
+        journal = modelfactories.JournalFactory.create(eletronic_issn='1518-8787')
+
+        tasks.link_article_to_journal(article.pk)
+
+        fresh_article = models.Article.objects.get(pk=article.pk)
+        self.assertEquals(fresh_article.journal.pk, journal.pk)
 

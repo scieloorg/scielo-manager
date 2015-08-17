@@ -1,10 +1,18 @@
 # coding: utf-8
+import os
 
 import factory
 import datetime
 
 from journalmanager import models
 from django.contrib.auth.models import Group
+
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+with open(os.path.join(_HERE, 'xml_samples', '0034-8910-rsp-48-2-0216.xml')) as xml_file:
+    SAMPLE_XML = xml_file.read()
 
 
 class UserFactory(factory.Factory):
@@ -85,6 +93,7 @@ class JournalFactory(factory.Factory):
     frequency = u'Q'
     scielo_issn = u'print'
     print_issn = factory.Sequence(lambda n: '1234-%04d' % int(n))
+    eletronic_issn = factory.Sequence(lambda n: '4321-%04d' % int(n))
     init_vol = u'1'
     title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
     title_iso = u'ABCD. Arquivos B. de C. D. (São Paulo)'
@@ -212,3 +221,10 @@ class PressReleaseArticleFactory(factory.Factory):
 
     press_release = factory.SubFactory(RegularPressReleaseFactory)
     article_pid = factory.Sequence(lambda n: 'S0102-311X201300030000%s' % n)
+
+
+class ArticleFactory(factory.Factory):
+    FACTORY_FOR = models.Article
+
+    xml = SAMPLE_XML
+
