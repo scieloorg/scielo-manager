@@ -12,18 +12,20 @@ import logging
 import threading
 import contextlib
 import datetime
+import operator
 from copy import deepcopy
 
 from lxml import isoschematron, etree
 from django.db.models import Q
 from django.db import IntegrityError
+from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
 from scielomanager import connectors
 from . import models
 
 
-logger = logging.getLogger(__name__)
+logger = get_task_logger(__name__)
 
 
 ARTICLE_SAVE_MUTEX = threading.Lock()
@@ -121,13 +123,29 @@ def link_article_to_journal(article_pk):
         return None
 
     try:
-        journal = models.Journal.objects.get(
-                Q(print_issn=article.issn_ppub) | Q(eletronic_issn=article.issn_epub))
+        query_params = []
+        if article.issn_ppub:
+            query_params.append(Q(print_issn=article.issn_ppub))
+
+        if article.issn_epub:
+            query_params.append(Q(eletronic_issn=article.issn_epub))
+
+        query_expr = reduce(operator.or_, query_params)
+        journal = models.Journal.objects.get(query_expr)
+
     except models.Journal.DoesNotExist:
         # Pode ser que os ISSNs do XML estejam invertidos...
         try:
-            journal = models.Journal.objects.get(
-                    Q(print_issn=article.issn_epub) | Q(eletronic_issn=article.issn_ppub))
+            query_params = []
+            if article.issn_ppub:
+                query_params.append(Q(eletronic_issn=article.issn_ppub))
+
+            if article.issn_epub:
+                query_params.append(Q(print_issn=article.issn_epub))
+
+            query_expr = reduce(operator.or_, query_params)
+            journal = models.Journal.objects.get(query_expr)
+
         except models.Journal.DoesNotExist:
             logger.info('Cannot find parent Journal for Article with pk: %s. Skipping the linking task.', article_pk)
             return None
