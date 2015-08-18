@@ -12,7 +12,7 @@ from . import modelfactories as editorial_modelfactories
 
 
 class IssueBoardMessageTests(TestCase):
-    ACTIONS =  [
+    ACTIONS = [
         'issue_add_no_replicated_board',
         'issue_add_replicated_board',
     ]
@@ -77,7 +77,7 @@ class IssueBoardMessageTests(TestCase):
 
 
 class BoardMembersMessageTests(TestCase):
-    ACTIONS =  [
+    ACTIONS = [
         'board_add_member',
         'board_edit_member',
         'board_delete_member',
