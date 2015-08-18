@@ -16,14 +16,30 @@ This code doesn't modify the default unittest2 test discovery behavior, which
 only searches for tests in files named "test*.py".
 
 """
+import logging
+import warnings
 from django.conf import settings
 from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.utils.importlib import import_module
 from django.utils.unittest.loader import defaultTestLoader
+from scielomanager.tools import get_setting_or_raise
+
+
+DISABLE_LOGGING_BELOW_LEVEL = get_setting_or_raise('DISABLE_LOGGING_BELOW_LEVEL')
 
 
 class DiscoveryRunner(DjangoTestSuiteRunner):
+
+    def setup_test_environment(self, **kwargs):
+        if DISABLE_LOGGING_BELOW_LEVEL:
+            level = getattr(logging, DISABLE_LOGGING_BELOW_LEVEL)
+            logging.disable(level)
+            warnings.warn(
+                "Loggings has beed disabled below level: %s" % DISABLE_LOGGING_BELOW_LEVEL
+            )
+        return super(DiscoveryRunner, self).setup_test_environment(**kwargs)
+
     """A test suite runner that uses unittest2 test discovery."""
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         suite = None
