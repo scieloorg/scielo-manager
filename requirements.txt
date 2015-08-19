@@ -13,7 +13,7 @@ webassets==0.7.1
 yuicompressor
 jsonfield
 django-tastypie==0.9.16
--e git+git://github.com/scieloorg/django-htmlmin.git#egg=django-htmlmin
+django-htmlmin==0.7.0
 -e git+git://github.com/scieloorg/django-cache-machine.git#egg=django-cache-machine
 packtools
 Celery

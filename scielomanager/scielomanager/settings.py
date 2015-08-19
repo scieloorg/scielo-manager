@@ -124,6 +124,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -379,3 +380,4 @@ else:
 
 # Always minify the HTML when the DEBUG mode is False
 HTML_MINIFY = not DEBUG
+EXCLUDE_FROM_MINIFYING = ('^admin/', )
