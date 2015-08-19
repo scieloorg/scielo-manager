@@ -1023,8 +1023,7 @@ class Issue(caching.base.CachingMixin, models.Model):
 
     class Meta:
         ordering = ('created', 'id')
-        permissions = (("list_issue", "Can list Issues"),
-                      ("reorder_issue", "Can Reorder Issues"))
+        permissions = (("list_issue", "Can list Issues"), )
 
     @property
     def scielo_pid(self):
