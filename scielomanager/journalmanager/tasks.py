@@ -96,7 +96,7 @@ def submit_to_elasticsearch(article_pk):
     do Elasticsearch.
     """
     try:
-        article = models.Article.objects.get(pk=article_pk)
+        article = models.Article.nocacheobjects.get(pk=article_pk)
     except models.Article.DoesNotExist:
         logger.error('Cannot find Article with pk: %s. Skipping the submission to elasticsearch.', article_pk)
         return None
@@ -173,7 +173,7 @@ def link_article_to_issue(article_pk):
     """ Tenta associar o artigo ao seu número.
     """
     try:
-        article = models.Article.objects.get(pk=article_pk, issue=None, is_aop=False)
+        article = models.Article.nocacheobjects.get(pk=article_pk, issue=None, is_aop=False)
     except models.Article.DoesNotExist:
         logger.info('Cannot find unlinked Article with pk: %s. Skipping the linking task.', article_pk)
         return None
@@ -205,7 +205,7 @@ def link_article_to_issue(article_pk):
 def process_orphan_articles():
     """ Tenta associar os artigos órfãos com periódicos e fascículos.
     """
-    orphans = models.Article.objects.filter(issue=None)
+    orphans = models.Article.nocacheobjects.only('pk', 'journal').filter(issue=None)
 
     for orphan in orphans:
         if orphan.journal is None:
@@ -218,7 +218,7 @@ def process_orphan_articles():
 def process_dirty_articles():
     """ Task (periódica) que garanta a indexação dos artigos sujos.
     """
-    dirties = models.Article.objects.filter(es_is_dirty=True)
+    dirties = models.Article.nocacheobjects.only('pk').filter(es_is_dirty=True)
 
     for dirty in dirties:
         submit_to_elasticsearch.delay(dirty.pk)
@@ -288,7 +288,7 @@ def rebuild_articles_domain_key():
     a qualquer momento.
     https://github.com/scieloorg/scielo-manager/issues/1183
     """
-    articles = models.Article.objects.all()
+    articles = models.Article.nocacheobjects.only('pk').all()
 
     for article in articles:
         rebuild_article_domain_key.delay(article.pk)

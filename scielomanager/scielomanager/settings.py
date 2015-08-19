@@ -323,8 +323,7 @@ if 'djcelery' in INSTALLED_APPS:
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
     CELERY_IMPORTS = ('scielomanager.tasks')
-    CELERYD_MAX_TASKS_PER_CHILD = 50
-    CELERYD_TASK_TIME_LIMIT = 60
+    CELERYD_MAX_TASKS_PER_CHILD = 100
     CELERY_SEND_TASK_ERROR_EMAILS = True
 
 if 'thrift' in INSTALLED_APPS:
