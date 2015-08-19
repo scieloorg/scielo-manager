@@ -12,18 +12,20 @@ import logging
 import threading
 import contextlib
 import datetime
+import operator
 from copy import deepcopy
 
 from lxml import isoschematron, etree
 from django.db.models import Q
 from django.db import IntegrityError
+from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
 from scielomanager import connectors
 from . import models
 
 
-logger = logging.getLogger(__name__)
+logger = get_task_logger(__name__)
 
 
 ARTICLE_SAVE_MUTEX = threading.Lock()
@@ -94,7 +96,7 @@ def submit_to_elasticsearch(article_pk):
     do Elasticsearch.
     """
     try:
-        article = models.Article.objects.get(pk=article_pk)
+        article = models.Article.nocacheobjects.get(pk=article_pk)
     except models.Article.DoesNotExist:
         logger.error('Cannot find Article with pk: %s. Skipping the submission to elasticsearch.', article_pk)
         return None
@@ -121,13 +123,37 @@ def link_article_to_journal(article_pk):
         return None
 
     try:
-        journal = models.Journal.objects.get(
-                Q(print_issn=article.issn_ppub) | Q(eletronic_issn=article.issn_epub))
+        query_params = []
+        if article.issn_ppub:
+            query_params.append(Q(print_issn=article.issn_ppub))
+
+        if article.issn_epub:
+            query_params.append(Q(eletronic_issn=article.issn_epub))
+
+        if not query_params:
+            logger.error('Missing attributes issn_ppub and issn_epub in Article wit pk: %s.', article_pk)
+            return None
+
+        query_expr = reduce(operator.or_, query_params)
+        journal = models.Journal.objects.get(query_expr)
+
     except models.Journal.DoesNotExist:
         # Pode ser que os ISSNs do XML estejam invertidos...
         try:
-            journal = models.Journal.objects.get(
-                    Q(print_issn=article.issn_epub) | Q(eletronic_issn=article.issn_ppub))
+            query_params = []
+            if article.issn_ppub:
+                query_params.append(Q(eletronic_issn=article.issn_ppub))
+
+            if article.issn_epub:
+                query_params.append(Q(print_issn=article.issn_epub))
+
+            if not query_params:
+                logger.error('Missing attributes issn_ppub and issn_epub in Article wit pk: %s.', article_pk)
+                return None
+
+            query_expr = reduce(operator.or_, query_params)
+            journal = models.Journal.objects.get(query_expr)
+
         except models.Journal.DoesNotExist:
             logger.info('Cannot find parent Journal for Article with pk: %s. Skipping the linking task.', article_pk)
             return None
@@ -147,7 +173,7 @@ def link_article_to_issue(article_pk):
     """ Tenta associar o artigo ao seu número.
     """
     try:
-        article = models.Article.objects.get(pk=article_pk, issue=None, is_aop=False)
+        article = models.Article.nocacheobjects.get(pk=article_pk, issue=None, is_aop=False)
     except models.Article.DoesNotExist:
         logger.info('Cannot find unlinked Article with pk: %s. Skipping the linking task.', article_pk)
         return None
@@ -179,7 +205,7 @@ def link_article_to_issue(article_pk):
 def process_orphan_articles():
     """ Tenta associar os artigos órfãos com periódicos e fascículos.
     """
-    orphans = models.Article.objects.filter(issue=None)
+    orphans = models.Article.nocacheobjects.only('pk', 'journal').filter(issue=None)
 
     for orphan in orphans:
         if orphan.journal is None:
@@ -192,7 +218,7 @@ def process_orphan_articles():
 def process_dirty_articles():
     """ Task (periódica) que garanta a indexação dos artigos sujos.
     """
-    dirties = models.Article.objects.filter(es_is_dirty=True)
+    dirties = models.Article.nocacheobjects.only('pk').filter(es_is_dirty=True)
 
     for dirty in dirties:
         submit_to_elasticsearch.delay(dirty.pk)
@@ -262,7 +288,7 @@ def rebuild_articles_domain_key():
     a qualquer momento.
     https://github.com/scieloorg/scielo-manager/issues/1183
     """
-    articles = models.Article.objects.all()
+    articles = models.Article.nocacheobjects.only('pk').all()
 
     for article in articles:
         rebuild_article_domain_key.delay(article.pk)

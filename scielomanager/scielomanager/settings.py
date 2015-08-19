@@ -124,6 +124,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -323,6 +324,8 @@ if 'djcelery' in INSTALLED_APPS:
     CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
     CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
     CELERY_IMPORTS = ('scielomanager.tasks')
+    CELERYD_MAX_TASKS_PER_CHILD = 100
+    CELERY_SEND_TASK_ERROR_EMAILS = True
 
 if 'thrift' in INSTALLED_APPS:
     THRIFT_CONFIG = {
@@ -376,3 +379,4 @@ else:
 
 # Always minify the HTML when the DEBUG mode is False
 HTML_MINIFY = not DEBUG
+EXCLUDE_FROM_MINIFYING = ('^admin/', )
