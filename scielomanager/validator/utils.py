@@ -3,13 +3,15 @@ import logging
 import lxml
 import pkg_resources
 import packtools
-
+from scielomanager.tools import get_setting_or_raise
 logger = logging.getLogger(__name__)
 
 try:
     PACKTOOLS_VERSION = pkg_resources.get_distribution('packtools').version
 except pkg_resources.DistributionNotFound:
     PACKTOOLS_VERSION = None
+
+PACKTOOLS_DEPRECATION_WARNING_VERSION = get_setting_or_raise('PACKTOOLS_DEPRECATION_WARNING_VERSION')
 
 
 def count(target, collection, key):
@@ -60,6 +62,8 @@ def analyze_xml(file):
             'annotations': err_xml,
             'validation_errors': None,
             'meta': xml.meta,
+            'sps_version': xml.sps_version,
+            'is_deprecated_version': xml.sps_version == PACKTOOLS_DEPRECATION_WARNING_VERSION,
         }
 
         if not status:
