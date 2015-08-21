@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SciELO Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-10 11:17-0200\n"
+"POT-Creation-Date: 2015-08-20 19:00-0300\n"
 "PO-Revision-Date: 2012-10-23 08:30+0000\n"
 "Last-Translator: scielo <tecnologia@scielo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,57 +17,71 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/base_lv1.html:24 templates/base_lv1.html.py:136
-msgid "Journals"
-msgstr "Journals"
+#: custom_fields.py:44
+#, python-format
+msgid "Please keep filesize under %(maxsize)s. Current filesize %(filesize)s"
+msgstr ""
 
-#: templates/base_lv1.html:29
-#, fuzzy
-msgid "Articles in submission"
-msgstr "URL of online submission"
+#: custom_fields.py:49
+msgid "Filetype not supported."
+msgstr ""
 
-#: templates/base_lv1.html:34 templates/base_lv1.html.py:142
-msgid "Sponsors"
-msgstr "Sponsors"
+#: templates/base_lv0.html:26
+msgid "No results found for"
+msgstr ""
 
-#: templates/base_lv1.html:40
-msgid "Users"
-msgstr "Users"
+#: templates/base_lv0.html:46
+msgid "Browse"
+msgstr "Browse"
 
-#: templates/base_lv1.html:47
+#: templates/base_lv1.html:26
 #, fuzzy
 msgid "My Journals"
 msgstr "Journals"
 
-#: templates/base_lv1.html:59
+#: templates/base_lv1.html:32 templates/base_lv1.html.py:96
+msgid "Journals"
+msgstr "Journals"
+
+#: templates/base_lv1.html:37 templates/base_lv1.html.py:101
+msgid "Sponsors"
+msgstr "Sponsors"
+
+#: templates/base_lv1.html:43
+msgid "Users"
+msgstr "Users"
+
+#: templates/base_lv1.html:50
+#, fuzzy
+msgid "Download"
+msgstr "Downloads"
+
+#: templates/base_lv1.html:55
 msgid "Metadata for Markup"
 msgstr "Metadata for Markup"
 
-#: templates/base_lv1.html:66
+#: templates/base_lv1.html:62
 msgid "Maintenances"
 msgstr ""
 
-#: templates/base_lv1.html:96
-msgid "user settings"
-msgstr "user settings"
-
-#: templates/base_lv1.html:103
-msgid "logout"
-msgstr "logout"
-
-#: templates/base_lv1.html:122
-msgid "Trashed items"
-msgstr "Trashed items"
-
-#: templates/base_lv1.html:124
-msgid "Trash"
-msgstr "Trash"
-
-#: templates/base_lv1.html:154
+#: templates/base_lv1.html:87
 msgid "Search"
 msgstr "Search"
 
-#: templates/base_lv1.html:169
+#: templates/base_lv1.html:121
+msgid "Edit"
+msgstr "Edit"
+
+#: templates/base_lv1.html:156
+#, fuzzy
+msgid "My Trash"
+msgstr "Trash"
+
+#: templates/base_lv1.html:166 templates/registration/logout.html:7
+msgid "Logout"
+msgstr "Logout"
+
+#: templates/base_lv1.html:183
 msgid "edit"
 msgstr ""
 
@@ -75,7 +89,7 @@ msgstr ""
 msgid "Help"
 msgstr "Help"
 
-#: templates/footer.html:18 templates/footer.html.py:34
+#: templates/footer.html:18
 msgid "About"
 msgstr "About"
 
@@ -104,8 +118,12 @@ msgid "Dev mailing list"
 msgstr "Dev mailing list"
 
 #: templates/footer.html:32
-msgid "SciELO Project"
-msgstr "SciELO Project"
+msgid "Tools"
+msgstr ""
+
+#: templates/footer.html:35
+msgid "Packtools StyleChecker"
+msgstr ""
 
 #: templates/include_press_release/ahead.html:5
 #: templates/include_press_release/issue.html:5
@@ -117,7 +135,7 @@ msgstr "Is Press Release?"
 msgid "DOI"
 msgstr ""
 
-#: templates/include_press_release/ahead.html:39
+#: templates/include_press_release/ahead.html:42
 #: templates/include_press_release/issue.html:39
 msgid "There are no items."
 msgstr "There are no items."
@@ -172,15 +190,11 @@ msgstr "Username or email"
 msgid "Log in"
 msgstr "Log in"
 
-#: templates/registration/login.html:46 templates/registration/login.html:47
+#: templates/registration/login.html:42 templates/registration/login.html:43
 msgid "Forgot your password?"
 msgstr "Forgot your password?"
 
-#: templates/registration/logout.html:7
-msgid "Logout"
-msgstr "Logout"
-
-#: templates/registration/password_reset_complete.html:10
+#: templates/registration/password_reset_complete.html:9
 msgid ""
 "Your password has been reseted! You may now login in using your new "
 "credentials."
@@ -188,27 +202,27 @@ msgstr ""
 "Your password has been reseted! You may now login in using your new "
 "credentials."
 
-#: templates/registration/password_reset_complete.html:10
+#: templates/registration/password_reset_complete.html:9
 msgid "login"
 msgstr "login"
 
-#: templates/registration/password_reset_confirm.html:12
+#: templates/registration/password_reset_confirm.html:10
 msgid "Enter your new password below to reset your password:"
 msgstr "Enter your new password below to reset your password:"
 
-#: templates/registration/password_reset_confirm.html:15
+#: templates/registration/password_reset_confirm.html:13
 msgid "New Password"
 msgstr "New Password"
 
-#: templates/registration/password_reset_confirm.html:22
+#: templates/registration/password_reset_confirm.html:20
 msgid "save"
 msgstr "save"
 
-#: templates/registration/password_reset_confirm.html:29
+#: templates/registration/password_reset_confirm.html:27
 msgid "This link have already used to reset your password."
 msgstr "This link have already used to reset your password."
 
-#: templates/registration/password_reset_done.html:10
+#: templates/registration/password_reset_done.html:9
 msgid ""
 "We have sent you an email with a link to reset your password. Please check "
 "your email and click the link to continue."
@@ -216,7 +230,7 @@ msgstr ""
 "We have sent you an email with a link to reset your password. Please check "
 "your email and click the link to continue."
 
-#: templates/registration/password_reset_done.html:10
+#: templates/registration/password_reset_done.html:9
 msgid "Login"
 msgstr "Login"
 
@@ -245,7 +259,7 @@ msgstr ""
 "it\n"
 "into your web browser:\n"
 
-#: templates/registration/password_reset_form.html:10
+#: templates/registration/password_reset_form.html:9
 msgid ""
 "Enter your e-mail in the form below and we will send your username and "
 "instructions to create a new password."
@@ -253,11 +267,11 @@ msgstr ""
 "Enter your e-mail in the form below and we will send your username and "
 "instructions to create a new password."
 
-#: templates/registration/password_reset_form.html:12
+#: templates/registration/password_reset_form.html:11
 msgid "Reset Password"
 msgstr "Reset Password"
 
-#: templates/registration/password_reset_form.html:19
+#: templates/registration/password_reset_form.html:18
 msgid "Send instructions"
 msgstr "Send instructions"
 
@@ -290,6 +304,22 @@ msgstr "Please correct the errors below."
 msgid "You will receive an email with a link to activate your account."
 msgstr "You will receive an email with a link to activate your account."
 
+#, fuzzy
+#~ msgid "Articles in submission"
+#~ msgstr "URL of online submission"
+
+#~ msgid "user settings"
+#~ msgstr "user settings"
+
+#~ msgid "logout"
+#~ msgstr "logout"
+
+#~ msgid "Trashed items"
+#~ msgstr "Trashed items"
+
+#~ msgid "SciELO Project"
+#~ msgstr "SciELO Project"
+
 #~ msgid "Your new password and new password confirmation must match."
 #~ msgstr "Your new password and new password confirmation must match."
 
@@ -310,9 +340,6 @@ msgstr "You will receive an email with a link to activate your account."
 
 #~ msgid "cancel"
 #~ msgstr "cancel"
-
-#~ msgid "Downloads"
-#~ msgstr "Downloads"
 
 #~ msgid "Journal"
 #~ msgstr "Journal"
@@ -968,9 +995,6 @@ msgstr "You will receive an email with a link to activate your account."
 #~ msgid "Move to trash"
 #~ msgstr "Move to trash"
 
-#~ msgid "Browse"
-#~ msgstr "Browse"
-
 #~ msgid "Sections"
 #~ msgstr "Sections"
 
@@ -1019,9 +1043,6 @@ msgstr "You will receive an email with a link to activate your account."
 
 #~ msgid "## This record doesn't have title ##"
 #~ msgstr "## This record doesn't have title ##"
-
-#~ msgid "Edit"
-#~ msgstr "Edit"
 
 #~ msgid "Activate"
 #~ msgstr "Activate"
