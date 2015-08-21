@@ -1109,8 +1109,9 @@ class _SubParsersAction(Action):
         try:
             parser = self._name_parser_map[parser_name]
         except KeyError:
-            tup = parser_name, ', '.join(self._name_parser_map)
-            msg = _('unknown parser %r (choices: %s)' % tup)
+            choices = ', '.join(self._name_parser_map)
+            msg = _('unknown parser {parser_name} (choices: {choices})'.format(
+                parser_name=parser_name, choices=choices))
             raise ArgumentError(self, msg)
 
         # parse all the remaining options into the namespace
@@ -1405,10 +1406,9 @@ class _ActionsContainer(object):
         for option_string in args:
             # error on strings that don't start with an appropriate prefix
             if not option_string[0] in self.prefix_chars:
-                msg = _('invalid option string %r: '
-                        'must start with a character %r')
-                tup = option_string, self.prefix_chars
-                raise ValueError(msg % tup)
+                msg = _('invalid option string {option_string}: must start with a character {prefix_chars}'.format(
+                        option_string=option_string, prefix_chars=self.prefix_chars))
+                raise ValueError(msg)
 
             # strings starting with two prefix characters are long options
             option_strings.append(option_string)
@@ -2067,8 +2067,8 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         if len(option_tuples) > 1:
             options = ', '.join([option_string
                 for action, option_string, explicit_arg in option_tuples])
-            tup = arg_string, options
-            self.error(_('ambiguous option: %s could match %s') % tup)
+            self.error(_('ambiguous option: {arg_string} could match {options}'.format(
+                arg_string=arg_string, options=options)))
 
         # if exactly one action matched, this segmentation is good,
         # so return the parsed action
@@ -2247,8 +2247,9 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         # TypeErrors or ValueErrors also indicate errors
         except (TypeError, ValueError):
             name = getattr(action.type, '__name__', repr(action.type))
-            msg = _('invalid %s value: %r')
-            raise ArgumentError(action, msg % (name, arg_string))
+            msg = _('invalid {name} value: {arg_string}'.format(
+                name=name, arg_string=arg_string))
+            raise ArgumentError(action, msg)
 
         # return the converted value
         return result
@@ -2256,8 +2257,9 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
     def _check_value(self, action, value):
         # converted value must be one of the choices (if specified)
         if action.choices is not None and value not in action.choices:
-            tup = value, ', '.join(map(repr, action.choices))
-            msg = _('invalid choice: %r (choose from %s)') % tup
+            choices = ', '.join(map(repr, action.choices))
+            msg = _('invalid choice: {value} (choose from {choices})'.format(
+                value=value, choices=choices))
             raise ArgumentError(action, msg)
 
     # =======================
@@ -2350,4 +2352,4 @@ class ArgumentParser(_AttributeHolder, _ActionsContainer):
         should either exit or raise an exception.
         """
         self.print_usage(_sys.stderr)
-        self.exit(2, _('%s: error: %s\n') % (self.prog, message))
+        self.exit(2, _('{prog}: error: message\n'.format(prog=self.prog, message=message)))
