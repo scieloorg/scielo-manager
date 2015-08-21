@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SciELO Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-20 19:00-0300\n"
+"POT-Creation-Date: 2015-08-21 17:09-0300\n"
 "PO-Revision-Date: 2012-10-23 08:30+0000\n"
 "Last-Translator: scielo <tecnologia@scielo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,184 +17,2341 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: custom_fields.py:44
+#: accounts/views.py:25
+#, fuzzy
+msgid "Saved successfully"
+msgstr "Section removed successfully"
+
+#: accounts/views.py:27 journalmanager/views.py:52
+msgid "There are some errors or missing data."
+msgstr "There are some errors or missing data."
+
+#: accounts/views.py:48
+msgid "Your new password and new password confirmation must match."
+msgstr "Your new password and new password confirmation must match."
+
+#: accounts/views.py:57
+msgid "Your current password does not match. Please try again."
+msgstr "Your current password does not match. Please try again."
+
+#: accounts/views.py:60
+msgid "Your new password has been set."
+msgstr "Your new password has been set."
+
+#: accounts/templates/accounts/my_account.html:14
+#, fuzzy
+msgid "User information"
+msgstr "User Information"
+
+#: accounts/templates/accounts/my_account.html:17
+#: editorialmanager/templates/board/board_member_delete_data.html:12
+#, fuzzy
+msgid "First name"
+msgstr "Full name"
+
+#: accounts/templates/accounts/my_account.html:19
+#: editorialmanager/templates/board/board_member_delete_data.html:16
+msgid "Last name"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:21
+#: journalmanager/templates/journalmanager/editor.html:19
+#: journalmanager/templates/journalmanager/user_list.html:26
+msgid "Username"
+msgstr "Username"
+
+#: accounts/templates/accounts/my_account.html:23
+#: editorialmanager/templates/board/board_member_delete_data.html:26
+#: journalmanager/models.py:432
+msgid "Email"
+msgstr "Email"
+
+#: accounts/templates/accounts/my_account.html:47
+msgid "Profile"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:52
+#, fuzzy
+msgid "My Collections"
+msgstr "Collection"
+
+#: accounts/templates/accounts/my_account.html:57
+msgid "API token"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:64
+#, fuzzy
+msgid "Change Password"
+msgstr "New Password"
+
+#: accounts/templates/accounts/my_account.html:75
+msgid "Notifications & Other preferences"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:88
+#, fuzzy
+msgid "My collections"
+msgstr "Collection"
+
+#: accounts/templates/accounts/my_account.html:94
+#: journalmanager/templates/journalmanager/add_collection.html:5
+#: journalmanager/templates/journalmanager/add_user.html:134
+#: journalmanager/templates/journalmanager/home_journal.html:60
+msgid "Collection"
+msgstr "Collection"
+
+#: accounts/templates/accounts/my_account.html:95
+#, fuzzy
+msgid "Am I manager?"
+msgstr "is_manager"
+
+#: accounts/templates/accounts/my_account.html:113
+msgid "No collections related yet!"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:123
+msgid "API Token"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:125
+msgid "This is your token"
+msgstr ""
+
+#: accounts/templates/accounts/my_account.html:128
+msgid "Read more about the API usage"
+msgstr ""
+
+#: accounts/templates/accounts/password_change.html:6
+#: export/templates/export/markup_files.html:9
+#: journalmanager/templates/journalmanager/add_pressrelease.html:12
+#: scielomanager/templates/registration/registration_form.html:6
+msgid "Home"
+msgstr "Home"
+
+#: accounts/templates/accounts/password_change.html:7
+msgid "My Account"
+msgstr "My Account"
+
+#: accounts/templates/accounts/password_change.html:8
+#: accounts/templates/accounts/password_change.html:14
+msgid "Password Change"
+msgstr "Password Change"
+
+#: accounts/templates/accounts/password_change.html:21
+#: accounts/templates/accounts/password_change.html:28
+#: accounts/templates/accounts/password_change.html:35
+msgid "Field required!"
+msgstr "Field required!"
+
+#: accounts/templates/accounts/password_change.html:44
+#: editorialmanager/templates/journal/edit_journal.html:126
+#: journalmanager/templates/journalmanager/add_collection.html:166
+#: journalmanager/templates/journalmanager/add_issue.html:32
+#: journalmanager/templates/journalmanager/add_journal.html:560
+#: journalmanager/templates/journalmanager/add_pressrelease.html:121
+#: journalmanager/templates/journalmanager/add_section.html:109
+#: journalmanager/templates/journalmanager/add_sponsor.html:104
+#: journalmanager/templates/journalmanager/add_user.html:194
+#: journalmanager/templates/journalmanager/edit_journal_status.html:76
+#: scielomanager/templates/registration/password_reset_confirm.html:20
+msgid "save"
+msgstr "save"
+
+#: accounts/templates/accounts/password_change.html:45
+#: editorialmanager/templates/journal/edit_journal.html:130
+#: journalmanager/templates/journalmanager/add_collection.html:171
+#: journalmanager/templates/journalmanager/add_issue.html:37
+#: journalmanager/templates/journalmanager/add_journal.html:564
+#: journalmanager/templates/journalmanager/add_pressrelease.html:125
+#: journalmanager/templates/journalmanager/add_section.html:113
+#: journalmanager/templates/journalmanager/add_sponsor.html:109
+#: journalmanager/templates/journalmanager/add_user.html:198
+#: journalmanager/templates/journalmanager/edit_journal_status.html:80
+msgid "cancel"
+msgstr "cancel"
+
+#: accounts/templates/accounts/unauthorized.html:7
+msgid "You are not authorized to access the requested page."
+msgstr ""
+
+#: accounts/templates/accounts/unauthorized.html:8
+msgid " Maybe you want to "
+msgstr ""
+
+#: accounts/templates/accounts/unauthorized.html:10
+msgid ""
+"login <strong>with a more previleged account</strong></a> or contact support."
+msgstr ""
+
+#: audit_log/helpers.py:274
+#, python-format
+msgid "Added %(name)s \"%(object)s\"."
+msgstr ""
+
+#: audit_log/helpers.py:278
+#, python-format
+msgid "Changed %(list)s for %(name)s \"%(object)s\"."
+msgstr ""
+
+#: audit_log/helpers.py:279 audit_log/helpers.py:295
+msgid "and"
+msgstr ""
+
+#: audit_log/helpers.py:283
+#, python-format
+msgid "Deleted %(name)s \"%(object)s\"."
+msgstr ""
+
+#: audit_log/helpers.py:295
+#, python-format
+msgid "Changed fields: %s."
+msgstr ""
+
+#: audit_log/helpers.py:301
+msgid "No fields changed."
+msgstr ""
+
+#: audit_log/helpers.py:314
+msgid "No fields added."
+msgstr ""
+
+#: audit_log/models.py:25
+#, fuzzy
+msgid "action time"
+msgstr "Section Title"
+
+#: audit_log/models.py:28
+#, fuzzy
+msgid "object id"
+msgstr "Subject"
+
+#: audit_log/models.py:29
+msgid "object repr"
+msgstr ""
+
+#: audit_log/models.py:30
+msgid "action flag"
+msgstr ""
+
+#: audit_log/models.py:31
+#: editorialmanager/templates/journal/edit_journal.html:22
+#: health/templates/health/overall_status.html:38
+#: journalmanager/templates/journalmanager/add_journal.html:186
+#: maintenancewindow/models.py:37
+msgid "Description"
+msgstr "Description"
+
+#: audit_log/models.py:32
+msgid "old values"
+msgstr ""
+
+#: audit_log/models.py:33
+msgid "new values"
+msgstr ""
+
+#: audit_log/models.py:38
+#, fuzzy
+msgid "log entry"
+msgstr "Country"
+
+#: audit_log/models.py:39
+msgid "log entries"
+msgstr ""
+
+#: audit_log/models.py:83
+msgid "log entry permission"
+msgstr ""
+
+#: audit_log/models.py:84
+msgid "log entry permissions"
+msgstr ""
+
+#: editorialmanager/forms.py:66
+msgid "This field is not valid!"
+msgstr ""
+
+#: editorialmanager/forms.py:77
+#, fuzzy
+msgid "journal id"
+msgstr "Journal"
+
+#: editorialmanager/forms.py:78
+#, fuzzy
+msgid "issue id"
+msgstr "Issue Order"
+
+#: editorialmanager/forms.py:79
+msgid "board id"
+msgstr ""
+
+#: editorialmanager/forms.py:80
+#, fuzzy
+msgid "role name"
+msgstr "Full name"
+
+#: editorialmanager/forms.py:81
+msgid "current role position"
+msgstr ""
+
+#: editorialmanager/models.py:30
+msgid "First Name"
+msgstr ""
+
+#: editorialmanager/models.py:31
+#, fuzzy
+msgid "Last Name"
+msgstr "Name"
+
+#: editorialmanager/models.py:33 journalmanager/forms.py:29
+#: journalmanager/forms.py:43 journalmanager/forms.py:301
+#: journalmanager/models.py:543
+#: journalmanager/templates/journalmanager/editor.html:20
+#: journalmanager/templates/journalmanager/user_list.html:27
+msgid "E-mail"
+msgstr "E-mail"
+
+#: editorialmanager/models.py:34
+#, fuzzy
+msgid "institution"
+msgstr "Institution Name"
+
+#: editorialmanager/models.py:35
+#: editorialmanager/templates/board/board_member_delete_data.html:42
+msgid "Link CV"
+msgstr ""
+
+#: editorialmanager/models.py:36
+#: editorialmanager/templates/board/board_member_delete_data.html:48
+#: editorialmanager/templates/journal/journal_detail.html:97
+#: journalmanager/models.py:425 journalmanager/models.py:535
+msgid "City"
+msgstr "City"
+
+#: editorialmanager/models.py:37
+#: editorialmanager/templates/board/board_member_delete_data.html:54
+#: journalmanager/models.py:424 journalmanager/models.py:534
+msgid "State"
+msgstr "State"
+
+#: editorialmanager/models.py:38
+#: editorialmanager/templates/board/board_member_delete_data.html:60
+#: editorialmanager/templates/journal/journal_detail.html:93
+#: journalmanager/models.py:423 journalmanager/models.py:533
+msgid "Country"
+msgstr "Country"
+
+#: editorialmanager/models.py:39
+msgid "ResearcherID"
+msgstr ""
+
+#: editorialmanager/models.py:40
+msgid "ORCID"
+msgstr ""
+
+#: editorialmanager/models.py:42
+msgid "board order"
+msgstr ""
+
+#: editorialmanager/models.py:58 editorialmanager/models.py:72
+#: editorialmanager/templates/board/role_type_list_data.html:7
+#, fuzzy
+msgid "Role Name"
+msgstr "Collection Name"
+
+#: editorialmanager/views.py:237
+#, fuzzy
+msgid "Journal updated successfully."
+msgstr "Section removed successfully"
+
+#: editorialmanager/views.py:244 editorialmanager/views.py:320
+#: editorialmanager/views.py:391 editorialmanager/views.py:506
+#: editorialmanager/views.py:560 editorialmanager/views.py:638
+msgid "Check mandatory fields."
+msgstr ""
+
+#: editorialmanager/views.py:282 editorialmanager/views.py:343
+#: editorialmanager/views.py:406 editorialmanager/views.py:443
+#: editorialmanager/views.py:529 editorialmanager/views.py:579
+#: editorialmanager/views.py:598 editorialmanager/views.py:661
+#, fuzzy
+msgid "The journal is not available for you."
+msgstr "This journal does not have a cover"
+
+#: editorialmanager/views.py:317
+#, fuzzy
+msgid "Board Member updated successfully."
+msgstr "Section removed successfully"
+
+#: editorialmanager/views.py:349
+msgid "The issue is not available for you."
+msgstr ""
+
+#: editorialmanager/views.py:388
+#, fuzzy
+msgid "Board Member created successfully."
+msgstr "Section removed successfully"
+
+#: editorialmanager/views.py:431
+msgid "Board Member DELETED successfully."
+msgstr ""
+
+#: editorialmanager/views.py:464
+#, fuzzy
+msgid "Board block moved successfully."
+msgstr "Section removed successfully"
+
+#: editorialmanager/views.py:466
+msgid "Board block can not be moved"
+msgstr ""
+
+#: editorialmanager/views.py:503
+#, fuzzy
+msgid "Role created successfully."
+msgstr "Section removed successfully"
+
+#: editorialmanager/views.py:557 editorialmanager/views.py:635
+#, fuzzy
+msgid "Role updated successfully."
+msgstr "Section removed successfully"
+
+#: editorialmanager/templates/modal.html:24
+#: editorialmanager/templates/modal_form.html:24
+#: journalmanager/templates/journalmanager/add_pressrelease.html:143
+msgid "Close"
+msgstr ""
+
+#: editorialmanager/templates/modal_form.html:25
+msgid "Proceed"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list.html:6
+#, fuzzy
+msgid "Journal Editorial Board"
+msgstr "Journals DashBoard"
+
+#: editorialmanager/templates/board/board_list.html:12
+#: editorialmanager/templates/board/board_member_delete.html:8
+#: editorialmanager/templates/board/board_member_edit.html:9
+#: editorialmanager/templates/board/role_type_edit.html:9
+#: editorialmanager/templates/board/role_type_list.html:8
+#: editorialmanager/templates/board/role_type_translate.html:9
+#: editorialmanager/templates/journal/edit_journal.html:8
+#: editorialmanager/templates/journal/journal_list.html:10
+#: journalmanager/templates/journalmanager/journal_dash.html:7
+#: journalmanager/templates/journalmanager/journal_list.html:9
+#: journalmanager/templates/journalmanager/trash_listing.html:23
+#: scielomanager/templates/base_lv1.html:32
+#: scielomanager/templates/base_lv1.html:96
+msgid "Journals"
+msgstr "Journals"
+
+#: editorialmanager/templates/board/board_list.html:13
+#: editorialmanager/templates/board/board_list_data.html:78
+#: editorialmanager/templates/board/board_member_delete.html:9
+#: editorialmanager/templates/board/board_member_edit.html:10
+#: editorialmanager/templates/board/role_type_edit.html:10
+#: editorialmanager/templates/board/role_type_list.html:9
+#: editorialmanager/templates/board/role_type_translate.html:10
+#, fuzzy
+msgid "Editorial Board"
+msgstr "Editorial Standard"
+
+#: editorialmanager/templates/board/board_list.html:97
+msgid "Can not move this block, please try again later"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:30
+#: journalmanager/models.py:1000
+#: journalmanager/templates/journalmanager/issue_list.html:95
+msgid "Volume"
+msgstr "Volume"
+
+#: editorialmanager/templates/board/board_list_data.html:30
+#: journalmanager/models.py:427 journalmanager/models.py:537
+#: journalmanager/models.py:1001
+#: journalmanager/templates/journalmanager/issue_list.html:104
+msgid "Number"
+msgstr "Number"
+
+#: editorialmanager/templates/board/board_list_data.html:38
+#: journalmanager/templates/journalmanager/editor.html:23
+#: journalmanager/templates/journalmanager/issue_list.html:109
+#: journalmanager/templates/journalmanager/journal_list.html:65
+#: journalmanager/templates/journalmanager/section_list.html:26
+#: journalmanager/templates/journalmanager/sponsor_list.html:42
+#: journalmanager/templates/journalmanager/trash_listing.html:44
+#: journalmanager/templates/journalmanager/user_list.html:30
+msgid "Actions"
+msgstr "Actions"
+
+#: editorialmanager/templates/board/board_list_data.html:43
+#: editorialmanager/templates/journal/journal_list.html:36
+#, fuzzy
+msgid "Edit Journal"
+msgstr "Journal"
+
+#: editorialmanager/templates/board/board_list_data.html:49
+msgid "Add New Member"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:56
+msgid "List Roles"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:63
+#, fuzzy
+msgid "Add New Role"
+msgstr "Add new"
+
+#: editorialmanager/templates/board/board_list_data.html:69
+msgid "Download this board as CSV file"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:108
+#: editorialmanager/templates/board/role_type_edit.html:11
+#: editorialmanager/templates/board/role_type_edit.html:15
+#, fuzzy
+msgid "Edit Role"
+msgstr "Edit"
+
+#: editorialmanager/templates/board/board_list_data.html:116
+msgid "move DOWN this block"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:122
+msgid "move UP this block"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:170
+#: editorialmanager/templates/board/role_type_list_data.html:19
+#: journalmanager/templates/journalmanager/issue_list.html:136
+#: journalmanager/templatetags/user_collections_dashboard.py:18
+#: scielomanager/templates/base_lv1.html:121
+msgid "Edit"
+msgstr "Edit"
+
+#: editorialmanager/templates/board/board_list_data.html:175
+#: journalmanager/templates/journalmanager/home_journal.html:33
+#: journalmanager/templates/journalmanager/section_list.html:62
+msgid "Delete"
+msgstr "Delete"
+
+#: editorialmanager/templates/board/board_list_data.html:191
+msgid "This issue has no associate members"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:199
+msgid "This issue has no Editorial Board associated"
+msgstr ""
+
+#: editorialmanager/templates/board/board_list_data.html:208
+msgid "Cannot retrieve the Editorial Board because this journal has no Issues"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete.html:10
+#: editorialmanager/templates/board/board_member_delete.html:14
+msgid "Delete Board Member"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete.html:20
+#: editorialmanager/templates/board/board_member_edit.html:21
+#: editorialmanager/templates/board/role_type_edit.html:21
+#: editorialmanager/templates/board/role_type_translate.html:85
+msgid "Back to Board"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete.html:21
+msgid "Confirm"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete_data.html:6
+msgid "This operation cannot be undone"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete_data.html:7
+msgid "And to restore it you will need to create a new member"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete_data.html:20
+msgid "Role"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_delete_data.html:36
+#, fuzzy
+msgid "Institution"
+msgstr "Institution Name"
+
+#: editorialmanager/templates/board/board_member_edit.html:11
+#: editorialmanager/templates/board/board_member_edit.html:15
+msgid "Edit Board Member"
+msgstr ""
+
+#: editorialmanager/templates/board/board_member_edit.html:22
+#: editorialmanager/templates/board/role_type_edit.html:22
+#: editorialmanager/templates/board/role_type_translate.html:86
+#: journalmanager/templates/journalmanager/includes/form_snippet.html:32
+#, fuzzy
+msgid "Save"
+msgstr "Saved."
+
+#: editorialmanager/templates/board/role_type_list.html:10
+msgid "Roles List"
+msgstr ""
+
+#: editorialmanager/templates/board/role_type_list.html:14
+#: editorialmanager/templates/board/role_type_translate.html:11
+msgid "Roles"
+msgstr ""
+
+#: editorialmanager/templates/board/role_type_list_data.html:8
+#: validator/templates/validator/includes/xml_annotated.html:138
+#, fuzzy
+msgid "Action"
+msgstr "Actions"
+
+#: editorialmanager/templates/board/role_type_list_data.html:22
+#, fuzzy
+msgid "Translate"
+msgstr "Translation"
+
+#: editorialmanager/templates/board/role_type_translate.html:12
+#, fuzzy
+msgid "Role Translations"
+msgstr "Translation"
+
+#: editorialmanager/templates/board/role_type_translate.html:16
+#, fuzzy
+msgid "Role Translation for"
+msgstr "Translation"
+
+#: editorialmanager/templates/board/role_type_translate.html:41
+#, fuzzy
+msgid "Translated name"
+msgstr "Translation"
+
+#: editorialmanager/templates/board/role_type_translate.html:42
+#: editorialmanager/templates/journal/edit_journal.html:25
+#: journalmanager/models.py:875
+#: journalmanager/templates/journalmanager/add_journal.html:190
+#: journalmanager/templates/journalmanager/add_section.html:63
+#: journalmanager/templates/journalmanager/includes/titleformset.html:8
+msgid "Language"
+msgstr "Language"
+
+#: editorialmanager/templates/includes/journal_detail_info.html:8
+msgid "On-line version ISSN"
+msgstr ""
+
+#: editorialmanager/templates/includes/journal_detail_info.html:12
+#: editorialmanager/templates/journal/edit_journal.html:97
+#: editorialmanager/templates/journal/journal_detail.html:113
+#: journalmanager/models.py:605
+#: journalmanager/templates/journalmanager/add_journal.html:28
+#: journalmanager/templates/journalmanager/add_journal.html:454
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:32
+#, fuzzy
+msgid "Editor"
+msgstr "Edit"
+
+#: editorialmanager/templates/includes/journal_detail_info.html:16
+msgid "Not assigned yet"
+msgstr ""
+
+#: editorialmanager/templates/includes/journal_detail_info.html:20
+#: journalmanager/templates/journalmanager/journal_dash.html:15
+#, fuzzy
+msgid "Managed by the collections"
+msgstr "Is manager of the collection?"
+
+#: editorialmanager/templates/journal/edit_journal.html:9
+#, fuzzy
+msgid "Edit journal"
+msgstr "Edit"
+
+#: editorialmanager/templates/journal/edit_journal.html:16
+#: journalmanager/models.py:830
+#: journalmanager/templates/journalmanager/add_journal.html:20
+#: journalmanager/templates/journalmanager/add_journal.html:180
+msgid "Mission"
+msgstr "Mission"
+
+#: editorialmanager/templates/journal/edit_journal.html:59
+#: editorialmanager/templates/journal/journal_detail.html:72
+#, fuzzy
+msgid "License"
+msgstr "Licenses"
+
+#: editorialmanager/templates/journal/edit_journal.html:64
+#: journalmanager/templates/journalmanager/add_journal.html:23
+#: journalmanager/templates/journalmanager/add_journal.html:274
+msgid "Web of Science"
+msgstr ""
+
+#: editorialmanager/templates/journal/edit_journal.html:66
+#: journalmanager/templates/journalmanager/add_journal.html:276
+msgid "Indexed at:"
+msgstr ""
+
+#: editorialmanager/templates/journal/edit_journal.html:84
+#: editorialmanager/templates/journal/journal_detail.html:88
+#: journalmanager/templates/journalmanager/add_journal.html:26
+#: journalmanager/templates/journalmanager/add_journal.html:425
+#: journalmanager/templates/journalmanager/journal_dash.html:10
+#, fuzzy
+msgid "Publisher"
+msgstr "Publishers"
+
+#: editorialmanager/templates/journal/journal_detail.html:6
+#: journalmanager/models.py:1349
+#: validator/templates/validator/includes/xml_annotated.html:21
+#, fuzzy
+msgid "Journal title"
+msgstr "Journal Title"
+
+#: editorialmanager/templates/journal/journal_detail.html:10
+#: journalmanager/models.py:622
+msgid "ISO abbreviated title"
+msgstr "ISO abbreviated title"
+
+#: editorialmanager/templates/journal/journal_detail.html:14
+#, fuzzy
+msgid "Short title"
+msgstr "Short Title"
+
+#: editorialmanager/templates/journal/journal_detail.html:18
+#, fuzzy
+msgid "Medline title"
+msgstr "Medline Title"
+
+#: editorialmanager/templates/journal/journal_detail.html:22
+#: journalmanager/models.py:608
+#, fuzzy
+msgid "Previous title"
+msgstr "Other Previous Title"
+
+#: editorialmanager/templates/journal/journal_detail.html:26
+#, fuzzy
+msgid "ISSN(s)"
+msgstr "ISSN"
+
+#: editorialmanager/templates/journal/journal_detail.html:30
+#: journalmanager/models.py:629
+#: journalmanager/templates/journalmanager/journal_dash.html:11
+#: journalmanager/templates/journalmanager/journal_list.html:211
+msgid "Print ISSN"
+msgstr "Print ISSN"
+
+#: editorialmanager/templates/journal/journal_detail.html:35
+#: journalmanager/models.py:630
+#: journalmanager/templates/journalmanager/journal_dash.html:12
+msgid "Electronic ISSN"
+msgstr "Electronic ISSN"
+
+#: editorialmanager/templates/journal/journal_detail.html:42
+#, fuzzy
+msgid "Missions"
+msgstr "Mission"
+
+#: editorialmanager/templates/journal/journal_detail.html:53
+#, fuzzy
+msgid "Lanaguages"
+msgstr "Languages"
+
+#: editorialmanager/templates/journal/journal_detail.html:64
+#: journalmanager/models.py:626
+#: journalmanager/templates/journalmanager/journal_list.html:91
+#: journalmanager/templates/journalmanager/journal_list.html:213
+msgid "Acronym"
+msgstr "Acronym"
+
+#: editorialmanager/templates/journal/journal_detail.html:68
+#: journalmanager/models.py:653
+msgid "Index Coverage"
+msgstr "Index Coverage"
+
+#: editorialmanager/templates/journal/journal_detail.html:76
+#: journalmanager/models.py:632
+msgid "Initial Year"
+msgstr "Initial Year"
+
+#: editorialmanager/templates/journal/journal_detail.html:80
+#: journalmanager/models.py:635
+msgid "Final Year"
+msgstr "Final Year"
+
+#: editorialmanager/templates/journal/journal_detail.html:84
+#: journalmanager/models.py:640
+msgid "Frequency"
+msgstr "Frequency"
+
+#: editorialmanager/templates/journal/journal_detail.html:91
+#: journalmanager/templates/journalmanager/sponsor_list.html:63
+msgid "Name"
+msgstr "Name"
+
+#: editorialmanager/templates/journal/journal_detail.html:95
+#, fuzzy
+msgid "State/Province/Region"
+msgstr "Publisher State"
+
+#: editorialmanager/templates/journal/journal_detail.html:103
+#: journalmanager/models.py:607
+#: journalmanager/templates/journalmanager/add_sponsor.html:6
+msgid "Sponsor"
+msgstr "Sponsor"
+
+#: editorialmanager/templates/journal/journal_list.html:39
+msgid "Corpo editorial"
+msgstr ""
+
+#: editorialmanager/templates/journal/journal_list.html:48
+#, fuzzy
+msgid "No Journals found"
+msgstr "Journals"
+
+#: export/templates/export/markup_files.html:5
+#: export/templates/export/markup_files.html:10
+#, fuzzy
+msgid "Downloads"
+msgstr "Downloads"
+
+#: export/templates/export/markup_files.html:5
+msgid "Markup files"
+msgstr ""
+
+#: export/templates/export/markup_files.html:12
+#: scielomanager/templates/base_lv1.html:55
+msgid "Metadata for Markup"
+msgstr "Metadata for Markup"
+
+#: export/templates/export/markup_files.html:23
+#: journalmanager/templates/journalmanager/add_journal.html:8
+#: journalmanager/templates/journalmanager/home_journal.html:21
+#: journalmanager/templates/journalmanager/home_journal.html:62
+msgid "Journal"
+msgstr "Journal"
+
+#: export/templates/export/markup_files.html:33
+#: scielomanager/templates/include_press_release/issue.html:6
+msgid "Issue"
+msgstr "Issue"
+
+#: export/templates/export/markup_files.html:40
+msgid "Retrieving its issues"
+msgstr "Retrieving its issues"
+
+#: export/templates/export/markup_files.html:45
+#, fuzzy
+msgid "all issues"
+msgstr "volume issue"
+
+#: export/templates/export/markup_files.html:51
+msgid "download"
+msgstr "download"
+
+#: export/templates/export/markup_files.html:56
+msgid ""
+"\n"
+"  <h4>Metadata for the Markup software</h4>\n"
+"  <p>\n"
+"    <ul>\n"
+"      <li>Select a journal</li>\n"
+"      <li>Select an issue</li>\n"
+"      <li>Click the <strong>download</strong> button</li>\n"
+"    </ul>\n"
+"  </p>\n"
+"  <p>\n"
+"    A <strong>.zip</strong> package will be downloaded, containing the\n"
+"    metadata files required by the <a href=\"http://docs.scielo.org/projects/"
+"scielo-pc-programs/en/latest/markup.html#before-using-the-markup\">Markup</"
+"a> software.\n"
+"  </p>\n"
+"  <p>\n"
+"    <ul>\n"
+"      <li>Close the Markup software</li>\n"
+"      <li>Expand the .zip package</li>\n"
+"      <li>* Move all files to <strong>c:\\SciELO\\bin\\markup\\</strong></"
+"li>\n"
+"      <li>Reopen the Markup software et voilà!</li>\n"
+"    </ul>\n"
+"  </p>\n"
+"  <i>* The default installation path.</i>\n"
+"  "
+msgstr ""
+"\n"
+"  <h4>Metadata for the Markup software</h4>\n"
+"  <p>\n"
+"    <ul>\n"
+"      <li>Select a journal</li>\n"
+"      <li>Select an issue</li>\n"
+"      <li>Click the <strong>download</strong> button</li>\n"
+"    </ul>\n"
+"  </p>\n"
+"  <p>\n"
+"    A <strong>.zip</strong> package will be downloaded, containing the\n"
+"    metadata files required by the <a href=\"http://docs.scielo.org/projects/"
+"scielo-pc-programs/en/latest/markup.html#before-using-the-markup\">Markup</"
+"a> software.\n"
+"  </p>\n"
+"  <p>\n"
+"    <ul>\n"
+"      <li>Close the Markup software</li>\n"
+"      <li>Expand the .zip package</li>\n"
+"      <li>* Move all files to <strong>c:\\SciELO\\bin\\markup\\</strong></"
+"li>\n"
+"      <li>Reopen the Markup software et voilà!</li>\n"
+"    </ul>\n"
+"  </p>\n"
+"  <i>* The default installation path.</i>\n"
+"  "
+
+#: export/templates/export/markup_files.html:88
+msgid "Please select a Journal"
+msgstr ""
+
+#: health/templates/health/overall_status.html:6
+msgid "SciELO Manager System Status"
+msgstr ""
+
+#: health/templates/health/overall_status.html:13
+#, fuzzy
+msgid "SciELO Manager Status"
+msgstr "Change Status"
+
+#: health/templates/health/overall_status.html:16
+#, python-format
+msgid ""
+"\n"
+"                Updated about %(elapsed_time)s ago\n"
+"              "
+msgstr ""
+
+#: health/templates/health/overall_status.html:37
+msgid "Service"
+msgstr ""
+
+#: health/templates/health/overall_status.html:39
+#: journalmanager/templates/journalmanager/edit_journal_status.html:30
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:27
+#: journalmanager/templates/journalmanager/journal_list.html:90
+msgid "Status"
+msgstr "Status"
+
+#: health/templates/health/overall_status.html:49
+msgid "Operational"
+msgstr ""
+
+#: health/templates/health/overall_status.html:51
+msgid "Unknown"
+msgstr ""
+
+#: health/templates/health/overall_status.html:53
+msgid "Offline"
+msgstr ""
+
+#: health/templates/health/overall_status.html:64
+msgid ""
+"\n"
+"          Could not reach the health monitor. Keep calm and <strong>try "
+"again later.</strong>\n"
+"        "
+msgstr ""
+
+#: journalmanager/forms.py:25
+msgid "This email is being used by another user, please try another email."
+msgstr ""
+
+#: journalmanager/forms.py:63
+msgid "Select one or more collections"
+msgstr "Select one or more collections"
+
+#: journalmanager/forms.py:122 journalmanager/forms.py:125
+msgid "Select one or more languages"
+msgstr "Select one or more languages"
+
+#: journalmanager/forms.py:128
+msgid "Select one or more sponsors"
+msgstr "Select one or more sponsors"
+
+#: journalmanager/forms.py:131
+#, fuzzy
+msgid "Select one or more categories"
+msgstr "Select one or more groups"
+
+#: journalmanager/forms.py:134
+#, fuzzy
+msgid "Select one or more study area"
+msgstr "Select one or more languages"
+
+#: journalmanager/forms.py:188
+#: journalmanager/templates/journalmanager/add_journal.html:627
+msgid ""
+"Journal cover image extension is not allowed! Please select another file."
+msgstr ""
+
+#: journalmanager/forms.py:192
+#: journalmanager/templates/journalmanager/add_journal.html:625
+msgid "Journal cover image file size is too large! Please select another file."
+msgstr ""
+
+#: journalmanager/forms.py:198
+msgid ""
+"The image is {image_size}px pixel wide. It's supposed to be {expected_size}px"
+msgstr ""
+
+#: journalmanager/forms.py:204
+msgid ""
+"The image is {image_size}px pixel high. It's supposed to be {expected_size}px"
+msgstr ""
+
+#: journalmanager/forms.py:215
+#: journalmanager/templates/journalmanager/add_journal.html:628
+msgid ""
+"Journal logo image extension is not allowed! Please select another file."
+msgstr ""
+
+#: journalmanager/forms.py:218
+#: journalmanager/templates/journalmanager/add_journal.html:626
+msgid "Journal logo image file size is too large! Please select another file."
+msgstr ""
+
+#: journalmanager/forms.py:223
+msgid ""
+"The image is {logo_size}px pixel wide. It's supposed to be {expected_size}px"
+msgstr ""
+
+#: journalmanager/forms.py:227
+msgid ""
+"The image is {logo_size}px pixel high. It's supposed to be {expected_size}px"
+msgstr ""
+
+#: journalmanager/forms.py:296
+#: scielomanager/templates/registration/login.html:28
+msgid "Username or email"
+msgstr "Username or email"
+
+#: journalmanager/forms.py:297
+msgid "Password"
+msgstr "Password"
+
+#: journalmanager/forms.py:303
+msgid "Select one or more groups"
+msgstr "Select one or more groups"
+
+#: journalmanager/forms.py:349
+#, fuzzy
+msgid "Select one or more sections"
+msgstr "Select one or more section"
+
+#: journalmanager/forms.py:402
+msgid "You must complete at least one of two fields volume or number."
+msgstr "You must complete at least one of two fields volume or number."
+
+#: journalmanager/forms.py:416 journalmanager/forms.py:421
+#: journalmanager/forms.py:470 journalmanager/forms.py:475
+#: journalmanager/forms.py:521 journalmanager/forms.py:526
+msgid ""
+"Issue with this Year and (Volume or Number) already exists for this Journal."
+msgstr ""
+"Issue with this Year and (Volume or Number) already exists for this Journal."
+
+#: journalmanager/forms.py:453 journalmanager/forms.py:508
+#, fuzzy
+msgid "You must complete the volume filed. Number field must be empty."
+msgstr "You must complete at least one of two fields volume or number."
+
+#: journalmanager/forms.py:455 journalmanager/forms.py:510
+#, fuzzy
+msgid "You must complete the number filed. Volume field must be empty."
+msgstr "You must complete at least one of two fields volume or number."
+
+#: journalmanager/forms.py:852
+msgid "Please fill in at least one form"
+msgstr ""
+
+#: journalmanager/models.py:47
+msgid ""
+"If not defined, will be applied the related journal's use license. The "
+"SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/"
+"jf5ndd (5.2.11. Política de direitos autorais) for more details."
+msgstr ""
+
+#: journalmanager/models.py:294
+msgid "ISO 639-1 Language Code"
+msgstr "ISO 639-1 Language Code"
+
+#: journalmanager/models.py:295
+msgid "Language Name (in English)"
+msgstr "Language Name (in English)"
+
+#: journalmanager/models.py:389
+#, python-format
+msgid "User can't do this action: %s"
+msgstr ""
+
+#: journalmanager/models.py:392
+msgid "User can't ACCEPT checkins, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:394
+msgid "User can't REJECT checkins, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:396
+msgid ""
+"User can't REVIEW (Level 1) checkins, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:398
+msgid ""
+"User can't REVIEW (Level 2) checkins, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:400
+msgid ""
+"User can't SEND checkins TO REVIEW, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:402
+msgid ""
+"User can't SEND checkins TO PENDING, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:404
+msgid ""
+"User can't SEND checkins TO CHECKOUT, because doesn't have enough permissions"
+msgstr ""
+
+#: journalmanager/models.py:418
+msgid "Collection Name"
+msgstr "Collection Name"
+
+#: journalmanager/models.py:420
+msgid "Instance URL"
+msgstr "Instance URL"
+
+#: journalmanager/models.py:421
+#: journalmanager/templates/journalmanager/add_journal.html:535
+msgid "Logo"
+msgstr "Logo"
+
+#: journalmanager/models.py:422 journalmanager/models.py:532
+msgid "Sigla"
+msgstr "Sigla"
+
+#: journalmanager/models.py:426 journalmanager/models.py:536
+msgid "Address"
+msgstr "Address"
+
+#: journalmanager/models.py:428
+msgid "Complement"
+msgstr "Complement"
+
+#: journalmanager/models.py:429 journalmanager/models.py:539
+msgid "Zip Code"
+msgstr "Zip Code"
+
+#: journalmanager/models.py:430 journalmanager/models.py:540
+msgid "Phone Number"
+msgstr "Phone Number"
+
+#: journalmanager/models.py:431 journalmanager/models.py:541
+msgid "Fax Number"
+msgstr "Fax Number"
+
+#: journalmanager/models.py:514
+msgid "Is default"
+msgstr "Is default"
+
+#: journalmanager/models.py:515
+msgid "Is manager of the collection?"
+msgstr "Is manager of the collection?"
+
+#: journalmanager/models.py:530
+msgid "Institution Name"
+msgstr "Institution Name"
+
+#: journalmanager/models.py:531
+msgid "Institution Complements"
+msgstr "Institution Complements"
+
+#: journalmanager/models.py:538
+msgid "Address Complement"
+msgstr "Address Complement"
+
+#: journalmanager/models.py:542
+msgid "Cel Number"
+msgstr "Cel Number"
+
+#: journalmanager/models.py:544 journalmanager/models.py:658
+#: journalmanager/models.py:915 journalmanager/models.py:1015
+msgid "Is trashed?"
+msgstr "Is trashed?"
+
+#: journalmanager/models.py:571
+msgid "Term"
+msgstr ""
+
+#: journalmanager/models.py:582 journalmanager/models.py:615
+msgid "Study Area"
+msgstr "Study Area"
+
+#: journalmanager/models.py:609
+#, fuzzy
+msgid "Use license"
+msgstr "Licenses"
+
+#: journalmanager/models.py:612
+msgid "National Code"
+msgstr "National Code"
+
+#: journalmanager/models.py:614
+#, fuzzy
+msgid "Subject Categories"
+msgstr "Subject / Descriptors"
+
+#: journalmanager/models.py:618
+msgid "Total of ahead of print documents for the current year"
+msgstr ""
+
+#: journalmanager/models.py:619
+msgid "Total of ahead of print documents for the previous year"
+msgstr ""
+
+#: journalmanager/models.py:620
+#, fuzzy
+msgid "Twitter User"
+msgstr "New User"
+
+#: journalmanager/models.py:621
+#: journalmanager/templates/journalmanager/journal_list.html:92
+msgid "Journal Title"
+msgstr "Journal Title"
+
+#: journalmanager/models.py:623
+msgid "Short Title"
+msgstr "Short Title"
+
+#: journalmanager/models.py:627
+msgid "The ISSN used to build the Journal PID."
+msgstr "The ISSN used to build the Journal PID."
+
+#: journalmanager/models.py:631
+msgid "Subject / Descriptors"
+msgstr "Subject / Descriptors"
+
+#: journalmanager/models.py:633
+msgid "Initial Volume"
+msgstr "Initial Volume"
+
+#: journalmanager/models.py:634
+msgid "Initial Number"
+msgstr "Initial Number"
+
+#: journalmanager/models.py:636
+msgid "Final Volume"
+msgstr "Final Volume"
+
+#: journalmanager/models.py:637
+msgid "Final Number"
+msgstr "Final Number"
+
+#: journalmanager/models.py:638
+msgid "Medline Title"
+msgstr "Medline Title"
+
+#: journalmanager/models.py:639
+msgid "Medline Code"
+msgstr "Medline Code"
+
+#: journalmanager/models.py:642 journalmanager/models.py:1012
+msgid "Editorial Standard"
+msgstr "Editorial Standard"
+
+#: journalmanager/models.py:644 journalmanager/models.py:1010
+msgid "Controlled Vocabulary"
+msgstr "Controlled Vocabulary"
+
+#: journalmanager/models.py:646
+msgid "Publication Level"
+msgstr "Publication Level"
+
+#: journalmanager/models.py:648
+msgid "SECS Code"
+msgstr "SECS Code"
+
+#: journalmanager/models.py:649
+msgid "Copyrighter"
+msgstr "Copyrighter"
+
+#: journalmanager/models.py:650
+#, fuzzy
+msgid "URL of online submission"
+msgstr "URL of online submission"
+
+#: journalmanager/models.py:651
+msgid "URL of the journal"
+msgstr "URL of the journal"
+
+#: journalmanager/models.py:652
+msgid "Notes"
+msgstr "Notes"
+
+#: journalmanager/models.py:654
+msgid "Journal Cover"
+msgstr "Journal Cover"
+
+#: journalmanager/models.py:656
+#, fuzzy
+msgid "Journal Logo"
+msgstr "Journal Logomarca"
+
+#: journalmanager/models.py:659
+msgid "Other Previous Title"
+msgstr "Other Previous Title"
+
+#: journalmanager/models.py:660
+#, fuzzy
+msgid "Editor Names"
+msgstr "Edit"
+
+#: journalmanager/models.py:661
+#, fuzzy
+msgid "Editor Address"
+msgstr "Address"
+
+#: journalmanager/models.py:662
+#, fuzzy
+msgid "Editor City"
+msgstr "Country"
+
+#: journalmanager/models.py:663
+#, fuzzy
+msgid "Editor State/Province/Region"
+msgstr "Publisher State"
+
+#: journalmanager/models.py:664
+msgid "Editor Zip/Postal Code"
+msgstr ""
+
+#: journalmanager/models.py:665
+#, fuzzy
+msgid "Editor Country"
+msgstr "Country"
+
+#: journalmanager/models.py:666
+#, fuzzy
+msgid "Editor Phone 1"
+msgstr "Country"
+
+#: journalmanager/models.py:667
+#, fuzzy
+msgid "Editor Phone 2"
+msgstr "Country"
+
+#: journalmanager/models.py:668
+#, fuzzy
+msgid "Editor E-mail"
+msgstr "E-mail"
+
+#: journalmanager/models.py:669
+msgid "Publisher Name"
+msgstr "Publisher Name"
+
+#: journalmanager/models.py:670
+msgid "Publisher Country"
+msgstr "Publisher Country"
+
+#: journalmanager/models.py:671
+#, fuzzy
+msgid "Publisher State/Province/Region"
+msgstr "Publisher State"
+
+#: journalmanager/models.py:672
+msgid "Publication City"
+msgstr "Publication City"
+
+#: journalmanager/models.py:673
+msgid "SCIE"
+msgstr ""
+
+#: journalmanager/models.py:674
+msgid "SSCI"
+msgstr ""
+
+#: journalmanager/models.py:675
+msgid "A&HCI"
+msgstr ""
+
+#: journalmanager/models.py:785
+msgid "Why are you changing the publication status?"
+msgstr ""
+
+#: journalmanager/models.py:822 journalmanager/models.py:888
+#: journalmanager/models.py:1166 journalmanager/models.py:1291
+#: journalmanager/templates/journalmanager/add_journal.html:16
+#: journalmanager/templates/journalmanager/add_section.html:58
+#: journalmanager/templates/journalmanager/issue_list.html:59
+#: journalmanager/templates/journalmanager/trash_listing.html:76
+#: maintenancewindow/models.py:34
+msgid "Title"
+msgstr "Title"
+
+#: journalmanager/models.py:823
+msgid "Title Category"
+msgstr "Title Category"
+
+#: journalmanager/models.py:838
+msgid "License Code"
+msgstr "License Code"
+
+#: journalmanager/models.py:839
+msgid "License Reference URL"
+msgstr "License Reference URL"
+
+#: journalmanager/models.py:840
+msgid "Disclaimer"
+msgstr "Disclaimer"
+
+#: journalmanager/models.py:841
+#, fuzzy
+msgid "Is Default?"
+msgstr "Is default"
+
+#: journalmanager/models.py:874
+msgid "Translation"
+msgstr "Translation"
+
+#: journalmanager/models.py:876
+msgid "Model"
+msgstr "Model"
+
+#: journalmanager/models.py:877
+msgid "Field"
+msgstr "Field"
+
+#: journalmanager/models.py:1004
+msgid "Start Month"
+msgstr "Start Month"
+
+#: journalmanager/models.py:1005
+msgid "End Month"
+msgstr "End Month"
+
+#: journalmanager/models.py:1006
+msgid "Year"
+msgstr "Year"
+
+#: journalmanager/models.py:1007
+msgid "Is Marked Up?"
+msgstr "Is Marked Up?"
+
+#: journalmanager/models.py:1009
+msgid "Total of Documents"
+msgstr "Total of Documents"
+
+#: journalmanager/models.py:1014
+#: journalmanager/templates/journalmanager/includes/issue_cover.html:2
+msgid "Issue Cover"
+msgstr "Issue Cover"
+
+#: journalmanager/models.py:1018
+msgid "Issue Order"
+msgstr "Issue Order"
+
+#: journalmanager/models.py:1020
+#: journalmanager/templates/journalmanager/issue_list.html:61
+msgid "Type"
+msgstr ""
+
+#: journalmanager/models.py:1021
+msgid "Suppl Text"
+msgstr ""
+
+#: journalmanager/models.py:1022
+msgid "Special Text"
+msgstr ""
+
+#: journalmanager/models.py:1211
+#, fuzzy
+msgid "Press release DOI number"
+msgstr "Is Press Release?"
+
+#: journalmanager/models.py:1292
+#: journalmanager/templates/journalmanager/add_pressrelease.html:83
+msgid "Content"
+msgstr ""
+
+#: journalmanager/models.py:1302
+#: journalmanager/templates/journalmanager/article_detail.html:24
+msgid "PID"
+msgstr ""
+
+#: journalmanager/views.py:50
+msgid "Saved."
+msgstr "Saved."
+
+#: journalmanager/views.py:51
+msgid "Saved partially. You can continue to fill in this form later."
+msgstr "Saved partially. You can continue to fill in this form later."
+
+#: journalmanager/views.py:53
+msgid "The pended form has been deleted."
+msgstr "The pended form has been deleted."
+
+#: journalmanager/views.py:105 journalmanager/views.py:137
+msgid "Does not exist the group 'Editors'"
+msgstr ""
+
+#: journalmanager/views.py:127
+#, python-format
+msgid "Successfully selected %s as editor of this Journal"
+msgstr ""
+
+#: journalmanager/views.py:132
+msgid "No user selected as editor of this journal!"
+msgstr ""
+
+#: journalmanager/views.py:375
+msgid "The selected documents had been moved to the Trash."
+msgstr "The selected documents had been moved to the Trash."
+
+#: journalmanager/views.py:376
+msgid "The selected documents had been restored."
+msgstr "The selected documents had been restored."
+
+#: journalmanager/views.py:652
+msgid ""
+"This Journal already exists, please search the journal in the previous step"
+msgstr ""
+
+#: journalmanager/views.py:1000
+msgid ""
+"Issue created successfully, however we can not create the editorial board."
+msgstr ""
+
+#: journalmanager/views.py:1108
+msgid "Section removed successfully"
+msgstr "Section removed successfully"
+
+#: journalmanager/views.py:1112
+msgid "Cant't delete, some issues are using this Section"
+msgstr "Cant't delete, some issues are using this Section"
+
+#: journalmanager/views.py:1230
+msgid "{journal} add to collection {collection}"
+msgstr ""
+
+#: journalmanager/views.py:1297
+#, fuzzy
+msgid "The section already exists."
+msgstr "This section title already exists for this Journal."
+
+#: journalmanager/views.py:1298
+msgid "This is a new section."
+msgstr ""
+
+#: journalmanager/templates/journalmanager/add_collection.html:10
+msgid "Collection Information"
+msgstr "Collection Information"
+
+#: journalmanager/templates/journalmanager/add_collection.html:143
+msgid "Collection Logomarca"
+msgstr "Collection Logomarca"
+
+#: journalmanager/templates/journalmanager/add_collection.html:156
+msgid "This collections does not have a logomarca"
+msgstr "This collections does not have a logomarca"
+
+#: journalmanager/templates/journalmanager/add_issue.html:8
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:12
+#: journalmanager/templates/journalmanager/issue_list.html:9
+msgid "Issues"
+msgstr "Issues"
+
+#: journalmanager/templates/journalmanager/add_issue.html:20
+msgid "Issue Information"
+msgstr "Issue Information"
+
+#: journalmanager/templates/journalmanager/add_journal.html:17
+#: journalmanager/templates/journalmanager/add_journal.html:108
+#: journalmanager/templates/journalmanager/add_journal.html:113
+msgid "Other Titles"
+msgstr "Other Titles"
+
+#: journalmanager/templates/journalmanager/add_journal.html:18
+#: journalmanager/templates/journalmanager/add_journal.html:143
+msgid "ISSN"
+msgstr "ISSN"
+
+#: journalmanager/templates/journalmanager/add_journal.html:19
+msgid "Subjects"
+msgstr "Subjects"
+
+#: journalmanager/templates/journalmanager/add_journal.html:21
+#: journalmanager/templates/journalmanager/add_journal.html:224
+msgid "Languages"
+msgstr "Languages"
+
+#: journalmanager/templates/journalmanager/add_journal.html:22
+#: journalmanager/templates/journalmanager/add_journal.html:237
+msgid "System Information"
+msgstr "System Information"
+
+#: journalmanager/templates/journalmanager/add_journal.html:24
+#: journalmanager/templates/journalmanager/add_journal.html:290
+msgid "Licenses"
+msgstr "Licenses"
+
+#: journalmanager/templates/journalmanager/add_journal.html:25
+#: journalmanager/templates/journalmanager/add_journal.html:301
+msgid "Formal Information"
+msgstr "Formal Information"
+
+#: journalmanager/templates/journalmanager/add_journal.html:27
+#: journalmanager/templates/journalmanager/add_journal.html:445
+#: journalmanager/templates/journalmanager/sponsor_list.html:7
+#: journalmanager/templates/journalmanager/trash_listing.html:38
+#: scielomanager/templates/base_lv1.html:37
+#: scielomanager/templates/base_lv1.html:101
+msgid "Sponsors"
+msgstr "Sponsors"
+
+#: journalmanager/templates/journalmanager/add_journal.html:29
+#: journalmanager/templates/journalmanager/add_journal.html:495
+msgid "Social Network"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/add_journal.html:30
+#: journalmanager/templates/journalmanager/add_journal.html:504
+msgid "Further Information"
+msgstr "Further Information"
+
+#: journalmanager/templates/journalmanager/add_journal.html:31
+msgid "Images"
+msgstr "Images"
+
+#: journalmanager/templates/journalmanager/add_journal.html:71
+#: journalmanager/templates/journalmanager/add_section.html:51
+msgid "Titles"
+msgstr "Titles"
+
+#: journalmanager/templates/journalmanager/add_journal.html:114
+msgid "Category"
+msgstr "Category"
+
+#: journalmanager/templates/journalmanager/add_journal.html:164
+msgid "Subject"
+msgstr "Subject"
+
+#: journalmanager/templates/journalmanager/add_journal.html:513
+msgid "Journal Images"
+msgstr "Journal Images"
+
+#: journalmanager/templates/journalmanager/add_journal.html:517
+#, fuzzy
+msgid "Cover"
+msgstr "Issue Cover"
+
+#: journalmanager/templates/journalmanager/add_journal.html:522
+#: journalmanager/templates/journalmanager/add_journal.html:540
+msgid "Max upload file size"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/add_journal.html:524
+#: journalmanager/templates/journalmanager/add_journal.html:542
+msgid "Image Size"
+msgstr "Image Size"
+
+#: journalmanager/templates/journalmanager/add_journal.html:527
+#: journalmanager/templates/journalmanager/add_journal.html:545
+msgid "Image Extensions"
+msgstr "Image Extensions"
+
+#: journalmanager/templates/journalmanager/add_journal.html:572
+msgid "Save to Continue Later"
+msgstr "Save to Continue Later"
+
+#: journalmanager/templates/journalmanager/add_pressrelease.html:7
+#, fuzzy
+msgid "Press release"
+msgstr "Is Press Release?"
+
+#: journalmanager/templates/journalmanager/add_pressrelease.html:16
+msgid "Journals Dashboard"
+msgstr "Journals Dashboard"
+
+#: journalmanager/templates/journalmanager/add_pressrelease.html:23
+#, fuzzy
+msgid "New press release"
+msgstr "Is Press Release?"
+
+#: journalmanager/templates/journalmanager/add_pressrelease.html:46
+#, fuzzy
+msgid "Settings"
+msgstr "user settings"
+
+#: journalmanager/templates/journalmanager/add_pressrelease.html:61
+msgid "Article PID"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/add_pressrelease.html:139
+msgid "Preview"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/add_section.html:7
+#, fuzzy
+msgid "Section"
+msgstr "Sections"
+
+#: journalmanager/templates/journalmanager/add_section.html:95
+msgid "Section Information"
+msgstr "Section Information"
+
+#: journalmanager/templates/journalmanager/add_sponsor.html:34
+msgid "Institution Information"
+msgstr "Institution Information"
+
+#: journalmanager/templates/journalmanager/add_sponsor.html:86
+msgid "Sponsor Collections"
+msgstr "Sponsor Collections"
+
+#: journalmanager/templates/journalmanager/add_user.html:29
+msgid "User Information"
+msgstr "User Information"
+
+#: journalmanager/templates/journalmanager/add_user.html:107
+#, fuzzy
+msgid "User Notifications"
+msgstr "User Collections"
+
+#: journalmanager/templates/journalmanager/add_user.html:128
+msgid "User Collections"
+msgstr "User Collections"
+
+#: journalmanager/templates/journalmanager/add_user.html:129
+msgid "The first collection will be set as default"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/add_user.html:137
+#, fuzzy
+msgid "is manager"
+msgstr "is_manager"
+
+#: journalmanager/templates/journalmanager/add_user.html:138
+msgid "options"
+msgstr "options"
+
+#: journalmanager/templates/journalmanager/article_detail.html:6
+msgid "Article: "
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:12
+#: validator/templates/validator/includes/xml_annotated.html:12
+msgid "XML Meta"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:15
+#: validator/templates/validator/includes/xml_annotated.html:18
+msgid "Article title"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:18
+#, fuzzy
+msgid "Head Subject"
+msgstr "Subject"
+
+#: journalmanager/templates/journalmanager/article_detail.html:21
+#: journalmanager/templates/journalmanager/issue_list.html:60
+#: scielomanager/templates/include_press_release/ahead.html:6
+msgid "DOI"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:27
+msgid "Article Type"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:30
+#, fuzzy
+msgid "Article Version"
+msgstr "URL of online submission"
+
+#: journalmanager/templates/journalmanager/article_detail.html:37
+msgid "XML content"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:42
+#, fuzzy
+msgid "This article don't have XML"
+msgstr "## This record doesn't have title ##"
+
+#: journalmanager/templates/journalmanager/article_list.html:5
+#: journalmanager/templates/journalmanager/issue_list.html:51
+msgid "Articles"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_list.html:32
+#: journalmanager/templates/journalmanager/home_journal.html:63
+msgid "Updated at"
+msgstr "Updated at"
+
+#: journalmanager/templates/journalmanager/article_list.html:33
+msgid "Is Visible"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_list.html:50
+#: journalmanager/templates/journalmanager/home_journal.html:42
+#: journalmanager/templates/journalmanager/home_journal.html:85
+#: journalmanager/templates/journalmanager/issue_list.html:77
+#: journalmanager/templates/journalmanager/issue_list.html:142
+#: journalmanager/templates/journalmanager/issue_list.html:151
+#: journalmanager/templates/journalmanager/issue_list.html:156
+#: journalmanager/templates/journalmanager/journal_list.html:128
+#: journalmanager/templates/journalmanager/section_list.html:73
+#: journalmanager/templates/journalmanager/sponsor_list.html:81
+#: journalmanager/templates/journalmanager/trash_listing.html:94
+#: scielomanager/templates/include_press_release/ahead.html:42
+#: scielomanager/templates/include_press_release/issue.html:39
+msgid "There are no items."
+msgstr "There are no items."
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:6
+msgid "Publication Status"
+msgstr "Publication Status"
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:25
+msgid "Journal Status History"
+msgstr "Journal Status History"
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:31
+msgid "created at"
+msgstr "created at"
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:32
+msgid "changed by"
+msgstr "changed by"
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:33
+msgid "reason"
+msgstr "reason"
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:51
+msgid "Change Status"
+msgstr "Change Status"
+
+#: journalmanager/templates/journalmanager/edit_journal_status.html:55
+msgid "Be aware of this modification, once it could not be undone."
+msgstr "Be aware of this modification, once it could not be undone."
+
+#: journalmanager/templates/journalmanager/editor.html:21
+#: journalmanager/templates/journalmanager/user_list.html:28
+msgid "Full name"
+msgstr "Full name"
+
+#: journalmanager/templates/journalmanager/editor.html:22
+#: journalmanager/templates/journalmanager/user_list.html:29
+msgid "Groups"
+msgstr "Groups"
+
+#: journalmanager/templates/journalmanager/editor.html:44
+msgid "Change user editor"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/editor.html:52
+msgid ""
+"<strong>Warning!</strong> No user was selected as editor of this journal. To "
+"be the editor user must be in 'Editors' group"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/home_journal.html:16
+msgid "Drafts"
+msgstr "Drafts"
+
+#: journalmanager/templates/journalmanager/home_journal.html:56
+msgid "Recent activities"
+msgstr "Recent activities"
+
+#: journalmanager/templates/journalmanager/home_journal.html:61
+msgid "User"
+msgstr "User"
+
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:8
+#: scielomanager/templates/footer.html:18
+msgid "About"
+msgstr "About"
+
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:17
+#: journalmanager/templates/journalmanager/section_list.html:6
+#: journalmanager/templates/journalmanager/trash_listing.html:28
+msgid "Sections"
+msgstr "Sections"
+
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:22
+#: journalmanager/templates/journalmanager/pressrelease_list.html:7
+#, fuzzy
+msgid "Press Releases"
+msgstr "Is Press Release?"
+
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:36
+msgid "Board"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/issue_list.html:16
+#: journalmanager/templates/journalmanager/journal_list.html:41
+#: journalmanager/templates/journalmanager/pressrelease_list.html:15
+#: journalmanager/templates/journalmanager/section_list.html:12
+#: journalmanager/templates/journalmanager/sponsor_list.html:32
+msgid "New"
+msgstr "New"
+
+#: journalmanager/templates/journalmanager/issue_list.html:20
+msgid "Regular"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/issue_list.html:21
+msgid "Special"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/issue_list.html:22
+#, fuzzy
+msgid "Supplement"
+msgstr "Supplement Label"
+
+#: journalmanager/templates/journalmanager/issue_list.html:35
+#, fuzzy
+msgid "Total of ahead of print documents at:"
+msgstr "Total of Documents"
+
+#: journalmanager/templates/journalmanager/issue_list.html:38
+#, fuzzy
+msgid "update"
+msgstr "Updated at"
+
+#: journalmanager/templates/journalmanager/issue_list.html:51
+msgid "Ahead of print"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/issue_list.html:105
+msgid "Number of articles"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/issue_list.html:106
+msgid "Articles expected"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/issue_list.html:107
+#, fuzzy
+msgid "Publication months"
+msgstr "Publication Status"
+
+#: journalmanager/templates/journalmanager/issue_list.html:108
+#, fuzzy
+msgid "Updated"
+msgstr "Updated at"
+
+#: journalmanager/templates/journalmanager/issue_list.html:118
+msgid "volume issue"
+msgstr "volume issue"
+
+#: journalmanager/templates/journalmanager/journal_dash.html:13
+#, fuzzy
+msgid "Editor name"
+msgstr "Edit"
+
+#: journalmanager/templates/journalmanager/journal_dash.html:14
+#, fuzzy
+msgid "Editor e-mail"
+msgstr "E-mail"
+
+#: journalmanager/templates/journalmanager/journal_list.html:47
+#: journalmanager/templates/journalmanager/sponsor_list.html:37
+msgid "All"
+msgstr "All"
+
+#: journalmanager/templates/journalmanager/journal_list.html:50
+msgid "Current"
+msgstr "Current"
+
+#: journalmanager/templates/journalmanager/journal_list.html:53
+msgid "Suspended"
+msgstr "Suspended"
+
+#: journalmanager/templates/journalmanager/journal_list.html:56
+msgid "Deceased"
+msgstr "Deceased"
+
+#: journalmanager/templates/journalmanager/journal_list.html:59
+msgid "In progress"
+msgstr "In progress"
+
+#: journalmanager/templates/journalmanager/journal_list.html:74
+#: journalmanager/templates/journalmanager/sponsor_list.html:50
+msgid "Move to trash"
+msgstr "Move to trash"
+
+#: journalmanager/templates/journalmanager/journal_list.html:142
+msgid "Check if journal already exists"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:149
+#, fuzzy
+msgid "Adding journal to my collection"
+msgstr "Journal Collections"
+
+#: journalmanager/templates/journalmanager/journal_list.html:157
+msgid ""
+"To insert a journal, you need to check whether the journal exists. If it "
+"exists just add to your collection!"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:165
+#, fuzzy
+msgid "Search journal"
+msgstr "New Journal"
+
+#: journalmanager/templates/journalmanager/journal_list.html:174
+msgid "Add this journal to my current collection"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:184
+msgid "I understand the consequences, add new journal"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:212
+msgid "Eletronic ISSN"
+msgstr "Eletronic ISSN"
+
+#: journalmanager/templates/journalmanager/journal_list.html:214
+msgid "Coleções"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:226
+msgid "No journal(s) found to the term: "
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:240
+msgid "Search by: title, abbreviated title, acronym and ISSN(s)"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/journal_list.html:271
+#, fuzzy
+msgid "is already member of collection"
+msgstr "Is manager of the collection?"
+
+#: journalmanager/templates/journalmanager/journal_list.html:280
+msgid "An unexpected error. Please try again later."
+msgstr ""
+
+#: journalmanager/templates/journalmanager/pressrelease_list.html:20
+msgid "New regular press release"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/pressrelease_list.html:21
+msgid "New for ahead of print articles"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/pressrelease_list.html:27
+#, fuzzy
+msgid "Press Release of Issue"
+msgstr "Is Press Release?"
+
+#: journalmanager/templates/journalmanager/pressrelease_list.html:30
+#, fuzzy
+msgid "Press Release of Ahead"
+msgstr "Is Press Release?"
+
+#: journalmanager/templates/journalmanager/section_list.html:24
+msgid "Section Title"
+msgstr "Section Title"
+
+#: journalmanager/templates/journalmanager/section_list.html:25
+msgid "Code"
+msgstr "Code"
+
+#: journalmanager/templates/journalmanager/section_list.html:83
+msgid ""
+"Hey, you can not remove the sections that are being used by at least one "
+"issue of this journal."
+msgstr ""
+"Hey, you can not remove the sections that are being used by at least one "
+"issue of this journal."
+
+#: journalmanager/templates/journalmanager/trash_listing.html:7
+#, fuzzy
+msgid "Trash"
+msgstr "Trash"
+
+#: journalmanager/templates/journalmanager/trash_listing.html:12
+#, fuzzy
+msgid "My trash"
+msgstr "Trash"
+
+#: journalmanager/templates/journalmanager/trash_listing.html:33
+msgid "Publishers"
+msgstr "Publishers"
+
+#: journalmanager/templates/journalmanager/trash_listing.html:63
+msgid "Restore"
+msgstr "Restore"
+
+#: journalmanager/templates/journalmanager/user_list.html:8
+#: scielomanager/templates/base_lv1.html:43
+msgid "Users"
+msgstr "Users"
+
+#: journalmanager/templates/journalmanager/user_list.html:58
+msgid "Disable"
+msgstr "Disable"
+
+#: journalmanager/templates/journalmanager/user_list.html:64
+msgid "Enable"
+msgstr "Enable"
+
+#: journalmanager/templates/journalmanager/user_list.html:71
+msgid "Exclude from this collection"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/includes/form_add_editor.html:4
+#, fuzzy
+msgid "Choose a user to be editor of this journal"
+msgstr "This section title already exists for this Journal."
+
+#: journalmanager/templates/journalmanager/includes/form_add_editor.html:12
+msgid "Nobody"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/includes/form_add_editor.html:22
+msgid "Add this user as editor of this journal"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/includes/form_add_user_to_collection.html:2
+#, fuzzy
+msgid "Choose a user to be part of this collection"
+msgstr "Is manager of the collection?"
+
+#: journalmanager/templates/journalmanager/includes/form_add_user_to_collection.html:7
+msgid "Select an existing user"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/includes/form_image_field_row.html:17
+msgid "This journal does not have a cover"
+msgstr "This journal does not have a cover"
+
+#: journalmanager/templates/journalmanager/includes/form_image_field_row.html:28
+#, fuzzy
+msgid "This journal does not have a logo"
+msgstr "This journal does not have a logomarca"
+
+#: journalmanager/templates/journalmanager/includes/issue_cover.html:15
+msgid "This issue does not have a cover, it will use the default journal cover"
+msgstr ""
+"This issue does not have a cover, it will use the default journal cover"
+
+#: journalmanager/templates/journalmanager/includes/issue_form_generic_field_list.html:18
+msgid "Add new"
+msgstr "Add new"
+
+#: journalmanager/templates/journalmanager/includes/titleformset.html:2
+msgid "Titulos"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/includes/titleformset.html:7
+msgid "Thematic Title"
+msgstr "Thematic Title"
+
+#: journalmanager/templatetags/get_title_for_pended.py:11
+msgid "## This record doesn't have title ##"
+msgstr "## This record doesn't have title ##"
+
+#: journalmanager/templatetags/pagination_tags.py:113
+#, fuzzy
+msgid "Previous"
+msgstr "Other Previous Title"
+
+#: journalmanager/templatetags/pagination_tags.py:117
+msgid "Next"
+msgstr ""
+
+#: journalmanager/templatetags/pagination_tags.py:162
+msgid "of"
+msgstr ""
+
+#: journalmanager/templatetags/pagination_tags.py:204
+#, fuzzy
+msgid "Help on:"
+msgstr "Help"
+
+#: journalmanager/templatetags/user_collections_dashboard.py:20
+msgid "Activate"
+msgstr "Activate"
+
+#: maintenancewindow/models.py:35
+msgid "Begin at"
+msgstr ""
+
+#: maintenancewindow/models.py:36
+#, fuzzy
+msgid "End at"
+msgstr "End Month"
+
+#: maintenancewindow/models.py:38
+msgid "is blocking users"
+msgstr ""
+
+#: maintenancewindow/models.py:41
+msgid "once it is checked, it will set up the other events to false"
+msgstr ""
+
+#: maintenancewindow/models.py:43
+#, fuzzy
+msgid "Is finished"
+msgstr "Is trashed?"
+
+#: maintenancewindow/models.py:44
+#, fuzzy
+msgid "Report"
+msgstr "Report bug"
+
+#: scielomanager/custom_fields.py:44
 #, python-format
 msgid "Please keep filesize under %(maxsize)s. Current filesize %(filesize)s"
 msgstr ""
 
-#: custom_fields.py:49
+#: scielomanager/custom_fields.py:50
 msgid "Filetype not supported."
 msgstr ""
 
-#: templates/base_lv0.html:26
+#: scielomanager/templates/base_lv0.html:26
 msgid "No results found for"
 msgstr ""
 
-#: templates/base_lv0.html:46
+#: scielomanager/templates/base_lv0.html:46
 msgid "Browse"
 msgstr "Browse"
 
-#: templates/base_lv1.html:26
+#: scielomanager/templates/base_lv1.html:26
 #, fuzzy
 msgid "My Journals"
 msgstr "Journals"
 
-#: templates/base_lv1.html:32 templates/base_lv1.html.py:96
-msgid "Journals"
-msgstr "Journals"
-
-#: templates/base_lv1.html:37 templates/base_lv1.html.py:101
-msgid "Sponsors"
-msgstr "Sponsors"
-
-#: templates/base_lv1.html:43
-msgid "Users"
-msgstr "Users"
-
-#: templates/base_lv1.html:50
+#: scielomanager/templates/base_lv1.html:50
 #, fuzzy
 msgid "Download"
 msgstr "Downloads"
 
-#: templates/base_lv1.html:55
-msgid "Metadata for Markup"
-msgstr "Metadata for Markup"
-
-#: templates/base_lv1.html:62
+#: scielomanager/templates/base_lv1.html:62
 msgid "Maintenances"
 msgstr ""
 
-#: templates/base_lv1.html:87
+#: scielomanager/templates/base_lv1.html:87
 msgid "Search"
 msgstr "Search"
 
-#: templates/base_lv1.html:121
-msgid "Edit"
-msgstr "Edit"
-
-#: templates/base_lv1.html:156
+#: scielomanager/templates/base_lv1.html:156
 #, fuzzy
 msgid "My Trash"
 msgstr "Trash"
 
-#: templates/base_lv1.html:166 templates/registration/logout.html:7
+#: scielomanager/templates/base_lv1.html:166
+#: scielomanager/templates/registration/logout.html:7
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/base_lv1.html:183
+#: scielomanager/templates/base_lv1.html:183
 msgid "edit"
 msgstr ""
 
-#: templates/footer.html:16
+#: scielomanager/templates/footer.html:16
+#: validator/templates/validator/includes/xml_annotated.html:96
 msgid "Help"
 msgstr "Help"
 
-#: templates/footer.html:18
-msgid "About"
-msgstr "About"
-
-#: templates/footer.html:19
+#: scielomanager/templates/footer.html:19
 msgid "Documentation"
 msgstr "Documentation"
 
-#: templates/footer.html:20
+#: scielomanager/templates/footer.html:20
 msgid "Report bug"
 msgstr "Report bug"
 
-#: templates/footer.html:21
+#: scielomanager/templates/footer.html:21
 msgid "Discuss mailing list"
 msgstr "Discuss mailing list"
 
-#: templates/footer.html:25
+#: scielomanager/templates/footer.html:25
 msgid "Development"
 msgstr "Development"
 
-#: templates/footer.html:27
+#: scielomanager/templates/footer.html:27
 msgid "GitHub"
 msgstr "GitHub"
 
-#: templates/footer.html:28
+#: scielomanager/templates/footer.html:28
 msgid "Dev mailing list"
 msgstr "Dev mailing list"
 
-#: templates/footer.html:32
+#: scielomanager/templates/footer.html:32
 msgid "Tools"
 msgstr ""
 
-#: templates/footer.html:35
+#: scielomanager/templates/footer.html:35
 msgid "Packtools StyleChecker"
 msgstr ""
 
-#: templates/include_press_release/ahead.html:5
-#: templates/include_press_release/issue.html:5
+#: scielomanager/templates/include_press_release/ahead.html:5
+#: scielomanager/templates/include_press_release/issue.html:5
 #, fuzzy
 msgid "Press Release"
 msgstr "Is Press Release?"
 
-#: templates/include_press_release/ahead.html:6
-msgid "DOI"
-msgstr ""
-
-#: templates/include_press_release/ahead.html:42
-#: templates/include_press_release/issue.html:39
-msgid "There are no items."
-msgstr "There are no items."
-
-#: templates/include_press_release/issue.html:6
-msgid "Issue"
-msgstr "Issue"
-
-#: templates/registration/activate.html:6
-#: templates/registration/activation_complete.html:6
+#: scielomanager/templates/registration/activate.html:6
+#: scielomanager/templates/registration/activation_complete.html:6
 msgid "Your account is now activated."
 msgstr "Your account is now activated."
 
-#: templates/registration/activate.html:8
-#: templates/registration/activation_complete.html:8
+#: scielomanager/templates/registration/activate.html:8
+#: scielomanager/templates/registration/activation_complete.html:8
 msgid "You may now login using your username and password."
 msgstr "You may now login using your username and password."
 
-#: templates/registration/activation_email.txt:3
+#: scielomanager/templates/registration/activation_email.txt:3
 #, fuzzy
 msgid "Please click on the link below to activate your account."
 msgstr "You will receive an email with a link to activate your account."
 
-#: templates/registration/activation_email.txt:7
+#: scielomanager/templates/registration/activation_email.txt:7
 #, python-format
 msgid ""
 "\n"
 "    This key will expire in %(expiration_days)s days.\n"
 msgstr ""
 
-#: templates/registration/login.html:9
+#: scielomanager/templates/registration/login.html:9
 msgid "We are under maintenance!"
 msgstr ""
 
-#: templates/registration/login.html:11
+#: scielomanager/templates/registration/login.html:11
 msgid "We expect to be back at"
 msgstr ""
 
-#: templates/registration/login.html:18
+#: scielomanager/templates/registration/login.html:18
 msgid "Sorry, that's not a valid username or password"
 msgstr "Sorry, that's not a valid username or password"
 
-#: templates/registration/login.html:21
+#: scielomanager/templates/registration/login.html:21
 msgid "Sign in"
 msgstr "Sign in"
 
-#: templates/registration/login.html:28
-msgid "Username or email"
-msgstr "Username or email"
-
-#: templates/registration/login.html:40
+#: scielomanager/templates/registration/login.html:40
 msgid "Log in"
 msgstr "Log in"
 
-#: templates/registration/login.html:42 templates/registration/login.html:43
+#: scielomanager/templates/registration/login.html:42
+#: scielomanager/templates/registration/login.html:43
 msgid "Forgot your password?"
 msgstr "Forgot your password?"
 
-#: templates/registration/password_reset_complete.html:9
+#: scielomanager/templates/registration/password_reset_complete.html:9
 msgid ""
 "Your password has been reseted! You may now login in using your new "
 "credentials."
@@ -202,27 +2359,23 @@ msgstr ""
 "Your password has been reseted! You may now login in using your new "
 "credentials."
 
-#: templates/registration/password_reset_complete.html:9
+#: scielomanager/templates/registration/password_reset_complete.html:9
 msgid "login"
 msgstr "login"
 
-#: templates/registration/password_reset_confirm.html:10
+#: scielomanager/templates/registration/password_reset_confirm.html:10
 msgid "Enter your new password below to reset your password:"
 msgstr "Enter your new password below to reset your password:"
 
-#: templates/registration/password_reset_confirm.html:13
+#: scielomanager/templates/registration/password_reset_confirm.html:13
 msgid "New Password"
 msgstr "New Password"
 
-#: templates/registration/password_reset_confirm.html:20
-msgid "save"
-msgstr "save"
-
-#: templates/registration/password_reset_confirm.html:27
+#: scielomanager/templates/registration/password_reset_confirm.html:27
 msgid "This link have already used to reset your password."
 msgstr "This link have already used to reset your password."
 
-#: templates/registration/password_reset_done.html:9
+#: scielomanager/templates/registration/password_reset_done.html:9
 msgid ""
 "We have sent you an email with a link to reset your password. Please check "
 "your email and click the link to continue."
@@ -230,11 +2383,11 @@ msgstr ""
 "We have sent you an email with a link to reset your password. Please check "
 "your email and click the link to continue."
 
-#: templates/registration/password_reset_done.html:9
+#: scielomanager/templates/registration/password_reset_done.html:9
 msgid "Login"
 msgstr "Login"
 
-#: templates/registration/password_reset_email.html:4
+#: scielomanager/templates/registration/password_reset_email.html:4
 #, python-format
 msgid ""
 "\n"
@@ -259,7 +2412,7 @@ msgstr ""
 "it\n"
 "into your web browser:\n"
 
-#: templates/registration/password_reset_form.html:9
+#: scielomanager/templates/registration/password_reset_form.html:9
 msgid ""
 "Enter your e-mail in the form below and we will send your username and "
 "instructions to create a new password."
@@ -267,19 +2420,19 @@ msgstr ""
 "Enter your e-mail in the form below and we will send your username and "
 "instructions to create a new password."
 
-#: templates/registration/password_reset_form.html:11
+#: scielomanager/templates/registration/password_reset_form.html:11
 msgid "Reset Password"
 msgstr "Reset Password"
 
-#: templates/registration/password_reset_form.html:18
+#: scielomanager/templates/registration/password_reset_form.html:18
 msgid "Send instructions"
 msgstr "Send instructions"
 
-#: templates/registration/registration_complete.html:6
+#: scielomanager/templates/registration/registration_complete.html:6
 msgid "A confirmation e-mail is on the way"
 msgstr "A confirmation e-mail is on the way"
 
-#: templates/registration/registration_complete.html:8
+#: scielomanager/templates/registration/registration_complete.html:8
 msgid ""
 "Please click the activation link included in the e-mail to confirm you "
 "registration."
@@ -287,29 +2440,382 @@ msgstr ""
 "Please click the activation link included in the e-mail to confirm you "
 "registration."
 
-#: templates/registration/registration_form.html:6
-msgid "Home"
-msgstr "Home"
-
-#: templates/registration/registration_form.html:6
-#: templates/registration/registration_form.html:19
+#: scielomanager/templates/registration/registration_form.html:6
+#: scielomanager/templates/registration/registration_form.html:19
 msgid "Register"
 msgstr "Register"
 
-#: templates/registration/registration_form.html:9
+#: scielomanager/templates/registration/registration_form.html:9
 msgid "Please correct the errors below."
 msgstr "Please correct the errors below."
 
-#: templates/registration/registration_form.html:12
+#: scielomanager/templates/registration/registration_form.html:12
 msgid "You will receive an email with a link to activate your account."
 msgstr "You will receive an email with a link to activate your account."
 
-#, fuzzy
-#~ msgid "Articles in submission"
-#~ msgstr "URL of online submission"
+#: tools/isis2couchdb/tools/argparse.py:327
+msgid "usage: "
+msgstr ""
 
-#~ msgid "user settings"
-#~ msgstr "user settings"
+#: tools/isis2couchdb/tools/argparse.py:829
+msgid ".__call__() not defined"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1113
+msgid "unknown parser {parser_name} (choices: {choices})"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1150
+#, python-format
+msgid "argument \"-\" with mode %r"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1351
+#, python-format
+msgid "cannot merge actions - two groups are named %r"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1389
+msgid "'required' is an invalid argument for positionals"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1409
+msgid ""
+"invalid option string {option_string}: must start with a character "
+"{prefix_chars}"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1429
+#, python-format
+msgid "dest= is required for options like %r"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1446
+#, python-format
+msgid "invalid conflict_resolution value: %r"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1464
+#, python-format
+msgid "conflicting option string(s): %s"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1527
+msgid "mutually exclusive arguments must be optional"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1597
+msgid "positional arguments"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1598
+#, fuzzy
+msgid "optional arguments"
+msgstr "Total of Documents"
+
+#: tools/isis2couchdb/tools/argparse.py:1611
+msgid "show this help message and exit"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1616
+msgid "show program's version number and exit"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1648
+msgid "cannot have multiple subparser arguments"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1700
+#, python-format
+msgid "unrecognized arguments: %s"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1793
+#, python-format
+msgid "not allowed with argument %s"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1839
+#: tools/isis2couchdb/tools/argparse.py:1853
+#, python-format
+msgid "ignored explicit argument %r"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1943
+msgid "too few arguments"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1950
+#, python-format
+msgid "argument %s is required"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:1964
+#, python-format
+msgid "one of the arguments %s is required"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2010
+msgid "expected one argument"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2011
+msgid "expected at most one argument"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2012
+msgid "expected at least one argument"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2014
+#, python-format
+msgid "expected %s argument(s)"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2070
+msgid "ambiguous option: {arg_string} could match {options}"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2133
+#, python-format
+msgid "unexpected option string: %s"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2234
+#, python-format
+msgid "%r is not callable"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2250
+msgid "invalid {name} value: {arg_string}"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2261
+msgid "invalid choice: {value} (choose from {choices})"
+msgstr ""
+
+#: tools/isis2couchdb/tools/argparse.py:2355
+msgid "{prog}: error: message\n"
+msgstr ""
+
+#: validator/forms.py:9
+#: validator/templates/validator/includes/xml_annotated.html:15
+msgid "File"
+msgstr ""
+
+#: validator/forms.py:15
+msgid "This type of file is not allowed! Please select another file."
+msgstr ""
+
+#: validator/forms.py:18
+msgid "The file's size is too large! Please select a smaller file."
+msgstr ""
+
+#: validator/templates/validator/packtools.html:6
+msgid "Packtools - Style Checker"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:21
+msgid "SciELO Style Checker"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:23
+msgid ""
+"\n"
+"      Use this tool to confirm whether an XML file conforms to SciELO Style "
+"as defined in the SciELO Publishing Schema Tagging Guidelines.\n"
+"      "
+msgstr ""
+
+#: validator/templates/validator/packtools.html:28
+msgid ""
+"\n"
+"      Browse to your local XML file and click \"Validate\". The results will "
+"be displayed below.\n"
+"      "
+msgstr ""
+
+#: validator/templates/validator/packtools.html:39
+msgid "Upload XML"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:44
+#, fuzzy
+msgid "Help?"
+msgstr "Help"
+
+#: validator/templates/validator/packtools.html:54
+msgid "Max. upload size"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:65
+msgid "Clear"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:66
+msgid "Validate"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:72
+msgid ""
+"\n"
+"              If you have any problems with the tool or with the SPS Tagging "
+"Guidelines, please contact:\n"
+"              <strong><a href=\"mailto:scielo-xml@googlegroups.com\">scielo-"
+"xml@googlegroups.com</a></strong>.\n"
+"              "
+msgstr ""
+
+#: validator/templates/validator/packtools.html:107
+#: validator/templates/validator/includes/xml_annotated.html:203
+msgid "packtools version"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:151
+msgid "The file submitted is NOT XML"
+msgstr ""
+
+#: validator/templates/validator/packtools.html:156
+msgid "XML file excedes max upload size"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:24
+#, fuzzy
+msgid "Issue volume"
+msgstr "Issue Cover"
+
+#: validator/templates/validator/includes/xml_annotated.html:27
+#, fuzzy
+msgid "Issue number"
+msgstr "Issue Cover"
+
+#: validator/templates/validator/includes/xml_annotated.html:31
+msgid "SPS version"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:41
+msgid "The XML could not be analyzed"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:42
+msgid "Detail:"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:48
+msgid "Warning!"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:49
+msgid ""
+"This XML document uses a version of SciELO PS that soon will no longer be "
+"supported. Please consider upgrading to a newer version as soon as possible."
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:50
+msgid "If you want to know more about the support policy, please refer to"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:52
+msgid "SciELO PS official documentation"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:57
+msgid "XML validation output"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:62
+msgid "Level"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:63
+msgid "Message"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:64
+msgid "Occurrences"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:85
+msgid "The XML seems to be valid."
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:99
+msgid "back to errors"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:131
+msgid "Help and Shortcuts"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:137
+#, fuzzy
+msgid "Shortcut"
+msgstr "Short Title"
+
+#: validator/templates/validator/includes/xml_annotated.html:144
+msgid "Show this Help and Shortcuts popup"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:150
+msgid "Go fullscreen"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:154
+msgid "Exit fullscreen"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:158
+msgid "Show go-to-line field"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:162
+msgid "Show search field"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:166
+msgid "Find next"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:170
+msgid "Find previous"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:174
+msgid "Fold/Unfold current tag"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:178
+msgid "Jump to the matching selected tag"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:184
+msgid "Clear the last search of SPS-ERRORs"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:190
+msgid "Jump to Previous Highlighted SPS-ERROR"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:196
+msgid "Jump to Next Highlighted SPS-ERROR"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:479
+msgid "Phrase"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:487
+msgid "was NOT found"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:489
+msgid "in the next lines"
+msgstr ""
+
+#: validator/templates/validator/includes/xml_annotated.html:492
+#, fuzzy
+msgid "in the previous lines"
+msgstr "Other Previous Title"
 
 #~ msgid "logout"
 #~ msgstr "logout"
@@ -320,345 +2826,8 @@ msgstr "You will receive an email with a link to activate your account."
 #~ msgid "SciELO Project"
 #~ msgstr "SciELO Project"
 
-#~ msgid "Your new password and new password confirmation must match."
-#~ msgstr "Your new password and new password confirmation must match."
-
-#~ msgid "Your current password does not match. Please try again."
-#~ msgstr "Your current password does not match. Please try again."
-
-#~ msgid "Your new password has been set."
-#~ msgstr "Your new password has been set."
-
-#~ msgid "My Account"
-#~ msgstr "My Account"
-
-#~ msgid "Password Change"
-#~ msgstr "Password Change"
-
-#~ msgid "Field required!"
-#~ msgstr "Field required!"
-
-#~ msgid "cancel"
-#~ msgstr "cancel"
-
-#~ msgid "Journal"
-#~ msgstr "Journal"
-
-#~ msgid "Retrieving its issues"
-#~ msgstr "Retrieving its issues"
-
-#, fuzzy
-#~ msgid "all issues"
-#~ msgstr "volume issue"
-
-#~ msgid "download"
-#~ msgstr "download"
-
-#~ msgid ""
-#~ "\n"
-#~ "  <h4>Metadata for the Markup software</h4>\n"
-#~ "  <p>\n"
-#~ "    <ul>\n"
-#~ "      <li>Select a journal</li>\n"
-#~ "      <li>Select an issue</li>\n"
-#~ "      <li>Click the <strong>download</strong> button</li>\n"
-#~ "    </ul>\n"
-#~ "  </p>\n"
-#~ "  <p>\n"
-#~ "    A <strong>.zip</strong> package will be downloaded, containing the\n"
-#~ "    metadata files required by the <a href=\"http://docs.scielo.org/"
-#~ "projects/scielo-pc-programs/en/latest/markup.html#before-using-the-markup"
-#~ "\">Markup</a> software.\n"
-#~ "  </p>\n"
-#~ "  <p>\n"
-#~ "    <ul>\n"
-#~ "      <li>Close the Markup software</li>\n"
-#~ "      <li>Expand the .zip package</li>\n"
-#~ "      <li>* Move all files to <strong>c:\\SciELO\\bin\\markup\\</strong></"
-#~ "li>\n"
-#~ "      <li>Reopen the Markup software et voilà!</li>\n"
-#~ "    </ul>\n"
-#~ "  </p>\n"
-#~ "  <i>* The default installation path.</i>\n"
-#~ "  "
-#~ msgstr ""
-#~ "\n"
-#~ "  <h4>Metadata for the Markup software</h4>\n"
-#~ "  <p>\n"
-#~ "    <ul>\n"
-#~ "      <li>Select a journal</li>\n"
-#~ "      <li>Select an issue</li>\n"
-#~ "      <li>Click the <strong>download</strong> button</li>\n"
-#~ "    </ul>\n"
-#~ "  </p>\n"
-#~ "  <p>\n"
-#~ "    A <strong>.zip</strong> package will be downloaded, containing the\n"
-#~ "    metadata files required by the <a href=\"http://docs.scielo.org/"
-#~ "projects/scielo-pc-programs/en/latest/markup.html#before-using-the-markup"
-#~ "\">Markup</a> software.\n"
-#~ "  </p>\n"
-#~ "  <p>\n"
-#~ "    <ul>\n"
-#~ "      <li>Close the Markup software</li>\n"
-#~ "      <li>Expand the .zip package</li>\n"
-#~ "      <li>* Move all files to <strong>c:\\SciELO\\bin\\markup\\</strong></"
-#~ "li>\n"
-#~ "      <li>Reopen the Markup software et voilà!</li>\n"
-#~ "    </ul>\n"
-#~ "  </p>\n"
-#~ "  <i>* The default installation path.</i>\n"
-#~ "  "
-
-#~ msgid "Select one or more collections"
-#~ msgstr "Select one or more collections"
-
-#~ msgid "Select one or more languages"
-#~ msgstr "Select one or more languages"
-
-#~ msgid "Select one or more sponsors"
-#~ msgstr "Select one or more sponsors"
-
-#, fuzzy
-#~ msgid "Select one or more categories"
-#~ msgstr "Select one or more groups"
-
-#, fuzzy
-#~ msgid "Select one or more study area"
-#~ msgstr "Select one or more languages"
-
-#~ msgid "Password"
-#~ msgstr "Password"
-
-#~ msgid "Select one or more groups"
-#~ msgstr "Select one or more groups"
-
-#~ msgid "Select one or more section"
-#~ msgstr "Select one or more section"
-
-#~ msgid ""
-#~ "Issue with this Year and (Volume or Number) already exists for this "
-#~ "Journal."
-#~ msgstr ""
-#~ "Issue with this Year and (Volume or Number) already exists for this "
-#~ "Journal."
-
-#~ msgid "You must complete at least one of two fields volume or number."
-#~ msgstr "You must complete at least one of two fields volume or number."
-
-#~ msgid "This section title already exists for this Journal."
-#~ msgstr "This section title already exists for this Journal."
-
-#~ msgid "ISO 639-1 Language Code"
-#~ msgstr "ISO 639-1 Language Code"
-
-#~ msgid "Language Name (in English)"
-#~ msgstr "Language Name (in English)"
-
-#~ msgid "E-mail"
-#~ msgstr "E-mail"
-
-#~ msgid "Collection Name"
-#~ msgstr "Collection Name"
-
-#~ msgid "Instance URL"
-#~ msgstr "Instance URL"
-
-#~ msgid "Logo"
-#~ msgstr "Logo"
-
-#~ msgid "Sigla"
-#~ msgstr "Sigla"
-
-#~ msgid "Country"
-#~ msgstr "Country"
-
-#~ msgid "State"
-#~ msgstr "State"
-
-#~ msgid "City"
-#~ msgstr "City"
-
-#~ msgid "Address"
-#~ msgstr "Address"
-
-#~ msgid "Number"
-#~ msgstr "Number"
-
-#~ msgid "Complement"
-#~ msgstr "Complement"
-
-#~ msgid "Zip Code"
-#~ msgstr "Zip Code"
-
-#~ msgid "Phone Number"
-#~ msgstr "Phone Number"
-
-#~ msgid "Fax Number"
-#~ msgstr "Fax Number"
-
-#~ msgid "Email"
-#~ msgstr "Email"
-
-#~ msgid "Is default"
-#~ msgstr "Is default"
-
-#~ msgid "Is manager of the collection?"
-#~ msgstr "Is manager of the collection?"
-
-#~ msgid "Institution Name"
-#~ msgstr "Institution Name"
-
-#~ msgid "Institution Complements"
-#~ msgstr "Institution Complements"
-
-#~ msgid "Address Complement"
-#~ msgstr "Address Complement"
-
-#~ msgid "Cel Number"
-#~ msgstr "Cel Number"
-
-#~ msgid "Is trashed?"
-#~ msgstr "Is trashed?"
-
-#~ msgid "Study Area"
-#~ msgstr "Study Area"
-
-#~ msgid "Sponsor"
-#~ msgstr "Sponsor"
-
-#, fuzzy
-#~ msgid "Previous title"
-#~ msgstr "Other Previous Title"
-
-#, fuzzy
-#~ msgid "Use license"
-#~ msgstr "Licenses"
-
-#~ msgid "Collection"
-#~ msgstr "Collection"
-
-#~ msgid "National Code"
-#~ msgstr "National Code"
-
-#, fuzzy
-#~ msgid "Subject Categories"
-#~ msgstr "Subject / Descriptors"
-
-#~ msgid "Journal Title"
-#~ msgstr "Journal Title"
-
-#~ msgid "ISO abbreviated title"
-#~ msgstr "ISO abbreviated title"
-
-#~ msgid "Short Title"
-#~ msgstr "Short Title"
-
-#~ msgid "Acronym"
-#~ msgstr "Acronym"
-
-#~ msgid "The ISSN used to build the Journal PID."
-#~ msgstr "The ISSN used to build the Journal PID."
-
-#~ msgid "Print ISSN"
-#~ msgstr "Print ISSN"
-
-#~ msgid "Electronic ISSN"
-#~ msgstr "Electronic ISSN"
-
-#~ msgid "Subject / Descriptors"
-#~ msgstr "Subject / Descriptors"
-
-#~ msgid "Initial Year"
-#~ msgstr "Initial Year"
-
-#~ msgid "Initial Volume"
-#~ msgstr "Initial Volume"
-
-#~ msgid "Initial Number"
-#~ msgstr "Initial Number"
-
-#~ msgid "Final Year"
-#~ msgstr "Final Year"
-
-#~ msgid "Final Volume"
-#~ msgstr "Final Volume"
-
-#~ msgid "Final Number"
-#~ msgstr "Final Number"
-
-#~ msgid "Medline Title"
-#~ msgstr "Medline Title"
-
-#~ msgid "Medline Code"
-#~ msgstr "Medline Code"
-
-#~ msgid "Frequency"
-#~ msgstr "Frequency"
-
-#~ msgid "Publication Status"
-#~ msgstr "Publication Status"
-
 #~ msgid "Why the journal status will change?"
 #~ msgstr "Why the journal status will change?"
-
-#~ msgid "Editorial Standard"
-#~ msgstr "Editorial Standard"
-
-#~ msgid "Controlled Vocabulary"
-#~ msgstr "Controlled Vocabulary"
-
-#~ msgid "Publication Level"
-#~ msgstr "Publication Level"
-
-#~ msgid "SECS Code"
-#~ msgstr "SECS Code"
-
-#~ msgid "Copyrighter"
-#~ msgstr "Copyrighter"
-
-#~ msgid "URL of the journal"
-#~ msgstr "URL of the journal"
-
-#~ msgid "Notes"
-#~ msgstr "Notes"
-
-#~ msgid "Index Coverage"
-#~ msgstr "Index Coverage"
-
-#~ msgid "Journal Cover"
-#~ msgstr "Journal Cover"
-
-#, fuzzy
-#~ msgid "Journal Logo"
-#~ msgstr "Journal Logomarca"
-
-#~ msgid "Other Previous Title"
-#~ msgstr "Other Previous Title"
-
-#, fuzzy
-#~ msgid "Editor Address"
-#~ msgstr "Address"
-
-#, fuzzy
-#~ msgid "Editor Country"
-#~ msgstr "Country"
-
-#, fuzzy
-#~ msgid "Editor E-mail"
-#~ msgstr "E-mail"
-
-#~ msgid "Publisher Name"
-#~ msgstr "Publisher Name"
-
-#~ msgid "Publisher Country"
-#~ msgstr "Publisher Country"
-
-#, fuzzy
-#~ msgid "Publisher State/Province/Region"
-#~ msgstr "Publisher State"
-
-#~ msgid "Publication City"
-#~ msgstr "Publication City"
 
 #~ msgid "Journal Status"
 #~ msgstr "Journal Status"
@@ -669,65 +2838,11 @@ msgstr "You will receive an email with a link to activate your account."
 #~ msgid "Changed at"
 #~ msgstr "Changed at"
 
-#~ msgid "Title"
-#~ msgstr "Title"
-
-#~ msgid "Title Category"
-#~ msgstr "Title Category"
-
-#~ msgid "Mission"
-#~ msgstr "Mission"
-
-#~ msgid "License Code"
-#~ msgstr "License Code"
-
-#~ msgid "License Reference URL"
-#~ msgstr "License Reference URL"
-
-#~ msgid "Disclaimer"
-#~ msgstr "Disclaimer"
-
-#~ msgid "Translation"
-#~ msgstr "Translation"
-
-#~ msgid "Language"
-#~ msgstr "Language"
-
-#~ msgid "Model"
-#~ msgstr "Model"
-
-#~ msgid "Field"
-#~ msgstr "Field"
-
-#~ msgid "Volume"
-#~ msgstr "Volume"
-
 #~ msgid "Volume Supplement"
 #~ msgstr "Volume Supplement"
 
 #~ msgid "Number Supplement"
 #~ msgstr "Number Supplement"
-
-#~ msgid "Start Month"
-#~ msgstr "Start Month"
-
-#~ msgid "End Month"
-#~ msgstr "End Month"
-
-#~ msgid "Year"
-#~ msgstr "Year"
-
-#~ msgid "Is Marked Up?"
-#~ msgstr "Is Marked Up?"
-
-#~ msgid "Total of Documents"
-#~ msgstr "Total of Documents"
-
-#~ msgid "Issue Cover"
-#~ msgstr "Issue Cover"
-
-#~ msgid "Issue Order"
-#~ msgstr "Issue Order"
 
 #~ msgid "suppl."
 #~ msgstr "suppl."
@@ -735,136 +2850,20 @@ msgstr "You will receive an email with a link to activate your account."
 #~ msgid "pr"
 #~ msgstr "pr"
 
-#~ msgid "Supplement Label"
-#~ msgstr "Supplement Label"
-
-#~ msgid "Saved."
-#~ msgstr "Saved."
-
-#~ msgid "Saved partially. You can continue to fill in this form later."
-#~ msgstr "Saved partially. You can continue to fill in this form later."
-
-#~ msgid "There are some errors or missing data."
-#~ msgstr "There are some errors or missing data."
-
-#~ msgid "The pended form has been deleted."
-#~ msgstr "The pended form has been deleted."
-
-#~ msgid "The selected documents had been moved to the Trash."
-#~ msgstr "The selected documents had been moved to the Trash."
-
-#~ msgid "The selected documents had been restored."
-#~ msgstr "The selected documents had been restored."
-
-#~ msgid "Section removed successfully"
-#~ msgstr "Section removed successfully"
-
-#~ msgid "Cant't delete, some issues are using this Section"
-#~ msgstr "Cant't delete, some issues are using this Section"
-
-#~ msgid "Collection Information"
-#~ msgstr "Collection Information"
-
-#~ msgid "Collection Logomarca"
-#~ msgstr "Collection Logomarca"
-
-#~ msgid "This collections does not have a logomarca"
-#~ msgstr "This collections does not have a logomarca"
-
-#~ msgid "Journals Dashboard"
-#~ msgstr "Journals Dashboard"
-
 #~ msgid "Issue Dashboard"
 #~ msgstr "Issue Dashboard"
 
 #~ msgid "New Issue"
 #~ msgstr "New Issue"
 
-#~ msgid "Issue Information"
-#~ msgstr "Issue Information"
-
-#~ msgid "Thematic Title"
-#~ msgstr "Thematic Title"
-
-#~ msgid "Add new"
-#~ msgstr "Add new"
-
-#~ msgid ""
-#~ "This issue does not have a cover, it will use the default journal cover"
-#~ msgstr ""
-#~ "This issue does not have a cover, it will use the default journal cover"
-
 #~ msgid "Journal Dashboard"
 #~ msgstr "Journal Dashboard"
-
-#~ msgid "New Journal"
-#~ msgstr "New Journal"
 
 #~ msgid "Access"
 #~ msgstr "Access"
 
-#~ msgid "Other Titles"
-#~ msgstr "Other Titles"
-
-#~ msgid "ISSN"
-#~ msgstr "ISSN"
-
-#~ msgid "Journal Collections"
-#~ msgstr "Journal Collections"
-
-#~ msgid "Subjects"
-#~ msgstr "Subjects"
-
-#~ msgid "Languages"
-#~ msgstr "Languages"
-
-#~ msgid "System Information"
-#~ msgstr "System Information"
-
 #~ msgid "Publisher and Sponsor"
 #~ msgstr "Publisher and Sponsor"
-
-#~ msgid "Licenses"
-#~ msgstr "Licenses"
-
-#~ msgid "Formal Information"
-#~ msgstr "Formal Information"
-
-#, fuzzy
-#~ msgid "Publisher"
-#~ msgstr "Publishers"
-
-#, fuzzy
-#~ msgid "Editors"
-#~ msgstr "Edit"
-
-#~ msgid "Further Information"
-#~ msgstr "Further Information"
-
-#~ msgid "Images"
-#~ msgstr "Images"
-
-#~ msgid "Titles"
-#~ msgstr "Titles"
-
-#~ msgid "Category"
-#~ msgstr "Category"
-
-#~ msgid "Subject"
-#~ msgstr "Subject"
-
-#~ msgid "Description"
-#~ msgstr "Description"
-
-#, fuzzy
-#~ msgid "Editor"
-#~ msgstr "Edit"
-
-#~ msgid "Journal Images"
-#~ msgstr "Journal Images"
-
-#~ msgid "Image Size"
-#~ msgstr "Image Size"
 
 #~ msgid "height"
 #~ msgstr "height"
@@ -872,23 +2871,8 @@ msgstr "You will receive an email with a link to activate your account."
 #~ msgid "width"
 #~ msgstr "width"
 
-#~ msgid "Image Extensions"
-#~ msgstr "Image Extensions"
-
-#~ msgid "This journal does not have a cover"
-#~ msgstr "This journal does not have a cover"
-
-#~ msgid "This journal does not have a logomarca"
-#~ msgstr "This journal does not have a logomarca"
-
-#~ msgid "Save to Continue Later"
-#~ msgstr "Save to Continue Later"
-
 #~ msgid "New Section"
 #~ msgstr "New Section"
-
-#~ msgid "Section Information"
-#~ msgstr "Section Information"
 
 #~ msgid "Sponsor Dashboard"
 #~ msgstr "Sponsor Dashboard"
@@ -896,168 +2880,20 @@ msgstr "You will receive an email with a link to activate your account."
 #~ msgid "New sponsor"
 #~ msgstr "New sponsor"
 
-#~ msgid "Institution Information"
-#~ msgstr "Institution Information"
-
-#~ msgid "Sponsor Collections"
-#~ msgstr "Sponsor Collections"
-
 #~ msgid "Users DashBoard"
 #~ msgstr "Users DashBoard"
-
-#~ msgid "New User"
-#~ msgstr "New User"
-
-#~ msgid "User Information"
-#~ msgstr "User Information"
-
-#~ msgid "User Collections"
-#~ msgstr "User Collections"
-
-#~ msgid "is_manager"
-#~ msgstr "is_manager"
-
-#~ msgid "options"
-#~ msgstr "options"
-
-#~ msgid "Journal Status History"
-#~ msgstr "Journal Status History"
-
-#~ msgid "Status"
-#~ msgstr "Status"
-
-#~ msgid "created at"
-#~ msgstr "created at"
-
-#~ msgid "changed by"
-#~ msgstr "changed by"
-
-#~ msgid "reason"
-#~ msgstr "reason"
-
-#~ msgid "Change Status"
-#~ msgstr "Change Status"
-
-#~ msgid "Be aware of this modification, once it could not be undone."
-#~ msgstr "Be aware of this modification, once it could not be undone."
-
-#~ msgid "Drafts"
-#~ msgstr "Drafts"
-
-#~ msgid "Delete"
-#~ msgstr "Delete"
-
-#~ msgid "Recent activities"
-#~ msgstr "Recent activities"
-
-#~ msgid "User"
-#~ msgstr "User"
-
-#~ msgid "Updated at"
-#~ msgstr "Updated at"
 
 #~ msgid "Journal objects_issue"
 #~ msgstr "Journal objects_issue"
 
-#~ msgid "Issues"
-#~ msgstr "Issues"
-
-#~ msgid "New"
-#~ msgstr "New"
-
 #~ msgid "Numbers"
 #~ msgstr "Numbers"
-
-#~ msgid "volume issue"
-#~ msgstr "volume issue"
-
-#~ msgid "Journals DashBoard"
-#~ msgstr "Journals DashBoard"
-
-#~ msgid "All"
-#~ msgstr "All"
-
-#~ msgid "Current"
-#~ msgstr "Current"
-
-#~ msgid "Suspended"
-#~ msgstr "Suspended"
-
-#~ msgid "Deceased"
-#~ msgstr "Deceased"
-
-#~ msgid "In progress"
-#~ msgstr "In progress"
-
-#~ msgid "Actions"
-#~ msgstr "Actions"
-
-#~ msgid "Move to trash"
-#~ msgstr "Move to trash"
-
-#~ msgid "Sections"
-#~ msgstr "Sections"
 
 #~ msgid "Journal Sections"
 #~ msgstr "Journal Sections"
 
-#~ msgid "Section Title"
-#~ msgstr "Section Title"
-
-#~ msgid "Code"
-#~ msgstr "Code"
-
-#~ msgid ""
-#~ "Hey, you can not remove the sections that are being used by at least one "
-#~ "issue of this journal."
-#~ msgstr ""
-#~ "Hey, you can not remove the sections that are being used by at least one "
-#~ "issue of this journal."
-
 #~ msgid "Sponsors DashBoard"
 #~ msgstr "Sponsors DashBoard"
-
-#~ msgid "Name"
-#~ msgstr "Name"
-
-#~ msgid "Publishers"
-#~ msgstr "Publishers"
-
-#~ msgid "Restore"
-#~ msgstr "Restore"
-
-#~ msgid "Username"
-#~ msgstr "Username"
-
-#~ msgid "Full name"
-#~ msgstr "Full name"
-
-#~ msgid "Groups"
-#~ msgstr "Groups"
-
-#~ msgid "Disable"
-#~ msgstr "Disable"
-
-#~ msgid "Enable"
-#~ msgstr "Enable"
-
-#~ msgid "## This record doesn't have title ##"
-#~ msgstr "## This record doesn't have title ##"
-
-#~ msgid "Activate"
-#~ msgstr "Activate"
-
-#, fuzzy
-#~ msgid "End at"
-#~ msgstr "End Month"
-
-#, fuzzy
-#~ msgid "Is finished"
-#~ msgstr "Is trashed?"
-
-#, fuzzy
-#~ msgid "Report"
-#~ msgstr "Report bug"
 
 #~ msgid "Português"
 #~ msgstr "Português"
@@ -1089,9 +2925,6 @@ msgstr "You will receive an email with a link to activate your account."
 
 #~ msgid "Search: ISSN, Journal Title"
 #~ msgstr "Search: ISSN, Journal Title"
-
-#~ msgid "Eletronic ISSN"
-#~ msgstr "Eletronic ISSN"
 
 #~ msgid "Publisher and Sponsors"
 #~ msgstr "Publisher and Sponsors"
