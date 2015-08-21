@@ -26,6 +26,12 @@
 
       <dt>{% trans "Issue number" %}</dt>
       <dd>{{ xml_data.meta.issue_number }}</dd>
+
+      {% if xml_data.sps_version %}
+        <dt>{% trans "SPS version" %}</dt>
+        <dd>{{ xml_data.sps_version }}</dd>
+      {% endif %}
+
     </dl>
   </div>
 {% endif %}
@@ -36,6 +42,18 @@
     <p>{% trans "Detail:"%} <strong>{{ xml_exception }}</strong></p>
   </div>
 {% else %}
+
+  {% if xml_data.is_deprecated_version  %}
+    <div class="alert alert-warning alert-block">
+      <h4>{% trans "Warning!" %}</h4>
+      {% trans "This XML document uses a version of SciELO PS that soon will no longer be supported. Please consider upgrading to a newer version as soon as possible." %}<br>
+      {% trans "If you want to know more about the support policy, please refer to" %}:
+      <a href="http://docs.scielo.org/projects/scielo-publishing-schema/pt_BR/latest/#notas-da-versao">
+        {% trans "SciELO PS official documentation" %}
+      </a>.
+    </div>
+  {% endif %}
+
   <h4>{% trans "XML validation output" %}:</h4>
   {% if xml_data.validation_errors %}
     <table id="validation_errors_table" class="table table-striped table-hover table-condensed">

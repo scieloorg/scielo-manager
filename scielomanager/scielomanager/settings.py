@@ -380,3 +380,8 @@ else:
 # Always minify the HTML when the DEBUG mode is False
 HTML_MINIFY = not DEBUG
 EXCLUDE_FROM_MINIFYING = ('^admin/', )
+
+# Versão mais antiga suportada do SPS, na qual o usuario do
+# StyleChecker deve ser notficado do Deprecation Warning.
+# A versão deve respeitar o formato do atributo @specific-use: 'sps-1.1' ou 'sps-1.2'.
+PACKTOOLS_DEPRECATION_WARNING_VERSION = 'sps-1.1'
