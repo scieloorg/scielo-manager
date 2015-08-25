@@ -359,10 +359,6 @@ def toggle_active_collection(request, user_id, collection_id):
     # Setting up all user collections.is_default to False
     user_collections = models.get_user_collections(request.user.id)
 
-    # Clear cache when changes in UserCollections
-    invalid = [collection for collection in user_collections]
-    models.UserCollections.objects.invalidate(*invalid)
-
     collection = get_object_or_404(models.Collection, pk=collection_id)
     collection.make_default_to_user(request.user)
 
@@ -500,10 +496,6 @@ def add_user(request, user_id=None):
 
         if userform.is_valid() and usercollectionsformset.is_valid() and userprofileformset.is_valid():
             new_user = userform.save()
-
-            # Clear cache when changes in UserCollections
-            invalid = [collection for collection in user_collections]
-            models.UserCollections.objects.invalidate(*invalid)
 
             # force the first instance (collection) to be set as default
             instances = usercollectionsformset.save(commit=False)
