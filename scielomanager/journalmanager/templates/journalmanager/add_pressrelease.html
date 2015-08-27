@@ -3,9 +3,33 @@
 {% load widget_tweaks %}
 {% load formstamps %}
 {% load inctag_toolbars %}
+{% load assets %}
+{% load static %}
 
 {% block page_title %}{% trans "Press release" %} - {{journal.title}}{% endblock %}
-
+{% block extrahead %}
+  {{ block.super }}
+  {% assets "codemirror_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+  <style>
+    .tab-content .tab-pane {
+      min-height: 235px;
+    }
+    .CodeMirror {
+      width: 100%;
+      max-width: 785px;
+    }
+    iframe.preview-container {
+      width: 100%;
+      max-width: 788px;
+      height: 260px;
+      min-height: 260px;
+      max-height: 260px;
+      border: 1px solid black;
+    }
+  </style>
+{% endblock %}
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li>
@@ -87,25 +111,34 @@
       <tbody>
         {% for form in translation_formset %}
         <tr id="{{ form.prefix }}-row">
-          <td>
-            <label>Language</label>
+          <td class="span4">
+            <label>{% trans "Language" %}</label>
             {% for field in form.hidden_fields %}{{ field }}{% endfor %}
             {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
             {{ form.language }}
           </td>
           <td>
-            <label>Title</label>
-            {{ form.title|add_class:"span9" }}
+            <label>{% trans "Title" %}</label>
+            {{ form.title|add_class:"span12" }}
             <br/>
-            <label>Body</label>
-            {{ form.content|attr:"style:width:607px; height: 150px" }}
-            <a href="#pr-preview"
-               role="button"
-               class="btn"
-               data-toggle="modal"
-               onClick="preview(this)">
-               Preview as HTML
-            </a>
+            <div class="tabbable">
+              <ul class="nav nav-tabs">
+                <li class="active">
+                  <a href="#body_tab_{{ forloop.counter }}" data-toggle="tab">{% trans "Body" %}:</a>
+                </li>
+                <li>
+                  <a href="#html_tab_{{ forloop.counter }}" data-toggle="tab">{% trans "Preview as HTML" %}:</a>
+                </li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane active" id="body_tab_{{ forloop.counter }}" data-row-index="{{ forloop.counter }}">
+                  {{ form.content|add_class:"span12 content-textarea" }}
+                </div>
+                <div class="tab-pane" id="html_tab_{{ forloop.counter }}">
+                  <iframe id="preview_{{ forloop.counter }}" class="span12 preview-container"></iframe>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -131,18 +164,6 @@
     />
   </div>
 </form>
-
-<!-- Modal -->
-<div id="pr-preview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="lbl-pr-preview" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="lbl-pr-preview">{% trans "Preview" %}</h3>
-  </div>
-  <div class="modal-body" id="body-pr-preview"></div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
-  </div>
-</div>
 {% endblock %}
 
 {% block extrafooter %}
@@ -158,9 +179,55 @@
         prefix: '{{ article_formset.prefix }}'
       });
     });
-    function preview(part){
-      var html = $(part).prev().val();
-      $('#body-pr-preview').html(html);
-    }
   </script>
+
+  {# carregar codemirror e um conjunto básico de addons #}
+  <script src="{% static 'js/codemirror/lib/codemirror.js' %}"></script>
+  <script src="{% static 'js/codemirror/mode/xml/xml.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/fold/foldcode.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/fold/foldgutter.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/fold/brace-fold.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/fold/xml-fold.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/fold/comment-fold.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/selection/active-line.js' %}"></script>
+  <script src="{% static 'js/codemirror/addon/edit/matchtags.js' %}"></script>
+
+  {# setup do codemirror inspirado em http://codemirror.net/demo/preview.html #}
+  <script>
+    $(function() {
+      var delay;
+      $(".content-textarea").each(function (i) {
+        var row_index = $(this).parent().data('row-index');
+        var editor = CodeMirror.fromTextArea(document.getElementById(this.id), {
+          lineNumbers: true,
+          lineWrapping: true,
+          styleActiveLine: true,
+          foldGutter: true,
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+          matchTags: { bothTags: true },
+          mode: 'text/html'
+        });
+
+        editor.on("change", function() {
+          clearTimeout(delay);
+          delay = setTimeout(function(){
+            updatePreview(row_index)
+          }, 300);
+        });
+
+        function updatePreview(row_index) {
+          var previewFrame = document.getElementById('preview_' + row_index);
+          var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+          preview.open();
+          preview.write(editor.getValue());
+          preview.close();
+        }
+
+        setTimeout(function(){
+          updatePreview(row_index)
+        }, 300);
+      });
+    });
+  </script>
+
 {% endblock %}
