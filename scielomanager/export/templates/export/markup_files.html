@@ -36,7 +36,7 @@
       <div class="controls">
         {{ form.issue }}
         <span id="loading" style="display: none; margin: 5px;">
-          <img src="/static/images/loading.gif" width="20px" heigth="20px" />
+          <img src="{% static 'img/loading.gif' %}" width="20px" heigth="20px" />
           {% trans 'Retrieving its issues' %}
         </span>
       </div>
