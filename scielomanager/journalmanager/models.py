@@ -3,7 +3,6 @@ import urllib
 import hashlib
 import logging
 import choices
-import caching.base
 from pytz import all_timezones
 from scielomanager import tools
 import datetime
@@ -38,8 +37,6 @@ from scielomanager.utils import base28
 from scielomanager.custom_fields import ContentTypeRestrictedFileField, XMLSPSField
 from . import modelmanagers
 
-#User.__bases__ = (caching.base.CachingMixin, models.Model)
-#User.add_to_class('objects', caching.base.CachingManager())
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +70,7 @@ def get_journals_default_use_license():
         raise ImproperlyConfigured("There is no UseLicense set as default")
 
 
-class AppCustomManager(caching.base.CachingManager):
+class AppCustomManager(models.Manager):
     """
     Domain specific model managers.
     """
@@ -233,7 +230,7 @@ class CollectionCustomManager(AppCustomManager):
         return collections
 
 
-class RegularPressReleaseCustomManager(caching.base.CachingManager):
+class RegularPressReleaseCustomManager(models.Manager):
 
     def by_journal_pid(self, journal_pid):
         """
@@ -270,7 +267,7 @@ class RegularPressReleaseCustomManager(caching.base.CachingManager):
         return preleases_qset.filter(issue__publication_year=year).filter(issue__order=order)
 
 
-class AheadPressReleaseCustomManager(caching.base.CachingManager):
+class AheadPressReleaseCustomManager(models.Manager):
 
     def by_journal_pid(self, journal_pid):
         """
@@ -281,16 +278,13 @@ class AheadPressReleaseCustomManager(caching.base.CachingManager):
         return preleases
 
 
-class Language(caching.base.CachingMixin, models.Model):
+class Language(models.Model):
     """
     Represents ISO 639-1 Language Code and its language name in English. Django
     automaticaly translates language names, if you write them right.
 
     http://en.wikipedia.org/wiki/ISO_639-1_language_matrix
     """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
     iso_code = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     name = models.CharField(_('Language Name (in English)'), max_length=64)
 
@@ -304,10 +298,7 @@ class Language(caching.base.CachingMixin, models.Model):
 PROFILE_TIMEZONES_CHOICES = zip(all_timezones, all_timezones)
 
 
-class UserProfile(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
+class UserProfile(models.Model):
     user = models.OneToOneField(User)
     email_notifications = models.BooleanField("Want to receive email notifications?", default=True)
     tz = models.CharField("Time Zone",  max_length=150, choices=PROFILE_TIMEZONES_CHOICES, default=settings.TIME_ZONE)
@@ -342,13 +333,9 @@ class UserProfile(caching.base.CachingMixin, models.Model):
         return uc.collection
 
 
-class Collection(caching.base.CachingMixin, models.Model):
-    # objects = CollectionCustomManager()
-    # nocacheobjects = models.Manager()
-    # Custom manager
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    userobjects = modelmanagers.CollectionManager()
+class Collection(models.Model):
+    objects = models.Manager()  # The default manager.
+    userobjects = modelmanagers.CollectionManager()  # Custom manager
 
     collection = models.ManyToManyField(User, related_name='user_collection', through='UserCollections', null=True, blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
@@ -440,10 +427,9 @@ class Collection(caching.base.CachingMixin, models.Model):
             return False
 
 
-class UserCollections(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-    userobjects = modelmanagers.UserCollectionsManager()
+class UserCollections(models.Model):
+    objects = models.Manager()  # The default manager.
+    userobjects = modelmanagers.UserCollectionsManager()  # Custom manager
 
     user = models.ForeignKey(User)
     collection = models.ForeignKey(Collection)
@@ -454,12 +440,9 @@ class UserCollections(caching.base.CachingMixin, models.Model):
         unique_together = ("user", "collection", )
 
 
-class Institution(caching.base.CachingMixin, models.Model):
-
-    # Custom manager
-    objects = models.Manager()
-    nocacheobjects = models.Manager()
-    userobjects = modelmanagers.InstitutionManager()
+class Institution(models.Model):
+    objects = models.Manager()  # The default manager.
+    userobjects = modelmanagers.InstitutionManager()  # Custom manager
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -487,10 +470,8 @@ class Institution(caching.base.CachingMixin, models.Model):
 
 
 class Sponsor(Institution):
-    # Custom manager
-    objects = models.Manager()
-    nocacheobjects = models.Manager()
-    userobjects = modelmanagers.SponsorManager()
+    objects = models.Manager()  # The default manager.
+    userobjects = modelmanagers.SponsorManager()  # Custom manager
 
     collections = models.ManyToManyField(Collection)
 
@@ -498,11 +479,8 @@ class Sponsor(Institution):
         permissions = (("list_sponsor", "Can list Sponsors"),)
 
 
-class SubjectCategory(caching.base.CachingMixin, models.Model):
-
-    # Custom manager
-    objects = JournalCustomManager()
-    nocacheobjects = models.Manager()
+class SubjectCategory(models.Model):
+    objects = JournalCustomManager()  # Custom manager
 
     term = models.CharField(_('Term'), max_length=256, db_index=True)
 
@@ -510,11 +488,7 @@ class SubjectCategory(caching.base.CachingMixin, models.Model):
         return self.term
 
 
-class StudyArea(caching.base.CachingMixin, models.Model):
-
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
+class StudyArea(models.Model):
     study_area = models.CharField(_('Study Area'), max_length=256,
                                   choices=sorted(choices.SUBJECTS, key=lambda SUBJECTS: SUBJECTS[1]))
 
@@ -522,7 +496,7 @@ class StudyArea(caching.base.CachingMixin, models.Model):
         return self.study_area
 
 
-class Journal(caching.base.CachingMixin, models.Model):
+class Journal(models.Model):
     """
     Represents a Journal that is managed by one SciELO Collection.
 
@@ -534,7 +508,6 @@ class Journal(caching.base.CachingMixin, models.Model):
 
     # Custom manager
     objects = JournalCustomManager()
-    nocacheobjects = models.Manager()
     userobjects = modelmanagers.JournalManager()
 
     # Relation fields
@@ -751,26 +724,19 @@ class JournalTimeline(models.Model):
     created_by = models.ForeignKey(User)
 
 
-class JournalTitle(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
+class JournalTitle(models.Model):
     journal = models.ForeignKey(Journal, related_name='other_titles')
     title = models.CharField(_('Title'), null=False, max_length=128)
     category = models.CharField(_('Title Category'), null=False, max_length=128, choices=sorted(choices.TITLE_CATEGORY, key=lambda TITLE_CATEGORY: TITLE_CATEGORY[1]))
 
 
-class JournalMission(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
+class JournalMission(models.Model):
     journal = models.ForeignKey(Journal, related_name='missions')
     description = models.TextField(_('Mission'))
     language = models.ForeignKey('Language', blank=False, null=True)
 
 
-class UseLicense(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
+class UseLicense(models.Model):
     license_code = models.CharField(_('License Code'), unique=True, null=False, blank=False, max_length=64)
     reference_url = models.URLField(_('License Reference URL'), null=True, blank=True)
     disclaimer = models.TextField(_('Disclaimer'), null=True, blank=True, max_length=512)
@@ -804,9 +770,7 @@ class UseLicense(caching.base.CachingMixin, models.Model):
         super(UseLicense, self).save(*args, **kwargs)
 
 
-class TranslatedData(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
+class TranslatedData(models.Model):
     translation = models.CharField(_('Translation'), null=True, blank=True, max_length=512)
     language = models.CharField(_('Language'), choices=sorted(choices.LANGUAGE, key=lambda LANGUAGE: LANGUAGE[1]), null=False, blank=False, max_length=32)
     model = models.CharField(_('Model'), null=False, blank=False, max_length=32)
@@ -816,10 +780,7 @@ class TranslatedData(caching.base.CachingMixin, models.Model):
         return self.translation if self.translation is not None else 'Missing trans: {0}.{1}'.format(self.model, self.field)
 
 
-class SectionTitle(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
+class SectionTitle(models.Model):
     section = models.ForeignKey('Section', related_name='titles')
     title = models.CharField(_('Title'), max_length=256, null=False)
     language = models.ForeignKey('Language')
@@ -828,7 +789,7 @@ class SectionTitle(caching.base.CachingMixin, models.Model):
         ordering = ['title']
 
 
-class Section(caching.base.CachingMixin, models.Model):
+class Section(models.Model):
     """
     Represents a multilingual section of one/many Issues of
     a given Journal.
@@ -839,7 +800,6 @@ class Section(caching.base.CachingMixin, models.Model):
     """
     # Custom manager
     objects = SectionCustomManager()
-    nocacheobjects = models.Manager()
     userobjects = modelmanagers.SectionManager()
 
     journal = models.ForeignKey(Journal)
@@ -924,11 +884,10 @@ class Section(caching.base.CachingMixin, models.Model):
             self._create_code(*args, **kwargs)
 
 
-class Issue(caching.base.CachingMixin, models.Model):
+class Issue(models.Model):
 
     # Custom manager
     objects = IssueCustomManager()
-    nocacheobjects = models.Manager()
     userobjects = modelmanagers.IssueManager()
 
     section = models.ManyToManyField(Section, blank=True)
@@ -994,7 +953,7 @@ class Issue(caching.base.CachingMixin, models.Model):
     @property
     def publication_date(self):
         start = self.get_publication_start_month_display()
-        end =  self.get_publication_end_month_display()
+        end = self.get_publication_end_month_display()
         if start and end:
             return '{0}/{1} {2}'.format(start[:3], end[:3], self.publication_year)
         elif start:
@@ -1010,7 +969,7 @@ class Issue(caching.base.CachingMixin, models.Model):
             prefixed_number = 'suppl.%s' % self.suppl_text
         elif self.type == 'special':
             prefixed_number = 'spe.%s' % self.spe_text
-        else: # regular
+        else:  # regular
             prefixed_number = 'n.%s' % self.number
         return 'vol.%s %s' % (self.volume, prefixed_number)
 
@@ -1044,7 +1003,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         issue = self.verbose_identification
         city = self.journal.publication_city
         dates = self.publication_date
-        return '%s %s %s %s'% (abrev_title, issue, city, dates)
+        return '%s %s %s %s' % (abrev_title, issue, city, dates)
 
     def _suggest_order(self, force=False):
         """
@@ -1058,7 +1017,7 @@ class Issue(caching.base.CachingMixin, models.Model):
         When force ``True`` this method ignore order attribute from the instance
         and return the suggest order.
         """
-        if self.order and force == False:
+        if self.order and force is False:
             return self.order
 
         filters = {
@@ -1094,28 +1053,20 @@ class Issue(caching.base.CachingMixin, models.Model):
         super(Issue, self).save(*args, **kwargs)
 
 
-class IssueTitle(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
+class IssueTitle(models.Model):
     issue = models.ForeignKey(Issue)
     language = models.ForeignKey('Language')
     title = models.CharField(_('Title'), max_length=256)
 
 
-class PendedForm(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
+class PendedForm(models.Model):
     view_name = models.CharField(max_length=128)
     form_hash = models.CharField(max_length=32)
     user = models.ForeignKey(User, related_name='pending_forms')
     created_at = models.DateTimeField(auto_now=True)
 
 
-class PendedValue(caching.base.CachingMixin, models.Model):
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
-
+class PendedValue(models.Model):
     form = models.ForeignKey(PendedForm, related_name='data')
     name = models.CharField(max_length=255)
     value = models.TextField()
@@ -1135,15 +1086,13 @@ class DataChangeEvent(models.Model):
     collection = models.ForeignKey(Collection)
 
 
-class PressRelease(caching.base.CachingMixin, models.Model):
+class PressRelease(models.Model):
     """
     Represents a press-release bound to a Journal.
     If ``issue`` is None, the pressrelease is refers to an ahead article.
     It can be available in one or any languages (restricted by the Journal
     publishing policy).
     """
-    nocacheobjects = models.Manager()
-    objects = models.Manager()
     doi = models.CharField(_("Press release DOI number"),
                            max_length=128, null=True, blank=True)
 
@@ -1216,24 +1165,20 @@ class PressRelease(caching.base.CachingMixin, models.Model):
         permissions = (("list_pressrelease", "Can list PressReleases"),)
 
 
-class PressReleaseTranslation(caching.base.CachingMixin, models.Model):
+class PressReleaseTranslation(models.Model):
     """
     Represents a press-release in a given language.
     """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
     press_release = models.ForeignKey(PressRelease, related_name='translations')
     language = models.ForeignKey('Language')
     title = models.CharField(_('Title'), max_length=128)
     content = models.TextField(_('Content'))
 
 
-class PressReleaseArticle(caching.base.CachingMixin, models.Model):
+class PressReleaseArticle(models.Model):
     """
     Represents press-releases bound to Articles.
     """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
     press_release = models.ForeignKey(PressRelease, related_name='articles')
     article_pid = models.CharField(_('PID'), max_length=32, db_index=True)
 
@@ -1252,7 +1197,7 @@ class AheadPressRelease(PressRelease):
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
 
-class Article(caching.base.CachingMixin, models.Model):
+class Article(models.Model):
     """
     Artigo associado ou não a um periódico ou fascículo.
 
@@ -1263,8 +1208,7 @@ class Article(caching.base.CachingMixin, models.Model):
         - https://code.djangoproject.com/ticket/19463
         - https://github.com/django/django/commit/ed7821231b7dbf34a6c8ca65be3b9bcbda4a0703
     """
-    objects = caching.base.CachingManager()
-    nocacheobjects = models.Manager()
+    objects = models.Manager()  # The default manager.
     userobjects = modelmanagers.ArticleManager()
 
     created_at = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
@@ -1479,4 +1423,3 @@ def disconnect_article_post_save_signals():
 
 # Callback da tasty-pie para a geração de token para os usuários
 models.signals.post_save.connect(create_api_key, sender=User)
-
