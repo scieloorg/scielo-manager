@@ -1109,7 +1109,7 @@ def del_section(request, journal_id, section_id):
     else:
         messages.info(
             request,
-            _('Cant\'t delete, some issues are using this Section')
+            _("Can't delete, some issues are using this Section")
         )
 
     return HttpResponseRedirect(
