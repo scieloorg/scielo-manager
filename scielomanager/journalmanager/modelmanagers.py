@@ -29,7 +29,6 @@ Custom instance of ``models.query.QuerySet``
 * ``unavailable`` returns all objects marked as trash.
 
 """
-import caching.base
 import models
 from scielomanager.utils import usercontext
 from scielomanager.utils.modelmanagers import UserObjectQuerySet, UserObjectManager

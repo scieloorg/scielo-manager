@@ -2,10 +2,8 @@ from datetime import date
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-import caching.base
 
-
-class EventManager(caching.base.CachingManager):
+class EventManager(models.Manager):
 
     def scheduled_events(self, actual_date=date.today()):
         """
@@ -28,7 +26,7 @@ class EventManager(caching.base.CachingManager):
         self.filter(is_blocking_users=True).update(is_blocking_users=False)
 
 
-class Event(caching.base.CachingMixin, models.Model):
+class Event(models.Model):
 
     objects = EventManager()
     title = models.CharField(_('Title'), max_length=128, null=False, blank=False)
@@ -36,10 +34,9 @@ class Event(caching.base.CachingMixin, models.Model):
     end_at = models.DateTimeField(_('End at'), null=False, blank=False, db_index=True)
     description = models.TextField(_('Description'), null=False, blank=False)
     is_blocking_users = models.BooleanField(_('is blocking users'),
-                        default=False,
-                        db_index=True,
-                        help_text=_('once it is checked, it will set up the other events to false')
-                        )
+                                            default=False,
+                                            db_index=True,
+                                            help_text=_('once it is checked, it will set up the other events to false'))
     is_finished = models.BooleanField(_('Is finished'), default=False)
     event_report = models.TextField(_('Report'), blank=True)
 

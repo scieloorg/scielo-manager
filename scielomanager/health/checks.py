@@ -1,10 +1,9 @@
-#coding: utf-8
+# coding: utf-8
 import logging
 import uuid
 
 import psycopg2
 from django.db import connections, DatabaseError
-from django.core.cache import cache
 from celery import current_app
 from kombu import Connection
 
@@ -24,6 +23,7 @@ class PGConnection(CheckItem):
             psycopg2.extensions.STATUS_IN_TRANSACTION,
             psycopg2.extensions.STATUS_PREPARED,
     )
+
     def __init__(self):
         self.must_fail = False
 
@@ -53,20 +53,6 @@ class PGConnection(CheckItem):
                 return None
         else:
             return True
-
-
-class CachingBackend(CheckItem):
-    """
-    Connection with the caching backend
-    """
-    def __call__(self):
-        key = uuid.uuid4().hex
-
-        try:
-            ret_code = cache.add(key, '\x01', timeout=1)
-            return bool(ret_code)
-        finally:
-            cache.delete(key)
 
 
 class CeleryConnection(CheckItem):
