@@ -29,10 +29,10 @@ Custom instance of ``models.query.QuerySet``
 * ``unavailable`` returns all objects marked as trash.
 
 """
-import caching.base
+from django.db import models
 
 
-class UserObjectQuerySet(caching.base.CachingQuerySet):
+class UserObjectQuerySet(models.query.QuerySet):
     """
     Provides a basic implementation of userobject querysets with
     caching features.
@@ -44,7 +44,7 @@ class UserObjectQuerySet(caching.base.CachingQuerySet):
         return self.none()
 
 
-class UserObjectManager(caching.base.CachingManager):
+class UserObjectManager(models.Manager):
     """
     Provides a basic implementation of userobject managers with
     caching features.

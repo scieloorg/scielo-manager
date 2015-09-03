@@ -281,13 +281,6 @@ SECTION_CODE_TOTAL_RANDOM_CHARS = 4
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-CACHES = {
-    'default': {
-        # 'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        'LOCATION': '',
-    }
-}
 
 IMAGE_CONTENT_TYPE = ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
 IMAGE_DIMENSIONS = {

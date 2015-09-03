@@ -359,10 +359,6 @@ def toggle_active_collection(request, user_id, collection_id):
     # Setting up all user collections.is_default to False
     user_collections = models.get_user_collections(request.user.id)
 
-    # Clear cache when changes in UserCollections
-    invalid = [collection for collection in user_collections]
-    models.UserCollections.objects.invalidate(*invalid)
-
     collection = get_object_or_404(models.Collection, pk=collection_id)
     collection.make_default_to_user(request.user)
 
@@ -500,10 +496,6 @@ def add_user(request, user_id=None):
 
         if userform.is_valid() and usercollectionsformset.is_valid() and userprofileformset.is_valid():
             new_user = userform.save()
-
-            # Clear cache when changes in UserCollections
-            invalid = [collection for collection in user_collections]
-            models.UserCollections.objects.invalidate(*invalid)
 
             # force the first instance (collection) to be set as default
             instances = usercollectionsformset.save(commit=False)
@@ -1109,7 +1101,7 @@ def del_section(request, journal_id, section_id):
     else:
         messages.info(
             request,
-            _('Cant\'t delete, some issues are using this Section')
+            _("Can't delete, some issues are using this Section")
         )
 
     return HttpResponseRedirect(
@@ -1227,7 +1219,9 @@ def ajx_add_journal_to_user_collection(request, journal_id):
     else:
         # The journal is join to new collection with status ``inprogress``
         journal.join(user_collection, request.user)
-        messages.error(request, _('%s add to collection %s') % (journal, user_collection))
+        messages.error(request, _('{journal} add to collection {collection}'.format(
+            journal=journal,
+            collection=user_collection)))
 
         response = {
             'journal': journal.title,

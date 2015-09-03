@@ -21,38 +21,20 @@ class SectionTitleInline(admin.StackedInline):
     model = SectionTitle
 
 
-class StudyAreaAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return StudyArea.nocacheobjects
-
-admin.site.register(StudyArea, StudyAreaAdmin)
+admin.site.register(StudyArea)
 
 
 class CollectionAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Collection.nocacheobjects
-
     list_display = ('name',)
     search_fields = ('name',)
 
 admin.site.register(Collection, CollectionAdmin)
 
 
-class SectionAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Section.nocacheobjects
-
-admin.site.register(Section, SectionAdmin)
+admin.site.register(Section)
 
 
 class JournalAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Journal.nocacheobjects
-
     list_display = ('title',)
     search_fields = ('title',)
     filter_horizontal = ('languages',)
@@ -62,10 +44,6 @@ admin.site.register(Journal, JournalAdmin)
 
 
 class InstitutionAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Institution.nocacheobjects
-
     list_display = ('name',)
     search_fields = ('name',)
 
@@ -73,20 +51,12 @@ admin.site.register(Institution, InstitutionAdmin)
 
 
 class UserCollectionsInline(admin.TabularInline):
-
-    def queryset(self, request):
-        return UserCollections.nocacheobjects
-
     model = UserCollections
     extra = 1
     can_delete = True
 
 
 class UserProfileInline(admin.StackedInline):
-
-    def queryset(self, request):
-        return UserProfile.nocacheobjects
-
     model = UserProfile
     max_num = 1
     can_delete = True
@@ -127,10 +97,6 @@ admin.site.register(User, UserAdmin)
 
 
 class IssueAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Issue.nocacheobjects
-
     search_fields = ('publication_year', 'volume', 'number', 'journal__title')
     list_display = ('journal', 'volume', 'number', 'is_trashed', 'is_marked_up', '__unicode__',)
 
@@ -138,10 +104,6 @@ admin.site.register(Issue, IssueAdmin)
 
 
 class SponsorAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Sponsor.nocacheobjects
-
     filter_horizontal = ('collections',)
 
 admin.site.register(Sponsor, SponsorAdmin)
@@ -149,42 +111,21 @@ admin.site.register(Sponsor, SponsorAdmin)
 
 class UseLicenseAdmin(admin.ModelAdmin):
     list_display = ('license_code', 'is_default', )
-    def queryset(self, request):
-        return UseLicense.nocacheobjects
 
 admin.site.register(UseLicense, UseLicenseAdmin)
-
-
-class LanguageAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return Language.nocacheobjects
-
-admin.site.register(Language, LanguageAdmin)
-
-
-class TranslatedDataAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return TranslatedData.nocacheobjects
-
+admin.site.register(Language)
 admin.site.register(TranslatedData)
+admin.site.register(PressRelease)
 
 
-class PressReleaseAdmin(admin.ModelAdmin):
-
-    def queryset(self, request):
-        return PressRelease.nocacheobjects
-
-admin.site.register(PressRelease, PressReleaseAdmin)
-
-
-#--------
+# --------
 # Article
-#--------
+# --------
+
 def is_linked_to_issue(article):
     return bool(article.issue)
 is_linked_to_issue.boolean = True
+
 
 def is_linked_to_journal(article):
     return bool(article.journal)
@@ -193,16 +134,13 @@ is_linked_to_issue.boolean = True
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = (
-            'aid', 'xml_version', 'domain_key','updated_at',
+            'aid', 'xml_version', 'domain_key', 'updated_at',
             is_linked_to_issue, is_linked_to_journal,
     )
     list_filter = ('issue__journal',)
     date_hierarchy = 'updated_at'
     actions = ['link_to_issue', 'link_to_journal']
     readonly_fields = ('domain_key', 'xml', 'is_aop', 'xml_version', )
-
-    def queryset(self, request):
-        return Article.nocacheobjects
 
     def link_to_issue(self, request, queryset):
         for article in queryset:

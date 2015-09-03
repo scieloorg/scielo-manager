@@ -1,9 +1,10 @@
 {% load scielo_common %}
 {% load i18n %}
+{% load static %}
 <div class="well">
   {% for field in form.hidden_fields %}
     {{ field }}
-  {% endfor %}  
+  {% endfor %}
   {% for field in form.visible_fields %}
     {% if field.name != "cover" %} <!-- Cover field is listed bellow -->
       <div id='row_{{ field.name }}' class="control-group {% if field.errors %}error{% endif %}">
@@ -15,7 +16,7 @@
           {% endif %}
           {% if field.name == 'section' %}
             <a class="popup" href="{% url section.add journal.id %}?popup=1">
-              <img alt="{% trans 'Add new' %}" src="/static/images/icon_addlink.gif">
+              <img alt="{% trans 'Add new' %}" src="{% static 'img/icon_addlink.gif' %}">
             </a>
           {% endif %}
         </label>

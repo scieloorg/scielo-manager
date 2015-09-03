@@ -3,7 +3,6 @@ South
 psycopg2==2.4.1
 wsgiref==0.1.2
 scielo-django-extensions==0.4
-python-memcached==1.48
 ordereddict==1.1
 pillow==2.3.0
 django-widget-tweaks==1.1.1
@@ -14,7 +13,6 @@ yuicompressor
 jsonfield
 django-tastypie==0.9.16
 django-htmlmin==0.7.0
--e git+git://github.com/scieloorg/django-cache-machine.git#egg=django-cache-machine
 packtools
 Celery
 django-celery

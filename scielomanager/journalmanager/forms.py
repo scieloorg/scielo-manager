@@ -184,17 +184,26 @@ class JournalForm(ModelForm):
         if cover:
             if not cover.name:
                 if cover.content_type not in settings.IMAGE_CONTENT_TYPE:
-                    raise forms.ValidationError(_(u"Journal cover image extension is not allowed! Please select another file."))
+                    raise forms.ValidationError(
+                        _(u"Journal cover image extension is not allowed! Please select another file."))
 
             if cover.size > settings.JOURNAL_COVER_MAX_SIZE:
-                raise forms.ValidationError(_(u"Journal cover image file size is too large! Please select another file."))
+                raise forms.ValidationError(
+                    _(u"Journal cover image file size is too large! Please select another file."))
 
             w, h = get_image_dimensions(cover)
 
             if w != settings.IMAGE_DIMENSIONS['width_cover']:
-                raise forms.ValidationError(_(u"The image is %ipx pixel wide. It's supposed to be %spx") % (w, settings.IMAGE_DIMENSIONS['width_cover']))
+                raise forms.ValidationError(
+                    _(u"The image is {image_size}px pixel wide. It's supposed to be {expected_size}px".format(
+                        image_size=w,
+                        expected_size=settings.IMAGE_DIMENSIONS['width_cover'])))
+
             if h != settings.IMAGE_DIMENSIONS['height_cover']:
-                raise forms.ValidationError("The image is %ipx pixel high. It's supposed to be %spx" % (h, settings.IMAGE_DIMENSIONS['height_cover']))
+                raise forms.ValidationError(
+                    _("The image is {image_size}px pixel high. It's supposed to be {expected_size}px".format(
+                        image_size=h,
+                        expected_size=settings.IMAGE_DIMENSIONS['height_cover'])))
 
         return cover
 
@@ -211,9 +220,13 @@ class JournalForm(ModelForm):
             w, h = get_image_dimensions(logo)
 
             if w != settings.IMAGE_DIMENSIONS['width_logo']:
-                raise forms.ValidationError(_("The image is %ipx pixel wide. It's supposed to be %spx") % (w, settings.IMAGE_DIMENSIONS['width_logo']))
+                raise forms.ValidationError(_("The image is {logo_size}px pixel wide. It's supposed to be {expected_size}px".format(
+                    logo_size=w,
+                    expected_size=settings.IMAGE_DIMENSIONS['width_logo'])))
             if h != settings.IMAGE_DIMENSIONS['height_logo']:
-                raise forms.ValidationError(_("The image is %ipx pixel high. It's supposed to be %spx") % (h, settings.IMAGE_DIMENSIONS['height_logo']))
+                raise forms.ValidationError(_("The image is {logo_size}px pixel high. It's supposed to be {expected_size}px".format(
+                    logo_size=h,
+                    expected_size=settings.IMAGE_DIMENSIONS['height_logo'])))
 
         return logo
 
