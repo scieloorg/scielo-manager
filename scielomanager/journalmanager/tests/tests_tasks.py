@@ -600,7 +600,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
 
 
 class FunctionAddFromStringTests(TestCase):
-    sample = u"""<article>
+    sample = u"""<article article-type="research-article">
                    <front>
                      <journal-meta>
                        <journal-title-group>
@@ -746,4 +746,40 @@ class LinkArticleToJournalTests(TestCase):
 
         fresh_article = models.Article.objects.get(pk=article.pk)
         self.assertEquals(fresh_article.journal.pk, journal.pk)
+
+
+class LinkArticleWithTheirRelated(TestCase):
+
+    def test_correction_linkage(self):
+        correction = modelfactories.ArticleFactory.create(
+                xml=modelfactories.SAMPLE_XML_RELATED)
+
+        related_article_node = correction.xml.xpath(
+                correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
+
+        link_to_article = related_article_node.attrib['{http://www.w3.org/1999/xlink}href']
+
+        article = modelfactories.ArticleFactory.create(doi=link_to_article)
+
+        tasks.link_article_with_their_related(correction.pk)
+
+        self.assertTrue(models.Article.objects.get(
+            pk=correction.pk).links_to.get(link_to=article))
+
+    def test_correction_linkage_is_idempotent(self):
+        correction = modelfactories.ArticleFactory.create(
+                xml=modelfactories.SAMPLE_XML_RELATED)
+
+        related_article_node = correction.xml.xpath(
+                correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
+
+        link_to_article = related_article_node.attrib['{http://www.w3.org/1999/xlink}href']
+
+        article = modelfactories.ArticleFactory.create(doi=link_to_article)
+
+        tasks.link_article_with_their_related(correction.pk)
+        tasks.link_article_with_their_related(correction.pk)
+
+        self.assertEquals(1, models.Article.objects.get(
+            pk=correction.pk).links_to.filter(link_to=article).count())
 
