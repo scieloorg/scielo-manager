@@ -749,7 +749,7 @@ class UseLicenseTests(TestCase):
 
 
 class ArticleTests(TestCase):
-    sample = u"""<article specific-use="sps-1.2">
+    sample = u"""<article article-type="research-article" specific-use="sps-1.2">
                    <front>
                      <journal-meta>
                        <journal-title-group>
@@ -1108,6 +1108,64 @@ class ArticleXpathsTests(TestCase):
         self.assertEqual(
                 article.xml.xpath(models.Article.XPaths.AOP_ID)[0].text,
                 u'xpto')
+
+    def test_related_articles(self):
+        sample = u"""<article xmlns:xlink="http://www.w3.org/1999/xlink">
+                       <front>
+                         <article-meta>
+                           <related-article related-article-type="corrected-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142998"
+                                            ext-link-type="doi"/>
+                           <related-article related-article-type="corrected-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142999"
+                                            ext-link-type="doi"/>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        rel_articles = article.xml.xpath(models.Article.XPaths.RELATED_CORRECTED_ARTICLES)
+
+        self.assertEqual(len(rel_articles), 2)
+        self.assertEqual(
+                rel_articles[0].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142998')
+        self.assertEqual(
+                rel_articles[1].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142999')
+
+    def test_related_articles_at_response(self):
+        sample = u"""<article xmlns:xlink="http://www.w3.org/1999/xlink">
+                       <front>
+                         <article-meta>
+                         </article-meta>
+                       </front>
+                       <response>
+                         <front-stub>
+                           <related-article related-article-type="commentary-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142998"
+                                            ext-link-type="doi"/>
+                           <related-article related-article-type="commentary-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142999"
+                                            ext-link-type="doi"/>
+                         </front-stub>
+                       </response>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        rel_articles = article.xml.xpath(models.Article.XPaths.RELATED_COMMENTARY_ARTICLES)
+
+        self.assertEqual(len(rel_articles), 2)
+        self.assertEqual(
+                rel_articles[0].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142998')
+        self.assertEqual(
+                rel_articles[1].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142999')
 
 
 class ArticleDomainKeyTests(TestCase):
