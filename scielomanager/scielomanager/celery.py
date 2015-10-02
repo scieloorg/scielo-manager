@@ -33,7 +33,13 @@ CELERYBEAT_SCHEDULE = {
         'task': 'journalmanager.tasks.process_dirty_articles',
         'schedule': crontab(minute=0, hour=2),
         'args': ()
-    }
+    },
+    # Executa durante horário de trabalho desde utc+2 à utc-7
+    'process-related-articles-working-hours': {
+        'task': 'journalmanager.tasks.process_related_articles',
+        'schedule': crontab(minute=0, hour='2-20', day_of_week='mon-fri'),
+        'args': ()
+    },
 }
 app.conf.update(
     CELERYBEAT_SCHEDULE=CELERYBEAT_SCHEDULE,

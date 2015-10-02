@@ -600,7 +600,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
 
 
 class FunctionAddFromStringTests(TestCase):
-    sample = u"""<article>
+    sample = u"""<article article-type="research-article">
                    <front>
                      <journal-meta>
                        <journal-title-group>
