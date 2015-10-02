@@ -45,7 +45,7 @@ class Migration(DataMigration):
             else:
                 article.links_to_related_articles_are_pending = False
 
-        article.save()
+            article.save()
 
 
     def backwards(self, orm):
