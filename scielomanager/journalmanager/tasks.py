@@ -312,10 +312,8 @@ def link_article_with_their_related(article_pk):
                 article_pk)
         return None
 
-    related_article_elements = (
-            referrer.xml.xpath(models.Article.XPaths.RELATED_CORRECTED_ARTICLES) +
-            referrer.xml.xpath(models.Article.XPaths.RELATED_COMMENTARY_ARTICLES)
-    )
+    related_article_elements = referrer.xml.xpath(
+            models.Article.XPaths.RELATED_CORRECTED_ARTICLES)
 
     doi_type_pairs = ([elem.attrib['{http://www.w3.org/1999/xlink}href'],
                       elem.attrib['related-article-type']]

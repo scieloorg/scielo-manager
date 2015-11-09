@@ -40,6 +40,7 @@ from . import modelmanagers
 
 logger = logging.getLogger(__name__)
 
+LINKABLE_ARTICLE_TYPES = ['correction', ]
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
 ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If not defined, will be applied the related journal's use license. \
 The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.")
@@ -1318,7 +1319,7 @@ class Article(models.Model):
             if not self.article_type:
                 raise ValueError('Could not get article-type from %s' % self)
 
-            if self.article_type in ['correction', 'article-commentary']:
+            if self.article_type in LINKABLE_ARTICLE_TYPES:
                 self.articles_linkage_is_pending = True
 
         super(Article, self).save(*args, **kwargs)

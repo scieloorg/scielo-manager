@@ -40,7 +40,7 @@ class Migration(DataMigration):
             article.doi = get_value(article.xml, DOI) or u''
             article.article_type = get_value(article.xml, ARTICLE_TYPE) or u'undefined'
 
-            if article.article_type in ['correction', 'article-commentary']:
+            if article.article_type == 'correction':
                 article.articles_linkage_is_pending = True
             else:
                 article.articles_linkage_is_pending = False
