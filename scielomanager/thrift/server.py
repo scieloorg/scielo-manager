@@ -36,6 +36,27 @@ def resource_cleanup(tocall):
     return wrapper
 
 
+def article_from_es(data):
+    """ Get an instance of `spec.Article` from Elasticsearch datastructure.
+    """
+
+    article = spec.Article(abbrev_journal_title=data.get('abbrev_journal_title'),
+            epub=data.get('epub'), ppub=data.get('ppub'), volume=data.get('volume'),
+            issue=data.get('issue'), year=data.get('year'), doi=data.get('doi'),
+            pid=data.get('pid'), aid=data.get('aid'), head_subject=data.get('head_subject'),
+            article_type=data.get('article_type'), version=data.get('version'),
+            is_aop=data.get('is_aop'), source=data.get('source'),
+            timestamp=data.get('timestamp'))
+
+    article.links_to = [spec.RelatedArticle(aid=rel.get('aid'), type=rel.get('type'))
+                        for rel in data.get('links_to', [])]
+
+    article.referrers = [spec.RelatedArticle(aid=rel.get('aid'), type=rel.get('type'))
+                         for rel in data.get('referrers', [])]
+
+    return article
+
+
 class RPCHandler(object):
     """Implementação do serviço `JournalManagerServices`.
     """
@@ -109,7 +130,7 @@ class RPCHandler(object):
             LOGGER.exception(exc)
             raise spec.ServerError()
 
-        articles = [spec.Article(**data) for data in batch]
+        articles = [article_from_es(data) for data in batch]
 
         results = spec.ScanArticlesResults()
         if articles:

@@ -59,12 +59,20 @@ def _gen_es_struct_from_article(article):
 
     article_as_octets = str(article.xml)
 
+    links_to = [{'aid': rel.link_to.aid, 'type': rel.link_type}
+                for rel in article.links_to.all()]
+
+    referrers = [{'aid': rel.referrer.aid, 'type': rel.link_type}
+                 for rel in article.referrers.all()]
+
     partial_struct = {
         'version': article.xml_version,
         'is_aop': article.is_aop,
         'source': article_as_octets,
         'aid': article.aid,
         'timestamp': datetime.datetime.now(),
+        'links_to': links_to,
+        'referrers': referrers,
     }
 
     es_struct.update(partial_struct)

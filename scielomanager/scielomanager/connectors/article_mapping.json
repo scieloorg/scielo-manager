@@ -53,6 +53,14 @@
          "year": {
             "type": "date",
             "format": "yyyy"
+         },
+         "links_to": {
+             "type": "nested",
+             "include_in_parent": true
+         },
+         "referrers": {
+             "type": "nested",
+             "include_in_parent": true
          }
       }
    }
