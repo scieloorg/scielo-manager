@@ -40,6 +40,7 @@ from . import modelmanagers
 
 logger = logging.getLogger(__name__)
 
+LINKABLE_ARTICLE_TYPES = ['correction', ]
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
 ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If not defined, will be applied the related journal's use license. \
 The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.")
@@ -1197,6 +1198,27 @@ class AheadPressRelease(PressRelease):
     journal = models.ForeignKey(Journal, related_name='press_releases')
 
 
+class ArticlesLinkage(models.Model):
+    """ Relação entre entidades do tipo `Article`.
+
+    Representa a relação que no XML é realizada por meio do elemento
+    `related-article`.
+
+      - `referrer` é a instância de `Article` que remete à outra.
+      - `link_to` é a instância de `Article` referida pela outra.
+      - `link_type` é o tipo da relação, que pode ser: corrected-article ou
+        commentary-article.
+    """
+    referrer = models.ForeignKey('Article', related_name='links_to')
+    link_to = models.ForeignKey('Article', related_name='referrers')
+    link_type = models.CharField(max_length=32)
+
+    def __repr__(self):
+        return u'<%s referrer="%s" link_to="%s" link_type="%s">' % (
+                self.__class__.__name__, repr(self.referrer), repr(self.link_to),
+                self.link_type)
+
+
 class Article(models.Model):
     """
     Artigo associado ou não a um periódico ou fascículo.
@@ -1215,17 +1237,22 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
     es_updated_at = models.DateTimeField(null=True, blank=True)  # elasticsearch
     es_is_dirty = models.BooleanField(default=True)
+    articles_linkage_is_pending = models.BooleanField(default=False)
 
     aid = models.CharField(max_length=32, unique=True, editable=False)
+    doi = models.CharField(max_length=2048, default=u'', db_index=True)
     domain_key = models.SlugField(max_length=2048, unique=True, db_index=False, editable=False)
     is_visible = models.BooleanField(default=True)
     is_aop = models.BooleanField(default=False)
     xml = XMLSPSField()
     xml_version = models.CharField(max_length=9)
+    article_type = models.CharField(max_length=32, db_index=True)
 
     # artigo pode estar temporariamente desassociado de seu periódico e fascículo
     journal = models.ForeignKey(Journal, related_name='articles', blank=True, null=True)
     issue = models.ForeignKey(Issue, related_name='articles', blank=True, null=True)
+    related_articles = models.ManyToManyField('self', through='ArticlesLinkage',
+            symmetrical=False, blank=True, null=True)
     journal_title = models.CharField(_('Journal title'), max_length=512, db_index=True)
     issn_ppub = models.CharField(max_length=9, db_index=True)
     issn_epub = models.CharField(max_length=9, db_index=True)
@@ -1257,6 +1284,8 @@ class Article(models.Model):
         PID = '/article/front/article-meta/article-id[@pub-id-type="publisher-id"]'
         ARTICLE_TYPE = '/article/@article-type'
         AOP_ID = '/article/front/article-meta/article-id[@pub-id-type="other"]'
+        RELATED_CORRECTED_ARTICLES = '/article/front/article-meta/related-article[@related-article-type="corrected-article"]'
+        RELATED_COMMENTARY_ARTICLES = '/article/response/front-stub/related-article[@related-article-type="commentary-article"]'
 
     def save(self, *args, **kwargs):
         """
@@ -1278,12 +1307,20 @@ class Article(models.Model):
             self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB) or ''
             self.xml_version = self.get_value(self.XPaths.SPS_VERSION) or 'pre-sps'
             self.aid = str(uuid4().hex)
+            self.article_type = self.get_value(self.XPaths.ARTICLE_TYPE)
+            self.doi = self.get_value(self.XPaths.DOI) or ''
 
             if not any([self.issn_ppub, self.issn_epub]):
                 raise ValueError('Either issn_ppub or issn_epub must be set')
 
             if not self.journal_title:
                 raise ValueError('Could not get journal-title from %s' % self)
+
+            if not self.article_type:
+                raise ValueError('Could not get article-type from %s' % self)
+
+            if self.article_type in LINKABLE_ARTICLE_TYPES:
+                self.articles_linkage_is_pending = True
 
         super(Article, self).save(*args, **kwargs)
 
@@ -1374,6 +1411,16 @@ class Article(models.Model):
         text_values = (value if value else 'none' for value in values)
         joined_values = '_'.join(text_values)
         return slugify(joined_values)
+
+    def __repr__(self):
+        # para instâncias não salvas
+        if self.xml is None:
+            domain_key = u''
+        else:
+            domain_key = self.domain_key or self._get_domain_key()
+
+        return u'<%s aid="%s" domain_key="%s">' % (self.__class__.__name__,
+                self.aid, domain_key)
 
 
 # --------------------

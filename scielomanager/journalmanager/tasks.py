@@ -17,7 +17,7 @@ from copy import deepcopy
 
 from lxml import isoschematron, etree
 from django.db.models import Q
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
@@ -292,3 +292,66 @@ def rebuild_articles_domain_key():
 
     for article in articles:
         rebuild_article_domain_key.delay(article.pk)
+
+
+@app.task(ignore_result=True)
+def link_article_with_their_related(article_pk):
+    """ Tenta associar artigos relacionados.
+
+    Essa função é idempotente, e pode ser executada inúmeras vezes até
+    que todas as referências de um artigo sejam estabelecidas.
+
+    Caso alguma exceção seja levantada, nenhuma mudança será persistida na
+    base de dados.
+    """
+    try:
+        referrer = models.Article.objects.get(pk=article_pk,
+                articles_linkage_is_pending=True)
+    except models.Article.DoesNotExist:
+        logger.info('Cannot find Article with with pk: %s. Skipping the task.',
+                article_pk)
+        return None
+
+    related_article_elements = referrer.xml.xpath(
+            models.Article.XPaths.RELATED_CORRECTED_ARTICLES)
+
+    doi_type_pairs = ([elem.attrib['{http://www.w3.org/1999/xlink}href'],
+                      elem.attrib['related-article-type']]
+                      for elem in related_article_elements)
+
+    def _ensure_articles_are_linked(doi, rel_type):
+        try:
+            target = models.Article.objects.only('pk').get(doi=doi)
+        except (models.Article.DoesNotExist, models.Article.MultipleObjectsReturned) as exc:
+            logger.error('Cannot get article with DOI "%s". The error message is: "%s"',
+                    doi, exc.message)
+            return False
+
+        _, created = models.ArticlesLinkage.objects.get_or_create(
+                referrer=referrer, link_to=target, link_type=rel_type)
+
+        logger.info('Article with pk %s is %s linked to %s',
+                'now' if created else 'already', target.pk, referrer.pk)
+
+        return True
+
+    with transaction.commit_on_success():
+        link_statuses = (_ensure_articles_are_linked(doi, rel_type)
+                         for doi, rel_type in doi_type_pairs)
+
+        if all(link_statuses):
+            referrer.articles_linkage_is_pending = False
+            with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
+                referrer.save()
+
+
+@app.task(ignore_result=True)
+def process_related_articles():
+    """ Tenta associar artigos relacionados.
+    """
+    articles = models.Article.objects.only('pk').filter(
+            articles_linkage_is_pending=True)
+
+    for article in articles:
+        link_article_with_their_related.delay(article.pk)
+

@@ -1,0 +1,2195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN" "JATS-journalpublishing1.dtd">
+<article xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mml="http://www.w3.org/1998/Math/MathML" dtd-version="1.0" article-type="correction" xml:lang="en" specific-use="sps-1.2">
+	<front>
+		<journal-meta>
+			<journal-id journal-id-type="nlm-ta">Rev Saude Publica</journal-id>
+			<journal-title-group>
+				<journal-title>Revista de Saúde Pública</journal-title>
+				<abbrev-journal-title abbrev-type="publisher">Rev. Saúde Pública</abbrev-journal-title>
+			</journal-title-group>
+			<issn pub-type="ppub">0034-8910</issn>
+			<issn pub-type="epub">1518-8787</issn>
+			<publisher>
+				<publisher-name>Faculdade de Saúde Pública da Universidade de São Paulo</publisher-name>
+			</publisher>
+		</journal-meta>
+		<article-meta>
+			<article-id pub-id-type="publisher-id">S0034-8910.2014048004966</article-id>
+			<article-id pub-id-type="doi">10.1590/S0034-8910.2014048004966</article-id>
+			<article-categories>
+				<subj-group subj-group-type="heading">
+					<subject>Artigos Originais</subject>
+				</subj-group>
+			</article-categories>
+			<title-group>
+				<article-title xml:lang="en">Depressive symptoms in institutionalized older adults (correction)</article-title>
+				<trans-title-group xml:lang="pt">
+					<trans-title>Sintomas depressivos em idosos institucionalizados</trans-title>
+				</trans-title-group>
+			</title-group>
+			<contrib-group>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Santiago</surname>
+						<given-names>Lívia Maria</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff1">
+						<sup>I</sup>
+					</xref>
+				</contrib>
+				<contrib contrib-type="author">
+					<name>
+						<surname>Mattos</surname>
+						<given-names>Inês Echenique</given-names>
+					</name>
+					<xref ref-type="aff" rid="aff2">
+						<sup>II</sup>
+					</xref>
+				</contrib>
+			</contrib-group>
+			<aff id="aff1">
+				<label>I</label>
+				<institution content-type="orgdiv2">Departamento de Fonoaudiologia</institution>
+				<institution content-type="orgdiv1">Faculdade de Medicina</institution>
+				<institution content-type="orgname">Universidade Federal do Rio de Janeiro</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original">Departamento de Fonoaudiologia. Faculdade de Medicina. Universidade Federal do Rio de Janeiro. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<aff id="aff2">
+				<label>II</label>
+				<institution content-type="orgdiv2">epartamento de Epidemiologia e Métodos Quantitativos em Saúd</institution>
+				<institution content-type="orgdiv1">Escola Nacional de Saúde Pública</institution>
+				<institution content-type="orgname">Fundação Oswaldo Cruz</institution>
+				<addr-line>
+					<named-content content-type="city">Rio de Janeiro</named-content>
+					<named-content content-type="state">RJ</named-content>
+				</addr-line>
+				<country>Brasil</country>
+				<institution content-type="original"> Departamento de Epidemiologia e Métodos Quantitativos em Saúde. Escola Nacional de Saúde Pública. Fundação Oswaldo Cruz. Rio de Janeiro, RJ, Brasil</institution>
+			</aff>
+			<author-notes>
+				<corresp>
+					<label>Correspondence</label>:  Lívia Maria Santiago  Departamento de Fonoaudiologia – HUCFF  Rua Rodolpho Rocco, 255/9E11 Cidade Universitária  21941-913 Rio de Janeiro, RJ, Brasil  E-mail: <email>liviamsantiago@gmail.com</email>
+				</corresp>
+				<fn fn-type="conflict">
+					<p>The authors declare that there is no conflict of interest.</p>
+				</fn>
+			</author-notes>
+			<pub-date pub-type="epub-ppub">
+				<month>04</month>
+				<year>2014</year>
+			</pub-date>
+			<volume>48</volume>
+			<issue>3</issue>
+			<fpage seq="a">1</fpage>
+			<lpage>4</lpage>
+			<history>
+				<date date-type="received">
+					<day>27</day>
+					<month>5</month>
+					<year>2013</year>
+				</date>
+				<date date-type="accepted">
+					<day>11</day>
+					<month>11</month>
+					<year>2013</year>
+				</date>
+			</history>
+			<permissions>
+				<license license-type="open-access" xlink:href="http://creativecommons.org/licenses/by-nc/3.0/">
+					<license-p>This is an Open Access article distributed under the terms of the Creative Commons Attribution Non-Commercial License, which permits unrestricted non-commercial use, distribution, and reproduction in any medium, provided the original work is properly cited.</license-p>
+				</license>
+			</permissions>
+            <related-article related-article-type="corrected-article" id="ra1" xlink:href="10.1590/S0034-8910.2014048004965" ext-link-type="doi"/>
+			<abstract xml:lang="en">
+				<sec>
+					<title>OBJECTIVE</title>
+					<p>To estimate the prevalence of depressive symptoms among institutionalized elderly individuals and to analyze factors associated with this condition.</p>
+				</sec>
+				<sec>
+					<title>METHODS</title>
+					<p>This was a cross-sectional study involving 462 individuals aged 60 or older, residents in long stay institutions in four Brazilian municipalities. The dependent variable was assessed using the 15-item Geriatric Depression Scale. Poisson’s regression was used to evaluate associations with co-variables. We investigated which variables were most relevant in terms of presence of depressive symptoms within the studied context through factor analysis.</p>
+				</sec>
+				<sec>
+					<title>RESULTS</title>
+					<p>Prevalence of depressive symptoms was 48.7%. The variables associated with depressive symptoms were: regular/bad/very bad self-rated health; comorbidities; hospitalizations; and lack of friends in the institution. Five components accounted for 49.2% of total variance of the sample: functioning, social support, sensory deficiency, institutionalization and health conditions. In the factor analysis, functionality and social support were the components which explained a large part of observed variance.</p>
+				</sec>
+				<sec>
+					<title>CONCLUSIONS</title>
+					<p>A high prevalence of depressive symptoms, with significant variation in distribution, was observed. Such results emphasize the importance of health conditions and functioning for institutionalized older individuals developing depression. They also point to the importance of providing opportunities for interaction among institutionalized individuals.</p>
+				</sec>
+			</abstract>
+			<trans-abstract xml:lang="pt">
+				<sec>
+					<title>OBJETIVO</title>
+					<p>Analisar a prevalência de depressão em idosos institucionalizados e os fatores associados.</p>
+				</sec>
+				<sec>
+					<title>MÉTODOS</title>
+					<p>Estudo seccional com 462 indivíduos de 60 anos ou mais, residentes em instituições de longa permanência em quatro municípios brasileiros. A variável dependente foi avaliada pela Escala de Depressão Geriátrica de 15 itens. Foi efetuada a análise de regressão de Poisson para avaliar associações com as covariáveis. Buscou-se identificar as variáveis mais relevantes para a presença de sintomas depressivos por meio de análise fatorial.</p>
+				</sec>
+				<sec>
+					<title>RESULTADOS</title>
+					<p>A prevalência de sintomas depressivos foi 48,7%. A saúde autorreferida como regular/ruim/muito ruim, as comorbidades, hospitalizações e a falta de amigos na instituição apresentaram associação com a presença de sintomas depressivos. Foram identificados cinco componentes que, em conjunto, explicaram 49,2% da variância da amostra: funcionalidade, apoio social, deficiência sensorial, institucionalização e condições de saúde. Na análise fatorial, os componentes funcionalidade e apoio social foram os que explicaram grande parte da variância observada.</p>
+				</sec>
+				<sec>
+					<title>CONCLUSÕES</title>
+					<p>Observou-se alta prevalência de sintomas depressivos, com distribuição heterogênea. Esses resultados reforçam o papel das condições de saúde e da funcionalidade para o desenvolvimento de depressão nos idosos institucionalizados e apontam para a importância de oferecer oportunidades de interação entre os residentes nas instituições de longa permanência.</p>
+				</sec>
+			</trans-abstract>
+			<kwd-group xml:lang="en">
+				<kwd>Aged</kwd>
+				<kwd>Depression, epidemiology</kwd>
+				<kwd>Homes for the Aged</kwd>
+				<kwd>Risk Factors</kwd>
+				<kwd>Cross-Sectional Studies</kwd>
+			</kwd-group>
+			<kwd-group xml:lang="pt">
+				<kwd>Idoso</kwd>
+				<kwd>Depressão, epidemiologia</kwd>
+				<kwd>Instituição de Longa Permanência para Idosos</kwd>
+				<kwd>Fatores de Risco</kwd>
+				<kwd>Estudos Transversais</kwd>
+			</kwd-group>
+			<funding-group>
+				<award-group>
+					<funding-source>Fundação para o Desenvolvimento Científico e Tecnológico em Saúde</funding-source>
+					<award-id>013-LIV10-2-5-33</award-id>
+				</award-group>
+				<funding-statement>This study was supported by the Fundação para o Desenvolvimento Científico e Tecnológico em Saúde (FIOTEC – Process ENSP-013-LIV10-2-5-33 – Programa Inova ENSP).</funding-statement>
+			</funding-group>
+			<counts>
+				<table-count count="5"/>
+				<ref-count count="30"/>
+				<page-count count="9"/>
+			</counts>
+		</article-meta>
+	</front>
+	<body>
+		<sec sec-type="intro">
+			<title>INTRODUCTION</title>
+			<p>Depression is a mood disorder that is most often encountered among older individuals.<xref ref-type="bibr" rid="B15">
+					<sup>15</sup>
+				</xref> It is pointed out as one of the conditions responsible for high morbidity-mortality risk, more frequent use of healthcare services, low adherence to therapy and treatment and self-care behavior, and suicide.<xref ref-type="bibr" rid="B3">
+					<sup>3</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B10">
+					<sup>10</sup>
+				</xref>
+			</p>
+			<p>Multiple risk factors for depression have been identified, including social, demographic, psychological and health factors. According to Alexopoulos<xref ref-type="bibr" rid="B2">
+					<sup>2</sup>
+				</xref> (2005), low economic status, psychosocial adversities, chronic illnesses and disabilities, in addition to suffering caused by disrupted family relationships, are associated with depression in old age. In a follow-up study conducted with 344 Dutch nationals aged 85 or older with no diagnosis of depression during the recruitment period, it was observed that low functional capacity in daily life activities and institutionalization were predictive factors for depression.<xref ref-type="bibr" rid="B26">
+					<sup>26</sup>
+				</xref> Institutionalization was considered as one of the most important risk factors for depression among older people, according to the National Institutes of Health Consensus on Depression, which pointed out a 5% prevalence of depression among older individuals seen at primary healthcare clinics and a prevalence of 15.0%-25.0% among older individuals living in nursing homes, in the United States.<xref ref-type="bibr" rid="B14">
+					<sup>14</sup>
+				</xref>
+			</p>
+			<p>Brazil’s older population has been growing quickly and the longevity of those individuals has also been on the rise.<xref ref-type="fn" rid="fn1">
+					<sup>a</sup>
+				</xref> Brazilian society is made of increasingly smaller families. Additionally, women have been joining the work force, and this often means that there is no family caretaker available to look after a vulnerable older person’s health, welfare and survival.<xref ref-type="bibr" rid="B1">
+					<sup>1</sup>
+				</xref> Underprivileged economic and social conditions of a large proportion of the older population in the country make it impossible for them to meet their basic needs. Such situations combine to create increased demand for care in long stay institutions. Unlike what occurs in developed countries, long stay institutions for older individuals (ILPI) in Brazil are organized as healthcare/social assistance institutions whose nature is almost always one of permanent residence.<xref ref-type="bibr" rid="B6">
+					<sup>6</sup>
+				</xref>
+			</p>
+			<p>This study aimed to analyze the prevalence of depressive symptoms and associated factors in older individuals who live in long stay institutions.</p>
+		</sec>
+		<sec sec-type="methods">
+			<title>METHODS</title>
+			<p>This study was based on data from the research project,<xref ref-type="fn" rid="fn2">
+					<sup>b</sup>
+				</xref> 2010 to 2011, conducted in ten institutions with individuals aged 60 or older who lived in ILPI across four Brazilian municipalities (Rio de Janeiro, RJ; Juiz de Fora, MG; Campo Grande, MS and Cuiabá, MT). In Rio de Janeiro, the largest public institution was selected. In the other cities, three institutions were included, with the following criteria: the largest public institution of the city and two more public or philanthropic institutions. The interviews were based on a structured questionnaire and were conducted by trained interviewers.</p>
+			<p>In this study, 462 (60.8%) older individuals were included, who were able to answer an interview based on self-rated questions.</p>
+			<p>The dependent variable was depressive symptoms and the 15-item Geriatric Depression Scale was used for its assessment. A score of five or above was considered as indicative of depressive symptoms.<xref ref-type="bibr" rid="B23">
+					<sup>23</sup>
+				</xref> The study evaluated associations with the following co-variables: sociodemographic; social support; functioning and cognition; and those related to sensory and health conditions.</p>
+			<p>Associations between the independent variables and depressive symptoms were analyzed using prevalence ratios (PR). Poisson’s multiple regression analysis with robust variance was used to explore observed associations, after adjustment for confounding variables. The level of statistical significance was set at 0.05 for variables to remain in the final model.</p>
+			<p>Factor analysis was used to identify the most relevant components of depressive symptoms among the studied population. The correlation matrix of the variables was examined to analyze the strength of observed correlations; variables that had 25.0% or more of their coefficients below 0.3 were excluded. Fifteen independent variables remained in the study, seven of which are health related (hearing impairment; visual impairment; cognitive deficit; hospitalization within the last 12 months; self-rated health; functional capacity in activities of daily living (ADL); functional capacity in instrumental activities of daily living (IADL); two are demographic (sex, age group); four are related to social support (religiousness; having visitors; having friends in the institution; having friends outside the institution) and length of institutionalization. The main components were analyzed to identify the number of factors required to represent the set of variables, examining the percentage of total variance explained by each of them. In order to explore observed relationships, we performed rotation procedures using the Varimax orthogonal rotation method.</p>
+			<p>Statistical analyses were performed using SPSS 16.0 and Stata SE 10.0.</p>
+			<p>This study was approved by the Committee of Ethics in Research of the <italic>Escola Nacional de Saúde Pública </italic>(CAAE 0120.0.031.000-10). All participants signed the informed consent form.</p>
+		</sec>
+		<sec sec-type="results">
+			<title>RESULTS</title>
+			<p>The study population was predominantly male, with low levels of education (up to 5 years) and without a partner (single or widowers). The average age was 75.2 (DP 9.0) and the median age was 74.0 years. The prevalence of depressive symptoms in the study population was 48.7%.</p>
+			<p>Most of the older individuals reported having visitors (64.4%), having a religion (93.6%), having friends in the institution (74.3%) and outside (67.2%). As for health characteristics, prevalence of functional incapacity was 34.4% and 71.4% for ADL and IADL, respectively; prevalence of cognitive deficit was 71.4%. A minority had five or more illnesses, used over five medications and reported hospitalization or fall episodes in the last 12 months.</p>
+			<p>The following variables proved to be associated with depressive symptoms in bivariate analysis (<xref ref-type="table" rid="t01">Tables 1</xref> and <xref ref-type="table" rid="t02">2</xref>): friends in the institution; self-rated health; reporting five or more illnesses; recent hospitalization; recent weight loss; fall in the last twelve months; incapacity in activities of daily living; incapacity in instrumental activities of daily living; and presence of visual disorders.</p>
+			<p>
+				<table-wrap id="t01">
+					<label>Table 1</label>
+					<caption>
+						<title>Prevalence of depressive symptoms and prevalence ratios according to sociodemographic and social support variables among older individuals living in long stay institutions. Brazil, 2010-2011. (N = 462)</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="14%">
+							<col width="30%"/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" style="font-weight:normal">Variable</th>
+								<th style="font-weight:normal">n</th>
+								<th style="font-weight:normal">Prevalence of depressive symptoms</th>
+								<th style="font-weight:normal">%</th>
+								<th style="font-weight:normal">Crude PR</th>
+								<th style="font-weight:normal">95%CI</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Gender</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Male</td>
+								<td align="center">291</td>
+								<td align="center">137</td>
+								<td align="center">47.1</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Female</td>
+								<td align="center">171</td>
+								<td align="center">88</td>
+								<td align="center">51.5</td>
+								<td align="center">1.09</td>
+								<td align="center">0.90;0.32</td>
+							</tr>
+							<tr>
+								<td>Age group</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> 60 to 69</td>
+								<td align="center">126</td>
+								<td align="center">65</td>
+								<td align="center">51.6</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> 70 to 79</td>
+								<td align="center">168</td>
+								<td align="center">80</td>
+								<td align="center">47.6</td>
+								<td align="center">0.92</td>
+								<td align="center">0.73;1.16</td>
+							</tr>
+							<tr>
+								<td> 80 or older</td>
+								<td align="center">156</td>
+								<td align="center">71</td>
+								<td align="center">45.5</td>
+								<td align="center">0.88</td>
+								<td align="center">0.69;1.12</td>
+							</tr>
+							<tr>
+								<td>Level of education</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Over 5 years</td>
+								<td align="center">121</td>
+								<td align="center">55</td>
+								<td align="center">45.5</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Up to 5 years</td>
+								<td align="center">198</td>
+								<td align="center">95</td>
+								<td align="center">48.0</td>
+								<td align="center">1.06</td>
+								<td align="center">0.83;1.35</td>
+							</tr>
+							<tr>
+								<td> Illiterate</td>
+								<td align="center">116</td>
+								<td align="center">62</td>
+								<td align="center">53.4</td>
+								<td align="center">1.18</td>
+								<td align="center">0.91;1.52</td>
+							</tr>
+							<tr>
+								<td>Marital status</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Married/Steady partner</td>
+								<td align="center">62</td>
+								<td align="center">25</td>
+								<td align="center">40.3</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Divorced/Separated</td>
+								<td align="center">70</td>
+								<td align="center">38</td>
+								<td align="center">54.3</td>
+								<td align="center">1.35</td>
+								<td align="center">0.93;1.95</td>
+							</tr>
+							<tr>
+								<td> Widow(er)</td>
+								<td align="center">114</td>
+								<td align="center">61</td>
+								<td align="center">53.5</td>
+								<td align="center">1.33</td>
+								<td align="center">0.94;1.88</td>
+							</tr>
+							<tr>
+								<td> Single</td>
+								<td align="center">214</td>
+								<td align="center">101</td>
+								<td align="center">47.2</td>
+								<td align="center">1.17</td>
+								<td align="center">0.84;1.64</td>
+							</tr>
+							<tr>
+								<td>Having visitors</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">295</td>
+								<td align="center">143</td>
+								<td align="center">48.5</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">163</td>
+								<td align="center">81</td>
+								<td align="center">49.7</td>
+								<td align="center">1.03</td>
+								<td align="center">0.84;1.24</td>
+							</tr>
+							<tr>
+								<td>Religion and spirituality</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">428</td>
+								<td align="center">207</td>
+								<td align="center">48.4</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No religion</td>
+								<td align="center">29</td>
+								<td align="center">15</td>
+								<td align="center">51.7</td>
+								<td align="center">1.07</td>
+								<td align="center">0.74;1.54</td>
+							</tr>
+							<tr>
+								<td>Friends in the institution</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">341</td>
+								<td align="center">152</td>
+								<td align="center">44.6</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">118</td>
+								<td align="center">72</td>
+								<td align="center">61.0</td>
+								<td align="center">1.37</td>
+								<td align="center">1.14;1.65</td>
+							</tr>
+							<tr>
+								<td>Friends outside the institution</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">307</td>
+								<td align="center">146</td>
+								<td align="center">47.6</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">150</td>
+								<td align="center">79</td>
+								<td align="center">52.7</td>
+								<td align="center">1.11</td>
+								<td align="center">0.91;1.34</td>
+							</tr>
+							<tr>
+								<td>Leisure/Recreational activities in the last 12 months</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">109</td>
+								<td align="center">57</td>
+								<td align="center">52.3</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">346</td>
+								<td align="center">166</td>
+								<td align="center">48.0</td>
+								<td align="center">0.92</td>
+								<td align="center">0.74;1.13</td>
+							</tr>
+						</tbody>
+					</table>
+				</table-wrap>
+			</p>
+			<p>
+				<table-wrap id="t02">
+					<label>Table 2</label>
+					<caption>
+						<title>Prevalence of depressive symptoms and prevalence ratios according to health-related variables among older individuals living in long stay institutions. Brazil, 2010-2011. (N = 462)</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="14%">
+							<col width="30%"/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" style="font-weight:normal">Variable</th>
+								<th style="font-weight:normal">n</th>
+								<th style="font-weight:normal">Prevalence of depressive symptoms</th>
+								<th style="font-weight:normal">%</th>
+								<th style="font-weight:normal">Crude PR</th>
+								<th style="font-weight:normal">95%CI</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Self-rated health</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Excellent/Good</td>
+								<td align="center">197</td>
+								<td align="center">64</td>
+								<td align="center">32.5</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Regular</td>
+								<td align="center">166</td>
+								<td align="center">87</td>
+								<td align="center">52.4</td>
+								<td align="center">1.61</td>
+								<td align="center">1.26;2.07</td>
+							</tr>
+							<tr>
+								<td> Bad/Very bad</td>
+								<td align="center">90</td>
+								<td align="center">71</td>
+								<td align="center">78.9</td>
+								<td align="center">2.43</td>
+								<td align="center">1.93;3.05</td>
+							</tr>
+							<tr>
+								<td>Presence of cognitive deficit (MEEM)</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">120</td>
+								<td align="center">51</td>
+								<td align="center">42.5</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">327</td>
+								<td align="center">170</td>
+								<td align="center">52.0</td>
+								<td align="center">1.22</td>
+								<td align="center">0.97;1.54</td>
+							</tr>
+							<tr>
+								<td>Report of 5 or more illnesses</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">438</td>
+								<td align="center">205</td>
+								<td align="center">46.8</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">21</td>
+								<td align="center">18</td>
+								<td align="center">85.7</td>
+								<td align="center">1.83</td>
+								<td align="center">1.50;2.24</td>
+							</tr>
+							<tr>
+								<td>Use of more than 5 medications</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">329</td>
+								<td align="center">152</td>
+								<td align="center">46.2</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">131</td>
+								<td align="center">73</td>
+								<td align="center">55.7</td>
+								<td align="center">1.21</td>
+								<td align="center">1.00;1.46</td>
+							</tr>
+							<tr>
+								<td>Hospitalization in the last 12 months</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">374</td>
+								<td align="center">172</td>
+								<td align="center">46.0</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">87</td>
+								<td align="center">52</td>
+								<td align="center">59.8</td>
+								<td align="center">1.30</td>
+								<td align="center">1.06;1.59</td>
+							</tr>
+							<tr>
+								<td>Self-reported weight loss in the last 12 months</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">278</td>
+								<td align="center">125</td>
+								<td align="center">45.0</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">159</td>
+								<td align="center">90</td>
+								<td align="center">56.6</td>
+								<td align="center">1.26</td>
+								<td align="center">1.04;1.52</td>
+							</tr>
+							<tr>
+								<td>Fall in the last 12 months</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">316</td>
+								<td align="center">138</td>
+								<td align="center">43.7</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">143</td>
+								<td align="center">87</td>
+								<td align="center">60.8</td>
+								<td align="center">1.39</td>
+								<td align="center">1.16;1.67</td>
+							</tr>
+							<tr>
+								<td>Functional/Activities of daily living (ADL) incapacity</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">303</td>
+								<td align="center">135</td>
+								<td align="center">44.6</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">159</td>
+								<td align="center">90</td>
+								<td align="center">56.6</td>
+								<td align="center">1.27</td>
+								<td align="center">1.06;1.53</td>
+							</tr>
+							<tr>
+								<td>Functional/Instrumental activities of daily Living (IADL) incapacity</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">132</td>
+								<td align="center">53</td>
+								<td align="center">40.2</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">330</td>
+								<td align="center">172</td>
+								<td align="center">52.1</td>
+								<td align="center">1.30</td>
+								<td align="center">1.03;1.64</td>
+							</tr>
+							<tr>
+								<td>Visual impairment</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">199</td>
+								<td align="center">85</td>
+								<td align="center">42.7</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">263</td>
+								<td align="center">140</td>
+								<td align="center">53.2</td>
+								<td align="center">1.25</td>
+								<td align="center">1.02;1.52</td>
+							</tr>
+							<tr>
+								<td>Hearing impairment</td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> No</td>
+								<td align="center">346</td>
+								<td align="center">163</td>
+								<td align="center">47.1</td>
+								<td align="center">1</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td> Yes</td>
+								<td align="center">116</td>
+								<td align="center">62</td>
+								<td align="center">53.4</td>
+								<td align="center">1.13</td>
+								<td align="center">0.93;1.39</td>
+							</tr>
+						</tbody>
+					</table>
+				</table-wrap>
+			</p>
+			<p>In multivariate analysis the following were independent factors associated with depressive symptoms: self-rated health; reporting five or more illnesses; hospitalization in the last 12 months; and friends in the institution (<xref ref-type="table" rid="t03">Table 3</xref>).</p>
+			<p>
+				<table-wrap id="t03">
+					<label>Table 3</label>
+					<caption>
+						<title>Poisson’s regression multivariate analysis of factors associated with depressive symptoms among institutionalized older individuals. Brazil, 2010-2011.</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="33%">
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" style="font-weight:normal">Variable</th>
+								<th style="font-weight:normal">Adjusted prevalence ratio<sup>a</sup>
+								</th>
+								<th style="font-weight:normal">95%CI</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Self-rated health (Regular/Bad/Very bad)</td>
+								<td align="center">1.47</td>
+								<td align="center">1.31;1.66</td>
+							</tr>
+							<tr>
+								<td>Report of five or more illnesses (Yes)</td>
+								<td align="center">1.34</td>
+								<td align="center">1.09;1.65</td>
+							</tr>
+							<tr>
+								<td>Hospitalization in the last twelve months (Yes)</td>
+								<td align="center">1.26</td>
+								<td align="center">1.04;1.54</td>
+							</tr>
+							<tr>
+								<td>Friends in the institution (No)</td>
+								<td align="center">1.24</td>
+								<td align="center">1.03;1.49</td>
+							</tr>
+						</tbody>
+					</table>
+					<table-wrap-foot>
+						<p>
+							<sup>a</sup> Adjusted by all variables in the model.</p>
+					</table-wrap-foot>
+				</table-wrap>
+			</p>
+			<p>Bartlett’s statistical test of sphericity (p &lt; 0.001) and Kaiser-Meyer-Olkin’s measure of sampling adequacy (0.632) indicated that the correlation matrix was adequate to the factor analysis. Five components remained, which together accounted for 49.2% of total variance (<xref ref-type="table" rid="t04">Table 4</xref>). Rotation of the matrix using Varimax’s method (<xref ref-type="table" rid="t05">Table 5</xref>) showed high positive loadings of functional capacity variables and of the cognitive deficit variable in component 1 and a moderate positive loading of the variable gender. This first component was named Functioning. Component 2 was named Social Support. Variables related to this domain showed high and positive loading, while the variable gender showed moderate negative loading. Variables hearing impairment and visual impairment showed high positive loading in component 3, as well as the age group variable; this was named Sensory Deficiency. The variable age group also showed moderate loading in component 4, called Institutionalization, in which high and positive loadings were observed for the variables level of education and length of institutionalization. Component 5, Health Condition, had high loading of the variables hospitalization in the last 12 months and self-rated health; loading is positive for the first and negative for the latter.</p>
+			<p>
+				<table-wrap id="t04">
+					<label>Table 4</label>
+					<caption>
+						<title>Factor analysis: principal components analysis and total variance explained. Brazil, 2010-2011.</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="33%">
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" style="font-weight:normal">Components</th>
+								<th style="font-weight:normal">Percentage of variance explained</th>
+								<th style="font-weight:normal">Cumulative percentage</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1 (Functioning)</td>
+								<td align="center">11.5</td>
+								<td align="center">11.5</td>
+							</tr>
+							<tr>
+								<td>2 (Social support)</td>
+								<td align="center">11.3</td>
+								<td align="center">22.8</td>
+							</tr>
+							<tr>
+								<td>3 (Sensory deficiency)</td>
+								<td align="center">10.5</td>
+								<td align="center">33.3</td>
+							</tr>
+							<tr>
+								<td>4 (Institutionalization)</td>
+								<td align="center">8.4</td>
+								<td align="center">41.7</td>
+							</tr>
+							<tr>
+								<td>5 (Health condition)</td>
+								<td align="center">7.4</td>
+								<td align="center">49.2</td>
+							</tr>
+						</tbody>
+					</table>
+				</table-wrap>
+			</p>
+			<p>
+				<table-wrap id="t05">
+					<label>Table 5</label>
+					<caption>
+						<title>Factor analysis: principal components analysis with Varimax Rotationa and factor loading. Brazil, 2010-2011.</title>
+					</caption>
+					<table frame="hsides" rules="groups">
+						<colgroup width="16%">
+							<col width="30%"/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+							<col/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th align="left" style="font-weight:normal">Variable</th>
+								<th colspan="5" style="font-weight:normal">Component <hr/>  </th>
+							</tr>
+							<tr>
+								<th align="left" style="font-weight:normal"> </th>
+								<th style="font-weight:normal">1</th>
+								<th style="font-weight:normal">2</th>
+								<th style="font-weight:normal">3</th>
+								<th style="font-weight:normal">4</th>
+								<th style="font-weight:normal">5</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Functional capacity in ADL<sup>b</sup>
+								</td>
+								<td align="center">
+									<bold>0.708</bold>
+								</td>
+								<td align="center">0.101</td>
+								<td align="center">0.103</td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Functional capacity in IADL<sup>c</sup>
+								</td>
+								<td align="center">
+									<bold>0.705</bold>
+								</td>
+								<td> </td>
+								<td align="center">0.201</td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Cognitive deficit</td>
+								<td align="center">
+									<bold>0.653</bold>
+								</td>
+								<td> </td>
+								<td align="center">-0.138</td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Friends outside the institution</td>
+								<td align="center">-0.162</td>
+								<td align="center">
+									<bold>0.722</bold>
+								</td>
+								<td> </td>
+								<td align="center">0.193</td>
+								<td align="center">0.202</td>
+							</tr>
+							<tr>
+								<td>Having visitors</td>
+								<td> </td>
+								<td align="center">
+									<bold>0.661</bold>
+								</td>
+								<td> </td>
+								<td align="center">-0.109</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Friends in the institution</td>
+								<td> </td>
+								<td align="center">
+									<bold>0.583</bold>
+								</td>
+								<td align="center">0.146</td>
+								<td align="center">0.259</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Gender</td>
+								<td align="center">
+									<italic>0.342</italic>
+								</td>
+								<td align="center">
+									<bold>-0.423</bold>
+								</td>
+								<td> </td>
+								<td align="center">
+									<italic>0.383</italic>
+								</td>
+								<td align="center">0.235</td>
+							</tr>
+							<tr>
+								<td>Religiousness</td>
+								<td align="center">0.137</td>
+								<td align="center">
+									<bold>0.385</bold>
+								</td>
+								<td> </td>
+								<td align="center">-0.147</td>
+								<td align="center">-0.116</td>
+							</tr>
+							<tr>
+								<td>Hearing impairment</td>
+								<td> </td>
+								<td> </td>
+								<td align="center">
+									<bold>0.751</bold>
+								</td>
+								<td> </td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Visual impairment</td>
+								<td> </td>
+								<td> </td>
+								<td align="center">
+									<bold>0.685</bold>
+								</td>
+								<td> </td>
+								<td align="center">-0.167</td>
+							</tr>
+							<tr>
+								<td>Age group</td>
+								<td align="center">0.209</td>
+								<td align="center">-0.152</td>
+								<td align="center">
+									<bold>0.513</bold>
+								</td>
+								<td align="center">
+									<italic>0.365</italic>
+								</td>
+								<td align="center">0.233</td>
+							</tr>
+							<tr>
+								<td>Level of education</td>
+								<td> </td>
+								<td align="center">0.142</td>
+								<td> </td>
+								<td align="center">
+									<bold>0.706</bold>
+								</td>
+								<td> </td>
+							</tr>
+							<tr>
+								<td>Length of institutionalization</td>
+								<td> </td>
+								<td> </td>
+								<td align="center">-0.227</td>
+								<td align="center">
+									<bold>0.563</bold>
+								</td>
+								<td align="center">-0.129</td>
+							</tr>
+							<tr>
+								<td>Hospitalization in the last 12 months</td>
+								<td align="center">0.117</td>
+								<td> </td>
+								<td align="center">0.172</td>
+								<td align="center">-0.109</td>
+								<td align="center">
+									<bold>0.725</bold>
+								</td>
+							</tr>
+							<tr>
+								<td>Self-rated health</td>
+								<td align="center">0.211</td>
+								<td> </td>
+								<td align="center">0.280</td>
+								<td> </td>
+								<td align="center">
+									<bold>-0.596</bold>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<table-wrap-foot>
+						<p>
+							<sup>a</sup> Excluding eigenvalues &lt; 0.100.</p>
+						<p>
+							<sup>b</sup> Basic Activities of Daily Living.</p>
+						<p>
+							<sup>c</sup> Instrumental Activities of Daily Living.</p>
+						<p>Bold values represent the components with higher loadings in the respective factor.</p>
+						<p>Italic values represent high loadings, though they are higher in another factor.</p>
+					</table-wrap-foot>
+				</table-wrap>
+			</p>
+		</sec>
+		<sec sec-type="discussion">
+			<title>DISCUSSION</title>
+			<p>ILPI in Brazil consist of public or private facilities that provide comprehensive institutional care to individuals aged 60 or older, who are functionally dependent or independent and who cannot remain with their families or in their own homes.<xref ref-type="fn" rid="fn3">
+					<sup>c</sup>
+				</xref> According to Lopes et al<xref ref-type="bibr" rid="B13">
+					<sup>13</sup>
+				</xref> (2007), older individuals who live in such institutions have certain features that distinguish them from others who live within a community. This is due to frequent inactivity, emotional neediness, high prevalence of functional dependency, cognitive issues, lack of help for self-care and insufficient financial support. Prevalence of depressive symptoms of nearly 50.0% was identified among the older individuals, however, we expected an even higher proportion, considering that such individuals are institutionalized.</p>
+			<p>Depression in older individuals residing in the community is often associated with demographic and social factors, such as being female, widow/er or single, younger or much older (60-65 and 80 years old or older, respectively), having a low level of education, belonging to less privileged economic classes and living alone.<xref ref-type="bibr" rid="B4">
+					<sup>4</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B18">
+					<sup>18</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B12">
+					<sup>12</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B22">
+					<sup>22</sup>
+				</xref> In the current study no such features proved to be a statistically significant risk factor for depressive symptoms, which can be partially explained by the fact that the research targeted older individuals living in long stay institutions and institutionalization in itself is considered an even more important determinant of the condition than the other mentioned risk factors.<xref ref-type="bibr" rid="B14">
+					<sup>14</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B26">
+					<sup>26</sup>
+				</xref>
+			</p>
+			<p>Lack of friends in the institution proved to be one of the variables associated with depressive symptoms included in the adjusted model. In a study conducted with individuals aged 65 or older in London, United Kingdom, to assess risk factors for depression, the feeling of loneliness (strongly influenced by lack of contact with friends) was reported as the main determinant of this condition (OR = 12.4, 95%CI 7.6;20.0).<xref ref-type="bibr" rid="B18">
+					<sup>18</sup>
+				</xref>
+			</p>
+			<p>Negative self-rated health is a good predictor of morbidity and mortality among older populations and it is also a determinant of depressive symptoms among this group.<xref ref-type="bibr" rid="B11">
+					<sup>11</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B20">
+					<sup>20</sup>
+				</xref> Older individuals who lived in the community, from the Bambuí cohort in Minas Gerais, Southeastern Brazil, and who rated their health as regular or bad/very bad, showed 84.0% and 114.0% higher risk of depression, respectively, when compared to those who rated their health as good/very good; the model was adjusted by gender, age group, marital status, level of education, functional incapacity and insomnia.<xref ref-type="bibr" rid="B4">
+					<sup>4</sup>
+				</xref> In our study, moderate/bad/very bad self-rated health was the main factor associated with depressive symptoms, pointing to a nearly 50.0% higher risk in the adjusted model.</p>
+			<p>Greater prevalence of depressive symptoms was found among individuals with cognitive issues, which had already been pointed out by Lima et al (2009), who commented on the association between those two diagnoses that are so common among older individuals.<xref ref-type="bibr" rid="B12">
+					<sup>12</sup>
+				</xref> According to Cummings et al (2003), older people become at risk of depression when physical and/or cognitive impairment threatens their independent operation in the community and their management of typical household tasks.<xref ref-type="bibr" rid="B5">
+					<sup>5</sup>
+				</xref>
+			</p>
+			<p>Depression is also related to one’s nutritional state, since it interferes with neural control, which is responsible for hunger, anxiety and food compulsion, which may lead to malnutrition or obesity. In a study conducted with individuals aged 60 to 88 years old, Hiperdia group participants in the municipality of Sarandi, PR, Southern Brazil, it was observed that 33.3% of low-weight elderly individuals had depressive symptoms. This study identified an association between self-reported weight loss and depressive symptoms, although the latter did not remain in the multivariate model.<xref ref-type="fn" rid="fn4">
+					<sup>d</sup>
+				</xref>
+			</p>
+			<p>Another factor identified in this study as being related to depressive symptoms was functional dependency. The Bambuí study had already observed an association between this condition and incapacity in ADL, with a 39.0% higher risk of depression among dependent individuals, in a model adjusted by the previously mentioned variables.<xref ref-type="bibr" rid="B4">
+					<sup>4</sup>
+				</xref> Among individuals aged 65 or older who took part in the EPIDOSO study and who lived in Sao Paulo, Southeastern Brazil, prevalence of depression was also greater among those with ADL incapacity (OR = 2.12; p &lt; 0.001), in a model adjusted by gender, age and use of medication.<xref ref-type="bibr" rid="B12">
+					<sup>12</sup>
+				</xref> In a prospective study with North American people aged 65 or older, chronic conditions, low cognitive function, depression and smoking were associated with functional decline. This study also showed that depressed mood was associated not only with poorer functional outcomes, but also with increased rates of functional decline over the follow-up period.<xref ref-type="bibr" rid="B30">
+					<sup>30</sup>
+				</xref>
+			</p>
+			<p>Using a greater number of medications was related to depressive symptoms in the bivariate analysis. Lima et al<xref ref-type="bibr" rid="B12">
+					<sup>12</sup>
+				</xref> (2009) had identified this association (OR = 1.44; p &lt; 0.001) in analysis adjusted by gender, age and functional dependency. The number of medications reflects a greater number of combined illnesses and consequently greater likelihood of hospitalization. This would explain the associations found in the present study between depressive symptoms and the variables reporting five or more illnesses and hospitalization in the last twelve months.</p>
+			<p>Problems related to hearing and vision may cause difficulties in interpersonal relationships and limit people’s social interactions, both of which are crucial to maintaining one’s welfare, especially in older individuals.<xref ref-type="bibr" rid="B29">
+					<sup>29</sup>
+				</xref> This study identified an association between visual disorders and depressive symptoms, but this association did not remain in the adjusted model.</p>
+			<p>Factor analysis identified five components of the construct of depressive symptoms in the studied group. High positive loadings were observed for variables that show an older person’s independence and autonomy in performing basic daily activities and managing their own life in the Functioning component. This component also showed moderate loading of the variable gender. Loss of functional capacity is associated with gender and the literature has shown greater risk of dependency for females.<xref ref-type="bibr" rid="B16">
+					<sup>16</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B21">
+					<sup>21</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B27">
+					<sup>27</sup>
+				</xref>
+			</p>
+			<p>Variables related to social support had almost all their loading in the Social Support component. The variable gender had its highest loading in this component, however with a moderate contribution. A positive association has been observed between the female sex and greater social support.<xref ref-type="bibr" rid="B8">
+					<sup>8</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B9">
+					<sup>9</sup>
+				</xref>
+			</p>
+			<p>Variables related to hearing and visual disorders combined with the variable age group to form the Sensory Deficiency component. Hearing and visual impairment are associated with older age.<xref ref-type="bibr" rid="B29">
+					<sup>29</sup>
+				</xref>
+			</p>
+			<p>In the Institutionalization component, the variables level of education and length of institutionalization had high positive loadings, with moderate loading of the age group variable. In Brazil, low levels of education and old age are positively associated with institutionalization.<xref ref-type="bibr" rid="B1">
+					<sup>1</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B6">
+					<sup>6</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B7">
+					<sup>7</sup>
+				</xref>
+			</p>
+			<p>Variables more directly related to current health had their major loading in the Health Condition component. It is possible that such variables are more immediately responsible for triggering depression throughout the process of development of illness.<xref ref-type="bibr" rid="B17">
+					<sup>17</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B19">
+					<sup>19</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B24">
+					<sup>24</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B25">
+					<sup>25</sup>
+				</xref>
+			</p>
+			<p>A single study was identified in the literature that analyzed factors associated with depression in institutionalized older individuals. Eight institutions were selected in Taiwan and eight in Hong Kong. The study included residents of both genders, aged 65 or older and who did not have severe cognitive deficit.<xref ref-type="bibr" rid="B28">
+					<sup>28</sup>
+				</xref> Sex (OR = 2.72; 95%CI 1.07;6.86), self-rated health condition (OR = 0.52; 95%CI 0.32;0.85) and level of happiness with their life situation (OR = 0.42; 95%CI 0.24;0.71) were all associated with depression in the Taiwan sample. In the Hong Kong sample, variables predicting depression were level of happiness with their life situation (OR = 0.52; 95%CI 0.31;0.86), cognitive status (OR = 0.92; 95%CI 0.85;1.00) and functioning (OR = 0.96; 95%CI 0.94;0.98). Such results support the importance of health conditions and functioning for the development of depression in institutionalized older individuals.</p>
+			<p>Despite different sociocultural contexts, differences in the composition of study populations (in terms of age groups and other sociodemographic features), and also in methodologies used for analysis, the associations observed in this study are mostly supported by other investigations.</p>
+			<p>This study has some limitations. First, its cross-sectional design, which restricts the interpretation of the observed associations in terms of cause and effect. Second, data was self-reported, which could have introduced an information bias. Third, a screening instrument to identify depressive symptoms was used, but it would be necessary to perform additional tests to confirm the diagnosis of depression. Although there is heterogeneity in the prevalence of depressive symptoms among older individuals, the risk factors identified in this study are supported by other investigations, even considering the different context of institutionalization in Brazil.<xref ref-type="bibr" rid="B4">
+					<sup>4</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B12">
+					<sup>12</sup>
+				</xref>
+				<sup>,</sup>
+				<xref ref-type="bibr" rid="B30">
+					<sup>30</sup>
+				</xref>
+			</p>
+			<p>Hospitalization is a critical point in the set of events leading to depressive symptoms in older individuals and so controlling chronic diseases and preventing falls would contribute to the reduction of this condition. Also, social support appears to be strongly associated with depressive symptoms and it would be important to promote interaction between residents of long stay institutions in order to provide the opportunity of establishing new friendship bonds.</p>
+		</sec>
+	</body>
+	<back>
+		<ref-list>
+			<title>REFERENCES</title>
+			<ref id="B1">
+				<label>1</label>
+				<mixed-citation>. Aires M, Paz AA, Perosa CT. Situação de saúde e grau de dependência de pessoas idosas institucionalizadas. <italic>Rev Gaucha Enferm.</italic> 2009;30(3):192-9.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Aires</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Paz</surname>
+							<given-names>AA</given-names>
+						</name>
+						<name>
+							<surname>Perosa</surname>
+							<given-names>CT</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Situação de saúde e grau de dependência de pessoas idosas institucionalizadas</article-title>
+					<source>Rev Gaucha Enferm</source>
+					<year>2009</year>
+					<volume>30</volume>
+					<issue>3</issue>
+					<fpage>192</fpage>
+					<lpage>199</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B2">
+				<label>2</label>
+				<mixed-citation>. Alexopoulos GS. Depression in the elderly. <italic>Lancet.</italic> 2005;365(9475):1961-70. DOI:10.1016/S0140-6736(05)66665-2</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Alexopoulos</surname>
+							<given-names>GS</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Depression in the elderly</article-title>
+					<source>Lancet</source>
+					<year>2005</year>
+					<volume>365</volume>
+					<issue>9475</issue>
+					<fpage>1961</fpage>
+					<lpage>1970</lpage>
+					<pub-id pub-id-type="doi">10.1016/S0140-6736(05)66665-2</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B3">
+				<label>3</label>
+				<mixed-citation>. Boswell EB, Stoudemire A. Major depression in the primary care setting. <italic>Am J Med.</italic> 1996;101(6Suppl1):3-9. DOI:10.1016/S0002-9343(96)00392-0</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Boswell</surname>
+							<given-names>EB</given-names>
+						</name>
+						<name>
+							<surname>Stoudemire</surname>
+							<given-names>A</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Major depression in the primary care setting</article-title>
+					<source>Am J Med</source>
+					<year>1996</year>
+					<volume>101</volume>
+					<issue>6</issue>
+					<supplement>1</supplement>
+					<fpage>3</fpage>
+					<lpage>9</lpage>
+					<pub-id pub-id-type="doi">10.1016/S0002-9343(96)00392-0</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B4">
+				<label>4</label>
+				<mixed-citation>. Castro-Costa E, Lima-Costa MF, Carvalhais S, Firmo JOA, Uchoa E. Factors associated with depressive symptoms measured by the 12-item General Health Questionnaire in Community-Dwelling Older Adults (The Bambuí Health Aging Study). <italic>Rev Bras Psiquiatr.</italic> 2008;30(2):104-9. DOI:10.1590/S1516-44462008005000007</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Castro-Costa</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Lima-Costa</surname>
+							<given-names>MF</given-names>
+						</name>
+						<name>
+							<surname>Carvalhais</surname>
+							<given-names>S</given-names>
+						</name>
+						<name>
+							<surname>Firmo</surname>
+							<given-names>JOA</given-names>
+						</name>
+						<name>
+							<surname>Uchoa</surname>
+							<given-names>E</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Factors associated with depressive symptoms measured by the 12-item General Health Questionnaire in Community-Dwelling Older Adults (The Bambuí Health Aging Study)</article-title>
+					<source>Rev Bras Psiquiatr</source>
+					<year>2008</year>
+					<volume>30</volume>
+					<issue>2</issue>
+					<fpage>104</fpage>
+					<lpage>109</lpage>
+					<pub-id pub-id-type="doi">10.1590/S1516-44462008005000007</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B5">
+				<label>5</label>
+				<mixed-citation>. Cummings SM, Neff JA, Husaini BA. Functional impairment as a predictor of depressive symptomatology: the role of race, religiosity, and social support. <italic>Health Soc Work.</italic> 2003;28(1):23-32. DOI:10.1046/j.1532-5415.2002.50259.x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Cummings</surname>
+							<given-names>SM</given-names>
+						</name>
+						<name>
+							<surname>Neff</surname>
+							<given-names>JA</given-names>
+						</name>
+						<name>
+							<surname>Husaini</surname>
+							<given-names>BA</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Functional impairment as a predictor of depressive symptomatology: the role of race, religiosity, and social support</article-title>
+					<source>Health Soc Work</source>
+					<year>2003</year>
+					<volume>28</volume>
+					<issue>1</issue>
+					<fpage>23</fpage>
+					<lpage>32</lpage>
+					<pub-id pub-id-type="doi">10.1046/j.1532-5415.2002.50259.x</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B6">
+				<label>6</label>
+				<mixed-citation>. Danilow MZ, Moreira ACS, Villela CG, Barra BB, Novaes MRCG, Oliveira MPF. Perfil epidemiológico, sociodemográfico e psicossocial de idosos institucionalizados do Distrito Federal. <italic>Comun Cienc Saude.</italic> 2007;18(1):9-16.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Danilow</surname>
+							<given-names>MZ</given-names>
+						</name>
+						<name>
+							<surname>Moreira</surname>
+							<given-names>ACS</given-names>
+						</name>
+						<name>
+							<surname>Villela</surname>
+							<given-names>CG</given-names>
+						</name>
+						<name>
+							<surname>Barra</surname>
+							<given-names>BB</given-names>
+						</name>
+						<name>
+							<surname>Novaes</surname>
+							<given-names>MRCG</given-names>
+						</name>
+						<name>
+							<surname>Oliveira</surname>
+							<given-names>MPF</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Perfil epidemiológico, sociodemográfico e psicossocial de idosos institucionalizados do Distrito Federal</article-title>
+					<source>Comun Cienc Saude</source>
+					<year>2007</year>
+					<volume>18</volume>
+					<issue>1</issue>
+					<fpage>9</fpage>
+					<lpage>16</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B7">
+				<label>7</label>
+				<mixed-citation>. Davim RMB, Torres GV, Dantas SMM, Lima VM. Estudo com idosos de instituições asilares do município de Natal/RN: características socioeconômicas e de saúde. <italic>Rev Latino-Am Enfermagem.</italic> 2004;12(3):518-24. DOI:10.1590/S0104-11692004000300010</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Davim</surname>
+							<given-names>RMB</given-names>
+						</name>
+						<name>
+							<surname>Torres</surname>
+							<given-names>GV</given-names>
+						</name>
+						<name>
+							<surname>Dantas</surname>
+							<given-names>SMM</given-names>
+						</name>
+						<name>
+							<surname>Lima</surname>
+							<given-names>VM</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Estudo com idosos de instituições asilares do município de Natal/RN: características socioeconômicas e de saúde</article-title>
+					<source>Rev Latino-Am Enfermagem</source>
+					<year>2004</year>
+					<volume>12</volume>
+					<issue>3</issue>
+					<fpage>518</fpage>
+					<lpage>524</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0104-11692004000300010</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B8">
+				<label>8</label>
+				<mixed-citation>. Forthofer MS, Janz NK, Dodge JA, Clark NM. Gender differences in the associations of self esteem, stress and social support with functional health status among older adults with heart disease. <italic>J Women Aging.</italic> 2001;13(1):19-37. DOI:10.1300/J074v13n01_03</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Forthofer</surname>
+							<given-names>MS</given-names>
+						</name>
+						<name>
+							<surname>Janz</surname>
+							<given-names>NK</given-names>
+						</name>
+						<name>
+							<surname>Dodge</surname>
+							<given-names>JA</given-names>
+						</name>
+						<name>
+							<surname>Clark</surname>
+							<given-names>NM</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Gender differences in the associations of self esteem, stress and social support with functional health status among older adults with heart disease</article-title>
+					<source>J Women Aging</source>
+					<year>2001</year>
+					<volume>13</volume>
+					<issue>1</issue>
+					<fpage>19</fpage>
+					<lpage>37</lpage>
+					<pub-id pub-id-type="doi">10.1300/J074v13n01_03</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B9">
+				<label>9</label>
+				<mixed-citation>. Hale CJ, Hannum JW, Espelage DL. Social support and physical health: the importance of belonging. <italic>J Am Col Health.</italic> 2005;53(6):276-84. DOI:10.3200/JACH.53.6.276-284</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Hale</surname>
+							<given-names>CJ</given-names>
+						</name>
+						<name>
+							<surname>Hannum</surname>
+							<given-names>JW</given-names>
+						</name>
+						<name>
+							<surname>Espelage</surname>
+							<given-names>DL</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Social support and physical health: the importance of belonging</article-title>
+					<source>J Am Col Health</source>
+					<year>2005</year>
+					<volume>53</volume>
+					<issue>6</issue>
+					<fpage>276</fpage>
+					<lpage>284</lpage>
+					<pub-id pub-id-type="doi">10.3200/JACH.53.6.276-284</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B10">
+				<label>10</label>
+				<mixed-citation>. Katona C, Livingston G, Manela M, Leek C, Mullan E, Orrell M,  et al. The symptomatology of depression in the elderly. <italic>Int Clin Psychopharmacol.</italic> 1997;12(Suppl7):19-23. DOI:10.1097/00004850-199712007-00004</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Katona</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Livingston</surname>
+							<given-names>G</given-names>
+						</name>
+						<name>
+							<surname>Manela</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Leek</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Mullan</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Orrell</surname>
+							<given-names>M</given-names>
+						</name>
+						<etal>et al</etal>
+					</person-group>
+					<article-title xml:lang="en">The symptomatology of depression in the elderly</article-title>
+					<source>Int Clin Psychopharmacol</source>
+					<year>1997</year>
+					<volume>12</volume>
+					<supplement>7</supplement>
+					<fpage>19</fpage>
+					<lpage>23</lpage>
+					<pub-id pub-id-type="doi">10.1097/00004850-199712007-00004</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B11">
+				<label>11</label>
+				<mixed-citation>. Lee Y. The predictive value of self-assessed general, physical, and mental health on functional decline and mortality in older adults. <italic>J Epidemiol Comm Health</italic>. 2000;54(2):123-9. DOI:10.1136/jech.54.2.123</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Lee</surname>
+							<given-names>Y</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">The predictive value of self-assessed general, physical, and mental health on functional decline and mortality in older adults</article-title>
+					<source>J Epidemiol Comm Health</source>
+					<year>2000</year>
+					<volume>54</volume>
+					<issue>2</issue>
+					<fpage>123</fpage>
+					<lpage>129</lpage>
+					<pub-id pub-id-type="doi">10.1136/jech.54.2.123</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B12">
+				<label>12</label>
+				<mixed-citation>. Lima MT, Silva RS, Ramos LR. Fatores associados à sintomatologia depressiva numa coorte urbana de idosos. <italic>J Bras Psiquiatr.</italic> 2009;58(1):1-7. DOI:10.1590/S0047-20852009000100001</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Lima</surname>
+							<given-names>MT</given-names>
+						</name>
+						<name>
+							<surname>Silva</surname>
+							<given-names>RS</given-names>
+						</name>
+						<name>
+							<surname>Ramos</surname>
+							<given-names>LR</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Fatores associados à sintomatologia depressiva numa coorte urbana de idosos</article-title>
+					<source>J Bras Psiquiatr</source>
+					<year>2009</year>
+					<volume>58</volume>
+					<issue>1</issue>
+					<fpage>1</fpage>
+					<lpage>7</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0047-20852009000100001</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B13">
+				<label>13</label>
+				<mixed-citation>. Lopes FL, Tier CG, Lunardi Filho W, Santos SSC. Diagnóstico de enfermagem de idosos residentes em uma instituição de longa permanência (ILP). <italic>Cienc Cuid Saude.</italic> 2007;6(1):59-67. DOI:10.1590/S0080-62342007000300006</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Lopes</surname>
+							<given-names>FL</given-names>
+						</name>
+						<name>
+							<surname>Tier</surname>
+							<given-names>CG</given-names>
+						</name>
+						<name>
+							<surname>Lunardi</surname>
+							<given-names>W</given-names>
+							<suffix>Filho</suffix>
+						</name>
+						<name>
+							<surname>Santos</surname>
+							<given-names>SSC</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Diagnóstico de enfermagem de idosos residentes em uma instituição de longa permanência (ILP)</article-title>
+					<source>Cienc Cuid Saude</source>
+					<year>2007</year>
+					<volume>6</volume>
+					<issue>1</issue>
+					<fpage>59</fpage>
+					<lpage>67</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0080-62342007000300006</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B14">
+				<label>14</label>
+				<mixed-citation>. NIH Consensus Development Panel on Depression in Late Life. Diagnosis and treatment of depression. <italic>JAMA.</italic> 1992;268(8):1018-24. DOI:10.1001/jama.1992.03490080092032</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<collab>NIH Consensus Development Panel on Depression in Late Life</collab>
+					</person-group>
+					<article-title xml:lang="en">Diagnosis and treatment of depression</article-title>
+					<source>JAMA</source>
+					<year>1992</year>
+					<volume>268</volume>
+					<issue>8</issue>
+					<fpage>1018</fpage>
+					<lpage>1024</lpage>
+					<pub-id pub-id-type="doi">10.1001/jama.1992.03490080092032</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B15">
+				<label>15</label>
+				<mixed-citation>. Paradela EM, Lourenço RA, Veras RP. Validação da escala de depressão geriátrica em um ambulatório geral. <italic>Rev Saude Publica.</italic> 2005;39(6):918-23. DOI:10.1590/S0034-89102005000600008</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Paradela</surname>
+							<given-names>EM</given-names>
+						</name>
+						<name>
+							<surname>Lourenço</surname>
+							<given-names>RA</given-names>
+						</name>
+						<name>
+							<surname>Veras</surname>
+							<given-names>RP</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Validação da escala de depressão geriátrica em um ambulatório geral</article-title>
+					<source>Rev Saude Publica</source>
+					<year>2005</year>
+					<volume>39</volume>
+					<issue>6</issue>
+					<fpage>918</fpage>
+					<lpage>923</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0034-89102005000600008</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B16">
+				<label>16</label>
+				<mixed-citation>. Parahyba MI, Veras R, Melzer D. Incapacidade funcional entre as mulheres idosas no Brasil. <italic>Rev Saude Publica.</italic> 2005;39(3):383-91. DOI:10.1590/S0034-89102005000300008</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Parahyba</surname>
+							<given-names>MI</given-names>
+						</name>
+						<name>
+							<surname>Veras</surname>
+							<given-names>R</given-names>
+						</name>
+						<name>
+							<surname>Melzer</surname>
+							<given-names>D</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Incapacidade funcional entre as mulheres idosas no Brasil</article-title>
+					<source>Rev Saude Publica</source>
+					<year>2005</year>
+					<volume>39</volume>
+					<issue>3</issue>
+					<fpage>383</fpage>
+					<lpage>391</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0034-89102005000300008</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B17">
+				<label>17</label>
+				<mixed-citation>. Prina AM, Deeg D, Brayne C, Beekman A, Huisman M. The association between depressive symptoms and non-psychiatric hospitalization in older adults. <italic>PloS One.</italic> 2012;7(4):e34821. DOI:10.1371/journal.pone.0034821</mixed-citation>
+				<element-citation publication-type="journal" publisher-type="'">
+					<person-group>
+						<name>
+							<surname>Prina</surname>
+							<given-names>AM</given-names>
+						</name>
+						<name>
+							<surname>Deeg</surname>
+							<given-names>D</given-names>
+						</name>
+						<name>
+							<surname>Brayne</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Beekman</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Huisman</surname>
+							<given-names>M</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">The association between depressive symptoms and non-psychiatric hospitalization in older adults</article-title>
+					<source>PloS One</source>
+					<year>2012</year>
+					<volume>7</volume>
+					<issue>4</issue>
+					<elocation-id>e34821</elocation-id>
+					<pub-id pub-id-type="doi">10.1371/journal.pone.0034821</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B18">
+				<label>18</label>
+				<mixed-citation>. Prince MJ, Harwood RH, Blizard RA, Thomas A, Mann AH. Social support deficits, loneliness and life events as risk factors for depression in old age. The Gospel Oak Project VI. <italic>Psychol Med.</italic> 1997;27(2):323-32. DOI:10.1017/S0033291796004485</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Prince</surname>
+							<given-names>MJ</given-names>
+						</name>
+						<name>
+							<surname>Harwood</surname>
+							<given-names>RH</given-names>
+						</name>
+						<name>
+							<surname>Blizard</surname>
+							<given-names>RA</given-names>
+						</name>
+						<name>
+							<surname>Thomas</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Mann</surname>
+							<given-names>AH</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Social support deficits, loneliness and life events as risk factors for depression in old age. The Gospel Oak Project VI</article-title>
+					<source>Psychol Med</source>
+					<year>1997</year>
+					<volume>27</volume>
+					<issue>2</issue>
+					<fpage>323</fpage>
+					<lpage>332</lpage>
+					<pub-id pub-id-type="doi">10.1017/S0033291796004485</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B19">
+				<label>19</label>
+				<mixed-citation>. Pruchno R, Wilson-Genderson M, Cartwright F. Self-rated health and depressive symptoms in patients with end-stage renal disease and their spouses: a longitudinal dyadic analysis of late-life marriages. <italic>Gerontol B Psychol Sci Soc Sci. </italic>2009;64(2):212-21. DOI:10.1093/geronb/gbp006</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Pruchno</surname>
+							<given-names>R</given-names>
+						</name>
+						<name>
+							<surname>Wilson-Genderson</surname>
+							<given-names>M</given-names>
+						</name>
+						<name>
+							<surname>Cartwright</surname>
+							<given-names>F</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Self-rated health and depressive symptoms in patients with end-stage renal disease and their spouses: a longitudinal dyadic analysis of late-life marriages</article-title>
+					<source>Gerontol B Psychol Sci Soc Sci</source>
+					<year>2009</year>
+					<volume>64</volume>
+					<issue>2</issue>
+					<fpage>212</fpage>
+					<lpage>221</lpage>
+					<pub-id pub-id-type="doi">10.1093/geronb/gbp006</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B20">
+				<label>20</label>
+				<mixed-citation>. Santiago LM, Novaes CO, Mattos IE. Self-rated health (SRH) as a predictor of mortality in elderly men living in a medium-size city in Brazil. <italic>Arch Gerontol Geriatr.</italic> 2010;51(3):e88-93. DOI:10.1016/j.archger.2010.01.004</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Santiago</surname>
+							<given-names>LM</given-names>
+						</name>
+						<name>
+							<surname>Novaes</surname>
+							<given-names>CO</given-names>
+						</name>
+						<name>
+							<surname>Mattos</surname>
+							<given-names>IE</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Self-rated health (SRH) as a predictor of mortality in elderly men living in a medium-size city in Brazil</article-title>
+					<source>Arch Gerontol Geriatr</source>
+					<year>2010</year>
+					<volume>51</volume>
+					<issue>3</issue>
+					<fpage>e88</fpage>
+					<lpage>e93</lpage>
+					<pub-id pub-id-type="doi">10.1016/j.archger.2010.01.004</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B21">
+				<label>21</label>
+				<mixed-citation>. Santos JLF, Lebrão ML, Duarte YAO, Lima FD. Functional performance of the elderly instrumental activities of daily living: an analysis in the municipality of São Paulo, Brasil. <italic>Cad Saude Publica.</italic> 2008;24(4)879-86. DOI:10.1590/S0102-311X2008000400019</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Santos</surname>
+							<given-names>JLF</given-names>
+						</name>
+						<name>
+							<surname>Lebrão</surname>
+							<given-names>ML</given-names>
+						</name>
+						<name>
+							<surname>Duarte</surname>
+							<given-names>YAO</given-names>
+						</name>
+						<name>
+							<surname>Lima</surname>
+							<given-names>FD</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Functional performance of the elderly instrumental activities of daily living: an analysis in the municipality of São Paulo, Brasil</article-title>
+					<source>Cad Saude Publica</source>
+					<year>2008</year>
+					<volume>24</volume>
+					<issue>4</issue>
+					<fpage>879</fpage>
+					<lpage>886</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0102-311X2008000400019</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B22">
+				<label>22</label>
+				<mixed-citation>. Sass A, Gravena AAF, Pilger C, Mathias TAF, Marcon SS. Depressão em idosos inscritos no Programa de Controle de hipertensão arterial e diabetes mellitus. <italic>Acta Paul Enferm.</italic> 2012;25(1):80-5. DOI:10.1590/S0103-21002012000100014</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Sass</surname>
+							<given-names>A</given-names>
+						</name>
+						<name>
+							<surname>Gravena</surname>
+							<given-names>AAF</given-names>
+						</name>
+						<name>
+							<surname>Pilger</surname>
+							<given-names>C</given-names>
+						</name>
+						<name>
+							<surname>Mathias</surname>
+							<given-names>TAF</given-names>
+						</name>
+						<name>
+							<surname>Marcon</surname>
+							<given-names>SS</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="pt">Depressão em idosos inscritos no Programa de Controle de hipertensão arterial e diabetes mellitus</article-title>
+					<source>Acta Paul Enferm</source>
+					<year>2012</year>
+					<volume>25</volume>
+					<issue>1</issue>
+					<fpage>80</fpage>
+					<lpage>85</lpage>
+					<pub-id pub-id-type="doi">10.1590/S0103-21002012000100014</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B23">
+				<label>23</label>
+				<mixed-citation>. Sheik JA, Yesavage JA. Geriatric Depression Scale (GDS): recent findings and development of a shorter version. <italic>Clin Gerontol.</italic> 1986;37:819-20.</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Sheik</surname>
+							<given-names>JA</given-names>
+						</name>
+						<name>
+							<surname>Yesavage</surname>
+							<given-names>JA</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Geriatric Depression Scale (GDS): recent findings and development of a shorter version</article-title>
+					<source>Clin Gerontol</source>
+					<year>1986</year>
+					<volume>37</volume>
+					<fpage>819</fpage>
+					<lpage>820</lpage>
+				</element-citation>
+			</ref>
+			<ref id="B24">
+				<label>24</label>
+				<mixed-citation>. Shin JH, Do YK, Maselko J, Brouwer RJ, Song SW, Ostbye T. Predictors of and health services utilization related to depressive symptoms among elderly Koreans. <italic>Soc Sci Med. </italic>2012;75(1):179-85. DOI:10.1016/j.socscimed.2012.03.012</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Shin</surname>
+							<given-names>JH</given-names>
+						</name>
+						<name>
+							<surname>Do</surname>
+							<given-names>YK</given-names>
+						</name>
+						<name>
+							<surname>Maselko</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Brouwer</surname>
+							<given-names>RJ</given-names>
+						</name>
+						<name>
+							<surname>Song</surname>
+							<given-names>SW</given-names>
+						</name>
+						<name>
+							<surname>Ostbye</surname>
+							<given-names>T</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Predictors of and health services utilization related to depressive symptoms among elderly Koreans</article-title>
+					<source>Soc Sci Med</source>
+					<year>2012</year>
+					<volume>75</volume>
+					<issue>1</issue>
+					<fpage>179</fpage>
+					<lpage>185</lpage>
+					<pub-id pub-id-type="doi">10.1016/j.socscimed.2012.03.012</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B25">
+				<label>25</label>
+				<mixed-citation>. Skaner Y, Nilsson GH, Sundquist K, Hassler E, Krakau I. Self-rated health, symptoms of depression and general symptoms at 3 and 12 months after a first-ever stroke: a municipality-based study in Sweden. <italic>BMC Fam Pract.</italic> 2007;8:61. DOI:10.1186/1471-2296-8-61</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Skaner</surname>
+							<given-names>Y</given-names>
+						</name>
+						<name>
+							<surname>Nilsson</surname>
+							<given-names>GH</given-names>
+						</name>
+						<name>
+							<surname>Sundquist</surname>
+							<given-names>K</given-names>
+						</name>
+						<name>
+							<surname>Hassler</surname>
+							<given-names>E</given-names>
+						</name>
+						<name>
+							<surname>Krakau</surname>
+							<given-names>I</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Self-rated health, symptoms of depression and general symptoms at 3 and 12 months after a first-ever stroke: a municipality-based study in Sweden</article-title>
+					<source>BMC Fam Pract</source>
+					<year>2007</year>
+					<volume>8</volume>
+					<size units="pages">61</size>
+					<pub-id pub-id-type="doi">10.1186/1471-2296-8-61</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B26">
+				<label>26</label>
+				<mixed-citation>. Stek ML, Vinkers DJ, Gussekloo J, Van der Mast RC, Beekman ATF, Westendorp JW. Natural history of depression in the oldest old population-based prospective study. <italic>British J Psych.</italic> 2006;188:65-9. DOI:10.1192/bjp.188.1.65</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Stek</surname>
+							<given-names>ML</given-names>
+						</name>
+						<name>
+							<surname>Vinkers</surname>
+							<given-names>DJ</given-names>
+						</name>
+						<name>
+							<surname>Gussekloo</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Van der Mast</surname>
+							<given-names>RC</given-names>
+						</name>
+						<name>
+							<surname>Beekman</surname>
+							<given-names>ATF</given-names>
+						</name>
+						<name>
+							<surname>Westendorp</surname>
+							<given-names>JW</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Natural history of depression in the oldest old population-based prospective study</article-title>
+					<source>British J Psych</source>
+					<year>2006</year>
+					<volume>188</volume>
+					<fpage>65</fpage>
+					<lpage>69</lpage>
+					<pub-id pub-id-type="doi">10.1192/bjp.188.1.65</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B27">
+				<label>27</label>
+				<mixed-citation>. Stel VS, Smit JH, Pluijm SMF, Lips P. Consequences of falling in older men and women and risk factors for health service use and functional decline. <italic>Age Ageing. </italic>2004;33(1):58-65. DOI:10.1093/ageing/afh028</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Stel</surname>
+							<given-names>VS</given-names>
+						</name>
+						<name>
+							<surname>Smit</surname>
+							<given-names>JH</given-names>
+						</name>
+						<name>
+							<surname>Pluijm</surname>
+							<given-names>SMF</given-names>
+						</name>
+						<name>
+							<surname>Lips</surname>
+							<given-names>P</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Consequences of falling in older men and women and risk factors for health service use and functional decline</article-title>
+					<source>Age Ageing</source>
+					<year>2004</year>
+					<volume>33</volume>
+					<issue>1</issue>
+					<fpage>58</fpage>
+					<lpage>65</lpage>
+					<pub-id pub-id-type="doi">10.1093/ageing/afh028</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B28">
+				<label>28</label>
+				<mixed-citation>. Tsai YF, Chung JWY, Wong TKS, Huang CM. Comparison of the prevalence and risk factors for depressive symptoms among elderly nursing home residents in Taiwan and Hong Kong. <italic>Int J Geriatr Psychiatry.</italic> 2005;20(4):315-21. DOI:10.1002/gps.1281</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Tsai</surname>
+							<given-names>YF</given-names>
+						</name>
+						<name>
+							<surname>Chung</surname>
+							<given-names>JWY</given-names>
+						</name>
+						<name>
+							<surname>Wong</surname>
+							<given-names>TKS</given-names>
+						</name>
+						<name>
+							<surname>Huang</surname>
+							<given-names>CM</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Comparison of the prevalence and risk factors for depressive symptoms among elderly nursing home residents in Taiwan and Hong Kong</article-title>
+					<source>Int J Geriatr Psychiatry</source>
+					<year>2005</year>
+					<volume>20</volume>
+					<issue>4</issue>
+					<fpage>315</fpage>
+					<lpage>321</lpage>
+					<pub-id pub-id-type="doi">10.1002/gps.1281</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B29">
+				<label>29</label>
+				<mixed-citation>. Wallhagen MI, Strawbridge WJ, Shema SJ, Kurata J, Kaplan JA. Comparative impact of hearing and vision impairment on subsequent functioning. <italic>J Am Geriatr Soc.</italic> 2001;49(8):1086-92. DOI:10.1046/j.1532-5415.2001.49213.x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Wallhagen</surname>
+							<given-names>MI</given-names>
+						</name>
+						<name>
+							<surname>Strawbridge</surname>
+							<given-names>WJ</given-names>
+						</name>
+						<name>
+							<surname>Shema</surname>
+							<given-names>SJ</given-names>
+						</name>
+						<name>
+							<surname>Kurata</surname>
+							<given-names>J</given-names>
+						</name>
+						<name>
+							<surname>Kaplan</surname>
+							<given-names>JA</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Comparative impact of hearing and vision impairment on subsequent functioning</article-title>
+					<source>J Am Geriatr Soc</source>
+					<year>2001</year>
+					<volume>49</volume>
+					<issue>8</issue>
+					<fpage>1086</fpage>
+					<lpage>1092</lpage>
+					<pub-id pub-id-type="doi">10.1046/j.1532-5415.2001.49213.x</pub-id>
+				</element-citation>
+			</ref>
+			<ref id="B30">
+				<label>30</label>
+				<mixed-citation>. Wang L, van Belle G, Kukull WB, Larson EB. Predictors of functional change: a longitudinal study of nondemented people aged 65 and older. <italic>J Am Geriatr Soc. </italic>2002;50(9):1525-34. DOI:10.1046/j.1532-5415.2002.50408.x</mixed-citation>
+				<element-citation publication-type="journal">
+					<person-group>
+						<name>
+							<surname>Wang</surname>
+							<given-names>L</given-names>
+						</name>
+						<name>
+							<surname>van Belle</surname>
+							<given-names>G</given-names>
+						</name>
+						<name>
+							<surname>Kukull</surname>
+							<given-names>WB</given-names>
+						</name>
+						<name>
+							<surname>Larson</surname>
+							<given-names>EB</given-names>
+						</name>
+					</person-group>
+					<article-title xml:lang="en">Predictors of functional change: a longitudinal study of nondemented people aged 65 and older</article-title>
+					<source>J Am Geriatr Soc</source>
+					<year>2002</year>
+					<volume>50</volume>
+					<issue>9</issue>
+					<fpage>1525</fpage>
+					<lpage>1534</lpage>
+					<pub-id pub-id-type="doi" specific-use="0">10.1046/j.1532-5415.2002.50408.x</pub-id>
+				</element-citation>
+			</ref>
+		</ref-list>
+		<fn-group>
+			<fn id="fn1">
+				<label>a</label>
+				<p> Ministério da Saúde. DATASUS. Informações de Saúde. Brasília (DF); 2012 [cited 2013 Jan]. Available from: <ext-link ext-link-type="uri" xlink:href="http://www2.datasus.gov.br/DATASUS/index.php?area=02">http://www2.datasus.gov.br/DATASUS/index.php?area=02</ext-link>
+				</p>
+			</fn>
+			<fn id="fn2">
+				<label>b</label>
+				<p> Fundação Oswaldo Cruz. Escola Nacional de Saúde Pública ‘Sérgio Arouca”. Condições de saúde de idosos institucionalizados: uma proposta de avaliação de necessidades e utilização da Classificação Internacional de Funcionalidade, Incapacidade e Saúde para planejamento de ações de prevenção e reabilitação. Rio de Janeiro; 2010 [cited 2013 Jan]. Available from: <ext-link ext-link-type="uri" xlink:href="http://www.ensp.fiocruz.br/portal-ensp/pos-graduacao/site/projetos-de-pesquisa/detalhes/?site=2&amp;id=3259">http://www.ensp.fiocruz.br/portal-ensp/pos-graduacao/site/projetos-de-pesquisa/detalhes/?site=2&amp;id=3259</ext-link>
+				</p>
+			</fn>
+			<fn id="fn3">
+				<label>c</label>
+				<p> Sociedade Brasileira de Geriatria e Gerontologia. Manual de funcionamento para as instituições de longa permanência para idosos. São Paulo: Imprensa Oficial; 2003.</p>
+			</fn>
+			<fn id="fn4">
+				<label>d</label>
+				<p> Peixoto HG. Estado Nutricional e seus fatores interferentes em pacientes com transtornos depressivos [dissertação de mestrado]. Brasília (DF): Faculdade de Ciências da Saúde da UnB; 2006.</p>
+			</fn>
+			<fn id="fn5" fn-type="financial-disclosure">
+				<p>This study was supported by the <italic>Fundação para o Desenvolvimento Científico e Tecnológico em Saúde</italic> (FIOTEC – Process ENSP-013-LIV10-2-5-33 –<italic> Programa Inova </italic>ENSP).</p>
+			</fn>
+		</fn-group>
+	</back>
+</article>
