@@ -749,15 +749,17 @@ class UseLicenseTests(TestCase):
 
 
 class ArticleTests(TestCase):
-    sample = u"""<article specific-use="sps-1.2">
+    sample = u"""<article article-type="research-article" specific-use="sps-1.2">
                    <front>
                      <journal-meta>
                        <journal-title-group>
                          <journal-title>Revista de Saúde Pública</journal-title>
                        </journal-title-group>
                        <issn pub-type="ppub">1032-289X</issn>
+                       <issn pub-type="epub">1032-2898</issn>
                      </journal-meta>
                      <article-meta>
+                       <article-id pub-id-type="doi">10.1590/abcd</article-id>
                        <volume>1</volume>
                        <issue>10</issue>
                        <pub-date>
@@ -770,21 +772,29 @@ class ArticleTests(TestCase):
                  </article>"""
 
     def test_fields_are_created_on_save(self):
+        auto_fields = ['journal_title', 'domain_key', 'aid', 'issn_ppub',
+                'issn_epub', 'xml_version', 'article_type', 'doi']
+
         article = models.Article(xml=self.sample)
 
-        self.assertEqual(article.journal_title, '')
-        self.assertEqual(article.domain_key, '')
-        self.assertEqual(article.aid, '')
+        for field in auto_fields:
+            self.assertEqual(getattr(article, field), '')
 
         article.save()
 
-        self.assertTrue(article.journal_title)
-        self.assertTrue(article.domain_key)
-        self.assertTrue(article.aid)
+        self.assertEquals(article.journal_title, u'Revista de Saúde Pública')
+        self.assertEquals(article.issn_ppub, u'1032-289X')
+        self.assertEquals(article.issn_epub, u'1032-2898')
+        self.assertEquals(article.xml_version, u'sps-1.2')
+        self.assertEquals(article.doi, u'10.1590/abcd')
 
     def test_is_visible_defaults_to_true(self):
         article = models.Article()
         self.assertTrue(article.is_visible)
+
+    def test_articles_linkage_is_pending_defaults_to_false(self):
+        article = models.Article()
+        self.assertFalse(article.articles_linkage_is_pending)
 
     def test_articles_are_unique(self):
         from django.db import IntegrityError
@@ -993,6 +1003,37 @@ class ArticleTests(TestCase):
         article = models.Article(xml=sample)
         self.assertFalse(article._get_is_aop())
 
+    def test_related_articles_detection(self):
+        sample = u"""<article specific-use="sps-1.2"
+                              article-type="correction"
+                              xmlns:xlink="http://www.w3.org/1999/xlink">
+                       <front>
+                         <journal-meta>
+                           <journal-title-group>
+                             <journal-title>Revista de Saúde Pública</journal-title>
+                           </journal-title-group>
+                           <issn pub-type="ppub">1032-289X</issn>
+                         </journal-meta>
+                         <article-meta>
+                           <article-id pub-id-type="other">4809</article-id>
+                           <volume>00</volume>
+                           <issue>00</issue>
+                           <pub-date>
+                             <year>2014</year>
+                           </pub-date>
+                           <fpage>00</fpage>
+                           <lpage>00</lpage>
+                           <related-article related-article-type="corrected-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142998"
+                                            ext-link-type="doi"/>
+                         </article-meta>
+                       </front>
+                     </article>"""
+        article = models.Article(xml=sample)
+        article.save()
+        self.assertTrue(article.articles_linkage_is_pending)
+
 
 class ArticleXpathsTests(TestCase):
 
@@ -1108,6 +1149,64 @@ class ArticleXpathsTests(TestCase):
         self.assertEqual(
                 article.xml.xpath(models.Article.XPaths.AOP_ID)[0].text,
                 u'xpto')
+
+    def test_related_articles(self):
+        sample = u"""<article xmlns:xlink="http://www.w3.org/1999/xlink">
+                       <front>
+                         <article-meta>
+                           <related-article related-article-type="corrected-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142998"
+                                            ext-link-type="doi"/>
+                           <related-article related-article-type="corrected-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142999"
+                                            ext-link-type="doi"/>
+                         </article-meta>
+                       </front>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        rel_articles = article.xml.xpath(models.Article.XPaths.RELATED_CORRECTED_ARTICLES)
+
+        self.assertEqual(len(rel_articles), 2)
+        self.assertEqual(
+                rel_articles[0].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142998')
+        self.assertEqual(
+                rel_articles[1].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142999')
+
+    def test_related_articles_at_response(self):
+        sample = u"""<article xmlns:xlink="http://www.w3.org/1999/xlink">
+                       <front>
+                         <article-meta>
+                         </article-meta>
+                       </front>
+                       <response>
+                         <front-stub>
+                           <related-article related-article-type="commentary-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142998"
+                                            ext-link-type="doi"/>
+                           <related-article related-article-type="commentary-article"
+                                            id="ra1"
+                                            xlink:href="10.1590/abd1806-4841.20142999"
+                                            ext-link-type="doi"/>
+                         </front-stub>
+                       </response>
+                     </article>"""
+
+        article = models.Article(xml=sample)
+        rel_articles = article.xml.xpath(models.Article.XPaths.RELATED_COMMENTARY_ARTICLES)
+
+        self.assertEqual(len(rel_articles), 2)
+        self.assertEqual(
+                rel_articles[0].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142998')
+        self.assertEqual(
+                rel_articles[1].attrib['{http://www.w3.org/1999/xlink}href'],
+                '10.1590/abd1806-4841.20142999')
 
 
 class ArticleDomainKeyTests(TestCase):

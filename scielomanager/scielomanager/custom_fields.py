@@ -55,18 +55,26 @@ class ContentTypeRestrictedFileField(models.FileField):
 
 
 class XMLSPS(object):
-    def __init__(self, xml_root_string):
-        if isinstance(xml_root_string, str):
-            xml_string = xml_root_string
-        elif isinstance(xml_root_string, unicode):
-            xml_string = xml_root_string.encode('utf-8')
+    def __init__(self, data):
+        if isinstance(data, str):
+            xml_string = data
+        elif isinstance(data, unicode):
+            xml_string = data.encode('utf-8')
         else:
             raise TypeError('xml must be str or unicode')
 
         self.root_etree = etree.parse(io.BytesIO(xml_string))
 
     def __repr__(self):
-        return etree.tostring(self.root_etree, encoding='utf-8', xml_declaration=True)
+        return u'<%s xml_etree=%s>' % (self.__class__.__name__,
+                repr(self.root_etree))
+
+    def __unicode__(self):
+        return str(self).decode('utf-8')
+
+    def __str__(self):
+        return etree.tostring(self.root_etree, encoding=u'utf-8',
+                xml_declaration=True)
 
     def __getattr__(self, name):
         return getattr(self.root_etree, name)
@@ -78,12 +86,12 @@ class XMLSPSField(TextField):
     __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
-        if not value:
-            return None
-        elif isinstance(value, XMLSPS):
+        if isinstance(value, XMLSPS):
             return value
-        else:
-            return XMLSPS(value)
+        elif bool(value) is False:
+            return None
+
+        return XMLSPS(value)
 
     def get_prep_value(self, value):
         return str(value)

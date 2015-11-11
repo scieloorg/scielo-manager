@@ -15,6 +15,10 @@ with open(os.path.join(_HERE, 'xml_samples', '0034-8910-rsp-48-2-0216.xml')) as 
     SAMPLE_XML = xml_file.read()
 
 
+with open(os.path.join(_HERE, 'xml_samples', '0034-8910-rsp-48-2-0216_related.xml')) as xml_file:
+    SAMPLE_XML_RELATED = xml_file.read()
+
+
 class UserFactory(factory.Factory):
     FACTORY_FOR = models.User
 
