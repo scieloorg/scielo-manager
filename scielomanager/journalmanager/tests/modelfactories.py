@@ -188,15 +188,6 @@ class SectionTitleFactory(factory.Factory):
     section = factory.SubFactory(SectionFactory)
 
 
-class DataChangeEventFactory(factory.Factory):
-    FACTORY_FOR = models.DataChangeEvent
-
-    user = factory.SubFactory(UserFactory)
-    content_object = factory.SubFactory(JournalFactory)
-    collection = factory.SubFactory(CollectionFactory)
-    event_type = 'added'
-
-
 class RegularPressReleaseFactory(factory.Factory):
     FACTORY_FOR = models.RegularPressRelease
 

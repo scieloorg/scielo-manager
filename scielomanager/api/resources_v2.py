@@ -304,42 +304,6 @@ class JournalResource(ModelResource):
             for subject_category in bundle.obj.subject_categories.all()]
 
 
-class DataChangeEventResource(ModelResource):
-    collection_uri = fields.ForeignKey(CollectionResource, 'collection')
-    seq = fields.IntegerField(attribute='pk', readonly=True)
-    object_uri = GenericForeignKeyField({
-        models.Journal: JournalResource,
-        models.Issue: IssueResource,
-    }, 'content_object')
-
-    class Meta(ApiKeyAuthMeta):
-        resource_name = 'changes'
-        queryset = models.DataChangeEvent.objects.all()
-        excludes = [
-            'object_id',
-            'id',
-        ]
-        allowed_methods = ['get', ]
-
-    def build_filters(self, filters=None):
-        """
-        Custom filter that retrieves data by since.
-        """
-        if filters is None:
-            filters = {}
-
-        query_filters = {}
-
-        orm_filters = super(DataChangeEventResource, self).build_filters(filters)
-
-        if 'since' in filters:
-            query_filters['pk__gte'] = int(filters['since'])
-
-        orm_filters['pk__in'] = models.DataChangeEvent.objects.filter(**query_filters)
-
-        return orm_filters
-
-
 class PressReleaseTranslationResource(ModelResource):
     language = fields.CharField(readonly=True)
 

@@ -1073,20 +1073,6 @@ class PendedValue(models.Model):
     value = models.TextField()
 
 
-class DataChangeEvent(models.Model):
-    """
-    Tracks data changes to make possible for consumer apps to know
-    what to sync.
-    """
-    changed_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
-    event_type = models.CharField(max_length=16, choices=EVENT_TYPES)
-    collection = models.ForeignKey(Collection)
-
-
 class PressRelease(models.Model):
     """
     Represents a press-release bound to a Journal.

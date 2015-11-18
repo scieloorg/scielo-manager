@@ -19,7 +19,6 @@ v1_api_resources = [
     resources_v1.CollectionResource(),
     resources_v1.IssueResource(),
     resources_v1.SectionResource(),
-    resources_v1.DataChangeEventResource(),
     resources_v1.PressReleaseResource(),
     resources_v1.AheadPressReleaseResource(),
 ]
@@ -38,7 +37,6 @@ v2_api_resources = [
     resources_v2.CollectionResource(),
     resources_v2.IssueResource(),
     resources_v2.SectionResource(),
-    resources_v2.DataChangeEventResource(),
     resources_v2.PressReleaseResource(),
     resources_v2.AheadPressReleaseResource(),
     resources_v2.PressReleaseTranslationResource(),

@@ -798,62 +798,6 @@ class SectionsRestAPITest(WebTest):
         self.assertEqual(response.status_code, 401)
 
 
-class ChangesRestAPITest(WebTest):
-
-    def setUp(self):
-        self.user = auth.UserF(is_active=True)
-        self.extra_environ = _make_auth_environ(self.user.username,
-            self.user.api_key.key)
-
-    def test_changes_index(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.get('/api/v1/changes/',
-            extra_environ=self.extra_environ)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('objects' in response.content)
-
-    def test_since_filter(self):
-        seqs = []
-        for i in range(5):
-            event = modelfactories.DataChangeEventFactory.create()
-            seqs.append(event.pk)
-
-        response = self.app.get('/api/v1/changes/?since=%s' % seqs[1],
-            extra_environ=self.extra_environ)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('objects' in response.content)
-        self.assertEqual(len(json.loads(response.content)['objects']), 4)
-
-    def test_post_data(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.post('/api/v1/changes/',
-            extra_environ=self.extra_environ, status=405)
-
-        self.assertEqual(response.status_code, 405)
-
-    def test_put_data(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.put('/api/v1/changes/',
-            extra_environ=self.extra_environ, status=405)
-
-        self.assertEqual(response.status_code, 405)
-
-    def test_del_data(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.delete('/api/v1/changes/',
-            extra_environ=self.extra_environ, status=405)
-
-        self.assertEqual(response.status_code, 405)
-
-    def test_access_denied_for_unauthenticated_users(self):
-        event = modelfactories.DataChangeEventFactory.create()
-        response = self.app.get('/api/v1/changes/', status=401)
-
-        self.assertEqual(response.status_code, 401)
-
-
 class PressReleaseRestAPITest(WebTest):
 
     def setUp(self):

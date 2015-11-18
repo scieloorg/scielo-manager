@@ -669,13 +669,6 @@ def add_journal(request, journal_id=None):
                     if request.POST.get('form_hash', None) and request.POST['form_hash'] != 'None':
                         models.PendedForm.objects.get(form_hash=request.POST['form_hash']).delete()
 
-                    # record the event
-                    models.DataChangeEvent.objects.create(
-                        user=request.user,
-                        content_object=saved_journal,
-                        collection=models.Collection.userobjects.active(),
-                        event_type='updated' if journal_id else 'added'
-                    )
                     return HttpResponseRedirect(reverse('journal.dash', args=[saved_journal.id]))
             else:
                 messages.error(request, MSG_FORM_MISSING)
@@ -884,14 +877,6 @@ def edit_issue(request, journal_id, issue_id=None):
 
             messages.info(request, MSG_FORM_SAVED)
 
-            # record the event
-            models.DataChangeEvent.objects.create(
-                user=request.user,
-                content_object=saved_issue,
-                collection=models.Collection.userobjects.get_query_set().get_default_by_user(request.user),
-                event_type='updated'
-            )
-
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
             messages.error(request, MSG_FORM_MISSING)
@@ -1013,14 +998,6 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
             helpers.log_create(**audit_data)
 
             messages.info(request, MSG_FORM_SAVED)
-
-            # record the event
-            models.DataChangeEvent.objects.create(
-                user=request.user,
-                content_object=saved_issue,
-                collection=models.Collection.userobjects.active(),
-                event_type='added'
-            )
 
             return HttpResponseRedirect(reverse('issue.index', args=[journal_id]))
         else:
