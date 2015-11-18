@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "1.2.0"
+const string VERSION = "1.3.0"
 
 
 #
@@ -51,6 +51,16 @@ exception BadRequestError {
 exception TimeoutError {
 }
 
+/*
+ * Representa a relação entre artigos.
+ *
+ * Esta relação é comumente estabelecida entre artigos e suas erratas, onde 
+ * o campo `type` leva o valor `correction`.
+ */
+struct RelatedArticle {
+    1: required string aid;
+    2: optional string type;
+}
 
 /*
  * Article representa um documento XML em conformidade com a especificação 
@@ -76,6 +86,8 @@ struct Article {
     13: optional bool is_aop;
     14: required string source;
     15: optional string timestamp;
+    16: optional list<RelatedArticle> links_to;
+    17: optional list<RelatedArticle> referrers;
 }
 
 /*
