@@ -6,6 +6,7 @@ Interface do connector tipo `Storage`:
     - scan(query: str) -> str
     - scroll(scroll_id: str) -> (str, list)
 """
+import os
 import logging
 import functools
 
@@ -26,6 +27,16 @@ ES_SCROLL_TIMEOUT = '30s'
 ES_NODES = tools.get_setting_or_raise('ELASTICSEARCH_NODES')
 ES_ARTICLE_INDEX_NAME = tools.get_setting_or_raise('ES_ARTICLE_INDEX_NAME')
 ES_ARTICLE_DOC_TYPE = tools.get_setting_or_raise('ES_ARTICLE_DOC_TYPE')
+
+_CWD = os.path.dirname(os.path.abspath(__file__))
+ES_ARTICLE_MAPPING_PATH = os.path.join(_CWD, 'article_mapping.json')
+
+
+def _get_article_mapping():
+    with open(ES_ARTICLE_MAPPING_PATH, 'r') as mapping_file:
+        mapping_data = mapping_file.read()
+
+    return mapping_data
 
 
 def translate_exceptions(wrapped):
@@ -125,4 +136,20 @@ class _Elasticsearch(object):
                 results.append(source)
 
         return resp.get('_scroll_id'), results
+
+    @translate_exceptions
+    def delete_index(self):
+        """Remove o índice `self.index`.
+
+        Atenção: Além do índice, o mapping e todos os registros serão removidos!
+        """
+        _ = self.es_client.indices.delete(index=self.index)
+
+    @translate_exceptions
+    def create_index(self):
+        """Cria o índice `self.index`.
+        """
+        mapping_data = _get_article_mapping()
+
+        _ = self.es_client.indices.create(index=self.index, body=mapping_data)
 
