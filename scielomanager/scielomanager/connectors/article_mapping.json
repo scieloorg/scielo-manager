@@ -1,67 +1,69 @@
 {
-   "article": {
-      "_timestamp": {
-          "enabled": true,
-          "path": "timestamp"
-      },
-      "properties": {
-         "abbrev_journal_title": {
-            "type": "string"
-         },
-         "aid": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "article_type": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "doi": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "epub": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "head_subject": {
-            "type": "string"
-         },
-         "is_aop": {
-            "type": "boolean"
-         },
-         "issue": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "pid": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "ppub": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "version": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "volume": {
-            "type": "string",
-            "index": "not_analyzed"
-         },
-         "year": {
-            "type": "date",
-            "format": "yyyy"
-         },
-         "links_to": {
-             "type": "nested",
-             "include_in_parent": true
-         },
-         "referrers": {
-             "type": "nested",
-             "include_in_parent": true
-         }
-      }
-   }
+    "mappings": {
+       "article": {
+          "_timestamp": {
+              "enabled": true,
+              "path": "timestamp"
+          },
+          "properties": {
+             "abbrev_journal_title": {
+                "type": "string"
+             },
+             "aid": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "article_type": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "doi": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "epub": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "head_subject": {
+                "type": "string"
+             },
+             "is_aop": {
+                "type": "boolean"
+             },
+             "issue": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "pid": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "ppub": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "version": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "volume": {
+                "type": "string",
+                "index": "not_analyzed"
+             },
+             "year": {
+                "type": "date",
+                "format": "yyyy"
+             },
+             "links_to": {
+                 "type": "nested",
+                 "include_in_parent": true
+             },
+             "referrers": {
+                 "type": "nested",
+                 "include_in_parent": true
+             }
+          }
+       }
+    }
 }
