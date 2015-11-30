@@ -59,12 +59,20 @@ def _gen_es_struct_from_article(article):
 
     article_as_octets = str(article.xml)
 
+    links_to = [{'aid': rel.link_to.aid, 'type': rel.link_type}
+                for rel in article.links_to.all()]
+
+    referrers = [{'aid': rel.referrer.aid, 'type': rel.link_type}
+                 for rel in article.referrers.all()]
+
     partial_struct = {
         'version': article.xml_version,
         'is_aop': article.is_aop,
         'source': article_as_octets,
         'aid': article.aid,
         'timestamp': datetime.datetime.now(),
+        'links_to': links_to,
+        'referrers': referrers,
     }
 
     es_struct.update(partial_struct)
@@ -262,36 +270,14 @@ def create_article_from_string(xml_string):
 
 
 @app.task(ignore_result=True)
-def rebuild_article_domain_key(article_pk):
-    """ Reconstroi a chave de domínio do artigo.
-
-    Atenção: Essa task não é utilizada pelo projeto e pode ser removida
-    a qualquer momento.
-    https://github.com/scieloorg/scielo-manager/issues/1183
+def mark_articles_as_dirty():
+    """ Marca todos os artigos para serem reindexados.
     """
-    try:
-        article = models.Article.objects.get(pk=article_pk)
-    except models.Article.DoesNotExist:
-        logger.info('Cannot find Article with pk: %s.', article_pk)
-        return None
+    with transaction.commit_on_success():
+        total_rows = models.Article.objects.all().update(es_is_dirty=True)
 
-    # a chave é gerada automaticamente ao salvar o objeto e
-    # o artigo não precisa ser reindexado no Elasticsearch
-    article.save()
+    logger.info('%s Articles were set as dirty to Elasticsearch.', total_rows)
 
-
-@app.task(ignore_result=True)
-def rebuild_articles_domain_key():
-    """ Dispara a tarefa de reconstrução da chave de domínio para todos artigos.
-
-    Atenção: Essa task não é utilizada pelo projeto e pode ser removida
-    a qualquer momento.
-    https://github.com/scieloorg/scielo-manager/issues/1183
-    """
-    articles = models.Article.objects.only('pk').all()
-
-    for article in articles:
-        rebuild_article_domain_key.delay(article.pk)
 
 
 @app.task(ignore_result=True)
