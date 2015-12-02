@@ -519,7 +519,8 @@ class Journal(models.Model):
     use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'), default=get_journals_default_use_license)
     collections = models.ManyToManyField('Collection', through='Membership')
     languages = models.ManyToManyField('Language',)
-    national_code = models.CharField(_('National Code'), max_length=64, null=True, blank=True)
+    ccn_code = models.CharField(_("CCN Code"), max_length=64, default='',
+            blank=True, help_text=_("The code of the journal at the CCN database."))
     abstract_keyword_languages = models.ManyToManyField('Language', related_name="abstract_keyword_languages", )
     subject_categories = models.ManyToManyField(SubjectCategory, verbose_name=_("Subject Categories"), related_name="journals", null=True)
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"), related_name="journals_migration_tmp", null=True)
