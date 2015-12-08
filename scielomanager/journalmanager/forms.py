@@ -233,7 +233,7 @@ class JournalForm(ModelForm):
     class Meta:
 
         model = models.Journal
-        exclude = ('collections')
+        exclude = ('collections', 'previous_ahead_documents', 'current_ahead_documents')
         # Overriding the default field types or widgets
         widgets = {
             'title': forms.TextInput(attrs={'class': 'span9'}),

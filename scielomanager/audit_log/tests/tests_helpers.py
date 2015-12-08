@@ -159,8 +159,6 @@ class AuditLogFromJournalFormTests(WebTest):
             'abstract_keyword_languages',
             'subject_categories',
             'study_areas',
-            'current_ahead_documents',
-            'previous_ahead_documents',
             'title',
             'title_iso',
             'short_title',
@@ -203,10 +201,5 @@ class AuditLogFromJournalFormTests(WebTest):
 
         # compare form data and stored new_values data
         for k,v in log_entry.new_values['form_data'].iteritems():
-            if k in ['previous_ahead_documents', 'current_ahead_documents']:
-                # when created, are set by default to None,
-                # and when saved to db are transformed to jsonfield, is saved as u'None'
-                self.assertEqual(log_entry.new_values['form_data'][k], u'None')
-            else:
-                form_value = form['journal-%s' % k].value
-                self.assertEqual(log_entry.new_values['form_data'][k], force_unicode(v))
+            form_value = form['journal-%s' % k].value
+            self.assertEqual(log_entry.new_values['form_data'][k], force_unicode(v))

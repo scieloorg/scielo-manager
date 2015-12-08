@@ -202,6 +202,7 @@ class JournalResource(ModelResource):
     study_areas = fields.ListField(readonly=True)
     pub_status = fields.CharField(readonly=True)
     pub_status_reason = fields.CharField(readonly=True)
+    national_code = fields.CharField(attribute='ccn_code', readonly=True)
 
     #recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
@@ -310,6 +311,11 @@ class JournalResource(ModelResource):
             col = current_user_active_collection()
 
         return bundle.obj.membership_info(col, 'reason')
+
+    def dehydrate(self, bundle):
+        # garantia de compatibilidade
+        bundle.data.pop('ccn_code', False)
+        return bundle
 
 
 class PressReleaseTranslationResource(ModelResource):

@@ -374,7 +374,7 @@ class JournalImport:
 
         # National Code
         if '20' in record:
-            journal.national_code = record['20'][0]
+            journal.ccn_code = record['20'][0]
 
         # Publication Frequency
         if '380' in record:
@@ -391,9 +391,6 @@ class JournalImport:
 
         if '340' in record:
             journal.alphabet = record['340'][0]
-
-        if '20' in record:
-            journal.national_code = record['20'][0]
 
         if '117' in record:
             journal.editorial_standard = record['117'][0]
