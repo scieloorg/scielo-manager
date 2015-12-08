@@ -220,6 +220,7 @@ class JournalResource(ModelResource):
     study_areas = fields.ListField(readonly=True)
     pub_status = fields.CharField(readonly=True)
     pub_status_reason = fields.CharField(readonly=True)
+    national_code = fields.CharField(attribute='ccn_code', readonly=True)
 
     # Relation fields
     creator = fields.ForeignKey(UserResource, 'creator')
@@ -302,6 +303,11 @@ class JournalResource(ModelResource):
     def dehydrate_subject_categories(self, bundle):
         return [subject_category.term
             for subject_category in bundle.obj.subject_categories.all()]
+
+    def dehydrate(self, bundle):
+        # garantia de compatibilidade
+        bundle.data.pop('ccn_code', False)
+        return bundle
 
 
 class PressReleaseTranslationResource(ModelResource):
