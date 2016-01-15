@@ -14,7 +14,6 @@ except ImportError:
 
 from django.db import (
     models,
-    transaction,
     IntegrityError,
     DatabaseError,
     )
@@ -1256,9 +1255,29 @@ class ArticlesLinkage(models.Model):
                 self.link_type)
 
 
+class ArticleControlAttributes(models.Model):
+    """ Atributos de controle de instância tipo `Article`.
+    """
+    es_updated_at = models.DateTimeField(null=True, blank=True)
+    es_is_dirty = models.BooleanField(default=True)
+    articles_linkage_is_pending = models.BooleanField(default=False)
+
+    article = models.OneToOneField('Article', on_delete=models.CASCADE,
+            related_name='control_attributes')
+
+    def __repr__(self):
+        return '<%s article="%s" es_updated_at="%s" es_is_dirty="%s" articles_linkage_is_pending="%s">' % (
+                self.__class__.__name__, repr(self.article), self.es_updated_at,
+                self.es_is_dirty, self.articles_linkage_is_pending)
+
+
 class Article(models.Model):
     """
     Artigo associado ou não a um periódico ou fascículo.
+
+    Atributos de controle -- integração com Elasticsearch e referenciamento
+    recursivo -- podem ser acessador por meio do atributo `control_attributes`,
+    duh.
 
     Obs:
         Na versão 1.8 do Django, tem incorporado um novo tipo de campo no core: UUIDField, que seria
@@ -1272,13 +1291,11 @@ class Article(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
     updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
-    es_updated_at = models.DateTimeField(null=True, blank=True)  # elasticsearch
-    es_is_dirty = models.BooleanField(default=True)
-    articles_linkage_is_pending = models.BooleanField(default=False)
 
     aid = models.CharField(max_length=32, unique=True, editable=False)
     doi = models.CharField(max_length=2048, default=u'', db_index=True)
-    domain_key = models.SlugField(max_length=2048, unique=True, db_index=False, editable=False)
+    domain_key = models.SlugField(max_length=2048, unique=True, db_index=False,
+            editable=False)
     is_visible = models.BooleanField(default=True)
     is_aop = models.BooleanField(default=False)
     xml = XMLSPSField()
@@ -1338,7 +1355,7 @@ class Article(models.Model):
         self.is_aop = self._get_is_aop()
         self.domain_key = self._get_domain_key()
 
-        if not self.pk:
+        if self.pk is None:
             self.journal_title = self.get_value(self.XPaths.JOURNAL_TITLE)
             self.issn_ppub = self.get_value(self.XPaths.ISSN_PPUB) or ''
             self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB) or ''
@@ -1356,17 +1373,8 @@ class Article(models.Model):
             if not self.article_type:
                 raise ValueError('Could not get article-type from %s' % self)
 
-            if self.article_type in LINKABLE_ARTICLE_TYPES:
-                self.articles_linkage_is_pending = True
-
         super(Article, self).save(*args, **kwargs)
 
-    def save_dirty(self, *args, **kwargs):
-        """ Salva a instância marcando-a como pendente de indexação no
-        Elasticsearch.
-        """
-        self.es_is_dirty = True
-        self.save(*args, **kwargs)
 
     def get_value(self, expression):
         """ Busca `expression` em `self.xml` e retorna o resultado da primeira ocorrência.
@@ -1471,15 +1479,18 @@ def create_profile(sender, instance, created, **kwargs):
         profile, new = UserProfile.objects.get_or_create(user=instance)
 
 
-def submit_to_elasticsearch(sender, instance, created, **kwargs):
-    """ Indexa o artigo no Elasticsearch sempre que houver alteração.
+@receiver(post_save, sender=ArticleControlAttributes)
+def submit_to_elasticsearch(sender, instance, **kwargs):
+    """ Indexa o artigo no Elasticsearch sempre que o atributo `es_is_dirty`
+    for igual a `True`.
     """
     if instance.es_is_dirty:
         celery.current_app.send_task(
                 'journalmanager.tasks.submit_to_elasticsearch',
-                args=[instance.pk])
+                args=[instance.article.pk])
 
 
+@receiver(post_save, sender=Article)
 def link_article_to_journal(sender, instance, created, **kwargs):
     """ Tenta encontrar o periódico e o fascículo do artigo recém criado.
 
@@ -1492,18 +1503,19 @@ def link_article_to_journal(sender, instance, created, **kwargs):
                 args=[instance.pk])
 
 
-def connect_article_post_save_signals():
-    models.signals.post_save.connect(submit_to_elasticsearch, sender=Article)
-    models.signals.post_save.connect(link_article_to_journal, sender=Article)
+@receiver(post_save, sender=Article)
+def create_article_control_attributes(sender, instance, created, **kwargs):
+    """ Cria a entidade com os atributos de controle da instância de `Article`.
+    """
+    ctrl_attrs, ctrl_attrs_created = ArticleControlAttributes.objects.get_or_create(
+            article=instance)
 
-
-connect_article_post_save_signals()
-
-
-def disconnect_article_post_save_signals():
-    models.signals.post_save.disconnect(submit_to_elasticsearch, sender=Article)
-    models.signals.post_save.disconnect(link_article_to_journal, sender=Article)
+    if ctrl_attrs_created:
+        linkage_is_pending = instance.article_type in LINKABLE_ARTICLE_TYPES
+        ctrl_attrs.articles_linkage_is_pending = linkage_is_pending
+        ctrl_attrs.save()
 
 
 # Callback da tasty-pie para a geração de token para os usuários
 models.signals.post_save.connect(create_api_key, sender=User)
+

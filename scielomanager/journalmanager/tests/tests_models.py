@@ -793,8 +793,8 @@ class ArticleTests(TestCase):
         self.assertTrue(article.is_visible)
 
     def test_articles_linkage_is_pending_defaults_to_false(self):
-        article = models.Article()
-        self.assertFalse(article.articles_linkage_is_pending)
+        ctrl_attrs = models.ArticleControlAttributes()
+        self.assertFalse(ctrl_attrs.articles_linkage_is_pending)
 
     def test_articles_are_unique(self):
         from django.db import IntegrityError
@@ -1032,7 +1032,7 @@ class ArticleTests(TestCase):
                      </article>"""
         article = models.Article(xml=sample)
         article.save()
-        self.assertTrue(article.articles_linkage_is_pending)
+        self.assertTrue(article.control_attributes.articles_linkage_is_pending)
 
 
 class ArticleXpathsTests(TestCase):
