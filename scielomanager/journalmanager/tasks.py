@@ -15,6 +15,7 @@ from copy import deepcopy
 from lxml import isoschematron, etree
 from django.db.models import Q
 from django.db import IntegrityError, transaction
+from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
@@ -55,11 +56,17 @@ def _gen_es_struct_from_article(article):
 
     article_as_octets = str(article.xml)
 
-    links_to = [{'aid': rel.link_to.aid, 'type': rel.link_type}
-                for rel in article.links_to.all()]
+    try:
+        links_to = [{'aid': rel.link_to.aid, 'type': rel.link_type}
+                    for rel in article.links_to.all()]
+    except ObjectDoesNotExist:
+        links_to = []
 
-    referrers = [{'aid': rel.referrer.aid, 'type': rel.link_type}
-                 for rel in article.referrers.all()]
+    try:
+        referrers = [{'aid': rel.referrer.aid, 'type': rel.link_type}
+                     for rel in article.referrers.all()]
+    except ObjectDoesNotExist:
+        referrers = []
 
     partial_struct = {
         'version': article.xml_version,
