@@ -8,9 +8,6 @@
 """
 import os
 import io
-import logging
-import threading
-import contextlib
 import datetime
 import operator
 from copy import deepcopy
@@ -18,6 +15,7 @@ from copy import deepcopy
 from lxml import isoschematron, etree
 from django.db.models import Q
 from django.db import IntegrityError, transaction
+from django.core.exceptions import ObjectDoesNotExist
 from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
@@ -28,7 +26,6 @@ from . import models
 logger = get_task_logger(__name__)
 
 
-ARTICLE_SAVE_MUTEX = threading.Lock()
 BASIC_ARTICLE_META_PATH = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), 'basic_article_meta.sch')
 
@@ -59,11 +56,17 @@ def _gen_es_struct_from_article(article):
 
     article_as_octets = str(article.xml)
 
-    links_to = [{'aid': rel.link_to.aid, 'type': rel.link_type}
-                for rel in article.links_to.all()]
+    try:
+        links_to = [{'aid': rel.link_to.aid, 'type': rel.link_type}
+                    for rel in article.links_to.all()]
+    except ObjectDoesNotExist:
+        links_to = []
 
-    referrers = [{'aid': rel.referrer.aid, 'type': rel.link_type}
-                 for rel in article.referrers.all()]
+    try:
+        referrers = [{'aid': rel.referrer.aid, 'type': rel.link_type}
+                     for rel in article.referrers.all()]
+    except ObjectDoesNotExist:
+        referrers = []
 
     partial_struct = {
         'version': article.xml_version,
@@ -80,33 +83,16 @@ def _gen_es_struct_from_article(article):
     return es_struct
 
 
-@contextlib.contextmanager
-def avoid_circular_signals(mutex):
-    """ Garante a execução de um bloco de código sem o disparo de signals.
-
-    A finalidade deste gerenciador de contexto é de permitir que entidades
-    de `models.Article` sejam modificadas e salvas dentro de tasks invocadas
-    por signals de `post_save`, sem que esses signals sejam disparados novamente.
-    I.e. evita loop de signals.
-    """
-    try:
-        mutex.acquire()
-        models.disconnect_article_post_save_signals()
-        yield
-        models.connect_article_post_save_signals()
-    finally:
-        mutex.release()
-
-
 @app.task(ignore_result=True)
 def submit_to_elasticsearch(article_pk):
     """ Submete a instância de `journalmanager.models.Article` para indexação
     do Elasticsearch.
     """
     try:
-        article = models.Article.objects.get(pk=article_pk)
+        article = models.Article.objects.get(pk=article_pk,
+                control_attributes__es_is_dirty=True)
     except models.Article.DoesNotExist:
-        logger.error('Cannot find Article with pk: %s. Skipping the submission to elasticsearch.', article_pk)
+        logger.error('Cannot find or Article is not ready to be submitted to elasticsearch. Pk: %s. Skipping.', article_pk)
         return None
 
     struct = _gen_es_struct_from_article(article)
@@ -114,10 +100,10 @@ def submit_to_elasticsearch(article_pk):
 
     logger.info('Article "%s" was indexed successfully.', article.domain_key)
 
-    article.es_updated_at = datetime.datetime.now()
-    article.es_is_dirty = False
-    with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
-        article.save()
+    article_ctrl_attrs = article.control_attributes
+    article_ctrl_attrs.es_updated_at = datetime.datetime.now()
+    article_ctrl_attrs.es_is_dirty = False
+    article_ctrl_attrs.save()
 
 
 @app.task(ignore_result=True)
@@ -167,8 +153,7 @@ def link_article_to_journal(article_pk):
             return None
 
     article.journal = journal
-    with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
-        article.save()
+    article.save()
 
     logger.info('Article "%s" is now linked to journal "%s".',
                 article.domain_key, journal.title)
@@ -200,8 +185,7 @@ def link_article_to_issue(article_pk):
             logger.info('Cannot find Issue for Article with pk: %s. Skipping the linking task.', article_pk)
         else:
             article.issue = issue
-            with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
-                article.save()
+            article.save()
 
             logger.info('Article "%s" is now linked to issue "%s".',
                     article.domain_key, issue.label)
@@ -226,7 +210,8 @@ def process_orphan_articles():
 def process_dirty_articles():
     """ Task (periódica) que garanta a indexação dos artigos sujos.
     """
-    dirties = models.Article.objects.only('pk').filter(es_is_dirty=True)
+    dirties = models.Article.objects.only('pk').filter(
+            control_attributes__es_is_dirty=True)
 
     for dirty in dirties:
         submit_to_elasticsearch.delay(dirty.pk)
@@ -261,8 +246,7 @@ def create_article_from_string(xml_string):
         raise ValueError('Missing identification elements')
 
     new_article = models.Article(xml=xml_bstring)
-    with ARTICLE_SAVE_MUTEX:
-        new_article.save_dirty()
+    new_article.save()
 
     logger.info('New Article added with aid: %s.', new_article.aid)
 
@@ -274,7 +258,7 @@ def mark_articles_as_dirty():
     """ Marca todos os artigos para serem reindexados.
     """
     with transaction.commit_on_success():
-        total_rows = models.Article.objects.all().update(es_is_dirty=True)
+        total_rows = models.ArticleControlAttributes.objects.all().update(es_is_dirty=True)
 
     logger.info('%s Articles were set as dirty to Elasticsearch.', total_rows)
 
@@ -292,7 +276,7 @@ def link_article_with_their_related(article_pk):
     """
     try:
         referrer = models.Article.objects.get(pk=article_pk,
-                articles_linkage_is_pending=True)
+                control_attributes__articles_linkage_is_pending=True)
     except models.Article.DoesNotExist:
         logger.info('Cannot find Article with with pk: %s. Skipping the task.',
                 article_pk)
@@ -307,7 +291,7 @@ def link_article_with_their_related(article_pk):
 
     def _ensure_articles_are_linked(doi, rel_type):
         try:
-            target = models.Article.objects.only('pk').get(doi=doi)
+            target = models.Article.objects.get(doi=doi)
         except (models.Article.DoesNotExist, models.Article.MultipleObjectsReturned) as exc:
             logger.error('Cannot get article with DOI "%s". The error message is: "%s"',
                     doi, exc.message)
@@ -326,9 +310,8 @@ def link_article_with_their_related(article_pk):
                          for doi, rel_type in doi_type_pairs)
 
         if all(link_statuses):
-            referrer.articles_linkage_is_pending = False
-            with avoid_circular_signals(ARTICLE_SAVE_MUTEX):
-                referrer.save()
+            referrer.control_attributes.articles_linkage_is_pending = False
+            referrer.control_attributes.save()
 
 
 @app.task(ignore_result=True)
@@ -336,7 +319,7 @@ def process_related_articles():
     """ Tenta associar artigos relacionados.
     """
     articles = models.Article.objects.only('pk').filter(
-            articles_linkage_is_pending=True)
+            control_attributes__articles_linkage_is_pending=True)
 
     for article in articles:
         link_article_with_their_related.delay(article.pk)
