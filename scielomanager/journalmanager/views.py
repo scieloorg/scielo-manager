@@ -2,13 +2,14 @@
 import json
 import urlparse
 from datetime import datetime
+import operator
 
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
 
-import operator
+import packtools
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
