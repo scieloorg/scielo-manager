@@ -310,14 +310,17 @@ def article_detail(request, article_pk):
     article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
     previews = []
 
-    if article.xml and not article.is_aop:
+    if article.xml:
+        css_url = static('css/htmlgenerator/styles.css')
+
         try:
-            css_url = static('css/htmlgenerator/styles.css')
-            for lang, html_output in packtools.HTMLGenerator(article.xml.root_etree, valid_only=False, css=css_url):
-                previews.append({'lang': lang, 'html': html_output})
+            html_generator = packtools.HTMLGenerator(article.xml.root_etree,
+                    valid_only=False, css=css_url)
+            previews = [{'lang': lang, 'html': html}
+                        for lang, html in html_generator]
+
         except Exception:
-            # qualquer exeção aborta a pre-visualização mas continua com o resto
-            previews = []
+            pass
 
     return render_to_response(
         'journalmanager/article_detail.html',
