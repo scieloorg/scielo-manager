@@ -783,3 +783,56 @@ class LinkArticleWithTheirRelated(TestCase):
         self.assertEquals(1, models.Article.objects.get(
             pk=correction.pk).links_to.filter(link_to=article).count())
 
+
+class CreateArticleAssetsFromBytes(TestCase):
+
+    def test_asset_is_created(self):
+        article = modelfactories.ArticleFactory.create()
+        self.assertEquals(article.assets.all().count(), 0)
+
+        tasks.create_articleasset_from_bytes(article.aid, 'somefile.txt',
+                b'\x04\x00', owner='Joe Doe', use_license='License text')
+
+        self.assertEquals(article.assets.all().count(), 1)
+
+    def test_asset_licensing_meta_is_stored(self):
+        article = modelfactories.ArticleFactory.create()
+
+        tasks.create_articleasset_from_bytes(article.aid, 'somefile.txt',
+                b'\x04\x00', owner='Joe Doe', use_license='License text')
+
+        asset = article.assets.all()[0]
+
+        self.assertEquals(asset.owner, 'Joe Doe')
+        self.assertEquals(asset.use_license, 'License text')
+
+    def test_asset_is_stored(self):
+        article = modelfactories.ArticleFactory.create()
+
+        tasks.create_articleasset_from_bytes(article.aid, 'somefile.txt',
+                b'\x04\x00', owner='Joe Doe', use_license='License text')
+
+        asset = article.assets.all()[0]
+
+        self.assertEquals(asset.file.name.rsplit('/', 1)[1], 'somefile.txt')
+        self.assertEquals(asset.file.read(), b'\x04\x00')
+
+    def test_task_returns_asset_url(self):
+        article = modelfactories.ArticleFactory.create()
+
+        return_val = tasks.create_articleasset_from_bytes(article.aid,
+                'somefile.txt', b'\x04\x00', owner='Joe Doe',
+                use_license='License text')
+
+        asset = article.assets.all()[0]
+
+        self.assertEquals(return_val, asset.file.url)
+
+    def test_unknown_aid(self):
+        article = modelfactories.ArticleFactory.create()
+
+        self.assertRaises(ValueError,
+                lambda: tasks.create_articleasset_from_bytes('unknown-aid',
+                    'somefile.txt', b'\x04\x00', owner='Joe Doe',
+                    use_license='License text'))
+
