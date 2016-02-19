@@ -21,11 +21,11 @@ Os valores para ``errno`` são:
 +-------+------------------+----------------------------------------------------------+
 | errno | Tipo             | Descrição                                                |
 +=======+==================+==========================================================+
-| 1     | DuplicationError | O artigo representado por ``xml_string`` já havia sido   |
-|       |                  | adicionado anteriormente                                 |
+| 1     | DuplicationError | A entidade não pôde ser criada pois já existe um registro|
+|       |                  | com a mesma chave única.                                 |
 +-------+------------------+----------------------------------------------------------+
-| 2     | ValueError       | ``xml_string`` é mal-formado ou apresenta algum problema |
-|       |                  | estrutural que impeça sua identificação                  |
+| 2     | ValueError       | O valor passado por argumento causou um erro na execução |
+|       |                  | da tarefa.                                               |
 +-------+------------------+----------------------------------------------------------+
 
 

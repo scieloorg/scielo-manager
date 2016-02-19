@@ -16,6 +16,7 @@ from lxml import isoschematron, etree
 from django.db.models import Q
 from django.db import IntegrityError, transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
@@ -323,4 +324,34 @@ def process_related_articles():
 
     for article in articles:
         link_article_with_their_related.delay(article.pk)
+
+
+@app.task(throws=(ValueError,))
+def create_articleasset_from_bytes(aid, filename, content, owner=None,
+        use_license=None):
+    """Cria uma instância de `journalmanager.models.ArticleAsset`.
+
+    :param aid: ``article-id`` formado por uma string de 32 bytes.
+    :param filename: string de texto contendo o nome do arquivo do ativo digital.
+    :param content: string de bytes com o conteúdo do ativo digital.
+    :param owner: (opcional) string de texto informando o detentor do copyright.
+    :param use_license: (opcional): string de texto informando a licença de uso.
+    """
+    try:
+        article = models.Article.objects.get(aid=aid)
+
+    except models.Article.DoesNotExist:
+        raise ValueError('Cannot find Article with aid: %s' % aid)
+
+    _owner = owner or u''
+    _use_license = use_license or u''
+
+    asset = models.ArticleAsset(article=article, owner=_owner,
+            use_license=_use_license)
+    asset.file.save(filename, ContentFile(content))
+
+    logger.info('New ArticleAsset %s added to Article with aid: %s.',
+            repr(asset), aid)
+
+    return asset.file.url
 
