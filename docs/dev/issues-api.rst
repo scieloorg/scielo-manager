@@ -86,6 +86,14 @@ Response:
             "/api/v1/sections/1264/",
             "/api/v1/sections/1262/"
           ],
+          "use_license": {
+            "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+            "id": ​5033,
+            "is_default": false,
+            "license_code": "BY/4.0",
+            "reference_url": "http://creativecommons.org/licenses/by/4.0/",
+            "resource_uri": "/api/v1/uselicenses/5033/"
+          },
           "suppl_number": null,
           "suppl_volume": null,
           "total_documents": 16,
@@ -223,6 +231,14 @@ Response:
               ]
             }
           ],
+          "use_license": {
+            "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+            "id": ​5033,
+            "is_default": false,
+            "license_code": "BY/4.0",
+            "reference_url": "http://creativecommons.org/licenses/by/4.0/",
+            "resource_uri": "/api/v2/uselicenses/5033/"
+          },
           "spe_text": null,
           "suppl_number": "",
           "suppl_text": null,
@@ -298,6 +314,14 @@ Response:
         "/api/v1/sections/1264/",
         "/api/v1/sections/1262/"
       ],
+      "use_license": {
+        "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+        "id": ​5033,
+        "is_default": false,
+        "license_code": "BY/4.0",
+        "reference_url": "http://creativecommons.org/licenses/by/4.0/",
+        "resource_uri": "/api/v1/uselicenses/5033/"
+      },
       "suppl_number": null,
       "suppl_volume": null,
       "total_documents": 16,
@@ -424,6 +448,14 @@ Response:
           ]
         }
       ],
+      "use_license": {
+        "disclaimer": "<a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by/4.0/80x15.png\" /></a><br />This work is licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.",
+        "id": ​5033,
+        "is_default": false,
+        "license_code": "BY/4.0",
+        "reference_url": "http://creativecommons.org/licenses/by/4.0/",
+        "resource_uri": "/api/v2/uselicenses/5033/"
+      },
       "spe_text": null,
       "suppl_number": "",
       "suppl_text": null,

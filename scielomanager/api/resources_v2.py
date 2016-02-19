@@ -128,6 +128,7 @@ class IssueResource(ModelResource):
     thematic_titles = fields.CharField(readonly=True)
     suppl_volume = fields.CharField(attribute='volume', readonly=True)
     suppl_number = fields.CharField(attribute='number', readonly=True)
+    use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = models.Issue.objects.all()
