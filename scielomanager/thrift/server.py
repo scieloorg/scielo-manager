@@ -143,3 +143,14 @@ class RPCHandler(object):
     def getInterfaceVersion(self):
         return spec.VERSION
 
+    @resource_cleanup
+    def addArticleAsset(self, aid, filename, content, meta):
+        try:
+            delayed_task = tasks.create_articleasset_from_bytes.delay(
+                    aid, filename, content, meta.owner, meta.use_license)
+            return delayed_task.id
+
+        except Exception as exc:
+            LOGGER.exception(exc)
+            raise spec.ServerError()
+

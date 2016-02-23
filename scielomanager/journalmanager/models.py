@@ -862,7 +862,7 @@ class Section(models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
-        return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
+        return ' | '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
     @property
     def actual_code(self):
@@ -1466,6 +1466,30 @@ class Article(models.Model):
 
         return u'<%s aid="%s" domain_key="%s">' % (self.__class__.__name__,
                 self.aid, domain_key)
+
+
+def articleasset_directory_path(instance, filename):
+    """Indica o diretório de armazenamento dos arquivos de ``ArticleAsset.file``.
+
+    O ativo será armazenado em MEDIA_ROOT/articles/<aid>/assets/<filename>.
+    """
+    return 'articles/{aid}/assets/{filename}'.format(
+            aid=instance.article.aid, filename=filename)
+
+
+class ArticleAsset(models.Model):
+    """Ativo digital vinculado a uma instância de Article.
+    """
+    article = models.ForeignKey('Article', on_delete=models.CASCADE,
+            related_name='assets')
+    file = models.FileField(upload_to=articleasset_directory_path)
+    owner = models.CharField(max_length=1024, default=u'')
+    use_license = models.TextField(default=u'')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self):
+        return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
+                self.pk, self.file.url)
 
 
 # --------------------

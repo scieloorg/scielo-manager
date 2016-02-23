@@ -564,6 +564,7 @@ class IssuesRestAPITest(WebTest):
             u'thematic_titles',
             u'suppl_text',
             u'type',
+            u'use_license'
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

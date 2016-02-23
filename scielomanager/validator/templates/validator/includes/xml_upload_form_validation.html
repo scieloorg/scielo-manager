@@ -1,0 +1,39 @@
+{% load i18n %}
+<script type="text/javascript">
+    $(function () {
+      var xml_upload_form = $('#xml_upload_form');
+      var form_buttons = $('.form-buttons', xml_upload_form);
+      var filestyle_field = $(":file", xml_upload_form);
+      var selected_tab = null;
+
+
+      /* resize button */
+      filestyle_field.filestyle('classInput', 'span11 custom-filestyle');
+
+      /* clear form */
+      var clear_btn = $('#form_clear_btn', form_buttons);
+      clear_btn.click(function(event){
+        filestyle_field.filestyle('clear');
+        $('#form_messages').html('');
+      });
+
+      /* control form submit */
+      xml_upload_form.submit(function(){
+        /* validate XML size and content type */
+        file_obj = $('#id_file')[0].files[0];
+        if (file_obj.type != "text/xml") {
+          msg = '{% trans "This type of file is not allowed! Please select another file." %}';
+          display_form_msg(msg, 'error', true);
+          return false
+        }
+        if (file_obj.size > {{ SETTINGS_MAX_UPLOAD_SIZE }}) {
+          msg = '{% trans "The file size is too large! Please select a smaller file." %}';
+          display_form_msg(msg, 'error', true);
+          return false
+        }
+        return true;
+
+      });
+
+    });
+  </script>

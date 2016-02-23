@@ -2,13 +2,14 @@
 import json
 import urlparse
 from datetime import datetime
+import operator
 
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
 
-import operator
+import packtools
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
@@ -31,6 +32,7 @@ from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
 from django.conf import settings
 from django.db.models import Q
+from django.templatetags.static import static
 
 from . import models
 from .forms import *
@@ -306,12 +308,27 @@ def article_index(request, issue_id):
 def article_detail(request, article_pk):
 
     article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
+    previews = []
+
+    if article.xml:
+        css_url = static('css/htmlgenerator/styles.css')
+
+        try:
+            html_generator = packtools.HTMLGenerator.parse(
+                    article.xml.root_etree, valid_only=False, css=css_url)
+            previews = [{'lang': lang, 'html': html}
+                        for lang, html in html_generator]
+
+        except Exception:
+            pass
 
     return render_to_response(
         'journalmanager/article_detail.html',
         {
             'article': ArticleAttrGetter(article),
             'journal': article.journal,
+            'packtools_version': packtools.__version__,
+            'previews': previews,
         },
         context_instance=RequestContext(request)
     )

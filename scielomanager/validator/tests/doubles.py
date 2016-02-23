@@ -3,8 +3,9 @@ import packtools
 # packtools.stylechecker double
 
 
-class XMLValidatorDouble(packtools.XMLValidator):
-    def __init__(self, file, dtd=None, no_doctype=False):
+class XMLValidatorDouble(object):
+    @classmethod
+    def parse(cls, file, dtd=None, no_doctype=False):
         pass
 
     def validate_all(self, fail_fast=False):

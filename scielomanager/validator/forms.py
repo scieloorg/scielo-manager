@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 
 
-class StyleCheckerForm(forms.Form):
+class XMLUploadForm(forms.Form):
     file = forms.FileField(label=_("File"))
 
     def clean_file(self):

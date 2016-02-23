@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load static %}
+{% load menu_active %}
 
 {% block base_struture %}
 <style type="text/css">
@@ -20,7 +21,8 @@
       <a class="brand" href="/">SciELO Manager</a>
       <div class="nav-collapse collapse">
         <ul class="nav">
-          <li class="active"><a href="{% url validator.packtools.stylechecker %}">Style Checker</a></li>
+          <li class="{% active '/stylechecker/$' %}"><a href="{% url validator.packtools.stylechecker %}">Style Checker</a></li>
+          <li class="{% active '/preview/html/$' %}"><a href="{% url validator.packtools.preview_html %}">HTML Previewer</a></li>
         </ul>
       </div><!--/.nav-collapse -->
     </div>
@@ -29,8 +31,32 @@
 
 <div class="container container-base">
 	{% block main_content %}
-		
+
 	{% endblock main_content %}
 </div> <!-- /container -->
 
 {% endblock base_struture %}
+{% block extrafooter %}
+
+  <script type="text/javascript">
+
+    function display_form_msg(msg, type, append){
+      var form_messages = $('#form_messages');
+      var html;
+      form_messages.hide();
+
+      html = '<div class="alert alert-'+ type +'">';
+      html += '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+      html += msg;
+      html += '</div>';
+      if (append) {
+        form_messages.append(html);
+      } else {
+        form_messages.html(html);
+      }
+      form_messages.show();
+    }
+
+</script>
+{% endblock extrafooter %}
+

@@ -47,7 +47,7 @@ def analyze_xml(file):
     result = err = None
 
     try:
-        xml = packtools.XMLValidator(file)
+        xml = packtools.XMLValidator.parse(file)
 
     except (lxml.etree.XMLSyntaxError, IOError, ValueError) as e:
         err = e

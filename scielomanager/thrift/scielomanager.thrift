@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "1.3.0"
+const string VERSION = "1.4.0"
 
 
 #
@@ -125,6 +125,15 @@ struct AsyncResult {
     2: string value;                  // string codificada em json
 }
 
+/*
+ * ArticleAssetMeta representa metadados associados ao ativo digital, como 
+ * informação de licenciamento por exemplo.
+ */
+struct ArticleAssetMeta {
+    1: optional string owner;
+    2: optional string use_license;
+}
+
 
 service JournalManagerServices {
     /*
@@ -134,6 +143,15 @@ service JournalManagerServices {
      * criada. `task_id` deve ser utilizada para obter o resultado da função. 
      */
     string addArticle(1:string xml_string) throws (1:ServerError srv_err);
+
+    /*
+     * Adiciona um novo ativo digital, vinculado a uma entidade Article.
+     *
+     * Retorna string `task_id` correspondente ao identificador da tarefa
+     * criada. `task_id` deve ser utilizada para obter o resultado da função. 
+     */
+    string addArticleAsset(1:string aid, 2:string filename, 3:binary content, 
+            4:ArticleAssetMeta meta) throws (1:ServerError srv_err);
 
     /*
      * Consulta o resultado da execução de uma determinada tarefa assíncrona.
@@ -160,8 +178,7 @@ service JournalManagerServices {
      * campo `next_batch_id` apresenta o identificador do próximo lote.
      */
     ScanArticlesResults getScanArticlesBatch(1:string batch_id) throws (
-            1:ServerError srv_err, 2:BadRequestError req_err, 
-            3:TimeoutError tou_err); 
+            1:ServerError srv_err, 2:BadRequestError req_err); 
 
 
     #

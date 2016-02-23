@@ -1,10 +1,5 @@
 # coding: utf-8
 """ Tasks do celery para a aplicação `journalmanager`.
-
-  - Todas as tasks que executam `Article.save` devem tomar cuidado com
-    problemas de concorrência, haja vista que os callbacks de post save
-    devem ser desabilitados em alguns casos, por meio do contexto
-    `avoid_circular_signals`.
 """
 import os
 import io
@@ -16,6 +11,7 @@ from lxml import isoschematron, etree
 from django.db.models import Q
 from django.db import IntegrityError, transaction
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
 
 from scielomanager.celery import app
@@ -92,7 +88,8 @@ def submit_to_elasticsearch(article_pk):
         article = models.Article.objects.get(pk=article_pk,
                 control_attributes__es_is_dirty=True)
     except models.Article.DoesNotExist:
-        logger.error('Cannot find or Article is not ready to be submitted to elasticsearch. Pk: %s. Skipping.', article_pk)
+        logger.error('Cannot find or Article is not ready to be submitted to '
+                     'elasticsearch. Pk: %s. Skipping.', article_pk)
         return None
 
     struct = _gen_es_struct_from_article(article)
@@ -113,7 +110,8 @@ def link_article_to_journal(article_pk):
     try:
         article = models.Article.objects.get(pk=article_pk, journal=None)
     except models.Article.DoesNotExist:
-        logger.info('Cannot find unlinked Article with pk: %s. Skipping the linking task.', article_pk)
+        logger.info('Cannot find unlinked Article with pk "%s". '
+                    'Skipping the linking task.', article_pk)
         return None
 
     try:
@@ -125,7 +123,8 @@ def link_article_to_journal(article_pk):
             query_params.append(Q(eletronic_issn=article.issn_epub))
 
         if not query_params:
-            logger.error('Missing attributes issn_ppub and issn_epub in Article wit pk: %s.', article_pk)
+            logger.error('Missing attributes issn_ppub and issn_epub in '
+                         'Article wit pk "%s".', article_pk)
             return None
 
         query_expr = reduce(operator.or_, query_params)
@@ -142,14 +141,16 @@ def link_article_to_journal(article_pk):
                 query_params.append(Q(print_issn=article.issn_epub))
 
             if not query_params:
-                logger.error('Missing attributes issn_ppub and issn_epub in Article wit pk: %s.', article_pk)
+                logger.error('Missing attributes issn_ppub and issn_epub in '
+                             'Article with pk "%s".', article_pk)
                 return None
 
             query_expr = reduce(operator.or_, query_params)
             journal = models.Journal.objects.get(query_expr)
 
         except models.Journal.DoesNotExist:
-            logger.info('Cannot find parent Journal for Article with pk: %s. Skipping the linking task.', article_pk)
+            logger.info('Cannot find parent Journal for Article with pk "%s". '
+                        'Skipping the linking task.', article_pk)
             return None
 
     article.journal = journal
@@ -164,15 +165,20 @@ def link_article_to_journal(article_pk):
 @app.task(ignore_result=True)
 def link_article_to_issue(article_pk):
     """ Tenta associar o artigo ao seu número.
+
+    Por hora não são suportados artigos de suplementos e fascículos especiais.
+    https://github.com/scieloorg/scielo-manager/issues/1248
     """
     try:
         article = models.Article.objects.get(pk=article_pk, issue=None, is_aop=False)
     except models.Article.DoesNotExist:
-        logger.info('Cannot find unlinked Article with pk: %s. Skipping the linking task.', article_pk)
+        logger.info('Cannot find unlinked Article with pk "%s". '
+                    'Skipping the linking task.', article_pk)
         return None
 
     if article.journal is None:
-        logger.info('Cannot link Article to issue without having a journal. Article pk: %s. Skipping the linking task.', article_pk)
+        logger.info('Cannot link Article to issue without having a journal. '
+                    'Article pk "%s". Skipping the linking task.', article_pk)
     else:
         volume = article.get_value(article.XPaths.VOLUME)
         issue = article.get_value(article.XPaths.ISSUE)
@@ -181,8 +187,9 @@ def link_article_to_issue(article_pk):
         try:
             issue = article.journal.issue_set.get(
                     volume=volume, number=issue, publication_year=year)
-        except models.Issue.DoesNotExist:
-            logger.info('Cannot find Issue for Article with pk: %s. Skipping the linking task.', article_pk)
+        except (models.Issue.DoesNotExist, models.Issue.MultipleObjectsReturned):
+            logger.info('Cannot find Issue for Article with pk "%s". '
+                        'Skipping the linking task.', article_pk)
         else:
             article.issue = issue
             article.save()
@@ -323,4 +330,34 @@ def process_related_articles():
 
     for article in articles:
         link_article_with_their_related.delay(article.pk)
+
+
+@app.task(throws=(ValueError,))
+def create_articleasset_from_bytes(aid, filename, content, owner=None,
+        use_license=None):
+    """Cria uma instância de `journalmanager.models.ArticleAsset`.
+
+    :param aid: ``article-id`` formado por uma string de 32 bytes.
+    :param filename: string de texto contendo o nome do arquivo do ativo digital.
+    :param content: string de bytes com o conteúdo do ativo digital.
+    :param owner: (opcional) string de texto informando o detentor do copyright.
+    :param use_license: (opcional): string de texto informando a licença de uso.
+    """
+    try:
+        article = models.Article.objects.get(aid=aid)
+
+    except models.Article.DoesNotExist:
+        raise ValueError('Cannot find Article with aid: %s' % aid)
+
+    _owner = owner or u''
+    _use_license = use_license or u''
+
+    asset = models.ArticleAsset(article=article, owner=_owner,
+            use_license=_use_license)
+    asset.file.save(filename, ContentFile(content))
+
+    logger.info('New ArticleAsset %s added to Article with aid: %s.',
+            repr(asset), aid)
+
+    return asset.file.url
 

@@ -65,6 +65,13 @@ class SectionResource(ModelResource):
             for title in bundle.obj.titles.all()]
 
 
+class UseLicenseResource(ModelResource):
+    class Meta(ApiKeyAuthMeta):
+        queryset = UseLicense.objects.all()
+        resource_name = 'uselicenses'
+        allowed_methods = ['get', ]
+
+
 class IssueResource(ModelResource):
     """
     IMPORTANT: is_press_release was removed on V2
@@ -76,6 +83,7 @@ class IssueResource(ModelResource):
     is_press_release = fields.BooleanField(readonly=True)
     suppl_volume = fields.CharField(attribute='volume', readonly=True)
     suppl_number = fields.CharField(attribute='number', readonly=True)
+    use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()
@@ -162,12 +170,6 @@ class SponsorResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
         queryset = Sponsor.objects.all()
         resource_name = 'sponsors'
-        allowed_methods = ['get', ]
-
-class UseLicenseResource(ModelResource):
-    class Meta(ApiKeyAuthMeta):
-        queryset = UseLicense.objects.all()
-        resource_name = 'uselicenses'
         allowed_methods = ['get', ]
 
 
