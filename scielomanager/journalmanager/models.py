@@ -862,7 +862,7 @@ class Section(models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
-        return ' / '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
+        return ' | '.join([sec_title.title for sec_title in self.titles.all().order_by('language')])
 
     @property
     def actual_code(self):

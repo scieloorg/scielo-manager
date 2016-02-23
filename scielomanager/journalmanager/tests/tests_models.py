@@ -65,7 +65,7 @@ class SectionTests(MockerTestCase):
         section_title_en.section = section_title.section
         section_title_en.save()
 
-        expected = 'Original Articles / Artigos Originais'
+        expected = 'Original Articles | Artigos Originais'
 
         self.assertEqual(unicode(section_title.section), expected)
 
