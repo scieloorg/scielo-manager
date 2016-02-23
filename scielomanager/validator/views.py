@@ -53,7 +53,8 @@ def packtools_preview_html(request, template_name='validator/preview_html.html')
             xml_file = request.FILES['file']
             previews = []
             try:
-                for lang, html_output in packtools.HTMLGenerator(xml_file, valid_only=False, css=CSS_URL):
+                for lang, html_output in packtools.HTMLGenerator.parse(
+                        xml_file, valid_only=False, css=CSS_URL):
                     previews.append({'lang': lang, 'html': html_output})
             except Exception as e:
                 print e.message

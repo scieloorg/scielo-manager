@@ -4,7 +4,8 @@ import packtools
 
 
 class XMLValidatorDouble(object):
-    def __init__(self, file, dtd=None, no_doctype=False):
+    @classmethod
+    def parse(cls, file, dtd=None, no_doctype=False):
         pass
 
     def validate_all(self, fail_fast=False):
