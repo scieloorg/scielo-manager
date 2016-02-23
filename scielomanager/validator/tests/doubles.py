@@ -3,7 +3,7 @@ import packtools
 # packtools.stylechecker double
 
 
-class XMLValidatorDouble(packtools.XMLValidator):
+class XMLValidatorDouble(object):
     def __init__(self, file, dtd=None, no_doctype=False):
         pass
 
