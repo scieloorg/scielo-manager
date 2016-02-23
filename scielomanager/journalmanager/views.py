@@ -314,8 +314,8 @@ def article_detail(request, article_pk):
         css_url = static('css/htmlgenerator/styles.css')
 
         try:
-            html_generator = packtools.HTMLGenerator(article.xml.root_etree,
-                    valid_only=False, css=css_url)
+            html_generator = packtools.HTMLGenerator.parse(
+                    article.xml.root_etree, valid_only=False, css=css_url)
             previews = [{'lang': lang, 'html': html}
                         for lang, html in html_generator]
 
