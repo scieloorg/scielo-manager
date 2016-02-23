@@ -35,22 +35,40 @@
     <div class="row">
         <div class="span12">
             <ul class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" href="#xml_content">
-                        {% trans "XML content" %}:
-                    </a>
-                </li>
                 {# adiciono uma tab para cada linguagem/html gerado #}
                 {% for preview in previews %}
-                    <li>
+                    <li {% if forloop.first %}class="active"{% endif %}>
                         <a data-toggle="tab" href="#preview_{{ preview.lang }}">
                             {% trans "HTML preview" %} ({{ preview.lang|upper }})
                         </a>
                     </li>
+                {% empty %}
+                    <li class="active">
+                        <a data-toggle="tab" href="#preview_unavailable">
+                            {% trans "HTML preview" %}
+                        </a>
+                    </li>
                 {% endfor %}
+                <li>
+                    <a data-toggle="tab" href="#xml_content">
+                        {% trans "Source XML" %}
+                    </a>
+                </li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="xml_content">
+                {# adiciono uma tab-pane para cada linguagem/html gerado #}
+                {% for preview in previews %}
+                    <div class="tab-pane tab-pane-preview {% if forloop.first %}active{% endif %}" id="preview_{{ preview.lang }}">
+                        <div class="preview_container">
+                            <iframe id="iframe_{{preview.lang}}" scrolling="auto" src='' width="100%" height="1000px" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="tab-pane tab-pane-preview active" id="preview_unavailable">
+                        <p>{% trans "Sorry, but the HTML preview is not available for this article." %}</p>
+                    </div>
+                {% endfor %}
+                <div class="tab-pane" id="xml_content">
                     <div class="codemirror_wrapper">
                         {% if article.xml %}
                             <textarea id="code" name="code">{{ article.xml }}</textarea>
@@ -59,14 +77,6 @@
                         {% endif %}
                     </div>
                 </div>
-                {# adiciono uma tab-pane para cada linguagem/html gerado #}
-                {% for preview in previews %}
-                    <div class="tab-pane tab-pane-preview" id="preview_{{ preview.lang }}">
-                        <div class="preview_container">
-                            <iframe id="iframe_{{preview.lang}}" scrolling="auto" src='' width="100%" height="1000px" frameborder="0"></iframe>
-                        </div>
-                    </div>
-                {% endfor %}
             </div>
         </div>
     </div>

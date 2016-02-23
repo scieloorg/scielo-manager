@@ -23,7 +23,7 @@
     </tr>
   </thead>
   <tbody>
-    {% regroup articles by xml_head_subject as articles_list %}
+    {% regroup articles by HEAD_SUBJECT as articles_list %}
     {% for article_set in articles_list %}
       <tr class="grey_bg">
         <td>
