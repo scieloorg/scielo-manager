@@ -89,6 +89,18 @@ class SectionTests(MockerTestCase):
 
         self.assertEqual(section._suggest_code(rand_generator=gen), expected_code)
 
+    def test_suggest_code_unicode_strings(self):
+        gen = self.mocker.mock()
+        gen(4)
+        self.mocker.result('XYZW')
+        self.mocker.replay()
+
+        section = SectionFactory.create()
+        section.journal.acronym = u'ÁÇÚCAR'
+        expected_code = u'{0}-{1}'.format(section.journal.acronym, 'XYZW')
+
+        self.assertEqual(section._suggest_code(rand_generator=gen), expected_code)
+
 
 class UserProfileTests(TestCase):
 
