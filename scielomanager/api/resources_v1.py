@@ -83,7 +83,7 @@ class IssueResource(ModelResource):
     is_press_release = fields.BooleanField(readonly=True)
     suppl_volume = fields.CharField(attribute='volume', readonly=True)
     suppl_number = fields.CharField(attribute='number', readonly=True)
-    use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True)
+    use_license = fields.ForeignKey(UseLicenseResource, 'use_license', full=True, null=True)
 
     class Meta(ApiKeyAuthMeta):
         queryset = Issue.objects.all()

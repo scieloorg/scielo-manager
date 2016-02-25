@@ -895,7 +895,7 @@ class Section(models.Model):
         chars sequence. It may accept the number of chars as argument.
         """
         num_chars = getattr(settings, 'SECTION_CODE_TOTAL_RANDOM_CHARS', 4)
-        fmt = '{0}-{1}'.format(self.journal.acronym, rand_generator(num_chars))
+        fmt = u'{0}-{1}'.format(self.journal.acronym, rand_generator(num_chars))
         return fmt
 
     def _create_code(self, *args, **kwargs):
