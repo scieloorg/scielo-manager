@@ -836,3 +836,26 @@ class CreateArticleAssetsFromBytes(TestCase):
                     'somefile.txt', b'\x04\x00', owner='Joe Doe',
                     use_license='License text'))
 
+
+class CreateArticleHTMLRenditionsTests(TestCase):
+    def test_htmls_urls_are_returned(self):
+        article = modelfactories.ArticleFactory.create()
+        result = tasks.create_article_html_renditions(article.pk)
+
+        urls = [html.file.url for html in article.htmls.all()]
+
+        self.assertEquals(sorted(result), sorted(urls))
+
+    def test_unknown_article_raises_ValueError(self):
+        self.assertRaises(ValueError,
+                lambda: tasks.create_article_html_renditions(1))
+
+    def test_htmls_filenames_are_suffixed_with_lang(self):
+        article = modelfactories.ArticleFactory.create()
+        result = tasks.create_article_html_renditions(article.pk)
+
+        urls = [[html.file.url, html.lang] for html in article.htmls.all()]
+
+        for url, lang in urls:
+            self.assertTrue(url.endswith(u'-' + lang + u'.html'))
+

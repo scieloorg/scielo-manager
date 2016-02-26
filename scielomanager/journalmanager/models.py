@@ -1468,13 +1468,24 @@ class Article(models.Model):
                 self.aid, domain_key)
 
 
-def articleasset_directory_path(instance, filename):
-    """Indica o diretório de armazenamento dos arquivos de ``ArticleAsset.file``.
+def make_article_directory_path(content_type):
+    """ Produz funções que definem o diretório de armazenamento dos arquivos
+    relacionados a um artigo.
 
-    O ativo será armazenado em MEDIA_ROOT/articles/<aid>/assets/<filename>.
+    O ativo será armazenado em:
+    MEDIA_ROOT/articles/<aid_seg1>/<aid_seg2>/<aid_seg3>/<aid>/<content_type>/<filename>.
     """
-    return 'articles/{aid}/assets/{filename}'.format(
-            aid=instance.article.aid, filename=filename)
+    def article_directory_path(instance, filename):
+        aid = instance.article.aid
+        seg1 = aid[:2]
+        seg2 = aid[2:4]
+        seg3 = aid[4:6]
+
+        return 'articles/{seg1}/{seg2}/{seg3}/{aid}/{type}/{filename}'.format(
+                seg1=seg1, seg2=seg2, seg3=seg3, aid=aid,
+                type=content_type, filename=filename)
+
+    return article_directory_path
 
 
 class ArticleAsset(models.Model):
@@ -1482,7 +1493,7 @@ class ArticleAsset(models.Model):
     """
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='assets')
-    file = models.FileField(upload_to=articleasset_directory_path)
+    file = models.FileField(upload_to=make_article_directory_path('assets'))
     owner = models.CharField(max_length=1024, default=u'')
     use_license = models.TextField(default=u'')
     updated_at = models.DateTimeField(auto_now=True)
@@ -1490,6 +1501,26 @@ class ArticleAsset(models.Model):
     def __repr__(self):
         return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
                 self.pk, self.file.url)
+
+
+class ArticleHTMLRendition(models.Model):
+    """Documento HTML de uma tradução de uma instância de Article.
+
+    Armazena apenas o *build* mais recente para cada idioma.
+    """
+    article = models.ForeignKey('Article', on_delete=models.CASCADE,
+            related_name='htmls')
+    file = models.FileField(upload_to=make_article_directory_path('htmls'))
+    lang = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
+    build_version = models.CharField(max_length=8)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self):
+        return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
+                self.pk, self.file.url)
+
+    class Meta:
+        unique_together = (('article', 'lang'),)
 
 
 # --------------------
@@ -1538,6 +1569,16 @@ def create_article_control_attributes(sender, instance, created, **kwargs):
         linkage_is_pending = instance.article_type in LINKABLE_ARTICLE_TYPES
         ctrl_attrs.articles_linkage_is_pending = linkage_is_pending
         ctrl_attrs.save()
+
+
+@receiver(post_save, sender=Article)
+def create_article_html_renditions(sender, instance, created, **kwargs):
+    """ Cria os documentos HTML para cada idioma do artigo.
+    """
+    if created:
+        celery.current_app.send_task(
+                'journalmanager.tasks.create_article_html_renditions',
+                args=[instance.pk])
 
 
 # Callback da tasty-pie para a geração de token para os usuários

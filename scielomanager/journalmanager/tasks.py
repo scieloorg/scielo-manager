@@ -13,6 +13,8 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
+from django.templatetags.static import static
+import packtools
 
 from scielomanager.celery import app
 from scielomanager import connectors
@@ -360,4 +362,40 @@ def create_articleasset_from_bytes(aid, filename, content, owner=None,
             repr(asset), aid)
 
     return asset.file.url
+
+
+@app.task(throws=(ValueError,))
+def create_article_html_renditions(article_pk, css_url=None, valid_only=False):
+    """Cria os documentos HTML para cada idioma do artigo.
+
+    :param css_url: (opcional) URL da CSS a ser relacionada no documento HTML.
+    :param valid_only: (opcional) produz o HTML apenas para XMLs válidos.
+    """
+    try:
+        article = models.Article.objects.get(pk=article_pk)
+
+    except models.Article.DoesNotExist:
+        raise ValueError('Cannot find Article with pk: %s' % article_pk)
+
+    css_url = css_url or static('css/htmlgenerator/styles.css')
+
+    files_urls = []
+    for lang, html in packtools.HTMLGenerator.parse(article.xml.root_etree,
+            valid_only=valid_only, css=css_url):
+        rendition, _ = models.ArticleHTMLRendition.objects.get_or_create(
+                article=article, lang=lang)
+        rendition.build_version = packtools.__version__
+
+        content = etree.tostring(html, encoding='utf-8', method='html',
+                doctype=u'<!DOCTYPE html>')
+
+        filename = ''.join([article.aid, u'-', lang, u'.html'])
+        rendition.file.save(filename, ContentFile(content))
+
+        files_urls.append(rendition.file.url)
+
+        logger.info('ArticleHTMLRendition in lang "%s" added to Article with '
+                    'aid: %s.', lang, article.aid)
+
+    return files_urls
 
