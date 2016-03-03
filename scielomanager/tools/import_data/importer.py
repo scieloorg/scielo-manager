@@ -70,8 +70,9 @@ class Catalog(object):
     def _load_language(self, language):
 
         language = Language.objects.get_or_create(
-                iso_code=language,
-                name=choices.LANG_DICT.get(language, '###NOT FOUND###'))[0]
+            iso_code=language,
+            name=choices.LANG_DICT.get(language, '###NOT FOUND###')
+        )[0]
 
         return language
 
@@ -282,11 +283,9 @@ class Catalog(object):
         try:
             journal.save(force_insert=True)
         except DatabaseError as e:
-            import pdb; pdb.set_trace()
-            print e.message
+            logger.error(e.message)
         except IntegrityError as e:
-            import pdb; pdb.set_trace()
-            print e.message
+            logger.error(e.message)
 
         self._post_save_journal(journal, data)
 
@@ -369,20 +368,15 @@ class Catalog(object):
         try:
             issue.save(auto_order=False)
         except DatabaseError as e:
-            import pdb; pdb.set_trace()
-            print e.message
+            logger.error(e.message)
         except IntegrityError as e:
-            import pdb; pdb.set_trace()
-            print e.message
+            logger.error(e.message)
 
     def load_issue(self, data):
         issns = set()
         issns.add(data.journal.scielo_issn)
         issns.add(data.journal.print_issn)
         issns.add(data.journal.electronic_issn)
-
-        if data.publisher_id == '0103-733120150002':
-            import pdb; pdb.set_trace()
 
         try:
             journal = Journal.objects.get(
@@ -436,11 +430,9 @@ class Catalog(object):
         try:
             issue.save(force_insert=True)
         except DatabaseError as e:
-            import pdb; pdb.set_trace()
-            print e.message
+            logger.error(e.message)
         except IntegrityError as e:
-            import pdb; pdb.set_trace()
-            print e.message
+            logger.error(e.message)
 
         self._post_save_issue(issue, data)
 
