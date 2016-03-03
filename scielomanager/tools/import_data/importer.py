@@ -389,14 +389,15 @@ class Catalog(object):
 
     @transaction.commit_on_success
     def load_issue(self, data):
-        issns = set()
-        issns.add(data.journal.scielo_issn)
-        issns.add(data.journal.print_issn)
-        issns.add(data.journal.electronic_issn)
 
         if data.type == 'ahead':
             logger.info('Issue (Ahead) will not be imported')
             return
+
+        issns = set()
+        issns.add(data.journal.scielo_issn)
+        issns.add(data.journal.print_issn)
+        issns.add(data.journal.electronic_issn)
 
         try:
             journal = Journal.objects.get(
