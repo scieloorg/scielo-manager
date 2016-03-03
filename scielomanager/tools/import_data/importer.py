@@ -353,7 +353,11 @@ class Catalog(object):
         issue.ctrl_vocabulary = data.controlled_vocabulary
         issue.editorial_standard = data.editorial_standard
 
-        issue.save(force_insert=True)
+        try:
+            issue.save(force_insert=True)
+        except django.db.utils.DatabaseError:
+            import pdb; pdb.set_trace()
+
 
         self._post_save_issue(issue, data)
 
