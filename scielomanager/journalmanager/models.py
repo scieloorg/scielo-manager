@@ -1093,13 +1093,15 @@ class Issue(models.Model):
         if self.use_license is None and self.journal:
             self.use_license = self._get_default_use_license()
 
-        if not self.pk:
-            self.order = self._suggest_order()
-        else:
-            # the ordering control is based on publication year attr.
-            # if an issue is moved between pub years, the order must be reset.
-            if tools.has_changed(self, 'publication_year'):
-                self.order = self._suggest_order(force=True)
+        # auto_order=False é passado na importação de dados para evitar o order automático
+        if kwargs.pop('auto_order', True):
+            if not self.pk:
+                self.order = self._suggest_order()
+            else:
+                # the ordering control is based on publication year attr.
+                # if an issue is moved between pub years, the order must be reset.
+                if tools.has_changed(self, 'publication_year'):
+                    self.order = self._suggest_order(force=True)
 
         super(Issue, self).save(*args, **kwargs)
 

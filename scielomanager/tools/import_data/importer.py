@@ -20,7 +20,6 @@ setup_environ(settings)
 
 from django.db.models import Q
 from django.db.utils import DatabaseError, IntegrityError
-from journalmanager.models import *
 from django.contrib.auth.models import User
 from journalmanager.models import *
 
@@ -68,19 +67,28 @@ class Catalog(object):
         except:
             raise ValueError('Collection do no exists: %s' % collection)
 
+    def _load_language(self, language):
+
+        language = Language.objects.get_or_create(
+                iso_code=language,
+                name=choices.LANG_DICT.get(language, '###NOT FOUND###'))[0]
+
+        return language
+
     def _load_journal_mission(self, journal, missions):
-        from sectionimport import LANG_DICT as lang_dict
+        if missions is None:
+            return
 
         for language, description in missions.items():
             mission = JournalMission()
-            language = Language.objects.get_or_create(
-                iso_code=language,
-                name=choices.LANG_DICT.get(language, '###NOT FOUND###'))[0]
+            language = self._load_language(language)
             mission.language = language
             mission.description = description
             journal.missions.add(mission)
 
     def _load_journal_subject_areas(self, journal, areas):
+        if areas is None:
+            return
 
         for area in areas:
             try:
@@ -92,23 +100,26 @@ class Catalog(object):
 
             journal.study_areas.add(studyarea)
 
-    def _load_journal_textlanguage(self, journal, langs):
-        for i in langs:
-            language = Language.objects.get_or_create(
-                iso_code=i,
-                name=choices.LANG_DICT.get(i, '###NOT FOUND###'))[0]
+    def _load_journal_textlanguage(self, journal, languages):
+        if languages is None:
+            return
 
+        for language in languages:
+            language = self._load_language(language)
             journal.languages.add(language)
 
-    def _load_journal_abstractlanguage(self, journal, langs):
-        for i in langs:
-            language = Language.objects.get_or_create(
-                iso_code=i,
-                name=choices.LANG_DICT.get(i, '###NOT FOUND###'))[0]
+    def _load_journal_abstractlanguage(self, journal, languages):
+        if languages is None:
+            return
 
+        for language in languages:
+            language = self._load_language(language)
             journal.abstract_keyword_languages.add(language)
 
     def _load_journal_status_history(self, journal, status_history, user):
+
+        if status_history is None:
+            return
 
         for st_date, status, reason in status_history:
 
@@ -174,6 +185,9 @@ class Catalog(object):
 
     def _load_journal_use_license(self, journal, permission):
 
+        if permission is None:
+            return
+
         use_license = UseLicense.objects.get_or_create(
             license_code=permission['id'].upper())[0]
 
@@ -192,8 +206,10 @@ class Catalog(object):
         Function: load_sponsor
         Retorna um objeto Sponsor() caso a gravação do mesmo em banco de dados for concluida
         """
+        if data.sponsors is None:
+            return
 
-        for sponsor in data.sponsors or []:
+        for sponsor in data.sponsors:
 
             db_sponsor = Sponsor.objects.get_or_create(name=sponsor)[0]
             db_sponsor.collections.add(self.collection)
@@ -209,12 +225,12 @@ class Catalog(object):
 
         journal.created = data.creation_date
         journal.updated = data.update_date
-        self._load_journal_textlanguage(journal, data.languages or [])
-        self._load_journal_abstractlanguage(journal, data.abstract_languages or [])
-        self._load_journal_subject_areas(journal, data.subject_areas or [])
-        self._load_journal_mission(journal, data.mission or [])
+        self._load_journal_textlanguage(journal, data.languages)
+        self._load_journal_abstractlanguage(journal, data.abstract_languages)
+        self._load_journal_subject_areas(journal, data.subject_areas)
+        self._load_journal_mission(journal, data.mission)
         self._load_journal_other_titles(journal, data)
-        self._load_journal_status_history(journal, data.status_history or [], self.user)
+        self._load_journal_status_history(journal, data.status_history, self.user)
         self._load_journal_use_license(journal, data.permissions)
         self._load_journal_sponsor(journal, data)
 
@@ -278,13 +294,55 @@ class Catalog(object):
 
         return journal
 
-    def _load_issue_sections(self, issue, data):
-        pass
+    def _load_issue_sections(self, issue, sections):
 
-    def _load_issue_titles(self, issue, data):
-        pass
+        if sections is None:
+            return None
+
+        for code, texts in sections.items():
+            for language, text in texts.items():
+                language = self._load_language(language)
+                try:
+                    section = Section.objects.get(
+                        journal=issue.journal,
+                        legacy_code=code,
+
+                    )
+                    sectiontitle = SectionTitle.objects.get_or_create(
+                        section=section,
+                        language=language,
+                        title=text
+                    )
+                except exceptions.ObjectDoesNotExist:
+                    section = Section()
+                    section.legacy_code = code
+                    section.journal = issue.journal
+                    section.save(force_insert=True)
+                    sectiontitle = SectionTitle.objects.get_or_create(
+                        section=section,
+                        language=language,
+                        title=text
+                    )
+
+                issue.section.add(section)
+
+    def _load_issue_titles(self, issue, titles):
+
+        if titles is None:
+            return None
+
+        for language, title in titles.items():
+            language = self._load_language(language)
+            issuetitle = IssueTitle()
+            issuetitle.title = title
+            issuetitle.issue = issue
+            issuetitle.language = language
+            issuetitle.save(force_insert=True)
 
     def _load_issue_use_license(self, issue, permission):
+
+        if permission is None:
+            return None
 
         use_license = UseLicense.objects.get_or_create(
             license_code=permission['id'].upper())[0]
@@ -301,15 +359,15 @@ class Catalog(object):
 
     def _post_save_issue(self, issue, data):
 
+        issue.order = int(data.order)
         issue.created = data.creation_date
         issue.updated = data.update_date
-        self._load_issue_titles(issue, data)
-        #self._load_issue_sections(issue, data)
-        if data.permissions:
-            self._load_issue_use_license(issue, data.permissions)
+        self._load_issue_titles(issue, data.titles)
+        self._load_issue_sections(issue, data.sections)
+        self._load_issue_use_license(issue, data.permissions)
 
         try:
-            issue.save()
+            issue.save(auto_order=False)
         except DatabaseError as e:
             import pdb; pdb.set_trace()
             print e.message
@@ -331,7 +389,7 @@ class Catalog(object):
                 Q(print_issn__in=issns) |
                 Q(eletronic_issn__in=issns))
             logger.info('Journal already exists, skiping journal creation')
-        except:
+        except exceptions.ObjectDoesNotExist:
             logger.info('Journal do no exists, creating journal')
             journal = self.load_journal(data.journal)
 
@@ -354,7 +412,7 @@ class Catalog(object):
                 suppl_text=suppl)
             logger.info('Issue already exists, skiping issue creation')
             return
-        except:
+        except exceptions.ObjectDoesNotExist:
             logger.info('Issue do not exists, creating issue')
 
         issue = Issue()
@@ -365,18 +423,15 @@ class Catalog(object):
         issue.type = data.type
         if data.type == 'special' and spe:
             issue.spe_text = spe
-
         if data.type == 'supplement' and suppl:
             issue.suppl_text = suppl
-
-        issue.order = data.order
         issue.is_press_release = data.is_press_release
         issue.total_documents = data.total_documents or 0
         issue.publication_start_month = data.start_month or 0
         issue.publication_end_month = data.end_month or 0
         issue.is_marked_up = data.is_marked_up
-        issue.ctrl_vocabulary = data.controlled_vocabulary
-        issue.editorial_standard = data.editorial_standard
+        issue.ctrl_vocabulary = data.controlled_vocabulary[0] if data.controlled_vocabulary else ''
+        issue.editorial_standard = data.editorial_standard[0] if data.editorial_standard else ''
 
         try:
             issue.save(force_insert=True)
