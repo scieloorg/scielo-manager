@@ -3,7 +3,6 @@ import os
 from datetime import date
 
 from django.core.management import setup_environ
-from django.core import exceptions
 
 try:
     from scielomanager import settings
@@ -17,9 +16,10 @@ except ImportError:
     import settings
 
 setup_environ(settings)
-
-from django.db.models import Q
+from django.core import exceptions
 from django.db.utils import DatabaseError, IntegrityError
+from django.db import transaction
+from django.db.models import Q
 from django.contrib.auth.models import User
 from journalmanager.models import *
 
@@ -235,10 +235,18 @@ class Catalog(object):
         self._load_journal_use_license(journal, data.permissions)
         self._load_journal_sponsor(journal, data)
 
-        journal.save()
+        try:
+            journal.save()
+        except DatabaseError as e:
+            logger.error(e.message)
+            transaction.rollback()
+        except IntegrityError as e:
+            logger.error(e.message)
+            transaction.rollback()
 
+    @transaction.commit_on_success
     def load_journal(self, data):
-        logger.info('Importing Journal')
+        logger.info('Importing Journal (%s)' % data.title)
 
         journal = Journal()
 
@@ -284,8 +292,12 @@ class Catalog(object):
             journal.save(force_insert=True)
         except DatabaseError as e:
             logger.error(e.message)
+            logger.debug('Journal (%s) not imported' % (data.title))
+            transaction.rollback()
         except IntegrityError as e:
             logger.error(e.message)
+            logger.debug('Journal (%s) not imported' % (data.title))
+            transaction.rollback()
 
         self._post_save_journal(journal, data)
 
@@ -369,14 +381,22 @@ class Catalog(object):
             issue.save(auto_order=False)
         except DatabaseError as e:
             logger.error(e.message)
+            transaction.rollback()
         except IntegrityError as e:
+            transaction.rollback()
             logger.error(e.message)
+            transaction.rollback()
 
+    @transaction.commit_on_success
     def load_issue(self, data):
         issns = set()
         issns.add(data.journal.scielo_issn)
         issns.add(data.journal.print_issn)
         issns.add(data.journal.electronic_issn)
+
+        if data.type == 'ahead':
+            logger.info('Issue (Ahead) will not be imported')
+            return
 
         try:
             journal = Journal.objects.get(
@@ -389,7 +409,7 @@ class Catalog(object):
 
         logger.info('Importing Issue (%s)' % (data.label))
 
-        spe = 'spe' if data.type == 'special' else None
+        spe = data.number.replace('spe', '') if data.type == 'special' else None
         suppl = ' '.join([
                 data.supplement_volume or '',
                 data.supplement_number or ''
@@ -415,7 +435,8 @@ class Catalog(object):
         issue.volume = data.volume or ''
         issue.number = data.number or ''
         issue.type = data.type
-        if data.type == 'special' and spe:
+        if data.type == 'special':
+            issue.number = data.number.replace('spe', '') if data.number else ''
             issue.spe_text = spe
         if data.type == 'supplement' and suppl:
             issue.suppl_text = suppl
@@ -431,8 +452,12 @@ class Catalog(object):
             issue.save(force_insert=True)
         except DatabaseError as e:
             logger.error(e.message)
+            logger.debug('Issue (%s) not imported' % (data.label))
+            transaction.rollback()
         except IntegrityError as e:
             logger.error(e.message)
+            logger.debug('Issue (%s) not imported' % (data.label))
+            transaction.rollback()
 
         self._post_save_issue(issue, data)
 
