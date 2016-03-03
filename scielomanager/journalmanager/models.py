@@ -621,7 +621,7 @@ class Journal(models.Model):
     editor_phone2 = models.CharField(_('Editor Phone 2'), null=True, blank=True,
             max_length=32)
     editor_email = models.EmailField(_('Editor E-mail'))
-    publisher_name = models.CharField(_('Publisher Name'), max_length=256)
+    publisher_name = models.CharField(_('Publisher Name'), max_length=512)
     publisher_country = modelfields.CountryField(_('Publisher Country'))
     publisher_state = models.CharField(_('Publisher State/Province/Region'),
             max_length=64)

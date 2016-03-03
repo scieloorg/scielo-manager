@@ -19,6 +19,7 @@ except ImportError:
 setup_environ(settings)
 
 from django.db.models import Q
+from django.db.utils import DatabaseError, IntegrityError
 from journalmanager.models import *
 from django.contrib.auth.models import User
 from journalmanager.models import *
@@ -262,7 +263,14 @@ class Catalog(object):
         journal.is_indexed_ssci = data.is_indexed_in_ssci
         journal.is_indexed_aehci = data.is_indexed_in_ahci
 
-        journal.save(force_insert=True)
+        try:
+            journal.save(force_insert=True)
+        except DatabaseError as e:
+            import pdb; pdb.set_trace()
+            print e.message
+        except IntegrityError as e:
+            import pdb; pdb.set_trace()
+            print e.message
 
         self._post_save_journal(journal, data)
 
@@ -295,18 +303,33 @@ class Catalog(object):
 
         issue.created = data.creation_date
         issue.updated = data.update_date
-        #self._load_issue_titles(issue, data)
+        self._load_issue_titles(issue, data)
         #self._load_issue_sections(issue, data)
         if data.permissions:
             self._load_issue_use_license(issue, data.permissions)
 
-        issue.save()
+        try:
+            issue.save()
+        except DatabaseError as e:
+            import pdb; pdb.set_trace()
+            print e.message
+        except IntegrityError as e:
+            import pdb; pdb.set_trace()
+            print e.message
 
     def load_issue(self, data):
+        issns = set()
+        issns.add(data.journal.scielo_issn)
+        issns.add(data.journal.print_issn)
+        issns.add(data.journal.electronic_issn)
+
+        if data.publisher_id == '0103-733120150002':
+            import pdb; pdb.set_trace()
+
         try:
             journal = Journal.objects.get(
-                Q(print_issn=data.journal.scielo_issn) |
-                Q(eletronic_issn=data.journal.scielo_issn))
+                Q(print_issn__in=issns) |
+                Q(eletronic_issn__in=issns))
             logger.info('Journal already exists, skiping journal creation')
         except:
             logger.info('Journal do no exists, creating journal')
@@ -342,8 +365,10 @@ class Catalog(object):
         issue.type = data.type
         if data.type == 'special' and spe:
             issue.spe_text = spe
-        elif data.type == 'supplement' and suppl:
+
+        if data.type == 'supplement' and suppl:
             issue.suppl_text = suppl
+
         issue.order = data.order
         issue.is_press_release = data.is_press_release
         issue.total_documents = data.total_documents or 0
@@ -355,9 +380,12 @@ class Catalog(object):
 
         try:
             issue.save(force_insert=True)
-        except django.db.utils.DatabaseError:
+        except DatabaseError as e:
             import pdb; pdb.set_trace()
-
+            print e.message
+        except IntegrityError as e:
+            import pdb; pdb.set_trace()
+            print e.message
 
         self._post_save_issue(issue, data)
 
