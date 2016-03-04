@@ -1343,38 +1343,40 @@ class Article(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Ao salvar a entidade `Article`, alguns atributos são definidos
-        automaticamente: `journal_title`, `issn_ppub`, `issn_epub`, `is_aop`,
-        `domain_key`, `xml_version` e `aid`. Caso algum dos atributos
-        `journal-title`, `issn_ppub` ou `issn_epub` não sejam encontrados no
-        `xml`, a exceção `ValueError` é levantada.
-
-        Os valores `is_aop` e `domain_key` são atualizados sempre que a
-        instância é salva.
+        Ao salvar a instância pela primeira vez, o valor do atributo `aid` é
+        gerado automaticamente caso nenhum valor tenha sido atribuido.
         """
-        self.is_aop = self._get_is_aop()
-        self.domain_key = self._get_domain_key()
-
-        if self.pk is None:
-            self.journal_title = self.get_value(self.XPaths.JOURNAL_TITLE)
-            self.issn_ppub = self.get_value(self.XPaths.ISSN_PPUB) or ''
-            self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB) or ''
-            self.xml_version = self.get_value(self.XPaths.SPS_VERSION) or 'pre-sps'
+        if self.pk is None and not self.aid:
             self.aid = str(uuid4().hex)
-            self.article_type = self.get_value(self.XPaths.ARTICLE_TYPE)
-            self.doi = self.get_value(self.XPaths.DOI) or ''
-
-            if not any([self.issn_ppub, self.issn_epub]):
-                raise ValueError('Either issn_ppub or issn_epub must be set')
-
-            if not self.journal_title:
-                raise ValueError('Could not get journal-title from %s' % self)
-
-            if not self.article_type:
-                raise ValueError('Could not get article-type from %s' % self)
 
         super(Article, self).save(*args, **kwargs)
 
+    @classmethod
+    def parse(cls, content_as_bytes):
+        newarticle = cls(xml=content_as_bytes)
+
+        xpaths = cls.XPaths
+        get_value = newarticle.get_value
+
+        newarticle.is_aop = newarticle._get_is_aop()
+        newarticle.domain_key = newarticle._get_domain_key()
+        newarticle.journal_title = get_value(xpaths.JOURNAL_TITLE)
+        newarticle.issn_ppub = get_value(xpaths.ISSN_PPUB) or ''
+        newarticle.issn_epub = get_value(xpaths.ISSN_EPUB) or ''
+        newarticle.xml_version = get_value(xpaths.SPS_VERSION) or 'pre-sps'
+        newarticle.article_type = get_value(xpaths.ARTICLE_TYPE)
+        newarticle.doi = get_value(xpaths.DOI) or ''
+
+        if not any([newarticle.issn_ppub, newarticle.issn_epub]):
+            raise ValueError('Either issn_ppub or issn_epub must be set')
+
+        if not newarticle.journal_title:
+            raise ValueError('Could not get journal-title.')
+
+        if not newarticle.article_type:
+            raise ValueError('Could not get article-type.')
+
+        return newarticle
 
     def get_value(self, expression):
         """ Busca `expression` em `self.xml` e retorna o resultado da primeira ocorrência.

@@ -783,23 +783,6 @@ class ArticleTests(TestCase):
                    </front>
                  </article>"""
 
-    def test_fields_are_created_on_save(self):
-        auto_fields = ['journal_title', 'domain_key', 'aid', 'issn_ppub',
-                'issn_epub', 'xml_version', 'article_type', 'doi']
-
-        article = models.Article(xml=self.sample)
-
-        for field in auto_fields:
-            self.assertEqual(getattr(article, field), '')
-
-        article.save()
-
-        self.assertEquals(article.journal_title, u'Revista de Saúde Pública')
-        self.assertEquals(article.issn_ppub, u'1032-289X')
-        self.assertEquals(article.issn_epub, u'1032-2898')
-        self.assertEquals(article.xml_version, u'sps-1.2')
-        self.assertEquals(article.doi, u'10.1590/abcd')
-
     def test_is_visible_defaults_to_true(self):
         article = models.Article()
         self.assertTrue(article.is_visible)
@@ -810,10 +793,10 @@ class ArticleTests(TestCase):
 
     def test_articles_are_unique(self):
         from django.db import IntegrityError
-        article = models.Article(xml=self.sample)
+        article = models.Article.parse(self.sample)
         article.save()
 
-        dup_article = models.Article(xml=self.sample)
+        dup_article = models.Article.parse(self.sample)
         self.assertRaises(IntegrityError, lambda: dup_article.save())
 
     def test_either_pissn_or_eissn_must_be_present(self):
@@ -836,8 +819,7 @@ class ArticleTests(TestCase):
                        </front>
                      </article>"""
 
-        article = models.Article(xml=sample)
-        self.assertRaises(ValueError, lambda: article.save())
+        self.assertRaises(ValueError, lambda: models.Article.parse(sample))
 
     def test_journal_title_must_be_present(self):
         sample = u"""<article>
@@ -859,8 +841,7 @@ class ArticleTests(TestCase):
                        </front>
                      </article>"""
 
-        article = models.Article(xml=sample)
-        self.assertRaises(ValueError, lambda: article.save())
+        self.assertRaises(ValueError, lambda: models.Article.parse(sample))
 
     def test_get_value_for_element_text(self):
         article = models.Article(xml=self.sample)
@@ -1042,7 +1023,7 @@ class ArticleTests(TestCase):
                          </article-meta>
                        </front>
                      </article>"""
-        article = models.Article(xml=sample)
+        article = models.Article.parse(sample)
         article.save()
         self.assertTrue(article.control_attributes.articles_linkage_is_pending)
 

@@ -751,8 +751,8 @@ class LinkArticleToJournalTests(TestCase):
 class LinkArticleWithTheirRelated(TestCase):
 
     def test_correction_linkage(self):
-        correction = modelfactories.ArticleFactory.create(
-                xml=modelfactories.SAMPLE_XML_RELATED)
+        correction = models.Article.parse(modelfactories.SAMPLE_XML_RELATED)
+        correction.save()
 
         related_article_node = correction.xml.xpath(
                 correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
@@ -767,8 +767,8 @@ class LinkArticleWithTheirRelated(TestCase):
             pk=correction.pk).links_to.get(link_to=article))
 
     def test_correction_linkage_is_idempotent(self):
-        correction = modelfactories.ArticleFactory.create(
-                xml=modelfactories.SAMPLE_XML_RELATED)
+        correction = models.Article.parse(modelfactories.SAMPLE_XML_RELATED)
+        correction.save()
 
         related_article_node = correction.xml.xpath(
                 correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]

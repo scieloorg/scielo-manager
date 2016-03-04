@@ -222,4 +222,13 @@ class ArticleFactory(factory.Factory):
     FACTORY_FOR = models.Article
 
     xml = SAMPLE_XML
+    is_aop = False
+    domain_key = factory.Sequence(
+            lambda n: 'revista-de-saude-publica_48_2_2014_216_a_224_none_none_%s' % n)
+    journal_title = u'Revista de Saúde Pública'
+    issn_ppub = u'0034-8910'
+    issn_epub = u'1518-8787'
+    xml_version = u'sps-1.2'
+    article_type = u'research-article'
+    doi = u'10.1590/S0034-8910.2014048004965'
 
