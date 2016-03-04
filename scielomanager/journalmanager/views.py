@@ -308,19 +308,13 @@ def article_index(request, issue_id):
 def article_detail(request, article_pk):
 
     article = get_object_or_404(models.Article.userobjects.active(), pk=article_pk)
-    previews = []
 
-    if article.xml:
-        css_url = static('css/htmlgenerator/styles.css')
+    def safe_read(file):
+        with file as _file:
+            return _file.read()
 
-        try:
-            html_generator = packtools.HTMLGenerator.parse(
-                    article.xml.root_etree, valid_only=False, css=css_url)
-            previews = [{'lang': lang, 'html': html}
-                        for lang, html in html_generator]
-
-        except Exception:
-            pass
+    previews = [{'lang': html.lang, 'html': safe_read(html.file)}
+                for html in article.htmls.all()]
 
     return render_to_response(
         'journalmanager/article_detail.html',
