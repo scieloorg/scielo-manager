@@ -117,7 +117,13 @@ class Catalog(object):
             language = self._load_language(language)
             journal.abstract_keyword_languages.add(language)
 
-    def _load_journal_status_history(self, journal, status_history, user):
+    def _load_journal_status_history(self, journal, status_history):
+
+        ## cleanup before deploy the new status history
+        timeline = JournalTimeline.objects.filter(
+            journal=journal,
+            collection=self.collection
+        ).delete()
 
         if status_history is None:
             return
@@ -131,7 +137,7 @@ class Catalog(object):
                 st_date += '-01'
 
             defaults = {
-                'created_by': user,
+                'created_by': self.user,
             }
 
             try:
@@ -140,10 +146,11 @@ class Catalog(object):
                     collection=self.collection,
                     since=st_date,
                     status=status,
+                    reason=reason,
                     defaults=defaults)[0]
             except exceptions.ValidationError:
                 logger.warning('Invalid timeline (%s) for the journal (%s), nothing was assigned' % (
-                    ', '.join([date, status, reason]), journal.title)
+                    ', '.join([st_date, status, reason]), journal.title)
                 )
 
         try:
@@ -152,11 +159,12 @@ class Catalog(object):
                 collection=self.collection,
                 since=st_date,
                 status=status,
+                reason=reason,
                 defaults=defaults
             )
-        except:
+        except IntegrityError:
             logger.warning('Invalid membership (%s) for the journal (%s), nothing was assigned' % (
-                ', '.join([date, status, reason]), journal.title)
+                ', '.join([st_date, status, reason]), journal.title)
             )
 
         """
@@ -166,6 +174,8 @@ class Catalog(object):
         inseridos verificando a data da execução da importação
         """
         JournalTimeline.objects.filter(
+            journal=journal,
+            collection=self.collection,
             since__month=date.today().month,
             since__year=date.today().year).delete()
 
@@ -217,6 +227,13 @@ class Catalog(object):
             db_sponsor.save()
             journal.sponsor.add(db_sponsor)
 
+    def _load_journal_membership(self, journal):
+
+        if journal.is_member(self.collection):
+            return
+
+        journal.join(self.collection, self.user)
+
     def _post_save_journal(self, journal, data):
         """
         Este método existe para dados que só podem ser associados a um
@@ -231,9 +248,10 @@ class Catalog(object):
         self._load_journal_subject_areas(journal, data.subject_areas)
         self._load_journal_mission(journal, data.mission)
         self._load_journal_other_titles(journal, data)
-        self._load_journal_status_history(journal, data.status_history, self.user)
+        self._load_journal_status_history(journal, data.status_history)
         self._load_journal_use_license(journal, data.permissions)
         self._load_journal_sponsor(journal, data)
+        self._load_journal_membership(journal)
 
         try:
             journal.save()
@@ -246,6 +264,21 @@ class Catalog(object):
 
     @transaction.commit_on_success
     def load_journal(self, data):
+
+        issns = set()
+        issns.add(data.scielo_issn)
+        issns.add(data.print_issn)
+        issns.add(data.electronic_issn)
+
+        try:
+            journal = Journal.objects.get(
+                Q(print_issn__in=issns) |
+                Q(eletronic_issn__in=issns))
+            logger.info('Journal already exists, skiping journal creation')
+            return journal
+        except exceptions.ObjectDoesNotExist:
+            logger.info('Journal do no exists, creating journal')
+
         logger.info('Importing Journal (%s)' % data.title)
 
         journal = Journal()
@@ -292,12 +325,14 @@ class Catalog(object):
             journal.save(force_insert=True)
         except DatabaseError as e:
             logger.error(e.message)
-            logger.debug('Journal (%s) not imported' % (data.title))
+            logger.error('Journal (%s) not imported' % (data.title))
             transaction.rollback()
+            return
         except IntegrityError as e:
             logger.error(e.message)
-            logger.debug('Journal (%s) not imported' % (data.title))
+            logger.error('Journal (%s) not imported' % (data.title))
             transaction.rollback()
+            return
 
         self._post_save_journal(journal, data)
 
@@ -387,35 +422,12 @@ class Catalog(object):
             logger.error(e.message)
             transaction.rollback()
 
-    @transaction.commit_on_success
-    def load_issue(self, data):
-
-        if data.type == 'ahead':
-            logger.info('Issue (Ahead) will not be imported')
-            return
-
-        issns = set()
-        issns.add(data.journal.scielo_issn)
-        issns.add(data.journal.print_issn)
-        issns.add(data.journal.electronic_issn)
-
-        try:
-            journal = Journal.objects.get(
-                Q(print_issn__in=issns) |
-                Q(eletronic_issn__in=issns))
-            logger.info('Journal already exists, skiping journal creation')
-        except exceptions.ObjectDoesNotExist:
-            logger.info('Journal do no exists, creating journal')
-            journal = self.load_journal(data.journal)
-
-        logger.info('Importing Issue (%s)' % (data.label))
-
+    def _issue_exists(self, journal, data):
         spe = data.number.replace('spe', '') if data.type == 'special' else None
         suppl = ' '.join([
                 data.supplement_volume or '',
                 data.supplement_number or ''
             ]).strip() if data.type == 'supplement' else None
-
         try:
             issue = Issue.objects.get(
                 journal=journal,
@@ -426,11 +438,41 @@ class Catalog(object):
                 spe_text=spe,
                 suppl_text=suppl)
             logger.info('Issue already exists, skiping issue creation')
-            return
+            return issue
         except exceptions.ObjectDoesNotExist:
             logger.info('Issue do not exists, creating issue')
 
-        issue = Issue()
+        return None
+
+    @transaction.commit_on_success
+    def load_issue(self, data):
+
+        if data.type == 'ahead':
+            logger.info('Issue (Ahead) will not be imported')
+            return
+
+        journal = self.load_journal(data.journal)
+
+        if not journal:
+            return
+
+        self._load_journal_status_history(journal, data.journal.status_history)
+
+        logger.info('Importing Issue (%s)' % (data.label))
+
+        try:
+            issue = self._issue_exists(journal, data) or Issue()
+        except exceptions.MultipleObjectsReturned as e:
+            logger.error('Multiple issues found this new issue will not be created')
+            transaction.rollback()
+            return
+
+        spe = data.number.replace('spe', '') if data.type == 'special' else None
+        suppl = ' '.join([
+                data.supplement_volume or '',
+                data.supplement_number or ''
+            ]).strip() if data.type == 'supplement' else None
+
         issue.journal = journal
         issue.publication_year = data.publication_date[:4]
         issue.volume = data.volume or ''
@@ -453,12 +495,14 @@ class Catalog(object):
             issue.save(force_insert=True)
         except DatabaseError as e:
             logger.error(e.message)
-            logger.debug('Issue (%s) not imported' % (data.label))
+            logger.error('Issue (%s) not imported' % (data.label))
             transaction.rollback()
+            return
         except IntegrityError as e:
             logger.error(e.message)
-            logger.debug('Issue (%s) not imported' % (data.label))
+            logger.error('Issue (%s) not imported' % (data.label))
             transaction.rollback()
+            return
 
         self._post_save_issue(issue, data)
 
