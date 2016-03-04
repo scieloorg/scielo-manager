@@ -621,7 +621,7 @@ class Journal(models.Model):
     editor_phone2 = models.CharField(_('Editor Phone 2'), null=True, blank=True,
             max_length=32)
     editor_email = models.EmailField(_('Editor E-mail'))
-    publisher_name = models.CharField(_('Publisher Name'), max_length=256)
+    publisher_name = models.CharField(_('Publisher Name'), max_length=512)
     publisher_country = modelfields.CountryField(_('Publisher Country'))
     publisher_state = models.CharField(_('Publisher State/Province/Region'),
             max_length=64)
@@ -1093,13 +1093,15 @@ class Issue(models.Model):
         if self.use_license is None and self.journal:
             self.use_license = self._get_default_use_license()
 
-        if not self.pk:
-            self.order = self._suggest_order()
-        else:
-            # the ordering control is based on publication year attr.
-            # if an issue is moved between pub years, the order must be reset.
-            if tools.has_changed(self, 'publication_year'):
-                self.order = self._suggest_order(force=True)
+        # auto_order=False é passado na importação de dados para evitar o order automático
+        if kwargs.pop('auto_order', True):
+            if not self.pk:
+                self.order = self._suggest_order()
+            else:
+                # the ordering control is based on publication year attr.
+                # if an issue is moved between pub years, the order must be reset.
+                if tools.has_changed(self, 'publication_year'):
+                    self.order = self._suggest_order(force=True)
 
         super(Issue, self).save(*args, **kwargs)
 
