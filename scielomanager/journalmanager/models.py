@@ -1495,7 +1495,8 @@ class ArticleAsset(models.Model):
     """
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='assets')
-    file = models.FileField(upload_to=make_article_directory_path('assets'))
+    file = models.FileField(upload_to=make_article_directory_path('assets'),
+            max_length=1024)
     owner = models.CharField(max_length=1024, default=u'')
     use_license = models.TextField(default=u'')
     updated_at = models.DateTimeField(auto_now=True)
@@ -1512,7 +1513,8 @@ class ArticleHTMLRendition(models.Model):
     """
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='htmls')
-    file = models.FileField(upload_to=make_article_directory_path('htmls'))
+    file = models.FileField(upload_to=make_article_directory_path('htmls'),
+            max_length=1024)
     lang = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     build_version = models.CharField(max_length=8)
     updated_at = models.DateTimeField(auto_now=True)
