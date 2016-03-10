@@ -84,7 +84,7 @@ class Automata(object):
         return self._journal.acronym.lower()
 
     def __unicode__(self):
-        return '{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
+        return u'{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
             self.citat, self.acron, self.norma_acron)
 
 
@@ -119,7 +119,7 @@ class Issue(object):
         return str(self._issue.publication_year) + str(self._issue.order)
 
     def __unicode__(self):
-        rows = '\r\n'.join([self.legend, self.period, self.order, '', ''])
+        rows = u'\r\n'.join([self.legend, self.period, self.order, u'', u''])
         return rows
 
 
@@ -214,14 +214,14 @@ class L10nIssue(Automata, Issue):
             return L10ISSUEMGS[self._language][1]
 
     def __unicode__(self):
-        rows = '\r\n'.join([
+        rows = u'\r\n'.join([
             self.legend,
             self.issue_meta,
             self.sections,
             self.sections_ids,
             self.ctrl_vocabulary,
             self.norma_name,
-            '',
+            u'',
         ])
         return rows
 
@@ -430,14 +430,14 @@ class L10nAhead(Ahead):
         ])
 
     def __unicode__(self):
-        rows = '\r\n'.join([
+        rows = u'\r\n'.join([
             self.title_ahead,
             self.ahead_meta,
             self.sections,
             self.sections_ids,
             self.ctrl_vocabulary,
             self.norma_name,
-            '',
+            u'',
         ])
         return rows
 
