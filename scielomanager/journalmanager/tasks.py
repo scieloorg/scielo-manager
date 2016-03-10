@@ -254,7 +254,7 @@ def create_article_from_string(xml_string):
         logger.debug('Schematron validation error log: %s.', metadata_sch.error_log)
         raise ValueError('Missing identification elements')
 
-    new_article = models.Article(xml=xml_bstring)
+    new_article = models.Article.parse(xml_bstring)
     new_article.save()
 
     logger.info('New Article added with aid: %s.', new_article.aid)
