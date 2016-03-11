@@ -61,9 +61,10 @@ class RPCHandler(object):
     """Implementação do serviço `JournalManagerServices`.
     """
     @resource_cleanup
-    def addArticle(self, xml_string):
+    def addArticle(self, xml_string, overwrite):
         try:
-            delayed_task = tasks.create_article_from_string.delay(xml_string)
+            delayed_task = tasks.create_article_from_string.delay(
+                    xml_string, overwrite_if_exists=overwrite)
             return delayed_task.id
 
         except Exception as exc:
