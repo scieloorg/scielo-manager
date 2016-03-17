@@ -1,7 +1,7 @@
 .. _func-addArticle:
 
-``string addArticle(1:string xml_string) throws (1:ServerError srv_err);``
-==========================================================================
+``string addArticle(1:string xml_string, 2:bool overwrite) throws (1:ServerError srv_err);``
+============================================================================================
 
 Cadastra uma nova entidade ``journalmanager.models.Article``. 
 
@@ -46,6 +46,12 @@ No caso de resultados com status ``FAILURE``, os valores para ``errno`` são:
 | 2     | ValueError       | ``xml_string`` é mal-formado ou apresenta algum problema |
 |       |                  | estrutural que impeça sua identificação                  |
 +-------+------------------+----------------------------------------------------------+
+
+
+.. note:: Erros do tipo ``DuplicationError`` ocorrem apenas em invocações cujo 
+          valor do argumento ``overwrite`` é igual a ``FALSE``. Caso o valor 
+          seja ``TRUE``, a entidade pré-existente será substituída de maneira 
+          permanente.
 
 
 Os elementos de identificação são: 

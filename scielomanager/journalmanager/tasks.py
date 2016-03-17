@@ -9,7 +9,7 @@ from copy import deepcopy
 
 from lxml import isoschematron, etree
 from django.db.models import Q
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
@@ -227,7 +227,7 @@ def process_dirty_articles():
 
 
 @app.task(throws=(IntegrityError, ValueError))
-def create_article_from_string(xml_string):
+def create_article_from_string(xml_string, overwrite_if_exists=False):
     """ Cria uma instância de `journalmanager.models.Article`.
 
     Pode levantar `django.db.IntegrityError` no caso de artigos duplicados,
@@ -236,6 +236,8 @@ def create_article_from_string(xml_string):
     presentes.
 
     :param xml_string: String de texto unicode.
+    :param overwrite_if_exists: (opcional) valor booleano indicando se o artigo
+                                deve ser substituído caso já exista.
     :return: aid (article-id) formado por uma string de 32 bytes.
     """
     if not isinstance(xml_string, unicode):
@@ -255,7 +257,40 @@ def create_article_from_string(xml_string):
         raise ValueError('Missing identification elements')
 
     new_article = models.Article.parse(xml_bstring)
-    new_article.save()
+
+    with transaction.commit_manually():
+        sid = transaction.savepoint()
+        try:
+            new_article.save()
+
+        except IntegrityError:
+            transaction.savepoint_rollback(sid)
+
+            if overwrite_if_exists:
+                try:
+                    old_article = models.Article.objects.only('pk', 'aid').get(
+                            domain_key=new_article.domain_key)
+
+                    old_article.control_attributes.delete()
+                    old_article.related_articles.clear()
+
+                    new_article.pk = old_article.pk
+                    new_article.aid = old_article.aid
+                    new_article.save()
+
+                except DatabaseError:
+                    transaction.savepoint_rollback(sid)
+
+                else:
+                    transaction.savepoint_commit(sid)
+
+            else:
+                raise
+
+        else:
+            transaction.savepoint_commit(sid)
+
+        transaction.commit()
 
     logger.info('New Article added with aid: %s.', new_article.aid)
 

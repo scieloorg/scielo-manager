@@ -648,10 +648,49 @@ class FunctionAddFromStringTests(TestCase):
         self.assertRaises(IntegrityError,
                 tasks.create_article_from_string, self.sample)
 
+    def test_duplicated_articles_causes_overwrite(self):
+        from django.db import IntegrityError
+
+        aid1 = tasks.create_article_from_string(self.sample)
+        art1 = models.Article.objects.get(aid=aid1)
+        art1.article_type = u'foo'  # para comparar depois
+        art1.save()
+
+        aid2 = tasks.create_article_from_string(self.sample,
+                overwrite_if_exists=True)
+
+        self.assertEquals(aid1, aid2)
+
+        art2 = models.Article.objects.get(aid=aid2)
+        self.assertEquals(art2.article_type, u'research-article')
+
     def test_xml_with_syntax_error(self):
         err_xml = u"<article></articlezzzz>"
         self.assertRaises(ValueError,
                 tasks.create_article_from_string, err_xml)
+
+    def test_duplicated_articles_clear_related_articles(self):
+        correction = models.Article.parse(modelfactories.SAMPLE_XML_RELATED)
+        correction.save()
+
+        related_article_node = correction.xml.xpath(
+                correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
+
+        link_to_article = related_article_node.attrib['{http://www.w3.org/1999/xlink}href']
+
+        article = modelfactories.ArticleFactory.create(doi=link_to_article)
+
+        tasks.link_article_with_their_related(correction.pk)
+
+        self.assertTrue(models.Article.objects.get(
+            pk=correction.pk).links_to.get(link_to=article))
+
+        # Agora a instância será sobrescrita
+        new_aid = tasks.create_article_from_string(
+                modelfactories.SAMPLE_XML_RELATED.decode('utf-8'),
+                overwrite_if_exists=True)
+        new_correction = models.Article.objects.get(aid=new_aid)
+        self.assertEquals(new_correction.links_to.all().count(), 0)
 
 
 class LinkArticleToJournalTests(TestCase):
