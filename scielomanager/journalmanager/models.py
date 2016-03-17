@@ -621,7 +621,7 @@ class Journal(models.Model):
     editor_phone2 = models.CharField(_('Editor Phone 2'), null=True, blank=True,
             max_length=32)
     editor_email = models.EmailField(_('Editor E-mail'))
-    publisher_name = models.CharField(_('Publisher Name'), max_length=256)
+    publisher_name = models.CharField(_('Publisher Name'), max_length=512)
     publisher_country = modelfields.CountryField(_('Publisher Country'))
     publisher_state = models.CharField(_('Publisher State/Province/Region'),
             max_length=64)
@@ -1093,13 +1093,15 @@ class Issue(models.Model):
         if self.use_license is None and self.journal:
             self.use_license = self._get_default_use_license()
 
-        if not self.pk:
-            self.order = self._suggest_order()
-        else:
-            # the ordering control is based on publication year attr.
-            # if an issue is moved between pub years, the order must be reset.
-            if tools.has_changed(self, 'publication_year'):
-                self.order = self._suggest_order(force=True)
+        # auto_order=False é passado na importação de dados para evitar o order automático
+        if kwargs.pop('auto_order', True):
+            if not self.pk:
+                self.order = self._suggest_order()
+            else:
+                # the ordering control is based on publication year attr.
+                # if an issue is moved between pub years, the order must be reset.
+                if tools.has_changed(self, 'publication_year'):
+                    self.order = self._suggest_order(force=True)
 
         super(Issue, self).save(*args, **kwargs)
 
@@ -1343,38 +1345,40 @@ class Article(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Ao salvar a entidade `Article`, alguns atributos são definidos
-        automaticamente: `journal_title`, `issn_ppub`, `issn_epub`, `is_aop`,
-        `domain_key`, `xml_version` e `aid`. Caso algum dos atributos
-        `journal-title`, `issn_ppub` ou `issn_epub` não sejam encontrados no
-        `xml`, a exceção `ValueError` é levantada.
-
-        Os valores `is_aop` e `domain_key` são atualizados sempre que a
-        instância é salva.
+        Ao salvar a instância pela primeira vez, o valor do atributo `aid` é
+        gerado automaticamente caso nenhum valor tenha sido atribuido.
         """
-        self.is_aop = self._get_is_aop()
-        self.domain_key = self._get_domain_key()
-
-        if self.pk is None:
-            self.journal_title = self.get_value(self.XPaths.JOURNAL_TITLE)
-            self.issn_ppub = self.get_value(self.XPaths.ISSN_PPUB) or ''
-            self.issn_epub = self.get_value(self.XPaths.ISSN_EPUB) or ''
-            self.xml_version = self.get_value(self.XPaths.SPS_VERSION) or 'pre-sps'
+        if self.pk is None and not self.aid:
             self.aid = str(uuid4().hex)
-            self.article_type = self.get_value(self.XPaths.ARTICLE_TYPE)
-            self.doi = self.get_value(self.XPaths.DOI) or ''
-
-            if not any([self.issn_ppub, self.issn_epub]):
-                raise ValueError('Either issn_ppub or issn_epub must be set')
-
-            if not self.journal_title:
-                raise ValueError('Could not get journal-title from %s' % self)
-
-            if not self.article_type:
-                raise ValueError('Could not get article-type from %s' % self)
 
         super(Article, self).save(*args, **kwargs)
 
+    @classmethod
+    def parse(cls, content_as_bytes):
+        newarticle = cls(xml=content_as_bytes)
+
+        xpaths = cls.XPaths
+        get_value = newarticle.get_value
+
+        newarticle.is_aop = newarticle._get_is_aop()
+        newarticle.domain_key = newarticle._get_domain_key()
+        newarticle.journal_title = get_value(xpaths.JOURNAL_TITLE)
+        newarticle.issn_ppub = get_value(xpaths.ISSN_PPUB) or ''
+        newarticle.issn_epub = get_value(xpaths.ISSN_EPUB) or ''
+        newarticle.xml_version = get_value(xpaths.SPS_VERSION) or 'pre-sps'
+        newarticle.article_type = get_value(xpaths.ARTICLE_TYPE)
+        newarticle.doi = get_value(xpaths.DOI) or ''
+
+        if not any([newarticle.issn_ppub, newarticle.issn_epub]):
+            raise ValueError('Either issn_ppub or issn_epub must be set')
+
+        if not newarticle.journal_title:
+            raise ValueError('Could not get journal-title.')
+
+        if not newarticle.article_type:
+            raise ValueError('Could not get article-type.')
+
+        return newarticle
 
     def get_value(self, expression):
         """ Busca `expression` em `self.xml` e retorna o resultado da primeira ocorrência.
@@ -1468,13 +1472,24 @@ class Article(models.Model):
                 self.aid, domain_key)
 
 
-def articleasset_directory_path(instance, filename):
-    """Indica o diretório de armazenamento dos arquivos de ``ArticleAsset.file``.
+def make_article_directory_path(content_type):
+    """ Produz funções que definem o diretório de armazenamento dos arquivos
+    relacionados a um artigo.
 
-    O ativo será armazenado em MEDIA_ROOT/articles/<aid>/assets/<filename>.
+    O ativo será armazenado em:
+    MEDIA_ROOT/articles/<aid_seg1>/<aid_seg2>/<aid_seg3>/<aid>/<content_type>/<filename>.
     """
-    return 'articles/{aid}/assets/{filename}'.format(
-            aid=instance.article.aid, filename=filename)
+    def article_directory_path(instance, filename):
+        aid = instance.article.aid
+        seg1 = aid[:2]
+        seg2 = aid[2:4]
+        seg3 = aid[4:6]
+
+        return 'articles/{seg1}/{seg2}/{seg3}/{aid}/{type}/{filename}'.format(
+                seg1=seg1, seg2=seg2, seg3=seg3, aid=aid,
+                type=content_type, filename=filename)
+
+    return article_directory_path
 
 
 class ArticleAsset(models.Model):
@@ -1482,7 +1497,8 @@ class ArticleAsset(models.Model):
     """
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='assets')
-    file = models.FileField(upload_to=articleasset_directory_path)
+    file = models.FileField(upload_to=make_article_directory_path('assets'),
+            max_length=1024)
     owner = models.CharField(max_length=1024, default=u'')
     use_license = models.TextField(default=u'')
     updated_at = models.DateTimeField(auto_now=True)
@@ -1490,6 +1506,27 @@ class ArticleAsset(models.Model):
     def __repr__(self):
         return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
                 self.pk, self.file.url)
+
+
+class ArticleHTMLRendition(models.Model):
+    """Documento HTML de uma tradução de uma instância de Article.
+
+    Armazena apenas o *build* mais recente para cada idioma.
+    """
+    article = models.ForeignKey('Article', on_delete=models.CASCADE,
+            related_name='htmls')
+    file = models.FileField(upload_to=make_article_directory_path('htmls'),
+            max_length=1024)
+    lang = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
+    build_version = models.CharField(max_length=8)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self):
+        return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
+                self.pk, self.file.url)
+
+    class Meta:
+        unique_together = (('article', 'lang'),)
 
 
 # --------------------
@@ -1538,6 +1575,16 @@ def create_article_control_attributes(sender, instance, created, **kwargs):
         linkage_is_pending = instance.article_type in LINKABLE_ARTICLE_TYPES
         ctrl_attrs.articles_linkage_is_pending = linkage_is_pending
         ctrl_attrs.save()
+
+
+@receiver(post_save, sender=Article)
+def create_article_html_renditions(sender, instance, created, **kwargs):
+    """ Cria os documentos HTML para cada idioma do artigo.
+    """
+    if created:
+        celery.current_app.send_task(
+                'journalmanager.tasks.create_article_html_renditions',
+                args=[instance.pk])
 
 
 # Callback da tasty-pie para a geração de token para os usuários

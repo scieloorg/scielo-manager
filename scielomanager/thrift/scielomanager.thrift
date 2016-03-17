@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "1.4.0"
+const string VERSION = "2.0.0"
 
 
 #
@@ -142,7 +142,8 @@ service JournalManagerServices {
      * Retorna string `task_id` correspondente ao identificador da tarefa
      * criada. `task_id` deve ser utilizada para obter o resultado da função. 
      */
-    string addArticle(1:string xml_string) throws (1:ServerError srv_err);
+    string addArticle(1:string xml_string, 2:bool overwrite) throws (
+            1:ServerError srv_err);
 
     /*
      * Adiciona um novo ativo digital, vinculado a uma entidade Article.

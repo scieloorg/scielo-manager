@@ -401,24 +401,21 @@ class RegularIssueForm(IssueBaseForm):
             raise forms.ValidationError(
                 _('You must complete at least one of two fields volume or number.'))
 
-        try:
-            issue = models.Issue.objects.get(number=number,
-                                             volume=volume,
-                                             publication_year=publication_year,
-                                             journal=self.journal.pk)
-        except models.Issue.DoesNotExist:
+        # fascículos de volume podem retornar mais de 1 item na consulta a
+        # seguir.
+        issues = models.Issue.objects.filter(number=number, volume=volume,
+                publication_year=publication_year, journal=self.journal.pk)
+
+        if issues.exists():
+            issues_pk = [issue.pk for issue in issues]
+            if self.instance is None or (self.instance.pk not in issues_pk):
+                raise forms.ValidationError({NON_FIELD_ERRORS:\
+                    _('Issue with this Year and (Volume or Number) already '
+                      'exists for this Journal.')})
+
+        else:
             # Perfect! A brand new issue!
             pass
-        except MultipleObjectsReturned as e:
-            logger.error('''
-                Multiple issues returned for the same number, volume and year for one journal.
-                Traceback: %s'''.strip() % e.message)
-            raise forms.ValidationError({NON_FIELD_ERRORS: _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
-        else:
-            # Issue already exists (handling updates).
-            if self.instance is None or (self.instance.pk != issue.pk):
-                raise forms.ValidationError({NON_FIELD_ERRORS:\
-                    _('Issue with this Year and (Volume or Number) already exists for this Journal.')})
 
         return self.cleaned_data
 

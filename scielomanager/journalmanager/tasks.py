@@ -9,10 +9,12 @@ from copy import deepcopy
 
 from lxml import isoschematron, etree
 from django.db.models import Q
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, transaction, DatabaseError
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
+from django.templatetags.static import static
+import packtools
 
 from scielomanager.celery import app
 from scielomanager import connectors
@@ -225,7 +227,7 @@ def process_dirty_articles():
 
 
 @app.task(throws=(IntegrityError, ValueError))
-def create_article_from_string(xml_string):
+def create_article_from_string(xml_string, overwrite_if_exists=False):
     """ Cria uma instância de `journalmanager.models.Article`.
 
     Pode levantar `django.db.IntegrityError` no caso de artigos duplicados,
@@ -234,6 +236,8 @@ def create_article_from_string(xml_string):
     presentes.
 
     :param xml_string: String de texto unicode.
+    :param overwrite_if_exists: (opcional) valor booleano indicando se o artigo
+                                deve ser substituído caso já exista.
     :return: aid (article-id) formado por uma string de 32 bytes.
     """
     if not isinstance(xml_string, unicode):
@@ -252,8 +256,41 @@ def create_article_from_string(xml_string):
         logger.debug('Schematron validation error log: %s.', metadata_sch.error_log)
         raise ValueError('Missing identification elements')
 
-    new_article = models.Article(xml=xml_bstring)
-    new_article.save()
+    new_article = models.Article.parse(xml_bstring)
+
+    with transaction.commit_manually():
+        sid = transaction.savepoint()
+        try:
+            new_article.save()
+
+        except IntegrityError:
+            transaction.savepoint_rollback(sid)
+
+            if overwrite_if_exists:
+                try:
+                    old_article = models.Article.objects.only('pk', 'aid').get(
+                            domain_key=new_article.domain_key)
+
+                    old_article.control_attributes.delete()
+                    old_article.related_articles.clear()
+
+                    new_article.pk = old_article.pk
+                    new_article.aid = old_article.aid
+                    new_article.save()
+
+                except DatabaseError:
+                    transaction.savepoint_rollback(sid)
+
+                else:
+                    transaction.savepoint_commit(sid)
+
+            else:
+                raise
+
+        else:
+            transaction.savepoint_commit(sid)
+
+        transaction.commit()
 
     logger.info('New Article added with aid: %s.', new_article.aid)
 
@@ -360,4 +397,40 @@ def create_articleasset_from_bytes(aid, filename, content, owner=None,
             repr(asset), aid)
 
     return asset.file.url
+
+
+@app.task(throws=(ValueError,))
+def create_article_html_renditions(article_pk, css_url=None, valid_only=False):
+    """Cria os documentos HTML para cada idioma do artigo.
+
+    :param css_url: (opcional) URL da CSS a ser relacionada no documento HTML.
+    :param valid_only: (opcional) produz o HTML apenas para XMLs válidos.
+    """
+    try:
+        article = models.Article.objects.get(pk=article_pk)
+
+    except models.Article.DoesNotExist:
+        raise ValueError('Cannot find Article with pk: %s' % article_pk)
+
+    css_url = css_url or static('css/htmlgenerator/styles.css')
+
+    files_urls = []
+    for lang, html in packtools.HTMLGenerator.parse(article.xml.root_etree,
+            valid_only=valid_only, css=css_url):
+        rendition, _ = models.ArticleHTMLRendition.objects.get_or_create(
+                article=article, lang=lang)
+        rendition.build_version = packtools.__version__
+
+        content = etree.tostring(html, encoding='utf-8', method='html',
+                doctype=u'<!DOCTYPE html>')
+
+        filename = ''.join([article.aid, u'-', lang, u'.html'])
+        rendition.file.save(filename, ContentFile(content))
+
+        files_urls.append(rendition.file.url)
+
+        logger.info('ArticleHTMLRendition in lang "%s" added to Article with '
+                    'aid: %s.', lang, article.aid)
+
+    return files_urls
 

@@ -648,10 +648,49 @@ class FunctionAddFromStringTests(TestCase):
         self.assertRaises(IntegrityError,
                 tasks.create_article_from_string, self.sample)
 
+    def test_duplicated_articles_causes_overwrite(self):
+        from django.db import IntegrityError
+
+        aid1 = tasks.create_article_from_string(self.sample)
+        art1 = models.Article.objects.get(aid=aid1)
+        art1.article_type = u'foo'  # para comparar depois
+        art1.save()
+
+        aid2 = tasks.create_article_from_string(self.sample,
+                overwrite_if_exists=True)
+
+        self.assertEquals(aid1, aid2)
+
+        art2 = models.Article.objects.get(aid=aid2)
+        self.assertEquals(art2.article_type, u'research-article')
+
     def test_xml_with_syntax_error(self):
         err_xml = u"<article></articlezzzz>"
         self.assertRaises(ValueError,
                 tasks.create_article_from_string, err_xml)
+
+    def test_duplicated_articles_clear_related_articles(self):
+        correction = models.Article.parse(modelfactories.SAMPLE_XML_RELATED)
+        correction.save()
+
+        related_article_node = correction.xml.xpath(
+                correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
+
+        link_to_article = related_article_node.attrib['{http://www.w3.org/1999/xlink}href']
+
+        article = modelfactories.ArticleFactory.create(doi=link_to_article)
+
+        tasks.link_article_with_their_related(correction.pk)
+
+        self.assertTrue(models.Article.objects.get(
+            pk=correction.pk).links_to.get(link_to=article))
+
+        # Agora a instância será sobrescrita
+        new_aid = tasks.create_article_from_string(
+                modelfactories.SAMPLE_XML_RELATED.decode('utf-8'),
+                overwrite_if_exists=True)
+        new_correction = models.Article.objects.get(aid=new_aid)
+        self.assertEquals(new_correction.links_to.all().count(), 0)
 
 
 class LinkArticleToJournalTests(TestCase):
@@ -751,8 +790,8 @@ class LinkArticleToJournalTests(TestCase):
 class LinkArticleWithTheirRelated(TestCase):
 
     def test_correction_linkage(self):
-        correction = modelfactories.ArticleFactory.create(
-                xml=modelfactories.SAMPLE_XML_RELATED)
+        correction = models.Article.parse(modelfactories.SAMPLE_XML_RELATED)
+        correction.save()
 
         related_article_node = correction.xml.xpath(
                 correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
@@ -767,8 +806,8 @@ class LinkArticleWithTheirRelated(TestCase):
             pk=correction.pk).links_to.get(link_to=article))
 
     def test_correction_linkage_is_idempotent(self):
-        correction = modelfactories.ArticleFactory.create(
-                xml=modelfactories.SAMPLE_XML_RELATED)
+        correction = models.Article.parse(modelfactories.SAMPLE_XML_RELATED)
+        correction.save()
 
         related_article_node = correction.xml.xpath(
                 correction.XPaths.RELATED_CORRECTED_ARTICLES)[0]
@@ -835,4 +874,27 @@ class CreateArticleAssetsFromBytes(TestCase):
                 lambda: tasks.create_articleasset_from_bytes('unknown-aid',
                     'somefile.txt', b'\x04\x00', owner='Joe Doe',
                     use_license='License text'))
+
+
+class CreateArticleHTMLRenditionsTests(TestCase):
+    def test_htmls_urls_are_returned(self):
+        article = modelfactories.ArticleFactory.create()
+        result = tasks.create_article_html_renditions(article.pk)
+
+        urls = [html.file.url for html in article.htmls.all()]
+
+        self.assertEquals(sorted(result), sorted(urls))
+
+    def test_unknown_article_raises_ValueError(self):
+        self.assertRaises(ValueError,
+                lambda: tasks.create_article_html_renditions(1))
+
+    def test_htmls_filenames_are_suffixed_with_lang(self):
+        article = modelfactories.ArticleFactory.create()
+        result = tasks.create_article_html_renditions(article.pk)
+
+        urls = [[html.file.url, html.lang] for html in article.htmls.all()]
+
+        for url, lang in urls:
+            self.assertTrue(url.endswith(u'-' + lang + u'.html'))
 
