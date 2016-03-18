@@ -241,7 +241,7 @@ class Catalog(object):
         existência de um PK definido.
         """
 
-        journal.created = data.creation_date
+        journal.created = data.creation_date or data.processing_date
         journal.updated = data.update_date
         self._load_journal_textlanguage(journal, data.languages)
         self._load_journal_abstractlanguage(journal, data.abstract_languages)
@@ -406,7 +406,7 @@ class Catalog(object):
     def _post_save_issue(self, issue, data):
 
         issue.order = int(data.order)
-        issue.created = data.creation_date
+        issue.created = data.creation_date or data.processing_date
         issue.updated = data.update_date
         self._load_issue_titles(issue, data.titles)
         self._load_issue_sections(issue, data.sections)
