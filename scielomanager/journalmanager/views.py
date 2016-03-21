@@ -1207,7 +1207,7 @@ def ajx_add_journal_to_user_collection(request, journal_id):
     else:
         # The journal is join to new collection with status ``inprogress``
         journal.join(user_collection, request.user)
-        messages.error(request, _('{journal} add to collection {collection}'.format(
+        messages.error(request, _(u'{journal} add to collection {collection}'.format(
             journal=journal,
             collection=user_collection)))
 
