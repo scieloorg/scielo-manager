@@ -22,9 +22,9 @@ def my_account(request):
         profile_form = UserProfileForm(request.POST, instance=request.user.get_profile())
         if profile_form.is_valid():
             profile_form.save()
-            messages.success(request, _('Saved successfully'))
+            messages.success(request, _(u'Saved successfully'))
         else:
-            messages.error(request, _('There are some errors or missing data.'))
+            messages.error(request, _(u'There are some errors or missing data.'))
 
     my_collecttions = [{'name': c.name, 'is_manager': c.is_managed_by_user(request.user)} for c in request.user.user_collection.all()]
 
@@ -45,7 +45,7 @@ def password_change(request):
         if form.is_valid():
             cleaned_data = form.cleaned_data
             if cleaned_data['new_password'] != cleaned_data['new_password_again']:
-                messages.error(request, _('Your new password and new password confirmation must match.'))
+                messages.error(request, _(u'Your new password and new password confirmation must match.'))
                 return HttpResponseRedirect(reverse('journalmanager.password_change'))
 
             auth_user = authenticate(username=request.user.username,
@@ -54,10 +54,10 @@ def password_change(request):
                 auth_user.set_password(cleaned_data['new_password'])
                 auth_user.save()
             else:
-                messages.error(request, _('Your current password does not match. Please try again.'))
+                messages.error(request, _(u'Your current password does not match. Please try again.'))
                 return HttpResponseRedirect(reverse('journalmanager.password_change'))
 
-            messages.info(request, _('Your new password has been set.'))
+            messages.info(request, _(u'Your new password has been set.'))
             return HttpResponseRedirect(reverse('journalmanager.my_account'))
     else:
         form = forms.PasswordChangeForm()
