@@ -49,10 +49,10 @@ from editorialmanager.models import EditorialBoard
 from editorialmanager import notifications
 from accounts import forms as accounts_forms
 
-MSG_FORM_SAVED = _('Saved.')
-MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
-MSG_FORM_MISSING = _('There are some errors or missing data.')
-MSG_DELETE_PENDED = _('The pended form has been deleted.')
+MSG_FORM_SAVED = _(u'Saved.')
+MSG_FORM_SAVED_PARTIALLY = _(u'Saved partially. You can continue to fill in this form later.')
+MSG_FORM_MISSING = _(u'There are some errors or missing data.')
+MSG_DELETE_PENDED = _(u'The pended form has been deleted.')
 
 user_request_context = usercontext.get_finder()
 
@@ -104,7 +104,7 @@ def get_editor(request, journal_id):
         try:
             users_editor = get_users_by_group('Editors')
         except ObjectDoesNotExist:
-            messages.error(request, _("Does not exist the group 'Editors'"))
+            umessages.error(request, _(u"Does not exist the group 'Editors'"))
 
     return render_to_response('journalmanager/editor.html',
                              {'editor': journal.editor,
@@ -126,17 +126,17 @@ def add_editor(request, journal_id):
             editor = User.objects.get(pk=editor_pk)
             journal.editor = editor
             journal.save()
-            messages.success(request, _("Successfully selected %s as editor of this Journal" % editor.get_full_name()))
+            messages.success(request, _(u"Successfully selected %s as editor of this Journal" % editor.get_full_name()))
         else:
             #Remove editor
             journal.editor = None
             journal.save()
-            messages.success(request, _("No user selected as editor of this journal!"))
+            messages.success(request, _(u"No user selected as editor of this journal!"))
     else:
         try:
             users_editor = get_users_by_group('Editors')
         except ObjectDoesNotExist:
-            messages.error(request, _("Does not exist the group 'Editors'"))
+            messages.error(request, _(u"Does not exist the group 'Editors'"))
 
         return render_to_response('journalmanager/includes/form_add_editor.html',
                                  {'journal': journal,
@@ -652,7 +652,7 @@ def add_journal(request, journal_id=None):
                     filter_list.append(Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn')))
 
                 if journal_id is None and models.Journal.objects.filter(reduce(operator.or_, filter_list)).exists():
-                    messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
+                    messages.error(request, _(u"This Journal already exists, please search the journal in the previous step"))
                 else:
                     saved_journal = journalform.save_all(creator=request.user)
 
@@ -762,7 +762,7 @@ def add_sponsor(request, sponsor_id=None):
             newsponsorform = sponsorform.save()
 
             if request.POST.get('popup', 0):
-                return HttpResponse('<script type="text/javascript">\
+                return HttpResponse(u'<script type="text/javascript">\
                     opener.updateSelect(window, "%s", "%s", "id_journal-sponsor");</script>' % \
                     (escape(newsponsorform.id), escape(newsponsorform)))
 
@@ -985,7 +985,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                     members = last_issue.editorialboard.editorialmember_set.all()
                 except ObjectDoesNotExist:
                     messages.info(request,
-                        _("Issue created successfully, however we can not create the editorial board."))
+                        _(u"Issue created successfully, however we can not create the editorial board."))
                     notifications.issue_board_replica(issue, 'issue_add_no_replicated_board')
                 else:
                     ed_board = EditorialBoard()
@@ -1060,7 +1060,7 @@ def add_section(request, journal_id, section_id=None):
             section_title_formset.save()
 
             if request.POST.get('popup', 0):
-                return HttpResponse('<script type="text/javascript">\
+                return HttpResponse(u'<script type="text/javascript">\
                     opener.updateSelect(window, "%s", "%s", "id_section");</script>' % \
                     (escape(add_form.id), escape(add_form)))
 
@@ -1085,11 +1085,11 @@ def del_section(request, journal_id, section_id):
     if not section.is_used():
         section.is_trashed = True
         section.save()
-        messages.success(request, _('Section removed successfully'))
+        messages.success(request, _(u'Section removed successfully'))
     else:
         messages.info(
             request,
-            _("Can't delete, some issues are using this Section")
+            _(u"Can't delete, some issues are using this Section")
         )
 
     return HttpResponseRedirect(
@@ -1254,7 +1254,7 @@ def ajx_list_issues_for_markup_files(request):
 
     issues = []
     for issue in journal_issues:
-        text = '{0} - {1}'.format(issue.publication_year, issue.label)
+        text = u'{0} - {1}'.format(issue.publication_year, issue.label)
         issues.append({'id': issue.pk, 'text': text})
 
     response_data = json.dumps(issues)
