@@ -342,7 +342,7 @@ class JournalRestAPITest(WebTest):
         journal.join(col, self.user)
 
         response = self.app.get('/api/v1/journals/',
-            extra_environ=self.extra_environ).json
+                                extra_environ=self.extra_environ).json
 
         self.assertEqual(response['objects'][0]['pub_status'], u'inprogress')
 
@@ -361,10 +361,29 @@ class JournalRestAPITest(WebTest):
 
         journal.change_status(col, u'current', u'yeah', self.user)
 
-        response = self.app.get('/api/v1/journals/',
-            extra_environ=self.extra_environ).json
+        response = self.app.get('/api/v1/journals/?collection=%s' % col.name_slug,
+                                extra_environ=self.extra_environ).json
 
         self.assertEqual(response['objects'][0]['pub_status'], u'current')
+
+    def test_dehydrate_pub_status_with_multiple_collections_without_collection_param(self):
+        col = modelfactories.CollectionFactory()
+        col2 = modelfactories.CollectionFactory()
+
+        col.add_user(self.user)
+        col2.add_user(self.user)
+
+        col.make_default_to_user(self.user)
+
+        journal = modelfactories.JournalFactory.create()
+        journal.join(col, self.user)
+        journal.join(col2, self.user, )
+
+        journal.change_status(col, u'current', u'yeah', self.user)
+
+        response = self.app.get('/api/v1/journals/',
+                                extra_environ=self.extra_environ, status=400)
+        self.assertEqual(response.status_code, 400)
 
 
 class CollectionRestAPITest(WebTest):

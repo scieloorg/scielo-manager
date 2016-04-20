@@ -153,7 +153,7 @@ def _do_move_board_block(board_pk, position, direction):
                 m.save()
     else:
         # direction is not UP nor DOWN, so, ignore it, do nothing, skip it
-        logger.error("Trying to move a board (pk: %s) block (position: %s) in this direction: %s is not possible, so doing nothing!" %  (board_pk, position, direction))
+        logger.error(u"Trying to move a board (pk: %s) block (position: %s) in this direction: %s is not possible, so doing nothing!" %  (board_pk, position, direction))
 
 
 def _user_has_access(user):
@@ -234,14 +234,14 @@ def edit_journal(request, journal_id):
             # this view only handle existing journals, so always log changes.
             helpers.log_change(**audit_data)
 
-            messages.success(request, _('Journal updated successfully.'))
+            messages.success(request, _(u'Journal updated successfully.'))
 
             if request.user.get_profile().is_editor:
                 return HttpResponseRedirect(reverse('editorial.index'))
             else:
                 return HttpResponseRedirect(reverse('journal.dash', args=[journal.id]))
         else:
-            messages.error(request, _('Check mandatory fields.'))
+            messages.error(request, _(u'Check mandatory fields.'))
 
     else:
         journalform = RestrictedJournalForm(instance=journal, prefix='journal')
@@ -279,7 +279,7 @@ def edit_board_member(request, journal_id, member_id):
 
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     board_member = get_object_or_404(models.EditorialMember, id=member_id)
@@ -314,10 +314,10 @@ def edit_board_member(request, journal_id, member_id):
             # notify librarians
             notifications.board_members_send_email_by_action(board_member, request.user, audit_data['message'], 'board_edit_member')
 
-            messages.success(request, _('Board Member updated successfully.'))
+            messages.success(request, _(u'Board Member updated successfully.'))
             return HttpResponseRedirect(board_url)
         else:
-            messages.error(request, _('Check mandatory fields.'))
+            messages.error(request, _(u'Check mandatory fields.'))
             context['form'] = form
             return render_to_response(template_name, context, context_instance=RequestContext(request))
     else:
@@ -340,13 +340,13 @@ def add_board_member(request, journal_id, issue_id):
 
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     # get the issue, then the board if exist
     issue = Issue.userobjects.active().filter(pk=issue_id)
     if len(issue) != 1:
-        messages.error(request, _('The issue is not available for you.'))
+        messages.error(request, _(u'The issue is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     issue = issue[0]
@@ -385,10 +385,10 @@ def add_board_member(request, journal_id, issue_id):
             # notify librarians
             notifications.board_members_send_email_by_action(new_member, request.user, audit_data['message'], 'board_add_member')
 
-            messages.success(request, _('Board Member created successfully.'))
+            messages.success(request, _(u'Board Member created successfully.'))
             return HttpResponseRedirect(board_url)
         else:
-            messages.error(request, _('Check mandatory fields.'))
+            messages.error(request, _(u'Check mandatory fields.'))
             context['form'] = form
             return render_to_response(template_name, context, context_instance=RequestContext(request))
     else:
@@ -403,7 +403,7 @@ def add_board_member(request, journal_id, issue_id):
 def delete_board_member(request, journal_id, member_id):
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     if request.is_ajax():
@@ -428,7 +428,7 @@ def delete_board_member(request, journal_id, member_id):
         notifications.board_members_send_email_by_action(board_member, request.user, audit_message, 'board_delete_member')
         # delete member!
         board_member.delete()
-        messages.success(request, _('Board Member DELETED successfully.'))
+        messages.success(request, _(u'Board Member DELETED successfully.'))
         return HttpResponseRedirect(board_url)
 
     return render_to_response(template_name, context, context_instance=RequestContext(request))
@@ -440,7 +440,7 @@ def board_move_block(request, journal_id):
     board_url = reverse('editorial.board', args=[journal_id, ])
 
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(board_url)
 
     if request.method == "POST":
@@ -461,10 +461,10 @@ def board_move_block(request, journal_id):
                 position=data['role_position'],
                 direction=data['direction'])
 
-            messages.success(request, _('Board block moved successfully.'))
+            messages.success(request, _(u'Board block moved successfully.'))
         else:
-            messages.error(request, _('Board block can not be moved'))
-            logger.error("Board block can not be moved. form is not valid. Errors: %s" % form.errors)
+            messages.error(request, _(u'Board block can not be moved'))
+            logger.error(u"Board block can not be moved. form is not valid. Errors: %s" % form.errors)
 
     return HttpResponseRedirect(board_url)
 
@@ -500,10 +500,10 @@ def add_role_type(request, journal_id):
             }
             # this view only handle NEW editorial board member, so always log create.
             helpers.log_create(**audit_data)
-            messages.success(request, _('Role created successfully.'))
+            messages.success(request, _(u'Role created successfully.'))
             return HttpResponseRedirect(board_url)
         else:
-            messages.error(request, _('Check mandatory fields.'))
+            messages.error(request, _(u'Check mandatory fields.'))
             context['form'] = form
             return render_to_response(template_name, context, context_instance=RequestContext(request))
     else:
@@ -526,7 +526,7 @@ def edit_role_type(request, journal_id, role_id):
 
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     role_type = get_object_or_404(models.RoleType, id=role_id)
@@ -554,10 +554,10 @@ def edit_role_type(request, journal_id, role_id):
             }
             # this view only handle existing roles, so always log changes.
             helpers.log_change(**audit_data)
-            messages.success(request, _('Role updated successfully.'))
+            messages.success(request, _(u'Role updated successfully.'))
             return HttpResponseRedirect(board_url)
         else:
-            messages.error(request, _('Check mandatory fields.'))
+            messages.error(request, _(u'Check mandatory fields.'))
             context['form'] = form
             return render_to_response(template_name, context, context_instance=RequestContext(request))
     else:
@@ -576,7 +576,7 @@ def list_role_type(request, journal_id):
 
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     board_url = reverse('editorial.board', args=[journal_id, ])
@@ -595,7 +595,7 @@ def translate_role_type(request, journal_id, role_id):
     template_name = 'board/role_type_translate.html'
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     role_type = get_object_or_404(models.RoleType, id=role_id)
@@ -632,10 +632,10 @@ def translate_role_type(request, journal_id, role_id):
             # this view only handle existing roles, so always log changes.
             helpers.log_change(**audit_data)
 
-            messages.success(request, _('Role updated successfully.'))
+            messages.success(request, _(u'Role updated successfully.'))
             return HttpResponseRedirect(board_url)
         else:
-            messages.error(request, _('Check mandatory fields.'))
+            messages.error(request, _(u'Check mandatory fields.'))
     else:
         formset = RoleTypeTranslationFormSet(instance=role_type, prefix="role-translations-formset")
 
@@ -658,7 +658,7 @@ def export_csv(request, journal_id, issue_id=None):
 
     # check if user have correct access to view the journal:
     if not Journal.userobjects.active().filter(pk=journal_id).exists():
-        messages.error(request, _('The journal is not available for you.'))
+        messages.error(request, _(u'The journal is not available for you.'))
         return HttpResponseRedirect(reverse('editorial.index'))
 
     filters = {}
@@ -672,14 +672,14 @@ def export_csv(request, journal_id, issue_id=None):
                 'publication_year', 'volume', 'number')[0]
         except models.Issue.DoesNotExist:
             raise Http404("Requested Issue does not exist")
-        filename = 'board_%s_%s_v%s_n%s' % (journal_slug, issue_year, issue_volume, issue_number)
+        filename = u'board_%s_%s_v%s_n%s' % (journal_slug, issue_year, issue_volume, issue_number)
     else:
-        filename = 'full_board_%s' % journal_slug
+        filename = u'full_board_%s' % journal_slug
 
     issues = journal.issue_set.filter(**filters).order_by('-publication_year', '-volume', '-number')
 
     response = HttpResponse(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="%s.csv"' % filename
+    response['Content-Disposition'] = u'attachment; filename="%s.csv"' % filename
 
     template = loader.get_template('board/export_member_csv.txt')
     context = Context({'journal': journal, 'issues': issues})
