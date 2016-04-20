@@ -10,6 +10,7 @@ from tastypie.contrib.contenttypes.fields import GenericForeignKeyField
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.authorization import Authorization
+from tastypie.exceptions import BadRequest
 
 from journalmanager.models import (
     Journal,
@@ -46,9 +47,9 @@ class ApiKeyAuthMeta:
 
 class SectionResource(ModelResource):
     journal = fields.ForeignKey('api.resources_v1.JournalResource',
-        'journal')
+                                'journal')
     issues = fields.OneToManyField('api.resources_v1.IssueResource',
-        'issue_set')
+                                   'issue_set')
     titles = fields.CharField(readonly=True)
 
     class Meta(ApiKeyAuthMeta):
@@ -77,7 +78,7 @@ class IssueResource(ModelResource):
     IMPORTANT: is_press_release was removed on V2
     """
     journal = fields.ForeignKey('api.resources_v1.JournalResource',
-        'journal')
+                                'journal')
     sections = fields.ManyToManyField(SectionResource, 'section')
     thematic_titles = fields.CharField(readonly=True)
     is_press_release = fields.BooleanField(readonly=True)
@@ -160,11 +161,13 @@ class CollectionResource(ModelResource):
         resource_name = 'collections'
         allowed_methods = ['get', ]
 
+
 class SubjectCategoryResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
         queryset = SubjectCategory.objects.all()
         resource_name = 'subjectcategory'
         allowed_methods = ['get', ]
+
 
 class SponsorResource(ModelResource):
     class Meta(ApiKeyAuthMeta):
@@ -206,7 +209,7 @@ class JournalResource(ModelResource):
     pub_status_reason = fields.CharField(readonly=True)
     national_code = fields.CharField(attribute='ccn_code', readonly=True)
 
-    #recursive field
+    # recursive field
     previous_title = fields.ForeignKey('self', 'previous_title', null=True)
     succeeding_title = fields.ForeignKey('self', 'succeeding_title', null=True)
 
@@ -258,7 +261,7 @@ class JournalResource(ModelResource):
             },
         """
         return [(mission.language.iso_code, mission.description)
-            for mission in bundle.obj.missions.all()]
+                for mission in bundle.obj.missions.all()]
 
     def dehydrate_other_titles(self, bundle):
         """
@@ -269,24 +272,24 @@ class JournalResource(ModelResource):
             },
         """
         return [(title.category, title.title)
-            for title in bundle.obj.other_titles.all()]
+                for title in bundle.obj.other_titles.all()]
 
     def dehydrate_languages(self, bundle):
         return [language.iso_code
-            for language in bundle.obj.languages.all()]
+                for language in bundle.obj.languages.all()]
 
     def dehydrate_subject_categories(self, bundle):
         return [subject_category.term
-            for subject_category in bundle.obj.subject_categories.all()]
+                for subject_category in bundle.obj.subject_categories.all()]
 
     def dehydrate_pub_status_history(self, bundle):
         return [{'date': event.since,
                 'status': event.status}
-            for event in bundle.obj.statuses.order_by('-since').all()]
+                for event in bundle.obj.statuses.order_by('-since').all()]
 
     def dehydrate_study_areas(self, bundle):
         return [area.study_area
-            for area in bundle.obj.study_areas.all()]
+                for area in bundle.obj.study_areas.all()]
 
     def dehydrate_collections(self, bundle):
         """
@@ -299,18 +302,48 @@ class JournalResource(ModelResource):
             return ''
 
     def dehydrate_pub_status(self, bundle):
+        """
+        The version v1 of API doesnt work with multiple collections.
+
+        To get the information about status of journal is mandatory the collection
+        context, so we get this in the query string.
+
+        IMPORTANT: the param ``collection`` is mandatory.
+        """
         try:
             col = bundle.obj.collections.get()
         except MultipleObjectsReturned:
-            col = current_user_active_collection()
+            # Get collection by query string
+            query_collection = bundle.request.GET.get('collection')
+
+            if query_collection:
+                col = bundle.obj.collections.get(name_slug=query_collection)
+
+            else:
+                raise BadRequest("missing collection param")
 
         return bundle.obj.membership_info(col, 'status')
 
     def dehydrate_pub_status_reason(self, bundle):
+        """
+        The version v1 of API doesnt work with multiple collections.
+
+        To get the information about status of journal is mandatory the collection
+        context, so we get this in the query string.
+
+        IMPORTANT: the param ``collection`` is mandatory.
+        """
         try:
             col = bundle.obj.collections.get()
         except MultipleObjectsReturned:
-            col = current_user_active_collection()
+            # Get collection by query string
+            query_collection = bundle.request.GET.get('collection')
+
+            if query_collection:
+                col = bundle.obj.collections.get(name_slug=query_collection)
+
+            else:
+                raise BadRequest("missing collection param")
 
         return bundle.obj.membership_info(col, 'reason')
 
