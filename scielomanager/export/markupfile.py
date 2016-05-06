@@ -247,11 +247,11 @@ class JournalStandard(L10nIssue):
 
     @property
     def medline_title(self):
-        return unicode(self._journal.title)
+        return unicode(self._journal.medline_title)
 
     @property
     def medline_code(self):
-        return u''
+        return unicode(self._journal.medline_code)
 
     @property
     def pissn(self):
@@ -462,11 +462,11 @@ class JournalStandardAhead(L10nAhead):
 
     @property
     def medline_title(self):
-        return unicode(self._journal.title)
+        return unicode(self._journal.medline_title)
 
     @property
     def medline_code(self):
-        return u''
+        return unicode(self._journal.medline_code)
 
     @property
     def pissn(self):
