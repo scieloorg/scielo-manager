@@ -437,11 +437,11 @@ class JournalStandardTests(MockerTestCase):
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         self.assertEqual(journalstd.study_area, '')
 
-    def test_medline_title_is_the_journal_title(self):
+    def test_medline_title_is_the_journal_medline_title(self):
         dummy_journal = self.mocker.mock()
         dummy_issue = self.mocker.mock()
 
-        dummy_journal.title
+        dummy_journal.medline_title
         self.mocker.result('spam')
 
         self.mocker.replay()
@@ -451,15 +451,18 @@ class JournalStandardTests(MockerTestCase):
         self.assertEqual(title, u'spam')
         self.assertIsInstance(title, unicode)
 
-    def test_medline_code_must_always_be_empty(self):
+    def test_medline_code_is_the_journal_medline_code(self):
         dummy_journal = self.mocker.mock()
         dummy_issue = self.mocker.mock()
+
+        dummy_journal.medline_code
+        self.mocker.result('123456789')
 
         self.mocker.replay()
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         code = journalstd.medline_code
-        self.assertEqual(code, u'')
+        self.assertEqual(code, u'123456789')
         self.assertIsInstance(code, unicode)
 
     def test_pissn_is_the_journal_print_issn(self):
@@ -553,7 +556,12 @@ class JournalStandardTests(MockerTestCase):
 
         dummy_journal.title
         self.mocker.result('spam')
-        self.mocker.count(2)
+
+        dummy_journal.medline_title
+        self.mocker.result('spam')
+
+        dummy_journal.medline_code
+        self.mocker.result('123456789')
 
         dummy_journal.acronym
         self.mocker.result('foo')
@@ -569,7 +577,7 @@ class JournalStandardTests(MockerTestCase):
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         journal_meta = journalstd.journal_meta
         expected_journal_meta = u"""
-        1234-1234#blitz#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam##spam#foo#1234-123X#1234-1234#fizz
+        1234-1234#blitz#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam#123456789#spam#foo#1234-123X#1234-1234#fizz
         """.strip()
         self.assertEqual(journal_meta, expected_journal_meta)
         self.assertIsInstance(journal_meta, unicode)
@@ -1269,10 +1277,10 @@ class JournalStandardAheadTests(MockerTestCase):
         journalstd = self._makeOne(dummy_journal)
         self.assertEqual(journalstd.study_area, '')
 
-    def test_medline_title_is_the_journal_title(self):
+    def test_medline_title_is_the_journal_medline_title(self):
         dummy_journal = self.mocker.mock()
 
-        dummy_journal.title
+        dummy_journal.medline_title
         self.mocker.result('spam')
 
         self.mocker.replay()
@@ -1282,14 +1290,17 @@ class JournalStandardAheadTests(MockerTestCase):
         self.assertEqual(title, u'spam')
         self.assertIsInstance(title, unicode)
 
-    def test_medline_code_must_always_be_empty(self):
+    def test_medline_code_is_the_journal_medline_code(self):
         dummy_journal = self.mocker.mock()
+
+        dummy_journal.medline_code
+        self.mocker.result('123456789')
 
         self.mocker.replay()
 
         journalstd = self._makeOne(dummy_journal)
         code = journalstd.medline_code
-        self.assertEqual(code, u'')
+        self.assertEqual(code, u'123456789')
         self.assertIsInstance(code, unicode)
 
     def test_pissn_is_the_journal_print_issn(self):
@@ -1374,8 +1385,11 @@ class JournalStandardAheadTests(MockerTestCase):
         self.mocker.result('bar')
         self.mocker.count(5)
 
-        dummy_journal.title
+        dummy_journal.medline_title
         self.mocker.result('spam')
+
+        dummy_journal.medline_code
+        self.mocker.result('123456789')
 
         dummy_journal.acronym
         self.mocker.result('foo')
@@ -1391,7 +1405,7 @@ class JournalStandardAheadTests(MockerTestCase):
         journalstd = self._makeOne(dummy_journal)
         journal_meta = journalstd.journal_meta
         expected_journal_meta = u"""
-        1234-1234#foo#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam##foo#foo#1234-123X#1234-1234#fizz
+        1234-1234#foo#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam#123456789#foo#foo#1234-123X#1234-1234#fizz
         """.strip()
         self.assertEqual(journal_meta, expected_journal_meta)
         self.assertIsInstance(journal_meta, unicode)
