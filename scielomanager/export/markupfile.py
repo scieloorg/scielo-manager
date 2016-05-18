@@ -98,9 +98,9 @@ class Issue(object):
 
     @property
     def legend(self):
-        return u'{0} v.{1} n.{2}'.format(self._issue.journal.title_iso,
-                                unicode(self._issue.volume),
-                                unicode(self._issue.identification))
+        return u'{0} v.{1} n.{2}'.format(self._issue.journal.short_title,
+                                         unicode(self._issue.volume),
+                                         unicode(self._issue.identification))
 
     @property
     def period(self):

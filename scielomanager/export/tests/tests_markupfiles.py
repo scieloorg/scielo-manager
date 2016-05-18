@@ -293,7 +293,7 @@ class IssueTests(MockerTestCase):
         dummy_issue.identification
         self.mocker.result('3')
 
-        dummy_journal.title_iso
+        dummy_journal.short_title
         self.mocker.result('Star Wars')
 
         self.mocker.replay()
@@ -337,7 +337,7 @@ class IssueTests(MockerTestCase):
         dummy_issue.journal
         self.mocker.result(dummy_journal)
 
-        dummy_journal.title_iso
+        dummy_journal.short_title
         self.mocker.result('Star Wars')
 
         dummy_issue.volume
