@@ -51,6 +51,10 @@ exception BadRequestError {
 exception TimeoutError {
 }
 
+/* Recurso requerido não existe. */
+exception DoesNotExist {
+}
+
 /*
  * Representa a relação entre artigos.
  *
@@ -89,6 +93,146 @@ struct Article {
     16: optional list<RelatedArticle> links_to;
     17: optional list<RelatedArticle> referrers;
 }
+
+/*
+ * Collection representa um conjunto de metadados de um periódico. Os dados são
+ * compatíveis com o modelo de dados definidos em models.py entretanto apenas
+ * alguns metadados estão disponíveis.
+ *
+ */
+
+struct Collection {
+    1: optional i64 id;
+    2: required string name;
+    3: optional string name_slug;
+    4: optional string url;
+    5: required string acronym;
+    6: optional string country;
+    7: optional string state;
+    8: optional string city;
+    9: optional string address;
+    10: optional string address_number;
+    11: optional string address_complement;
+    12: optional string zip_code;
+    13: optional string phone;
+    14: optional string fax;
+    15: optional string email;
+    16: optional list<i64> journals;
+}
+
+struct UseLicense {
+    1: required string license_code;
+    2: optional string reference_url;
+    3: optional string disclaimer;
+    4: required bool is_default;
+}
+
+struct JournalMission {
+    1: optional string language;
+    2: optional string description;
+}
+
+/*
+ * Journal representa um conjunto de metadados de um periódico. Os dados são
+ * compatíveis com o modelo de dados definidos em models.py entretanto apenas
+ * alguns metadados estão disponíveis.
+ *
+ */
+
+struct Journal {
+    1: optional i64 id;
+    2: required string title;
+    3: required string title_iso;
+    4: optional string short_title;
+    5: optional string medline_title;
+    6: optional string medline_code;
+    7: optional string twitter_user;
+    8: required list<string> study_areas;
+    9: required list<string> subject_categories;
+    10: required UseLicense use_license;
+    11: optional string created;
+    12: optional string updated;
+    13: required string acronym;
+    14: required string scielo_issn;
+    15: optional string print_issn;
+    16: optional string electronic_issn;
+    17: optional string frequency;
+    18: optional string copyrighter;
+    19: optional string url_online_submission;
+    20: optional string url_journal;
+    21: optional string notes;
+    22: optional bool is_trashed;
+    23: optional bool is_indexed_scie;
+    24: optional bool is_indexed_ssci;
+    25: optional bool is_indexed_aehci;
+    26: optional list<JournalMission> missions;
+    27: optional list<i64> issues;
+    28: optional list<i64> collections;
+}
+
+/*
+ * EditorialBoardMember representa os dados de um membro de um corpo editorial. 
+ * Os dados são compatíveis com o modelo de dados definidos em models.py
+ * entretanto apenas alguns metadados estão disponíveis através.
+ *
+ */
+
+struct EditorialBoardMember {
+    1: optional string first_name;
+    2: optional string last_name;
+    3: optional string city;
+    4: optional string country;
+    5: optional string state;
+    6: optional string email;
+    7: optional string research_id;
+    8: optional string orcid;
+    9: optional string link_cv;
+    10: optional string role;
+    11: optional i64 order;
+    12: optional string institution;
+}
+
+/*
+ * IssueTitle representa o título de um fascículo em um idioma específico. Os
+ * dados são compatíveis com o modelo de dados definidos em models.py entretanto
+ * apenas alguns metadados estão disponíveis através.
+ *
+ */
+
+struct IssueTitle {
+    1: optional string language;
+    2: optional string title;
+}
+
+/*
+ * Issue representa um conjunto de metadados de um fascículo. Os dados são
+ * compatíveis com o modelo de dados definidos em models.py entretanto apenas
+ * alguns metadados estão disponíveis.
+ *
+ */
+
+ struct Issue {
+    1: optional i64 id;
+    2: optional Journal journal;
+    3: optional string volume;
+    4: optional string number;
+    5: optional string created;
+    6: optional string updated;
+    7: optional i64 publication_start_month;
+    8: optional i64 publication_end_month;
+    9: optional i64 publication_year;
+    10: optional string publication_date;
+    11: optional UseLicense use_license;
+    12: optional string label;
+    13: optional i64 order;
+    14: required string type;
+    15: optional string suppl_text;
+    16: optional string spe_text;
+    17: optional string identification;
+    18: optional list<IssueTitle> issue_title;
+    19: optional list<i64> articles;
+    20: optional list<EditorialBoardMember> editorial_board;
+ }
 
 /*
  * ScanArticlesResults representa um lote de entidades Article, retornado 
@@ -190,5 +334,64 @@ service JournalManagerServices {
      * Obtém a versão da interface Thrift do servidor.
      */
     string getInterfaceVersion();
-}
 
+    /*
+     * Obtém metadados de periódicos.
+     *
+     * Os resultados são representados pela struct `Journal`.
+     *
+     */
+
+    Journal getJournal(1:i64 journal_id) throws (1:ServerError srv_err,
+            2:BadRequestError req_err, 3:DoesNotExist match_err);
+
+    /*
+     * Obtém metadados de fascículos.
+     *
+     * Os resultados são representados pela struct `Issue`.
+     *
+     */
+
+    Issue getIssue(1:i64 issue_id) throws (1:ServerError srv_err,
+            2:BadRequestError req_err, 3:DoesNotExist match_err);
+
+    /*
+     * Obtém metadados de fascículos.
+     *
+     * Os resultados são representados pela struct `Issue`.
+     *
+     */
+
+    Collection getCollection(1:i64 collection_id) throws (1:ServerError srv_err,
+            2:BadRequestError req_err, 3:DoesNotExist match_err);
+
+    /*
+     * Obtém lista de periódicos de uma coleção ou de todo o catálogo.
+     *
+     * Os resultados são representados por uma lista instâncias de struct
+     * `Journal`.
+     *
+     */
+
+    list<Journal> getJournals(1: optional i64 collection_id, 2: optional string from_date, 3: optional string until_date, 4: i32 limit, 5: i32 offset)  throws (1:ServerError srv_err, 2:BadRequestError req_err)
+
+    /*
+     * Obtém lista de fascículos de um periódico ou de todo o catálogo.
+     *
+     * Os resultados são representados por uma lista instâncias de struct
+     * `Issue`.
+     *
+     */
+
+    list<Issue> getIssues(1: optional i64 journal_id, 2: optional string from_date, 3: optional string until_date, 4: i32 limit, 5: i32 offset)  throws (1:ServerError srv_err, 2:BadRequestError req_err)
+
+    /*
+     * Obtém lista de coleções do catálogo.
+     *
+     * Os resultados são representados por uma lista instâncias de struct
+     * `Collection`.
+     *
+     */
+
+    list<Collection> getCollections(1: optional string from_date, 2: optional string until_date, 3: i32 limit, 4: i32 offset)  throws (1:ServerError srv_err, 2:BadRequestError req_err)
+}
