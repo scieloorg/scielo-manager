@@ -9,7 +9,7 @@ from celery.result import AsyncResult
 from journalmanager import tasks
 from thrift import spec
 from scielomanager import connectors
-from journalmanager.models import Journal, Issue, Collection
+from journalmanager.models import Journal, Issue, Collection, JournalTimeline
 from editorialmanager.models import EditorialBoard
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -232,6 +232,22 @@ def issue_from_model(data):
     return issue
 
 
+def journal_timeline_from_model(jtl):
+
+    timeline = []
+
+    for item in jtl:
+        timeline.append(
+            spec.JournalTimeline(
+                since=item.since.isoformat(),
+                status=item.status,
+                reason=item.reason
+            )
+        )
+
+    return timeline
+
+
 class RPCHandler(object):
     """Implementação do serviço `JournalManagerServices`.
     """
@@ -330,16 +346,26 @@ class RPCHandler(object):
             LOGGER.exception(exc)
             raise spec.ServerError()
 
-    def getJournal(self, journal_id):
+    def getJournal(self, journal_id, collection_id=None):
 
         try:
-            data = Journal.objects.get(pk=journal_id)
-            return journal_from_model(data)
+            journal_model = Journal.objects.get(pk=journal_id)
+            journal_struct = journal_from_model(journal_model)
         except Journal.DoesNotExist:
             raise spec.DoesNotExist()
         except Exception as exc:
             LOGGER.ServerError(exc)
             raise spec.Server()
+
+        journal_struct.timeline = []
+
+        if collection_id:
+            jtl_model = JournalTimeline.objects.filter(
+                journal=journal_model, collection=collection_id).order_by('since')
+
+            journal_struct.timeline = journal_timeline_from_model(jtl_model)
+
+        return journal_struct
 
     def getIssue(self, issue_id):
 
