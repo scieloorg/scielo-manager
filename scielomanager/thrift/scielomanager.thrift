@@ -132,6 +132,12 @@ struct JournalMission {
     2: optional string description;
 }
 
+struct JournalTimeline {
+    1: required string since;
+    2: required string status;
+    3: optional string reason;
+}
+
 /*
  * Journal representa um conjunto de metadados de um periódico. Os dados são
  * compatíveis com o modelo de dados definidos em models.py entretanto apenas
@@ -168,6 +174,7 @@ struct Journal {
     26: optional list<JournalMission> missions;
     27: optional list<i64> issues;
     28: optional list<i64> collections;
+    29: optional list<JournalTimeline> timeline;
 }
 
 /*
@@ -342,7 +349,7 @@ service JournalManagerServices {
      *
      */
 
-    Journal getJournal(1:i64 journal_id) throws (1:ServerError srv_err,
+    Journal getJournal(1:i64 journal_id, 2: optional i64 collection_id) throws (1:ServerError srv_err,
             2:BadRequestError req_err, 3:DoesNotExist match_err);
 
     /*
