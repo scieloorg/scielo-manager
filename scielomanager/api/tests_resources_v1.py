@@ -203,6 +203,7 @@ class JournalRestAPITest(WebTest):
             u'twitter_user',
             u'previous_title',
             u'succeeding_title',
+            u'jid'
         ]
 
         json_keys = set(response.json.keys())
