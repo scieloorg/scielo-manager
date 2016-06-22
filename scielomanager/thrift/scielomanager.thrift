@@ -31,7 +31,7 @@ namespace py scielomanager
  * IMPORTANTE! Alterar o valor de VERSION após qualquer alteração na interface.
  * Regras em: http://semver.org/lang/pt-BR/
  */
-const string VERSION = "2.0.0"
+const string VERSION = "2.1.0"
 
 
 #
