@@ -16,7 +16,6 @@ from django.core.exceptions import ObjectDoesNotExist
 LOGGER = logging.getLogger(__name__)
 ARTICLE_ES_CLIENT = connectors.ArticleElasticsearch()
 
-TODAY = datetime.datetime.now().isoformat()[:10]
 LIMIT = 100
 
 ERRNO_NS = {
@@ -355,7 +354,7 @@ class RPCHandler(object):
             raise spec.DoesNotExist()
         except Exception as exc:
             LOGGER.ServerError(exc)
-            raise spec.Server()
+            raise spec.ServerError()
 
         journal_struct.timeline = []
 
@@ -376,7 +375,7 @@ class RPCHandler(object):
             raise spec.DoesNotExist()
         except Exception as exc:
             LOGGER.ServerError(exc)
-            raise spec.Server()
+            raise spec.ServerError()
 
     def getCollection(self, collection_id):
 
@@ -387,16 +386,16 @@ class RPCHandler(object):
             raise spec.DoesNotExist()
         except Exception as exc:
             LOGGER.ServerError(exc)
-            raise spec.Server()
+            raise spec.ServerError()
 
-    def getJournals(self, collection_id, from_date, until_date, limit, offset):
+    def getJournals(self, collection_id, from_date=None, until_date=None, limit=None, offset=None):
         query = {}
         limit = limit or LIMIT
         offset = offset or 0
 
         if from_date or until_date:
             from_date = from_date or '0001-01-01'
-            until_date = until_date or TODAY
+            until_date = until_date or datetime.datetime.now().isoformat()[:10]
             query = {
                 "created__range": [from_date, until_date]
             }
@@ -408,18 +407,18 @@ class RPCHandler(object):
             data = [journal_from_model(i) for i in Journal.objects.filter(**query)[offset:offset+limit]]
         except Exception as exc:
             LOGGER.ServerError(exc)
-            raise spec.Server()
+            raise spec.ServerError()
 
         return data
 
-    def getIssues(self, journal_id, from_date, until_date, limit, offset):
+    def getIssues(self, journal_id, from_date=None, until_date=None, limit=None, offset=None):
         query = {}
         limit = limit or LIMIT
         offset = offset or 0
 
         if from_date or until_date:
             from_date = from_date or '0001-01-01'
-            until_date = until_date or TODAY
+            until_date = until_date or datetime.datetime.now().isoformat()[:10]
             query = {
                 "created__range": [from_date, until_date]
             }
@@ -431,18 +430,17 @@ class RPCHandler(object):
             data = [issue_from_model(i) for i in Issue.objects.filter(**query)[offset:offset+limit]]
         except Exception as exc:
             LOGGER.ServerError(exc)
-            raise spec.Server()
+            raise spec.ServerError()
 
         return data
 
-    def getCollections(self, from_date, until_date, limit, offset):
+    def getCollections(self, from_date=None, until_date=None, limit=None, offset=None):
         query = {}
         limit = limit or LIMIT
         offset = offset or 0
-
         if from_date or until_date:
             from_date = from_date or '0001-01-01'
-            until_date = until_date or TODAY
+            until_date = until_date or datetime.datetime.now().isoformat()[:10]
             query = {
                 "created__range": [from_date, until_date]
             }
@@ -451,6 +449,6 @@ class RPCHandler(object):
             data = [collection_from_model(i) for i in Collection.objects.filter(**query)[offset:offset+limit]]
         except Exception as exc:
             LOGGER.ServerError(exc)
-            raise spec.Server()
+            raise spec.ServerError()
 
         return data
