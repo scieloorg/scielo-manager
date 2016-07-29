@@ -10,5 +10,6 @@ install:
 before_script:
   - cp scielomanager/scielomanager/settings_local.include-TEMPLATE scielomanager/scielomanager/settings_local.include
   - psql -c 'create database journalmanager;' -U postgres
+  - pip install --upgrade pip
 script:
   - make test
