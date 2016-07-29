@@ -5,7 +5,8 @@
 # Translators:
 # Translators:
 # fabiobatalha <fabiobatalha@gmail.com>, 2012
-# Juan Funez <juan.funez@gmail.com>, 2014-2015
+# Javani Araujo <javani.araujo@scielo.org>, 2016
+# Juan Funez <juan.funez@gmail.com>, 2014-2016
 # maguirre21 <maguirre@conicyt.cl>, 2012
 # mbarraza <mbarraza@conicyt.cl>, 2012
 # Néstor Arellano Pulido <nestor_arellano@rocketmail.com>, 2012
@@ -15,8 +16,8 @@ msgstr ""
 "Project-Id-Version: SciELO Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-08-21 17:09-0300\n"
-"PO-Revision-Date: 2015-08-24 18:54+0000\n"
-"Last-Translator: Juan Funez <juan.funez@gmail.com>\n"
+"PO-Revision-Date: 2016-07-22 11:49+0000\n"
+"Last-Translator: Javani Araujo <javani.araujo@scielo.org>\n"
 "Language-Team: Spanish (Spain) (http://www.transifex.com/scielo/scielomanager/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -68,7 +69,7 @@ msgstr "Nombre de usuario"
 #: editorialmanager/templates/board/board_member_delete_data.html:26
 #: journalmanager/models.py:432
 msgid "Email"
-msgstr "Correo electrónico."
+msgstr "Correo electrónico"
 
 #: accounts/templates/accounts/my_account.html:47
 msgid "Profile"
@@ -88,7 +89,7 @@ msgstr "Cambio de Contraseña"
 
 #: accounts/templates/accounts/my_account.html:75
 msgid "Notifications & Other preferences"
-msgstr "Notificaciones % Otras preferencias"
+msgstr "Notificaciones & Otras preferencias"
 
 #: accounts/templates/accounts/my_account.html:88
 msgid "My collections"
@@ -270,11 +271,11 @@ msgstr "¡Este campo no es válido!"
 
 #: editorialmanager/forms.py:77
 msgid "journal id"
-msgstr "id del periódico"
+msgstr "id de la revista"
 
 #: editorialmanager/forms.py:78
 msgid "issue id"
-msgstr "id del fascículo"
+msgstr "id del número"
 
 #: editorialmanager/forms.py:79
 msgid "board id"
@@ -352,7 +353,7 @@ msgstr "Nombre del Cargo"
 
 #: editorialmanager/views.py:237
 msgid "Journal updated successfully."
-msgstr "Periódico actualizado con éxito."
+msgstr "Revista actualizada con éxito."
 
 #: editorialmanager/views.py:244 editorialmanager/views.py:320
 #: editorialmanager/views.py:391 editorialmanager/views.py:506
@@ -365,7 +366,7 @@ msgstr "Revise los campos obligatorios."
 #: editorialmanager/views.py:529 editorialmanager/views.py:579
 #: editorialmanager/views.py:598 editorialmanager/views.py:661
 msgid "The journal is not available for you."
-msgstr "El periódico no está disponible para usted."
+msgstr "La revista no está disponible para usted."
 
 #: editorialmanager/views.py:317
 msgid "Board Member updated successfully."
@@ -373,7 +374,7 @@ msgstr "Miembro del Cuerpo Editorial actualizado con éxito."
 
 #: editorialmanager/views.py:349
 msgid "The issue is not available for you."
-msgstr "El fascículo no está disponible para usted."
+msgstr "El número no está disponible para usted."
 
 #: editorialmanager/views.py:388
 msgid "Board Member created successfully."
@@ -411,7 +412,7 @@ msgstr "Proceder"
 
 #: editorialmanager/templates/board/board_list.html:6
 msgid "Journal Editorial Board"
-msgstr "Cuerpo Editorial del Periódico"
+msgstr "Cuerpo Editorial de la revista"
 
 #: editorialmanager/templates/board/board_list.html:12
 #: editorialmanager/templates/board/board_member_delete.html:8
@@ -427,7 +428,7 @@ msgstr "Cuerpo Editorial del Periódico"
 #: scielomanager/templates/base_lv1.html:32
 #: scielomanager/templates/base_lv1.html:96
 msgid "Journals"
-msgstr "Periódicos"
+msgstr "Revistas"
 
 #: editorialmanager/templates/board/board_list.html:13
 #: editorialmanager/templates/board/board_list_data.html:78
@@ -470,7 +471,7 @@ msgstr "Acciones"
 #: editorialmanager/templates/board/board_list_data.html:43
 #: editorialmanager/templates/journal/journal_list.html:36
 msgid "Edit Journal"
-msgstr "Editar Periódico"
+msgstr "Editar Revista"
 
 #: editorialmanager/templates/board/board_list_data.html:49
 msgid "Add New Member"
@@ -518,15 +519,15 @@ msgstr "Eliminar"
 
 #: editorialmanager/templates/board/board_list_data.html:191
 msgid "This issue has no associate members"
-msgstr "Este fascículo no tiene miembros asociados"
+msgstr "Este número no tiene miembros asociados"
 
 #: editorialmanager/templates/board/board_list_data.html:199
 msgid "This issue has no Editorial Board associated"
-msgstr "Este fascículo no tiene Cuerpo Editorial asociado"
+msgstr "Este número no tiene Cuerpo Editorial asociado"
 
 #: editorialmanager/templates/board/board_list_data.html:208
 msgid "Cannot retrieve the Editorial Board because this journal has no Issues"
-msgstr "No se puede recuperar el Cuerpo Editorial porque este periódico no tiene fascículos"
+msgstr "No se puede recuperar el Cuerpo Editorial porque esta revista no tiene números"
 
 #: editorialmanager/templates/board/board_member_delete.html:10
 #: editorialmanager/templates/board/board_member_delete.html:14
@@ -636,7 +637,7 @@ msgstr "Gestionado por las colecciones"
 
 #: editorialmanager/templates/journal/edit_journal.html:9
 msgid "Edit journal"
-msgstr "Editar periódico"
+msgstr "Editar revista"
 
 #: editorialmanager/templates/journal/edit_journal.html:16
 #: journalmanager/models.py:830
@@ -673,7 +674,7 @@ msgstr "Publicador"
 #: journalmanager/models.py:1349
 #: validator/templates/validator/includes/xml_annotated.html:21
 msgid "Journal title"
-msgstr "Título del periódico"
+msgstr "Título de la revista"
 
 #: editorialmanager/templates/journal/journal_detail.html:10
 #: journalmanager/models.py:622
@@ -682,7 +683,7 @@ msgstr "Título ISO abreviado"
 
 #: editorialmanager/templates/journal/journal_detail.html:14
 msgid "Short title"
-msgstr "Título corto."
+msgstr "Título corto"
 
 #: editorialmanager/templates/journal/journal_detail.html:18
 msgid "Medline title"
@@ -766,7 +767,7 @@ msgstr "Cuerpo editorial"
 
 #: editorialmanager/templates/journal/journal_list.html:48
 msgid "No Journals found"
-msgstr "Periódicos no encontrados"
+msgstr "Revistas no encontradas"
 
 #: export/templates/export/markup_files.html:5
 #: export/templates/export/markup_files.html:10
@@ -787,20 +788,20 @@ msgstr "Metadatos para Marcado"
 #: journalmanager/templates/journalmanager/home_journal.html:21
 #: journalmanager/templates/journalmanager/home_journal.html:62
 msgid "Journal"
-msgstr "Periódico"
+msgstr "Revista"
 
 #: export/templates/export/markup_files.html:33
 #: scielomanager/templates/include_press_release/issue.html:6
 msgid "Issue"
-msgstr "Fascículo"
+msgstr "Número"
 
 #: export/templates/export/markup_files.html:40
 msgid "Retrieving its issues"
-msgstr "Recuperar sus fascículos"
+msgstr "Recuperar sus números"
 
 #: export/templates/export/markup_files.html:45
 msgid "all issues"
-msgstr "todos los fascículos"
+msgstr "todos los números"
 
 #: export/templates/export/markup_files.html:51
 msgid "download"
@@ -835,7 +836,7 @@ msgstr "\n<h4>Los metadatos para el de software de margen</h4>\n<p>\n<ul>\n<li>S
 
 #: export/templates/export/markup_files.html:88
 msgid "Please select a Journal"
-msgstr "Por favor seleccione un Periódico"
+msgstr "Por favor seleccione una revista"
 
 #: health/templates/health/overall_status.html:6
 msgid "SciELO Manager System Status"
@@ -901,7 +902,7 @@ msgstr "Seleccionar uno o más patrocinadores"
 
 #: journalmanager/forms.py:131
 msgid "Select one or more categories"
-msgstr "Seleccionar uno o más categorías"
+msgstr "Seleccionar una o más categorías"
 
 #: journalmanager/forms.py:134
 msgid "Select one or more study area"
@@ -911,13 +912,13 @@ msgstr "Seleccionar una o más áreas de estudio"
 #: journalmanager/templates/journalmanager/add_journal.html:627
 msgid ""
 "Journal cover image extension is not allowed! Please select another file."
-msgstr "La extensión de la imagen de portada del periódico, no está permitida! Por favor seleccione otro archivo."
+msgstr "La extensión de la imagen de portada de la revista, no está permitida! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:192
 #: journalmanager/templates/journalmanager/add_journal.html:625
 msgid ""
 "Journal cover image file size is too large! Please select another file."
-msgstr "El tamaño del archivo de imagen de portada del periódico, es muy grande! Por favor seleccione otro archivo."
+msgstr "El tamaño del archivo de imagen de portada de la revista, es muy grande! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:198
 msgid ""
@@ -935,12 +936,12 @@ msgstr "La imagen es {image_size}px de altura. Se supone que debe ser {expected_
 #: journalmanager/templates/journalmanager/add_journal.html:628
 msgid ""
 "Journal logo image extension is not allowed! Please select another file."
-msgstr "La extensión de la imagen del logo del periódico, no está permitida! Por favor seleccione otro archivo."
+msgstr "La extensión de la imagen del logo de la revista no está permitida! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:218
 #: journalmanager/templates/journalmanager/add_journal.html:626
 msgid "Journal logo image file size is too large! Please select another file."
-msgstr "La extensión de la imagen del logo del periódico, es muy grande! Por favor seleccione otro archivo."
+msgstr "La extensión de la imagen del logo de la revista es muy grande! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:223
 msgid ""
@@ -978,7 +979,7 @@ msgstr "Usted debe completar por lo menos uno de los dos campos del volumen o n�
 #: journalmanager/forms.py:521 journalmanager/forms.py:526
 msgid ""
 "Issue with this Year and (Volume or Number) already exists for this Journal."
-msgstr "Fascículo con este Año y (Volumen o Número) ya existe para este Periódico"
+msgstr "Número con este Año y (Volumen o Número) ya existe para esta revista"
 
 #: journalmanager/forms.py:453 journalmanager/forms.py:508
 msgid "You must complete the volume filed. Number field must be empty."
@@ -998,7 +999,7 @@ msgid ""
 "SciELO default use license is BY-NC. Please visit: "
 "http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for "
 "more details."
-msgstr "Sí no es definida, será aplicada la licencia de uso del periódico relacionado. La licencia de uso por defecto de SciELO es  BY-NC. Por favor visite: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) para más información."
+msgstr "Sí no es definida, será aplicada la licencia de uso de la revista relacionada. La licencia de uso por defecto de SciELO es  BY-NC. Por favor visite: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) para más información."
 
 #: journalmanager/models.py:294
 msgid "ISO 639-1 Language Code"
@@ -1092,7 +1093,7 @@ msgstr "Es el predeterminado"
 
 #: journalmanager/models.py:515
 msgid "Is manager of the collection?"
-msgstr "Es gestor de la colección?"
+msgstr "¿Es gestor de la colección?"
 
 #: journalmanager/models.py:530
 msgid "Institution Name"
@@ -1133,7 +1134,7 @@ msgstr "Código Nacional"
 
 #: journalmanager/models.py:614
 msgid "Subject Categories"
-msgstr "Categorias de Asunto"
+msgstr "Categorías de Asunto"
 
 #: journalmanager/models.py:618
 msgid "Total of ahead of print documents for the current year"
@@ -1150,7 +1151,7 @@ msgstr "Usuario de Twitter"
 #: journalmanager/models.py:621
 #: journalmanager/templates/journalmanager/journal_list.html:92
 msgid "Journal Title"
-msgstr "Título del Periódico"
+msgstr "Título de la revista"
 
 #: journalmanager/models.py:623
 msgid "Short Title"
@@ -1158,7 +1159,7 @@ msgstr "Título Corto"
 
 #: journalmanager/models.py:627
 msgid "The ISSN used to build the Journal PID."
-msgstr "El ISSN usado para hacer el PID del Periódico"
+msgstr "El ISSN usado para hacer el PID de la revista"
 
 #: journalmanager/models.py:631
 msgid "Subject / Descriptors"
@@ -1214,7 +1215,7 @@ msgstr "URL de envío en línea"
 
 #: journalmanager/models.py:651
 msgid "URL of the journal"
-msgstr "URL del periódico"
+msgstr "URL de la revista"
 
 #: journalmanager/models.py:652
 msgid "Notes"
@@ -1222,11 +1223,11 @@ msgstr "Notas"
 
 #: journalmanager/models.py:654
 msgid "Journal Cover"
-msgstr "Portada del periódico"
+msgstr "Portada de la revista"
 
 #: journalmanager/models.py:656
 msgid "Journal Logo"
-msgstr "Logo del periódico"
+msgstr "Logo de la revista"
 
 #: journalmanager/models.py:659
 msgid "Other Previous Title"
@@ -1328,7 +1329,7 @@ msgstr "Declaración de exención de responsabilidad"
 
 #: journalmanager/models.py:841
 msgid "Is Default?"
-msgstr "Es el predeterminado?"
+msgstr "¿Es el predeterminado?"
 
 #: journalmanager/models.py:874
 msgid "Translation"
@@ -1356,7 +1357,7 @@ msgstr "Año"
 
 #: journalmanager/models.py:1007
 msgid "Is Marked Up?"
-msgstr "Está marcado?"
+msgstr "¿Está marcado?"
 
 #: journalmanager/models.py:1009
 msgid "Total of Documents"
@@ -1365,11 +1366,11 @@ msgstr "Total de documentos"
 #: journalmanager/models.py:1014
 #: journalmanager/templates/journalmanager/includes/issue_cover.html:2
 msgid "Issue Cover"
-msgstr "Portada de Fascículo"
+msgstr "Portada de número"
 
 #: journalmanager/models.py:1018
 msgid "Issue Order"
-msgstr "Orden del Fascículo"
+msgstr "Orden del número"
 
 #: journalmanager/models.py:1020
 #: journalmanager/templates/journalmanager/issue_list.html:61
@@ -1417,7 +1418,7 @@ msgstr "No existe el grupo 'Editors'"
 #: journalmanager/views.py:127
 #, python-format
 msgid "Successfully selected %s as editor of this Journal"
-msgstr "Seleccionado %s con éxito como editor de este Periódico "
+msgstr "Seleccionado %s con éxito como editor de esta revista"
 
 #: journalmanager/views.py:132
 msgid "No user selected as editor of this journal!"
@@ -1434,12 +1435,12 @@ msgstr "Los documentos seleccionados se han restaurados."
 #: journalmanager/views.py:652
 msgid ""
 "This Journal already exists, please search the journal in the previous step"
-msgstr "Este periódico ya existe, por favor busque el periódico en el paso anterior"
+msgstr "Esta revista ya existe, por favor búsquela en el paso anterior"
 
 #: journalmanager/views.py:1000
 msgid ""
 "Issue created successfully, however we can not create the editorial board."
-msgstr "Fascículo creado con éxito, sin embargo no podemos crear el Cuerpo Editorial."
+msgstr "Número creado con éxito, sin embargo no podemos crear el Cuerpo Editorial."
 
 #: journalmanager/views.py:1108
 msgid "Section removed successfully"
@@ -1477,11 +1478,11 @@ msgstr "Estas colecciones no tienen logos"
 #: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:12
 #: journalmanager/templates/journalmanager/issue_list.html:9
 msgid "Issues"
-msgstr "Fascículos"
+msgstr "Números"
 
 #: journalmanager/templates/journalmanager/add_issue.html:20
 msgid "Issue Information"
-msgstr "Información del fascículo"
+msgstr "Información del número"
 
 #: journalmanager/templates/journalmanager/add_journal.html:17
 #: journalmanager/templates/journalmanager/add_journal.html:108
@@ -1556,7 +1557,7 @@ msgstr "Asunto"
 
 #: journalmanager/templates/journalmanager/add_journal.html:513
 msgid "Journal Images"
-msgstr "Imágenes del periódico"
+msgstr "Imágenes de la revista"
 
 #: journalmanager/templates/journalmanager/add_journal.html:517
 msgid "Cover"
@@ -1587,7 +1588,7 @@ msgstr "Comunicado de Prensa"
 
 #: journalmanager/templates/journalmanager/add_pressrelease.html:16
 msgid "Journals Dashboard"
-msgstr "Tablero del Periódico"
+msgstr "Tablero de la revista"
 
 #: journalmanager/templates/journalmanager/add_pressrelease.html:23
 msgid "New press release"
@@ -1761,7 +1762,7 @@ msgstr "Cambiar usuario editor"
 msgid ""
 "<strong>Warning!</strong> No user was selected as editor of this journal. To"
 " be the editor user must be in 'Editors' group"
-msgstr "<strong>Atención!</strong> No se ha seleccionado un usuario editor para este periódico. Para ser el usuario editor debe pertenecer al grupo:  'Editors'"
+msgstr "<strong>Atención!</strong> No se ha seleccionado un usuario editor para esta revista. Para ser el usuario editor debe pertenecer al grupo:  'Editors'"
 
 #: journalmanager/templates/journalmanager/home_journal.html:16
 msgid "Drafts"
@@ -1845,7 +1846,7 @@ msgstr "Actualizado"
 
 #: journalmanager/templates/journalmanager/issue_list.html:118
 msgid "volume issue"
-msgstr "volumen del fascículo"
+msgstr "volumen de la revista"
 
 #: journalmanager/templates/journalmanager/journal_dash.html:13
 msgid "Editor name"
@@ -1870,7 +1871,7 @@ msgstr "Suspendido"
 
 #: journalmanager/templates/journalmanager/journal_list.html:56
 msgid "Deceased"
-msgstr "Difunto"
+msgstr "Terminado"
 
 #: journalmanager/templates/journalmanager/journal_list.html:59
 msgid "In progress"
@@ -1883,29 +1884,29 @@ msgstr "Mover a la papelera"
 
 #: journalmanager/templates/journalmanager/journal_list.html:142
 msgid "Check if journal already exists"
-msgstr "Verificar si ya existe el periódico"
+msgstr "Verificar si ya existe la revista"
 
 #: journalmanager/templates/journalmanager/journal_list.html:149
 msgid "Adding journal to my collection"
-msgstr "Agregar periódico a mi colección"
+msgstr "Agregar revista a mi colección"
 
 #: journalmanager/templates/journalmanager/journal_list.html:157
 msgid ""
 "To insert a journal, you need to check whether the journal exists. If it "
 "exists just add to your collection!"
-msgstr "Para ingresar un periódico, es necesario comprobar si ya existe. Si es que ya existe sólo tiene que añadirlo a su colección!"
+msgstr "Para ingresar una revista, es necesario comprobar si ya existe. Si es que ya existe sólo tiene que añadirlo a su colección!"
 
 #: journalmanager/templates/journalmanager/journal_list.html:165
 msgid "Search journal"
-msgstr "Buscar periódico"
+msgstr "Buscar revista"
 
 #: journalmanager/templates/journalmanager/journal_list.html:174
 msgid "Add this journal to my current collection"
-msgstr "Agregar este periódico a mi colección actual"
+msgstr "Agregar esta revista a mi colección actual"
 
 #: journalmanager/templates/journalmanager/journal_list.html:184
 msgid "I understand the consequences, add new journal"
-msgstr "Entiendo las consecuencias, agregar nuevo periódico"
+msgstr "Entiendo las consecuencias, agregar nueva revista"
 
 #: journalmanager/templates/journalmanager/journal_list.html:212
 msgid "Eletronic ISSN"
@@ -1917,7 +1918,7 @@ msgstr "Colecciones"
 
 #: journalmanager/templates/journalmanager/journal_list.html:226
 msgid "No journal(s) found to the term: "
-msgstr "No se han encontrado periódicos para el término:"
+msgstr "No se han encontrado revistas para el término:"
 
 #: journalmanager/templates/journalmanager/journal_list.html:240
 msgid "Search by: title, abbreviated title, acronym and ISSN(s)"
@@ -1959,7 +1960,7 @@ msgstr "Código"
 msgid ""
 "Hey, you can not remove the sections that are being used by at least one "
 "issue of this journal."
-msgstr "Hey, no puede remover secciones que están siendo usadas por al menos un fascículo de este periódico."
+msgstr "Hey, no puede remover secciones que están siendo usadas por al menos un número de esta revista."
 
 #: journalmanager/templates/journalmanager/trash_listing.html:7
 msgid "Trash"
@@ -2016,16 +2017,16 @@ msgstr "Seleccionar un usuario existente"
 
 #: journalmanager/templates/journalmanager/includes/form_image_field_row.html:17
 msgid "This journal does not have a cover"
-msgstr "Este periódico no tiene portada"
+msgstr "Esta revista no tiene portada"
 
 #: journalmanager/templates/journalmanager/includes/form_image_field_row.html:28
 msgid "This journal does not have a logo"
-msgstr "Este periódico no tiene logo"
+msgstr "Esta revista no tiene logo"
 
 #: journalmanager/templates/journalmanager/includes/issue_cover.html:15
 msgid ""
 "This issue does not have a cover, it will use the default journal cover"
-msgstr "Este periódico no tiene portada, utilizará la portada de periódico por defecto"
+msgstr "Esta revista no tiene portada, utilizará la portada de periódico por defecto"
 
 #: journalmanager/templates/journalmanager/includes/issue_form_generic_field_list.html:18
 msgid "Add new"
@@ -2106,7 +2107,7 @@ msgstr "Examinar"
 
 #: scielomanager/templates/base_lv1.html:26
 msgid "My Journals"
-msgstr "Mis periódicos"
+msgstr "Mis revistas"
 
 #: scielomanager/templates/base_lv1.html:50
 msgid "Download"
@@ -2489,7 +2490,7 @@ msgstr "Subir XML"
 
 #: validator/templates/validator/packtools.html:44
 msgid "Help?"
-msgstr "Ayuda?"
+msgstr "¿Ayuda?"
 
 #: validator/templates/validator/packtools.html:54
 msgid "Max. upload size"
@@ -2526,11 +2527,11 @@ msgstr "El archivo XML supera el tamaño máximo de subida permitido"
 
 #: validator/templates/validator/includes/xml_annotated.html:24
 msgid "Issue volume"
-msgstr "Volumen del fascículo"
+msgstr "Volumen de la revista"
 
 #: validator/templates/validator/includes/xml_annotated.html:27
 msgid "Issue number"
-msgstr "Número del fascículo"
+msgstr "Número"
 
 #: validator/templates/validator/includes/xml_annotated.html:31
 msgid "SPS version"
