@@ -5,11 +5,12 @@ python:
 env:
   - DJANGO_VERSION=1.4 SCIELOMANAGER_SETTINGS_FILE=`pwd`/scielomanager/scielomanager/settings_local.include
 install:
+  - pip install --upgrade pip
+  - pip install --upgrade setuptools
   - pip install -r requirements.txt --use-mirrors
   - pip install -r requirements-test.txt --use-mirrors
 before_script:
   - cp scielomanager/scielomanager/settings_local.include-TEMPLATE scielomanager/scielomanager/settings_local.include
   - psql -c 'create database journalmanager;' -U postgres
-  - pip install --upgrade pip
 script:
   - make test
