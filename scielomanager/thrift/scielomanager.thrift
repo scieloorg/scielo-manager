@@ -95,7 +95,7 @@ struct Article {
 }
 
 /*
- * Collection representa um conjunto de metadados de um periódico. Os dados são
+ * Collection representa um conjunto de metadados de uma coleção. Os dados são
  * compatíveis com o modelo de dados definidos em models.py entretanto apenas
  * alguns metadados estão disponíveis.
  *
