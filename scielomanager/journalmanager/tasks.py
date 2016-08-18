@@ -15,6 +15,7 @@ from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
 from django.templatetags.static import static
 import packtools
+from PIL import Image
 
 from scielomanager.celery import app
 from scielomanager import connectors
@@ -389,9 +390,13 @@ def create_articleasset_from_bytes(aid, filename, content, owner=None,
     _owner = owner or u''
     _use_license = use_license or u''
 
+    # create and save the asset
     asset = models.ArticleAsset(article=article, owner=_owner,
             use_license=_use_license)
     asset.file.save(filename, ContentFile(content))
+
+    # create a preferred alternative for the asset
+    create_preferred_image_file.delay(asset.pk)
 
     logger.info('New ArticleAsset %s added to Article with aid: %s.',
             repr(asset), aid)
@@ -433,4 +438,84 @@ def create_article_html_renditions(article_pk, css_url=None, valid_only=False):
                     'aid: %s.', lang, article.aid)
 
     return files_urls
+
+
+def convert_image_to_jpeg(filepath, mode=None, **kwargs):
+    """Converte a imagem no caminho `filepath` para o formato JPEG.
+
+    Retorna um buffer com o conteúdo convertido da imagem. Pode levantar
+    `ValueError` caso `filepath` não seja reconhecido como uma imagem.
+
+    :param **kwargs: (opcional) argumentos nomeados serão repassados para a
+    função `Image.save`, com exceção de `format` que foi pré-definido.
+    """
+    output_buffer = io.BytesIO()
+    _ = kwargs.pop('format', None)
+
+    with Image.open(filepath) as original:
+        if mode:
+            _image = original.convert(mode=mode)
+        else:
+            _image = original
+
+        _image.save(output_buffer, format='jpeg', **kwargs)
+
+    return output_buffer
+
+
+@app.task
+def create_preferred_image_file(asset_pk):
+    """Cria uma versão alternativa de `ArticleAsset.file`, preferida para o
+    manuseio.
+
+    Por hora a versão preferida é o JPEG ao invés de TIFF. Para os demais
+    formatos não serão geradas outras versões.
+
+    :param asset_pk: chave primária da instância de `ArticleAsset`.
+    """
+    try:
+        asset = models.ArticleAsset.objects.get(pk=asset_pk)
+
+    except models.ArticleAsset.DoesNotExist:
+        raise ValueError('Cannot find ArticleAsset with pk: %s' % asset_pk)
+
+    try:
+        filepath = asset.file.path
+    except ValueError as exc:
+        logger.exception(exc)
+        logger.error('Cannot create a preferred alt file for %s. Skipping.',
+                     filepath)
+        raise
+
+    if not asset.is_image():
+        logger.error('Cannot create a preferred alt file for %s. Skipping.',
+                     filepath)
+        raise TypeError('Cannot create preferred alternatives for files '
+                        'other than images.')
+
+    with Image.open(asset.file.path) as _file:
+        if _file.format.lower() != 'tiff':
+            raise ValueError('Image is already in a preferred format.')
+
+    try:
+        # Levanta IOError caso `filepath` não seja um arquivo de imagem.
+        jpeg_buffer = convert_image_to_jpeg(filepath)
+    except IOError as exc:
+        logger.exception(exc)
+        logger.error('Cannot create a preferred alt file for %s. Skipping.',
+                     filepath)
+        raise
+
+    _, filename = os.path.split(filepath)
+    filename_head, _ = os.path.splitext(filename)
+
+    jpeg_filename = filename_head + '.jpeg'
+
+    asset.preferred_alt_file.save(jpeg_filename,
+                                  ContentFile(jpeg_buffer.getvalue()))
+
+    logger.info('Finished creating an alternative file for %s.',
+            repr(asset))
+
+    return asset.preferred_alt_file.url
 
