@@ -15,7 +15,7 @@ django-tastypie==0.9.16
 django-htmlmin==0.7.0
 packtools==1.1
 Celery
-django-celery
+django-celery==3.1.17
 django-kombu
 defusedxml==0.4.1
 cython
