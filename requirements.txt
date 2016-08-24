@@ -20,7 +20,7 @@ django-kombu==0.9.4
 defusedxml==0.4.1
 cython==0.24.1
 thriftpy==0.3.8
-django-countries==3.3
+django-countries==4.0
 -e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
 elasticsearch==2.4.0
 zerorpc>=0.4.4
