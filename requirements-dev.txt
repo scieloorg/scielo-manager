@@ -1,5 +1,5 @@
 django-extensions==1.7.2
-django-debug-toolbar
+django-debug-toolbar==1.5
 coverage==4.2
 django-coverage==1.2.4
 Fabric==1.12.0
