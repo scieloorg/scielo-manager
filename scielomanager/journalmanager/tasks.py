@@ -463,7 +463,7 @@ def convert_image_to_jpeg(filepath, mode=None, **kwargs):
     return output_buffer
 
 
-@app.task
+@app.task(throws=(ValueError, TypeError,))
 def create_preferred_image_file(asset_pk):
     """Cria uma versão alternativa de `ArticleAsset.file`, preferida para o
     manuseio.
@@ -490,7 +490,7 @@ def create_preferred_image_file(asset_pk):
     if not asset.is_image():
         logger.error('Cannot create a preferred alt file for %s. Skipping.',
                      filepath)
-        raise TypeError('Cannot create preferred alternatives for files '
+        raise ValueError('Cannot create preferred alternatives for files '
                         'other than images.')
 
     with Image.open(asset.file.path) as _file:

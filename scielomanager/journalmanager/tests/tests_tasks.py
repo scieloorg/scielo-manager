@@ -1,4 +1,5 @@
 #coding: utf-8
+import os
 import io
 import copy
 import unittest
@@ -897,4 +898,104 @@ class CreateArticleHTMLRenditionsTests(TestCase):
 
         for url, lang in urls:
             self.assertTrue(url.endswith(u'-' + lang + u'.html'))
+
+
+class ConvertImageToJpegTests(TestCase):
+    def test_convert_gif_image_to_jpeg(self):
+        from PIL import Image
+        image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                u'image_test', u'cover_too_heavy.gif')
+
+        # A conversão de GIF para JPEG depende da conversão do modo para a
+        # profundidade de cor por pixel. Por isso do argumento `mode`.
+        jpeg_buff = tasks.convert_image_to_jpeg(image_path, mode='RGB')
+        jpeg_buff.seek(0)
+
+        with Image.open(jpeg_buff) as img:
+            self.assertEquals(img.format.lower(), 'jpeg')
+
+    def test_convert_tif_image_to_jpeg(self):
+        from PIL import Image
+        image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                u'image_test', u'sample_tif_image.tif')
+
+        jpeg_buff = tasks.convert_image_to_jpeg(image_path)
+        jpeg_buff.seek(0)
+
+        with Image.open(jpeg_buff) as img:
+            self.assertEquals(img.format.lower(), 'jpeg')
+
+    def test_convert_pdf_to_jpeg(self):
+        """That should raise a IOError.
+        """
+        from PIL import Image
+        image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                u'image_test', u'logo.pdf')
+
+        self.assertRaises(IOError,
+                lambda: tasks.convert_image_to_jpeg(image_path))
+
+
+class CreatePreferredImageFileTests(TestCase):
+    def setUp(self):
+        self.unlink_registry = []
+
+    def tearDown(self):
+        for path in self.unlink_registry:
+            os.unlink(path)
+
+    def test_create_alt_image_from_tiff(self):
+        asset = modelfactories.ArticleAssetFactory.create()
+        self.assertEquals(False, bool(asset.preferred_alt_file))
+
+        tasks.create_preferred_image_file(asset.pk)
+
+        modified_asset = models.ArticleAsset.objects.get(pk=asset.pk)
+        self.assertEquals(True, bool(modified_asset.preferred_alt_file))
+
+        # evitar que arquivos temporários sobrem no disco.
+        self.unlink_registry.append(asset.file.path)
+        self.unlink_registry.append(modified_asset.preferred_alt_file.path)
+
+    def test_alt_to_tiff_is_jpeg(self):
+        from PIL import Image
+        asset = modelfactories.ArticleAssetFactory.create()
+        tasks.create_preferred_image_file(asset.pk)
+        modified_asset = models.ArticleAsset.objects.get(pk=asset.pk)
+        self.assertEquals('jpeg',
+                Image.open(modified_asset.preferred_alt_file.path).format.lower())
+
+        # evitar que arquivos temporários sobrem no disco.
+        self.unlink_registry.append(asset.file.path)
+        self.unlink_registry.append(modified_asset.preferred_alt_file.path)
+
+    def test_non_images_raise_ValueError(self):
+        from django.core.files.base import File
+        SAMPLE_PDF = open(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            u'image_test',
+            u'logo.pdf'))
+
+        asset = modelfactories.ArticleAssetFactory.build()
+        asset.file = File(SAMPLE_PDF)
+
+        self.assertRaises(ValueError,
+                lambda: tasks.create_preferred_image_file(asset.pk))
+
+    def test_images_other_than_tiff_raise_ValueError(self):
+        from django.core.files.base import File
+        SAMPLE_PDF = open(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            u'image_test',
+            u'cover.gif'))
+
+        asset = modelfactories.ArticleAssetFactory.build()
+        asset.file = File(SAMPLE_PDF)
+
+        self.assertRaises(ValueError,
+                lambda: tasks.create_preferred_image_file(asset.pk))
+
+    def test_missing_asset_raise_ValueError(self):
+        self.assertRaises(ValueError,
+                lambda: tasks.create_preferred_image_file(999999))
 
