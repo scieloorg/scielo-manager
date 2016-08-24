@@ -12,7 +12,7 @@ webassets==0.7.1
 yuicompressor==2.4.8
 jsonfield
 django-tastypie==0.13.3
-django-htmlmin==0.7.0
+django-htmlmin==0.9.1
 packtools==1.2
 Celery
 django-celery==3.1.17
