@@ -4,7 +4,7 @@ psycopg2==2.6.2
 wsgiref==0.1.2
 scielo-django-extensions==0.4
 ordereddict==1.1
-pillow==2.3.0
+pillow==3.3.1
 django-widget-tweaks==1.4.1
 lxml==3.6.3
 pyyaml==3.11
