@@ -96,6 +96,8 @@
       $('#{{ formset.prefix }} tbody tr input').addClass('span12');
       //multiple-formsets
       $('#{{ formset.prefix }} tbody tr').formset({
+        addText: "{% trans 'add another' %}",
+        deleteText: "{% trans 'remove' %}",
         formCssClass: 'dynamic-{{ formset.prefix }}-form',
         prefix: '{{ formset.prefix }}'
       });

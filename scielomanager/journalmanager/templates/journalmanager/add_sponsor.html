@@ -127,6 +127,8 @@
     });
     //multiple-formsets
     $('#sponsorcollectionsformset tbody tr').formset({
+      addText: "{% trans 'add another' %}",
+      deleteText: "{% trans 'remove' %}",
       formCssClass: 'dynamic-sponsorcollectionsformset-form',
       prefix: '{{ sponsorcollectionsformset.prefix }}'
     });

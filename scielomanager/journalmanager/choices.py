@@ -1,6 +1,8 @@
 # coding: utf-8
 import calendar
 
+from django.utils.translation import ugettext_lazy as _
+
 SCIELO_ISSN = [
     ('print', 'print'),
     ('electronic', 'electronic'),
@@ -65,10 +67,10 @@ TITLE_CATEGORY = [
 ]
 
 JOURNAL_PUBLICATION_STATUS = [
-    ('current', 'Current'),
-    ('deceased', 'Deceased'),
-    ('suspended', 'Suspended'),
-    ('inprogress', 'In Progress'),
+    ('current', _('Current')),
+    ('deceased', _('Deceased')),
+    ('suspended', _('Suspended')),
+    ('inprogress', _('In Progress')),
 ]
 
 # the index 0 has an empty value

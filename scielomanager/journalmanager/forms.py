@@ -116,23 +116,23 @@ class RestrictedJournalForm(ModelForm):
 
 
 class JournalForm(ModelForm):
-    print_issn = fields.ISSNField(max_length=9, required=False)
-    eletronic_issn = fields.ISSNField(max_length=9, required=False)
+    print_issn = fields.ISSNField(label=_('Print ISSN'), max_length=9, required=False)
+    eletronic_issn = fields.ISSNField(label=_('Electronic ISSN'), max_length=9, required=False)
     languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
         required=True)
     abstract_keyword_languages = forms.ModelMultipleChoiceField(models.Language.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more languages')}),
-        required=True)
+        required=True, label=_('Abstract keyword languages'))
     sponsor = forms.ModelMultipleChoiceField(models.Sponsor.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more sponsors')}),
         required=True)
     subject_categories = forms.ModelMultipleChoiceField(models.SubjectCategory.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more categories')}),
-        required=False)
+        required=False, label=_('Study area'))
     study_areas = forms.ModelMultipleChoiceField(models.StudyArea.objects.all(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more study area')}),
-        required=True)
+        required=True, label=_('Subject categories'))
     regex = re.compile(r'^(1|2)\d{3}$')
 
     def save_all(self, creator):
@@ -347,7 +347,10 @@ class IssueBaseForm(forms.ModelForm):
     section = forms.ModelMultipleChoiceField(
         models.Section.objects.none(),
         widget=forms.SelectMultiple(attrs={'title': _('Select one or more sections')}),
-        required=False)
+        required=False, label=_("Sections"))
+
+    use_license = forms.ModelChoiceField(models.UseLicense.objects.all(),
+                                         label=_("Use License"))
 
     class Meta:
         model = models.Issue
@@ -543,6 +546,7 @@ class SectionForm(ModelForm):
         super(SectionForm, self).__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
         self.fields['legacy_code'].widget.attrs['readonly'] = True
+        self.fields['legacy_code'].label = _('Legacy Code')
 
     def clean_code(self):
         return self.instance.legacy_code
@@ -604,6 +608,7 @@ class RegularPressReleaseForm(ModelForm):
         """
         self.journal = kwargs.pop('journal', None)
         super(RegularPressReleaseForm, self).__init__(*args, **kwargs)
+        self.fields['issue'].label = _('Issue')
 
         if not self.journal:
             raise TypeError('missing journal argument')

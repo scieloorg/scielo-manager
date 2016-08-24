@@ -771,7 +771,7 @@ class JournalTimeline(models.Model):
     status = models.CharField(max_length=16,
         choices=choices.JOURNAL_PUBLICATION_STATUS)
     since = models.DateTimeField()
-    reason = models.TextField(default="")
+    reason = models.TextField(_('Reason'), default="")
     created_by = models.ForeignKey(User)
 
 
@@ -855,7 +855,7 @@ class Section(models.Model):
 
     journal = models.ForeignKey(Journal)
 
-    code = models.CharField(unique=True, max_length=21, blank=True)
+    code = models.CharField(_('Legacy code'), unique=True, max_length=21, blank=True)
     legacy_code = models.CharField(null=True, blank=True, max_length=16)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -941,7 +941,7 @@ class Issue(models.Model):
     objects = IssueCustomManager()
     userobjects = modelmanagers.IssueManager()
 
-    section = models.ManyToManyField(Section, blank=True)
+    section = models.ManyToManyField(Section, verbose_name=_("Section"), blank=True)
     journal = models.ForeignKey(Journal)
     volume = models.CharField(_('Volume'), blank=True, max_length=16)
     number = models.CharField(_('Number'), blank=True, max_length=16)
@@ -951,7 +951,7 @@ class Issue(models.Model):
     publication_end_month = models.IntegerField(_('End Month'), blank=True, null=True, choices=choices.MONTHS)
     publication_year = models.IntegerField(_('Year'))
     is_marked_up = models.BooleanField(_('Is Marked Up?'), default=False, null=False, blank=True)
-    use_license = models.ForeignKey(UseLicense, null=True, help_text=ISSUE_DEFAULT_LICENSE_HELP_TEXT)
+    use_license = models.ForeignKey(UseLicense, verbose_name=_("Use License"), null=True, help_text=ISSUE_DEFAULT_LICENSE_HELP_TEXT)
     total_documents = models.IntegerField(_('Total of Documents'), default=0)
     ctrl_vocabulary = models.CharField(_('Controlled Vocabulary'), max_length=64,
         choices=sorted(choices.CTRL_VOCABULARY, key=lambda CTRL_VOCABULARY: CTRL_VOCABULARY[1]), null=False, blank=True)

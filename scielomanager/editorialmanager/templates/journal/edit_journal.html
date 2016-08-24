@@ -138,6 +138,8 @@
   <script>
 
     $('#missionformset tbody tr').formset({
+      addText: "{% trans 'add another' %}",
+      deleteText: "{% trans 'remove' %}",
       formCssClass: 'dynamic-missionformset-form',
       prefix: '{{ missionformset.prefix }}'
     });

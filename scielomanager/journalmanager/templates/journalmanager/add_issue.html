@@ -46,6 +46,8 @@
     $(".help-text").popover('hide');
     //multiple-formsets
     $('#titleformset tbody tr').formset({
+      addText: "{% trans 'add another' %}",
+      deleteText: "{% trans 'remove' %}",
       formCssClass: 'dynamic-titleformset-form',
       prefix: '{{ titleformset.prefix }}'
     });
