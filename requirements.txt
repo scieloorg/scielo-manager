@@ -16,7 +16,7 @@ django-htmlmin==0.7.0
 packtools==1.1
 Celery
 django-celery==3.1.17
-django-kombu
+django-kombu==0.9.4
 defusedxml==0.4.1
 cython==0.24.1
 thriftpy
