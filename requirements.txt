@@ -10,7 +10,7 @@ lxml==3.6.3
 pyyaml==3.11
 webassets==0.12.0
 yuicompressor==2.4.8
-jsonfield
+jsonfield==1.0.3
 django-tastypie==0.13.3
 django-htmlmin==0.9.1
 packtools==1.2
