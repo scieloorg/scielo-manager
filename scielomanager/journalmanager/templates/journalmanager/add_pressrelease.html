@@ -168,10 +168,14 @@
   <script>
     $(document).ready(function() {
       $('#translation_formset tbody tr').formset({
+        addText: "{% trans 'add another' %}",
+        deleteText: "{% trans 'remove' %}",
         formCssClass: 'dynamic-translation_formset-form',
         prefix: '{{ translation_formset.prefix }}'
       });
       $('#article_formset tbody tr').formset({
+        addText: "{% trans 'add another' %}",
+        deleteText: "{% trans 'remove' %}",
         formCssClass: 'dynamic-article_formset-form',
         prefix: '{{ article_formset.prefix }}'
       });

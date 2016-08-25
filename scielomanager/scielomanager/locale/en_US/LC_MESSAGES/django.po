@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SciELO Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-21 17:09-0300\n"
+"POT-Creation-Date: 2016-08-24 15:07-0300\n"
 "PO-Revision-Date: 2012-10-23 08:30+0000\n"
 "Last-Translator: scielo <tecnologia@scielo.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Saved successfully"
 msgstr "Section removed successfully"
 
-#: accounts/views.py:27 journalmanager/views.py:52
+#: accounts/views.py:27 journalmanager/views.py:54
 msgid "There are some errors or missing data."
 msgstr "There are some errors or missing data."
 
@@ -62,7 +62,7 @@ msgstr "Username"
 
 #: accounts/templates/accounts/my_account.html:23
 #: editorialmanager/templates/board/board_member_delete_data.html:26
-#: journalmanager/models.py:432
+#: journalmanager/models.py:355
 msgid "Email"
 msgstr "Email"
 
@@ -123,7 +123,7 @@ msgstr ""
 
 #: accounts/templates/accounts/password_change.html:6
 #: export/templates/export/markup_files.html:9
-#: journalmanager/templates/journalmanager/add_pressrelease.html:12
+#: journalmanager/templates/journalmanager/add_pressrelease.html:36
 #: scielomanager/templates/registration/registration_form.html:6
 msgid "Home"
 msgstr "Home"
@@ -148,7 +148,7 @@ msgstr "Field required!"
 #: journalmanager/templates/journalmanager/add_collection.html:166
 #: journalmanager/templates/journalmanager/add_issue.html:32
 #: journalmanager/templates/journalmanager/add_journal.html:560
-#: journalmanager/templates/journalmanager/add_pressrelease.html:121
+#: journalmanager/templates/journalmanager/add_pressrelease.html:151
 #: journalmanager/templates/journalmanager/add_section.html:109
 #: journalmanager/templates/journalmanager/add_sponsor.html:104
 #: journalmanager/templates/journalmanager/add_user.html:194
@@ -162,7 +162,7 @@ msgstr "save"
 #: journalmanager/templates/journalmanager/add_collection.html:171
 #: journalmanager/templates/journalmanager/add_issue.html:37
 #: journalmanager/templates/journalmanager/add_journal.html:564
-#: journalmanager/templates/journalmanager/add_pressrelease.html:125
+#: journalmanager/templates/journalmanager/add_pressrelease.html:155
 #: journalmanager/templates/journalmanager/add_section.html:113
 #: journalmanager/templates/journalmanager/add_sponsor.html:109
 #: journalmanager/templates/journalmanager/add_user.html:198
@@ -180,7 +180,7 @@ msgstr ""
 
 #: accounts/templates/accounts/unauthorized.html:10
 msgid ""
-"login <strong>with a more previleged account</strong></a> or contact support."
+"login <strong>with a more privileged account</strong></a> or contact support."
 msgstr ""
 
 #: audit_log/helpers.py:274
@@ -237,7 +237,7 @@ msgstr ""
 #: editorialmanager/templates/journal/edit_journal.html:22
 #: health/templates/health/overall_status.html:38
 #: journalmanager/templates/journalmanager/add_journal.html:186
-#: maintenancewindow/models.py:37
+#: maintenancewindow/models.py:35
 msgid "Description"
 msgstr "Description"
 
@@ -304,7 +304,7 @@ msgstr "Name"
 
 #: editorialmanager/models.py:33 journalmanager/forms.py:29
 #: journalmanager/forms.py:43 journalmanager/forms.py:301
-#: journalmanager/models.py:543
+#: journalmanager/models.py:462
 #: journalmanager/templates/journalmanager/editor.html:20
 #: journalmanager/templates/journalmanager/user_list.html:27
 msgid "E-mail"
@@ -323,20 +323,20 @@ msgstr ""
 #: editorialmanager/models.py:36
 #: editorialmanager/templates/board/board_member_delete_data.html:48
 #: editorialmanager/templates/journal/journal_detail.html:97
-#: journalmanager/models.py:425 journalmanager/models.py:535
+#: journalmanager/models.py:348 journalmanager/models.py:454
 msgid "City"
 msgstr "City"
 
 #: editorialmanager/models.py:37
 #: editorialmanager/templates/board/board_member_delete_data.html:54
-#: journalmanager/models.py:424 journalmanager/models.py:534
+#: journalmanager/models.py:347 journalmanager/models.py:453
 msgid "State"
 msgstr "State"
 
 #: editorialmanager/models.py:38
 #: editorialmanager/templates/board/board_member_delete_data.html:60
 #: editorialmanager/templates/journal/journal_detail.html:93
-#: journalmanager/models.py:423 journalmanager/models.py:533
+#: journalmanager/models.py:346 journalmanager/models.py:452
 msgid "Country"
 msgstr "Country"
 
@@ -416,7 +416,6 @@ msgstr "Section removed successfully"
 
 #: editorialmanager/templates/modal.html:24
 #: editorialmanager/templates/modal_form.html:24
-#: journalmanager/templates/journalmanager/add_pressrelease.html:143
 msgid "Close"
 msgstr ""
 
@@ -452,6 +451,7 @@ msgstr "Journals"
 #: editorialmanager/templates/board/role_type_edit.html:10
 #: editorialmanager/templates/board/role_type_list.html:9
 #: editorialmanager/templates/board/role_type_translate.html:10
+#: editorialmanager/templates/journal/journal_list.html:39
 #, fuzzy
 msgid "Editorial Board"
 msgstr "Editorial Standard"
@@ -461,14 +461,14 @@ msgid "Can not move this block, please try again later"
 msgstr ""
 
 #: editorialmanager/templates/board/board_list_data.html:30
-#: journalmanager/models.py:1000
+#: journalmanager/models.py:946
 #: journalmanager/templates/journalmanager/issue_list.html:95
 msgid "Volume"
 msgstr "Volume"
 
 #: editorialmanager/templates/board/board_list_data.html:30
-#: journalmanager/models.py:427 journalmanager/models.py:537
-#: journalmanager/models.py:1001
+#: journalmanager/models.py:350 journalmanager/models.py:456
+#: journalmanager/models.py:947
 #: journalmanager/templates/journalmanager/issue_list.html:104
 msgid "Number"
 msgstr "Number"
@@ -631,12 +631,39 @@ msgstr "Translation"
 
 #: editorialmanager/templates/board/role_type_translate.html:42
 #: editorialmanager/templates/journal/edit_journal.html:25
-#: journalmanager/models.py:875
+#: journalmanager/models.py:826
 #: journalmanager/templates/journalmanager/add_journal.html:190
+#: journalmanager/templates/journalmanager/add_pressrelease.html:112
 #: journalmanager/templates/journalmanager/add_section.html:63
 #: journalmanager/templates/journalmanager/includes/titleformset.html:8
 msgid "Language"
 msgstr "Language"
+
+#: editorialmanager/templates/board/role_type_translate.html:99
+#: editorialmanager/templates/journal/edit_journal.html:141
+#: journalmanager/templates/journalmanager/add_issue.html:49
+#: journalmanager/templates/journalmanager/add_journal.html:592
+#: journalmanager/templates/journalmanager/add_journal.html:598
+#: journalmanager/templates/journalmanager/add_pressrelease.html:171
+#: journalmanager/templates/journalmanager/add_pressrelease.html:177
+#: journalmanager/templates/journalmanager/add_section.html:163
+#: journalmanager/templates/journalmanager/add_sponsor.html:130
+#: journalmanager/templates/journalmanager/add_user.html:216
+msgid "add another"
+msgstr ""
+
+#: editorialmanager/templates/board/role_type_translate.html:100
+#: editorialmanager/templates/journal/edit_journal.html:142
+#: journalmanager/templates/journalmanager/add_issue.html:50
+#: journalmanager/templates/journalmanager/add_journal.html:593
+#: journalmanager/templates/journalmanager/add_journal.html:599
+#: journalmanager/templates/journalmanager/add_pressrelease.html:172
+#: journalmanager/templates/journalmanager/add_pressrelease.html:178
+#: journalmanager/templates/journalmanager/add_section.html:164
+#: journalmanager/templates/journalmanager/add_sponsor.html:131
+#: journalmanager/templates/journalmanager/add_user.html:217
+msgid "remove"
+msgstr ""
 
 #: editorialmanager/templates/includes/journal_detail_info.html:8
 msgid "On-line version ISSN"
@@ -645,7 +672,7 @@ msgstr ""
 #: editorialmanager/templates/includes/journal_detail_info.html:12
 #: editorialmanager/templates/journal/edit_journal.html:97
 #: editorialmanager/templates/journal/journal_detail.html:113
-#: journalmanager/models.py:605
+#: journalmanager/models.py:514
 #: journalmanager/templates/journalmanager/add_journal.html:28
 #: journalmanager/templates/journalmanager/add_journal.html:454
 #: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:32
@@ -663,13 +690,17 @@ msgstr ""
 msgid "Managed by the collections"
 msgstr "Is manager of the collection?"
 
+#: editorialmanager/templates/includes/journal_detail_info.html:24
+msgid "Download full board as CSV file"
+msgstr ""
+
 #: editorialmanager/templates/journal/edit_journal.html:9
 #, fuzzy
 msgid "Edit journal"
 msgstr "Edit"
 
 #: editorialmanager/templates/journal/edit_journal.html:16
-#: journalmanager/models.py:830
+#: journalmanager/models.py:786
 #: journalmanager/templates/journalmanager/add_journal.html:20
 #: journalmanager/templates/journalmanager/add_journal.html:180
 msgid "Mission"
@@ -702,14 +733,14 @@ msgid "Publisher"
 msgstr "Publishers"
 
 #: editorialmanager/templates/journal/journal_detail.html:6
-#: journalmanager/models.py:1349
+#: journalmanager/models.py:1312
 #: validator/templates/validator/includes/xml_annotated.html:21
 #, fuzzy
 msgid "Journal title"
 msgstr "Journal Title"
 
 #: editorialmanager/templates/journal/journal_detail.html:10
-#: journalmanager/models.py:622
+#: journalmanager/models.py:549
 msgid "ISO abbreviated title"
 msgstr "ISO abbreviated title"
 
@@ -724,7 +755,7 @@ msgid "Medline title"
 msgstr "Medline Title"
 
 #: editorialmanager/templates/journal/journal_detail.html:22
-#: journalmanager/models.py:608
+#: journalmanager/models.py:520
 #, fuzzy
 msgid "Previous title"
 msgstr "Other Previous Title"
@@ -735,14 +766,14 @@ msgid "ISSN(s)"
 msgstr "ISSN"
 
 #: editorialmanager/templates/journal/journal_detail.html:30
-#: journalmanager/models.py:629
+#: journalmanager/forms.py:119 journalmanager/models.py:559
 #: journalmanager/templates/journalmanager/journal_dash.html:11
 #: journalmanager/templates/journalmanager/journal_list.html:211
 msgid "Print ISSN"
 msgstr "Print ISSN"
 
 #: editorialmanager/templates/journal/journal_detail.html:35
-#: journalmanager/models.py:630
+#: journalmanager/forms.py:120 journalmanager/models.py:560
 #: journalmanager/templates/journalmanager/journal_dash.html:12
 msgid "Electronic ISSN"
 msgstr "Electronic ISSN"
@@ -753,34 +784,35 @@ msgid "Missions"
 msgstr "Mission"
 
 #: editorialmanager/templates/journal/journal_detail.html:53
-#, fuzzy
-msgid "Lanaguages"
+#: journalmanager/templates/journalmanager/add_journal.html:21
+#: journalmanager/templates/journalmanager/add_journal.html:224
+msgid "Languages"
 msgstr "Languages"
 
 #: editorialmanager/templates/journal/journal_detail.html:64
-#: journalmanager/models.py:626
+#: journalmanager/models.py:555
 #: journalmanager/templates/journalmanager/journal_list.html:91
 #: journalmanager/templates/journalmanager/journal_list.html:213
 msgid "Acronym"
 msgstr "Acronym"
 
 #: editorialmanager/templates/journal/journal_detail.html:68
-#: journalmanager/models.py:653
+#: journalmanager/models.py:598
 msgid "Index Coverage"
 msgstr "Index Coverage"
 
 #: editorialmanager/templates/journal/journal_detail.html:76
-#: journalmanager/models.py:632
+#: journalmanager/models.py:564
 msgid "Initial Year"
 msgstr "Initial Year"
 
 #: editorialmanager/templates/journal/journal_detail.html:80
-#: journalmanager/models.py:635
+#: journalmanager/models.py:569
 msgid "Final Year"
 msgstr "Final Year"
 
 #: editorialmanager/templates/journal/journal_detail.html:84
-#: journalmanager/models.py:640
+#: journalmanager/models.py:579
 msgid "Frequency"
 msgstr "Frequency"
 
@@ -795,14 +827,10 @@ msgid "State/Province/Region"
 msgstr "Publisher State"
 
 #: editorialmanager/templates/journal/journal_detail.html:103
-#: journalmanager/models.py:607
+#: journalmanager/models.py:518
 #: journalmanager/templates/journalmanager/add_sponsor.html:6
 msgid "Sponsor"
 msgstr "Sponsor"
-
-#: editorialmanager/templates/journal/journal_list.html:39
-msgid "Corpo editorial"
-msgstr ""
 
 #: editorialmanager/templates/journal/journal_list.html:48
 #, fuzzy
@@ -831,7 +859,7 @@ msgstr "Metadata for Markup"
 msgid "Journal"
 msgstr "Journal"
 
-#: export/templates/export/markup_files.html:33
+#: export/templates/export/markup_files.html:33 journalmanager/forms.py:611
 #: scielomanager/templates/include_press_release/issue.html:6
 msgid "Issue"
 msgstr "Issue"
@@ -957,6 +985,26 @@ msgid ""
 "        "
 msgstr ""
 
+#: journalmanager/choices.py:70
+#: journalmanager/templates/journalmanager/journal_list.html:50
+msgid "Current"
+msgstr "Current"
+
+#: journalmanager/choices.py:71
+#: journalmanager/templates/journalmanager/journal_list.html:56
+msgid "Deceased"
+msgstr "Deceased"
+
+#: journalmanager/choices.py:72
+#: journalmanager/templates/journalmanager/journal_list.html:53
+msgid "Suspended"
+msgstr "Suspended"
+
+#: journalmanager/choices.py:73
+#, fuzzy
+msgid "In Progress"
+msgstr "In progress"
+
 #: journalmanager/forms.py:25
 msgid "This email is being used by another user, please try another email."
 msgstr ""
@@ -969,6 +1017,10 @@ msgstr "Select one or more collections"
 msgid "Select one or more languages"
 msgstr "Select one or more languages"
 
+#: journalmanager/forms.py:126
+msgid "Abstract keyword languages"
+msgstr ""
+
 #: journalmanager/forms.py:128
 msgid "Select one or more sponsors"
 msgstr "Select one or more sponsors"
@@ -978,49 +1030,63 @@ msgstr "Select one or more sponsors"
 msgid "Select one or more categories"
 msgstr "Select one or more groups"
 
+#: journalmanager/forms.py:132
+#, fuzzy
+msgid "Study area"
+msgstr "Study Area"
+
 #: journalmanager/forms.py:134
 #, fuzzy
 msgid "Select one or more study area"
 msgstr "Select one or more languages"
 
+#: journalmanager/forms.py:135
+#, fuzzy
+msgid "Subject categories"
+msgstr "Subject / Descriptors"
+
 #: journalmanager/forms.py:188
-#: journalmanager/templates/journalmanager/add_journal.html:627
+#: journalmanager/templates/journalmanager/add_journal.html:631
 msgid ""
 "Journal cover image extension is not allowed! Please select another file."
 msgstr ""
 
 #: journalmanager/forms.py:192
-#: journalmanager/templates/journalmanager/add_journal.html:625
+#: journalmanager/templates/journalmanager/add_journal.html:629
 msgid "Journal cover image file size is too large! Please select another file."
 msgstr ""
 
 #: journalmanager/forms.py:198
+#, python-brace-format
 msgid ""
 "The image is {image_size}px pixel wide. It's supposed to be {expected_size}px"
 msgstr ""
 
 #: journalmanager/forms.py:204
+#, python-brace-format
 msgid ""
 "The image is {image_size}px pixel high. It's supposed to be {expected_size}px"
 msgstr ""
 
 #: journalmanager/forms.py:215
-#: journalmanager/templates/journalmanager/add_journal.html:628
+#: journalmanager/templates/journalmanager/add_journal.html:632
 msgid ""
 "Journal logo image extension is not allowed! Please select another file."
 msgstr ""
 
 #: journalmanager/forms.py:218
-#: journalmanager/templates/journalmanager/add_journal.html:626
+#: journalmanager/templates/journalmanager/add_journal.html:630
 msgid "Journal logo image file size is too large! Please select another file."
 msgstr ""
 
 #: journalmanager/forms.py:223
+#, python-brace-format
 msgid ""
 "The image is {logo_size}px pixel wide. It's supposed to be {expected_size}px"
 msgstr ""
 
 #: journalmanager/forms.py:227
+#, python-brace-format
 msgid ""
 "The image is {logo_size}px pixel high. It's supposed to be {expected_size}px"
 msgstr ""
@@ -1043,13 +1109,25 @@ msgstr "Select one or more groups"
 msgid "Select one or more sections"
 msgstr "Select one or more section"
 
-#: journalmanager/forms.py:402
+#: journalmanager/forms.py:350
+#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:17
+#: journalmanager/templates/journalmanager/section_list.html:6
+#: journalmanager/templates/journalmanager/trash_listing.html:28
+msgid "Sections"
+msgstr "Sections"
+
+#: journalmanager/forms.py:353 journalmanager/models.py:954
+#, fuzzy
+msgid "Use License"
+msgstr "Licenses"
+
+#: journalmanager/forms.py:405
 msgid "You must complete at least one of two fields volume or number."
 msgstr "You must complete at least one of two fields volume or number."
 
-#: journalmanager/forms.py:416 journalmanager/forms.py:421
-#: journalmanager/forms.py:470 journalmanager/forms.py:475
-#: journalmanager/forms.py:521 journalmanager/forms.py:526
+#: journalmanager/forms.py:416 journalmanager/forms.py:470
+#: journalmanager/forms.py:475 journalmanager/forms.py:521
+#: journalmanager/forms.py:526
 msgid ""
 "Issue with this Year and (Volume or Number) already exists for this Journal."
 msgstr ""
@@ -1065,489 +1143,478 @@ msgstr "You must complete at least one of two fields volume or number."
 msgid "You must complete the number filed. Volume field must be empty."
 msgstr "You must complete at least one of two fields volume or number."
 
-#: journalmanager/forms.py:852
+#: journalmanager/forms.py:549
+#, fuzzy
+msgid "Legacy Code"
+msgstr "License Code"
+
+#: journalmanager/forms.py:854
 msgid "Please fill in at least one form"
 msgstr ""
 
-#: journalmanager/models.py:47
+#: journalmanager/models.py:44
 msgid ""
 "If not defined, will be applied the related journal's use license. The "
 "SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/"
 "jf5ndd (5.2.11. Política de direitos autorais) for more details."
 msgstr ""
 
-#: journalmanager/models.py:294
+#: journalmanager/models.py:288 journalmanager/models.py:1520
 msgid "ISO 639-1 Language Code"
 msgstr "ISO 639-1 Language Code"
 
-#: journalmanager/models.py:295
+#: journalmanager/models.py:289
 msgid "Language Name (in English)"
 msgstr "Language Name (in English)"
 
-#: journalmanager/models.py:389
-#, python-format
-msgid "User can't do this action: %s"
-msgstr ""
-
-#: journalmanager/models.py:392
-msgid "User can't ACCEPT checkins, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:394
-msgid "User can't REJECT checkins, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:396
-msgid ""
-"User can't REVIEW (Level 1) checkins, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:398
-msgid ""
-"User can't REVIEW (Level 2) checkins, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:400
-msgid ""
-"User can't SEND checkins TO REVIEW, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:402
-msgid ""
-"User can't SEND checkins TO PENDING, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:404
-msgid ""
-"User can't SEND checkins TO CHECKOUT, because doesn't have enough permissions"
-msgstr ""
-
-#: journalmanager/models.py:418
+#: journalmanager/models.py:341
 msgid "Collection Name"
 msgstr "Collection Name"
 
-#: journalmanager/models.py:420
+#: journalmanager/models.py:343
 msgid "Instance URL"
 msgstr "Instance URL"
 
-#: journalmanager/models.py:421
+#: journalmanager/models.py:344
 #: journalmanager/templates/journalmanager/add_journal.html:535
 msgid "Logo"
 msgstr "Logo"
 
-#: journalmanager/models.py:422 journalmanager/models.py:532
+#: journalmanager/models.py:345 journalmanager/models.py:451
 msgid "Sigla"
 msgstr "Sigla"
 
-#: journalmanager/models.py:426 journalmanager/models.py:536
+#: journalmanager/models.py:349 journalmanager/models.py:455
 msgid "Address"
 msgstr "Address"
 
-#: journalmanager/models.py:428
+#: journalmanager/models.py:351
 msgid "Complement"
 msgstr "Complement"
 
-#: journalmanager/models.py:429 journalmanager/models.py:539
+#: journalmanager/models.py:352 journalmanager/models.py:458
 msgid "Zip Code"
 msgstr "Zip Code"
 
-#: journalmanager/models.py:430 journalmanager/models.py:540
+#: journalmanager/models.py:353 journalmanager/models.py:459
 msgid "Phone Number"
 msgstr "Phone Number"
 
-#: journalmanager/models.py:431 journalmanager/models.py:541
+#: journalmanager/models.py:354 journalmanager/models.py:460
 msgid "Fax Number"
 msgstr "Fax Number"
 
-#: journalmanager/models.py:514
+#: journalmanager/models.py:436
 msgid "Is default"
 msgstr "Is default"
 
-#: journalmanager/models.py:515
+#: journalmanager/models.py:437
 msgid "Is manager of the collection?"
 msgstr "Is manager of the collection?"
 
-#: journalmanager/models.py:530
+#: journalmanager/models.py:449
 msgid "Institution Name"
 msgstr "Institution Name"
 
-#: journalmanager/models.py:531
+#: journalmanager/models.py:450
 msgid "Institution Complements"
 msgstr "Institution Complements"
 
-#: journalmanager/models.py:538
+#: journalmanager/models.py:457
 msgid "Address Complement"
 msgstr "Address Complement"
 
-#: journalmanager/models.py:542
+#: journalmanager/models.py:461
 msgid "Cel Number"
 msgstr "Cel Number"
 
-#: journalmanager/models.py:544 journalmanager/models.py:658
-#: journalmanager/models.py:915 journalmanager/models.py:1015
+#: journalmanager/models.py:463 journalmanager/models.py:608
+#: journalmanager/models.py:862 journalmanager/models.py:961
 msgid "Is trashed?"
 msgstr "Is trashed?"
 
-#: journalmanager/models.py:571
+#: journalmanager/models.py:485
 msgid "Term"
 msgstr ""
 
-#: journalmanager/models.py:582 journalmanager/models.py:615
+#: journalmanager/models.py:492 journalmanager/models.py:536
 msgid "Study Area"
 msgstr "Study Area"
 
-#: journalmanager/models.py:609
+#: journalmanager/models.py:523
 #, fuzzy
 msgid "Use license"
 msgstr "Licenses"
 
-#: journalmanager/models.py:612
-msgid "National Code"
-msgstr "National Code"
+#: journalmanager/models.py:528
+#, fuzzy
+msgid "CCN Code"
+msgstr "SECS Code"
 
-#: journalmanager/models.py:614
+#: journalmanager/models.py:529
+msgid "The code of the journal at the CCN database."
+msgstr ""
+
+#: journalmanager/models.py:534
 #, fuzzy
 msgid "Subject Categories"
 msgstr "Subject / Descriptors"
 
-#: journalmanager/models.py:618
+#: journalmanager/models.py:541
 msgid "Total of ahead of print documents for the current year"
 msgstr ""
 
-#: journalmanager/models.py:619
+#: journalmanager/models.py:544
 msgid "Total of ahead of print documents for the previous year"
 msgstr ""
 
-#: journalmanager/models.py:620
+#: journalmanager/models.py:546
 #, fuzzy
 msgid "Twitter User"
 msgstr "New User"
 
-#: journalmanager/models.py:621
+#: journalmanager/models.py:548
 #: journalmanager/templates/journalmanager/journal_list.html:92
 msgid "Journal Title"
 msgstr "Journal Title"
 
-#: journalmanager/models.py:623
+#: journalmanager/models.py:551
 msgid "Short Title"
 msgstr "Short Title"
 
-#: journalmanager/models.py:627
+#: journalmanager/models.py:556
 msgid "The ISSN used to build the Journal PID."
 msgstr "The ISSN used to build the Journal PID."
 
-#: journalmanager/models.py:631
+#: journalmanager/models.py:562
 msgid "Subject / Descriptors"
 msgstr "Subject / Descriptors"
 
-#: journalmanager/models.py:633
+#: journalmanager/models.py:565
 msgid "Initial Volume"
 msgstr "Initial Volume"
 
-#: journalmanager/models.py:634
+#: journalmanager/models.py:567
 msgid "Initial Number"
 msgstr "Initial Number"
 
-#: journalmanager/models.py:636
+#: journalmanager/models.py:571
 msgid "Final Volume"
 msgstr "Final Volume"
 
-#: journalmanager/models.py:637
+#: journalmanager/models.py:573
 msgid "Final Number"
 msgstr "Final Number"
 
-#: journalmanager/models.py:638
+#: journalmanager/models.py:575
 msgid "Medline Title"
 msgstr "Medline Title"
 
-#: journalmanager/models.py:639
+#: journalmanager/models.py:577
 msgid "Medline Code"
 msgstr "Medline Code"
 
-#: journalmanager/models.py:642 journalmanager/models.py:1012
+#: journalmanager/models.py:582 journalmanager/models.py:958
 msgid "Editorial Standard"
 msgstr "Editorial Standard"
 
-#: journalmanager/models.py:644 journalmanager/models.py:1010
+#: journalmanager/models.py:584 journalmanager/models.py:956
 msgid "Controlled Vocabulary"
 msgstr "Controlled Vocabulary"
 
-#: journalmanager/models.py:646
+#: journalmanager/models.py:586
 msgid "Publication Level"
 msgstr "Publication Level"
 
-#: journalmanager/models.py:648
+#: journalmanager/models.py:589
 msgid "SECS Code"
 msgstr "SECS Code"
 
-#: journalmanager/models.py:649
+#: journalmanager/models.py:592
 msgid "Copyrighter"
 msgstr "Copyrighter"
 
-#: journalmanager/models.py:650
+#: journalmanager/models.py:593
 #, fuzzy
 msgid "URL of online submission"
 msgstr "URL of online submission"
 
-#: journalmanager/models.py:651
+#: journalmanager/models.py:595
 msgid "URL of the journal"
 msgstr "URL of the journal"
 
-#: journalmanager/models.py:652
+#: journalmanager/models.py:597
 msgid "Notes"
 msgstr "Notes"
 
-#: journalmanager/models.py:654
+#: journalmanager/models.py:600
 msgid "Journal Cover"
 msgstr "Journal Cover"
 
-#: journalmanager/models.py:656
+#: journalmanager/models.py:604
 #, fuzzy
 msgid "Journal Logo"
 msgstr "Journal Logomarca"
 
-#: journalmanager/models.py:659
+#: journalmanager/models.py:610
 msgid "Other Previous Title"
 msgstr "Other Previous Title"
 
-#: journalmanager/models.py:660
+#: journalmanager/models.py:612
 #, fuzzy
 msgid "Editor Names"
 msgstr "Edit"
 
-#: journalmanager/models.py:661
+#: journalmanager/models.py:613
 #, fuzzy
 msgid "Editor Address"
 msgstr "Address"
 
-#: journalmanager/models.py:662
+#: journalmanager/models.py:614
 #, fuzzy
 msgid "Editor City"
 msgstr "Country"
 
-#: journalmanager/models.py:663
+#: journalmanager/models.py:615
 #, fuzzy
 msgid "Editor State/Province/Region"
 msgstr "Publisher State"
 
-#: journalmanager/models.py:664
+#: journalmanager/models.py:617
 msgid "Editor Zip/Postal Code"
 msgstr ""
 
-#: journalmanager/models.py:665
+#: journalmanager/models.py:619
 #, fuzzy
 msgid "Editor Country"
 msgstr "Country"
 
-#: journalmanager/models.py:666
+#: journalmanager/models.py:620
 #, fuzzy
 msgid "Editor Phone 1"
 msgstr "Country"
 
-#: journalmanager/models.py:667
+#: journalmanager/models.py:621
 #, fuzzy
 msgid "Editor Phone 2"
 msgstr "Country"
 
-#: journalmanager/models.py:668
+#: journalmanager/models.py:623
 #, fuzzy
 msgid "Editor E-mail"
 msgstr "E-mail"
 
-#: journalmanager/models.py:669
+#: journalmanager/models.py:624
 msgid "Publisher Name"
 msgstr "Publisher Name"
 
-#: journalmanager/models.py:670
+#: journalmanager/models.py:625
 msgid "Publisher Country"
 msgstr "Publisher Country"
 
-#: journalmanager/models.py:671
+#: journalmanager/models.py:626
 #, fuzzy
 msgid "Publisher State/Province/Region"
 msgstr "Publisher State"
 
-#: journalmanager/models.py:672
+#: journalmanager/models.py:628
 msgid "Publication City"
 msgstr "Publication City"
 
-#: journalmanager/models.py:673
+#: journalmanager/models.py:629
 msgid "SCIE"
 msgstr ""
 
-#: journalmanager/models.py:674
+#: journalmanager/models.py:630
 msgid "SSCI"
 msgstr ""
 
-#: journalmanager/models.py:675
+#: journalmanager/models.py:631
 msgid "A&HCI"
 msgstr ""
 
-#: journalmanager/models.py:785
+#: journalmanager/models.py:745
 msgid "Why are you changing the publication status?"
 msgstr ""
 
-#: journalmanager/models.py:822 journalmanager/models.py:888
-#: journalmanager/models.py:1166 journalmanager/models.py:1291
+#: journalmanager/models.py:774
+msgid "Reason"
+msgstr "Reason"
+
+#: journalmanager/models.py:780 journalmanager/models.py:836
+#: journalmanager/models.py:1112 journalmanager/models.py:1213
 #: journalmanager/templates/journalmanager/add_journal.html:16
+#: journalmanager/templates/journalmanager/add_pressrelease.html:118
 #: journalmanager/templates/journalmanager/add_section.html:58
 #: journalmanager/templates/journalmanager/issue_list.html:59
 #: journalmanager/templates/journalmanager/trash_listing.html:76
-#: maintenancewindow/models.py:34
+#: maintenancewindow/models.py:32
 msgid "Title"
 msgstr "Title"
 
-#: journalmanager/models.py:823
+#: journalmanager/models.py:781
 msgid "Title Category"
 msgstr "Title Category"
 
-#: journalmanager/models.py:838
+#: journalmanager/models.py:791
 msgid "License Code"
 msgstr "License Code"
 
-#: journalmanager/models.py:839
+#: journalmanager/models.py:792
 msgid "License Reference URL"
 msgstr "License Reference URL"
 
-#: journalmanager/models.py:840
+#: journalmanager/models.py:793
 msgid "Disclaimer"
 msgstr "Disclaimer"
 
-#: journalmanager/models.py:841
+#: journalmanager/models.py:794
 #, fuzzy
 msgid "Is Default?"
 msgstr "Is default"
 
-#: journalmanager/models.py:874
+#: journalmanager/models.py:825
 msgid "Translation"
 msgstr "Translation"
 
-#: journalmanager/models.py:876
+#: journalmanager/models.py:827
 msgid "Model"
 msgstr "Model"
 
-#: journalmanager/models.py:877
+#: journalmanager/models.py:828
 msgid "Field"
 msgstr "Field"
 
-#: journalmanager/models.py:1004
+#: journalmanager/models.py:858
+msgid "Legacy code"
+msgstr "picles"
+
+#: journalmanager/models.py:944
+#: journalmanager/templates/journalmanager/add_section.html:7
+#, fuzzy
+msgid "Section"
+msgstr "Sections"
+
+#: journalmanager/models.py:950
 msgid "Start Month"
 msgstr "Start Month"
 
-#: journalmanager/models.py:1005
+#: journalmanager/models.py:951
 msgid "End Month"
 msgstr "End Month"
 
-#: journalmanager/models.py:1006
+#: journalmanager/models.py:952
 msgid "Year"
 msgstr "Year"
 
-#: journalmanager/models.py:1007
+#: journalmanager/models.py:953
 msgid "Is Marked Up?"
 msgstr "Is Marked Up?"
 
-#: journalmanager/models.py:1009
+#: journalmanager/models.py:955
 msgid "Total of Documents"
 msgstr "Total of Documents"
 
-#: journalmanager/models.py:1014
+#: journalmanager/models.py:960
 #: journalmanager/templates/journalmanager/includes/issue_cover.html:2
 msgid "Issue Cover"
 msgstr "Issue Cover"
 
-#: journalmanager/models.py:1018
+#: journalmanager/models.py:964
 msgid "Issue Order"
 msgstr "Issue Order"
 
-#: journalmanager/models.py:1020
+#: journalmanager/models.py:966
 #: journalmanager/templates/journalmanager/issue_list.html:61
 msgid "Type"
 msgstr ""
 
-#: journalmanager/models.py:1021
+#: journalmanager/models.py:967
 msgid "Suppl Text"
 msgstr ""
 
-#: journalmanager/models.py:1022
+#: journalmanager/models.py:968
 msgid "Special Text"
 msgstr ""
 
-#: journalmanager/models.py:1211
+#: journalmanager/models.py:1135
 #, fuzzy
 msgid "Press release DOI number"
 msgstr "Is Press Release?"
 
-#: journalmanager/models.py:1292
-#: journalmanager/templates/journalmanager/add_pressrelease.html:83
+#: journalmanager/models.py:1214
+#: journalmanager/templates/journalmanager/add_pressrelease.html:104
 msgid "Content"
 msgstr ""
 
-#: journalmanager/models.py:1302
+#: journalmanager/models.py:1222
 #: journalmanager/templates/journalmanager/article_detail.html:24
 msgid "PID"
 msgstr ""
 
-#: journalmanager/views.py:50
+#: journalmanager/views.py:52
 msgid "Saved."
 msgstr "Saved."
 
-#: journalmanager/views.py:51
+#: journalmanager/views.py:53
 msgid "Saved partially. You can continue to fill in this form later."
 msgstr "Saved partially. You can continue to fill in this form later."
 
-#: journalmanager/views.py:53
+#: journalmanager/views.py:55
 msgid "The pended form has been deleted."
 msgstr "The pended form has been deleted."
 
-#: journalmanager/views.py:105 journalmanager/views.py:137
+#: journalmanager/views.py:107 journalmanager/views.py:139
 msgid "Does not exist the group 'Editors'"
 msgstr ""
 
-#: journalmanager/views.py:127
+#: journalmanager/views.py:129
 #, python-format
 msgid "Successfully selected %s as editor of this Journal"
 msgstr ""
 
-#: journalmanager/views.py:132
+#: journalmanager/views.py:134
 msgid "No user selected as editor of this journal!"
 msgstr ""
 
-#: journalmanager/views.py:375
+#: journalmanager/views.py:382
 msgid "The selected documents had been moved to the Trash."
 msgstr "The selected documents had been moved to the Trash."
 
-#: journalmanager/views.py:376
+#: journalmanager/views.py:383
 msgid "The selected documents had been restored."
 msgstr "The selected documents had been restored."
 
-#: journalmanager/views.py:652
+#: journalmanager/views.py:655
 msgid ""
 "This Journal already exists, please search the journal in the previous step"
 msgstr ""
 
-#: journalmanager/views.py:1000
+#: journalmanager/views.py:988
 msgid ""
 "Issue created successfully, however we can not create the editorial board."
 msgstr ""
 
-#: journalmanager/views.py:1108
+#: journalmanager/views.py:1088
 msgid "Section removed successfully"
 msgstr "Section removed successfully"
 
-#: journalmanager/views.py:1112
-msgid "Cant't delete, some issues are using this Section"
+#: journalmanager/views.py:1092
+#, fuzzy
+msgid "Can't delete, some issues are using this Section"
 msgstr "Cant't delete, some issues are using this Section"
 
-#: journalmanager/views.py:1230
+#: journalmanager/views.py:1210
+#, python-brace-format
 msgid "{journal} add to collection {collection}"
 msgstr ""
 
-#: journalmanager/views.py:1297
+#: journalmanager/views.py:1277
 #, fuzzy
 msgid "The section already exists."
 msgstr "This section title already exists for this Journal."
 
-#: journalmanager/views.py:1298
+#: journalmanager/views.py:1278
 msgid "This is a new section."
 msgstr ""
 
@@ -1587,11 +1654,6 @@ msgstr "ISSN"
 #: journalmanager/templates/journalmanager/add_journal.html:19
 msgid "Subjects"
 msgstr "Subjects"
-
-#: journalmanager/templates/journalmanager/add_journal.html:21
-#: journalmanager/templates/journalmanager/add_journal.html:224
-msgid "Languages"
-msgstr "Languages"
 
 #: journalmanager/templates/journalmanager/add_journal.html:22
 #: journalmanager/templates/journalmanager/add_journal.html:237
@@ -1633,6 +1695,7 @@ msgstr "Images"
 
 #: journalmanager/templates/journalmanager/add_journal.html:71
 #: journalmanager/templates/journalmanager/add_section.html:51
+#: journalmanager/templates/journalmanager/includes/titleformset.html:2
 msgid "Titles"
 msgstr "Titles"
 
@@ -1672,37 +1735,36 @@ msgstr "Image Extensions"
 msgid "Save to Continue Later"
 msgstr "Save to Continue Later"
 
-#: journalmanager/templates/journalmanager/add_pressrelease.html:7
+#: journalmanager/templates/journalmanager/add_pressrelease.html:9
 #, fuzzy
 msgid "Press release"
 msgstr "Is Press Release?"
 
-#: journalmanager/templates/journalmanager/add_pressrelease.html:16
+#: journalmanager/templates/journalmanager/add_pressrelease.html:40
 msgid "Journals Dashboard"
 msgstr "Journals Dashboard"
 
-#: journalmanager/templates/journalmanager/add_pressrelease.html:23
+#: journalmanager/templates/journalmanager/add_pressrelease.html:47
 #, fuzzy
 msgid "New press release"
 msgstr "Is Press Release?"
 
-#: journalmanager/templates/journalmanager/add_pressrelease.html:46
+#: journalmanager/templates/journalmanager/add_pressrelease.html:67
 #, fuzzy
 msgid "Settings"
 msgstr "user settings"
 
-#: journalmanager/templates/journalmanager/add_pressrelease.html:61
+#: journalmanager/templates/journalmanager/add_pressrelease.html:82
 msgid "Article PID"
 msgstr ""
 
-#: journalmanager/templates/journalmanager/add_pressrelease.html:139
-msgid "Preview"
+#: journalmanager/templates/journalmanager/add_pressrelease.html:124
+msgid "Body"
 msgstr ""
 
-#: journalmanager/templates/journalmanager/add_section.html:7
-#, fuzzy
-msgid "Section"
-msgstr "Sections"
+#: journalmanager/templates/journalmanager/add_pressrelease.html:127
+msgid "Preview as HTML"
+msgstr ""
 
 #: journalmanager/templates/journalmanager/add_section.html:95
 msgid "Section Information"
@@ -1776,13 +1838,23 @@ msgstr ""
 msgid "Article Version"
 msgstr "URL of online submission"
 
-#: journalmanager/templates/journalmanager/article_detail.html:37
-msgid "XML content"
+#: journalmanager/templates/journalmanager/article_detail.html:42
+#: journalmanager/templates/journalmanager/article_detail.html:48
+#: validator/templates/validator/preview_html.html:85
+msgid "HTML preview"
 msgstr ""
 
-#: journalmanager/templates/journalmanager/article_detail.html:42
+#: journalmanager/templates/journalmanager/article_detail.html:54
+msgid "Source XML"
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:68
+msgid "Sorry, but the HTML preview is not available for this article."
+msgstr ""
+
+#: journalmanager/templates/journalmanager/article_detail.html:76
 #, fuzzy
-msgid "This article don't have XML"
+msgid "This article doesn't have a XML file."
 msgstr "## This record doesn't have title ##"
 
 #: journalmanager/templates/journalmanager/article_list.html:5
@@ -1880,12 +1952,6 @@ msgstr "User"
 msgid "About"
 msgstr "About"
 
-#: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:17
-#: journalmanager/templates/journalmanager/section_list.html:6
-#: journalmanager/templates/journalmanager/trash_listing.html:28
-msgid "Sections"
-msgstr "Sections"
-
 #: journalmanager/templates/journalmanager/inctag_journaldash_toolbar.html:22
 #: journalmanager/templates/journalmanager/pressrelease_list.html:7
 #, fuzzy
@@ -1968,18 +2034,6 @@ msgstr "E-mail"
 msgid "All"
 msgstr "All"
 
-#: journalmanager/templates/journalmanager/journal_list.html:50
-msgid "Current"
-msgstr "Current"
-
-#: journalmanager/templates/journalmanager/journal_list.html:53
-msgid "Suspended"
-msgstr "Suspended"
-
-#: journalmanager/templates/journalmanager/journal_list.html:56
-msgid "Deceased"
-msgstr "Deceased"
-
 #: journalmanager/templates/journalmanager/journal_list.html:59
 msgid "In progress"
 msgstr "In progress"
@@ -2022,8 +2076,9 @@ msgid "Eletronic ISSN"
 msgstr "Eletronic ISSN"
 
 #: journalmanager/templates/journalmanager/journal_list.html:214
-msgid "Coleções"
-msgstr ""
+#, fuzzy
+msgid "Collections"
+msgstr "Collection"
 
 #: journalmanager/templates/journalmanager/journal_list.html:226
 msgid "No journal(s) found to the term: "
@@ -2147,13 +2202,9 @@ msgid "This issue does not have a cover, it will use the default journal cover"
 msgstr ""
 "This issue does not have a cover, it will use the default journal cover"
 
-#: journalmanager/templates/journalmanager/includes/issue_form_generic_field_list.html:18
+#: journalmanager/templates/journalmanager/includes/issue_form_generic_field_list.html:19
 msgid "Add new"
 msgstr "Add new"
-
-#: journalmanager/templates/journalmanager/includes/titleformset.html:2
-msgid "Titulos"
-msgstr ""
 
 #: journalmanager/templates/journalmanager/includes/titleformset.html:7
 msgid "Thematic Title"
@@ -2185,40 +2236,40 @@ msgstr "Help"
 msgid "Activate"
 msgstr "Activate"
 
-#: maintenancewindow/models.py:35
+#: maintenancewindow/models.py:33
 msgid "Begin at"
 msgstr ""
 
-#: maintenancewindow/models.py:36
+#: maintenancewindow/models.py:34
 #, fuzzy
 msgid "End at"
 msgstr "End Month"
 
-#: maintenancewindow/models.py:38
+#: maintenancewindow/models.py:36
 msgid "is blocking users"
 msgstr ""
 
-#: maintenancewindow/models.py:41
+#: maintenancewindow/models.py:39
 msgid "once it is checked, it will set up the other events to false"
 msgstr ""
 
-#: maintenancewindow/models.py:43
+#: maintenancewindow/models.py:40
 #, fuzzy
 msgid "Is finished"
 msgstr "Is trashed?"
 
-#: maintenancewindow/models.py:44
+#: maintenancewindow/models.py:41
 #, fuzzy
 msgid "Report"
 msgstr "Report bug"
 
 #: scielomanager/custom_fields.py:44
-#, python-format
-msgid "Please keep filesize under %(maxsize)s. Current filesize %(filesize)s"
+#, python-brace-format
+msgid "Please keep file size under {maxsize}. Current file size {filesize}"
 msgstr ""
 
 #: scielomanager/custom_fields.py:50
-msgid "Filetype not supported."
+msgid "File type not supported."
 msgstr ""
 
 #: scielomanager/templates/base_lv0.html:26
@@ -2295,7 +2346,11 @@ msgid "Tools"
 msgstr ""
 
 #: scielomanager/templates/footer.html:35
-msgid "Packtools StyleChecker"
+msgid "Style Checker"
+msgstr ""
+
+#: scielomanager/templates/footer.html:38
+msgid "HTML Previewer"
 msgstr ""
 
 #: scielomanager/templates/include_press_release/ahead.html:5
@@ -2453,157 +2508,13 @@ msgstr "Please correct the errors below."
 msgid "You will receive an email with a link to activate your account."
 msgstr "You will receive an email with a link to activate your account."
 
-#: tools/isis2couchdb/tools/argparse.py:327
-msgid "usage: "
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:829
-msgid ".__call__() not defined"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1113
-msgid "unknown parser {parser_name} (choices: {choices})"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1150
-#, python-format
-msgid "argument \"-\" with mode %r"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1351
-#, python-format
-msgid "cannot merge actions - two groups are named %r"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1389
-msgid "'required' is an invalid argument for positionals"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1409
-msgid ""
-"invalid option string {option_string}: must start with a character "
-"{prefix_chars}"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1429
-#, python-format
-msgid "dest= is required for options like %r"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1446
-#, python-format
-msgid "invalid conflict_resolution value: %r"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1464
-#, python-format
-msgid "conflicting option string(s): %s"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1527
-msgid "mutually exclusive arguments must be optional"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1597
-msgid "positional arguments"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1598
-#, fuzzy
-msgid "optional arguments"
-msgstr "Total of Documents"
-
-#: tools/isis2couchdb/tools/argparse.py:1611
-msgid "show this help message and exit"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1616
-msgid "show program's version number and exit"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1648
-msgid "cannot have multiple subparser arguments"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1700
-#, python-format
-msgid "unrecognized arguments: %s"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1793
-#, python-format
-msgid "not allowed with argument %s"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1839
-#: tools/isis2couchdb/tools/argparse.py:1853
-#, python-format
-msgid "ignored explicit argument %r"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1943
-msgid "too few arguments"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1950
-#, python-format
-msgid "argument %s is required"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:1964
-#, python-format
-msgid "one of the arguments %s is required"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2010
-msgid "expected one argument"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2011
-msgid "expected at most one argument"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2012
-msgid "expected at least one argument"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2014
-#, python-format
-msgid "expected %s argument(s)"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2070
-msgid "ambiguous option: {arg_string} could match {options}"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2133
-#, python-format
-msgid "unexpected option string: %s"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2234
-#, python-format
-msgid "%r is not callable"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2250
-msgid "invalid {name} value: {arg_string}"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2261
-msgid "invalid choice: {value} (choose from {choices})"
-msgstr ""
-
-#: tools/isis2couchdb/tools/argparse.py:2355
-msgid "{prog}: error: message\n"
-msgstr ""
-
 #: validator/forms.py:9
 #: validator/templates/validator/includes/xml_annotated.html:15
 msgid "File"
 msgstr ""
 
 #: validator/forms.py:15
+#: validator/templates/validator/includes/xml_upload_form_validation.html:25
 msgid "This type of file is not allowed! Please select another file."
 msgstr ""
 
@@ -2611,52 +2522,51 @@ msgstr ""
 msgid "The file's size is too large! Please select a smaller file."
 msgstr ""
 
-#: validator/templates/validator/packtools.html:6
-msgid "Packtools - Style Checker"
+#: validator/templates/validator/preview_html.html:6
+msgid "Packtools - SciELO HTML Previewer"
 msgstr ""
 
-#: validator/templates/validator/packtools.html:21
-msgid "SciELO Style Checker"
+#: validator/templates/validator/preview_html.html:14
+msgid "SciELO HTML Previewer"
 msgstr ""
 
-#: validator/templates/validator/packtools.html:23
+#: validator/templates/validator/preview_html.html:15
+msgid "Use this tool to preview your XML file as an HTML"
+msgstr ""
+
+#: validator/templates/validator/preview_html.html:16
 msgid ""
-"\n"
-"      Use this tool to confirm whether an XML file conforms to SciELO Style "
-"as defined in the SciELO Publishing Schema Tagging Guidelines.\n"
-"      "
+"Browse to your local XML file and click 'Preview'. The results will be "
+"displayed below."
 msgstr ""
 
-#: validator/templates/validator/packtools.html:28
-msgid ""
-"\n"
-"      Browse to your local XML file and click \"Validate\". The results will "
-"be displayed below.\n"
-"      "
-msgstr ""
-
-#: validator/templates/validator/packtools.html:39
+#: validator/templates/validator/preview_html.html:24
+#: validator/templates/validator/stylechecker.html:28
 msgid "Upload XML"
 msgstr ""
 
-#: validator/templates/validator/packtools.html:44
+#: validator/templates/validator/preview_html.html:29
+#: validator/templates/validator/stylechecker.html:33
 #, fuzzy
 msgid "Help?"
 msgstr "Help"
 
-#: validator/templates/validator/packtools.html:54
+#: validator/templates/validator/preview_html.html:39
+#: validator/templates/validator/stylechecker.html:43
 msgid "Max. upload size"
 msgstr ""
 
-#: validator/templates/validator/packtools.html:65
+#: validator/templates/validator/preview_html.html:50
+#: validator/templates/validator/stylechecker.html:54
 msgid "Clear"
 msgstr ""
 
-#: validator/templates/validator/packtools.html:66
-msgid "Validate"
+#: validator/templates/validator/preview_html.html:51
+msgid "Preview"
 msgstr ""
 
-#: validator/templates/validator/packtools.html:72
+#: validator/templates/validator/preview_html.html:57
+#: validator/templates/validator/stylechecker.html:61
 msgid ""
 "\n"
 "              If you have any problems with the tool or with the SPS Tagging "
@@ -2666,17 +2576,41 @@ msgid ""
 "              "
 msgstr ""
 
-#: validator/templates/validator/packtools.html:107
+#: validator/templates/validator/preview_html.html:99
+msgid "No HTML generated, is the XML file valid?"
+msgstr ""
+
+#: validator/templates/validator/stylechecker.html:6
+msgid "Packtools - Style Checker"
+msgstr ""
+
+#: validator/templates/validator/stylechecker.html:10
+msgid "SciELO Style Checker"
+msgstr ""
+
+#: validator/templates/validator/stylechecker.html:12
+msgid ""
+"\n"
+"      Use this tool to confirm whether an XML file conforms to SciELO Style "
+"as defined in the SciELO Publishing Schema Tagging Guidelines.\n"
+"      "
+msgstr ""
+
+#: validator/templates/validator/stylechecker.html:17
+msgid ""
+"\n"
+"      Browse to your local XML file and click \"Validate\". The results will "
+"be displayed below.\n"
+"      "
+msgstr ""
+
+#: validator/templates/validator/stylechecker.html:55
+msgid "Validate"
+msgstr ""
+
+#: validator/templates/validator/includes/packtools_version.html:5
 #: validator/templates/validator/includes/xml_annotated.html:203
 msgid "packtools version"
-msgstr ""
-
-#: validator/templates/validator/packtools.html:151
-msgid "The file submitted is NOT XML"
-msgstr ""
-
-#: validator/templates/validator/packtools.html:156
-msgid "XML file excedes max upload size"
 msgstr ""
 
 #: validator/templates/validator/includes/xml_annotated.html:24
@@ -2817,6 +2751,21 @@ msgstr ""
 msgid "in the previous lines"
 msgstr "Other Previous Title"
 
+#: validator/templates/validator/includes/xml_upload_form_validation.html:30
+msgid "The file size is too large! Please select a smaller file."
+msgstr ""
+
+#, fuzzy
+#~ msgid "Lanaguages"
+#~ msgstr "Languages"
+
+#~ msgid "National Code"
+#~ msgstr "National Code"
+
+#, fuzzy
+#~ msgid "optional arguments"
+#~ msgstr "Total of Documents"
+
 #~ msgid "logout"
 #~ msgstr "logout"
 
@@ -2831,9 +2780,6 @@ msgstr "Other Previous Title"
 
 #~ msgid "Journal Status"
 #~ msgstr "Journal Status"
-
-#~ msgid "Reason"
-#~ msgstr "Reason"
 
 #~ msgid "Changed at"
 #~ msgstr "Changed at"

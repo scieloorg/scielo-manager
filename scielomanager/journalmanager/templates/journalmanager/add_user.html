@@ -213,6 +213,8 @@
       });
       //multiple-formsets
       $('#usercollectionsformset tbody tr').formset({
+        addText: "{% trans 'add another' %}",
+        deleteText: "{% trans 'remove' %}",
         formCssClass: 'dynamic-usercollectionsformset-form',
         prefix: '{{ usercollectionsformset.prefix }}'
       });
