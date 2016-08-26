@@ -911,8 +911,8 @@ class ConvertImageToJpegTests(TestCase):
         jpeg_buff = tasks.convert_image_to_jpeg(image_path, mode='RGB')
         jpeg_buff.seek(0)
 
-        with Image.open(jpeg_buff) as img:
-            self.assertEquals(img.format.lower(), 'jpeg')
+        img = Image.open(jpeg_buff)
+        self.assertEquals(img.format.lower(), 'jpeg')
 
     def test_convert_tif_image_to_jpeg(self):
         from PIL import Image
@@ -922,8 +922,8 @@ class ConvertImageToJpegTests(TestCase):
         jpeg_buff = tasks.convert_image_to_jpeg(image_path)
         jpeg_buff.seek(0)
 
-        with Image.open(jpeg_buff) as img:
-            self.assertEquals(img.format.lower(), 'jpeg')
+        img = Image.open(jpeg_buff)
+        self.assertEquals(img.format.lower(), 'jpeg')
 
     def test_convert_pdf_to_jpeg(self):
         """That should raise a IOError.

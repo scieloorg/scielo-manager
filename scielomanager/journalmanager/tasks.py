@@ -452,13 +452,13 @@ def convert_image_to_jpeg(filepath, mode=None, **kwargs):
     output_buffer = io.BytesIO()
     _ = kwargs.pop('format', None)
 
-    with Image.open(filepath) as original:
-        if mode:
-            _image = original.convert(mode=mode)
-        else:
-            _image = original
+    original = Image.open(filepath)
+    if mode:
+        _image = original.convert(mode=mode)
+    else:
+        _image = original
 
-        _image.save(output_buffer, format='jpeg', **kwargs)
+    _image.save(output_buffer, format='jpeg', **kwargs)
 
     return output_buffer
 
@@ -493,9 +493,9 @@ def create_preferred_image_file(asset_pk):
         raise ValueError('Cannot create preferred alternatives for files '
                         'other than images.')
 
-    with Image.open(asset.file.path) as _file:
-        if _file.format.lower() != 'tiff':
-            raise ValueError('Image is already in a preferred format.')
+    _file = Image.open(asset.file.path)
+    if _file.format.lower() != 'tiff':
+        raise ValueError('Image is already in a preferred format.')
 
     try:
         # Levanta IOError caso `filepath` não seja um arquivo de imagem.

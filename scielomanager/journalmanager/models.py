@@ -1523,7 +1523,6 @@ class ArticleAsset(models.Model):
         except IOError:
             return False
         else:
-            img.close()
             return True
 
     @property
