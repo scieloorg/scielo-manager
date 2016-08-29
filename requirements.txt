@@ -7,7 +7,7 @@ ordereddict==1.1
 pillow==2.3.0
 django-widget-tweaks==1.1.1
 lxml
-pyyaml
+pyyaml==3.12
 webassets==0.7.1
 yuicompressor
 jsonfield
