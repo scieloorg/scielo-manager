@@ -160,6 +160,8 @@
       $(".help-text").popover('hide');
 
       $('#section_title_formset tbody tr').formset({
+        addText: "{% trans 'add another' %}",
+        deleteText: "{% trans 'remove' %}",
         formCssClass: 'dynamic-section_title_formset-form',
         prefix: '{{ section_title_formset.prefix }}'
       });

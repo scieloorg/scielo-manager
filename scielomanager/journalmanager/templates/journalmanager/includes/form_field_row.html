@@ -4,7 +4,9 @@
   <label
     for="{{ field.auto_id }}"
     class="control-label {% if field.field.required %} req-field {% endif %}">
-      {% trans field.label %}
+
+    {% trans field.label %}
+
   </label>
   <div class="controls">
     {{ field }}
@@ -27,7 +29,6 @@
           {% field_help field.label field.help_text term %}
         </span>
       {% endwith %}
-      {% field_help field.label field.help_text term-journal-title %}
     {% endif %}
     {% if field.errors %}
       <span class="help-inline danger">{{ field.errors }}</span>
