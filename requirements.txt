@@ -14,7 +14,7 @@ jsonfield
 django-tastypie==0.9.16
 django-htmlmin==0.7.0
 packtools==1.2
-Celery
+Celery==3.1.24
 django-celery
 django-kombu
 defusedxml==0.4.1
