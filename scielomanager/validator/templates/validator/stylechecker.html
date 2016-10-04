@@ -49,7 +49,14 @@
                 {% endfor %}
               </div>
             {% endwith %}
-
+            <div>
+              <label class="checkbox">
+                {{ form.add_scielo_br_rules }}
+                {% blocktrans %}
+                Also validate against SciELO Brazil's specific rules. <a href="http://docs.scielo.org/projects/scielo-publishing-schema/pt_BR/latest/narr/scielo-brasil.html">Read more.</a>
+                {% endblocktrans %}
+              </label>
+            </div>
             <div class='form-buttons clearfix'>
               <input type="button" class="btn btn-danger pull-left" id='form_clear_btn' value="{% trans 'Clear' %}" />
               <input type="submit" class="btn btn-success pull-right" value="{% trans 'Validate' %}" />

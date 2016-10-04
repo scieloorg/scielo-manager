@@ -24,7 +24,13 @@ def packtools_home(request, template_name='validator/stylechecker.html'):
         if form.is_valid():
             xml_file = request.FILES['file']
 
-            results, exc = utils.analyze_xml(xml_file)
+            if form.cleaned_data.get('add_scielo_br_rules', False):
+                extra_sch = packtools.catalogs.SCHEMAS['scielo-br']
+            else:
+                extra_sch = None
+
+            results, exc = utils.analyze_xml(xml_file,
+                    extra_schematron=extra_sch)
             context['results'] = results
             context['xml_exception'] = getattr(exc, 'message', None)
 

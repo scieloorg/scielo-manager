@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 
 
 class XMLUploadForm(forms.Form):
+    add_scielo_br_rules = forms.BooleanField(required=False, initial=True)
     file = forms.FileField(label=_("File"))
 
     def clean_file(self):

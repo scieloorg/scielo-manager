@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SciELO Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-24 15:08-0300\n"
+"POT-Creation-Date: 2016-10-03 17:53-0300\n"
 "PO-Revision-Date: 2015-08-21 21:19+0000\n"
 "Last-Translator: Gustavo Fonseca <gustavofons@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/scielo/"
@@ -985,13 +985,11 @@ msgid "Journal cover image file size is too large! Please select another file."
 msgstr ""
 
 #: journalmanager/forms.py:198
-#, python-brace-format
 msgid ""
 "The image is {image_size}px pixel wide. It's supposed to be {expected_size}px"
 msgstr ""
 
 #: journalmanager/forms.py:204
-#, python-brace-format
 msgid ""
 "The image is {image_size}px pixel high. It's supposed to be {expected_size}px"
 msgstr ""
@@ -1008,13 +1006,11 @@ msgid "Journal logo image file size is too large! Please select another file."
 msgstr ""
 
 #: journalmanager/forms.py:223
-#, python-brace-format
 msgid ""
 "The image is {logo_size}px pixel wide. It's supposed to be {expected_size}px"
 msgstr ""
 
 #: journalmanager/forms.py:227
-#, python-brace-format
 msgid ""
 "The image is {logo_size}px pixel high. It's supposed to be {expected_size}px"
 msgstr ""
@@ -1508,7 +1504,6 @@ msgid "Can't delete, some issues are using this Section"
 msgstr ""
 
 #: journalmanager/views.py:1210
-#, python-brace-format
 msgid "{journal} add to collection {collection}"
 msgstr ""
 
@@ -2131,7 +2126,6 @@ msgid "Report"
 msgstr "Relatório"
 
 #: scielomanager/custom_fields.py:44
-#, python-brace-format
 msgid "Please keep file size under {maxsize}. Current file size {filesize}"
 msgstr ""
 
@@ -2372,17 +2366,17 @@ msgstr "Por favor, corrija os erros abaixo."
 msgid "You will receive an email with a link to activate your account."
 msgstr "Você receberá um e-mail com um link para ativar sua conta."
 
-#: validator/forms.py:9
+#: validator/forms.py:10
 #: validator/templates/validator/includes/xml_annotated.html:15
 msgid "File"
 msgstr "Arquivo"
 
-#: validator/forms.py:15
+#: validator/forms.py:16
 #: validator/templates/validator/includes/xml_upload_form_validation.html:25
 msgid "This type of file is not allowed! Please select another file."
 msgstr "Tipo de arquivo não suportado. Por favor, selecione outro arquivo."
 
-#: validator/forms.py:18
+#: validator/forms.py:19
 msgid "The file's size is too large! Please select a smaller file."
 msgstr "Este arquivo é muito grande! Por favor, selecione um arquivo menor."
 
@@ -2425,7 +2419,7 @@ msgid "Max. upload size"
 msgstr "Tamanho máximo"
 
 #: validator/templates/validator/preview_html.html:50
-#: validator/templates/validator/stylechecker.html:54
+#: validator/templates/validator/stylechecker.html:61
 msgid "Clear"
 msgstr "Limpar"
 
@@ -2434,7 +2428,7 @@ msgid "Preview"
 msgstr ""
 
 #: validator/templates/validator/preview_html.html:57
-#: validator/templates/validator/stylechecker.html:61
+#: validator/templates/validator/stylechecker.html:68
 msgid ""
 "\n"
 "              If you have any problems with the tool or with the SPS Tagging "
@@ -2489,6 +2483,15 @@ msgstr ""
 "      "
 
 #: validator/templates/validator/stylechecker.html:55
+msgid ""
+"\n"
+"                Also validate against SciELO Brazil's specific rules. <a "
+"href=\"http://docs.scielo.org/projects/scielo-publishing-schema/pt_BR/latest/"
+"narr/scielo-brasil.html\">Read more.</a>\n"
+"                "
+msgstr ""
+
+#: validator/templates/validator/stylechecker.html:62
 msgid "Validate"
 msgstr "Validar"
 
