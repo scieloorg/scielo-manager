@@ -41,13 +41,14 @@ def make_error_filter(key):
     return err_filter
 
 
-def analyze_xml(file):
+def analyze_xml(file, extra_schematron=None):
     """Analyzes `file` against packtools' XMLValidator.
     """
     result = err = None
 
     try:
-        xml = packtools.XMLValidator.parse(file)
+        xml = packtools.XMLValidator.parse(file,
+                extra_schematron=extra_schematron)
 
     except (lxml.etree.XMLSyntaxError, IOError, ValueError,
             packtools.exceptions.XMLDoctypeError) as e:

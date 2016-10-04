@@ -77,7 +77,7 @@ def make_stub_analyze_xml(type):
     else:
         raise ValueError('Unknown type value')
 
-    def stub__analyze_xml(f):
+    def stub__analyze_xml(f, extra_schematron=None):
         return result, err
 
     return stub__analyze_xml
