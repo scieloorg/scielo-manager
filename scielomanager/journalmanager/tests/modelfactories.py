@@ -6,6 +6,7 @@ import datetime
 
 from journalmanager import models
 from django.contrib.auth.models import Group
+from django.core.files.base import File
 
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +14,10 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 
 with open(os.path.join(_HERE, 'xml_samples', '0034-8910-rsp-48-2-0216.xml')) as xml_file:
     SAMPLE_XML = xml_file.read()
+
+
+SAMPLE_TIFF_IMAGE = open(
+        os.path.join(_HERE, 'image_test', 'sample_tif_image.tif'))
 
 
 with open(os.path.join(_HERE, 'xml_samples', '0034-8910-rsp-48-2-0216_related.xml')) as xml_file:
@@ -231,4 +236,14 @@ class ArticleFactory(factory.Factory):
     xml_version = u'sps-1.2'
     article_type = u'research-article'
     doi = u'10.1590/S0034-8910.2014048004965'
+
+
+class ArticleAssetFactory(factory.Factory):
+    FACTORY_FOR = models.ArticleAsset
+
+    article = factory.SubFactory(ArticleFactory)
+    file = File(SAMPLE_TIFF_IMAGE)
+    owner = u'SciELO'
+    use_license = u'Creative Commons - BY'
+
 
