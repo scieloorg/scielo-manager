@@ -1,1 +1,1 @@
--e git+https://github.com/scieloorg/xylose@1.7.5#egg=xylose
+-e git+https://github.com/scieloorg/xylose@1.16.5#egg=xylose
