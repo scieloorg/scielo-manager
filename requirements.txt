@@ -18,7 +18,7 @@ Celery
 django-celery
 django-kombu
 defusedxml==0.4.1
-cython
+cython==0.25.1
 thriftpy
 django-countries==3.3
 -e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
