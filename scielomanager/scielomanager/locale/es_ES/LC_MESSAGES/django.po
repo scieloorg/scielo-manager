@@ -1,11 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Translators:
 # fabiobatalha <fabiobatalha@gmail.com>, 2012
-# Javani Araujo <javani.araujo@scielo.org>, 2016
+# javani <javani.araujo@scielo.org>, 2016
+# javani <javani.araujo@scielo.org>, 2016
 # Juan Funez <juan.funez@gmail.com>, 2014-2016
 # maguirre21 <maguirre@conicyt.cl>, 2012
 # mbarraza <mbarraza@conicyt.cl>, 2012
@@ -16,14 +17,13 @@ msgstr ""
 "Project-Id-Version: SciELO Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-10-03 17:53-0300\n"
-"PO-Revision-Date: 2016-07-22 11:49+0000\n"
-"Last-Translator: Javani Araujo <javani.araujo@scielo.org>\n"
-"Language-Team: Spanish (Spain) (http://www.transifex.com/scielo/"
-"scielomanager/language/es_ES/)\n"
-"Language: es_ES\n"
+"PO-Revision-Date: 2016-10-05 08:38+0000\n"
+"Last-Translator: Gustavo Fonseca <gustavofons@gmail.com>\n"
+"Language-Team: Spanish (Spain) (http://www.transifex.com/scielo/scielomanager/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: accounts/views.py:25
@@ -36,8 +36,7 @@ msgstr "Existen errores o faltan datos."
 
 #: accounts/views.py:48
 msgid "Your new password and new password confirmation must match."
-msgstr ""
-"La nueva contraseña y la confirmación de la nueva contraseña deben coincidir."
+msgstr "La nueva contraseña y la confirmación de la nueva contraseña deben coincidir."
 
 #: accounts/views.py:57
 msgid "Your current password does not match. Please try again."
@@ -183,10 +182,9 @@ msgstr "Tal vez usted quiere"
 
 #: accounts/templates/accounts/unauthorized.html:10
 msgid ""
-"login <strong>with a more privileged account</strong></a> or contact support."
-msgstr ""
-"Inicie sesión <strong>con una cuenta de más previlegiada</strong></a> o "
-"entre en contacto con el soporte."
+"login <strong>with a more privileged account</strong></a> or contact "
+"support."
+msgstr "login"
 
 #: audit_log/helpers.py:274
 #, python-format
@@ -530,9 +528,7 @@ msgstr "Este número no tiene Cuerpo Editorial asociado"
 
 #: editorialmanager/templates/board/board_list_data.html:208
 msgid "Cannot retrieve the Editorial Board because this journal has no Issues"
-msgstr ""
-"No se puede recuperar el Cuerpo Editorial porque esta revista no tiene "
-"números"
+msgstr "No se puede recuperar el Cuerpo Editorial porque esta revista no tiene números"
 
 #: editorialmanager/templates/board/board_member_delete.html:10
 #: editorialmanager/templates/board/board_member_delete.html:14
@@ -629,7 +625,7 @@ msgstr "Idioma"
 #: journalmanager/templates/journalmanager/add_sponsor.html:130
 #: journalmanager/templates/journalmanager/add_user.html:216
 msgid "add another"
-msgstr ""
+msgstr "añadir otro"
 
 #: editorialmanager/templates/board/role_type_translate.html:100
 #: editorialmanager/templates/journal/edit_journal.html:142
@@ -642,7 +638,7 @@ msgstr ""
 #: journalmanager/templates/journalmanager/add_sponsor.html:131
 #: journalmanager/templates/journalmanager/add_user.html:217
 msgid "remove"
-msgstr ""
+msgstr "quitar"
 
 #: editorialmanager/templates/includes/journal_detail_info.html:8
 msgid "On-line version ISSN"
@@ -669,7 +665,7 @@ msgstr "Gestionado por las colecciones"
 
 #: editorialmanager/templates/includes/journal_detail_info.html:24
 msgid "Download full board as CSV file"
-msgstr "Descargar este cuerpo editorial como archivo CSV"
+msgstr "Descargar todo el cosejo editorial como un archivo CSV"
 
 #: editorialmanager/templates/journal/edit_journal.html:9
 msgid "Edit journal"
@@ -854,47 +850,19 @@ msgid ""
 "  </p>\n"
 "  <p>\n"
 "    A <strong>.zip</strong> package will be downloaded, containing the\n"
-"    metadata files required by the <a href=\"http://docs.scielo.org/projects/"
-"scielo-pc-programs/en/latest/markup.html#before-using-the-markup\">Markup</"
-"a> software.\n"
+"    metadata files required by the <a href=\"http://docs.scielo.org/projects/scielo-pc-programs/en/latest/markup.html#before-using-the-markup\">Markup</a> software.\n"
 "  </p>\n"
 "  <p>\n"
 "    <ul>\n"
 "      <li>Close the Markup software</li>\n"
 "      <li>Expand the .zip package</li>\n"
-"      <li>* Move all files to <strong>c:\\SciELO\\bin\\markup\\</strong></"
-"li>\n"
+"      <li>* Move all files to <strong>c:\\SciELO\\bin\\markup\\</strong></li>\n"
 "      <li>Reopen the Markup software et voilà!</li>\n"
 "    </ul>\n"
 "  </p>\n"
 "  <i>* The default installation path.</i>\n"
 "  "
-msgstr ""
-"\n"
-"<h4>Los metadatos para el de software de margen</h4>\n"
-"<p>\n"
-"<ul>\n"
-"<li>Seleccione una publicación</li>\n"
-"<li>Seleccione una edición</li>\n"
-"<li>Da clic en el botón de <strong>descarga</strong>.</li>\n"
-"</ul>\n"
-"</p>\n"
-"<p>\n"
-"Un paquete <strong>.zip</strong>será descargado, conteniendo los archivos "
-"del metadata requeridos por el software de <a href=\"http://docs.scielo.org/"
-"projects/scielo-pc-programs/en/latest/markup.html#before-using-the-markup"
-"\">Margen</a>.\n"
-"</p>\n"
-"<p>\n"
-"<ul>\n"
-"<li>Cierra el software de Margen</li>\n"
-"<li>Descompriime el archivo .zip</li>\n"
-"<li>* Mueve todos los archivos a <strong>c:\\SciELO\\bin\\markup\\</strong></"
-"li>\n"
-"<li>Reabre el software de margen y voilà!</li>\n"
-"</ul>\n"
-"</p>\n"
-"<i>* La ruta de instalación por defecto.</i>"
+msgstr "\n<h4>Los metadatos para el de software de margen</h4>\n<p>\n<ul>\n<li>Seleccione una publicación</li>\n<li>Seleccione una edición</li>\n<li>Da clic en el botón de <strong>descarga</strong>.</li>\n</ul>\n</p>\n<p>\nUn paquete <strong>.zip</strong>será descargado, conteniendo los archivos del metadata requeridos por el software de <a href=\"http://docs.scielo.org/projects/scielo-pc-programs/en/latest/markup.html#before-using-the-markup\">Margen</a>.\n</p>\n<p>\n<ul>\n<li>Cierra el software de Margen</li>\n<li>Descompriime el archivo .zip</li>\n<li>* Mueve todos los archivos a <strong>c:\\SciELO\\bin\\markup\\</strong></li>\n<li>Reabre el software de margen y voilà!</li>\n</ul>\n</p>\n<i>* La ruta de instalación por defecto.</i>"
 
 #: export/templates/export/markup_files.html:88
 msgid "Please select a Journal"
@@ -914,10 +882,7 @@ msgid ""
 "\n"
 "                Updated about %(elapsed_time)s ago\n"
 "              "
-msgstr ""
-"\n"
-"                Actualizado alrededor de %(elapsed_time)s atrás\n"
-"              "
+msgstr "\n                Actualizado alrededor de %(elapsed_time)s atrás\n              "
 
 #: health/templates/health/overall_status.html:37
 msgid "Service"
@@ -945,14 +910,9 @@ msgstr "Desconectado"
 #: health/templates/health/overall_status.html:64
 msgid ""
 "\n"
-"          Could not reach the health monitor. Keep calm and <strong>try "
-"again later.</strong>\n"
+"          Could not reach the health monitor. Keep calm and <strong>try again later.</strong>\n"
 "        "
-msgstr ""
-"\n"
-"          El monitor de salud esta fuera de aclance. Mantanga la calma e "
-"<strong>intente nuevamente más tarde.</strong>\n"
-"        "
+msgstr "\n          El monitor de salud esta fuera de aclance. Mantanga la calma e <strong>intente nuevamente más tarde.</strong>\n        "
 
 #: journalmanager/choices.py:70
 #: journalmanager/templates/journalmanager/journal_list.html:50
@@ -975,9 +935,7 @@ msgstr "En proceso"
 
 #: journalmanager/forms.py:25
 msgid "This email is being used by another user, please try another email."
-msgstr ""
-"Este correo electrónico es usado por otro usuario, por favor intente con "
-"otro correo electrónico."
+msgstr "Este correo electrónico es usado por otro usuario, por favor intente con otro correo electrónico."
 
 #: journalmanager/forms.py:63
 msgid "Select one or more collections"
@@ -989,7 +947,7 @@ msgstr "Seleccionar uno o más idiomas."
 
 #: journalmanager/forms.py:126
 msgid "Abstract keyword languages"
-msgstr ""
+msgstr "Idioma de los resúmenes y palabras-clave"
 
 #: journalmanager/forms.py:128
 msgid "Select one or more sponsors"
@@ -1001,7 +959,7 @@ msgstr "Seleccionar una o más categorías"
 
 #: journalmanager/forms.py:132
 msgid "Study area"
-msgstr "Area de Estudio"
+msgstr "Árede de estudio"
 
 #: journalmanager/forms.py:134
 msgid "Select one or more study area"
@@ -1015,59 +973,46 @@ msgstr "Categorías de Asunto"
 #: journalmanager/templates/journalmanager/add_journal.html:631
 msgid ""
 "Journal cover image extension is not allowed! Please select another file."
-msgstr ""
-"La extensión de la imagen de portada de la revista, no está permitida! Por "
-"favor seleccione otro archivo."
+msgstr "La extensión de la imagen de portada de la revista, no está permitida! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:192
 #: journalmanager/templates/journalmanager/add_journal.html:629
-msgid "Journal cover image file size is too large! Please select another file."
-msgstr ""
-"El tamaño del archivo de imagen de portada de la revista, es muy grande! Por "
-"favor seleccione otro archivo."
+msgid ""
+"Journal cover image file size is too large! Please select another file."
+msgstr "El tamaño del archivo de imagen de portada de la revista, es muy grande! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:198
 msgid ""
-"The image is {image_size}px pixel wide. It's supposed to be {expected_size}px"
-msgstr ""
-"La imagen es {image_size}px de ancho. Se supone que debe ser {expected_size}"
-"px"
+"The image is {image_size}px pixel wide. It's supposed to be "
+"{expected_size}px"
+msgstr "La imagen es {image_size}px de ancho. Se supone que debe ser {expected_size}px"
 
 #: journalmanager/forms.py:204
 msgid ""
-"The image is {image_size}px pixel high. It's supposed to be {expected_size}px"
-msgstr ""
-"La imagen es {image_size}px de altura. Se supone que debe ser {expected_size}"
-"px"
+"The image is {image_size}px pixel high. It's supposed to be "
+"{expected_size}px"
+msgstr "La imagen es {image_size}px de altura. Se supone que debe ser {expected_size}px"
 
 #: journalmanager/forms.py:215
 #: journalmanager/templates/journalmanager/add_journal.html:632
 msgid ""
 "Journal logo image extension is not allowed! Please select another file."
-msgstr ""
-"La extensión de la imagen del logo de la revista no está permitida! Por "
-"favor seleccione otro archivo."
+msgstr "La extensión de la imagen del logo de la revista no está permitida! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:218
 #: journalmanager/templates/journalmanager/add_journal.html:630
 msgid "Journal logo image file size is too large! Please select another file."
-msgstr ""
-"La extensión de la imagen del logo de la revista es muy grande! Por favor "
-"seleccione otro archivo."
+msgstr "La extensión de la imagen del logo de la revista es muy grande! Por favor seleccione otro archivo."
 
 #: journalmanager/forms.py:223
 msgid ""
 "The image is {logo_size}px pixel wide. It's supposed to be {expected_size}px"
-msgstr ""
-"La imagen del logo tiene {logo_size}px de ancho. Se supone que debe ser "
-"{expected_size}px"
+msgstr "La imagen del logo tiene {logo_size}px de ancho. Se supone que debe ser {expected_size}px"
 
 #: journalmanager/forms.py:227
 msgid ""
 "The image is {logo_size}px pixel high. It's supposed to be {expected_size}px"
-msgstr ""
-"La imagen del logo tiene {logo_size}px de altura. Se supone que debe ser "
-"{expected_size}px"
+msgstr "La imagen del logo tiene {logo_size}px de altura. Se supone que debe ser {expected_size}px"
 
 #: journalmanager/forms.py:296
 #: scielomanager/templates/registration/login.html:28
@@ -1099,8 +1044,7 @@ msgstr "Licencia de Uso"
 
 #: journalmanager/forms.py:405
 msgid "You must complete at least one of two fields volume or number."
-msgstr ""
-"Usted debe completar por lo menos uno de los dos campos del volumen o número."
+msgstr "Usted debe completar por lo menos uno de los dos campos del volumen o número."
 
 #: journalmanager/forms.py:416 journalmanager/forms.py:470
 #: journalmanager/forms.py:475 journalmanager/forms.py:521
@@ -1111,17 +1055,15 @@ msgstr "Número con este Año y (Volumen o Número) ya existe para esta revista"
 
 #: journalmanager/forms.py:453 journalmanager/forms.py:508
 msgid "You must complete the volume filed. Number field must be empty."
-msgstr ""
-"Usted debe completar el campo Volumen. El campo Número debe quedar vacío."
+msgstr "Usted debe completar el campo Volumen. El campo Número debe quedar vacío."
 
 #: journalmanager/forms.py:455 journalmanager/forms.py:510
 msgid "You must complete the number filed. Volume field must be empty."
-msgstr ""
-"Usted debe completar el campo Número. El campo Volumen debe quedar vacío."
+msgstr "Usted debe completar el campo Número. El campo Volumen debe quedar vacío."
 
 #: journalmanager/forms.py:549
 msgid "Legacy Code"
-msgstr "Código de Licencia"
+msgstr "Código anterior"
 
 #: journalmanager/forms.py:854
 msgid "Please fill in at least one form"
@@ -1130,13 +1072,10 @@ msgstr "Por favor complete por lo menos un formulario"
 #: journalmanager/models.py:44
 msgid ""
 "If not defined, will be applied the related journal's use license. The "
-"SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/"
-"jf5ndd (5.2.11. Política de direitos autorais) for more details."
-msgstr ""
-"Sí no es definida, será aplicada la licencia de uso de la revista "
-"relacionada. La licencia de uso por defecto de SciELO es  BY-NC. Por favor "
-"visite: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) "
-"para más información."
+"SciELO default use license is BY-NC. Please visit: "
+"http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for "
+"more details."
+msgstr "Sí no es definida, será aplicada la licencia de uso de la revista relacionada. La licencia de uso por defecto de SciELO es  BY-NC. Por favor visite: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) para más información."
 
 #: journalmanager/models.py:288 journalmanager/models.py:1520
 msgid "ISO 639-1 Language Code"
@@ -1226,11 +1165,11 @@ msgstr "Licencia de Uso"
 
 #: journalmanager/models.py:528
 msgid "CCN Code"
-msgstr "Código SECS"
+msgstr "Código CCN"
 
 #: journalmanager/models.py:529
 msgid "The code of the journal at the CCN database."
-msgstr ""
+msgstr "El código de la revista en la base de datos CCN"
 
 #: journalmanager/models.py:534
 msgid "Subject Categories"
@@ -1403,7 +1342,7 @@ msgstr "¿Por qué usted está cambiando el estado de publicación?"
 
 #: journalmanager/models.py:774
 msgid "Reason"
-msgstr "Reason"
+msgstr "Razón"
 
 #: journalmanager/models.py:780 journalmanager/models.py:836
 #: journalmanager/models.py:1112 journalmanager/models.py:1213
@@ -1519,8 +1458,7 @@ msgstr "Guardado."
 
 #: journalmanager/views.py:53
 msgid "Saved partially. You can continue to fill in this form later."
-msgstr ""
-"Guardado parcialmente. Puede continuar completando el formulario después."
+msgstr "Guardado parcialmente. Puede continuar completando el formulario después."
 
 #: journalmanager/views.py:55
 msgid "The pended form has been deleted."
@@ -1555,8 +1493,7 @@ msgstr "Esta revista ya existe, por favor búsquela en el paso anterior"
 #: journalmanager/views.py:988
 msgid ""
 "Issue created successfully, however we can not create the editorial board."
-msgstr ""
-"Número creado con éxito, sin embargo no podemos crear el Cuerpo Editorial."
+msgstr "Número creado con éxito, sin embargo no podemos crear el Cuerpo Editorial."
 
 #: journalmanager/views.py:1088
 msgid "Section removed successfully"
@@ -1716,11 +1653,11 @@ msgstr "PID del artículo"
 
 #: journalmanager/templates/journalmanager/add_pressrelease.html:124
 msgid "Body"
-msgstr "Cuerpo"
+msgstr "Cuerpo de texto"
 
 #: journalmanager/templates/journalmanager/add_pressrelease.html:127
 msgid "Preview as HTML"
-msgstr "Vista previa"
+msgstr "Vista previa en HTML"
 
 #: journalmanager/templates/journalmanager/add_section.html:95
 msgid "Section Information"
@@ -1794,19 +1731,19 @@ msgstr "Versión del artículo"
 #: journalmanager/templates/journalmanager/article_detail.html:48
 #: validator/templates/validator/preview_html.html:85
 msgid "HTML preview"
-msgstr "Vista previa"
+msgstr "Vista previa en HTML"
 
 #: journalmanager/templates/journalmanager/article_detail.html:54
 msgid "Source XML"
-msgstr ""
+msgstr "Source XML"
 
 #: journalmanager/templates/journalmanager/article_detail.html:68
 msgid "Sorry, but the HTML preview is not available for this article."
-msgstr ""
+msgstr "Discúlpame, pero la previa vista en HTML no está disponible para este artículo"
 
 #: journalmanager/templates/journalmanager/article_detail.html:76
 msgid "This article doesn't have a XML file."
-msgstr "Este artículo no tiene XML"
+msgstr "Este artículo no tiene un archivo XML"
 
 #: journalmanager/templates/journalmanager/article_list.html:5
 #: journalmanager/templates/journalmanager/issue_list.html:51
@@ -1882,11 +1819,9 @@ msgstr "Cambiar usuario editor"
 
 #: journalmanager/templates/journalmanager/editor.html:52
 msgid ""
-"<strong>Warning!</strong> No user was selected as editor of this journal. To "
-"be the editor user must be in 'Editors' group"
-msgstr ""
-"<strong>Atención!</strong> No se ha seleccionado un usuario editor para esta "
-"revista. Para ser el usuario editor debe pertenecer al grupo:  'Editors'"
+"<strong>Warning!</strong> No user was selected as editor of this journal. To"
+" be the editor user must be in 'Editors' group"
+msgstr "<strong>Atención!</strong> No se ha seleccionado un usuario editor para esta revista. Para ser el usuario editor debe pertenecer al grupo:  'Editors'"
 
 #: journalmanager/templates/journalmanager/home_journal.html:16
 msgid "Drafts"
@@ -2000,9 +1935,7 @@ msgstr "Agregar revista a mi colección"
 msgid ""
 "To insert a journal, you need to check whether the journal exists. If it "
 "exists just add to your collection!"
-msgstr ""
-"Para ingresar una revista, es necesario comprobar si ya existe. Si es que ya "
-"existe sólo tiene que añadirlo a su colección!"
+msgstr "Para ingresar una revista, es necesario comprobar si ya existe. Si es que ya existe sólo tiene que añadirlo a su colección!"
 
 #: journalmanager/templates/journalmanager/journal_list.html:165
 msgid "Search journal"
@@ -2022,7 +1955,7 @@ msgstr "ISSN electrónico"
 
 #: journalmanager/templates/journalmanager/journal_list.html:214
 msgid "Collections"
-msgstr "Colección"
+msgstr "Colecciones"
 
 #: journalmanager/templates/journalmanager/journal_list.html:226
 msgid "No journal(s) found to the term: "
@@ -2068,9 +2001,7 @@ msgstr "Código"
 msgid ""
 "Hey, you can not remove the sections that are being used by at least one "
 "issue of this journal."
-msgstr ""
-"Hey, no puede remover secciones que están siendo usadas por al menos un "
-"número de esta revista."
+msgstr "Hey, no puede remover secciones que están siendo usadas por al menos un número de esta revista."
 
 #: journalmanager/templates/journalmanager/trash_listing.html:7
 msgid "Trash"
@@ -2134,9 +2065,9 @@ msgid "This journal does not have a logo"
 msgstr "Esta revista no tiene logo"
 
 #: journalmanager/templates/journalmanager/includes/issue_cover.html:15
-msgid "This issue does not have a cover, it will use the default journal cover"
-msgstr ""
-"Esta revista no tiene portada, utilizará la portada de periódico por defecto"
+msgid ""
+"This issue does not have a cover, it will use the default journal cover"
+msgstr "Esta revista no tiene portada, utilizará la portada de periódico por defecto"
 
 #: journalmanager/templates/journalmanager/includes/issue_form_generic_field_list.html:19
 msgid "Add new"
@@ -2195,11 +2126,8 @@ msgid "Report"
 msgstr "Reporte"
 
 #: scielomanager/custom_fields.py:44
-#, fuzzy
 msgid "Please keep file size under {maxsize}. Current file size {filesize}"
-msgstr ""
-"Por favor mantenga el tamaño de los archivos menores a %(maxsize)s. Tamaño "
-"actual del archivo %(filesize)s"
+msgstr "Por favor mantenga el tamaño del archivo menor a {maxsize}. Tamaño actual del archivo {filesize}"
 
 #: scielomanager/custom_fields.py:50
 msgid "File type not supported."
@@ -2281,7 +2209,7 @@ msgstr "SciELO Style Checker"
 
 #: scielomanager/templates/footer.html:38
 msgid "HTML Previewer"
-msgstr "Vista previa"
+msgstr "Vista previa en HTML"
 
 #: scielomanager/templates/include_press_release/ahead.html:5
 #: scielomanager/templates/include_press_release/issue.html:5
@@ -2307,9 +2235,7 @@ msgstr "Por favor haga click en el link a continuación para activar su cuenta."
 msgid ""
 "\n"
 "    This key will expire in %(expiration_days)s days.\n"
-msgstr ""
-"\n"
-"    Esta clave expirará en %(expiration_days)s dias.\n"
+msgstr "\n    Esta clave expirará en %(expiration_days)s dias.\n"
 
 #: scielomanager/templates/registration/login.html:9
 msgid "We are under maintenance!"
@@ -2340,9 +2266,7 @@ msgstr "¿Olvidó tu contraseña?"
 msgid ""
 "Your password has been reseted! You may now login in using your new "
 "credentials."
-msgstr ""
-"¡Tu contraseña ha sido restablecida! Ahora puedes iniciar sesión con tu "
-"nueva información."
+msgstr "¡Tu contraseña ha sido restablecida! Ahora puedes iniciar sesión con tu nueva información."
 
 #: scielomanager/templates/registration/password_reset_complete.html:9
 msgid "login"
@@ -2364,10 +2288,7 @@ msgstr "Este enlace ya fue utilizado para restablecer su contraseña."
 msgid ""
 "We have sent you an email with a link to reset your password. Please check "
 "your email and click the link to continue."
-msgstr ""
-"Le hemos enviado un correo electrónico con un enlace para restablecer tu "
-"contraseña. Por favor, consulte su correo electrónico y haga click en el "
-"vínculo para continuar."
+msgstr "Le hemos enviado un correo electrónico con un enlace para restablecer tu contraseña. Por favor, consulte su correo electrónico y haga click en el vínculo para continuar."
 
 #: scielomanager/templates/registration/password_reset_done.html:9
 msgid "Login"
@@ -2383,30 +2304,15 @@ msgid ""
 "requested that your password be reset on %(site_name)s. If you do not\n"
 "wish to reset your password, please ignore this message.\n"
 "\n"
-"To reset your password, please click the following link, or copy and paste "
-"it\n"
+"To reset your password, please click the following link, or copy and paste it\n"
 "into your web browser:\n"
-msgstr ""
-"\n"
-"Saludos %(user)s,\n"
-"\n"
-"Has recibido este correo porque tú (o alguien más pretendiendo ser tú)\n"
-"ha solicitado el restablecimiento de su contraseña en %(site_name)s. Si tú "
-"no\n"
-"deseas restablecer tu contraseña, por favor ignora este mensaje.\n"
-"\n"
-"Para restablecer tu contraseña, por favor da clic en el siguiente enlace, o "
-"cópialo y pégalo\n"
-"en tu navegador de internet:\n"
+msgstr "\nSaludos %(user)s,\n\nHas recibido este correo porque tú (o alguien más pretendiendo ser tú)\nha solicitado el restablecimiento de su contraseña en %(site_name)s. Si tú no\ndeseas restablecer tu contraseña, por favor ignora este mensaje.\n\nPara restablecer tu contraseña, por favor da clic en el siguiente enlace, o cópialo y pégalo\nen tu navegador de internet:\n"
 
 #: scielomanager/templates/registration/password_reset_form.html:9
 msgid ""
 "Enter your e-mail in the form below and we will send your username and "
 "instructions to create a new password."
-msgstr ""
-"Ingrese su dirección de correo electrónico en el siguiente formulario y "
-"nosotros le enviaremos su usuario y las instrucciones para crear una nueva "
-"contraseña."
+msgstr "Ingrese su dirección de correo electrónico en el siguiente formulario y nosotros le enviaremos su usuario y las instrucciones para crear una nueva contraseña."
 
 #: scielomanager/templates/registration/password_reset_form.html:11
 msgid "Reset Password"
@@ -2424,9 +2330,7 @@ msgstr "Un correo electrónico de confirmación está en camino"
 msgid ""
 "Please click the activation link included in the e-mail to confirm you "
 "registration."
-msgstr ""
-"Por favor, haga click en el enlace de activación incluido en el correo "
-"electrónico para confirmar la inscripción."
+msgstr "Por favor, haga click en el enlace de activación incluido en el correo electrónico para confirmar la inscripción."
 
 #: scielomanager/templates/registration/registration_form.html:6
 #: scielomanager/templates/registration/registration_form.html:19
@@ -2439,8 +2343,7 @@ msgstr "Por favor, corrija los siguientes errores."
 
 #: scielomanager/templates/registration/registration_form.html:12
 msgid "You will receive an email with a link to activate your account."
-msgstr ""
-"Usted recibirá un correo electrónico con un enlace para activar su cuenta."
+msgstr "Usted recibirá un correo electrónico con un enlace para activar su cuenta."
 
 #: validator/forms.py:10
 #: validator/templates/validator/includes/xml_annotated.html:15
@@ -2450,33 +2353,29 @@ msgstr "Archivo"
 #: validator/forms.py:16
 #: validator/templates/validator/includes/xml_upload_form_validation.html:25
 msgid "This type of file is not allowed! Please select another file."
-msgstr ""
-"Este tipo de archivo no está permitido! Por favor seleccione otro archivo."
+msgstr "Este tipo de archivo no está permitido! Por favor seleccione otro archivo."
 
 #: validator/forms.py:19
 msgid "The file's size is too large! Please select a smaller file."
-msgstr ""
-"El tamaño de archivo es muy grande! Por favor seleccione otro archivo. "
+msgstr "El tamaño de archivo es muy grande! Por favor seleccione otro archivo. "
 
 #: validator/templates/validator/preview_html.html:6
 msgid "Packtools - SciELO HTML Previewer"
-msgstr ""
+msgstr "Oacktools - Vista previa en HTML"
 
 #: validator/templates/validator/preview_html.html:14
 msgid "SciELO HTML Previewer"
-msgstr ""
+msgstr "SciELO - Vista previa en HTML"
 
 #: validator/templates/validator/preview_html.html:15
 msgid "Use this tool to preview your XML file as an HTML"
-msgstr ""
+msgstr "Use esta herramienta para ver su archivo XML como un HTML"
 
 #: validator/templates/validator/preview_html.html:16
 msgid ""
 "Browse to your local XML file and click 'Preview'. The results will be "
 "displayed below."
-msgstr ""
-"Busque su archivo XML localmente y haga clic en \"Validar\". Los resultados "
-"aparecerán a continuación."
+msgstr "Busque su archivo XML localmente y haga clic en \"Vista Previa\". Los resultados aparecerán a continuación."
 
 #: validator/templates/validator/preview_html.html:24
 #: validator/templates/validator/stylechecker.html:28
@@ -2506,22 +2405,14 @@ msgstr "Vista previa"
 #: validator/templates/validator/stylechecker.html:68
 msgid ""
 "\n"
-"              If you have any problems with the tool or with the SPS Tagging "
-"Guidelines, please contact:\n"
-"              <strong><a href=\"mailto:scielo-xml@googlegroups.com\">scielo-"
-"xml@googlegroups.com</a></strong>.\n"
+"              If you have any problems with the tool or with the SPS Tagging Guidelines, please contact:\n"
+"              <strong><a href=\"mailto:scielo-xml@googlegroups.com\">scielo-xml@googlegroups.com</a></strong>.\n"
 "              "
-msgstr ""
-"\n"
-"              Si tiene algún problema con esta herramienta o con el SPS "
-"Tagging Guidelines, por favor entre en contacto con:\n"
-"              <strong><a href=\"mailto:scielo-xml@googlegroups.com\">scielo-"
-"xml@googlegroups.com</a></strong>.\n"
-"              "
+msgstr "\n              Si tiene algún problema con esta herramienta o con el SPS Tagging Guidelines, por favor entre en contacto con:\n              <strong><a href=\"mailto:scielo-xml@googlegroups.com\">scielo-xml@googlegroups.com</a></strong>.\n              "
 
 #: validator/templates/validator/preview_html.html:99
 msgid "No HTML generated, is the XML file valid?"
-msgstr ""
+msgstr "El HTML no fue generado, ¿el archivo XML es válido?"
 
 #: validator/templates/validator/stylechecker.html:6
 msgid "Packtools - Style Checker"
@@ -2534,34 +2425,21 @@ msgstr "SciELO Style Checker"
 #: validator/templates/validator/stylechecker.html:12
 msgid ""
 "\n"
-"      Use this tool to confirm whether an XML file conforms to SciELO Style "
-"as defined in the SciELO Publishing Schema Tagging Guidelines.\n"
+"      Use this tool to confirm whether an XML file conforms to SciELO Style as defined in the SciELO Publishing Schema Tagging Guidelines.\n"
 "      "
-msgstr ""
-"\n"
-"      Use esta herramienta para confirmar sí un archivo XML esta conforme al "
-"SciELO Style cuyas definiciones son especificadas por el SciELO Publishing "
-"Schema Tagging Guidelines.\n"
-"      "
+msgstr "\n      Use esta herramienta para confirmar sí un archivo XML esta conforme al SciELO Style cuyas definiciones son especificadas por el SciELO Publishing Schema Tagging Guidelines.\n      "
 
 #: validator/templates/validator/stylechecker.html:17
 msgid ""
 "\n"
-"      Browse to your local XML file and click \"Validate\". The results will "
-"be displayed below.\n"
+"      Browse to your local XML file and click \"Validate\". The results will be displayed below.\n"
 "      "
-msgstr ""
-"\n"
-"      Busque su archivo XML localmente y haga clic en \"Validar\". Los "
-"resultados aparecerán a continuación.\n"
-"      "
+msgstr "\n      Busque su archivo XML localmente y haga clic en \"Validar\". Los resultados aparecerán a continuación.\n      "
 
 #: validator/templates/validator/stylechecker.html:55
 msgid ""
 "\n"
-"                Also validate against SciELO Brazil's specific rules. <a "
-"href=\"http://docs.scielo.org/projects/scielo-publishing-schema/pt_BR/latest/"
-"narr/scielo-brasil.html\">Read more.</a>\n"
+"                Also validate against SciELO Brazil's specific rules. <a href=\"http://docs.scielo.org/projects/scielo-publishing-schema/pt_BR/latest/narr/scielo-brasil.html\">Read more.</a>\n"
 "                "
 msgstr ""
 
@@ -2602,15 +2480,11 @@ msgstr "Atención!"
 msgid ""
 "This XML document uses a version of SciELO PS that soon will no longer be "
 "supported. Please consider upgrading to a newer version as soon as possible."
-msgstr ""
-"Este documento XML usa una versión de SciELO PS que pronto dejará de ser "
-"soportada. Por favor considere actualizarlo a una versión mas nueva tan "
-"pronto como sea posible."
+msgstr "Este documento XML usa una versión de SciELO PS que pronto dejará de ser soportada. Por favor considere actualizarlo a una versión mas nueva tan pronto como sea posible."
 
 #: validator/templates/validator/includes/xml_annotated.html:50
 msgid "If you want to know more about the support policy, please refer to"
-msgstr ""
-"Si usted desea conocer más sobre la política de soporte, por favor visite"
+msgstr "Si usted desea conocer más sobre la política de soporte, por favor visite"
 
 #: validator/templates/validator/includes/xml_annotated.html:52
 msgid "SciELO PS official documentation"
@@ -2714,183 +2588,16 @@ msgstr "en las lineas anteriores"
 
 #: validator/templates/validator/includes/xml_upload_form_validation.html:30
 msgid "The file size is too large! Please select a smaller file."
-msgstr ""
-"El tamaño de archivo es muy grande! Por favor seleccione otro archivo. "
+msgstr "El tamaño de archivo es muy grande! Por favor seleccione otro archivo."
 
 #~ msgid "Lanaguages"
-#~ msgstr "Idiomas"
-
-#~ msgid "Corpo editorial"
-#~ msgstr "Cuerpo editorial"
-
-#~ msgid "User can't do this action: %s"
-#~ msgstr "El usuario no puede realizar esta acción: %s"
-
-#~ msgid "User can't ACCEPT checkins, because doesn't have enough permissions"
-#~ msgstr ""
-#~ "El usuario no puede ACEPTAR checkins, porque no cuenta con permisos "
-#~ "suficientes"
-
-#~ msgid "User can't REJECT checkins, because doesn't have enough permissions"
-#~ msgstr ""
-#~ "El usuario no puede RECHAZAR checkins, porque no cuenta con permisos "
-#~ "suficientes"
-
-#~ msgid ""
-#~ "User can't REVIEW (Level 1) checkins, because doesn't have enough "
-#~ "permissions"
-#~ msgstr ""
-#~ "El usuario no puede REVISAR checkins (Nivel 1), porque no cuenta con "
-#~ "permisos suficientes"
-
-#~ msgid ""
-#~ "User can't REVIEW (Level 2) checkins, because doesn't have enough "
-#~ "permissions"
-#~ msgstr ""
-#~ "El usuario no puede REVISAR checkins (Nivel 2), porque no cuenta con "
-#~ "permisos suficientes"
-
-#~ msgid ""
-#~ "User can't SEND checkins TO REVIEW, because doesn't have enough "
-#~ "permissions"
-#~ msgstr ""
-#~ "El usuario no puede ENVIAR checkins PARA REVISIÓN, porque no cuenta con "
-#~ "permisos suficientes"
-
-#~ msgid ""
-#~ "User can't SEND checkins TO PENDING, because doesn't have enough "
-#~ "permissions"
-#~ msgstr ""
-#~ "El usuario no puede ENVIAR checkins PARA PENDIENTE, porque no cuenta con "
-#~ "permisos suficientes"
-
-#~ msgid ""
-#~ "User can't SEND checkins TO CHECKOUT, because doesn't have enough "
-#~ "permissions"
-#~ msgstr ""
-#~ "El usuario no puede ENVIAR checkins PARA CHECKOUT, porque no cuenta con "
-#~ "permisos suficientes"
+#~ msgstr "Languages"
 
 #~ msgid "National Code"
-#~ msgstr "Código Nacional"
-
-#~ msgid "XML content"
-#~ msgstr "Contenido del artículo"
-
-#~ msgid "Coleções"
-#~ msgstr "Colecciones"
-
-#~ msgid "Titulos"
-#~ msgstr "Títulos"
-
-#~ msgid "Packtools StyleChecker"
-#~ msgstr "Packtools StyleChecker"
-
-#~ msgid "usage: "
-#~ msgstr "uso:"
-
-#~ msgid ".__call__() not defined"
-#~ msgstr ".__call__() no definido"
-
-#~ msgid "unknown parser {parser_name} (choices: {choices})"
-#~ msgstr "parser desconocido {parser_name} (opciones: {choices})"
-
-#~ msgid "argument \"-\" with mode %r"
-#~ msgstr "argumento \"-\" con modo %r"
-
-#~ msgid "cannot merge actions - two groups are named %r"
-#~ msgstr "no es posible mezclar las acciones - dos grupos son nombrados %r"
-
-#~ msgid "'required' is an invalid argument for positionals"
-#~ msgstr "'required' es un argumento no válido para posicionales"
-
-#~ msgid ""
-#~ "invalid option string {option_string}: must start with a character "
-#~ "{prefix_chars}"
-#~ msgstr ""
-#~ "opción de cadena invalida {option_string}: debe comenzar con el caracter "
-#~ "{prefix_chars}"
-
-#~ msgid "dest= is required for options like %r"
-#~ msgstr "dest= es requerido para opciones como %r"
-
-#~ msgid "invalid conflict_resolution value: %r"
-#~ msgstr "valor conflict_resolution inválido: %r"
-
-#~ msgid "conflicting option string(s): %s"
-#~ msgstr "opción de cadena(s): %s conflictantes"
-
-#~ msgid "mutually exclusive arguments must be optional"
-#~ msgstr "argumentos mutuamente exclusivos debe ser opcional"
-
-#~ msgid "positional arguments"
-#~ msgstr "argumentos posicionales"
+#~ msgstr "National Code"
 
 #~ msgid "optional arguments"
-#~ msgstr "argumentos opcionales"
-
-#~ msgid "show this help message and exit"
-#~ msgstr "mostrar este mensaje de ayuda y salir"
-
-#~ msgid "show program's version number and exit"
-#~ msgstr "mostrar número de la versión del programa y salir"
-
-#~ msgid "cannot have multiple subparser arguments"
-#~ msgstr "no es posible tener múltiples argumentos de subparser"
-
-#~ msgid "unrecognized arguments: %s"
-#~ msgstr "argumentos no reconocidos: %s"
-
-#~ msgid "not allowed with argument %s"
-#~ msgstr "no permitido con argumentos %s"
-
-#~ msgid "ignored explicit argument %r"
-#~ msgstr "argumentos explícitos ignorado: %r"
-
-#~ msgid "too few arguments"
-#~ msgstr "muy pocos argumentos"
-
-#~ msgid "argument %s is required"
-#~ msgstr "argumento %s es obligatorio"
-
-#~ msgid "one of the arguments %s is required"
-#~ msgstr "uno de estos argumentos %s son obligatorios"
-
-#~ msgid "expected one argument"
-#~ msgstr "un argumento esperado"
-
-#~ msgid "expected at most one argument"
-#~ msgstr "a lo sumo un argumento esperado"
-
-#~ msgid "expected at least one argument"
-#~ msgstr "al menos un argumento esperado"
-
-#~ msgid "expected %s argument(s)"
-#~ msgstr "esperados argumento(s): %s"
-
-#~ msgid "ambiguous option: {arg_string} could match {options}"
-#~ msgstr "opción ambigua: {arg_string} podría coincidir {options}"
-
-#~ msgid "unexpected option string: %s"
-#~ msgstr "opción de cadena inesperada: %s"
-
-#~ msgid "%r is not callable"
-#~ msgstr "%r no se puede llamar"
-
-#~ msgid "invalid {name} value: {arg_string}"
-#~ msgstr "valor {name} inválid: {arg_string}"
-
-#~ msgid "invalid choice: {value} (choose from {choices})"
-#~ msgstr "opción inválida: {value} (opciones {choices})"
-
-#~ msgid "{prog}: error: message\n"
-#~ msgstr "{prog}: error: mensaje\n"
-
-#~ msgid "The file submitted is NOT XML"
-#~ msgstr "Este archivo NO ES XML"
-
-#~ msgid "XML file excedes max upload size"
-#~ msgstr "El archivo XML supera el tamaño máximo de subida permitido"
+#~ msgstr "Total of Documents"
 
 #~ msgid "logout"
 #~ msgstr "logout"
@@ -2986,11 +2693,9 @@ msgstr ""
 #~ msgstr "Your username and password did not match. Please try again."
 
 #~ msgid ""
-#~ "Your account is not active. Please contact the SciELO or verify your e-"
-#~ "mail"
+#~ "Your account is not active. Please contact the SciELO or verify your e-mail"
 #~ msgstr ""
-#~ "Your account is not active. Please contact the SciELO or verify your e-"
-#~ "mail"
+#~ "Your account is not active. Please contact the SciELO or verify your e-mail"
 
 #~ msgid "Please login on the system to see this page"
 #~ msgstr "Please login on the system to see this page"
