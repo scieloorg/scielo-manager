@@ -22,14 +22,14 @@ Para a nova versão da ferramenta de gestão de periódicos, considerando as car
 Introdução
 ----------
 
-As bases de dados ISIS geradas pelo Title Manager são utilizadas em dois prontos do processo de publicação da SciELO, são eles: processo de marcação e processamento para inclusão de conteúdo.
+As bases de dados ISIS geradas pelo Title Manager são utilizadas em dois pontos do processo de publicação da SciELO, são eles: processo de marcação e processamento para inclusão de conteúdo.
 
 Processamento para inclusão de conteúdo
 =======================================
 
 Atualmente o SciELO possui um processamento (geraPadrao.bat) para inclusão de novas revistas, fascículos e artigos na coleção. Esse processamento recebe como entrada um conjunto de bases de dados, são elas: artigo, issue, code, title.
 
-As bases code, title e issue são únicadas para todo o processamento, significa que uma base de dados com todo o conteúdo de título, outra com todo conteúdo de code e outra com todo conteúdo de issues são geradas e gravadas em um diretório chamado serial gerando a seguinte estrutura de dados de entrada para o processamento.
+As bases code, title e issue são únicas para todo o processamento, significa que uma base de dados com todo o conteúdo de título, outra com todo conteúdo de code e outra com todo conteúdo de issues são geradas e gravadas em um diretório chamado serial gerando a seguinte estrutura de dados de entrada para o processamento.
 
 .. code-block:: text
 
@@ -74,7 +74,7 @@ Em resumo, significa que o processo de exportação de bases do SciELO Manager p
 Processo de Marcação
 ====================
 
-O processo de marcação de metadados de artigos nas SciELO é feito através da ferramenta Markup, que corresponde a um aplicativo VBSript embutido no Word para identificar os elementos dos artigos. Esse plugin do Word consulta algumas bases de dados ISIS geradas pela Title Manager para complementar a identificação de elementos no texto do artigo, como por exemplo:
+O processo de marcação de metadados de artigos nas SciELO é feito através da ferramenta Markup, que corresponde a um aplicativo VBScript embutido no Word para identificar os elementos dos artigos. Esse plugin do Word consulta algumas bases de dados ISIS geradas pela Title Manager para complementar a identificação de elementos no texto do artigo, como por exemplo:
 
 * Identificação de seções dos fascículos (base code)
 
@@ -334,7 +334,7 @@ Title
   quando mais de uma coleção compartilha mesma base title no site local. Resolver este problema
   criando instalações independentes para cada coleção SciELO, ex: Brasil e Saúde Pública.
 
-  Foram encontradas ocorrencias do campo v691 no arquivo sci_serial.xis entretanto parece não estar
+  Foram encontradas ocorrências do campo v691 no arquivo sci_serial.xis entretanto parece não estar
   em uso uma vez que faz referência a arquivos template (ScieloXML/collections.xis) que não estão 
   atualizados.
 
