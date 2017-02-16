@@ -13,7 +13,7 @@ yuicompressor
 jsonfield
 django-tastypie==0.9.16
 django-htmlmin==0.7.0
-packtools==1.3.2
+packtools==1.3.3
 Celery
 django-celery
 django-kombu
