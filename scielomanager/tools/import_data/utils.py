@@ -15,13 +15,13 @@ REGEX_ISSN = re.compile(r"^[0-9]{4}-[0-9]{3}[0-9xX]$")
 
 def articlemeta_server():
     try:
-        server = 'articlemeta.scielo.org:11620'
+        server = 'articlemeta.scielo.org:11621'
         host = server[0]
         port = int(server[1])
     except:
         logger.warning('Error defining Article Meta thrift server, assuming default server articlemeta.scielo.org:11620')
         host = 'articlemeta.scielo.org'
-        port = 11620
+        port = 11621
 
     return clients.ArticleMeta(host, port)
 
