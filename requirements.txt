@@ -19,7 +19,7 @@ django-celery==3.1.16
 defusedxml==0.4.1
 cython
 thriftpy
-django-countries==3.3
+django-countries==4.2
 -e git+https://github.com/scieloorg/thriftpy-wrap@0.1.1#egg=thriftpywrap
 elasticsearch>=1.0.0,<2.0.0
 zerorpc>=0.4.4
