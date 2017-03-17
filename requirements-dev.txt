@@ -1,4 +1,4 @@
-django-extensions
+django-extensions==1.7.7
 django-debug-toolbar
 coverage
 django-coverage
