@@ -997,7 +997,8 @@ class Issue(models.Model):
             values.append('suppl.%s' % self.suppl_text)
 
         if self.type == 'special':
-            values.append('spe.%s' % self.spe_text)
+            _spe_text = 'spe' + self.spe_text if self.spe_text else 'spe'
+            values.append(_spe_text)
 
         return ' '.join([val for val in values if val]).strip().replace('ahead', 'ahead of print')
 
