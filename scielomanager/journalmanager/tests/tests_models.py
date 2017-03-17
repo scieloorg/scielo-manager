@@ -158,7 +158,7 @@ class IssueTests(TestCase):
 
     def test_identification_for_special(self):
         issue = IssueFactory.create(number='1', spe_text='2', type='special')
-        expected = u'1 spe.2'
+        expected = u'1 spe2'
 
         self.assertEqual(issue.identification, expected)
 
