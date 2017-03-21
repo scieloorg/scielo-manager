@@ -31,9 +31,13 @@ from django.template.defaultfilters import slugify
 from scielo_extensions import modelfields
 from tastypie.models import create_api_key
 import celery
+from PIL import Image
 
 from scielomanager.utils import base28
-from scielomanager.custom_fields import ContentTypeRestrictedFileField, XMLSPSField
+from scielomanager.custom_fields import (
+        ContentTypeRestrictedFileField,
+        XMLSPSField,
+)
 from . import modelmanagers
 
 
@@ -993,7 +997,8 @@ class Issue(models.Model):
             values.append('suppl.%s' % self.suppl_text)
 
         if self.type == 'special':
-            values.append('spe.%s' % self.spe_text)
+            _spe_text = 'spe' + self.spe_text if self.spe_text else 'spe'
+            values.append(_spe_text)
 
         return ' '.join([val for val in values if val]).strip().replace('ahead', 'ahead of print')
 
@@ -1497,8 +1502,12 @@ class ArticleAsset(models.Model):
     """
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='assets')
-    file = models.FileField(upload_to=make_article_directory_path('assets'),
+    file = models.FileField(
+            upload_to=make_article_directory_path('assets'),
             max_length=1024)
+    preferred_alt_file = models.FileField(
+            upload_to=make_article_directory_path('alt_assets'),
+            max_length=1024, default=u'')
     owner = models.CharField(max_length=1024, default=u'')
     use_license = models.TextField(default=u'')
     updated_at = models.DateTimeField(auto_now=True)
@@ -1506,6 +1515,23 @@ class ArticleAsset(models.Model):
     def __repr__(self):
         return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
                 self.pk, self.file.url)
+
+    def is_image(self):
+        """Verifica se o ativo digital é uma imagem.
+        """
+        try:
+            img = Image.open(self.file)
+        except IOError:
+            return False
+        else:
+            return True
+
+    @property
+    def best_file(self):
+        if self.preferred_alt_file:
+            return self.preferred_alt_file
+        else:
+            return self.file
 
 
 class ArticleHTMLRendition(models.Model):

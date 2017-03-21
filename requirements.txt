@@ -13,10 +13,9 @@ yuicompressor
 jsonfield
 django-tastypie==0.9.16
 django-htmlmin==0.7.0
-packtools==1.3.1
-Celery
-django-celery
-django-kombu
+packtools==1.3.3
+celery==3.1.25
+django-celery==3.1.16
 defusedxml==0.4.1
 cython
 thriftpy
