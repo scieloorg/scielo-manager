@@ -370,6 +370,34 @@ class RegularIssueForm(IssueBaseForm):
         return self.cleaned_data
 
 
+class SupplementIssueForm(IssueBaseForm):
+    suppl_type = forms.ChoiceField(choices=choices.ISSUE_SUPPL_TYPE)
+    number = forms.CharField(required=False)
+    suppl_text = forms.CharField(widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        params = kwargs.pop('params', {})
+
+        if 'journal' not in params:
+            raise TypeError('SupplementIssueForm() takes journal in params keyword argument. e.g: params={"journal":<journal>')
+        else:
+            self.journal = params['journal']
+
+        super(SupplementIssueForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        volume = self.cleaned_data.get('volume')
+        number = self.cleaned_data.get('number')
+        suppl_type = self.cleaned_data.get('suppl_type')
+
+        if suppl_type == 'volume' and (volume == '' or number != ''):
+            raise forms.ValidationError(_('You must complete the volume filed.'))
+        if suppl_type == 'number' and (number == '' or volume != ''):
+            raise forms.ValidationError(_('You must complete the number filed.'))
+
+        return self.cleaned_data
+
+
 class IssueForm(ModelForm):
     section = forms.ModelMultipleChoiceField(models.Section.objects.none(),
          widget=forms.SelectMultiple(attrs={'title': _('Select one or more section')}),
