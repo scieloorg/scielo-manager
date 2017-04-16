@@ -1,0 +1,352 @@
+[
+  {
+    "pk": 64,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Advisory Board"
+    }
+  },
+  {
+    "pk": 62,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Area Editors"
+    }
+  },
+  {
+    "pk": 59,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Assistant editors"
+    }
+  },
+  {
+    "pk": 61,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Associated Editors"
+    }
+  },
+  {
+    "pk": 57,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Editor-in-Chief"
+    }
+  },
+  {
+    "pk": 63,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Editorial Board"
+    }
+  },
+  {
+    "pk": 65,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Editorial Production"
+    }
+  },
+  {
+    "pk": 66,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Executive Office"
+    }
+  },
+  {
+    "pk": 58,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Executive editors"
+    }
+  },
+  {
+    "pk": 67,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Grafic Composition"
+    }
+  },
+  {
+    "pk": 70,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Librarian"
+    }
+  },
+  {
+    "pk": 68,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Proofreading"
+    }
+  },
+  {
+    "pk": 60,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Scientific Editors"
+    }
+  },
+  {
+    "pk": 69,
+    "model": "editorialmanager.roletype",
+    "fields": {
+      "name": "Translation"
+    }
+  },
+  {
+    "pk": 100,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 57,
+      "name": "Editor Chefe",
+      "language": 3
+    }
+  },
+  {
+    "pk": 101,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 57,
+      "name": "Editor jefe",
+      "language": 4
+    }
+  },
+  {
+    "pk": 102,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 58,
+      "name": "Editor Executivo",
+      "language": 3
+    }
+  },
+  {
+    "pk": 103,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 58,
+      "name": "Editores ejecutivos",
+      "language": 4
+    }
+  },
+  {
+    "pk": 104,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 59,
+      "name": "Editor Cient\u00edfico",
+      "language": 3
+    }
+  },
+  {
+    "pk": 105,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 59,
+      "name": "Editor cient\u00edfico",
+      "language": 4
+    }
+  },
+  {
+    "pk": 106,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 60,
+      "name": "Editores Associados",
+      "language": 3
+    }
+  },
+  {
+    "pk": 107,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 60,
+      "name": "Editores asociados",
+      "language": 4
+    }
+  },
+  {
+    "pk": 108,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 61,
+      "name": "Editores de \u00c1rea",
+      "language": 3
+    }
+  },
+  {
+    "pk": 109,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 61,
+      "name": "Editores de \u00e1rea",
+      "language": 4
+    }
+  },
+  {
+    "pk": 110,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 62,
+      "name": "Editores Assistentes",
+      "language": 3
+    }
+  },
+  {
+    "pk": 111,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 62,
+      "name": "Editores asistentes",
+      "language": 4
+    }
+  },
+  {
+    "pk": 112,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 63,
+      "name": "Conselho Editorial",
+      "language": 3
+    }
+  },
+  {
+    "pk": 113,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 63,
+      "name": "Consejo de redacci\u00f3n",
+      "language": 4
+    }
+  },
+  {
+    "pk": 114,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 64,
+      "name": "Conselho Consultivo",
+      "language": 3
+    }
+  },
+  {
+    "pk": 115,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 64,
+      "name": "Consejo consultivo",
+      "language": 4
+    }
+  },
+  {
+    "pk": 116,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 65,
+      "name": "Produ\u00e7\u00e3o Editorial",
+      "language": 3
+    }
+  },
+  {
+    "pk": 117,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 65,
+      "name": "Producci\u00f3n editorial",
+      "language": 4
+    }
+  },
+  {
+    "pk": 118,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 66,
+      "name": "Secretaria Executiva",
+      "language": 3
+    }
+  },
+  {
+    "pk": 119,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 66,
+      "name": "Secretar\u00eda ejecutiva",
+      "language": 4
+    }
+  },
+  {
+    "pk": 120,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 67,
+      "name": "Composi\u00e7\u00e3o e Arte",
+      "language": 3
+    }
+  },
+  {
+    "pk": 121,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 67,
+      "name": "Composici\u00f3n y arte",
+      "language": 4
+    }
+  },
+  {
+    "pk": 122,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 68,
+      "name": "Revis\u00e3o de texto",
+      "language": 3
+    }
+  },
+  {
+    "pk": 123,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 68,
+      "name": "Correcci\u00f3n",
+      "language": 4
+    }
+  },
+  {
+    "pk": 124,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 69,
+      "name": "Tradu\u00e7\u00e3o",
+      "language": 3
+    }
+  },
+  {
+    "pk": 125,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 69,
+      "name": "Traducci\u00f3n",
+      "language": 4
+    }
+  },
+  {
+    "pk": 126,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 70,
+      "name": "Bibliotec\u00e1rio",
+      "language": 3
+    }
+  },
+  {
+    "pk": 127,
+    "model": "editorialmanager.roletypetranslation",
+    "fields": {
+      "role": 70,
+      "name": "Bibliotecario",
+      "language": 4
+    }
+  }
+]
