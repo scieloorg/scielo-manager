@@ -390,7 +390,8 @@ def add_board_member(request, journal_id, issue_id):
         else:
             messages.error(request, _(u'Check mandatory fields.'))
             context['form'] = form
-            return render_to_response(template_name, context, context_instance=RequestContext(request))
+            return render_to_response(template_name, context,
+                mimetype="text/plain", context_instance=RequestContext(request))
     else:
         form = forms.EditorialMemberForm()
 
