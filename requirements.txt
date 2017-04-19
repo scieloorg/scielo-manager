@@ -11,7 +11,7 @@ pyyaml
 webassets==0.7.1
 yuicompressor
 jsonfield
-django-tastypie==0.9.16
+django-tastypie==0.13.3
 django-htmlmin==0.7.0
 packtools==1.5
 celery==3.1.25
