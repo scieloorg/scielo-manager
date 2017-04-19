@@ -9,7 +9,7 @@ django-widget-tweaks==1.1.1
 lxml
 pyyaml
 webassets==0.7.1
-yuicompressor
+yuicompressor==2.4.8
 jsonfield
 django-tastypie==0.9.16
 django-htmlmin==0.7.0
