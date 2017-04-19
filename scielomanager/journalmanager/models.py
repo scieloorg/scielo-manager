@@ -527,6 +527,8 @@ class Journal(models.Model):
     use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'),
             default=get_journals_default_use_license)
     collections = models.ManyToManyField('Collection', through='Membership')
+
+    jid = models.CharField(max_length=32, unique=True, editable=False)
     # os idiomas que a revista publica conteúdo
     languages = models.ManyToManyField('Language')
     ccn_code = models.CharField(_("CCN Code"), max_length=64, default='',
@@ -548,12 +550,12 @@ class Journal(models.Model):
             _('Total of ahead of print documents for the previous year'),
             max_length=3, default=0, blank=True)
     twitter_user = models.CharField(_('Twitter User'), max_length=128,
-            default='', blank=True)
+                                    default='', blank=True)
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
     title_iso = models.CharField(_('ISO abbreviated title'), max_length=256,
-            db_index=True)
+                                 db_index=True)
     short_title = models.CharField(_('Short Title'), max_length=256,
-            db_index=True, default='')
+                                   db_index=True, default='')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     acronym = models.CharField(_('Acronym'), max_length=16, blank=False)
@@ -562,24 +564,24 @@ class Journal(models.Model):
                 choices.SCIELO_ISSN, key=lambda SCIELO_ISSN: SCIELO_ISSN[1]))
     print_issn = models.CharField(_('Print ISSN'), max_length=9, db_index=True)
     eletronic_issn = models.CharField(_('Electronic ISSN'), max_length=9,
-            db_index=True)
+                                      db_index=True)
     subject_descriptors = models.CharField(_('Subject / Descriptors'),
-            max_length=1024)
+                                           max_length=1024)
     init_year = models.CharField(_('Initial Year'), max_length=4)
     init_vol = models.CharField(_('Initial Volume'), max_length=16, default='',
-            blank=True)
+                                blank=True)
     init_num = models.CharField(_('Initial Number'), max_length=16, default='',
-            blank=True)
+                                blank=True)
     final_year = models.CharField(_('Final Year'), max_length=4, default='',
-            blank=True)
+                                  blank=True)
     final_vol = models.CharField(_('Final Volume'), max_length=16, default='',
-            blank=True)
+                                 blank=True)
     final_num = models.CharField(_('Final Number'), max_length=16, default='',
-            blank=True)
+                                 blank=True)
     medline_title = models.CharField(_('Medline Title'), max_length=256,
-            default='', blank=True)
+                                     default='', blank=True)
     medline_code = models.CharField(_('Medline Code'), max_length=64,
-            default='', blank=True)
+                                    default='', blank=True)
     frequency = models.CharField(_('Frequency'), max_length=16,
             choices=sorted(
                 choices.FREQUENCY, key=lambda FREQUENCY: FREQUENCY[1]))
@@ -595,12 +597,13 @@ class Journal(models.Model):
     # detentor dos direitos de uso
     copyrighter = models.CharField(_('Copyrighter'), max_length=254)
     url_online_submission = models.CharField(_('URL of online submission'),
-            max_length=128, default='', blank=True)
+                                             max_length=128, default='',
+                                             blank=True)
     url_journal = models.CharField(_('URL of the journal'), max_length=128,
-            default='', blank=True)
+                                   default='', blank=True)
     notes = models.TextField(_('Notes'), max_length=254, default='', blank=True)
     index_coverage = models.TextField(_('Index Coverage'), default='',
-            blank=True)
+                                      blank=True)
     cover = ContentTypeRestrictedFileField(_('Journal Cover'),
             upload_to='img/journal_cover/', null=True, blank=True,
             content_types=settings.IMAGE_CONTENT_TYPE,
@@ -610,25 +613,26 @@ class Journal(models.Model):
             content_types=settings.IMAGE_CONTENT_TYPE,
             max_upload_size=settings.JOURNAL_LOGO_MAX_SIZE)
     is_trashed = models.BooleanField(_('Is trashed?'), default=False,
-            db_index=True)
+                                     db_index=True)
     other_previous_title = models.CharField(_('Other Previous Title'),
-            max_length=255, default='', blank=True)
+                                            max_length=255, default='',
+                                            blank=True)
     editor_name = models.CharField(_('Editor Names'), max_length=512)
     editor_address = models.CharField(_('Editor Address'), max_length=512)
     editor_address_city = models.CharField(_('Editor City'), max_length=256)
     editor_address_state = models.CharField(_('Editor State/Province/Region'),
-            max_length=128)
+                                            max_length=128)
     editor_address_zip = models.CharField(_('Editor Zip/Postal Code'),
-            max_length=64)
+                                          max_length=64)
     editor_address_country = modelfields.CountryField(_('Editor Country'))
     editor_phone1 = models.CharField(_('Editor Phone 1'), max_length=32)
     editor_phone2 = models.CharField(_('Editor Phone 2'), null=True, blank=True,
-            max_length=32)
+                                     max_length=32)
     editor_email = models.EmailField(_('Editor E-mail'))
     publisher_name = models.CharField(_('Publisher Name'), max_length=512)
     publisher_country = modelfields.CountryField(_('Publisher Country'))
     publisher_state = models.CharField(_('Publisher State/Province/Region'),
-            max_length=64)
+                                       max_length=64)
     publication_city = models.CharField(_('Publication City'), max_length=64)
     is_indexed_scie = models.BooleanField(_('SCIE'), default=False)
     is_indexed_ssci = models.BooleanField(_('SSCI'), default=False)
@@ -636,7 +640,7 @@ class Journal(models.Model):
 
     def __repr__(self):
         return u'<%s pk="%s" acronym="%s">' % (self.__class__.__name__, self.pk,
-                self.acronym)
+                                               self.acronym)
 
     def __unicode__(self):
         return self.title
@@ -646,6 +650,11 @@ class Journal(models.Model):
         permissions = (("list_journal", "Can list Journals"),
                        ("list_editor_journal", "Can list editor Journal"),
                        ("change_editor", "Can change editor of the journal"))
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.jid = str(uuid4().hex)
+        super(Journal, self).save(*args, **kwargs)
 
     def get_last_issue(self):
         """

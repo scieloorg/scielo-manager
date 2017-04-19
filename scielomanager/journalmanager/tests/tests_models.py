@@ -319,6 +319,7 @@ class LanguageTests(TestCase):
 
 
 class JournalTests(TestCase):
+
     def setUp(self):
         self.user = auth.UserF(username='foo', password=HASH_FOR_123, is_active=True)
         self.collection = CollectionFactory.create()
@@ -475,6 +476,29 @@ class JournalTests(TestCase):
         journal = JournalFactory.create()
         default_use_license = UseLicense.objects.get(is_default=True)
         self.assertEqual(journal.use_license, default_use_license)
+
+    def test_exists_jid_after_save(self):
+        """
+        Check if jid exists after save method.
+        """
+        journal = JournalFactory.create()
+        journal.save()
+
+        self.assertTrue(journal.jid)
+
+    def test_checking_jid_update(self):
+        """
+        Checking that jid is not modified.
+        """
+        journal = JournalFactory.create()
+        journal.save()
+
+        jid = journal.jid
+
+        journal.title = "Change title"
+        journal.save()  # It will be update
+
+        self.assertEqual(jid, journal.jid)
 
 
 class CollectionTests(TestCase):
@@ -1277,4 +1301,3 @@ class ArticleDomainKeyTests(TestCase):
         article = models.Article(xml=sample)
         self.assertEqual(article._get_domain_key(),
                 'revista-de-saude-publica_1_10_2014_none_none_none_1038kgx_none')
-
