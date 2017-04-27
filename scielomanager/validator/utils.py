@@ -45,10 +45,16 @@ def analyze_xml(file, extra_schematron=None):
     """Analyzes `file` against packtools' XMLValidator.
     """
     result = err = None
+    if extra_schematron:
+        extra_sch = packtools.utils.get_schematron_from_filepath(
+                extra_schematron)
+        extra_sch = [extra_sch]
+    else:
+        extra_sch = None
 
     try:
         xml = packtools.XMLValidator.parse(file,
-                extra_schematron=extra_schematron)
+                extra_sch_schemas=extra_sch)
 
     except (lxml.etree.XMLSyntaxError, IOError, ValueError,
             packtools.exceptions.XMLDoctypeError) as e:
