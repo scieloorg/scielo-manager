@@ -529,7 +529,7 @@ class JournalStandardTests(MockerTestCase):
         dummy_issue.journal
         self.mocker.result(dummy_journal)
 
-        dummy_journal.title_iso
+        dummy_journal.short_title
         self.mocker.result(u'blitz')
 
         dummy_journal.editorial_standard
@@ -1345,7 +1345,7 @@ class JournalStandardAheadTests(MockerTestCase):
     def test_title_is_the_journal_title(self):
         dummy_journal = self.mocker.mock()
 
-        dummy_journal.short_title
+        dummy_journal.title
         self.mocker.result(u'foo')
 
         self.mocker.replay()
@@ -1359,9 +1359,13 @@ class JournalStandardAheadTests(MockerTestCase):
         dummy_journal = self.mocker.mock()
         dummy_study_area = self.mocker.mock()
 
+        dummy_journal.title
+        self.mocker.result(u'foo')
+        self.mocker.count(1)
+
         dummy_journal.short_title
         self.mocker.result(u'foo')
-        self.mocker.count(2)
+        self.mocker.count(1)
 
         dummy_journal.editorial_standard
         self.mocker.result('apa')
