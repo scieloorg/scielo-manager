@@ -1,6 +1,6 @@
 Django<1.5
 South
-psycopg2==2.4.1
+psycopg2==2.7.1
 wsgiref==0.1.2
 scielo-django-extensions==0.4
 ordereddict==1.1
