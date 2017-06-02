@@ -273,7 +273,7 @@ class JournalStandard(L10nIssue):
     def journal_meta(self):
         return '#'.join([
             self.issn,
-            self.abbrev_title,
+            self.short_title,
             self.norma,
             self.pub_type,
             self.issn,
@@ -482,7 +482,7 @@ class JournalStandardAhead(L10nAhead):
 
     @property
     def title(self):
-        return unicode(self._journal.short_title)
+        return unicode(self._journal.title)
 
     @property
     def acron(self):
@@ -499,7 +499,7 @@ class JournalStandardAhead(L10nAhead):
     def journal_meta(self):
         return '#'.join([
             self.issn,
-            self.title,
+            self.short_title,
             self.norma,
             self.pub_type,
             self.issn,
