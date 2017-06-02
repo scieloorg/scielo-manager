@@ -447,8 +447,8 @@ class Catalog(object):
     @transaction.commit_on_success
     def load_issue(self, data):
 
-        if data.type == 'ahead':
-            logger.info('Issue (Ahead) will not be imported')
+        if data.type == 'ahead' or data.type == 'pressrelease':
+            logger.info('Issue (%s) will not be imported' % data.type)
             return
 
         journal = self.load_journal(data.journal)
