@@ -1558,6 +1558,15 @@ class ArticleHTMLRendition(models.Model):
 # --------------------
 # Callbacks de signals
 # --------------------
+@receiver(post_save, sender=Membership)
+def journal_update_date(sender, instance, created, **kwargs):
+    """ Update journal.update_date when journal status is changed.
+    """
+
+    instance.journal.updated = datetime.datetime.now()
+    instance.journal.save()
+
+
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     """ Create a matching profile whenever a user object is created.
