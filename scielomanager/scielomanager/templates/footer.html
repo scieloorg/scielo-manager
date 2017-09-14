@@ -34,9 +34,11 @@
       <li>
         <a href="{% url validator.packtools.stylechecker %}">{% trans "Style Checker" %}</a>
       </li>
+      {% if enable_html_previewer %}
       <li>
         <a href="{% url validator.packtools.preview_html %}">{% trans "HTML Previewer" %}</a>
       </li>
+      {% endif %}
     </ul>
   </div>
   <div class="span2">
