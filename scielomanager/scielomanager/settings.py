@@ -87,10 +87,6 @@ ASSETS_DEBUG = False
 # Third-party URLS
 DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest'
 
-AVAILABLE_IN_TEMPLATES = {
-    'docs_url': DOCUMENTATION_BASE_URL,
-}
-
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
@@ -353,9 +349,11 @@ WAYTA_PATH = "/api/v1/"
 # Checkin expiration time span (in days)
 CHECKIN_EXPIRATION_TIME_SPAN = 7  # days
 
+# Liga e desliga de funcionalidades da app ``validator``
+VALIDATOR_ENABLE_HTML_PREVIEWER = True
+
 # ## END App customization settings
 #################################################################
-
 # Local deployment settings: there *must* be an unversioned
 # 'scielomanager.conf' file in /etc/scieloapps/.
 # See sample file at settings_local-SAMPLE.include.
@@ -378,3 +376,11 @@ EXCLUDE_FROM_MINIFYING = ('^admin/', )
 # StyleChecker deve ser notficado do Deprecation Warning.
 # A versão deve respeitar o formato do atributo @specific-use: 'sps-1.1' ou 'sps-1.2'.
 PACKTOOLS_DEPRECATION_WARNING_VERSION = 'sps-1.1'
+
+# Todas as chaves do dicionário abaixo serão disponibilizadas nos contextos de
+# todos os templates do projeto.
+AVAILABLE_IN_TEMPLATES = {
+    'docs_url': DOCUMENTATION_BASE_URL,
+    'enable_html_previewer': VALIDATOR_ENABLE_HTML_PREVIEWER,
+}
+
