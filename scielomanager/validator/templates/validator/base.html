@@ -22,7 +22,9 @@
       <div class="nav-collapse collapse">
         <ul class="nav">
           <li class="{% active '/stylechecker/$' %}"><a href="{% url validator.packtools.stylechecker %}">Style Checker</a></li>
+          {% if enable_html_previewer %}
           <li class="{% active '/preview/html/$' %}"><a href="{% url validator.packtools.preview_html %}">HTML Previewer</a></li>
+          {% endif %}
         </ul>
       </div><!--/.nav-collapse -->
     </div>
