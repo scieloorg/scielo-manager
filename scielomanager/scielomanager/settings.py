@@ -322,6 +322,9 @@ if 'thrift' in INSTALLED_APPS:
         'PORT': '6000',
     }
 
+# Se o envio do email de recuperação de senha deve ser realizado 
+# por tarefas assíncronas, com Celery.
+EMAIL_SENT_THROUGH_CELERY = False
 
 # ----------------------------------------------------
 # Endereços de enlace para comunicação inter-processos

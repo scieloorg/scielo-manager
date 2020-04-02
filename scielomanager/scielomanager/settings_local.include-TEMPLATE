@@ -15,6 +15,7 @@ DATABASES = {
 
 DOCUMENTATION_BASE_URL = r'http://readthedocs.org/docs/scielo-manager/en/latest/'
 
+EMAIL_SENT_THROUGH_CELERY = False
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587

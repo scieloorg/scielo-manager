@@ -5,6 +5,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 from django.utils.http import int_to_base36
 from django.template import loader
+from django.conf import settings
+
 from scielomanager.tasks import send_mail
 
 
@@ -52,4 +54,7 @@ class PasswordResetForm(PasswordResetForm):
             # Email subject *must not* contain newlines
             subject = ''.join(subject.splitlines())
             email = loader.render_to_string(email_template_name, c)
-            send_mail.delay(subject, email, [user.email])
+            if settings.EMAIL_SENT_THROUGH_CELERY:
+                send_mail.delay(subject, email, [user.email])
+            else:
+                send_mail(subject, email, [user.email])
