@@ -3,3 +3,4 @@ django-debug-toolbar
 coverage
 django-coverage
 Fabric==1.4.3
+django>=3.2.19 # not directly required, pinned by Snyk to avoid a vulnerability
