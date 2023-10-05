@@ -1,4 +1,4 @@
-Django<1.5
+Django<3.2.22
 South
 psycopg2==2.4.1
 wsgiref==0.1.2
