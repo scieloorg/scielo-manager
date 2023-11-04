@@ -1,10 +1,10 @@
-Django<1.5
+Django<3.2.23
 South
 psycopg2==2.4.1
 wsgiref==0.1.2
 scielo-django-extensions==0.4
 ordereddict==1.1
-pillow==2.3.0
+pillow==10.0.0
 django-widget-tweaks==1.1.1
 lxml
 pyyaml
