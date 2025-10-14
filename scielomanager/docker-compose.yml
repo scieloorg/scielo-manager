@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:9.6-alpine
+    environment:
+      POSTGRES_DB: scielo_db
+      POSTGRES_USER: scielo_user
+      POSTGRES_PASSWORD: scielo_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scielo_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Celery
+  redis:
+    image: redis:5-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Elasticsearch 1.x for legacy compatibility
+  elasticsearch:
+    image: elasticsearch:1.7.6
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Django Application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://scielo_user:scielo_pass@db:5432/scielo_db
+      - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    user: root  # For development only
+
+  # Celery Worker
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A scielomanager worker --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://scielo_user:scielo_pass@db:5432/scielo_db
+      - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+      - elasticsearch
+    user: root  # For development only
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A scielomanager beat --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://scielo_user:scielo_pass@db:5432/scielo_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    user: root  # For development only
+
+volumes:
+  postgres_data:
+  es_data:
+  static_volume:
+  media_volume:
