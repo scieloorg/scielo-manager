@@ -1,9 +1,23 @@
 Setup
 =====
 
-Just create a database, preferably in PostgreSQL, and make the necessary db settings in ``scielomanager/settings_local.include``.
+This project now targets **Python 3.13+**.
 
-run ``make setup`` et voilà.
+Create a database (preferably PostgreSQL) and configure
+``scielomanager/settings_local.include``.
+
+Then run ``make setup``.
+
+Docker (validation)
+===================
+
+To validate the project in containers:
+
+1. ``docker compose up --build``
+2. Access app at ``http://localhost:8000``
+3. Access Mailhog at ``http://localhost:8025``
+
+The compose stack includes: app, PostgreSQL, Redis and Mailhog.
 
 Docs
 ====

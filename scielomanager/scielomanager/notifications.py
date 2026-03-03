@@ -26,8 +26,8 @@ class Message(object):
         @param ``template_path`` (optional), is the path of the templated used to render the message body,
             if not provided, the template defined in self.EMAIL_DATA_BY_ACTION[action]['template_path'] will be used.
         """
-        if not self.EMAIL_DATA_BY_ACTION.has_key(action):
-            raise ValueError("This action: %s is not available. Please use one of this: %s " % (action, self.EMAIL_DATA_BY_ACTION.keys()))
+        if action not in self.EMAIL_DATA_BY_ACTION:
+            raise ValueError("This action: %s is not available. Please use one of this: %s " % (action, list(self.EMAIL_DATA_BY_ACTION.keys())))
 
         subject_sequence = [
             settings.EMAIL_SUBJECT_PREFIX,

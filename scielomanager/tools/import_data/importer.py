@@ -80,7 +80,7 @@ class Catalog(object):
         if missions is None:
             return
 
-        for language, description in missions.items():
+        for language, description in list(missions.items()):
             mission = JournalMission()
             language = self._load_language(language)
             mission.language = language
@@ -345,8 +345,8 @@ class Catalog(object):
         if sections is None:
             return None
 
-        for code, texts in sections.items():
-            for language, text in texts.items():
+        for code, texts in list(sections.items()):
+            for language, text in list(texts.items()):
                 language = self._load_language(language)
                 try:
                     section = Section.objects.get(
@@ -377,7 +377,7 @@ class Catalog(object):
         if titles is None:
             return None
 
-        for language, title in titles.items():
+        for language, title in list(titles.items()):
             language = self._load_language(language)
             issuetitle = IssueTitle()
             issuetitle.title = title

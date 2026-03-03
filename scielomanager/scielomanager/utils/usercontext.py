@@ -1,13 +1,10 @@
 from .middlewares import threadlocal
 
+from functools import lru_cache
+from importlib import import_module
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.functional import memoize
-from django.utils.importlib import import_module
-from django.utils.datastructures import SortedDict
-
-
-_finders = SortedDict()
 
 
 class UserRequestContextFinder(object):
@@ -68,4 +65,8 @@ def _get_finder(import_path):
         raise ImproperlyConfigured('Module "%s" does not define a "%s" '
                                    'class.' % (module, attr))
     return Finder()
-new_finder = memoize(_get_finder, _finders, 1)
+
+
+@lru_cache(maxsize=32)
+def new_finder(import_path):
+    return _get_finder(import_path)

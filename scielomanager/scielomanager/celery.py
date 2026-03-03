@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+
 
 import os
 
@@ -10,11 +10,11 @@ from django.conf import settings
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scielomanager.settings')
 
-app = Celery('scielomanager', broker='django://')
+app = Celery('scielomanager')
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.
-app.config_from_object('django.conf:settings')
+app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
@@ -41,9 +41,7 @@ CELERYBEAT_SCHEDULE = {
         'args': ()
     },
 }
-app.conf.update(
-    CELERYBEAT_SCHEDULE=CELERYBEAT_SCHEDULE,
-)
+app.conf.beat_schedule = CELERYBEAT_SCHEDULE
 
 if __name__ == '__main__':
     app.start()

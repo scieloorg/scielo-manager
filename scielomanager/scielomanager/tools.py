@@ -5,7 +5,11 @@ except ImportError:
     from md5 import new as md5
 import re
 
-from django.db.models.sql.datastructures import EmptyResultSet
+try:
+    from django.core.exceptions import EmptyResultSet
+except Exception:
+    class EmptyResultSet(Exception):
+        pass
 from django.core.paginator import EmptyPage
 from django.core.paginator import Paginator
 from django.contrib.auth.models import Group, User
@@ -89,12 +93,12 @@ def get_referer_view(request, default=None):
         return default
 
     # remove the protocol and split the url at the slashes
-    referer = re.sub('^https?:\/\/', '', referer).split('/')
+    referer = re.sub(r'^https?://', '', referer).split('/')
     #if referer[0] != request.META.get('SERVER_NAME'):
         #return default
 
     # add the slash at the relative path's view and finished
-    referer = u'/' + u'/'.join(referer[1:])
+    referer = '/' + '/'.join(referer[1:])
     return referer
 
 # Taken from Pyramid framework

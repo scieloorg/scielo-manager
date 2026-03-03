@@ -14,12 +14,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from celery.utils.log import get_task_logger
 from django.templatetags.static import static
-import packtools
 from PIL import Image
+try:
+    import packtools
+except ImportError:
+    packtools = None
 
 from scielomanager.celery import app
 from scielomanager import connectors
 from . import models
+from functools import reduce
 
 
 logger = get_task_logger(__name__)
@@ -241,7 +245,7 @@ def create_article_from_string(xml_string, overwrite_if_exists=False):
                                 deve ser substituído caso já exista.
     :return: aid (article-id) formado por uma string de 32 bytes.
     """
-    if not isinstance(xml_string, unicode):
+    if not isinstance(xml_string, str):
         raise TypeError('Only unicode strings are accepted')
 
     xml_bstring = xml_string.encode('utf-8')
@@ -250,7 +254,7 @@ def create_article_from_string(xml_string, overwrite_if_exists=False):
         parsed_xml = etree.parse(io.BytesIO(xml_bstring))
 
     except etree.XMLSyntaxError as exc:
-        raise ValueError(u"Syntax error: %s.", exc.message)
+        raise ValueError("Syntax error: %s.", exc.message)
 
     metadata_sch = deepcopy(ARTICLE_META_SCHEMATRON)
     if not metadata_sch.validate(parsed_xml):
@@ -387,8 +391,8 @@ def create_articleasset_from_bytes(aid, filename, content, owner=None,
     except models.Article.DoesNotExist:
         raise ValueError('Cannot find Article with aid: %s' % aid)
 
-    _owner = owner or u''
-    _use_license = use_license or u''
+    _owner = owner or ''
+    _use_license = use_license or ''
 
     # create and save the asset
     asset = models.ArticleAsset(article=article, owner=_owner,
@@ -417,6 +421,9 @@ def create_article_html_renditions(article_pk, css_url=None, valid_only=False):
     except models.Article.DoesNotExist:
         raise ValueError('Cannot find Article with pk: %s' % article_pk)
 
+    if packtools is None:
+        raise ValueError('packtools is not installed')
+
     css_url = css_url or static('css/htmlgenerator/styles.css')
 
     files_urls = []
@@ -427,9 +434,9 @@ def create_article_html_renditions(article_pk, css_url=None, valid_only=False):
         rendition.build_version = packtools.__version__
 
         content = etree.tostring(html, encoding='utf-8', method='html',
-                doctype=u'<!DOCTYPE html>')
+                doctype='<!DOCTYPE html>')
 
-        filename = ''.join([article.aid, u'-', lang, u'.html'])
+        filename = ''.join([article.aid, '-', lang, '.html'])
         rendition.file.save(filename, ContentFile(content))
 
         files_urls.append(rendition.file.url)
@@ -518,4 +525,3 @@ def create_preferred_image_file(asset_pk):
             repr(asset))
 
     return asset.preferred_alt_file.url
-

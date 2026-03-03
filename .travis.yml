@@ -1,9 +1,9 @@
 sudo: false
 language: python
 python:
-  - 2.7
+  - "3.13"
 env:
-  - DJANGO_VERSION=1.4 SCIELOMANAGER_SETTINGS_FILE=`pwd`/scielomanager/scielomanager/settings_local.include
+  - SCIELOMANAGER_SETTINGS_FILE=`pwd`/scielomanager/scielomanager/settings_local.include
 before_install:
   - pip install --upgrade pip
   - pip install --upgrade setuptools

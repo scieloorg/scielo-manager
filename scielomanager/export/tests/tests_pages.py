@@ -2,7 +2,7 @@
 import json
 
 from django_webtest import WebTest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories

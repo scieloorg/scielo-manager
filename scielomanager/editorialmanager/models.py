@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_countries.fields import CountryField
 
@@ -73,7 +73,7 @@ class RoleTypeTranslation(models.Model):
     language = models.ForeignKey(Language)
 
     def __unicode__(self):
-        return u"%s [%s]" % (self.name, self.language.iso_code)
+        return "%s [%s]" % (self.name, self.language.iso_code)
 
     class Meta:
         unique_together = ("role", "language")

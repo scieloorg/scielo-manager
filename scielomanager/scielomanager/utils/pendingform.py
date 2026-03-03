@@ -18,7 +18,7 @@ class PendingPostData(object):
         self.data = data
 
     def hash_data(self):
-        content = ','.join('%s:%s' % (k.encode('utf-8'), v.encode('utf-8')) for k, v in self.data.items())
+        content = ','.join('%s:%s' % (k.encode('utf-8'), v.encode('utf-8')) for k, v in list(self.data.items()))
         return md5(content).hexdigest()
 
     def pend(self, view_name, user):

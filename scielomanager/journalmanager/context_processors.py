@@ -58,14 +58,14 @@ def show_user_collections(request):
     def wrap():
         return models.Collection.userobjects.all()
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return {'user_collections': wrap}
     else:
         return {}
 
 
 def add_default_collection(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             collection = models.Collection.userobjects.active()
         except (RuntimeError, models.Collection.DoesNotExist):

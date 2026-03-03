@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.template.context import RequestContext
-from django.shortcuts import render_to_response
+from scielomanager.compat import render_to_response
 
 from health import domain
 

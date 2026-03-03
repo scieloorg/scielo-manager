@@ -25,12 +25,12 @@ class AutomataTests(MockerTestCase):
         dummy_journal = self.mocker.mock()
 
         dummy_journal.editorial_standard
-        self.mocker.result(u'iso690')
+        self.mocker.result('iso690')
 
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(automata.citat, u'icitat')
+        self.assertEqual(automata.citat, 'icitat')
 
     def test_citat_nbr6023(self):
         dummy_journal = self.mocker.mock()
@@ -272,7 +272,7 @@ class AutomataTests(MockerTestCase):
         self.mocker.replay()
 
         automata = self._makeOne(dummy_journal)
-        self.assertEqual(unicode(automata), '1234-1234;acitat;foo.amd;tgabnt.amd')
+        self.assertEqual(str(automata), '1234-1234;acitat;foo.amd;tgabnt.amd')
 
 
 class IssueTests(MockerTestCase):
@@ -363,7 +363,7 @@ class IssueTests(MockerTestCase):
         expected_result = 'Star Wars v.33 n.3\r\nMar/May\r\n20127\r\n\r\n'
 
         issue = self._makeOne(dummy_issue)
-        self.assertEqual(unicode(issue), expected_result)
+        self.assertEqual(str(issue), expected_result)
 
 
 class JournalStandardTests(MockerTestCase):
@@ -382,8 +382,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         pub_type = journalstd.pub_type
-        self.assertEqual(pub_type, u'ppub')
-        self.assertIsInstance(pub_type, unicode)
+        self.assertEqual(pub_type, 'ppub')
+        self.assertIsInstance(pub_type, str)
 
     def test_pub_type_for_electronic(self):
         dummy_journal = self.mocker.mock()
@@ -396,8 +396,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         pub_type = journalstd.pub_type
-        self.assertEqual(pub_type, u'epub')
-        self.assertIsInstance(pub_type, unicode)
+        self.assertEqual(pub_type, 'epub')
+        self.assertIsInstance(pub_type, str)
 
     def test_study_area(self):
         dummy_journal = self.mocker.mock()
@@ -417,9 +417,9 @@ class JournalStandardTests(MockerTestCase):
         self.mocker.replay()
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
-        expected_study_area = u'bar/bar/bar/bar/bar'
+        expected_study_area = 'bar/bar/bar/bar/bar'
         self.assertEqual(journalstd.study_area, expected_study_area)
-        self.assertIsInstance(expected_study_area, unicode)
+        self.assertIsInstance(expected_study_area, str)
 
     def test_study_area_empty_queryset(self):
         dummy_journal = self.mocker.mock()
@@ -448,8 +448,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         title = journalstd.medline_title
-        self.assertEqual(title, u'spam')
-        self.assertIsInstance(title, unicode)
+        self.assertEqual(title, 'spam')
+        self.assertIsInstance(title, str)
 
     def test_medline_code_is_the_journal_medline_code(self):
         dummy_journal = self.mocker.mock()
@@ -462,8 +462,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         code = journalstd.medline_code
-        self.assertEqual(code, u'123456789')
-        self.assertIsInstance(code, unicode)
+        self.assertEqual(code, '123456789')
+        self.assertIsInstance(code, str)
 
     def test_pissn_is_the_journal_print_issn(self):
         dummy_journal = self.mocker.mock()
@@ -476,8 +476,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         pissn = journalstd.pissn
-        self.assertEqual(pissn, u'1234-1234')
-        self.assertIsInstance(pissn, unicode)
+        self.assertEqual(pissn, '1234-1234')
+        self.assertIsInstance(pissn, str)
 
     def test_pissn_is_the_journal_electronic_issn(self):
         dummy_journal = self.mocker.mock()
@@ -490,8 +490,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         eissn = journalstd.eissn
-        self.assertEqual(eissn, u'1234-1234')
-        self.assertIsInstance(eissn, unicode)
+        self.assertEqual(eissn, '1234-1234')
+        self.assertIsInstance(eissn, str)
 
     def test_publisher_is_the_journal_publisher(self):
         dummy_journal = self.mocker.mock()
@@ -504,8 +504,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         publisher = journalstd.publisher
-        self.assertEqual(publisher, u'foo')
-        self.assertIsInstance(publisher, unicode)
+        self.assertEqual(publisher, 'foo')
+        self.assertIsInstance(publisher, str)
 
     def test_title_is_the_journal_title(self):
         dummy_journal = self.mocker.mock()
@@ -518,8 +518,8 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         title = journalstd.title
-        self.assertEqual(title, u'foo')
-        self.assertIsInstance(title, unicode)
+        self.assertEqual(title, 'foo')
+        self.assertIsInstance(title, str)
 
     def test_journal_meta(self):
         dummy_journal = self.mocker.mock()
@@ -530,7 +530,7 @@ class JournalStandardTests(MockerTestCase):
         self.mocker.result(dummy_journal)
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         dummy_journal.editorial_standard
         self.mocker.result('apa')
@@ -576,11 +576,11 @@ class JournalStandardTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal, dummy_issue)
         journal_meta = journalstd.journal_meta
-        expected_journal_meta = u"""
+        expected_journal_meta = """
         1234-1234#blitz#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam#123456789#spam#foo#1234-123X#1234-1234#fizz
         """.strip()
         self.assertEqual(journal_meta, expected_journal_meta)
-        self.assertIsInstance(journal_meta, unicode)
+        self.assertIsInstance(journal_meta, str)
 
 
 class L10nIssueTests(MockerTestCase):
@@ -607,12 +607,12 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.result(dummy_journal)
 
         dummy_journal.title_iso
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        self.assertEqual(l10nissue.abbrev_title, u'blitz')
+        self.assertEqual(l10nissue.abbrev_title, 'blitz')
 
     def test_abbrev_title_must_return_unicode(self):
         dummy_journal = self.mocker.mock()
@@ -622,12 +622,12 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.result(dummy_journal)
 
         dummy_journal.title_iso
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        self.assertIsInstance(l10nissue.abbrev_title, unicode)
+        self.assertIsInstance(l10nissue.abbrev_title, str)
 
     def test_short_title(self):
         dummy_journal = self.mocker.mock()
@@ -637,12 +637,12 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.result(dummy_journal)
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        self.assertEqual(l10nissue.short_title, u'blitz')
+        self.assertEqual(l10nissue.short_title, 'blitz')
 
     def test_short_title_must_return_unicode(self):
         dummy_journal = self.mocker.mock()
@@ -652,12 +652,12 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.result(dummy_journal)
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        self.assertIsInstance(l10nissue.short_title, unicode)
+        self.assertIsInstance(l10nissue.short_title, str)
 
     def test_volume(self):
         dummy_journal = self.mocker.mock()
@@ -671,8 +671,8 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         volume = l10nissue.volume
-        self.assertEqual(volume, u'7')
-        self.assertIsInstance(volume, unicode)
+        self.assertEqual(volume, '7')
+        self.assertIsInstance(volume, str)
 
     def test_volume_must_return_unicode_even_when_empty(self):
         dummy_journal = self.mocker.mock()
@@ -686,7 +686,7 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         volume = l10nissue.volume
-        self.assertIsInstance(volume, unicode)
+        self.assertIsInstance(volume, str)
 
     def test_number(self):
         dummy_journal = self.mocker.mock()
@@ -700,8 +700,8 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         number = l10nissue.number
-        self.assertEqual(number, u'7')
-        self.assertIsInstance(number, unicode)
+        self.assertEqual(number, '7')
+        self.assertIsInstance(number, str)
 
     def test_number_must_return_unicode_even_when_empty(self):
         dummy_journal = self.mocker.mock()
@@ -715,7 +715,7 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         number = l10nissue.number
-        self.assertIsInstance(number, unicode)
+        self.assertIsInstance(number, str)
 
     def test_suppl_volume(self):
         dummy_journal = self.mocker.mock()
@@ -735,8 +735,8 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_volume = l10nissue.suppl_volume
-        self.assertEqual(suppl_volume, u'foo')
-        self.assertIsInstance(suppl_volume, unicode)
+        self.assertEqual(suppl_volume, 'foo')
+        self.assertIsInstance(suppl_volume, str)
 
     def test_suppl_number(self):
         dummy_journal = self.mocker.mock()
@@ -756,8 +756,8 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_number = l10nissue.suppl_number
-        self.assertEqual(suppl_number, u'foo')
-        self.assertIsInstance(suppl_number, unicode)
+        self.assertEqual(suppl_number, 'foo')
+        self.assertIsInstance(suppl_number, str)
 
     def test_suppl_number_must_return_unicode_even_when_empty(self):
         dummy_journal = self.mocker.mock()
@@ -774,7 +774,7 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         suppl_number = l10nissue.suppl_number
-        self.assertIsInstance(suppl_number, unicode)
+        self.assertIsInstance(suppl_number, str)
 
     def test_date_iso(self):
         dummy_journal = self.mocker.mock()
@@ -791,8 +791,8 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         date_iso = l10nissue.date_iso
-        self.assertEqual(date_iso, u'foo0000')
-        self.assertIsInstance(date_iso, unicode)
+        self.assertEqual(date_iso, 'foo0000')
+        self.assertIsInstance(date_iso, str)
 
     def test_date_iso_must_return_unicode_even_when_empty(self):
         dummy_journal = self.mocker.mock()
@@ -809,7 +809,7 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         date_iso = l10nissue.date_iso
-        self.assertIsInstance(date_iso, unicode)
+        self.assertIsInstance(date_iso, str)
 
     def test_status_must_return_always_1(self):
         dummy_journal = self.mocker.mock()
@@ -820,8 +820,8 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
 
         status = l10nissue.status
-        self.assertEqual(status, u'1')
-        self.assertIsInstance(status, unicode)
+        self.assertEqual(status, '1')
+        self.assertIsInstance(status, str)
 
     def test_issue_meta(self):
         dummy_journal = self.mocker.mock()
@@ -831,7 +831,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.result(dummy_journal)
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         dummy_issue.type
         self.mocker.result('supplement')
@@ -862,7 +862,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        expected_issue_meta = u'blitz;7;;4;bar;baz0000;1234-1234;1'
+        expected_issue_meta = 'blitz;7;;4;bar;baz0000;1234-1234;1'
         self.assertEqual(l10nissue.issue_meta, expected_issue_meta)
 
     def test_issue_meta_must_return_unicode(self):
@@ -904,7 +904,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        self.assertIsInstance(l10nissue.issue_meta, unicode)
+        self.assertIsInstance(l10nissue.issue_meta, str)
 
     def test_sections(self):
         dummy_journal = self.mocker.mock()
@@ -923,10 +923,10 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        expected_sections = u'sec0;sec1;sec2;sec3;sec4;No section title'
+        expected_sections = 'sec0;sec1;sec2;sec3;sec4;No section title'
         sections = l10nissue.sections
         self.assertEqual(sections, expected_sections)
-        self.assertIsInstance(sections, unicode)
+        self.assertIsInstance(sections, str)
 
     def test_sections_with_empty_queryset(self):
         dummy_journal = self.mocker.mock()
@@ -946,8 +946,8 @@ class L10nIssueTests(MockerTestCase):
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         sections = l10nissue.sections
-        self.assertEqual(sections, u'No section title')
-        self.assertIsInstance(sections, unicode)
+        self.assertEqual(sections, 'No section title')
+        self.assertIsInstance(sections, str)
 
     def test_section_ids(self):
         dummy_journal = self.mocker.mock()
@@ -970,10 +970,10 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        expected_ids = u'6;6;6;6;6;nd'
+        expected_ids = '6;6;6;6;6;nd'
         ids = l10nissue.sections_ids
         self.assertEqual(ids, expected_ids)
-        self.assertIsInstance(ids, unicode)
+        self.assertIsInstance(ids, str)
 
     def test_section_ids_with_empty_queryset(self):
         dummy_journal = self.mocker.mock()
@@ -994,7 +994,7 @@ class L10nIssueTests(MockerTestCase):
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         ids = l10nissue.sections_ids
         self.assertEqual(ids, 'nd')
-        self.assertIsInstance(ids, unicode)
+        self.assertIsInstance(ids, str)
 
     def test_ctrl_vocabulary_decs(self):
         dummy_journal = self.mocker.mock()
@@ -1010,8 +1010,8 @@ class L10nIssueTests(MockerTestCase):
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
         vocabulary = l10nissue.ctrl_vocabulary
-        self.assertEqual(vocabulary, u'Health Sciences Descriptors')
-        self.assertIsInstance(vocabulary, unicode)
+        self.assertEqual(vocabulary, 'Health Sciences Descriptors')
+        self.assertIsInstance(vocabulary, str)
 
     def test_date_iso_if_publication_end_month_is_None(self):
         dummy_journal = self.mocker.mock()
@@ -1026,7 +1026,7 @@ class L10nIssueTests(MockerTestCase):
         self.mocker.replay()
 
         l10nissue = self._makeOne(dummy_journal, dummy_issue, 'en')
-        self.assertEqual(l10nissue.date_iso, u'20130000')
+        self.assertEqual(l10nissue.date_iso, '20130000')
 
 
 class AheadTests(MockerTestCase):
@@ -1076,7 +1076,7 @@ class AheadTests(MockerTestCase):
         expected_result = 'Star Wars n.ahead\r\n/\r\n201250\r\n\r\n'
 
         ahead = self._makeOne(dummy_journal, '2012')
-        self.assertEqual(unicode(ahead), expected_result)
+        self.assertEqual(str(ahead), expected_result)
 
 
 class L10nAheadTests(MockerTestCase):
@@ -1098,23 +1098,23 @@ class L10nAheadTests(MockerTestCase):
         dummy_journal = self.mocker.mock()
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         self.mocker.replay()
 
         l10nahead = self._makeOne(dummy_journal, '2012', 'en')
-        self.assertEqual(l10nahead.short_title, u'blitz')
+        self.assertEqual(l10nahead.short_title, 'blitz')
 
     def test_short_title_must_return_unicode(self):
         dummy_journal = self.mocker.mock()
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         self.mocker.replay()
 
         l10nahead = self._makeOne(dummy_journal, '2012', 'en')
-        self.assertIsInstance(l10nahead.short_title, unicode)
+        self.assertIsInstance(l10nahead.short_title, str)
 
     def test_date_iso(self):
         dummy_journal = self.mocker.mock()
@@ -1124,8 +1124,8 @@ class L10nAheadTests(MockerTestCase):
         l10nahead = self._makeOne(dummy_journal, '2012', 'en')
 
         date_iso = l10nahead.date_iso
-        self.assertEqual(date_iso, u'20120000')
-        self.assertIsInstance(date_iso, unicode)
+        self.assertEqual(date_iso, '20120000')
+        self.assertIsInstance(date_iso, str)
 
     def test_date_iso_must_return_unicode_even_when_empty(self):
         dummy_journal = self.mocker.mock()
@@ -1135,7 +1135,7 @@ class L10nAheadTests(MockerTestCase):
         l10nahead = self._makeOne(dummy_journal, '', 'en')
 
         date_iso = l10nahead.date_iso
-        self.assertIsInstance(date_iso, unicode)
+        self.assertIsInstance(date_iso, str)
 
 
     def test_status_must_return_always_1(self):
@@ -1146,17 +1146,17 @@ class L10nAheadTests(MockerTestCase):
         l10nahead = self._makeOne(dummy_journal, '2012', 'en')
 
         status = l10nahead.status
-        self.assertEqual(status, u'1')
-        self.assertIsInstance(status, unicode)
+        self.assertEqual(status, '1')
+        self.assertIsInstance(status, str)
 
     def test_issue_meta(self):
         dummy_journal = self.mocker.mock()
 
         dummy_journal.short_title
-        self.mocker.result(u'blitz')
+        self.mocker.result('blitz')
 
         dummy_journal.scielo_issn
-        self.mocker.result(u'print')
+        self.mocker.result('print')
 
         dummy_journal.print_issn
         self.mocker.result('1234-1234')
@@ -1164,7 +1164,7 @@ class L10nAheadTests(MockerTestCase):
         self.mocker.replay()
 
         l10nahead = self._makeOne(dummy_journal, '2012', 'en')
-        expected_issue_meta = u'blitz;;;ahead;;20120000;1234-1234;1'
+        expected_issue_meta = 'blitz;;;ahead;;20120000;1234-1234;1'
         self.assertEqual(l10nahead.ahead_meta, expected_issue_meta)
 
     def test_issue_meta_must_return_unicode(self):
@@ -1174,7 +1174,7 @@ class L10nAheadTests(MockerTestCase):
         self.mocker.result('blitz')
 
         dummy_journal.scielo_issn
-        self.mocker.result(u'print')
+        self.mocker.result('print')
 
         dummy_journal.print_issn
         self.mocker.result('1234-1234')
@@ -1182,7 +1182,7 @@ class L10nAheadTests(MockerTestCase):
         self.mocker.replay()
 
         l10nhead = self._makeOne(dummy_journal, '2012', 'en')
-        self.assertIsInstance(l10nhead.ahead_meta, unicode)
+        self.assertIsInstance(l10nhead.ahead_meta, str)
 
     def test_sections(self):
         dummy_journal = self.mocker.mock()
@@ -1190,11 +1190,11 @@ class L10nAheadTests(MockerTestCase):
         self.mocker.replay()
 
         l10nhead = self._makeOne(dummy_journal, '2012', 'en')
-        expected_sections = u'No section title'
+        expected_sections = 'No section title'
 
         sections = l10nhead.sections
         self.assertEqual(sections, expected_sections)
-        self.assertIsInstance(sections, unicode)
+        self.assertIsInstance(sections, str)
 
     def test_ctrl_vocabulary_decs(self):
         dummy_journal = self.mocker.mock()
@@ -1206,8 +1206,8 @@ class L10nAheadTests(MockerTestCase):
 
         l10nhead = self._makeOne(dummy_journal, '2012', 'en')
         vocabulary = l10nhead.ctrl_vocabulary
-        self.assertEqual(vocabulary, u'Health Sciences Descriptors')
-        self.assertIsInstance(vocabulary, unicode)
+        self.assertEqual(vocabulary, 'Health Sciences Descriptors')
+        self.assertIsInstance(vocabulary, str)
 
 
 class JournalStandardAheadTests(MockerTestCase):
@@ -1225,8 +1225,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         pub_type = journalstd.pub_type
-        self.assertEqual(pub_type, u'ppub')
-        self.assertIsInstance(pub_type, unicode)
+        self.assertEqual(pub_type, 'ppub')
+        self.assertIsInstance(pub_type, str)
 
     def test_pub_type_for_electronic(self):
         dummy_journal = self.mocker.mock()
@@ -1238,8 +1238,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         pub_type = journalstd.pub_type
-        self.assertEqual(pub_type, u'epub')
-        self.assertIsInstance(pub_type, unicode)
+        self.assertEqual(pub_type, 'epub')
+        self.assertIsInstance(pub_type, str)
 
     def test_study_area(self):
         dummy_journal = self.mocker.mock()
@@ -1258,9 +1258,9 @@ class JournalStandardAheadTests(MockerTestCase):
         self.mocker.replay()
 
         journalstd = self._makeOne(dummy_journal)
-        expected_study_area = u'bar/bar/bar/bar/bar'
+        expected_study_area = 'bar/bar/bar/bar/bar'
         self.assertEqual(journalstd.study_area, expected_study_area)
-        self.assertIsInstance(expected_study_area, unicode)
+        self.assertIsInstance(expected_study_area, str)
 
     def test_study_area_empty_queryset(self):
         dummy_journal = self.mocker.mock()
@@ -1287,8 +1287,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         title = journalstd.medline_title
-        self.assertEqual(title, u'spam')
-        self.assertIsInstance(title, unicode)
+        self.assertEqual(title, 'spam')
+        self.assertIsInstance(title, str)
 
     def test_medline_code_is_the_journal_medline_code(self):
         dummy_journal = self.mocker.mock()
@@ -1300,8 +1300,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         code = journalstd.medline_code
-        self.assertEqual(code, u'123456789')
-        self.assertIsInstance(code, unicode)
+        self.assertEqual(code, '123456789')
+        self.assertIsInstance(code, str)
 
     def test_pissn_is_the_journal_print_issn(self):
         dummy_journal = self.mocker.mock()
@@ -1313,8 +1313,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         pissn = journalstd.pissn
-        self.assertEqual(pissn, u'1234-1234')
-        self.assertIsInstance(pissn, unicode)
+        self.assertEqual(pissn, '1234-1234')
+        self.assertIsInstance(pissn, str)
 
     def test_pissn_is_the_journal_electronic_issn(self):
         dummy_journal = self.mocker.mock()
@@ -1326,8 +1326,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         eissn = journalstd.eissn
-        self.assertEqual(eissn, u'1234-1234')
-        self.assertIsInstance(eissn, unicode)
+        self.assertEqual(eissn, '1234-1234')
+        self.assertIsInstance(eissn, str)
 
     def test_publisher_is_the_journal_publisher(self):
         dummy_journal = self.mocker.mock()
@@ -1339,32 +1339,32 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         publisher = journalstd.publisher
-        self.assertEqual(publisher, u'foo')
-        self.assertIsInstance(publisher, unicode)
+        self.assertEqual(publisher, 'foo')
+        self.assertIsInstance(publisher, str)
 
     def test_title_is_the_journal_title(self):
         dummy_journal = self.mocker.mock()
 
         dummy_journal.title
-        self.mocker.result(u'foo')
+        self.mocker.result('foo')
 
         self.mocker.replay()
 
         journalstd = self._makeOne(dummy_journal)
         title = journalstd.title
-        self.assertEqual(title, u'foo')
-        self.assertIsInstance(title, unicode)
+        self.assertEqual(title, 'foo')
+        self.assertIsInstance(title, str)
 
     def test_journal_meta(self):
         dummy_journal = self.mocker.mock()
         dummy_study_area = self.mocker.mock()
 
         dummy_journal.title
-        self.mocker.result(u'foo')
+        self.mocker.result('foo')
         self.mocker.count(1)
 
         dummy_journal.short_title
-        self.mocker.result(u'foo')
+        self.mocker.result('foo')
         self.mocker.count(1)
 
         dummy_journal.editorial_standard
@@ -1408,8 +1408,8 @@ class JournalStandardAheadTests(MockerTestCase):
 
         journalstd = self._makeOne(dummy_journal)
         journal_meta = journalstd.journal_meta
-        expected_journal_meta = u"""
+        expected_journal_meta = """
         1234-1234#foo#apa#epub#1234-1234#bar/bar/bar/bar/bar#spam#123456789#foo#foo#1234-123X#1234-1234#fizz
         """.strip()
         self.assertEqual(journal_meta, expected_journal_meta)
-        self.assertIsInstance(journal_meta, unicode)
+        self.assertIsInstance(journal_meta, str)

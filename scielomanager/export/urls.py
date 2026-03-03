@@ -1,9 +1,9 @@
 # coding: utf-8
-from django.conf.urls.defaults import *
+from django.urls import re_path
 
 from . import views
 
 
-urlpatterns = patterns('',
-    url(r'^markupfiles/$', views.markup_files, name="export.markupfiles"),
-)
+urlpatterns = [
+    re_path(r'^markupfiles/$', views.markup_files, name="export.markupfiles"),
+]

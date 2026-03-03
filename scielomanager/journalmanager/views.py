@@ -1,15 +1,19 @@
 # coding: utf-8
 import json
-import urlparse
+import urllib.parse
 from datetime import datetime
 import operator
+from functools import reduce, partial
 
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
 
-import packtools
+try:
+    import packtools
+except ImportError:
+    packtools = None
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
@@ -17,16 +21,15 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from django.core.urlresolvers import reverse
-from django.core.urlresolvers import resolve
+from django.urls import reverse
+from django.urls import resolve
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import loader
 from django.template.context import RequestContext
-from django.utils.translation import ugettext as _
-from django.utils.functional import curry
+from django.utils.translation import gettext as _
 from django.utils.html import escape
 from django.forms.models import inlineformset_factory
 from django.forms.formsets import formset_factory
@@ -49,12 +52,21 @@ from editorialmanager.models import EditorialBoard
 from editorialmanager import notifications
 from accounts import forms as accounts_forms
 
-MSG_FORM_SAVED = _(u'Saved.')
-MSG_FORM_SAVED_PARTIALLY = _(u'Saved partially. You can continue to fill in this form later.')
-MSG_FORM_MISSING = _(u'There are some errors or missing data.')
-MSG_DELETE_PENDED = _(u'The pended form has been deleted.')
+MSG_FORM_SAVED = _('Saved.')
+MSG_FORM_SAVED_PARTIALLY = _('Saved partially. You can continue to fill in this form later.')
+MSG_FORM_MISSING = _('There are some errors or missing data.')
+MSG_DELETE_PENDED = _('The pended form has been deleted.')
 
 user_request_context = usercontext.get_finder()
+
+
+def render_to_response(template_name, context=None, context_instance=None, **kwargs):
+    request = getattr(context_instance, 'request', None) if context_instance else None
+    if request is None:
+        request = kwargs.pop('request', None)
+    if request is None:
+        raise ValueError('request is required for render_to_response compatibility')
+    return render(request, template_name, context or {}, **kwargs)
 
 
 class ArticleAttrGetter(object):
@@ -86,7 +98,7 @@ def get_first_letter(objects_all):
     """
     Returns a set of first letters from names in `objects_all`
     """
-    letters_set = set(unicode(letter).strip()[0].upper() for letter in objects_all)
+    letters_set = set(str(letter).strip()[0].upper() for letter in objects_all)
 
     return sorted(list(letters_set))
 
@@ -104,7 +116,7 @@ def get_editor(request, journal_id):
         try:
             users_editor = get_users_by_group('Editors')
         except ObjectDoesNotExist:
-            umessages.error(request, _(u"Does not exist the group 'Editors'"))
+            umessages.error(request, _("Does not exist the group 'Editors'"))
 
     return render_to_response('journalmanager/editor.html',
                              {'editor': journal.editor,
@@ -126,17 +138,17 @@ def add_editor(request, journal_id):
             editor = User.objects.get(pk=editor_pk)
             journal.editor = editor
             journal.save()
-            messages.success(request, _(u"Successfully selected %s as editor of this Journal" % editor.get_full_name()))
+            messages.success(request, _("Successfully selected %s as editor of this Journal" % editor.get_full_name()))
         else:
             #Remove editor
             journal.editor = None
             journal.save()
-            messages.success(request, _(u"No user selected as editor of this journal!"))
+            messages.success(request, _("No user selected as editor of this journal!"))
     else:
         try:
             users_editor = get_users_by_group('Editors')
         except ObjectDoesNotExist:
-            messages.error(request, _(u"Does not exist the group 'Editors'"))
+            messages.error(request, _("Does not exist the group 'Editors'"))
 
         return render_to_response('journalmanager/includes/form_add_editor.html',
                                  {'journal': journal,
@@ -148,7 +160,7 @@ def add_editor(request, journal_id):
 
 def index(request):
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('journalmanager.user_login'))
 
     #Redirect user when it`s is editor
@@ -253,7 +265,7 @@ def section_index(request, journal_id=None):
     journal = get_object_or_404(models.Journal.userobjects.active(), id=journal_id)
 
     sections = models.Section.userobjects.active().filter(journal=journal)
-    sections = sorted(sections, key=lambda x: unicode(x))
+    sections = sorted(sections, key=lambda x: str(x))
 
     objects = get_paginated(sections, request.GET.get('page', 1))
 
@@ -321,7 +333,7 @@ def article_detail(request, article_pk):
         {
             'article': ArticleAttrGetter(article),
             'journal': article.journal,
-            'packtools_version': packtools.__version__,
+            'packtools_version': getattr(packtools, '__version__', 'not-installed'),
             'previews': previews,
         },
         context_instance=RequestContext(request)
@@ -496,7 +508,7 @@ def add_user(request, user_id=None):
         extra=1, can_delete=True, formset=FirstFieldRequiredFormSet)
 
     # filter the collections the user is manager.
-    UserCollectionsFormSet.form = staticmethod(curry(UserCollectionsForm, user=request.user))
+    UserCollectionsFormSet.form = staticmethod(partial(UserCollectionsForm, user=request.user))
     # user profile fomrset
     UserProfileFormSet = inlineformset_factory(User, models.UserProfile, form=UserProfileForm, extra=1, max_num=1, can_delete=False)
 
@@ -652,7 +664,7 @@ def add_journal(request, journal_id=None):
                     filter_list.append(Q(eletronic_issn__icontains=request.POST.get('journal-eletronic_issn')))
 
                 if journal_id is None and models.Journal.objects.filter(reduce(operator.or_, filter_list)).exists():
-                    messages.error(request, _(u"This Journal already exists, please search the journal in the previous step"))
+                    messages.error(request, _("This Journal already exists, please search the journal in the previous step"))
                 else:
                     saved_journal = journalform.save_all(creator=request.user)
 
@@ -687,12 +699,12 @@ def add_journal(request, journal_id=None):
                 # if conver or logo fail in validation, then override the has_xxx_url with
                 # the value stored previously, or false if none
 
-                if 'cover' in journalform.errors.keys():
+                if 'cover' in list(journalform.errors.keys()):
                     has_cover_url = previous_journal_cover if previous_journal_cover else False
                 else:
                     has_cover_url = journal.cover.url if hasattr(journal, 'cover') and hasattr(journal.cover, 'url') else False
 
-                if 'logo' in journalform.errors.keys():
+                if 'logo' in list(journalform.errors.keys()):
                     has_logo_url = previous_journal_logo if previous_journal_logo else False
                 else:
                     has_logo_url = journal.logo.url if hasattr(journal, 'logo') and hasattr(journal.logo, 'url') else False
@@ -762,7 +774,7 @@ def add_sponsor(request, sponsor_id=None):
             newsponsorform = sponsorform.save()
 
             if request.POST.get('popup', 0):
-                return HttpResponse(u'<script type="text/javascript">\
+                return HttpResponse('<script type="text/javascript">\
                     opener.updateSelect(window, "%s", "%s", "id_journal-sponsor");</script>' % \
                     (escape(newsponsorform.id), escape(newsponsorform)))
 
@@ -985,7 +997,7 @@ def add_issue(request, issue_type, journal_id, issue_id=None):
                     members = last_issue.editorialboard.editorialmember_set.all()
                 except ObjectDoesNotExist:
                     messages.info(request,
-                        _(u"Issue created successfully, however we can not create the editorial board."))
+                        _("Issue created successfully, however we can not create the editorial board."))
                     notifications.issue_board_replica(issue, 'issue_add_no_replicated_board')
                 else:
                     ed_board = EditorialBoard()
@@ -1060,7 +1072,7 @@ def add_section(request, journal_id, section_id=None):
             section_title_formset.save()
 
             if request.POST.get('popup', 0):
-                return HttpResponse(u'<script type="text/javascript">\
+                return HttpResponse('<script type="text/javascript">\
                     opener.updateSelect(window, "%s", "%s", "id_section");</script>' % \
                     (escape(add_form.id), escape(add_form)))
 
@@ -1085,11 +1097,11 @@ def del_section(request, journal_id, section_id):
     if not section.is_used():
         section.is_trashed = True
         section.save()
-        messages.success(request, _(u'Section removed successfully'))
+        messages.success(request, _('Section removed successfully'))
     else:
         messages.info(
             request,
-            _(u"Can't delete, some issues are using this Section")
+            _("Can't delete, some issues are using this Section")
         )
 
     return HttpResponseRedirect(
@@ -1207,7 +1219,7 @@ def ajx_add_journal_to_user_collection(request, journal_id):
     else:
         # The journal is join to new collection with status ``inprogress``
         journal.join(user_collection, request.user)
-        messages.error(request, _(u'{journal} add to collection {collection}'.format(
+        messages.error(request, _('{journal} add to collection {collection}'.format(
             journal=journal,
             collection=user_collection)))
 
@@ -1254,7 +1266,7 @@ def ajx_list_issues_for_markup_files(request):
 
     issues = []
     for issue in journal_issues:
-        text = u'{0} - {1}'.format(issue.publication_year, issue.label)
+        text = '{0} - {1}'.format(issue.publication_year, issue.label)
         issues.append({'id': issue.pk, 'text': text})
 
     response_data = json.dumps(issues)
@@ -1296,7 +1308,7 @@ def ajx_lookup_for_section_translation(request):
     found_secs = models.Section.userobjects.all().available().filter(
         journal__pk=journal_id, titles__title=section_title)
 
-    sections = [[unicode(sec), sec.actual_code] for sec in found_secs if sec.pk != exclude]
+    sections = [[str(sec), sec.actual_code] for sec in found_secs if sec.pk != exclude]
     has_sections = bool(sections)
     data = {
         'exists': has_sections,

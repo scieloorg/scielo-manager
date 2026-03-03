@@ -43,7 +43,7 @@ class RootElementsTests(PhaseBasedTestCase):
         article/front/journal-meta is present
         article/front/article-meta is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta></journal-meta>
                          <article-meta></article-meta>
@@ -57,7 +57,7 @@ class RootElementsTests(PhaseBasedTestCase):
         article/front/journal-meta is present
         article/front/article-meta is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta></journal-meta>
                        </front>
@@ -70,7 +70,7 @@ class RootElementsTests(PhaseBasedTestCase):
         article/front/journal-meta is absent
         article/front/article-meta is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta></article-meta>
                        </front>
@@ -83,7 +83,7 @@ class RootElementsTests(PhaseBasedTestCase):
         article/front/journal-meta is absent
         article/front/article-meta is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                        </front>
                      </article>"""
@@ -99,7 +99,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is present
         //journal-meta/issn[@pub-type="epub"] is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -119,7 +119,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is present
         //journal-meta/issn[@pub-type="epub"] is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -138,7 +138,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is absent
         //journal-meta/issn[@pub-type="epub"] is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -157,7 +157,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is absent
         //journal-meta/issn[@pub-type="epub"] is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -175,7 +175,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is present
         //journal-meta/issn[@pub-type="epub"] is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -194,7 +194,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is present
         //journal-meta/issn[@pub-type="epub"] is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -212,7 +212,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is absent
         //journal-meta/issn[@pub-type="epub"] is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -230,7 +230,7 @@ class JournalMetaElementsTests(PhaseBasedTestCase):
         //journal-meta/issn[@pub-type="ppub"] is absent
         //journal-meta/issn[@pub-type="epub"] is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -254,7 +254,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/lpage is present
         //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -279,7 +279,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/lpage is absent
         //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -301,7 +301,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -322,7 +322,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -344,7 +344,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -364,7 +364,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -386,7 +386,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -406,7 +406,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -427,7 +427,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <volume>1</volume>
@@ -446,7 +446,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <issue>10</issue>
@@ -468,7 +468,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <issue>10</issue>
@@ -488,7 +488,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <issue>10</issue>
@@ -509,7 +509,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <issue>10</issue>
@@ -528,7 +528,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <pub-date>
@@ -549,7 +549,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is present
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <pub-date>
@@ -568,7 +568,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is present
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <pub-date>
@@ -588,7 +588,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
         //article-meta/pub-date/year is absent
         (//article-meta/fpage and //article-meta/lpage) or //article-meta/elocation-id is absent
         """
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <pub-date>
@@ -601,7 +601,7 @@ class ArticleMetaElementsTests(PhaseBasedTestCase):
 
 
 class FunctionAddFromStringTests(TestCase):
-    sample = u"""<article article-type="research-article">
+    sample = """<article article-type="research-article">
                    <front>
                      <journal-meta>
                        <journal-title-group>
@@ -654,19 +654,19 @@ class FunctionAddFromStringTests(TestCase):
 
         aid1 = tasks.create_article_from_string(self.sample)
         art1 = models.Article.objects.get(aid=aid1)
-        art1.article_type = u'foo'  # para comparar depois
+        art1.article_type = 'foo'  # para comparar depois
         art1.save()
 
         aid2 = tasks.create_article_from_string(self.sample,
                 overwrite_if_exists=True)
 
-        self.assertEquals(aid1, aid2)
+        self.assertEqual(aid1, aid2)
 
         art2 = models.Article.objects.get(aid=aid2)
-        self.assertEquals(art2.article_type, u'research-article')
+        self.assertEqual(art2.article_type, 'research-article')
 
     def test_xml_with_syntax_error(self):
-        err_xml = u"<article></articlezzzz>"
+        err_xml = "<article></articlezzzz>"
         self.assertRaises(ValueError,
                 tasks.create_article_from_string, err_xml)
 
@@ -691,7 +691,7 @@ class FunctionAddFromStringTests(TestCase):
                 modelfactories.SAMPLE_XML_RELATED.decode('utf-8'),
                 overwrite_if_exists=True)
         new_correction = models.Article.objects.get(aid=new_aid)
-        self.assertEquals(new_correction.links_to.all().count(), 0)
+        self.assertEqual(new_correction.links_to.all().count(), 0)
 
 
 class LinkArticleToJournalTests(TestCase):
@@ -711,7 +711,7 @@ class LinkArticleToJournalTests(TestCase):
 
         fresh_article = models.Article.objects.get(pk=article.pk)
         # não houve match.
-        self.assertEquals(fresh_article.journal, None)
+        self.assertEqual(fresh_article.journal, None)
 
     def test_many_journals_without_electronic_issn(self):
         article = modelfactories.ArticleFactory.create()
@@ -729,7 +729,7 @@ class LinkArticleToJournalTests(TestCase):
 
         fresh_article = models.Article.objects.get(pk=article.pk)
         # não houve match.
-        self.assertEquals(fresh_article.journal, None)
+        self.assertEqual(fresh_article.journal, None)
 
     def test_match_based_on_print_issn(self):
         article = modelfactories.ArticleFactory.create()
@@ -742,7 +742,7 @@ class LinkArticleToJournalTests(TestCase):
         tasks.link_article_to_journal(article.pk)
 
         fresh_article = models.Article.objects.get(pk=article.pk)
-        self.assertEquals(fresh_article.journal.pk, journal.pk)
+        self.assertEqual(fresh_article.journal.pk, journal.pk)
 
     def test_match_based_on_crossed_print_issn(self):
         """Quando issn_ppub está identificado como issn_epub
@@ -757,7 +757,7 @@ class LinkArticleToJournalTests(TestCase):
         tasks.link_article_to_journal(article.pk)
 
         fresh_article = models.Article.objects.get(pk=article.pk)
-        self.assertEquals(fresh_article.journal.pk, journal.pk)
+        self.assertEqual(fresh_article.journal.pk, journal.pk)
 
     def test_match_based_on_electronic_issn(self):
         article = modelfactories.ArticleFactory.create()
@@ -770,7 +770,7 @@ class LinkArticleToJournalTests(TestCase):
         tasks.link_article_to_journal(article.pk)
 
         fresh_article = models.Article.objects.get(pk=article.pk)
-        self.assertEquals(fresh_article.journal.pk, journal.pk)
+        self.assertEqual(fresh_article.journal.pk, journal.pk)
 
     def test_match_based_on_crossed_electronic_issn(self):
         """Quando issn_epub está identificado como issn_ppub
@@ -785,7 +785,7 @@ class LinkArticleToJournalTests(TestCase):
         tasks.link_article_to_journal(article.pk)
 
         fresh_article = models.Article.objects.get(pk=article.pk)
-        self.assertEquals(fresh_article.journal.pk, journal.pk)
+        self.assertEqual(fresh_article.journal.pk, journal.pk)
 
 
 class LinkArticleWithTheirRelated(TestCase):
@@ -820,7 +820,7 @@ class LinkArticleWithTheirRelated(TestCase):
         tasks.link_article_with_their_related(correction.pk)
         tasks.link_article_with_their_related(correction.pk)
 
-        self.assertEquals(1, models.Article.objects.get(
+        self.assertEqual(1, models.Article.objects.get(
             pk=correction.pk).links_to.filter(link_to=article).count())
 
 
@@ -828,12 +828,12 @@ class CreateArticleAssetsFromBytes(TestCase):
 
     def test_asset_is_created(self):
         article = modelfactories.ArticleFactory.create()
-        self.assertEquals(article.assets.all().count(), 0)
+        self.assertEqual(article.assets.all().count(), 0)
 
         tasks.create_articleasset_from_bytes(article.aid, 'somefile.txt',
                 b'\x04\x00', owner='Joe Doe', use_license='License text')
 
-        self.assertEquals(article.assets.all().count(), 1)
+        self.assertEqual(article.assets.all().count(), 1)
 
     def test_asset_licensing_meta_is_stored(self):
         article = modelfactories.ArticleFactory.create()
@@ -843,8 +843,8 @@ class CreateArticleAssetsFromBytes(TestCase):
 
         asset = article.assets.all()[0]
 
-        self.assertEquals(asset.owner, 'Joe Doe')
-        self.assertEquals(asset.use_license, 'License text')
+        self.assertEqual(asset.owner, 'Joe Doe')
+        self.assertEqual(asset.use_license, 'License text')
 
     def test_asset_is_stored(self):
         article = modelfactories.ArticleFactory.create()
@@ -854,8 +854,8 @@ class CreateArticleAssetsFromBytes(TestCase):
 
         asset = article.assets.all()[0]
 
-        self.assertEquals(asset.file.name.rsplit('/', 1)[1], 'somefile.txt')
-        self.assertEquals(asset.file.read(), b'\x04\x00')
+        self.assertEqual(asset.file.name.rsplit('/', 1)[1], 'somefile.txt')
+        self.assertEqual(asset.file.read(), b'\x04\x00')
 
     def test_task_returns_asset_url(self):
         article = modelfactories.ArticleFactory.create()
@@ -866,7 +866,7 @@ class CreateArticleAssetsFromBytes(TestCase):
 
         asset = article.assets.all()[0]
 
-        self.assertEquals(return_val, asset.file.url)
+        self.assertEqual(return_val, asset.file.url)
 
     def test_unknown_aid(self):
         article = modelfactories.ArticleFactory.create()
@@ -884,7 +884,7 @@ class CreateArticleHTMLRenditionsTests(TestCase):
 
         urls = [html.file.url for html in article.htmls.all()]
 
-        self.assertEquals(sorted(result), sorted(urls))
+        self.assertEqual(sorted(result), sorted(urls))
 
     def test_unknown_article_raises_ValueError(self):
         self.assertRaises(ValueError,
@@ -897,14 +897,14 @@ class CreateArticleHTMLRenditionsTests(TestCase):
         urls = [[html.file.url, html.lang] for html in article.htmls.all()]
 
         for url, lang in urls:
-            self.assertTrue(url.endswith(u'-' + lang + u'.html'))
+            self.assertTrue(url.endswith('-' + lang + '.html'))
 
 
 class ConvertImageToJpegTests(TestCase):
     def test_convert_gif_image_to_jpeg(self):
         from PIL import Image
         image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                u'image_test', u'cover_too_heavy.gif')
+                'image_test', 'cover_too_heavy.gif')
 
         # A conversão de GIF para JPEG depende da conversão do modo para a
         # profundidade de cor por pixel. Por isso do argumento `mode`.
@@ -912,25 +912,25 @@ class ConvertImageToJpegTests(TestCase):
         jpeg_buff.seek(0)
 
         img = Image.open(jpeg_buff)
-        self.assertEquals(img.format.lower(), 'jpeg')
+        self.assertEqual(img.format.lower(), 'jpeg')
 
     def test_convert_tif_image_to_jpeg(self):
         from PIL import Image
         image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                u'image_test', u'sample_tif_image.tif')
+                'image_test', 'sample_tif_image.tif')
 
         jpeg_buff = tasks.convert_image_to_jpeg(image_path)
         jpeg_buff.seek(0)
 
         img = Image.open(jpeg_buff)
-        self.assertEquals(img.format.lower(), 'jpeg')
+        self.assertEqual(img.format.lower(), 'jpeg')
 
     def test_convert_pdf_to_jpeg(self):
         """That should raise a IOError.
         """
         from PIL import Image
         image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                u'image_test', u'logo.pdf')
+                'image_test', 'logo.pdf')
 
         self.assertRaises(IOError,
                 lambda: tasks.convert_image_to_jpeg(image_path))
@@ -946,12 +946,12 @@ class CreatePreferredImageFileTests(TestCase):
 
     def test_create_alt_image_from_tiff(self):
         asset = modelfactories.ArticleAssetFactory.create()
-        self.assertEquals(False, bool(asset.preferred_alt_file))
+        self.assertEqual(False, bool(asset.preferred_alt_file))
 
         tasks.create_preferred_image_file(asset.pk)
 
         modified_asset = models.ArticleAsset.objects.get(pk=asset.pk)
-        self.assertEquals(True, bool(modified_asset.preferred_alt_file))
+        self.assertEqual(True, bool(modified_asset.preferred_alt_file))
 
         # evitar que arquivos temporários sobrem no disco.
         self.unlink_registry.append(asset.file.path)
@@ -962,7 +962,7 @@ class CreatePreferredImageFileTests(TestCase):
         asset = modelfactories.ArticleAssetFactory.create()
         tasks.create_preferred_image_file(asset.pk)
         modified_asset = models.ArticleAsset.objects.get(pk=asset.pk)
-        self.assertEquals('jpeg',
+        self.assertEqual('jpeg',
                 Image.open(modified_asset.preferred_alt_file.path).format.lower())
 
         # evitar que arquivos temporários sobrem no disco.
@@ -973,8 +973,8 @@ class CreatePreferredImageFileTests(TestCase):
         from django.core.files.base import File
         SAMPLE_PDF = open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            u'image_test',
-            u'logo.pdf'))
+            'image_test',
+            'logo.pdf'))
 
         asset = modelfactories.ArticleAssetFactory.build()
         asset.file = File(SAMPLE_PDF)
@@ -986,8 +986,8 @@ class CreatePreferredImageFileTests(TestCase):
         from django.core.files.base import File
         SAMPLE_PDF = open(os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            u'image_test',
-            u'cover.gif'))
+            'image_test',
+            'cover.gif'))
 
         asset = modelfactories.ArticleAssetFactory.build()
         asset.file = File(SAMPLE_PDF)

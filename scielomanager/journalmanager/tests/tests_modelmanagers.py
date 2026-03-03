@@ -163,9 +163,9 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1 = modelfactories.JournalFactory.create(title='ABC')
         journal1.join(collection, user)
-        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2 = modelfactories.JournalFactory.create(title='XYZ')
         journal2.join(collection, user)
 
         def get_user_collections():
@@ -182,9 +182,9 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1 = modelfactories.JournalFactory.create(title='ABC')
         journal1.join(collection, user)
-        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2 = modelfactories.JournalFactory.create(title='XYZ')
         journal2.join(collection, user)
 
         def get_user_collections():
@@ -206,7 +206,7 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1 = modelfactories.JournalFactory.create(title='ABC')
         journal1.join(collection, user)
 
         def get_user_collections():
@@ -222,7 +222,7 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'7ABC')
+        journal1 = modelfactories.JournalFactory.create(title='7ABC')
         journal1.join(collection, user)
 
         def get_user_collections():
@@ -238,9 +238,9 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'ABC 123')
+        journal1 = modelfactories.JournalFactory.create(title='ABC 123')
         journal1.join(collection, user)
-        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2 = modelfactories.JournalFactory.create(title='XYZ')
         journal2.join(collection, user)
 
         def get_user_collections():
@@ -257,9 +257,9 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'ABC BAZ')
+        journal1 = modelfactories.JournalFactory.create(title='ABC BAZ')
         journal1.join(collection, user)
-        journal2 = modelfactories.JournalFactory.create(title=u'XYZ')
+        journal2 = modelfactories.JournalFactory.create(title='XYZ')
         journal2.join(collection, user)
 
         def get_user_collections():
@@ -281,7 +281,7 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'ABC')
+        journal1 = modelfactories.JournalFactory.create(title='ABC')
         journal1.join(collection, user)
 
         def get_user_collections():
@@ -297,7 +297,7 @@ class JournalManagerTests(TestCase):
 
         user = self._make_user(collection)
 
-        journal1 = modelfactories.JournalFactory.create(title=u'7 ABC')
+        journal1 = modelfactories.JournalFactory.create(title='7 ABC')
         journal1.join(collection, user)
 
         def get_user_collections():
@@ -671,11 +671,11 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         sponsor2 = modelfactories.SponsorFactory.create(
-            name=u'BAR')
+            name='BAR')
         sponsor2.collections.add(collection)
 
         def get_user_collections():
@@ -693,11 +693,11 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         sponsor2 = modelfactories.SponsorFactory.create(
-            name=u'BAR')
+            name='BAR')
         sponsor2.collections.add(collection)
 
         def get_user_collections():
@@ -720,7 +720,7 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         def get_user_collections():
@@ -737,11 +737,11 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         sponsor2 = modelfactories.SponsorFactory.create(
-            name=u'7 BAR')
+            name='7 BAR')
         sponsor2.collections.add(collection)
 
         def get_user_collections():
@@ -759,11 +759,11 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         sponsor2 = modelfactories.SponsorFactory.create(
-            name=u'BAR')
+            name='BAR')
         sponsor2.collections.add(collection)
 
         def get_user_collections():
@@ -781,11 +781,11 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         sponsor2 = modelfactories.SponsorFactory.create(
-            name=u'BAR')
+            name='BAR')
         sponsor2.collections.add(collection)
 
         def get_user_collections():
@@ -808,7 +808,7 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         def get_user_collections():
@@ -825,11 +825,11 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO')
+            name='FOO')
         sponsor1.collections.add(collection)
 
         sponsor2 = modelfactories.SponsorFactory.create(
-            name=u'7 BAR')
+            name='7 BAR')
         sponsor2.collections.add(collection)
 
         def get_user_collections():
@@ -847,7 +847,7 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO', is_trashed=False)
+            name='FOO', is_trashed=False)
         sponsor1.collections.add(collection)
 
         def get_user_collections():
@@ -865,7 +865,7 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO', is_trashed=True)
+            name='FOO', is_trashed=True)
         sponsor1.collections.add(collection)
 
         def get_user_collections():
@@ -882,7 +882,7 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO', is_trashed=True)
+            name='FOO', is_trashed=True)
         sponsor1.collections.add(collection)
 
         def get_user_collections():
@@ -899,7 +899,7 @@ class SponsorManagerTests(TestCase):
         user = self._make_user(collection)
 
         sponsor1 = modelfactories.SponsorFactory.create(
-            name=u'FOO', is_trashed=False)
+            name='FOO', is_trashed=False)
         sponsor1.collections.add(collection)
 
         def get_user_collections():

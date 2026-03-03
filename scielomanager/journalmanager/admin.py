@@ -2,7 +2,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.admin.templatetags.admin_static import static
+from django.templatetags.static import static
+from django.utils.html import format_html
 from tastypie.models import ApiAccess
 
 from .models import *
@@ -71,12 +72,11 @@ class UserAdmin(UserAdmin):
         if user.get_profile():
             email_notifications = user.get_profile().email_notifications
             icon_url = static('admin/img/icon-%s.gif' % {True: 'yes', False: 'no', None: 'unknown'}[email_notifications])
-            return '<img src="{0}" alt="{1}" />'.format(icon_url, email_notifications)
+            return format_html('<img src="{}" alt="{}" />', icon_url, email_notifications)
         else:
-            icon_url = static('admin/img/icon-icon-unknown.gif')
-            return '<img src="{0}" alt="NO PROFILE" />no profile!' % icon_url
+            icon_url = static('admin/img/icon-unknown.svg')
+            return format_html('<img src="{}" alt="NO PROFILE" /> no profile!', icon_url)
     profile_email_notifications.short_description = 'Email Notifications'
-    profile_email_notifications.allow_tags = True
 
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'profile_email_notifications', )
     inlines = (UserProfileInline, UserCollectionsInline)
@@ -148,12 +148,12 @@ class ArticleAdmin(admin.ModelAdmin):
 
         count = queryset.count()
         if count >= 2:
-            message = u'%s tasks were scheduled' % (count,)
+            message = '%s tasks were scheduled' % (count,)
         else:
-            message = u'%s task was scheduled' % (count,)
+            message = '%s task was scheduled' % (count,)
         self.message_user(request, message)
 
-    link_to_issue.short_description = u'Try to link with its issue'
+    link_to_issue.short_description = 'Try to link with its issue'
 
     def link_to_journal(self, request, queryset):
         for article in queryset:
@@ -161,11 +161,11 @@ class ArticleAdmin(admin.ModelAdmin):
 
         count = queryset.count()
         if count >= 2:
-            message = u'%s tasks were scheduled' % (count,)
+            message = '%s tasks were scheduled' % (count,)
         else:
-            message = u'%s task was scheduled' % (count,)
+            message = '%s task was scheduled' % (count,)
         self.message_user(request, message)
 
-    link_to_journal.short_description = u'Try to link with its journal'
+    link_to_journal.short_description = 'Try to link with its journal'
 
 admin.site.register(Article, ArticleAdmin)

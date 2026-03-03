@@ -14,6 +14,20 @@ class ThreadLocalMiddleware(object):
     Makes the request object visible system-wide in a thread local
     basis.
     """
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        self.process_request(request)
+        if self.get_response is None:
+            return None
+        try:
+            response = self.get_response(request)
+        except Exception as exc:
+            self.process_exception(request, exc)
+            raise
+        return self.process_response(request, response)
+
     def process_request(self, request):
         th_localstore._request = request
 

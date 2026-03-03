@@ -6,7 +6,7 @@ import os
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 
-execfile(os.path.join(PROJECT_PATH, 'settings.py'))
+exec(compile(open(os.path.join(PROJECT_PATH, 'settings.py'), "rb").read(), os.path.join(PROJECT_PATH, 'settings.py'), 'exec'))
 
 
 INSTALLED_APPS += (

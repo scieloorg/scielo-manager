@@ -16,7 +16,7 @@
 # {% user_avatar_url request.user "medium" %}
 # {% user_avatar_url request.user "large" %}
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from django import template
 from django.conf import settings
 from journalmanager.models import UserProfile
@@ -39,7 +39,7 @@ def user_avatar_url(user, size):
     else:
         return '' # unknow size, no photo
 
-    if not user or not user.is_authenticated() or not user.email:
+    if not user or not user.is_authenticated or not user.email:
         return ''
 
     try:
@@ -47,7 +47,7 @@ def user_avatar_url(user, size):
     except UserProfile.DoesNotExist:
         return ''
     else:
-        params = urllib.urlencode({'s': size, 'd': 'mm'})
+        params = urllib.parse.urlencode({'s': size, 'd': 'mm'})
         gravatar_url = getattr(settings, 'GRAVATAR_BASE_URL', 'https://secure.gravatar.com')
         avartar_url = '{0}/avatar/{1}?{2}'.format(gravatar_url, user_profile.gravatar_id, params)
         return avartar_url

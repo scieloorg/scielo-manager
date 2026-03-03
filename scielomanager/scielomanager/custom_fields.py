@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models.fields import TextField
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from lxml import etree
 
 
@@ -57,24 +57,25 @@ class ContentTypeRestrictedFileField(models.FileField):
 class XMLSPS(object):
     def __init__(self, data):
         if isinstance(data, str):
-            xml_string = data
-        elif isinstance(data, unicode):
-            xml_string = data.encode('utf-8')
+            xml_bytes = data.encode("utf-8")
+        elif isinstance(data, bytes):
+            xml_bytes = data
         else:
-            raise TypeError('xml must be str or unicode')
+            raise TypeError("xml must be str or bytes")
 
-        self.root_etree = etree.parse(io.BytesIO(xml_string))
+        self.root_etree = etree.parse(io.BytesIO(xml_bytes))
 
     def __repr__(self):
-        return u'<%s xml_etree=%s>' % (self.__class__.__name__,
+        return '<%s xml_etree=%s>' % (self.__class__.__name__,
                 repr(self.root_etree))
 
-    def __unicode__(self):
-        return str(self).decode('utf-8')
-
     def __str__(self):
-        return etree.tostring(self.root_etree, encoding=u'utf-8',
-                xml_declaration=True)
+        xml_bytes = etree.tostring(
+            self.root_etree,
+            encoding="utf-8",
+            xml_declaration=True,
+        )
+        return xml_bytes.decode("utf-8")
 
     def __getattr__(self, name):
         return getattr(self.root_etree, name)
@@ -82,8 +83,6 @@ class XMLSPS(object):
 
 class XMLSPSField(TextField):
     description = 'A xml sps field'
-
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         if isinstance(value, XMLSPS):
@@ -95,10 +94,3 @@ class XMLSPSField(TextField):
 
     def get_prep_value(self, value):
         return str(value)
-
-
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([],[
-        "^scielomanager\.custom_fields\.ContentTypeRestrictedFileField",
-        "^scielomanager\.custom_fields\.XMLSPSField",
-    ])

@@ -36,9 +36,9 @@ def query_string(request, variables, mode):
             query_string_dict[variable] = escape(value)
     if query_string_dict:
         if mode == "html_form":
-            query_string = ' '.join([u'<input type="hidden" name="%s" value="%s">' % (k, v) for k, v in query_string_dict.items()])
+            query_string = ' '.join(['<input type="hidden" name="%s" value="%s">' % (k, v) for k, v in list(query_string_dict.items())])
         else:
-            query_string = '?' + '&amp;'.join([u'%s=%s' % (k, v) for k, v in query_string_dict.items()]).replace(' ', '%20')
+            query_string = '?' + '&amp;'.join(['%s=%s' % (k, v) for k, v in list(query_string_dict.items())]).replace(' ', '%20')
             if mode == "include_ampersand":
                 query_string += '&amp;'
     else:

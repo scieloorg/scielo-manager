@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django_webtest import WebTest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test.utils import override_settings
 
 from journalmanager.tests import modelfactories
@@ -252,8 +252,8 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(audited_obj._meta.object_name, 'EditorialMember')
         self.assertEqual(audited_obj.pk, members[0].pk)
 
-        self.assertIn(u'Added fields:', entry.change_message)  # message starts with u'Added fields:'
-        for field_name in member_data.keys():
+        self.assertIn('Added fields:', entry.change_message)  # message starts with u'Added fields:'
+        for field_name in list(member_data.keys()):
             self.assertIn(field_name, entry.change_message)
 
     def test_ADD_board_member_invalid_POST_is_invalid(self):
@@ -292,7 +292,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         # check output
         self.assertTemplateUsed(response, 'board/board_member_edit_form.html')
         self.assertFalse(response.context['form'].is_valid())
-        expected_errors = {'link_cv': [u'Enter a valid URL.']}
+        expected_errors = {'link_cv': ['Enter a valid URL.']}
         self.assertEqual(response.context['form'].errors, expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
         # expected extra context data
@@ -386,8 +386,8 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(audited_obj._meta.object_name, 'EditorialMember')
         self.assertEqual(audited_obj.pk, member_from_db.pk)
 
-        self.assertIn( u'Changed fields:', entry.change_message) # message starts with u'Changed fields:'
-        for field_name in member_data_update.keys():
+        self.assertIn( 'Changed fields:', entry.change_message) # message starts with u'Changed fields:'
+        for field_name in list(member_data_update.keys()):
             self.assertIn(field_name, entry.change_message)
 
     def test_EDIT_board_member_invalid_POST_is_invalid(self):
@@ -429,7 +429,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         # check output
         self.assertTemplateUsed(response, 'board/board_member_edit_form.html')
         self.assertFalse(response.context['form'].is_valid())
-        expected_errors = {'email': [u'Enter a valid e-mail address.']}
+        expected_errors = {'email': ['Enter a valid e-mail address.']}
         self.assertEqual(response.context['form'].errors, expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
 
@@ -499,7 +499,7 @@ class EditorialMemberFormAsEditorTests(WebTest):
         self.assertEqual(entry.content_type.model_class(), EditorialMember)
         audited_obj = entry.get_audited_object()
         self.assertIsNone(audited_obj)  # audited object (member) was deleted, so, no referece to it
-        expected_change_msg = u'Record DELETED (%s, pk: %s): %s' % (member.pk, member._meta.verbose_name, unicode(member))
+        expected_change_msg = 'Record DELETED (%s, pk: %s): %s' % (member.pk, member._meta.verbose_name, str(member))
         self.assertEqual(entry.change_message, expected_change_msg)
 
 
@@ -1437,7 +1437,7 @@ class EditRoleTypeForm(WebTest):
         # check output
         self.assertTemplateUsed(response, 'board/role_type_edit.html')
         self.assertFalse(response.context['form'].is_valid())
-        expected_errors = {'name': [u'This field is required.']}
+        expected_errors = {'name': ['This field is required.']}
         self.assertEqual(response.context['form'].errors, expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
         # expected extra context data
@@ -1472,7 +1472,7 @@ class EditRoleTypeForm(WebTest):
         # check output
         self.assertTemplateUsed(response, 'board/role_type_edit.html')
         self.assertFalse(response.context['form'].is_valid())
-        expected_errors = {'name': [u'Role type with this Role Name already exists.']}
+        expected_errors = {'name': ['Role type with this Role Name already exists.']}
         self.assertEqual(response.context['form'].errors, expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
         # expected extra context data
@@ -1538,7 +1538,7 @@ class EditRoleTypeForm(WebTest):
         # check output
         self.assertTemplateUsed(response, 'board/role_type_edit.html')
         self.assertFalse(response.context['form'].is_valid())
-        expected_errors = {'name': [u'This field is required.']}
+        expected_errors = {'name': ['This field is required.']}
         self.assertEqual(response.context['form'].errors, expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
         # expected extra context data
@@ -1568,15 +1568,15 @@ class EditRoleTypeForm(WebTest):
         self.user.user_permissions.add(perm_change_roletype)
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
         data = [
-            {'name': u'Os Picles', 'language': l1},
-            {'name': u'Los Picles', 'language': l2},
-            {'name': u'Le Piclé', 'language': l3},
+            {'name': 'Os Picles', 'language': l1},
+            {'name': 'Los Picles', 'language': l2},
+            {'name': 'Le Piclé', 'language': l3},
         ]
 
         # when
         response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
         form = response.forms['role-translations-form']
-        for x in xrange(0, 3):
+        for x in range(0, 3):
             form['role-translations-formset-%s-name' % x] = data[x]['name']
             form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
 
@@ -1589,7 +1589,7 @@ class EditRoleTypeForm(WebTest):
         # check db:
         translations = RoleTypeTranslation.objects.filter(role=role)
         self.assertEqual(translations.count(), 3)
-        for x in xrange(0, 3):
+        for x in range(0, 3):
             t = translations.get(language=data[x]['language'])
             self.assertEqual(t.name, data[x]['name'])
 
@@ -1621,15 +1621,15 @@ class EditRoleTypeForm(WebTest):
         self.user.user_permissions.add(perm_change_roletype)
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
         data = [
-            {'name': u'Il Picolo', 'language': l1},
-            {'name': u'Los Picles', 'language': l2},
-            {'name': u'Le Piclé', 'language': l3},
+            {'name': 'Il Picolo', 'language': l1},
+            {'name': 'Los Picles', 'language': l2},
+            {'name': 'Le Piclé', 'language': l3},
         ]
 
         # when
         response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
         form = response.forms['role-translations-form']
-        for x in xrange(0, 3):
+        for x in range(0, 3):
             form['role-translations-formset-%s-name' % x] = data[x]['name']
             form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
 
@@ -1637,7 +1637,7 @@ class EditRoleTypeForm(WebTest):
         # then
         self.assertTemplateUsed(response, 'board/role_type_translate.html')
         self.assertFalse(response.context['formset'].is_valid())
-        expected_errors = [u'At least Portuguese and Spanish translations are required']
+        expected_errors = ['At least Portuguese and Spanish translations are required']
         self.assertEqual(response.context['formset'].non_form_errors(), expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
         # check audit log
@@ -1663,15 +1663,15 @@ class EditRoleTypeForm(WebTest):
         pre_submittion_audit_logs_count = AuditLogEntry.objects.all().count()
 
         data = [
-            {'name': u'Os Picles', 'language': l1},
-            {'name': u'Ahmet Al Picle', 'language': l2},
-            {'name': u'Le Piclé', 'language': l3},
+            {'name': 'Os Picles', 'language': l1},
+            {'name': 'Ahmet Al Picle', 'language': l2},
+            {'name': 'Le Piclé', 'language': l3},
         ]
 
         # when
         response = self.app.get(reverse("editorial.role.translate", args=[self.journal.id, role.id]), user=self.user)
         form = response.forms['role-translations-form']
-        for x in xrange(0, 3):
+        for x in range(0, 3):
             form['role-translations-formset-%s-name' % x] = data[x]['name']
             form.set('role-translations-formset-%s-language' % x, data[x]['language'].pk)
 
@@ -1679,7 +1679,7 @@ class EditRoleTypeForm(WebTest):
         # then
         self.assertTemplateUsed(response, 'board/role_type_translate.html')
         self.assertFalse(response.context['formset'].is_valid())
-        expected_errors = [u'At least Portuguese and Spanish translations are required']
+        expected_errors = ['At least Portuguese and Spanish translations are required']
         self.assertEqual(response.context['formset'].non_form_errors(), expected_errors)
         self.assertIn('Check mandatory fields.', response.body)
         # check audit log

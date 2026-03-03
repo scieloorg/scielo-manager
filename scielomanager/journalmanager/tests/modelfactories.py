@@ -68,8 +68,8 @@ class StudyAreaFactory(factory.Factory):
 class SponsorFactory(factory.Factory):
     FACTORY_FOR = models.Sponsor
 
-    name = u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
-    address = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+    name = 'Fundação de Amparo a Pesquisa do Estado de São Paulo'
+    address = 'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                 Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
     email = 'fapesp@scielo.org'
     complement = ''
@@ -79,51 +79,51 @@ class UseLicenseFactory(factory.Factory):
     FACTORY_FOR = models.UseLicense
 
     license_code = factory.Sequence(lambda n: 'CC BY-NC-SA%s' % n)
-    reference_url = u'http://creativecommons.org/licenses/by-nc-sa/3.0/deed.pt'
-    disclaimer = u'<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Licença Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />Este trabalho foi licenciado com uma Licença <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons - Atribuição - NãoComercial - CompartilhaIgual 3.0 Não Adaptada</a>.'
+    reference_url = 'http://creativecommons.org/licenses/by-nc-sa/3.0/deed.pt'
+    disclaimer = '<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Licença Creative Commons" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />Este trabalho foi licenciado com uma Licença <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons - Atribuição - NãoComercial - CompartilhaIgual 3.0 Não Adaptada</a>.'
 
 
 class CollectionFactory(factory.Factory):
     FACTORY_FOR = models.Collection
 
-    url = u'http://www.scielo.br/'
+    url = 'http://www.scielo.br/'
     name = factory.Sequence(lambda n: 'scielo%s' % n)
-    address_number = u'430'
-    country = u'Brasil'
-    address = u'Rua Machado Bittencourt'
-    email = u'fapesp@scielo.org'
+    address_number = '430'
+    country = 'Brasil'
+    address = 'Rua Machado Bittencourt'
+    email = 'fapesp@scielo.org'
     name_slug = factory.Sequence(lambda n: 'scl%s' % n)
 
 
 class JournalFactory(factory.Factory):
     FACTORY_FOR = models.Journal
 
-    ctrl_vocabulary = u'decs'
-    frequency = u'Q'
-    scielo_issn = u'print'
+    ctrl_vocabulary = 'decs'
+    frequency = 'Q'
+    scielo_issn = 'print'
     print_issn = factory.Sequence(lambda n: '1234-%04d' % int(n))
     eletronic_issn = factory.Sequence(lambda n: '4321-%04d' % int(n))
-    init_vol = u'1'
-    title = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-    title_iso = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-    short_title = u'ABCD.(São Paulo)'
-    editorial_standard = u'vancouv'
-    secs_code = u'6633'
-    init_year = u'1986'
+    init_vol = '1'
+    title = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+    title_iso = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+    short_title = 'ABCD.(São Paulo)'
+    editorial_standard = 'vancouv'
+    secs_code = '6633'
+    init_year = '1986'
     acronym = factory.Sequence(lambda n: 'ABCD%s' % int(n))
-    pub_level = u'CT'
-    init_num = u'1',
-    subject_descriptors = u"""
+    pub_level = 'CT'
+    init_num = '1',
+    subject_descriptors = """
         MEDICINA
         CIRURGIA
         GASTROENTEROLOGIA
         GASTROENTEROLOGIA""".strip()
-    publisher_name = u'Colégio Brasileiro de Cirurgia Digestiva'
-    publisher_country = u'BR'
-    publisher_state = u'SP'
-    publication_city = u'São Paulo'
-    editor_address = u'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel. = (11) 3288-8174/3289-0741'
-    editor_email = u'cbcd@cbcd.org.br'
+    publisher_name = 'Colégio Brasileiro de Cirurgia Digestiva'
+    publisher_country = 'BR'
+    publisher_state = 'SP'
+    publication_city = 'São Paulo'
+    editor_address = 'Av. Brigadeiro Luiz Antonio, 278 - 6° - Salas 10 e 11, 01318-901 São Paulo/SP Brasil, Tel. = (11) 3288-8174/3289-0741'
+    editor_email = 'cbcd@cbcd.org.br'
 
     creator = factory.SubFactory(UserFactory)
     use_license = factory.SubFactory(UseLicenseFactory)
@@ -151,7 +151,7 @@ class IssueTitleFactory(factory.Factory):
     FACTORY_FOR = models.IssueTitle
 
     language = factory.SubFactory(LanguageFactory)
-    title = u'Bla'
+    title = 'Bla'
 
 
 class IssueFactory(factory.Factory):
@@ -187,7 +187,7 @@ class UserProfileFactory(factory.Factory):
 class SectionTitleFactory(factory.Factory):
     FACTORY_FOR = models.SectionTitle
 
-    title = u'Artigos Originais'
+    title = 'Artigos Originais'
 
     language = factory.SubFactory(LanguageFactory)
     section = factory.SubFactory(SectionFactory)
@@ -212,8 +212,8 @@ class PressReleaseTranslationFactory(factory.Factory):
 
     language = factory.SubFactory(LanguageFactory)
     press_release = factory.SubFactory(RegularPressReleaseFactory)
-    title = u'Yeah, this issue is amazing!'
-    content = u'Want to read more about...'
+    title = 'Yeah, this issue is amazing!'
+    content = 'Want to read more about...'
 
 
 class PressReleaseArticleFactory(factory.Factory):
@@ -230,12 +230,12 @@ class ArticleFactory(factory.Factory):
     is_aop = False
     domain_key = factory.Sequence(
             lambda n: 'revista-de-saude-publica_48_2_2014_216_a_224_none_none_%s' % n)
-    journal_title = u'Revista de Saúde Pública'
-    issn_ppub = u'0034-8910'
-    issn_epub = u'1518-8787'
-    xml_version = u'sps-1.2'
-    article_type = u'research-article'
-    doi = u'10.1590/S0034-8910.2014048004965'
+    journal_title = 'Revista de Saúde Pública'
+    issn_ppub = '0034-8910'
+    issn_epub = '1518-8787'
+    xml_version = 'sps-1.2'
+    article_type = 'research-article'
+    doi = '10.1590/S0034-8910.2014048004965'
 
 
 class ArticleAssetFactory(factory.Factory):
@@ -243,7 +243,7 @@ class ArticleAssetFactory(factory.Factory):
 
     article = factory.SubFactory(ArticleFactory)
     file = File(SAMPLE_TIFF_IMAGE)
-    owner = u'SciELO'
-    use_license = u'Creative Commons - BY'
+    owner = 'SciELO'
+    use_license = 'Creative Commons - BY'
 
 

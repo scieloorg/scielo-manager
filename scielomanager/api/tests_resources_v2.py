@@ -128,78 +128,78 @@ class JournalRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'editor_address',
-            u'copyrighter',
-            u'editor_address_city',
-            u'editor_address_state',
-            u'creator',
-            u'ctrl_vocabulary',
-            u'national_code',
-            u'updated',
-            u'frequency',
-            u'url_journal',
-            u'short_title',
-            u'final_num',
-            u'logo',
-            u'publisher_country',
-            u'publisher_name',
-            u'eletronic_issn',
-            u'issues',
-            u'url_online_submission',
-            u'init_vol',
-            u'subject_descriptors',
-            u'title',
-            u'pub_status_history',
-            u'id',
-            u'final_year',
-            u'editorial_standard',
-            u'languages',
-            u'scielo_issn',
-            u'collections',
-            u'index_coverage',
-            u'secs_code',
-            u'init_year',
-            u'sections',
-            u'is_indexed_aehci',
-            u'use_license',
-            u'other_titles',
-            u'editor_address_country',
-            u'acronym',
-            u'publisher_state',
-            u'is_indexed_scie',
-            u'sponsors',
-            u'abstract_keyword_languages',
-            u'editor_name',
-            u'other_previous_title',
-            u'study_areas',
-            u'medline_code',
-            u'is_trashed',
-            u'init_num',
-            u'publication_city',
-            u'pub_level',
-            u'is_indexed_ssci',
-            u'missions',
-            u'editor_email',
-            u'created',
-            u'medline_title',
-            u'final_vol',
-            u'cover',
-            u'editor_phone2',
-            u'editor_phone1',
-            u'print_issn',
-            u'editor_address_zip',
-            u'contact',
-            u'pub_status',
-            u'pub_status_reason',
-            u'title_iso',
-            u'notes',
-            u'resource_uri',
-            u'previous_ahead_documents',
-            u'current_ahead_documents',
-            u'twitter_user',
-            u'previous_title',
-            u'succeeding_title',
-            u'subject_categories'
+            'editor_address',
+            'copyrighter',
+            'editor_address_city',
+            'editor_address_state',
+            'creator',
+            'ctrl_vocabulary',
+            'national_code',
+            'updated',
+            'frequency',
+            'url_journal',
+            'short_title',
+            'final_num',
+            'logo',
+            'publisher_country',
+            'publisher_name',
+            'eletronic_issn',
+            'issues',
+            'url_online_submission',
+            'init_vol',
+            'subject_descriptors',
+            'title',
+            'pub_status_history',
+            'id',
+            'final_year',
+            'editorial_standard',
+            'languages',
+            'scielo_issn',
+            'collections',
+            'index_coverage',
+            'secs_code',
+            'init_year',
+            'sections',
+            'is_indexed_aehci',
+            'use_license',
+            'other_titles',
+            'editor_address_country',
+            'acronym',
+            'publisher_state',
+            'is_indexed_scie',
+            'sponsors',
+            'abstract_keyword_languages',
+            'editor_name',
+            'other_previous_title',
+            'study_areas',
+            'medline_code',
+            'is_trashed',
+            'init_num',
+            'publication_city',
+            'pub_level',
+            'is_indexed_ssci',
+            'missions',
+            'editor_email',
+            'created',
+            'medline_title',
+            'final_vol',
+            'cover',
+            'editor_phone2',
+            'editor_phone1',
+            'print_issn',
+            'editor_address_zip',
+            'contact',
+            'pub_status',
+            'pub_status_reason',
+            'title_iso',
+            'notes',
+            'resource_uri',
+            'previous_ahead_documents',
+            'current_ahead_documents',
+            'twitter_user',
+            'previous_title',
+            'succeeding_title',
+            'subject_categories'
         ]
 
         json_keys = set(response.json.keys())
@@ -453,26 +453,26 @@ class CollectionRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'city',
-            u'fax',
-            u'address_complement',
-            u'address_number',
-            u'acronym',
-            u'country',
-            u'zip_code',
-            u'id',
-            u'phone',
-            u'state',
-            u'name_slug',
-            u'url',
-            u'address',
-            u'logo',
-            u'resource_uri',
-            u'email',
-            u'name'
+            'city',
+            'fax',
+            'address_complement',
+            'address_number',
+            'acronym',
+            'country',
+            'zip_code',
+            'id',
+            'phone',
+            'state',
+            'name_slug',
+            'url',
+            'address',
+            'logo',
+            'resource_uri',
+            'email',
+            'name'
         ]
 
-        self.assertEqual(response.json.keys(), expected_keys)
+        self.assertEqual(list(response.json.keys()), expected_keys)
 
     def test_access_denied_for_unathorized_users(self):
         modelfactories.CollectionFactory.create()
@@ -539,32 +539,32 @@ class IssuesRestAPITest(WebTest):
         response = self.app.get('/api/v2/issues/%s/' % issue.pk, extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'ctrl_vocabulary',
-            u'number',
-            u'total_documents',
-            u'label',
-            u'id',
-            u'publication_start_month',
-            u'suppl_number',
-            u'publication_end_month',
-            u'editorial_standard',
-            u'sections',
-            u'spe_text',
-            u'updated',
-            u'suppl_volume',
-            u'journal',
-            u'volume',
-            u'is_trashed',
-            u'is_marked_up',
-            u'created',
-            u'cover',
-            u'publication_year',
-            u'order',
-            u'resource_uri',
-            u'thematic_titles',
-            u'suppl_text',
-            u'type',
-            u'use_license'
+            'ctrl_vocabulary',
+            'number',
+            'total_documents',
+            'label',
+            'id',
+            'publication_start_month',
+            'suppl_number',
+            'publication_end_month',
+            'editorial_standard',
+            'sections',
+            'spe_text',
+            'updated',
+            'suppl_volume',
+            'journal',
+            'volume',
+            'is_trashed',
+            'is_marked_up',
+            'created',
+            'cover',
+            'publication_year',
+            'order',
+            'resource_uri',
+            'thematic_titles',
+            'suppl_text',
+            'type',
+            'use_license'
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
@@ -809,13 +809,13 @@ class PressReleaseRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'articles',
-            u'id',
-            u'issue_uri',
-            u'resource_uri',
-            u'translations',
-            u'issue_meta',
-            u'doi',
+            'articles',
+            'id',
+            'issue_uri',
+            'resource_uri',
+            'translations',
+            'issue_meta',
+            'doi',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
@@ -826,11 +826,11 @@ class PressReleaseRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'content',
-            u'id',
-            u'language',
-            u'resource_uri',
-            u'title',
+            'content',
+            'id',
+            'language',
+            'resource_uri',
+            'title',
         ]
 
         self.assertEqual(
@@ -974,12 +974,12 @@ class AheadPressReleaseRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'articles',
-            u'id',
-            u'journal_uri',
-            u'resource_uri',
-            u'translations',
-            u'doi',
+            'articles',
+            'id',
+            'journal_uri',
+            'resource_uri',
+            'translations',
+            'doi',
         ]
 
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
@@ -991,11 +991,11 @@ class AheadPressReleaseRestAPITest(WebTest):
             extra_environ=self.extra_environ)
 
         expected_keys = [
-            u'content',
-            u'id',
-            u'language',
-            u'resource_uri',
-            u'title',
+            'content',
+            'id',
+            'language',
+            'resource_uri',
+            'title',
         ]
 
         self.assertEqual(
@@ -1118,9 +1118,9 @@ class EditorialBoardRestAPITest(WebTest):
         response = self.app.get(target_url, extra_environ=self.extra_environ)
         # then
         expected_keys = [
-            u'id',
-            u'issue',
-            u'resource_uri',
+            'id',
+            'issue',
+            'resource_uri',
         ]
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
@@ -1171,9 +1171,9 @@ class RoleTypeRestAPITest(WebTest):
         response = self.app.get(target_url, extra_environ=self.extra_environ)
         # then
         expected_keys = [
-            u'id',
-            u'name',
-            u'resource_uri',
+            'id',
+            'name',
+            'resource_uri',
         ]
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
@@ -1224,11 +1224,11 @@ class RoleTypeTranslationRestAPITest(WebTest):
         response = self.app.get(target_url, extra_environ=self.extra_environ)
         # then
         expected_keys = [
-            u'id',
-            u'language',
-            u'name',
-            u'resource_uri',
-            u'role',
+            'id',
+            'language',
+            'name',
+            'resource_uri',
+            'role',
         ]
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
@@ -1296,21 +1296,21 @@ class EditorialMemberRestAPITest(WebTest):
         response = self.app.get(target_url, extra_environ=self.extra_environ)
         # then
         expected_keys = [
-            u'board',
-            u'city',
-            u'country',
-            u'email',
-            u'first_name',
-            u'id',
-            u'institution',
-            u'last_name',
-            u'link_cv',
-            u'orcid',
-            u'order',
-            u'research_id',
-            u'resource_uri',
-            u'role',
-            u'state'
+            'board',
+            'city',
+            'country',
+            'email',
+            'first_name',
+            'id',
+            'institution',
+            'last_name',
+            'link_cv',
+            'orcid',
+            'order',
+            'research_id',
+            'resource_uri',
+            'role',
+            'state'
         ]
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))
 
@@ -1361,9 +1361,9 @@ class LanguageRestAPITest(WebTest):
         response = self.app.get(target_url, extra_environ=self.extra_environ)
         # then
         expected_keys = [
-            u'id',
-            u'iso_code',
-            u'name',
-            u'resource_uri',
+            'id',
+            'iso_code',
+            'name',
+            'resource_uri',
         ]
         self.assertEqual(sorted(response.json.keys()), sorted(expected_keys))

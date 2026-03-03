@@ -72,8 +72,8 @@ class CeleryConnection(CheckItem):
         else:
             try:
                 ping_response = current_app.control.ping(timeout=1)[0]
-                ping_key = ping_response.keys()[0]
-                status = ping_response[ping_key]['ok'] == u'pong'
+                ping_key = list(ping_response.keys())[0]
+                status = ping_response[ping_key]['ok'] == 'pong'
             except Exception as exc:
                 logger.exception(exc)
                 status = False

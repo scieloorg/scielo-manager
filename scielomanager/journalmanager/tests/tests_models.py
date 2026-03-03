@@ -53,7 +53,7 @@ class SectionTests(MockerTestCase):
         section_title = SectionTitleFactory.create()
         expected = 'Artigos Originais'
 
-        self.assertEqual(unicode(section_title.section), expected)
+        self.assertEqual(str(section_title.section), expected)
 
     def test_unicode_repr_with_two_languages(self):
         language = LanguageFactory.create(iso_code='en', name='english')
@@ -67,7 +67,7 @@ class SectionTests(MockerTestCase):
 
         expected = 'Original Articles | Artigos Originais'
 
-        self.assertEqual(unicode(section_title.section), expected)
+        self.assertEqual(str(section_title.section), expected)
 
     def test_add_title(self):
         section = SectionFactory.create()
@@ -96,8 +96,8 @@ class SectionTests(MockerTestCase):
         self.mocker.replay()
 
         section = SectionFactory.create()
-        section.journal.acronym = u'ÁÇÚCAR'
-        expected_code = u'{0}-{1}'.format(section.journal.acronym, 'XYZW')
+        section.journal.acronym = 'ÁÇÚCAR'
+        expected_code = '{0}-{1}'.format(section.journal.acronym, 'XYZW')
 
         self.assertEqual(section._suggest_code(rand_generator=gen), expected_code)
 
@@ -128,45 +128,45 @@ class IssueTests(TestCase):
 
     def test_identification_for_suppl_text(self):
         issue = IssueFactory.create(number='1', suppl_text='2', type='supplement')
-        expected = u'1 suppl.2'
+        expected = '1 suppl.2'
 
         self.assertEqual(issue.identification, expected)
 
     def test_identification_for_number(self):
         issue = IssueFactory.create(number='1')
-        expected = u'1'
+        expected = '1'
 
         self.assertEqual(issue.identification, expected)
 
     def test_identification_for_number_with_sublevels(self):
         issue = IssueFactory.create(number='1a')
-        expected = u'1a'
+        expected = '1a'
 
         self.assertEqual(issue.identification, expected)
 
     def test_identification_for_suppl_text(self):
         issue = IssueFactory.create(number='1', suppl_text='2', type='supplement')
-        expected = u'1 suppl.2'
+        expected = '1 suppl.2'
 
         self.assertEqual(issue.identification, expected)
 
     def test_identification_for_ahead(self):
         issue = IssueFactory.create(number='ahead')
-        expected = u'ahead of print'
+        expected = 'ahead of print'
 
         self.assertEqual(issue.identification, expected)
 
     def test_identification_for_special(self):
         issue = IssueFactory.create(number='1', spe_text='2', type='special')
-        expected = u'1 spe2'
+        expected = '1 spe2'
 
         self.assertEqual(issue.identification, expected)
 
     def test_unicode_representation(self):
         issue = IssueFactory.create(volume='2', number='1', suppl_text='2', type='supplement')
-        expected = u'2 (1 suppl.2)'
+        expected = '2 (1 suppl.2)'
 
-        self.assertEqual(unicode(issue), expected)
+        self.assertEqual(str(issue), expected)
 
     def test_publication_date(self):
         issue = IssueFactory.create()
@@ -315,7 +315,7 @@ class LanguageTests(TestCase):
         # todo: learn a good way to change the current language of the app
         # in order to check the unicode value translated.
         language = LanguageFactory.build(name='portuguese')
-        self.assertEqual(unicode(language), u'portuguese')
+        self.assertEqual(str(language), 'portuguese')
 
 
 class JournalTests(TestCase):
@@ -332,14 +332,14 @@ class JournalTests(TestCase):
     def test_succeeding_title(self):
         journal1 = JournalFactory.create(title='uPrevious Title')
 
-        journal2 = JournalFactory.create(title=u'Succeeding Title', previous_title=journal1)
+        journal2 = JournalFactory.create(title='Succeeding Title', previous_title=journal1)
 
         result = journal1.succeeding_title
 
-        self.assertEqual(result.title, u'Succeeding Title')
+        self.assertEqual(result.title, 'Succeeding Title')
 
     def test_without_succeeding_title(self):
-        journal1 = JournalFactory.create(title=u'Previous Title')
+        journal1 = JournalFactory.create(title='Previous Title')
 
         result = journal1.succeeding_title
 
@@ -390,7 +390,7 @@ class JournalTests(TestCase):
         grid = journal.issues_as_grid()
         expected = [2012, 2011, 2010, 2009, 2008]
 
-        self.assertEqual(grid.keys(), expected)
+        self.assertEqual(list(grid.keys()), expected)
 
     def test_issues_grid_must_be_ordered_by_volume_desc(self):
         journal = JournalFactory.create()
@@ -401,9 +401,9 @@ class JournalTests(TestCase):
                                   publication_year=2012))
 
         grid = journal.issues_as_grid()
-        expected = [u'9', u'8', u'7', u'6', u'5']
+        expected = ['9', '8', '7', '6', '5']
 
-        self.assertEqual(grid.values()[0].keys(), expected)
+        self.assertEqual(list(grid.values())[0].keys(), expected)
 
     def test_issues_grid_must_be_ordered_dict(self):
         try:
@@ -430,9 +430,9 @@ class JournalTests(TestCase):
         journal.issue_set.add(IssueFactory.create(volume='2', publication_year='2014'))
 
         grid = journal.issues_as_grid()
-        expected = [u'27', u'10', u'9', u'2']
+        expected = ['27', '10', '9', '2']
 
-        self.assertEqual(grid.values()[0].keys(), expected)
+        self.assertEqual(list(grid.values())[0].keys(), expected)
 
     def test_journal_has_issues_must_be_true(self):
         journal = JournalFactory.create()
@@ -459,13 +459,13 @@ class JournalTests(TestCase):
         self.assertFalse(journal.has_issues(issues))
 
     def test_scielo_pid_when_print(self):
-        journal = JournalFactory.create(scielo_issn=u'print',
+        journal = JournalFactory.create(scielo_issn='print',
                                         print_issn='1234-4321',
                                         eletronic_issn='4321-1234')
         self.assertEqual(journal.scielo_pid, '1234-4321')
 
     def test_scielo_pid_when_electronic(self):
-        journal = JournalFactory.create(scielo_issn=u'electronic',
+        journal = JournalFactory.create(scielo_issn='electronic',
                                         print_issn='1234-4321',
                                         eletronic_issn='4321-1234')
         self.assertEqual(journal.scielo_pid, '4321-1234')
@@ -761,7 +761,7 @@ class UseLicenseTests(TestCase):
 
 
 class ArticleTests(TestCase):
-    sample = u"""<article article-type="research-article" specific-use="sps-1.2">
+    sample = """<article article-type="research-article" specific-use="sps-1.2">
                    <front>
                      <journal-meta>
                        <journal-title-group>
@@ -800,7 +800,7 @@ class ArticleTests(TestCase):
         self.assertRaises(IntegrityError, lambda: dup_article.save())
 
     def test_either_pissn_or_eissn_must_be_present(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -822,7 +822,7 @@ class ArticleTests(TestCase):
         self.assertRaises(ValueError, lambda: models.Article.parse(sample))
 
     def test_journal_title_must_be_present(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -852,7 +852,7 @@ class ArticleTests(TestCase):
         self.assertEqual(article.get_value(article.XPaths.SPS_VERSION), 'sps-1.2')
 
     def test_get_value_for_empty_element(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <empty-element></empty-element>
                        </front>
@@ -862,7 +862,7 @@ class ArticleTests(TestCase):
         self.assertEqual(article.get_value('/article/front/empty-element'), None)
 
     def test_get_value_for_enclosed_element(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <enclosed-element />
                        </front>
@@ -880,7 +880,7 @@ class ArticleTests(TestCase):
         self.assertEqual(article.get_value('/article/@foo'), None)
 
     def test_get_value_returns_stripped_strings(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <foo>    foobar                         </foo>
                        </front>
@@ -890,7 +890,7 @@ class ArticleTests(TestCase):
         self.assertEqual(article.get_value('/article/front/foo'), 'foobar')
 
     def test_get_value_returns_first_occurence(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <occ>first</occ>
                          <occ>second</occ>
@@ -901,7 +901,7 @@ class ArticleTests(TestCase):
         self.assertEqual(article.get_value('/article/front/occ'), 'first')
 
     def test_aop_detection(self):
-        sample = u"""<article specific-use="sps-1.2">
+        sample = """<article specific-use="sps-1.2">
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -925,7 +925,7 @@ class ArticleTests(TestCase):
         self.assertTrue(article._get_is_aop())
 
     def test_aop_detection_when_issue_meta_is_set(self):
-        sample = u"""<article specific-use="sps-1.2">
+        sample = """<article specific-use="sps-1.2">
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -949,7 +949,7 @@ class ArticleTests(TestCase):
         self.assertTrue(article._get_is_aop())
 
     def test_aop_detection_when_is_not_aop(self):
-        sample = u"""<article specific-use="sps-1.2">
+        sample = """<article specific-use="sps-1.2">
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -973,7 +973,7 @@ class ArticleTests(TestCase):
         self.assertFalse(article._get_is_aop())
 
     def test_aop_detection_when_is_not_aop_and_issue_data_is_missing(self):
-        sample = u"""<article specific-use="sps-1.2">
+        sample = """<article specific-use="sps-1.2">
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -997,7 +997,7 @@ class ArticleTests(TestCase):
         self.assertFalse(article._get_is_aop())
 
     def test_related_articles_detection(self):
-        sample = u"""<article specific-use="sps-1.2"
+        sample = """<article specific-use="sps-1.2"
                               article-type="correction"
                               xmlns:xlink="http://www.w3.org/1999/xlink">
                        <front>
@@ -1048,13 +1048,13 @@ class ArticleXpathsTests(TestCase):
         self.assertEqual(
                 self.article.xml.xpath(
                     models.Article.XPaths.ABBREV_JOURNAL_TITLE)[0].text,
-                u'Rev. Saúde Pública')
+                'Rev. Saúde Pública')
 
     def test_journal_title(self):
         self.assertEqual(
                 self.article.xml.xpath(
                     models.Article.XPaths.JOURNAL_TITLE)[0].text,
-                u'Revista de Saúde Pública')
+                'Revista de Saúde Pública')
 
     def test_issn_ppub(self):
         self.assertEqual(
@@ -1075,27 +1075,27 @@ class ArticleXpathsTests(TestCase):
     def test_year(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.YEAR)[0].text,
-                u'2014')
+                '2014')
 
     def test_volume(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.VOLUME)[0].text,
-                u'48')
+                '48')
 
     def test_issue(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.ISSUE)[0].text,
-                u'2')
+                '2')
 
     def test_fpage(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.FPAGE)[0].text,
-                u'216')
+                '216')
 
     def test_lpage(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.LPAGE)[0].text,
-                u'224')
+                '224')
 
     def test_elocationid(self):
         self.assertEqual(
@@ -1106,31 +1106,31 @@ class ArticleXpathsTests(TestCase):
         self.assertEqual(
                 self.article.xml.xpath(
                     models.Article.XPaths.HEAD_SUBJECT)[0].text,
-                u'Artigos Originais')
+                'Artigos Originais')
 
     def test_doi(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.DOI)[0].text,
-                u'10.1590/S0034-8910.2014048004965')
+                '10.1590/S0034-8910.2014048004965')
 
     def test_pid(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.PID)[0].text,
-                u'S0034-8910.2014048004965')
+                'S0034-8910.2014048004965')
 
     def test_article_type(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.ARTICLE_TYPE)[0],
-                u'research-article')
+                'research-article')
 
     def test_fpage_seq(self):
         self.assertEqual(
                 self.article.xml.xpath(models.Article.XPaths.FPAGE_SEQ)[0],
-                u'a')
+                'a')
 
 
     def test_aop_id(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <article-meta>
                            <article-id pub-id-type="other">xpto</article-id>
@@ -1141,10 +1141,10 @@ class ArticleXpathsTests(TestCase):
         article = models.Article(xml=sample)
         self.assertEqual(
                 article.xml.xpath(models.Article.XPaths.AOP_ID)[0].text,
-                u'xpto')
+                'xpto')
 
     def test_related_articles(self):
-        sample = u"""<article xmlns:xlink="http://www.w3.org/1999/xlink">
+        sample = """<article xmlns:xlink="http://www.w3.org/1999/xlink">
                        <front>
                          <article-meta>
                            <related-article related-article-type="corrected-article"
@@ -1171,7 +1171,7 @@ class ArticleXpathsTests(TestCase):
                 '10.1590/abd1806-4841.20142999')
 
     def test_related_articles_at_response(self):
-        sample = u"""<article xmlns:xlink="http://www.w3.org/1999/xlink">
+        sample = """<article xmlns:xlink="http://www.w3.org/1999/xlink">
                        <front>
                          <article-meta>
                          </article-meta>
@@ -1208,7 +1208,7 @@ class ArticleDomainKeyTests(TestCase):
     """
 
     def test_all_fields_but_elocationid_are_present(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -1232,7 +1232,7 @@ class ArticleDomainKeyTests(TestCase):
                 'revista-de-saude-publica_1_10_2014_10_a_15_none_none')
 
     def test_all_fields_except_seq_but_elocationid_are_present(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>
@@ -1256,7 +1256,7 @@ class ArticleDomainKeyTests(TestCase):
                 'revista-de-saude-publica_1_10_2014_10_none_15_none_none')
 
     def test_all_fields_but_fpage_and_lpage_are_present(self):
-        sample = u"""<article>
+        sample = """<article>
                        <front>
                          <journal-meta>
                            <journal-title-group>

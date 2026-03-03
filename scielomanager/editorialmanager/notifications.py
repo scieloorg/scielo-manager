@@ -66,7 +66,7 @@ class BoardMembersMessage(notifications.Message):
 
         if librarians:
             filtered_librarians = [librarian for librarian in librarians if user_receive_emails(librarian)]
-            self.bcc_recipients = map(lambda u: u.email, filtered_librarians)
+            self.bcc_recipients = [u.email for u in filtered_librarians]
         else:
             logger.error("[BoardMembersMessage.set_bcc_recipients] Can't prepare a message, Can't retrieve a list of Librarian Users.")
 

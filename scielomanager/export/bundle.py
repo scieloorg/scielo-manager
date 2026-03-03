@@ -2,7 +2,7 @@
 import os
 import tarfile
 import zipfile
-import StringIO
+import io
 import tempfile
 from datetime import datetime
 
@@ -26,10 +26,11 @@ class Bundle(object):
         out = tarfile.open(tmp.name, 'w')
 
         try:
-            for name, data in self._data.items():
+            for name, data in list(self._data.items()):
                 info = tarfile.TarInfo(name)
-                info.size = len(data)
-                out.addfile(info, StringIO.StringIO(data.encode('cp1252', 'replace')))
+                encoded_data = data.encode('cp1252', 'replace')
+                info.size = len(encoded_data)
+                out.addfile(info, io.BytesIO(encoded_data))
         finally:
             out.close()
 
@@ -41,7 +42,7 @@ class Bundle(object):
         out = zipfile.ZipFile(tmp.name, mode='w')
 
         try:
-            for name, data in self._data.items():
+            for name, data in list(self._data.items()):
                 info = zipfile.ZipInfo(name)
                 info.file_size = len(data)
                 info.compress_type = zipfile.ZIP_DEFLATED
@@ -62,9 +63,9 @@ class Bundle(object):
 
         base_path = os.path.split(os.path.splitext(target)[-2])[0]
         if not os.path.exists(base_path):
-            os.makedirs(base_path, 0755)
+            os.makedirs(base_path, 0o755)
 
-        with open(target, 'w') as f:
+        with open(target, 'wb') as f:
             f.write(data.read())
 
         data.close()

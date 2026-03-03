@@ -1,6 +1,6 @@
 # coding: utf-8
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext as __
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as __
 from django.conf import settings
 from django import template
 
@@ -31,14 +31,14 @@ def full_path(context, page_param_name='page', **params):
     if 'PATH_INFO' in context['request'].META:
         url_path = context['request'].META['PATH_INFO']
 
-    for key, value in params.items():
+    for key, value in list(params.items()):
         if key == 'page' and page_param_name and page_param_name.lower() != 'page':
             key = page_param_name.lower()
         url_get[key] = value
 
     if len(url_get):
         url_path += '&' if '?' in url_get else '?'
-        url_path += "%s" % "&".join(("%s=%s" % (key, value) for key, value in url_get.items() if value))
+        url_path += "%s" % "&".join(("%s=%s" % (key, value) for key, value in list(url_get.items()) if value))
 
     return url_path.encode('utf8')
 
@@ -97,9 +97,9 @@ class Pagination(template.Node):
 
             for page in object_record.paginator.page_range:
                 class_li_page = 'active' if object_record.number == page else ''
-                html_pages.append(u'<li class="{0}"><a href="{1}">{2}</a></li>'.format(class_li_page, full_path(context, page_param_name=page_param_name, page=page), page))
+                html_pages.append('<li class="{0}"><a href="{1}">{2}</a></li>'.format(class_li_page, full_path(context, page_param_name=page_param_name, page=page), page))
 
-            html_snippet = u'''
+            html_snippet = '''
                 <div class="pagination">
                     <ul>
                         <li class="prev {0}"><a href="{1}">&larr; {2}</a></li>
@@ -144,7 +144,7 @@ class SimplePagination(template.Node):
             class_li_previous = 'disabled' if not object_record.has_previous() else ''
             class_li_next = 'disabled' if not object_record.has_next() else ''
 
-            html_snippet = u'''
+            html_snippet = '''
                 <ul class="pager">
                     <li class="prev {4}">
                         <a href="{5}">&larr;</a>
@@ -192,7 +192,7 @@ class FieldHelpText(template.Node):
             if len(locals().get(value)) < 1:
                 return ''
 
-        html_snippet = u'''
+        html_snippet = '''
             <a class="help-text"
                target="_blank"
                rel="popover"

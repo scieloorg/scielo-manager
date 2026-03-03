@@ -1,7 +1,8 @@
 # coding: utf-8
-from django.conf.urls.defaults import *
-from django.contrib import admin
 from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, re_path
 from tastypie.api import Api
 
 from journalmanager import views, models
@@ -51,53 +52,49 @@ v2_api_resources = [
 for res in v2_api_resources:
     v2_api.register(res)
 
-urlpatterns = patterns('',
-    url(r'^$', views.index, name='index'),
+urlpatterns = [
+    re_path(r'^$', views.index, name='index'),
 
     # Article APP
-    url(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),
-    url(r'^articles/(?P<article_pk>\d+)/$', views.article_detail, name='article.detail'),
+    re_path(r'^issue/(?P<issue_id>\d+)/articles/$', views.article_index, name='article.index'),
+    re_path(r'^articles/(?P<article_pk>\d+)/$', views.article_detail, name='article.detail'),
 
     # Journal Manager APP
-    url(r'^journal/', include('journalmanager.urls')),
+    re_path(r'^journal/', include('journalmanager.urls')),
 
     # Editorial Manager APP
-    url(r'^editorial/', include('editorialmanager.urls')),
+    re_path(r'^editorial/', include('editorialmanager.urls')),
 
     # Django admin APP
-    url(r'^admin/', include(admin.site.urls)),
+    re_path(r'^admin/', admin.site.urls),
 
     # Accounts APP
-    url(r'accounts/', include('accounts.urls')),
+    re_path(r'accounts/', include('accounts.urls')),
 
     # I18N APP
-    url(r'^i18n/', include('django.conf.urls.i18n')),
+    re_path(r'^i18n/', include('django.conf.urls.i18n')),
 
     # API version 1
-    (r'^api/', include(v1_api.urls)),
+    re_path(r'^api/', include(v1_api.urls)),
 
     # API version 2
-    (r'^api/', include(v2_api.urls)),
+    re_path(r'^api/', include(v2_api.urls)),
 
     # Validator URLs:
-    url(r'^tools/validators/', include('validator.urls')),
+    re_path(r'^tools/validators/', include('validator.urls')),
 
     # Validator URLs:
-    url(r'^status/', include('health.urls')),
+    re_path(r'^status/', include('health.urls')),
 
     # Others
-    url(r'^trash/$', views.trash_listing, name="trash.listing"),
-    url(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
+    re_path(r'^trash/$', views.trash_listing, name="trash.listing"),
+    re_path(r'^trash/bulk_action/(?P<model_name>\w+)/(?P<action_name>\w+)/(?P<value>\w+)/$',
         views.generic_bulk_action, name='trash.bulk_action'),
-    url(r'^export/', include('export.urls')),
-    url(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
-    url(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
+    re_path(r'^export/', include('export.urls')),
+    re_path(r'^ajx/ajx3/$', views.ajx_list_users, name="ajx.ajx_list_users"),
+    re_path(r'^collection/(?P<collection_id>\d+)/edit/$', views.add_collection, name='collection.edit'),
 
-)
+]
 
 if settings.DEBUG:
-
-    urlpatterns += patterns('',
-        url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': settings.MEDIA_ROOT}),
-        )
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

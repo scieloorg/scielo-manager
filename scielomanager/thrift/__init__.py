@@ -1,7 +1,10 @@
 import os
 
 from django.conf import settings
-import thriftpy
+try:
+    import thriftpy
+except Exception:
+    import thriftpy2 as thriftpy
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))

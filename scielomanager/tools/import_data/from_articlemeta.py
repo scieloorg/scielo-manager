@@ -48,7 +48,7 @@ class Importer(object):
         self.catalog = Catalog(collection_to, user=user)
 
     def run(self):
-        for item in self.items():
+        for item in list(self.items()):
             self.catalog.load_issue(item)
 
     def items(self):
@@ -59,7 +59,7 @@ class Importer(object):
         for issn in self.issns:
             for data in self._articlemeta.issues(
                     collection=self.collection_from, issn=issn):
-                logger.debug(u'Reading issue (%s-%s) from journal %s - %s' % (
+                logger.debug('Reading issue (%s-%s) from journal %s - %s' % (
                     data.type, data.label, data.journal.title, data.journal.scielo_issn))
 
                 yield data
@@ -104,7 +104,7 @@ def main():
 
     args = parser.parse_args()
     _config_logging(args.logging_level, args.logging_file)
-    logger.info(u'Importing data from collection: %s' % args.collection_from)
+    logger.info('Importing data from collection: %s' % args.collection_from)
 
     issns = None
     if len(args.issns) > 0:
@@ -113,7 +113,7 @@ def main():
     try:
         importer = Importer(args.collection_from, args.collection_to, issns=issns)
     except ValueError:
-        logger.error(u'Destiny collection do not exists (%s)' % args.collection_to)
+        logger.error('Destiny collection do not exists (%s)' % args.collection_to)
     else:
         importer.run()
 

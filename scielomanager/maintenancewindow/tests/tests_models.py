@@ -30,7 +30,7 @@ class MaintenancewindowTests(TestCase):
     def test_scheduled_events_unavailable(self):
 
         EventFactory.create(
-            end_at=u'2012-11-12',
+            end_at='2012-11-12',
         )
 
         # Once no date was given, the call for open_events is assuming the current date.
@@ -39,7 +39,7 @@ class MaintenancewindowTests(TestCase):
     def test_scheduled_events_available(self):
 
         EventFactory.create(
-            end_at=u'2012-11-12',
+            end_at='2012-11-12',
         )
 
         self.assertTrue(len(models.Event.objects.scheduled_events(actual_date="2012-11-11")) > 0)

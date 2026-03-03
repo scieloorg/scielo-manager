@@ -1,9 +1,12 @@
 # coding: utf-8
 from django.template.context import RequestContext
-from django.shortcuts import render_to_response
 from django.conf import settings
 from django.templatetags.static import static
-import packtools
+from scielomanager.compat import render_to_response
+try:
+    import packtools
+except Exception:
+    packtools = None
 from . import forms
 from . import utils
 
@@ -24,7 +27,7 @@ def packtools_home(request, template_name='validator/stylechecker.html'):
         if form.is_valid():
             xml_file = request.FILES['file']
 
-            if form.cleaned_data.get('add_scielo_br_rules', False):
+            if packtools and form.cleaned_data.get('add_scielo_br_rules', False):
                 extra_sch = packtools.catalogs.SCHEMAS['scielo-br']
             else:
                 extra_sch = None
@@ -59,11 +62,12 @@ def packtools_preview_html(request, template_name='validator/preview_html.html')
             xml_file = request.FILES['file']
             previews = []
             try:
-                for lang, html_output in packtools.HTMLGenerator.parse(
-                        xml_file, valid_only=False, css=CSS_URL):
-                    previews.append({'lang': lang, 'html': html_output})
+                if packtools:
+                    for lang, html_output in packtools.HTMLGenerator.parse(
+                            xml_file, valid_only=False, css=CSS_URL):
+                        previews.append({'lang': lang, 'html': html_output})
             except Exception as e:
-                print e.message
+                print(str(e))
                 # qualquer exeção aborta a pre-visualização mas continua com o resto
                 previews = []
             context['previews'] = previews

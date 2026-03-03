@@ -42,7 +42,7 @@ class StatusChecker(object):
 
     @property
     def is_fully_operational(self):
-        return all([st['status'] for st in self.overall_status().values()])
+        return all([st['status'] for st in list(self.overall_status().values())])
 
     def overall_status(self):
         if not hasattr(self, '_overall_status'):

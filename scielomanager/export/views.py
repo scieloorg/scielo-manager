@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.template.context import RequestContext
-from django.shortcuts import render_to_response
 from django.shortcuts import redirect
+from scielomanager.compat import render_to_response
 
 from . import forms, markupfile
 

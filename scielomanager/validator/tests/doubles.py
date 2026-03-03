@@ -16,7 +16,7 @@ class XMLValidatorDouble(object):
         return {
             'article_title': 'HIV/AIDS knowledge among men who have sex with men: applying the item response theory',
             'issue_year': '2014',
-            'journal_title': u'Revista de Sa\xfade P\xfablica',
+            'journal_title': 'Revista de Sa\xfade P\xfablica',
             'journal_pissn': '0034-8910',
             'journal_eissn': '1518-8787',
             'issue_number': '2',
@@ -34,10 +34,10 @@ class XMLValidatorAnnotationsDouble(XMLValidatorDouble):
         class DummyError(object):
             line = 1
             column = 6
-            message = u'Premature end of data in tag xml line 1, line 1, column 6'
+            message = 'Premature end of data in tag xml line 1, line 1, column 6'
             level_name = 'ERROR'
 
-        for x in xrange(0, 6):
+        for x in range(0, 6):
             error_list.append(DummyError())
 
         return False, error_list
@@ -70,10 +70,10 @@ def make_stub_analyze_xml(type):
         err = None
     elif type == 'throw_io_error':
         result = None
-        err = IOError(u'Error reading file foo.xml')
+        err = IOError('Error reading file foo.xml')
     elif type == 'syntax_error':
         result = None
-        err = Exception(u'Premature end of data in tag unclosed_tag line 5, line 5, column 17')
+        err = Exception('Premature end of data in tag unclosed_tag line 5, line 5, column 17')
     else:
         raise ValueError('Unknown type value')
 

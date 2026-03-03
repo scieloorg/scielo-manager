@@ -8,7 +8,7 @@ from scielomanager import connectors
 from journalmanager import tasks
 
 
-_HELP = u"""\
+_HELP = """\
 Executa tarefas de manutenção da integração com o Elasticsearch.
 
 Os comandos são:
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 _reindex_articles()
             else:
                 raise CommandError(
-                        _to_bytestring(u'Comando inválido'))
+                        _to_bytestring('Comando inválido'))
 
         except elasticsearch.exceptions.TransportError as exc:
             raise CommandError(str(exc))

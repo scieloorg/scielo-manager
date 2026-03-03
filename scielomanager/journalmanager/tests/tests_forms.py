@@ -6,7 +6,7 @@ import os
 import unittest
 
 from django_webtest import WebTest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core import mail
 from django.test import TestCase
 from django.forms.models import inlineformset_factory
@@ -740,7 +740,7 @@ class UserFormTests(WebTest):
         response = form.submit()
 
         self.assertTemplateUsed(response, 'journalmanager/add_user.html')
-        self.assertEqual([u'Please fill in at least one form'], response.context['usercollectionsformset'].non_form_errors())
+        self.assertEqual(['Please fill in at least one form'], response.context['usercollectionsformset'].non_form_errors())
 
     @override_settings(CELERY_EAGER_PROPAGATES_EXCEPTIONS=True, CELERY_ALWAYS_EAGER=True, BROKER_BACKEND='memory')
     def test_create_user_with_coll_must_set_a_default(self):
@@ -794,7 +794,7 @@ class UserFormTests(WebTest):
         # when
         form = self.app.get(reverse('user.add'), user=self.user).forms['user-form']
         # then
-        self.assertIn(u'userprofile-0-email_notifications', form.fields)
+        self.assertIn('userprofile-0-email_notifications', form.fields)
 
     def test_edit_form_can_edit_profile_email_notifications(self):
         # with
@@ -803,7 +803,7 @@ class UserFormTests(WebTest):
         # when
         form = self.app.get(reverse('user.edit', args=[self.user.pk]), user=self.user).forms['user-form']
         # then
-        self.assertIn(u'userprofile-0-email_notifications', form.fields)
+        self.assertIn('userprofile-0-email_notifications', form.fields)
 
     def test_change_profile_notifications(self):
         # with
@@ -918,7 +918,7 @@ class UserCollectionsFormSetTests(TestCase):
         self.assertFalse(formset.is_valid())
         self.assertTrue(formset.forms[0].is_valid())
         self.assertFalse(formset.forms[1].is_valid())
-        expected_errors = {'__all__': [u'User collections with this User and Collection already exists.']}
+        expected_errors = {'__all__': ['User collections with this User and Collection already exists.']}
         self.assertEqual(formset.forms[1].errors, expected_errors)
 
     def test_create_formset_with_two_collections_only_the_first_is_set_as_default(self):
@@ -1100,9 +1100,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1151,9 +1151,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1221,9 +1221,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1292,9 +1292,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1362,9 +1362,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1433,9 +1433,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1501,9 +1501,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1570,9 +1570,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1638,9 +1638,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1715,9 +1715,9 @@ class JournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1787,8 +1787,8 @@ class JournalFormTests(WebTest):
         form['journal-eletronic_issn'] = journal.eletronic_issn
         form['journal-init_vol'] = '1'
         form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1857,8 +1857,8 @@ class JournalFormTests(WebTest):
         form['journal-eletronic_issn'] = '1234-9876'
         form['journal-init_vol'] = '1'
         form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -1999,8 +1999,8 @@ class SponsorFormTests(WebTest):
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
-        form['sponsor-name'] = u'Fundação de Amparo a Pesquisa do Estado de São Paulo'
-        form['sponsor-address'] = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+        form['sponsor-name'] = 'Fundação de Amparo a Pesquisa do Estado de São Paulo'
+        form['sponsor-address'] = 'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
         form['sponsor-email'] = 'fapesp@scielo.org'
         form['sponsor-complement'] = ''
@@ -2027,7 +2027,7 @@ class SponsorFormTests(WebTest):
 
         form = self.app.get(reverse('sponsor.add'), user=self.user).forms['sponsor-form']
 
-        form['sponsor-address'] = u'Av. Professor Lineu Prestes, 338 Cidade Universitária \
+        form['sponsor-address'] = 'Av. Professor Lineu Prestes, 338 Cidade Universitária \
                                     Caixa Postal 8105 05508-900 São Paulo SP Brazil Tel. / Fax: +55 11 3091-3047'
         form['sponsor-email'] = 'fapesp@scielo.org'
         form['sponsor-complement'] = ''
@@ -2127,11 +2127,11 @@ class IssueBaseFormClassTests(unittest.TestCase):
                     'cover': dj_forms.ImageField,
                     }
 
-        self.assertEqual(len(expected.keys()), len(issue_form.fields.keys()))
+        self.assertEqual(len(list(expected.keys())), len(list(issue_form.fields.keys())))
         self.assertEqual(sorted(expected.keys()), sorted(issue_form.fields.keys()))
         self.assertEqual(
             expected,
-            {fname: type(field) for fname, field in issue_form.fields.items()}
+            {fname: type(field) for fname, field in list(issue_form.fields.items())}
         )
 
     def test_save_commit_eq_False(self):
@@ -2167,15 +2167,15 @@ class IssueBaseFormClassTests(unittest.TestCase):
 
         self.assertIsInstance(issue_model, models.Issue)
         self.assertTrue(section in issue_model.section.all())
-        self.assertEqual(issue_model.volume, u'1')
+        self.assertEqual(issue_model.volume, '1')
         self.assertEqual(issue_model.publication_start_month, 1)
         self.assertEqual(issue_model.publication_end_month, 2)
         self.assertEqual(issue_model.publication_year, 2014)
         self.assertEqual(issue_model.is_marked_up, True)
         self.assertEqual(issue_model.use_license, use_license)
         self.assertEqual(issue_model.total_documents, 10)
-        self.assertEqual(issue_model.ctrl_vocabulary, u'nd')
-        self.assertEqual(issue_model.editorial_standard, u'iso690')
+        self.assertEqual(issue_model.ctrl_vocabulary, 'nd')
+        self.assertEqual(issue_model.editorial_standard, 'iso690')
         self.assertEqual(issue_model.cover, None)
 
     def test_save_m2m_while_commit_eq_False(self):
@@ -4162,11 +4162,11 @@ class SectionTitleFormValidationTests(TestCase):
         section.add_title('Original Article', language=language)
 
         post_dict = {
-            u'titles-INITIAL_FORMS': 0,
-            u'titles-TOTAL_FORMS': 1,
-            u'legacy_code': u'',
-            u'titles-0-language': unicode(language2.pk),
-            u'titles-0-title': u'Original Article',
+            'titles-INITIAL_FORMS': 0,
+            'titles-TOTAL_FORMS': 1,
+            'legacy_code': '',
+            'titles-0-language': str(language2.pk),
+            'titles-0-title': 'Original Article',
         }
 
         section_forms = forms.get_all_section_forms(post_dict,

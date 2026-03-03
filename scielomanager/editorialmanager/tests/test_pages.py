@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django_webtest import WebTest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from journalmanager.tests import modelfactories
 from . import modelfactories as editorial_modelfactories
@@ -444,8 +444,8 @@ class DownloadMemberCSVFileTests(WebTest):
         issue_year = self.issue.publication_year
         issue_volume = self.issue.volume
         issue_number = self.issue.number
-        filename = u'board_%s_%s_v%s_n%s' % (journal_slug, issue_year, issue_volume, issue_number)
-        self.assertEquals(response.content_disposition,
+        filename = 'board_%s_%s_v%s_n%s' % (journal_slug, issue_year, issue_volume, issue_number)
+        self.assertEqual(response.content_disposition,
                           'attachment; filename="%s.csv"' % filename)
 
     def test_authenticated_users_download_content(self):
@@ -459,6 +459,6 @@ class DownloadMemberCSVFileTests(WebTest):
             user=self.user
         )
 
-        expected = u'journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number, role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code_alpha3, research_id, orcid\r\n"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"\r\n' % (self.journal.title, self.journal.print_issn, self.journal.eletronic_issn, self.issue.publication_year, self.issue.volume, self.issue.number, member.role.name, member.first_name, member.last_name, member.first_name + ' ' + member.last_name, member.email, member.institution, member.link_cv, member.state, member.country.name, member.country, member.country.alpha3, member.research_id, member.orcid)
+        expected = 'journal, issn_print, issn_eletronic, issue_year, issue_volume, issue_number, role_name, first_name, last_name, full_name, email, institution, link_cv, state, country, country_code, country_code_alpha3, research_id, orcid\r\n"%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s"\r\n' % (self.journal.title, self.journal.print_issn, self.journal.eletronic_issn, self.issue.publication_year, self.issue.volume, self.issue.number, member.role.name, member.first_name, member.last_name, member.first_name + ' ' + member.last_name, member.email, member.institution, member.link_cv, member.state, member.country.name, member.country, member.country.alpha3, member.research_id, member.orcid)
 
         self.assertEqual(response.content, expected.encode('utf-8'))

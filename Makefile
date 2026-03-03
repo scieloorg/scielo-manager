@@ -12,30 +12,30 @@ clean:
 	@find . -name "*.pyc" -delete
 	
 test: 
-	@python $(MANAGE) test --settings=$(SETTINGS_TEST)
+	@python3 $(MANAGE) test --settings=$(SETTINGS_TEST)
 
 testfast:
-	@python $(MANAGE) test --settings=$(SETTINGS_TEST) --failfast
+	@python3 $(MANAGE) test --settings=$(SETTINGS_TEST) --failfast
 
 dbsetup:
-	@python $(MANAGE) syncdb --settings=$(SETTINGS)
+	@python3 $(MANAGE) migrate --settings=$(SETTINGS)
 
 loaddata:
-	@python $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
-	@python $(MANAGE) loaddata $(APP_PATH)/journalmanager/fixtures/use_licenses.json --settings=$(SETTINGS)
-	@python $(MANAGE) loaddata $(FIXTURES_DIR)/subject_categories.json --settings=$(SETTINGS)
-	@python $(MANAGE) loaddata $(FIXTURES_DIR)/study_area.json --settings=$(SETTINGS)
-	@python $(MANAGE) sync_perms --settings=$(SETTINGS)
+	@python3 $(MANAGE) loaddata $(FIXTURES_DIR)/groups.json --settings=$(SETTINGS)
+	@python3 $(MANAGE) loaddata $(APP_PATH)/journalmanager/fixtures/use_licenses.json --settings=$(SETTINGS)
+	@python3 $(MANAGE) loaddata $(FIXTURES_DIR)/subject_categories.json --settings=$(SETTINGS)
+	@python3 $(MANAGE) loaddata $(FIXTURES_DIR)/study_area.json --settings=$(SETTINGS)
+	@python3 $(MANAGE) sync_perms --settings=$(SETTINGS)
 
 dbmigrate:
-	@python $(MANAGE) migrate --settings=$(SETTINGS)
+	@python3 $(MANAGE) migrate --settings=$(SETTINGS)
 
 compilemessages:
-	@python $(MANAGE) compilemessages --settings=$(SETTINGS)
+	@python3 $(MANAGE) compilemessages --settings=$(SETTINGS)
 
 compile: 
 	@echo "Compiling all source files..."
-	@cd $(APP_PATH) && python -m compileall .
+	@cd $(APP_PATH) && python3 -m compileall .
 
 setup: clean compile deps dbsetup dbmigrate loaddata compilemessages test 
 

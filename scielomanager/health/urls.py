@@ -1,8 +1,7 @@
 # -*- encoding: utf-8 -*-
-from django.conf.urls.defaults import *
+from django.urls import re_path
 from . import views
 
-urlpatterns = patterns('',
-	url(r'^$', views.home, name="health.home"),
-)
-
+urlpatterns = [
+    re_path(r'^$', views.home, name="health.home"),
+]

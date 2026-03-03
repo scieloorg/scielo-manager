@@ -1,14 +1,20 @@
 # coding: utf-8
 import logging
 import lxml
-import pkg_resources
-import packtools
+try:
+    from importlib import metadata as importlib_metadata
+except ImportError:
+    import importlib_metadata  # type: ignore
+try:
+    import packtools
+except Exception:
+    packtools = None
 from scielomanager.tools import get_setting_or_raise
 logger = logging.getLogger(__name__)
 
 try:
-    PACKTOOLS_VERSION = pkg_resources.get_distribution('packtools').version
-except pkg_resources.DistributionNotFound:
+    PACKTOOLS_VERSION = importlib_metadata.version('packtools')
+except importlib_metadata.PackageNotFoundError:
     PACKTOOLS_VERSION = None
 
 PACKTOOLS_DEPRECATION_WARNING_VERSION = get_setting_or_raise('PACKTOOLS_DEPRECATION_WARNING_VERSION')
@@ -44,6 +50,9 @@ def make_error_filter(key):
 def analyze_xml(file, extra_schematron=None):
     """Analyzes `file` against packtools' XMLValidator.
     """
+    if packtools is None:
+        return None, RuntimeError('packtools is not installed in this environment')
+
     result = err = None
     if extra_schematron:
         extra_sch = packtools.utils.get_schematron_from_filepath(
@@ -76,7 +85,7 @@ def analyze_xml(file, extra_schematron=None):
 
         if not status:
             err_filter = make_error_filter(lambda x: x.message)
-            unique_err_list = filter(err_filter, errors)
+            unique_err_list = list(filter(err_filter, errors))
             err_list = [(error, count(error, errors, lambda x: x.message)) for error in unique_err_list]
 
             result['validation_errors'] = err_list

@@ -84,7 +84,7 @@ class _Elasticsearch(object):
         self.doctype = doctype
 
     def __repr__(self):
-        return u'<%s es_client=%s index=%s doctype=%s>' % (
+        return '<%s es_client=%s index=%s doctype=%s>' % (
                 self.__class__.__name__, self.es_client, self.index,
                 self.doctype)
 

@@ -7,16 +7,16 @@ MEDIA_ROOT = settings.MEDIA_ROOT + '/export/'
 MEDIA_URL = settings.MEDIA_URL + '/export/'
 
 standards = {
-    'iso690': ('icitat', 'iso', u'iso 690/87 - international standard organization'),
-    'nbr6023': ('acitat', 'abnt', u'nbr 6023/89 - associação nacional de normas técnicas'),
-    'other': ('ocitat', 'other', u'other standard'),
-    'vancouv': ('vcitat', 'vanc', u'the vancouver group - uniform requirements for manuscripts submitted to biomedical journals'),
-    'apa': ('pcitat', 'apa', u'American Psychological Association'),
+    'iso690': ('icitat', 'iso', 'iso 690/87 - international standard organization'),
+    'nbr6023': ('acitat', 'abnt', 'nbr 6023/89 - associação nacional de normas técnicas'),
+    'other': ('ocitat', 'other', 'other standard'),
+    'vancouv': ('vcitat', 'vanc', 'the vancouver group - uniform requirements for manuscripts submitted to biomedical journals'),
+    'apa': ('pcitat', 'apa', 'American Psychological Association'),
 }
 
-L10ISSUEMGS = {'en': (u'No section title', u'No Descriptor', u'Health Sciences Descriptors'),
-        'es': (u'Sín título de sección', u'Ningun Descriptor', u'Descriptores en Ciencia de la Salud'),
-        'pt': (u'Sem título de seção', u'Nenhum Descritor', u'Descritores em Ciência da Saúde')}
+L10ISSUEMGS = {'en': ('No section title', 'No Descriptor', 'Health Sciences Descriptors'),
+        'es': ('Sín título de sección', 'Ningun Descriptor', 'Descriptores en Ciencia de la Salud'),
+        'pt': ('Sem título de seção', 'Nenhum Descritor', 'Descritores em Ciência da Saúde')}
 
 issns = {
     'print': 'print_issn',
@@ -84,7 +84,7 @@ class Automata(object):
         return self._journal.acronym.lower()
 
     def __unicode__(self):
-        return u'{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
+        return '{0};{1};{2}.amd;tg{3}.amd'.format(self.issn,
             self.citat, self.acron, self.norma_acron)
 
 
@@ -98,9 +98,9 @@ class Issue(object):
 
     @property
     def legend(self):
-        return u'{0} v.{1} n.{2}'.format(self._issue.journal.short_title,
-                                         unicode(self._issue.volume),
-                                         unicode(self._issue.identification))
+        return '{0} v.{1} n.{2}'.format(self._issue.journal.short_title,
+                                         str(self._issue.volume),
+                                         str(self._issue.identification))
 
     @property
     def period(self):
@@ -119,7 +119,7 @@ class Issue(object):
         return str(self._issue.publication_year) + str(self._issue.order)
 
     def __unicode__(self):
-        rows = u'\r\n'.join([self.legend, self.period, self.order, u'', u''])
+        rows = '\r\n'.join([self.legend, self.period, self.order, '', ''])
         return rows
 
 
@@ -141,48 +141,48 @@ class L10nIssue(Automata, Issue):
     @property
     def volume(self):
         v = self._issue.volume
-        return unicode(v) if v else u''
+        return str(v) if v else ''
 
     @property
     def number(self):
         v = self._issue.number
-        return unicode(v) if v else u''
+        return str(v) if v else ''
 
     @property
     def suppl_volume(self):
         if self._issue.type == 'supplement' and not self._issue.number:
-            return unicode(self._issue.suppl_text)
+            return str(self._issue.suppl_text)
         else:
-            return u''
+            return ''
 
     @property
     def suppl_number(self):
         if self._issue.type == 'supplement' and self._issue.number:
-            return unicode(self._issue.suppl_text)
+            return str(self._issue.suppl_text)
         else:
-            return u''
+            return ''
 
     @property
     def date_iso(self):
         try:
-            month = u'%02d' % self._issue.publication_end_month
+            month = '%02d' % self._issue.publication_end_month
         except TypeError:
-            month = u'00'
-        year = unicode(self._issue.publication_year)
+            month = '00'
+        year = str(self._issue.publication_year)
 
         if year:
-            return year + month + u'00'
+            return year + month + '00'
         else:
-            return u''
+            return ''
 
     @property
     def status(self):
         # placebo
-        return u'1'
+        return '1'
 
     @property
     def issue_meta(self):
-        return u';'.join([
+        return ';'.join([
             self.short_title,
             self.volume,
             self.suppl_volume,
@@ -195,13 +195,13 @@ class L10nIssue(Automata, Issue):
 
     @property
     def sections(self):
-        sections = ';'.join([unicode(section) for section in self._issue.section.available(True).all()])
-        return sections + u';' + L10ISSUEMGS[self._language][0] if sections else L10ISSUEMGS[self._language][0]
+        sections = ';'.join([str(section) for section in self._issue.section.available(True).all()])
+        return sections + ';' + L10ISSUEMGS[self._language][0] if sections else L10ISSUEMGS[self._language][0]
 
     @property
     def sections_ids(self):
-        ids = ';'.join([unicode(section.actual_code) for section in self._issue.section.available(True).all()])
-        return ids + u';nd' if ids else u'nd'
+        ids = ';'.join([str(section.actual_code) for section in self._issue.section.available(True).all()])
+        return ids + ';nd' if ids else 'nd'
 
     @property
     def ctrl_vocabulary(self):
@@ -214,14 +214,14 @@ class L10nIssue(Automata, Issue):
             return L10ISSUEMGS[self._language][1]
 
     def __unicode__(self):
-        rows = u'\r\n'.join([
+        rows = '\r\n'.join([
             self.legend,
             self.issue_meta,
             self.sections,
             self.sections_ids,
             self.ctrl_vocabulary,
             self.norma_name,
-            u'',
+            '',
         ])
         return rows
 
@@ -235,9 +235,9 @@ class JournalStandard(L10nIssue):
     @property
     def pub_type(self):
         issns = {
-            'print': u'ppub',
-            'electronic': u'epub',
-            'eletronic': u'epub',
+            'print': 'ppub',
+            'electronic': 'epub',
+            'eletronic': 'epub',
         }
         return issns[self._journal.scielo_issn]
 
@@ -247,27 +247,27 @@ class JournalStandard(L10nIssue):
 
     @property
     def medline_title(self):
-        return unicode(self._journal.medline_title)
+        return str(self._journal.medline_title)
 
     @property
     def medline_code(self):
-        return unicode(self._journal.medline_code)
+        return str(self._journal.medline_code)
 
     @property
     def pissn(self):
-        return unicode(self._journal.print_issn)
+        return str(self._journal.print_issn)
 
     @property
     def eissn(self):
-        return unicode(self._journal.eletronic_issn)
+        return str(self._journal.eletronic_issn)
 
     @property
     def publisher(self):
-        return unicode(self._journal.publisher_name)
+        return str(self._journal.publisher_name)
 
     @property
     def title(self):
-        return unicode(self._journal.title)
+        return str(self._journal.title)
 
     @property
     def journal_meta(self):
@@ -301,12 +301,12 @@ def generate(journal, issue):
 
     try:
         packmeta = [
-            ('automata.mds', unicode(export_automata)),
-            ('issue.mds', unicode(export_issue)),
-            ('en_issue.mds', unicode(export_l10n_issue_en)),
-            ('es_issue.mds', unicode(export_l10n_issue_es)),
-            ('pt_issue.mds', unicode(export_l10n_issue_pt)),
-            ('journal-standard.txt', unicode(export_journal_standard)),
+            ('automata.mds', str(export_automata)),
+            ('issue.mds', str(export_issue)),
+            ('en_issue.mds', str(export_l10n_issue_en)),
+            ('es_issue.mds', str(export_l10n_issue_es)),
+            ('pt_issue.mds', str(export_l10n_issue_pt)),
+            ('journal-standard.txt', str(export_journal_standard)),
         ]
     except AttributeError as exc:
         raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))
@@ -327,7 +327,7 @@ class Ahead(object):
 
     @property
     def legend(self):
-        return u'{0} n.ahead'.format(self._journal.title_iso)
+        return '{0} n.ahead'.format(self._journal.title_iso)
 
     @property
     def period(self):
@@ -370,16 +370,16 @@ class L10nAhead(Ahead):
 
     @property
     def date_iso(self):
-        year = unicode(self._year)
+        year = str(self._year)
 
         if year:
-            return year + u'0000'
+            return year + '0000'
         else:
-            return u''
+            return ''
 
     @property
     def status(self):
-        return u'1'
+        return '1'
 
     @property
     def issn(self):
@@ -418,7 +418,7 @@ class L10nAhead(Ahead):
 
     @property
     def ahead_meta(self):
-        return u';'.join([
+        return ';'.join([
             self.short_title,
             '',
             '',
@@ -430,14 +430,14 @@ class L10nAhead(Ahead):
         ])
 
     def __unicode__(self):
-        rows = u'\r\n'.join([
+        rows = '\r\n'.join([
             self.title_ahead,
             self.ahead_meta,
             self.sections,
             self.sections_ids,
             self.ctrl_vocabulary,
             self.norma_name,
-            u'',
+            '',
         ])
         return rows
 
@@ -450,9 +450,9 @@ class JournalStandardAhead(L10nAhead):
     @property
     def pub_type(self):
         issns = {
-            'print': u'ppub',
-            'electronic': u'epub',
-            'eletronic': u'epub',
+            'print': 'ppub',
+            'electronic': 'epub',
+            'eletronic': 'epub',
         }
         return issns[self._journal.scielo_issn]
 
@@ -462,27 +462,27 @@ class JournalStandardAhead(L10nAhead):
 
     @property
     def medline_title(self):
-        return unicode(self._journal.medline_title)
+        return str(self._journal.medline_title)
 
     @property
     def medline_code(self):
-        return unicode(self._journal.medline_code)
+        return str(self._journal.medline_code)
 
     @property
     def pissn(self):
-        return unicode(self._journal.print_issn)
+        return str(self._journal.print_issn)
 
     @property
     def eissn(self):
-        return unicode(self._journal.eletronic_issn)
+        return str(self._journal.eletronic_issn)
 
     @property
     def publisher(self):
-        return unicode(self._journal.publisher_name)
+        return str(self._journal.publisher_name)
 
     @property
     def title(self):
-        return unicode(self._journal.title)
+        return str(self._journal.title)
 
     @property
     def acron(self):
@@ -530,12 +530,12 @@ def generate_ahead(journal_id, year):
 
     try:
         packmeta = [
-            ('automata.mds', unicode(export_automata)),
-            ('issue.mds', unicode(export_ahead)),
-            ('en_issue.mds', unicode(export_l10n_issue_en)),
-            ('es_issue.mds', unicode(export_l10n_issue_es)),
-            ('pt_issue.mds', unicode(export_l10n_issue_pt)),
-            ('journal-standard.txt', unicode(export_journal_standard)),
+            ('automata.mds', str(export_automata)),
+            ('issue.mds', str(export_ahead)),
+            ('en_issue.mds', str(export_l10n_issue_en)),
+            ('es_issue.mds', str(export_l10n_issue_es)),
+            ('pt_issue.mds', str(export_l10n_issue_pt)),
+            ('journal-standard.txt', str(export_journal_standard)),
         ]
     except AttributeError as exc:
         raise GenerationError('it was impossible to generate the package for %s. %s' % (journal.pk, exc))

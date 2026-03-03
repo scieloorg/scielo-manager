@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import hashlib
 import logging
-import choices
+from . import choices
 from pytz import all_timezones
 from scielomanager import tools
 import datetime
@@ -20,15 +20,21 @@ from django.db import (
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext as __
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as __
 from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from scielo_extensions import modelfields
+from django.utils.deconstruct import deconstructible
+try:
+    from scielo_extensions import modelfields
+except Exception:
+    from django_countries.fields import CountryField
+
+    class modelfields:
+        CountryField = CountryField
 from tastypie.models import create_api_key
 import celery
 from PIL import Image
@@ -45,7 +51,7 @@ logger = logging.getLogger(__name__)
 
 LINKABLE_ARTICLE_TYPES = ['correction', ]
 EVENT_TYPES = [(ev_type, ev_type) for ev_type in ['added', 'deleted', 'updated']]
-ISSUE_DEFAULT_LICENSE_HELP_TEXT = _(u"If not defined, will be applied the related journal's use license. \
+ISSUE_DEFAULT_LICENSE_HELP_TEXT = _("If not defined, will be applied the related journal's use license. \
 The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.")
 
 
@@ -299,7 +305,7 @@ class Language(models.Model):
         ordering = ['name']
 
 
-PROFILE_TIMEZONES_CHOICES = zip(all_timezones, all_timezones)
+PROFILE_TIMEZONES_CHOICES = list(zip(all_timezones, all_timezones))
 
 
 class UserProfile(models.Model):
@@ -325,7 +331,7 @@ class UserProfile(models.Model):
 
     @property
     def avatar_url(self):
-        params = urllib.urlencode({'s': 18, 'd': 'mm'})
+        params = urllib.parse.urlencode({'s': 18, 'd': 'mm'})
         return '{0}/avatar/{1}?{2}'.format(getattr(settings, 'GRAVATAR_BASE_URL', 'https://secure.gravatar.com'), self.gravatar_id, params)
 
     @property
@@ -341,7 +347,7 @@ class Collection(models.Model):
     objects = models.Manager()  # The default manager.
     userobjects = modelmanagers.CollectionManager()  # Custom manager
 
-    collection = models.ManyToManyField(User, related_name='user_collection', through='UserCollections', null=True, blank=True, )
+    collection = models.ManyToManyField(User, related_name='user_collection', through='UserCollections', blank=True, )
     name = models.CharField(_('Collection Name'), max_length=128, db_index=True, )
     name_slug = models.SlugField(unique=True, db_index=True, blank=True, null=True)
     url = models.URLField(_('Instance URL'), )
@@ -359,7 +365,7 @@ class Collection(models.Model):
     email = models.EmailField(_('Email'), )
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
     class Meta:
         ordering = ['name']
@@ -467,7 +473,7 @@ class Institution(models.Model):
     is_trashed = models.BooleanField(_('Is trashed?'), default=False, db_index=True)
 
     def __unicode__(self):
-        return u'%s' % (self.name)
+        return '%s' % (self.name)
 
     class Meta:
         ordering = ['name']
@@ -520,12 +526,12 @@ class Journal(models.Model):
     creator = models.ForeignKey(User, related_name='enjoy_creator',
             editable=False)
     sponsor = models.ManyToManyField('Sponsor', verbose_name=_('Sponsor'),
-            related_name='journal_sponsor', null=True, blank=True)
+            related_name='journal_sponsor', blank=True)
     previous_title = models.ForeignKey('Journal', verbose_name=_('Previous title'),
             related_name='prev_title', null=True, blank=True)
     # licença de uso padrão definida pelo editor da revista
     use_license = models.ForeignKey('UseLicense', verbose_name=_('Use license'),
-            default=get_journals_default_use_license)
+            null=True, blank=True)
     collections = models.ManyToManyField('Collection', through='Membership')
     # os idiomas que a revista publica conteúdo
     languages = models.ManyToManyField('Language')
@@ -535,18 +541,17 @@ class Journal(models.Model):
     abstract_keyword_languages = models.ManyToManyField('Language',
             related_name="abstract_keyword_languages")
     subject_categories = models.ManyToManyField(SubjectCategory,
-            verbose_name=_("Subject Categories"), related_name="journals",
-            null=True)
+            verbose_name=_("Subject Categories"), related_name="journals")
     study_areas = models.ManyToManyField(StudyArea, verbose_name=_("Study Area"),
-            related_name="journals_migration_tmp", null=True)
+            related_name="journals_migration_tmp")
 
     # Fields
     current_ahead_documents = models.IntegerField(
             _('Total of ahead of print documents for the current year'),
-            max_length=3, default=0, blank=True)
+            default=0, blank=True)
     previous_ahead_documents = models.IntegerField(
             _('Total of ahead of print documents for the previous year'),
-            max_length=3, default=0, blank=True)
+            default=0, blank=True)
     twitter_user = models.CharField(_('Twitter User'), max_length=128,
             default='', blank=True)
     title = models.CharField(_('Journal Title'), max_length=256, db_index=True)
@@ -635,7 +640,7 @@ class Journal(models.Model):
     is_indexed_aehci = models.BooleanField(_('A&HCI'), default=False)
 
     def __repr__(self):
-        return u'<%s pk="%s" acronym="%s">' % (self.__class__.__name__, self.pk,
+        return '<%s pk="%s" acronym="%s">' % (self.__class__.__name__, self.pk,
                 self.acronym)
 
     def __unicode__(self):
@@ -670,8 +675,8 @@ class Journal(models.Model):
             volume_node = year_node.setdefault(issue.volume, [])
             volume_node.append(issue)
 
-        for year, volume in grid.items():
-            for vol, issues in volume.items():
+        for year, volume in list(grid.items()):
+            for vol, issues in list(volume.items()):
                 issues.sort(key=lambda x: x.order)
 
         return grid
@@ -700,7 +705,7 @@ class Journal(models.Model):
         Returns the ISSN used as PID on SciELO public catalogs.
         """
 
-        attr = u'print_issn' if self.scielo_issn == u'print' else u'eletronic_issn'
+        attr = 'print_issn' if self.scielo_issn == 'print' else 'eletronic_issn'
         return getattr(self, attr)
 
     def join(self, collection, responsible):
@@ -899,7 +904,7 @@ class Section(models.Model):
         chars sequence. It may accept the number of chars as argument.
         """
         num_chars = getattr(settings, 'SECTION_CODE_TOTAL_RANDOM_CHARS', 4)
-        fmt = u'{0}-{1}'.format(self.journal.acronym, rand_generator(num_chars))
+        fmt = '{0}-{1}'.format(self.journal.acronym, rand_generator(num_chars))
         return fmt
 
     def _create_code(self, *args, **kwargs):
@@ -914,10 +919,10 @@ class Section(models.Model):
                     logger.warning('conflict while trying to generate a section code. %i tries remaining.' % tries)
                     continue
                 else:
-                    logger.info('code created successfully for %s' % unicode(self))
+                    logger.info('code created successfully for %s' % str(self))
                     break
             else:
-                msg = 'max_tries reached while trying to generate a code for the section %s.' % unicode(self)
+                msg = 'max_tries reached while trying to generate a code for the section %s.' % str(self)
                 logger.error(msg)
                 raise DatabaseError(msg)
 
@@ -985,8 +990,8 @@ class Issue(models.Model):
         return ''.join(
             [
                 jissn,
-                unicode(self.publication_year),
-                u'%04d' % self.order,
+                str(self.publication_year),
+                '%04d' % self.order,
             ]
         )
 
@@ -1093,7 +1098,7 @@ class Issue(models.Model):
         return self.journal.use_license
 
     def save(self, *args, **kwargs):
-        self.label = unicode(self)
+        self.label = str(self)
 
         if self.use_license is None and self.journal:
             self.use_license = self._get_default_use_license()
@@ -1173,7 +1178,7 @@ class PressRelease(models.Model):
         If the translation doesn't exist, nothing happens silently.
         """
         qry_params = {'press_release': self}
-        if isinstance(language, basestring):
+        if isinstance(language, str):
             qry_params['language__iso_code'] = language
         else:
             qry_params['language'] = language
@@ -1257,7 +1262,7 @@ class ArticlesLinkage(models.Model):
     link_type = models.CharField(max_length=32)
 
     def __repr__(self):
-        return u'<%s referrer="%s" link_to="%s" link_type="%s">' % (
+        return '<%s referrer="%s" link_to="%s" link_type="%s">' % (
                 self.__class__.__name__, repr(self.referrer), repr(self.link_to),
                 self.link_type)
 
@@ -1296,11 +1301,11 @@ class Article(models.Model):
     objects = models.Manager()  # The default manager.
     userobjects = modelmanagers.ArticleManager()
 
-    created_at = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now)
-    updated_at = models.DateTimeField(auto_now=True, default=datetime.datetime.now)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     aid = models.CharField(max_length=32, unique=True, editable=False)
-    doi = models.CharField(max_length=2048, default=u'', db_index=True)
+    doi = models.CharField(max_length=2048, default='', db_index=True)
     domain_key = models.SlugField(max_length=2048, unique=True, db_index=False,
             editable=False)
     is_visible = models.BooleanField(default=True)
@@ -1313,7 +1318,7 @@ class Article(models.Model):
     journal = models.ForeignKey(Journal, related_name='articles', blank=True, null=True)
     issue = models.ForeignKey(Issue, related_name='articles', blank=True, null=True)
     related_articles = models.ManyToManyField('self', through='ArticlesLinkage',
-            symmetrical=False, blank=True, null=True)
+            symmetrical=False, blank=True)
     journal_title = models.CharField(_('Journal title'), max_length=512, db_index=True)
     issn_ppub = models.CharField(max_length=9, db_index=True)
     issn_epub = models.CharField(max_length=9, db_index=True)
@@ -1469,22 +1474,21 @@ class Article(models.Model):
     def __repr__(self):
         # para instâncias não salvas
         if self.xml is None:
-            domain_key = u''
+            domain_key = ''
         else:
             domain_key = self.domain_key or self._get_domain_key()
 
-        return u'<%s aid="%s" domain_key="%s">' % (self.__class__.__name__,
+        return '<%s aid="%s" domain_key="%s">' % (self.__class__.__name__,
                 self.aid, domain_key)
 
 
-def make_article_directory_path(content_type):
-    """ Produz funções que definem o diretório de armazenamento dos arquivos
-    relacionados a um artigo.
+@deconstructible
+class ArticleDirectoryPath:
+    """Upload path factory serializable by Django migrations."""
+    def __init__(self, content_type):
+        self.content_type = content_type
 
-    O ativo será armazenado em:
-    MEDIA_ROOT/articles/<aid_seg1>/<aid_seg2>/<aid_seg3>/<aid>/<content_type>/<filename>.
-    """
-    def article_directory_path(instance, filename):
+    def __call__(self, instance, filename):
         aid = instance.article.aid
         seg1 = aid[:2]
         seg2 = aid[2:4]
@@ -1492,9 +1496,7 @@ def make_article_directory_path(content_type):
 
         return 'articles/{seg1}/{seg2}/{seg3}/{aid}/{type}/{filename}'.format(
                 seg1=seg1, seg2=seg2, seg3=seg3, aid=aid,
-                type=content_type, filename=filename)
-
-    return article_directory_path
+                type=self.content_type, filename=filename)
 
 
 class ArticleAsset(models.Model):
@@ -1503,17 +1505,17 @@ class ArticleAsset(models.Model):
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='assets')
     file = models.FileField(
-            upload_to=make_article_directory_path('assets'),
+            upload_to=ArticleDirectoryPath('assets'),
             max_length=1024)
     preferred_alt_file = models.FileField(
-            upload_to=make_article_directory_path('alt_assets'),
-            max_length=1024, default=u'')
-    owner = models.CharField(max_length=1024, default=u'')
-    use_license = models.TextField(default=u'')
+            upload_to=ArticleDirectoryPath('alt_assets'),
+            max_length=1024, default='')
+    owner = models.CharField(max_length=1024, default='')
+    use_license = models.TextField(default='')
     updated_at = models.DateTimeField(auto_now=True)
 
     def __repr__(self):
-        return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
+        return '<%s id="%s" url="%s">' % (self.__class__.__name__,
                 self.pk, self.file.url)
 
     def is_image(self):
@@ -1541,14 +1543,14 @@ class ArticleHTMLRendition(models.Model):
     """
     article = models.ForeignKey('Article', on_delete=models.CASCADE,
             related_name='htmls')
-    file = models.FileField(upload_to=make_article_directory_path('htmls'),
+    file = models.FileField(upload_to=ArticleDirectoryPath('htmls'),
             max_length=1024)
     lang = models.CharField(_('ISO 639-1 Language Code'), max_length=2)
     build_version = models.CharField(max_length=8)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __repr__(self):
-        return u'<%s id="%s" url="%s">' % (self.__class__.__name__,
+        return '<%s id="%s" url="%s">' % (self.__class__.__name__,
                 self.pk, self.file.url)
 
     class Meta:
@@ -1624,4 +1626,3 @@ def create_article_html_renditions(sender, instance, created, **kwargs):
 
 # Callback da tasty-pie para a geração de token para os usuários
 models.signals.post_save.connect(create_api_key, sender=User)
-

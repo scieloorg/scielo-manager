@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.utils import simplejson as json
-from django.utils.translation import ugettext as _
+import json
+from django.utils.translation import gettext as _
 from django.utils.text import get_text_list
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_str
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.fields.files import FieldFile
@@ -53,7 +53,7 @@ def field_serializer(field_value):
     elif isinstance(field_value, models.Model):
         # is a foreign key, so lets get it with model_to_dict
         field_value = model_to_dict(field_value)
-        for k,v in field_value.iteritems():
+        for k,v in field_value.items():
             field_value[k] = field_serializer(v)
     elif isinstance(field_value, InMemoryUploadedFile) or isinstance(field_value, TemporaryUploadedFile):
         try:
@@ -66,7 +66,7 @@ def field_serializer(field_value):
                 'encoding': getattr(field_value, 'encoding',''),
             }
         except AttributeError:
-            field_value = force_unicode(field_value)
+            field_value = force_str(field_value)
     elif hasattr(field_value,'path') or isinstance(field_value, FieldFile):
         # the field is an image or file. so lets get the file's 'path'
         try:
@@ -83,9 +83,9 @@ def field_serializer(field_value):
                 field_value['path'] = field_value['path'].split(settings.MEDIA_ROOT)[1]
         except ValueError:
             # possible the file field is empty (or deleted)
-            field_value = force_unicode(field_value)
+            field_value = force_str(field_value)
     else:
-        field_value = force_unicode(field_value)
+        field_value = force_str(field_value)
     return field_value
 
 
@@ -142,7 +142,7 @@ def collect_old_values(obj, form=None, formsets=None, as_json_string=False):
             related_objects = getattr(unsaved_object, accessor_name).all()
             model_related_objects[accessor_name] = related_objects
 
-        for related_name, related_objects in model_related_objects.iteritems():
+        for related_name, related_objects in model_related_objects.items():
             result_formset_data = {
                 "related_name": related_name,
                 "related_objects": [ model_to_dict(r_obj) for r_obj in related_objects]
@@ -271,16 +271,16 @@ def construct_message_from_formset(formsets):
 
     for formset in formsets:
         for added_object in formset.new_objects:
-            message.append(_(u'Added %(name)s "%(object)s".')
+            message.append(_('Added %(name)s "%(object)s".')
                                   % {'name': force_unicode(added_object._meta.verbose_name),
                                      'object': force_unicode(added_object)})
         for changed_object, changed_fields in formset.changed_objects:
-            message.append(_(u'Changed %(list)s for %(name)s "%(object)s".')
+            message.append(_('Changed %(list)s for %(name)s "%(object)s".')
                                   % {'list': get_text_list(changed_fields, _('and')),
                                      'name': force_unicode(changed_object._meta.verbose_name),
                                      'object': force_unicode(changed_object)})
         for deleted_object in formset.deleted_objects:
-            message.append(_(u'Deleted %(name)s "%(object)s".')
+            message.append(_('Deleted %(name)s "%(object)s".')
                                   % {'name': force_unicode(deleted_object._meta.verbose_name),
                                      'object': force_unicode(deleted_object)})
     return message
@@ -292,30 +292,30 @@ def construct_change_message(form=None, formsets=None):
     """
     message = []
     if form and form.changed_data:
-        message.append(_(u'Changed fields: %s.') % get_text_list(form.changed_data, _('and')))
+        message.append(_('Changed fields: %s.') % get_text_list(form.changed_data, _('and')))
 
     if formsets:
         message.extend(construct_message_from_formset(formsets))
 
-    message = u'\n'.join(message)
-    return message or _(u'No fields changed.')
+    message = '\n'.join(message)
+    return message or _('No fields changed.')
 
 
 def construct_create_message(form=None, formsets=None):
     """
     Construct a "created record" data into a message from a new object.
     """
-    message = [u'%s' % force_unicode(field) for field in form.cleaned_data if form]
+    message = ['%s' % force_unicode(field) for field in form.cleaned_data if form]
 
     if formsets:
         message.extend(construct_message_from_formset(formsets))
 
-    message = u'Added fields:\n' + u'\n'.join(message)
-    return message or _(u'No fields added.')
+    message = 'Added fields:\n' + '\n'.join(message)
+    return message or _('No fields added.')
 
 
 def construct_delete_message(obj):
-    return u"Record DELETED (%s, pk: %s): %s" % (
+    return "Record DELETED (%s, pk: %s): %s" % (
                 obj.pk,
                 force_unicode(obj._meta.verbose_name),
                 force_unicode(obj)

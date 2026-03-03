@@ -7,7 +7,7 @@ import unittest
 
 from django.conf import settings
 from django_webtest import WebTest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django_factory_boy import auth
 
 from journalmanager.tests import modelfactories
@@ -76,7 +76,7 @@ class UserAreasSelectorTests(WebTest):
 
         page = self.app.get(reverse('journal.index'), user=user)
 
-        response = page.click(href=u'/accounts/logout/').follow()
+        response = page.click(href='/accounts/logout/').follow()
 
         self.assertTemplateUsed(response, 'registration/login.html')
         self.assertNotIn('_auth_user_id', self.client.session)
@@ -411,7 +411,7 @@ class SectionLookupForTranslationsTests(WebTest):
         self.assertEqual(response_py['message'], 'The section already exists.')
 
         title, code = response_py['sections'][0]
-        self.assertEqual(title, unicode(section))
+        self.assertEqual(title, str(section))
         self.assertEqual(code, section.actual_code)
 
     def test_new_section(self):

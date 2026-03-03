@@ -1,5 +1,4 @@
-django-extensions
-django-debug-toolbar
-coverage
-django-coverage
-Fabric==1.4.3
+django-extensions>=3.2,<4.0
+django-debug-toolbar>=4.4,<5.0
+coverage>=7.6,<8.0
+Fabric>=3.2,<4.0

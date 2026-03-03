@@ -2,7 +2,7 @@
 import unittest
 
 from django_webtest import WebTest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from django.forms.models import inlineformset_factory
 from django.contrib.auth.models import User
@@ -53,9 +53,9 @@ class AuditLogFromJournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -100,9 +100,9 @@ class AuditLogFromJournalFormTests(WebTest):
         form['journal-final_num'] = ''
         form['journal-eletronic_issn'] = '0102-6720'
         form['journal-init_vol'] = '1'
-        form['journal-title'] = u'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
-        form['journal-title_iso'] = u'ABCD. Arquivos B. de C. D. (São Paulo)'
-        form['journal-short_title'] = u'ABCD.(São Paulo)'
+        form['journal-title'] = 'ABCD. Arquivos Brasileiros de Cirurgia Digestiva (São Paulo)'
+        form['journal-title_iso'] = 'ABCD. Arquivos B. de C. D. (São Paulo)'
+        form['journal-short_title'] = 'ABCD.(São Paulo)'
         form['journal-editorial_standard'] = 'vancouv'
         form['journal-scielo_issn'] = 'print'
         form['journal-init_year'] = '1986'
@@ -147,7 +147,7 @@ class AuditLogFromJournalFormTests(WebTest):
         audited_object = log_entry.get_audited_object()
         # inspect audited log entry data:
         self.assertEqual(log_entry.action_flag, audit_models.ADDITION)
-        self.assertEqual(log_entry.object_id, unicode(audited_object.pk))
+        self.assertEqual(log_entry.object_id, str(audited_object.pk))
         self.assertEqual(log_entry.content_type, ContentType.objects.get_for_model(audited_object))
         self.assertEqual(log_entry.old_values, None)
         self.assertEqual(log_entry.user, self.user)
@@ -192,14 +192,14 @@ class AuditLogFromJournalFormTests(WebTest):
             'is_indexed_aehci',
         ]
 
-        self.assertEqual(log_entry.new_values.keys(), [u'form_data', u'formsets_data'])
+        self.assertEqual(list(log_entry.new_values.keys()), ['form_data', 'formsets_data'])
         for field_edited in fields_edited:
             # all edited fields are in "new_values"-dict
-            self.assertIn(field_edited, log_entry.new_values['form_data'].keys())
+            self.assertIn(field_edited, list(log_entry.new_values['form_data'].keys()))
             # all edited fields are in the "change message" field
             self.assertIn(field_edited, log_entry.change_message)
 
         # compare form data and stored new_values data
-        for k,v in log_entry.new_values['form_data'].iteritems():
+        for k,v in log_entry.new_values['form_data'].items():
             form_value = form['journal-%s' % k].value
             self.assertEqual(log_entry.new_values['form_data'][k], force_unicode(v))

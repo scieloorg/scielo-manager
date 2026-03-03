@@ -1,6 +1,6 @@
 from django import template
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.urls import reverse
+from django.utils.translation import gettext as _
 
 
 register = template.Library()
@@ -12,7 +12,7 @@ def user_collections_dashboard(collections, user):
     for collection in collections:
         is_default = collection.is_default_to_user(user)
 
-        classname = u'dropdown active' if is_default else u'dropdown'
+        classname = 'dropdown active' if is_default else 'dropdown'
         name = collection.name
         edit_url = reverse('collection.edit', args=[collection.pk])
         edit_label = _('Edit')
@@ -22,7 +22,7 @@ def user_collections_dashboard(collections, user):
             args=[user.pk, collection.pk])
 
         if not is_default:
-            activation_snippet = u"""
+            activation_snippet = """
             <li id="activate-{lowercase_name}">
                 <a href="{activation_url}">
                   <i class="icon-ok-circle"></i> {activation_label}
@@ -32,7 +32,7 @@ def user_collections_dashboard(collections, user):
                        activation_label=activation_label,
                        lowercase_name=name.lower()).strip()
         else:
-            activation_snippet = u"""
+            activation_snippet = """
             <li class="disabled" id="activate-{lowercase_name}">
                 <i class="icon-ok-circle"></i> {activation_label}
             </li>
@@ -41,7 +41,7 @@ def user_collections_dashboard(collections, user):
                        lowercase_name=name.lower()).strip()
 
         if collection.is_managed_by_user(user):
-            html_edit = u"""<li id="edit-{lowercase_name}">
+            html_edit = """<li id="edit-{lowercase_name}">
                               <a href="{edit_url}">
                                 <i class="icon-edit"></i> {edit_label}
                               </a>
@@ -50,7 +50,7 @@ def user_collections_dashboard(collections, user):
                                             lowercase_name=name.lower()
                                             ).strip()
         else:
-            html_edit = u"""<li class="disabled" id="edit-{lowercase_name}">
+            html_edit = """<li class="disabled" id="edit-{lowercase_name}">
                               <i class="icon-edit"></i> {edit_label}
                             </li>""".format(edit_url=edit_url,
                                             edit_label=edit_label,
@@ -58,7 +58,7 @@ def user_collections_dashboard(collections, user):
                                             ).strip()
 
 
-        html_snippet = u"""
+        html_snippet = """
         <li id="{lowercase_name}" class="{classname}">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
             {name}

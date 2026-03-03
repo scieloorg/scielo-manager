@@ -1,14 +1,42 @@
 # -*- encoding: utf-8 -*-
 # Django settings for scielomanager project.
 import os
+import importlib
 from datetime import timedelta
 from django.contrib.messages import constants as messages
+from django.db import models as django_models
 
 # XML Catalog env-var is required for sps-stylechecking
-from packtools.catalogs import XML_CATALOG
-os.environ['XML_CATALOG_FILES'] = XML_CATALOG
+try:
+    from packtools.catalogs import XML_CATALOG
+except Exception:
+    XML_CATALOG = None
+else:
+    os.environ['XML_CATALOG_FILES'] = XML_CATALOG
 
 DEBUG = False
+
+
+def _patch_legacy_rel_fields():
+    """Compat shim for legacy models that omit on_delete in relation fields."""
+    fk_init = django_models.ForeignKey.__init__
+    o2o_init = django_models.OneToOneField.__init__
+
+    def _fk_init(self, *args, **kwargs):
+        if 'on_delete' not in kwargs and len(args) < 2:
+            kwargs['on_delete'] = django_models.CASCADE
+        fk_init(self, *args, **kwargs)
+
+    def _o2o_init(self, *args, **kwargs):
+        if 'on_delete' not in kwargs and len(args) < 2:
+            kwargs['on_delete'] = django_models.CASCADE
+        o2o_init(self, *args, **kwargs)
+
+    django_models.ForeignKey.__init__ = _fk_init
+    django_models.OneToOneField.__init__ = _o2o_init
+
+
+_patch_legacy_rel_fields()
 
 TEMPLATE_DEBUG = DEBUG
 PROJECT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -132,6 +160,20 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
 )
 
+# Django 2+ middleware setting
+MIDDLEWARE = (
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'scielomanager.utils.middlewares.threadlocal.ThreadLocalMiddleware',
+    'maintenancewindow.middleware.MaintenanceMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+)
+
 ROOT_URLCONF = 'scielomanager.urls'
 
 TEMPLATE_DIRS = (
@@ -153,15 +195,10 @@ INSTALLED_APPS = (
 
     # Third-party apps
     'django_assets',
-    'kombu.transport.django',
     'widget_tweaks',
-    'djcelery',
     'tastypie',
-    'south',
 
     # SciELO shared apps
-    'scielo_extensions',
-
     # SciELO Manager apps
     'maintenancewindow',
     'journalmanager',
@@ -174,6 +211,16 @@ INSTALLED_APPS = (
     'thrift',
     'scielomanager',  # apenas para management commands
 )
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Keep optional legacy integrations only when they are installed.
+for optional_app in ('djcelery', 'south'):
+    if importlib.util.find_spec(optional_app):
+        INSTALLED_APPS += (optional_app,)
+
+if importlib.util.find_spec('scielo_extensions'):
+    INSTALLED_APPS += ('scielo_extensions',)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -189,8 +236,35 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'journalmanager.context_processors.show_system_notes',
     'journalmanager.context_processors.show_system_notes_blocking_users',
     'journalmanager.context_processors.on_maintenance',
-    'scielo_extensions.context_processors.from_settings',
 )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': list(TEMPLATE_DIRS),
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'journalmanager.context_processors.dynamic_template_inheritance',
+                'journalmanager.context_processors.access_to_settings',
+                'journalmanager.context_processors.show_user_collections',
+                'journalmanager.context_processors.add_default_collection',
+                'journalmanager.context_processors.show_system_notes',
+            ],
+        },
+    },
+]
+
+if 'scielo_extensions' in INSTALLED_APPS:
+    TEMPLATE_CONTEXT_PROCESSORS += (
+        'scielo_extensions.context_processors.from_settings',
+    )
 
 # Messages framework
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
@@ -265,9 +339,9 @@ AUTHZ_REDIRECT_URL = '/accounts/unauthorized/'
 AUTHENTICATION_BACKENDS = ('journalmanager.backends.ModelBackend',)
 
 MANAGED_LANGUAGES_CHOICES = (
-    (u'en', u'English'),
-    (u'es', u'Español'),
-    (u'pt-BR', u'Português'),
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('pt-BR', 'Português'),
 )
 TARGET_LANGUAGES = MANAGED_LANGUAGES_CHOICES[1:]
 
@@ -309,10 +383,10 @@ LOCALE_PATHS = (
 
 if 'djcelery' in INSTALLED_APPS:
     CELERY_TIMEZONE = TIME_ZONE
-    BROKER_URL = 'django://'
-    CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-    CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
-    CELERY_IMPORTS = ('scielomanager.tasks')
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+    CELERY_ACCEPT_CONTENT = ['json', 'yaml']
+    CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'rpc://')
+    CELERY_IMPORTS = ('scielomanager.tasks',)
     CELERYD_MAX_TASKS_PER_CHILD = 100
     CELERY_SEND_TASK_ERROR_EMAILS = True
 
@@ -364,7 +438,7 @@ VALIDATOR_ENABLE_HTML_PREVIEWER = True
 # config file cannot be loaded.
 SCIELOMANAGER_SETTINGS_FILE = os.environ.get('SCIELOMANAGER_SETTINGS_FILE')
 if SCIELOMANAGER_SETTINGS_FILE:
-    execfile(SCIELOMANAGER_SETTINGS_FILE)
+    exec(compile(open(SCIELOMANAGER_SETTINGS_FILE, "rb").read(), SCIELOMANAGER_SETTINGS_FILE, 'exec'))
 else:
     raise RuntimeError('Missing settings file. Make sure SCIELOMANAGER_SETTINGS_FILE is configured.')
 
@@ -383,4 +457,3 @@ AVAILABLE_IN_TEMPLATES = {
     'docs_url': DOCUMENTATION_BASE_URL,
     'enable_html_previewer': VALIDATOR_ENABLE_HTML_PREVIEWER,
 }
-

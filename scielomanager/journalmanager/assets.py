@@ -1,8 +1,11 @@
 #
 #   DEVE SER MANTIDA A ORDEM DOS ARQUIVOS JS e CSS
 #
-
 from django_assets import Bundle, register
+from django.conf import settings
+
+YUI_JS_FILTER = None if settings.DEBUG else 'yui_js'
+YUI_CSS_FILTER = None if settings.DEBUG else 'yui_css'
 
 base_bundle = Bundle('../static/js/jquery/jquery-1.8.3.js',
                      '../static/js/jquery/jquery-ui.js')
@@ -27,7 +30,7 @@ app_bundle = Bundle('../static/js/bulk_actions.js',
                     )
 
 
-js = Bundle(base_bundle, minify_bundle, plugins_bundle, app_bundle, filters='yui_js', output='js/bundle.min.js')
+js = Bundle(base_bundle, minify_bundle, plugins_bundle, app_bundle, filters=YUI_JS_FILTER, output='js/bundle.min.js')
 
 register('js', js)
 
@@ -38,7 +41,7 @@ css = Bundle('../static/css/bootstrap.css',
              '../static/css/jquery.asmselect.css',
              '../static/css/select2.css',
              '../static/css/chosen.css',
-             '../static/css/style.css', filters='yui_css', output='css/bundle.min.css')
+             '../static/css/style.css', filters=YUI_CSS_FILTER, output='css/bundle.min.css')
 
 register('css', css)
 
@@ -49,7 +52,7 @@ codemirror_css = Bundle(
             '../static/css/codemirror/addon/display/fullscreen.css',
             '../static/css/codemirror/addon/dialog/dialog.css',
             '../static/css/codemirror/custom_styles.css',
-            filters='yui_css',
+            filters=YUI_CSS_FILTER,
             output='css/codemirror_bundle.min.css')
 
 register('codemirror_css', codemirror_css)
@@ -70,7 +73,7 @@ codemirror_js = Bundle(
             '../static/js/codemirror/addon/search/searchcursor.js',
             '../static/js/codemirror/addon/search/search.js',
             '../static/js/codemirror/addon/search/goto-line.js',
-            filters='yui_js',
+            filters=YUI_JS_FILTER,
             output='js/codemirror_bundle.min.js')
 
 register('codemirror_js', codemirror_js)

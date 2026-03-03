@@ -29,7 +29,7 @@ Custom instance of ``models.query.QuerySet``
 * ``unavailable`` returns all objects marked as trash.
 
 """
-import models
+from . import models
 from scielomanager.utils import usercontext
 from scielomanager.utils.modelmanagers import UserObjectQuerySet, UserObjectManager
 
@@ -112,10 +112,10 @@ class JournalQuerySet(UserObjectQuerySet):
         return self.filter(collections=get_active_collection())
 
     def startswith(self, char):
-        return self.filter(title__istartswith=unicode(char))
+        return self.filter(title__istartswith=str(char))
 
     def simple_search(self, term):
-        return self.filter(title__icontains=unicode(term))
+        return self.filter(title__icontains=str(term))
 
     def available(self):
         return self.filter(is_trashed=False)
@@ -221,10 +221,10 @@ class SponsorQuerySet(UserObjectQuerySet):
             collections=get_active_collection())
 
     def startswith(self, char):
-        return self.filter(name__istartswith=unicode(char))
+        return self.filter(name__istartswith=str(char))
 
     def simple_search(self, term):
-        return self.filter(name__icontains=unicode(term))
+        return self.filter(name__icontains=str(term))
 
     def available(self):
         return self.filter(is_trashed=False)

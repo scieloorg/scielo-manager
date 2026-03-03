@@ -1,13 +1,13 @@
 # coding: utf-8
 import re
 import logging
+from functools import partial
 
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseInlineFormSet
 from django.forms.models import inlineformset_factory
-from django.utils.translation import ugettext_lazy as _
-from django.utils.functional import curry
+from django.utils.translation import gettext_lazy as _
 from django.core.files.images import get_image_dimensions
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import NON_FIELD_ERRORS, MultipleObjectsReturned
@@ -16,7 +16,13 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 from journalmanager import models
 from journalmanager import choices
-from scielo_extensions import formfields as fields
+try:
+    from scielo_extensions import formfields as fields
+except ImportError:
+    class _FallbackFields:
+        ISSNField = forms.CharField
+
+    fields = _FallbackFields()
 from scielomanager.widgets import CustomImageWidget
 from django.contrib.auth.models import User
 
@@ -151,7 +157,7 @@ class JournalForm(ModelForm):
         eletronic_issn = cleaned_data.get("eletronic_issn")
 
         if not (print_issn or eletronic_issn):
-            msg = u'Eletronic ISSN or Print ISSN must be filled.'
+            msg = 'Eletronic ISSN or Print ISSN must be filled.'
             self._errors['scielo_issn'] = self.error_class([msg])
 
         return cleaned_data
@@ -165,7 +171,7 @@ class JournalForm(ModelForm):
             result = self.regex.match(self.cleaned_data["init_year"])
 
             if result is None:
-                raise forms.ValidationError(u'Invalid Date')
+                raise forms.ValidationError('Invalid Date')
 
         return self.cleaned_data["init_year"]
 
@@ -175,7 +181,7 @@ class JournalForm(ModelForm):
             result = self.regex.match(self.cleaned_data["final_year"])
 
             if result is None:
-                raise forms.ValidationError(u'Invalid Date')
+                raise forms.ValidationError('Invalid Date')
 
         return self.cleaned_data["final_year"]
 
@@ -185,17 +191,17 @@ class JournalForm(ModelForm):
             if not cover.name:
                 if cover.content_type not in settings.IMAGE_CONTENT_TYPE:
                     raise forms.ValidationError(
-                        _(u"Journal cover image extension is not allowed! Please select another file."))
+                        _("Journal cover image extension is not allowed! Please select another file."))
 
             if cover.size > settings.JOURNAL_COVER_MAX_SIZE:
                 raise forms.ValidationError(
-                    _(u"Journal cover image file size is too large! Please select another file."))
+                    _("Journal cover image file size is too large! Please select another file."))
 
             w, h = get_image_dimensions(cover)
 
             if w != settings.IMAGE_DIMENSIONS['width_cover']:
                 raise forms.ValidationError(
-                    _(u"The image is {image_size}px pixel wide. It's supposed to be {expected_size}px".format(
+                    _("The image is {image_size}px pixel wide. It's supposed to be {expected_size}px".format(
                         image_size=w,
                         expected_size=settings.IMAGE_DIMENSIONS['width_cover'])))
 
@@ -212,10 +218,10 @@ class JournalForm(ModelForm):
         if logo:
             if not logo.name:
                 if logo.content_type not in settings.IMAGE_CONTENT_TYPE:
-                    raise forms.ValidationError(_(u"Journal logo image extension is not allowed! Please select another file."))
+                    raise forms.ValidationError(_("Journal logo image extension is not allowed! Please select another file."))
 
             if logo.size > settings.JOURNAL_LOGO_MAX_SIZE:
-                raise forms.ValidationError(_(u"Journal logo image file size is too large! Please select another file."))
+                raise forms.ValidationError(_("Journal logo image file size is too large! Please select another file."))
 
             w, h = get_image_dimensions(logo)
 
@@ -618,6 +624,7 @@ class RegularPressReleaseForm(ModelForm):
 
     class Meta:
         model = models.RegularPressRelease
+        fields = '__all__'
 
 
 class AheadPressReleaseForm(ModelForm):
@@ -645,12 +652,14 @@ class PressReleaseTranslationForm(ModelForm):
 
     class Meta:
         model = models.PressReleaseTranslation
+        fields = '__all__'
 
 
 class PressReleaseArticleForm(ModelForm):
 
     class Meta:
         model = models.PressReleaseArticle
+        fields = '__all__'
 
 
 class AheadPressReleaseArticleForm(ModelForm):
@@ -658,6 +667,7 @@ class AheadPressReleaseArticleForm(ModelForm):
 
     class Meta:
         model = models.PressReleaseArticle
+        fields = '__all__'
 
     def clean_article_pid(self):
         if not self.cleaned_data['article_pid']:
@@ -694,7 +704,7 @@ def get_all_pressrelease_forms(post_dict, journal, pressrelease):
         formset=FirstFieldRequiredFormSet)
 
     translations_formset.form = staticmethod(
-        curry(PressReleaseTranslationForm, journal=journal))
+        partial(PressReleaseTranslationForm, journal=journal))
 
     article_formset = inlineformset_factory(
         models.PressRelease,
@@ -746,7 +756,7 @@ def get_all_ahead_pressrelease_forms(post_dict, journal, pressrelease):
         formset=FirstFieldRequiredFormSet)
 
     translations_formset.form = staticmethod(
-        curry(PressReleaseTranslationForm, journal=journal))
+        partial(PressReleaseTranslationForm, journal=journal))
 
     article_formset = inlineformset_factory(
         models.PressRelease,
@@ -797,7 +807,7 @@ class UserCollectionsForm(ModelForm):
             # this wierd behavior will cause to input unmanaged collections by the request.user
             # allowing other users be added in any other (unmanaged collection)
             self.fields['collection'].queryset = managed_collections
-            self.fields['collection'].choices = [(mc.pk, mc.name) for mc in managed_collections] + [(u'', u'---------'), ]
+            self.fields['collection'].choices = [(mc.pk, mc.name) for mc in managed_collections] + [('', '---------'), ]
 
     class Meta:
         model = models.UserCollections
@@ -810,6 +820,7 @@ class UserCollectionsForm(ModelForm):
 class JournalMissionForm(ModelForm):
     class Meta:
         model = models.JournalMission
+        fields = '__all__'
         widgets = {
             'description': forms.Textarea(attrs={'class': 'span12', 'rows': '3'}),
         }
@@ -818,6 +829,7 @@ class JournalMissionForm(ModelForm):
 class JournalTitleForm(ModelForm):
     class Meta:
         model = models.JournalTitle
+        fields = '__all__'
         widgets = {
             'title': forms.TextInput(attrs={'class': 'span12'}),
         }
@@ -826,6 +838,7 @@ class JournalTitleForm(ModelForm):
 class IssueTitleForm(ModelForm):
     class Meta:
         model = models.IssueTitle
+        fields = '__all__'
         widgets = {
             'title': forms.TextInput(attrs={'class': 'span12'}),
         }
