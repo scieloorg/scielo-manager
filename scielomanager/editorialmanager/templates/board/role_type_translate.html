@@ -6,9 +6,9 @@
 {% block content %}
 
   <ul class="breadcrumb">
-    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li><a href="{% url 'editorial.index' %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
     <li><a href="{{ board_url }}">{% trans 'Editorial Board' %}</a><span class="divider">/</span></li>
-    <li><a href="{% url editorial.role.list journal_id %}">{% trans 'Roles' %}</a><span class="divider">/</span></li>
+    <li><a href="{% url 'editorial.role.list' journal_id %}">{% trans 'Roles' %}</a><span class="divider">/</span></li>
     <li class="active">{% trans 'Role Translations' %}</li>
   </ul>
 
@@ -17,7 +17,7 @@
     <span class="pull-right">
       <em>
         {% if perms.editorialmanager.change_roletype %}
-          <a href="{% url editorial.role.edit journal_id role_type.pk %}">
+          <a href="{% url 'editorial.role.edit' journal_id role_type.pk %}">
             {{ role_type.name }}
           </a>
         {% else %}

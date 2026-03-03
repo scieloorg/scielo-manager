@@ -35,7 +35,7 @@
       {% for item in article_set.list %}
         <tr>
           <td>
-            <a class="article_title" href="{% url article.detail item.pk %}">
+            <a class="article_title" href="{% url 'article.detail' item.pk %}">
               {{ item.ARTICLE_TITLE }}
             </a>
           </td>

@@ -3,7 +3,7 @@
 <div style="height: 150px">
   <h4>{% trans 'Choose a user to be editor of this journal' %}:</h4>
 
-  <form method="POST" action="{% url editor.add journal.id %}" enctype="application/x-www-form-urlencoded">
+  <form method="POST" action="{% url 'editor.add' journal.id %}" enctype="application/x-www-form-urlencoded">
     {% csrf_token %}
     <div class="control-group">
         <div class="controls">

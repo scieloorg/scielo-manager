@@ -6,7 +6,7 @@
 {% block content %}
 
   <ul class="breadcrumb">
-    <li><a href="{% url editorial.index %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
+    <li><a href="{% url 'editorial.index' %}">{% trans 'Journals' %}</a><span class="divider">/</span></li>
     <li><a href="{{ board_url }}">{% trans 'Editorial Board' %}</a><span class="divider">/</span></li>
     <li class="active">{% trans 'Edit Board Member' %}</li>
   </ul>

@@ -6,7 +6,7 @@
   	<div class="alert alert-block span6 offset3" style="margin-top: 30px; margin-bottom: 30px;">
       <h4>{% trans "You are not authorized to access the requested page." %}</h4>
       {% trans " Maybe you want to " %}
-      <a href="{% url journalmanager.user_login %}{% if next %}?next={{ next }}{% endif %}">
+      <a href="{% url 'journalmanager.user_login' %}{% if next %}?next={{ next }}{% endif %}">
       {% trans "login <strong>with a more privileged account</strong></a> or contact support." %}
   	</div>
 </div>

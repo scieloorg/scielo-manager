@@ -17,9 +17,9 @@
       <span class="caret"></span>
     </a>
     <ul class="dropdown-menu">
-      <li><a href="{% url issue.add_regular journal.id %}">{% trans "Regular" %}</a></li>
-      <li><a href="{% url issue.add_special journal.id %}">{% trans "Special" %}</a></li>
-      <li><a href="{% url issue.add_supplement journal.id %}">{% trans "Supplement" %}</a></li>
+      <li><a href="{% url 'issue.add_regular' journal.id %}">{% trans "Regular" %}</a></li>
+      <li><a href="{% url 'issue.add_special' journal.id %}">{% trans "Special" %}</a></li>
+      <li><a href="{% url 'issue.add_supplement' journal.id %}">{% trans "Supplement" %}</a></li>
     </ul>
   </div>
   {% if perms.journalmanager.change_issue %}
@@ -65,7 +65,7 @@
             {% for a in aop_articles %}
               <tr>
                   <td>
-                    <a href="{% url article.detail a.pk %}">
+                    <a href="{% url 'article.detail' a.pk %}">
                       {{ a.ARTICLE_TITLE|default:"--" }}
                     </a>
                   </td>
@@ -113,7 +113,7 @@
                 {% for num in nums %}
                   <tr>
                       <td>
-                        <a href="{% url article.index num.id %}">
+                        <a href="{% url 'article.index' num.id %}">
                           {% if num.type == 'regular' and not num.number %}
                             {% trans 'volume issue' %}
                           {% else %}
@@ -132,7 +132,7 @@
                       <td>{{ num.get_publication_start_month_display }}/{{ num.get_publication_end_month_display }}</td>
                       <td>{{ num.updated|timezone:user.get_profile.tz|date:"d/m/Y - H:i"  }}</td>
                       <td>
-                        <a href="{% url issue.edit journal.pk num.id %}" class="btn btn-mini">
+                        <a href="{% url 'issue.edit' journal.pk num.id %}" class="btn btn-mini">
                           {% trans "Edit" %}
                         </a>
                       </td>

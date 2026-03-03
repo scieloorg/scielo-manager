@@ -63,7 +63,7 @@
                     <div class="span6">
                         <h4>{% trans "Change Password" %}:</h4>
                         <div class="well">
-                            <form id="change_password_form" action="{% url journalmanager.password_change %}" method="POST">
+                            <form id="change_password_form" action="{% url 'journalmanager.password_change' %}" method="POST">
                                 {% with password_form as form %}
                                     {% include "journalmanager/includes/form_snippet.html" %}
                                 {% endwith %}

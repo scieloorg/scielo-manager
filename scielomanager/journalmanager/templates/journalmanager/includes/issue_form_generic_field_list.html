@@ -15,7 +15,7 @@
             {{ field.label }}:
           {% endif %}
           {% if field.name == 'section' %}
-            <a class="popup" href="{% url section.add journal.id %}?popup=1">
+            <a class="popup" href="{% url 'section.add' journal.id %}?popup=1">
               <img alt="{% trans 'Add new' %}" src="{% static 'img/icon_addlink.gif' %}">
             </a>
           {% endif %}

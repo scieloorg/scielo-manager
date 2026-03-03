@@ -32,11 +32,11 @@
     <h4>{% trans "Tools" %}</h4>
     <ul>
       <li>
-        <a href="{% url validator.packtools.stylechecker %}">{% trans "Style Checker" %}</a>
+        <a href="{% url 'validator.packtools.stylechecker' %}">{% trans "Style Checker" %}</a>
       </li>
       {% if enable_html_previewer %}
       <li>
-        <a href="{% url validator.packtools.preview_html %}">{% trans "HTML Previewer" %}</a>
+        <a href="{% url 'validator.packtools.preview_html' %}">{% trans "HTML Previewer" %}</a>
       </li>
       {% endif %}
     </ul>

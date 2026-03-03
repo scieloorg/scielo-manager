@@ -35,7 +35,7 @@
     <tr id="{{ user.pk }}">
       <td>
         <a {% if not user.is_active %}class="strikethrough"{% endif %}
-           href="{% url user.edit user.pk %}">
+           href="{% url 'user.edit' user.pk %}">
            <img class="img-rounded" src="{% user_avatar_url user 'small' %}" alt="Gravatar">
            {{ user.username }}
         </a>
@@ -54,20 +54,20 @@
             {% if user.is_active %}
             <button id="action_disable_disable"
                     class="btn btn-mini btn-danger"
-                    value="{% url user.toggle_availability user.pk %}">
+                    value="{% url 'user.toggle_availability' user.pk %}">
               {% trans 'Disable' %}
             </button>
             {% else %}
             <button id="action_disable_disable"
                     class="btn btn-mini btn-success"
-                    value="{% url user.toggle_availability user.pk %}">
+                    value="{% url 'user.toggle_availability' user.pk %}">
               {% trans 'Enable' %}
             </button>
             {% endif %}
           </li>
           {% endif %}
           <li>
-            <a href="{% url user.exclude_user_from_collection user.pk %}" class="btn btn-mini btn-warning">
+            <a href="{% url 'user.exclude_user_from_collection' user.pk %}" class="btn btn-mini btn-warning">
               {% trans 'Exclude from this collection' %}
             </a>
           </li>

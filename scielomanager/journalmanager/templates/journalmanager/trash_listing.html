@@ -48,15 +48,15 @@
         <li>
           <a id="bulk_action_enable"
           {% if request.GET.show == 'section' %}
-             rel="{% url trash.bulk_action 'section' 'is_available' '1' %}"
+             rel="{% url 'trash.bulk_action' 'section' 'is_available' '1' %}"
           {% else %}
             {% if request.GET.show == 'publisher' %}
-             rel="{% url trash.bulk_action 'publisher' 'is_available' '1' %}"
+             rel="{% url 'trash.bulk_action' 'publisher' 'is_available' '1' %}"
             {% else %}
               {% if request.GET.show == 'sponsor' %}
-                rel="{% url trash.bulk_action 'sponsor' 'is_available' '1' %}"
+                rel="{% url 'trash.bulk_action' 'sponsor' 'is_available' '1' %}"
               {% else %}
-                rel="{% url trash.bulk_action 'journal' 'is_available' '1' %}"
+                rel="{% url 'trash.bulk_action' 'journal' 'is_available' '1' %}"
               {% endif %}
             {% endif %}
           {% endif %}

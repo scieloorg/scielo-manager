@@ -1,6 +1,6 @@
 {% load i18n %}
 {% load modal %}
-<a data-target='#modal' data-toggle="modal" href="{% url editorial.journal.detail journal.pk %}">
+<a data-target='#modal' data-toggle="modal" href="{% url 'editorial.journal.detail' journal.pk %}">
   <h4>{{ journal.title }}</h4>
 </a>
 <ul class="inline">
@@ -21,7 +21,7 @@
     <strong>{{ journal.collections.all|join:', ' }}</strong>
   </li>
   <li class="pull-right">
-    <a href="{% url editorial.export.csv.journal journal.id %}"> {% trans 'Download full board as CSV file' %} <i class="icon-download-alt"></i></a>
+    <a href="{% url 'editorial.export.csv.journal' journal.id %}"> {% trans 'Download full board as CSV file' %} <i class="icon-download-alt"></i></a>
   </li>
 </ul>
 {% modal 'Journal Details' %}

@@ -33,15 +33,15 @@
 {% block breadcrumb %}
 <ul class="breadcrumb">
   <li>
-    <a href="{% url index %}">{% trans 'Home' %}</a>
+    <a href="{% url 'index' %}">{% trans 'Home' %}</a>
     <span class="divider">/</span>
   </li>
   <li>
-    <a href="{% url journal.index %}">{% trans 'Journals Dashboard' %}</a>
+    <a href="{% url 'journal.index' %}">{% trans 'Journals Dashboard' %}</a>
     <span class="divider">/</span>
   </li>
   <li>
-    <a href="{% url prelease.index journal.id %}">{{journal.title}}</a>
+    <a href="{% url 'prelease.index' journal.id %}">{{journal.title}}</a>
     <span class="divider">/</span>
   </li>
   <li class="active">{% trans 'New press release' %}</li>

@@ -6,7 +6,7 @@
 
 {% block breadcrumb %}
 <ul class="breadcrumb">
-  <li><a href="{% url index %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url 'index' %}">{% trans 'Home' %}</a> <span class="divider">/</span></li>
   <li class="active">{% trans 'Downloads' %}</li>
   <li><span class="divider">/</span></li>
   <li class="active">{% trans 'Metadata for Markup' %}</li>
@@ -90,7 +90,7 @@
     }
     $('#loading').show();
     $.ajax({
-      url: "{% url ajx.list_issues_for_markup_files %}?j=" + journal + "&all=" + is_all,
+      url: "{% url 'ajx.list_issues_for_markup_files' %}?j=" + journal + "&all=" + is_all,
       success: function (data) {
         $("#{{form.issue.auto_id}} option").remove();
         for (var issue in data) {

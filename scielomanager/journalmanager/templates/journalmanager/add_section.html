@@ -129,7 +129,7 @@
         var title = $(this).val();
         var title_id = $(this).attr("id");
         $.ajax({
-            url: "{% url ajx.lookup_for_section_translation %}?j=" + journal + "&t=" + title,
+            url: "{% url 'ajx.lookup_for_section_translation' %}?j=" + journal + "&t=" + title,
             success: function (data) {
                 var msg_id = "msg_" + title_id;
                 if ($("#" + msg_id).length > 0) {

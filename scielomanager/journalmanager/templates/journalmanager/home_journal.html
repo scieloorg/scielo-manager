@@ -20,7 +20,7 @@
           <tr>
             <td>{% trans 'Journal' %}</td>
             <td>
-              <a href="{% url journal.add %}?resume={{pending_journal.form_hash}}"
+              <a href="{% url 'journal.add' %}?resume={{pending_journal.form_hash}}"
                  class="tip-bottom"
                  rel="tooltip"
                  data-original-title="{% get_title_for_pended pending_journal %}">
@@ -28,7 +28,7 @@
               </a>
             </td>
             <td>
-              <a href="{% url journal.del_pended pending_journal.form_hash %}"
+              <a href="{% url 'journal.del_pended' pending_journal.form_hash %}"
                  class="btn btn-mini btn-danger">
                 {% trans 'Delete' %}
               </a>
@@ -68,7 +68,7 @@
               {{ activity.collections.all|join:', ' }}
             </td>
             <td><a href="mailto:{{ activity.creator.email }}">{{ activity.creator.username }}</a></td>
-            <td><a href="{% url journal.edit activity.pk %}"
+            <td><a href="{% url 'journal.edit' activity.pk %}"
                    class="tip-bottom"
                    rel="tooltip"
                    data-original-title="{{ activity.title }}">{{ activity.short_title }}</a>

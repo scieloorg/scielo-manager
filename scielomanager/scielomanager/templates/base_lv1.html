@@ -23,24 +23,24 @@
           {# Only users with list_editor_journal see this menu option. #}
           {% if request.user.get_profile.is_editor %}
             <li id="users-link" class="active">
-              <a href="{% url editorial.index %}">{% trans 'My Journals' %}</a>
+              <a href="{% url 'editorial.index' %}">{% trans 'My Journals' %}</a>
             </li>
           {% endif %}
 
           {% if perms.journalmanager.list_journal %}
             <li id="journals-link" class="{% active '/journal/$' %}">
-              <a href="{% url journal.index %}">{% trans 'Journals' %}</a>
+              <a href="{% url 'journal.index' %}">{% trans 'Journals' %}</a>
             </li>
           {% endif %}
           {% if perms.journalmanager.list_sponsor %}
             <li id="sponsors-link" class="{% active '/journal/sponsor/' %}">
-              <a href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
+              <a href="{% url 'sponsor.index' %}">{% trans 'Sponsors' %}</a>
             </li>
           {% endif %}
           {% if is_manager_of_default_collection %}
             {% if perms.auth.change_user %}
               <li id="users-link" class="{% active '/journal/user/' %}">
-                <a href="{% url user.index %}">{% trans 'Users' %}</a>
+                <a href="{% url 'user.index' %}">{% trans 'Users' %}</a>
               </li>
             {% endif %}
           {% endif %}
@@ -52,7 +52,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li id="markupfiles">
-                  <a href="{% url export.markupfiles %}">{% trans 'Metadata for Markup' %}</a>
+                  <a href="{% url 'export.markupfiles' %}">{% trans 'Metadata for Markup' %}</a>
                 </li>
               </ul>
             </li>
@@ -93,12 +93,12 @@
                   <ul class="dropdown-menu pull-right">
                     {% if perms.journalmanager.list_journal %}
                       <li>
-                        <a class="search_filter" href="{% url journal.index %}">{% trans 'Journals' %}</a>
+                        <a class="search_filter" href="{% url 'journal.index' %}">{% trans 'Journals' %}</a>
                       </li>
                     {% endif %}
                     {% if perms.journalmanager.list_sponsor %}
                       <li>
-                        <a class="search_filter" href="{% url sponsor.index %}">{% trans 'Sponsors' %}</a>
+                        <a class="search_filter" href="{% url 'sponsor.index' %}">{% trans 'Sponsors' %}</a>
                       </li>
                     {% endif %}
                   </ul>
@@ -117,7 +117,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li class="active">
-                  <a href="{% url collection.edit user.get_profile.get_default_collection.pk %}" data-edit-collection="{{ user.get_profile.get_default_collection.name }}">
+                  <a href="{% url 'collection.edit' user.get_profile.get_default_collection.pk %}" data-edit-collection="{{ user.get_profile.get_default_collection.name }}">
                     <i class="icon-pencil"></i> {% trans "Edit" %}
                   </a>
                 </li>
@@ -126,7 +126,7 @@
                   {% for coll in user_collections %}
                     {% if user.get_profile.get_default_collection.pk != coll.pk %}
                       <li>
-                        <a href="{% url usercollection.toggle_active user.pk coll.pk %}" data-activate-collection="{{ user.get_profile.get_default_collection.name }}">
+                        <a href="{% url 'usercollection.toggle_active' user.pk coll.pk %}" data-activate-collection="{{ user.get_profile.get_default_collection.name }}">
                           {{ coll.name }}
                         </a>
                       </li>
@@ -144,7 +144,7 @@
             </a>
             <ul class="dropdown-menu" role="menu">
               <li>
-                <a href="{% url journalmanager.my_account %}">
+                <a href="{% url 'journalmanager.my_account' %}">
                   <i class="icon-user"></i> {{user.email}}
                 </a>
               </li>
@@ -152,7 +152,7 @@
               {% if perms.journalmanager.list_collection %}
                 {% if perms.auth %}
                 <li>
-                  <a href="{% url trash.listing %}?show=journal">
+                  <a href="{% url 'trash.listing' %}?show=journal">
                     <i class="icon-trash"></i> {% trans 'My Trash' %}
                   </a>
                 </li>
@@ -161,7 +161,7 @@
               <!-- /TRASH CAN -->
               <li class="divider"></li>
               <li>
-                <a href="{% url journalmanager.user_logout %}">
+                <a href="{% url 'journalmanager.user_logout' %}">
                   <i class="icon-off"></i>
                   {% trans 'Logout' %}
                 </a>
@@ -179,7 +179,7 @@
             <span style="margin-left: 10px; color: #909090">
               {{ journal.short_title }}
               {% if perms.journalmanager.change_journal %}
-                <a href="{% url journal.edit journal.pk %}" class="btn btn-mini">
+                <a href="{% url 'journal.edit' journal.pk %}" class="btn btn-mini">
                   <i class="icon-pencil icon-black"></i> {% trans 'edit' %}
                 </a>
               {% endif %}

@@ -56,7 +56,7 @@
   {% if request.GET.resume %}
     <form id="journal-form"
           method="post"
-          action="{% url journal.add %}"
+          action="{% url 'journal.add' %}"
           enctype="multipart/form-data"
           class="form-horizontal">
   {% else %}

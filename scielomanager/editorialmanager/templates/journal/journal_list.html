@@ -32,10 +32,10 @@
               </td>
               <td class="span3">
                   <div class="btn-group">
-                    <a href="{% url editorial.journal.edit journal.pk %}" class="btn btn-mini">
+                    <a href="{% url 'editorial.journal.edit' journal.pk %}" class="btn btn-mini">
                       <i class="icon-pencil"></i> {% trans 'Edit Journal' %}
                     </a>
-                    <a href="{% url editorial.board journal.pk %}" class="btn btn-mini">
+                    <a href="{% url 'editorial.board' journal.pk %}" class="btn btn-mini">
                       <i class="icon-list-alt"></i> {% trans 'Editorial Board' %}
                     </a>
                   </div>

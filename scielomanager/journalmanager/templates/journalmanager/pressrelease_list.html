@@ -17,8 +17,8 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-          <li><a href="{% url prelease.add journal.id %}">{% trans 'New regular press release' %}</a></li>
-          <li><a href="{% url aprelease.add journal.id %}">{% trans 'New for ahead of print articles' %}</a></li>
+          <li><a href="{% url 'prelease.add' journal.id %}">{% trans 'New regular press release' %}</a></li>
+          <li><a href="{% url 'aprelease.add' journal.id %}">{% trans 'New for ahead of print articles' %}</a></li>
         </ul>
       </div>
     </li>

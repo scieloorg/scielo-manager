@@ -29,7 +29,7 @@
   {% if perms.journalmanager.add_sponsor %}
     <li>
       <div class="btn-group first-tab-btn-group">
-        <a class="btn btn-primary" href="{% url sponsor.add %}">{% trans 'New' %}</a>
+        <a class="btn btn-primary" href="{% url 'sponsor.add' %}">{% trans 'New' %}</a>
       </div>
     </li>
   {% endif %}
@@ -46,7 +46,7 @@
       {% if not request.GET.is_available %}
         <li>
           <a id="bulk_action_enable"
-             rel="{% url trash.bulk_action 'sponsor' 'is_available' '0' %}"
+             rel="{% url 'trash.bulk_action' 'sponsor' 'is_available' '0' %}"
              href="javascript:void(0)"><i class="icon-trash"></i> {% trans "Move to trash" %}</a>
         </li>
       {% endif %}
@@ -70,7 +70,7 @@
           <input type="checkbox" name="action" value="{{ sponsor.id }}">
         </td>
         <td>
-          <a href="{% url sponsor.edit sponsor.pk %}">{{ sponsor }}</a>
+          <a href="{% url 'sponsor.edit' sponsor.pk %}">{{ sponsor }}</a>
         </td>
       </tr>
     {% empty %}
