@@ -1,0 +1,47 @@
+ADMINS = (
+    ('Docker Admin', 'docker@example.org'),
+)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'journalmanager',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': '5432',
+    }
+}
+
+DOCUMENTATION_BASE_URL = r'http://docs.scielo.org/projects/scielo-manager/en/latest/'
+
+EMAIL_HOST = 'mailhog'
+EMAIL_USE_TLS = False
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_SUBJECT_PREFIX = '[SciELO Manager] - DO NOT REPLY -'
+DEFAULT_FROM_EMAIL = 'noreply@example.org'
+
+USERREQUESTCONTEXT_FINDER = 'scielomanager.utils.usercontext.UserRequestContextFinder'
+
+DEBUG = True
+ALLOWED_HOSTS = ['*']
+MEDIA_URL = '/media/'
+ASSETS_DEBUG = True
+
+ELASTICSEARCH_NODES = (
+    'http://localhost:9200',
+)
+
+API_BALAIO = {
+    'default': {
+        'PROTOCOL': 'http',
+        'HOST': '127.0.0.1',
+        'PORT': '8888',
+        'PATH': '/api/v1/',
+    }
+}
+
+API_BALAIO_DEFAULT_TIMEOUT = 2
+API_BALAIO_DEFAULT_CHUNK_SIZE = 1024

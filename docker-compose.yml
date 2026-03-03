@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scielo-manager-app
+    environment:
+      SCIELOMANAGER_SETTINGS_FILE: /app/scielomanager/scielomanager/settings_local.include-docker
+      DB_HOST: db
+      DB_PORT: "5432"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    ports:
+      - "8000:8000"
+    entrypoint: ["sh", "/app/docker/entrypoint.sh"]
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - redis
+      - mailhog
+
+  db:
+    image: postgres:16-alpine
+    container_name: scielo-manager-db
+    environment:
+      POSTGRES_DB: journalmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: scielo-manager-redis
+    ports:
+      - "6379:6379"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: scielo-manager-mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  pgdata:
