@@ -24,12 +24,12 @@ class Migration(SchemaMigration):
 
         # Adding field 'Article.doi'
         db.add_column('journalmanager_article', 'doi',
-                      self.gf('django.db.models.fields.CharField')(default=u'', max_length=2048, db_index=True),
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=2048, db_index=True),
                       keep_default=False)
 
         # Adding field 'Article.article_type'
         db.add_column('journalmanager_article', 'article_type',
-                      self.gf('django.db.models.fields.CharField')(default=u'', max_length=32, db_index=True),
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=32, db_index=True),
                       keep_default=False)
 
 

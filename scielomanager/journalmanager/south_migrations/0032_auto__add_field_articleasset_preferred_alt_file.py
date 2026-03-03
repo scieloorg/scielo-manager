@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'ArticleAsset.preferred_alt_file'
         db.add_column('journalmanager_articleasset', 'preferred_alt_file',
-                      self.gf('django.db.models.fields.files.FileField')(default=u'', max_length=1024),
+                      self.gf('django.db.models.fields.files.FileField')(default='', max_length=1024),
                       keep_default=False)
 
 

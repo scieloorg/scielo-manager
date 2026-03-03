@@ -1,890 +1,520 @@
-# -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
-
-
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        # Adding model 'Language'
-        db.create_table('journalmanager_language', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('iso_code', self.gf('django.db.models.fields.CharField')(max_length=2)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=64)),
-        ))
-        db.send_create_signal('journalmanager', ['Language'])
-
-        # Adding model 'UserProfile'
-        db.create_table('journalmanager_userprofile', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
-            ('email_notifications', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('tz', self.gf('django.db.models.fields.CharField')(default='America/Sao_Paulo', max_length=150)),
-        ))
-        db.send_create_signal('journalmanager', ['UserProfile'])
-
-        # Adding model 'Collection'
-        db.create_table('journalmanager_collection', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=128, db_index=True)),
-            ('name_slug', self.gf('django.db.models.fields.SlugField')(max_length=50, unique=True, null=True, blank=True)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=200)),
-            ('logo', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
-            ('acronym', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=16, blank=True)),
-            ('country', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('state', self.gf('django.db.models.fields.CharField')(max_length=32, blank=True)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=32, blank=True)),
-            ('address', self.gf('django.db.models.fields.TextField')()),
-            ('address_number', self.gf('django.db.models.fields.CharField')(max_length=8)),
-            ('address_complement', self.gf('django.db.models.fields.CharField')(max_length=128, blank=True)),
-            ('zip_code', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('fax', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-        ))
-        db.send_create_signal('journalmanager', ['Collection'])
-
-        # Adding model 'UserCollections'
-        db.create_table('journalmanager_usercollections', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-            ('is_default', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_manager', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('journalmanager', ['UserCollections'])
-
-        # Adding unique constraint on 'UserCollections', fields ['user', 'collection']
-        db.create_unique('journalmanager_usercollections', ['user_id', 'collection_id'])
-
-        # Adding model 'Institution'
-        db.create_table('journalmanager_institution', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
-            ('complement', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
-            ('acronym', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=16, blank=True)),
-            ('country', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('state', self.gf('django.db.models.fields.CharField')(max_length=32, blank=True)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=32, blank=True)),
-            ('address', self.gf('django.db.models.fields.TextField')()),
-            ('address_number', self.gf('django.db.models.fields.CharField')(max_length=8)),
-            ('address_complement', self.gf('django.db.models.fields.CharField')(max_length=128, blank=True)),
-            ('zip_code', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('fax', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('cel', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
-        ))
-        db.send_create_signal('journalmanager', ['Institution'])
-
-        # Adding model 'Sponsor'
-        db.create_table('journalmanager_sponsor', (
-            ('institution_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.Institution'], unique=True, primary_key=True)),
-        ))
-        db.send_create_signal('journalmanager', ['Sponsor'])
-
-        # Adding M2M table for field collections on 'Sponsor'
-        m2m_table_name = db.shorten_name('journalmanager_sponsor_collections')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('sponsor', models.ForeignKey(orm['journalmanager.sponsor'], null=False)),
-            ('collection', models.ForeignKey(orm['journalmanager.collection'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['sponsor_id', 'collection_id'])
-
-        # Adding model 'SubjectCategory'
-        db.create_table('journalmanager_subjectcategory', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('term', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
-        ))
-        db.send_create_signal('journalmanager', ['SubjectCategory'])
-
-        # Adding model 'StudyArea'
-        db.create_table('journalmanager_studyarea', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('study_area', self.gf('django.db.models.fields.CharField')(max_length=256)),
-        ))
-        db.send_create_signal('journalmanager', ['StudyArea'])
-
-        # Adding model 'Journal'
-        db.create_table('journalmanager_journal', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('editor', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='editor_journal', null=True, to=orm['auth.User'])),
-            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='enjoy_creator', to=orm['auth.User'])),
-            ('previous_title', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='prev_title', null=True, to=orm['journalmanager.Journal'])),
-            ('use_license', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.UseLicense'])),
-            ('national_code', self.gf('django.db.models.fields.CharField')(max_length=64, null=True, blank=True)),
-            ('current_ahead_documents', self.gf('django.db.models.fields.IntegerField')(default=0, max_length=3, null=True, blank=True)),
-            ('previous_ahead_documents', self.gf('django.db.models.fields.IntegerField')(default=0, max_length=3, null=True, blank=True)),
-            ('twitter_user', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
-            ('title_iso', self.gf('django.db.models.fields.CharField')(max_length=256, db_index=True)),
-            ('short_title', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, db_index=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('acronym', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('scielo_issn', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('print_issn', self.gf('django.db.models.fields.CharField')(max_length=9, db_index=True)),
-            ('eletronic_issn', self.gf('django.db.models.fields.CharField')(max_length=9, db_index=True)),
-            ('subject_descriptors', self.gf('django.db.models.fields.CharField')(max_length=1024)),
-            ('init_year', self.gf('django.db.models.fields.CharField')(max_length=4)),
-            ('init_vol', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
-            ('init_num', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
-            ('final_year', self.gf('django.db.models.fields.CharField')(max_length=4, null=True, blank=True)),
-            ('final_vol', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('final_num', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('medline_title', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True)),
-            ('medline_code', self.gf('django.db.models.fields.CharField')(max_length=64, null=True, blank=True)),
-            ('frequency', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('editorial_standard', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('ctrl_vocabulary', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('pub_level', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('secs_code', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('copyrighter', self.gf('django.db.models.fields.CharField')(max_length=254)),
-            ('url_online_submission', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-            ('url_journal', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-            ('notes', self.gf('django.db.models.fields.TextField')(max_length=254, null=True, blank=True)),
-            ('index_coverage', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('cover', self.gf('scielomanager.custom_fields.ContentTypeRestrictedFileField')(max_length=100, null=True, blank=True)),
-            ('logo', self.gf('scielomanager.custom_fields.ContentTypeRestrictedFileField')(max_length=100, null=True, blank=True)),
-            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
-            ('other_previous_title', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('editor_name', self.gf('django.db.models.fields.CharField')(max_length=512)),
-            ('editor_address', self.gf('django.db.models.fields.CharField')(max_length=512)),
-            ('editor_address_city', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('editor_address_state', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('editor_address_zip', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('editor_address_country', self.gf('scielo_extensions.modelfields.CountryField')(max_length=2)),
-            ('editor_phone1', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('editor_phone2', self.gf('django.db.models.fields.CharField')(max_length=32, null=True, blank=True)),
-            ('editor_email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('publisher_name', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('publisher_country', self.gf('scielo_extensions.modelfields.CountryField')(max_length=2)),
-            ('publisher_state', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('publication_city', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('is_indexed_scie', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_indexed_ssci', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_indexed_aehci', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('journalmanager', ['Journal'])
-
-        # Adding M2M table for field sponsor on 'Journal'
-        m2m_table_name = db.shorten_name('journalmanager_journal_sponsor')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('sponsor', models.ForeignKey(orm['journalmanager.sponsor'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['journal_id', 'sponsor_id'])
-
-        # Adding M2M table for field languages on 'Journal'
-        m2m_table_name = db.shorten_name('journalmanager_journal_languages')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('language', models.ForeignKey(orm['journalmanager.language'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['journal_id', 'language_id'])
-
-        # Adding M2M table for field abstract_keyword_languages on 'Journal'
-        m2m_table_name = db.shorten_name('journalmanager_journal_abstract_keyword_languages')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('language', models.ForeignKey(orm['journalmanager.language'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['journal_id', 'language_id'])
-
-        # Adding M2M table for field subject_categories on 'Journal'
-        m2m_table_name = db.shorten_name('journalmanager_journal_subject_categories')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('subjectcategory', models.ForeignKey(orm['journalmanager.subjectcategory'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['journal_id', 'subjectcategory_id'])
-
-        # Adding M2M table for field study_areas on 'Journal'
-        m2m_table_name = db.shorten_name('journalmanager_journal_study_areas')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('journal', models.ForeignKey(orm['journalmanager.journal'], null=False)),
-            ('studyarea', models.ForeignKey(orm['journalmanager.studyarea'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['journal_id', 'studyarea_id'])
-
-        # Adding model 'Membership'
-        db.create_table('journalmanager_membership', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-            ('status', self.gf('django.db.models.fields.CharField')(default='inprogress', max_length=16)),
-            ('since', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('reason', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-        ))
-        db.send_create_signal('journalmanager', ['Membership'])
-
-        # Adding unique constraint on 'Membership', fields ['journal', 'collection']
-        db.create_unique('journalmanager_membership', ['journal_id', 'collection_id'])
-
-        # Adding model 'JournalTimeline'
-        db.create_table('journalmanager_journaltimeline', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='statuses', to=orm['journalmanager.Journal'])),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-            ('status', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('since', self.gf('django.db.models.fields.DateTimeField')()),
-            ('reason', self.gf('django.db.models.fields.TextField')(default='')),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-        ))
-        db.send_create_signal('journalmanager', ['JournalTimeline'])
-
-        # Adding model 'JournalTitle'
-        db.create_table('journalmanager_journaltitle', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='other_titles', to=orm['journalmanager.Journal'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('category', self.gf('django.db.models.fields.CharField')(max_length=128)),
-        ))
-        db.send_create_signal('journalmanager', ['JournalTitle'])
-
-        # Adding model 'JournalMission'
-        db.create_table('journalmanager_journalmission', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='missions', to=orm['journalmanager.Journal'])),
-            ('description', self.gf('django.db.models.fields.TextField')()),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'], null=True)),
-        ))
-        db.send_create_signal('journalmanager', ['JournalMission'])
-
-        # Adding model 'UseLicense'
-        db.create_table('journalmanager_uselicense', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('license_code', self.gf('django.db.models.fields.CharField')(unique=True, max_length=64)),
-            ('reference_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True)),
-            ('disclaimer', self.gf('django.db.models.fields.TextField')(max_length=512, null=True, blank=True)),
-            ('is_default', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('journalmanager', ['UseLicense'])
-
-        # Adding model 'TranslatedData'
-        db.create_table('journalmanager_translateddata', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('translation', self.gf('django.db.models.fields.CharField')(max_length=512, null=True, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('model', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('field', self.gf('django.db.models.fields.CharField')(max_length=32)),
-        ))
-        db.send_create_signal('journalmanager', ['TranslatedData'])
-
-        # Adding model 'SectionTitle'
-        db.create_table('journalmanager_sectiontitle', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('section', self.gf('django.db.models.fields.related.ForeignKey')(related_name='titles', to=orm['journalmanager.Section'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'])),
-        ))
-        db.send_create_signal('journalmanager', ['SectionTitle'])
-
-        # Adding model 'Section'
-        db.create_table('journalmanager_section', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
-            ('code', self.gf('django.db.models.fields.CharField')(unique=True, max_length=21, blank=True)),
-            ('legacy_code', self.gf('django.db.models.fields.CharField')(max_length=16, null=True, blank=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
-        ))
-        db.send_create_signal('journalmanager', ['Section'])
-
-        # Adding model 'Issue'
-        db.create_table('journalmanager_issue', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Journal'])),
-            ('volume', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('number', self.gf('django.db.models.fields.CharField')(max_length=16, blank=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('publication_start_month', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('publication_end_month', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('publication_year', self.gf('django.db.models.fields.IntegerField')()),
-            ('is_marked_up', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('use_license', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.UseLicense'], null=True)),
-            ('total_documents', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('ctrl_vocabulary', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
-            ('editorial_standard', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('cover', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
-            ('is_trashed', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
-            ('label', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=64, null=True, blank=True)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(blank=True)),
-            ('type', self.gf('django.db.models.fields.CharField')(default='regular', max_length=15)),
-            ('suppl_text', self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True)),
-            ('spe_text', self.gf('django.db.models.fields.CharField')(max_length=15, null=True, blank=True)),
-        ))
-        db.send_create_signal('journalmanager', ['Issue'])
-
-        # Adding M2M table for field section on 'Issue'
-        m2m_table_name = db.shorten_name('journalmanager_issue_section')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('issue', models.ForeignKey(orm['journalmanager.issue'], null=False)),
-            ('section', models.ForeignKey(orm['journalmanager.section'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['issue_id', 'section_id'])
-
-        # Adding model 'IssueTitle'
-        db.create_table('journalmanager_issuetitle', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Issue'])),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=256)),
-        ))
-        db.send_create_signal('journalmanager', ['IssueTitle'])
-
-        # Adding model 'PendedForm'
-        db.create_table('journalmanager_pendedform', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('view_name', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('form_hash', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='pending_forms', to=orm['auth.User'])),
-            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('journalmanager', ['PendedForm'])
-
-        # Adding model 'PendedValue'
-        db.create_table('journalmanager_pendedvalue', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='data', to=orm['journalmanager.PendedForm'])),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('value', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('journalmanager', ['PendedValue'])
-
-        # Adding model 'DataChangeEvent'
-        db.create_table('journalmanager_datachangeevent', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('changed_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
-            ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('event_type', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('collection', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Collection'])),
-        ))
-        db.send_create_signal('journalmanager', ['DataChangeEvent'])
-
-        # Adding model 'PressRelease'
-        db.create_table('journalmanager_pressrelease', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('doi', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, blank=True)),
-        ))
-        db.send_create_signal('journalmanager', ['PressRelease'])
-
-        # Adding model 'PressReleaseTranslation'
-        db.create_table('journalmanager_pressreleasetranslation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('press_release', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', to=orm['journalmanager.PressRelease'])),
-            ('language', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['journalmanager.Language'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('content', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('journalmanager', ['PressReleaseTranslation'])
-
-        # Adding model 'PressReleaseArticle'
-        db.create_table('journalmanager_pressreleasearticle', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('press_release', self.gf('django.db.models.fields.related.ForeignKey')(related_name='articles', to=orm['journalmanager.PressRelease'])),
-            ('article_pid', self.gf('django.db.models.fields.CharField')(max_length=32, db_index=True)),
-        ))
-        db.send_create_signal('journalmanager', ['PressReleaseArticle'])
-
-        # Adding model 'RegularPressRelease'
-        db.create_table('journalmanager_regularpressrelease', (
-            ('pressrelease_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.PressRelease'], unique=True, primary_key=True)),
-            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Issue'])),
-        ))
-        db.send_create_signal('journalmanager', ['RegularPressRelease'])
-
-        # Adding model 'AheadPressRelease'
-        db.create_table('journalmanager_aheadpressrelease', (
-            ('pressrelease_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['journalmanager.PressRelease'], unique=True, primary_key=True)),
-            ('journal', self.gf('django.db.models.fields.related.ForeignKey')(related_name='press_releases', to=orm['journalmanager.Journal'])),
-        ))
-        db.send_create_signal('journalmanager', ['AheadPressRelease'])
-
-        # Adding model 'Article'
-        db.create_table('journalmanager_article', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('issue', self.gf('django.db.models.fields.related.ForeignKey')(related_name='articles', to=orm['journalmanager.Issue'])),
-            ('front', self.gf('jsonfield.fields.JSONField')()),
-            ('xml_url', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('pdf_url', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('images_url', self.gf('django.db.models.fields.CharField')(max_length=256)),
-        ))
-        db.send_create_signal('journalmanager', ['Article'])
-
-
-    def backwards(self, orm):
-        # Removing unique constraint on 'Membership', fields ['journal', 'collection']
-        db.delete_unique('journalmanager_membership', ['journal_id', 'collection_id'])
-
-        # Removing unique constraint on 'UserCollections', fields ['user', 'collection']
-        db.delete_unique('journalmanager_usercollections', ['user_id', 'collection_id'])
-
-        # Deleting model 'Language'
-        db.delete_table('journalmanager_language')
-
-        # Deleting model 'UserProfile'
-        db.delete_table('journalmanager_userprofile')
-
-        # Deleting model 'Collection'
-        db.delete_table('journalmanager_collection')
-
-        # Deleting model 'UserCollections'
-        db.delete_table('journalmanager_usercollections')
-
-        # Deleting model 'Institution'
-        db.delete_table('journalmanager_institution')
-
-        # Deleting model 'Sponsor'
-        db.delete_table('journalmanager_sponsor')
-
-        # Removing M2M table for field collections on 'Sponsor'
-        db.delete_table(db.shorten_name('journalmanager_sponsor_collections'))
-
-        # Deleting model 'SubjectCategory'
-        db.delete_table('journalmanager_subjectcategory')
-
-        # Deleting model 'StudyArea'
-        db.delete_table('journalmanager_studyarea')
-
-        # Deleting model 'Journal'
-        db.delete_table('journalmanager_journal')
-
-        # Removing M2M table for field sponsor on 'Journal'
-        db.delete_table(db.shorten_name('journalmanager_journal_sponsor'))
-
-        # Removing M2M table for field languages on 'Journal'
-        db.delete_table(db.shorten_name('journalmanager_journal_languages'))
-
-        # Removing M2M table for field abstract_keyword_languages on 'Journal'
-        db.delete_table(db.shorten_name('journalmanager_journal_abstract_keyword_languages'))
-
-        # Removing M2M table for field subject_categories on 'Journal'
-        db.delete_table(db.shorten_name('journalmanager_journal_subject_categories'))
-
-        # Removing M2M table for field study_areas on 'Journal'
-        db.delete_table(db.shorten_name('journalmanager_journal_study_areas'))
-
-        # Deleting model 'Membership'
-        db.delete_table('journalmanager_membership')
-
-        # Deleting model 'JournalTimeline'
-        db.delete_table('journalmanager_journaltimeline')
-
-        # Deleting model 'JournalTitle'
-        db.delete_table('journalmanager_journaltitle')
-
-        # Deleting model 'JournalMission'
-        db.delete_table('journalmanager_journalmission')
-
-        # Deleting model 'UseLicense'
-        db.delete_table('journalmanager_uselicense')
-
-        # Deleting model 'TranslatedData'
-        db.delete_table('journalmanager_translateddata')
-
-        # Deleting model 'SectionTitle'
-        db.delete_table('journalmanager_sectiontitle')
-
-        # Deleting model 'Section'
-        db.delete_table('journalmanager_section')
-
-        # Deleting model 'Issue'
-        db.delete_table('journalmanager_issue')
-
-        # Removing M2M table for field section on 'Issue'
-        db.delete_table(db.shorten_name('journalmanager_issue_section'))
-
-        # Deleting model 'IssueTitle'
-        db.delete_table('journalmanager_issuetitle')
-
-        # Deleting model 'PendedForm'
-        db.delete_table('journalmanager_pendedform')
-
-        # Deleting model 'PendedValue'
-        db.delete_table('journalmanager_pendedvalue')
-
-        # Deleting model 'DataChangeEvent'
-        db.delete_table('journalmanager_datachangeevent')
-
-        # Deleting model 'PressRelease'
-        db.delete_table('journalmanager_pressrelease')
-
-        # Deleting model 'PressReleaseTranslation'
-        db.delete_table('journalmanager_pressreleasetranslation')
-
-        # Deleting model 'PressReleaseArticle'
-        db.delete_table('journalmanager_pressreleasearticle')
-
-        # Deleting model 'RegularPressRelease'
-        db.delete_table('journalmanager_regularpressrelease')
-
-        # Deleting model 'AheadPressRelease'
-        db.delete_table('journalmanager_aheadpressrelease')
-
-        # Deleting model 'Article'
-        db.delete_table('journalmanager_article')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'journalmanager.aheadpressrelease': {
-            'Meta': {'object_name': 'AheadPressRelease', '_ormbases': ['journalmanager.PressRelease']},
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Journal']"}),
-            'pressrelease_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.PressRelease']", 'unique': 'True', 'primary_key': 'True'})
-        },
-        'journalmanager.article': {
-            'Meta': {'object_name': 'Article'},
-            'front': ('jsonfield.fields.JSONField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'images_url': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'articles'", 'to': "orm['journalmanager.Issue']"}),
-            'pdf_url': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'xml_url': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'journalmanager.collection': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Collection'},
-            'acronym': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'blank': 'True'}),
-            'address': ('django.db.models.fields.TextField', [], {}),
-            'address_complement': ('django.db.models.fields.CharField', [], {'max_length': '128', 'blank': 'True'}),
-            'address_number': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
-            'collection': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'user_collection'", 'to': "orm['auth.User']", 'through': "orm['journalmanager.UserCollections']", 'blank': 'True', 'symmetrical': 'False', 'null': 'True'}),
-            'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'logo': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '128', 'db_index': 'True'}),
-            'name_slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'unique': 'True', 'null': 'True', 'blank': 'True'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'state': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
-            'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
-        },
-        'journalmanager.datachangeevent': {
-            'Meta': {'object_name': 'DataChangeEvent'},
-            'changed_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'event_type': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        },
-        'journalmanager.institution': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Institution'},
-            'acronym': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '16', 'blank': 'True'}),
-            'address': ('django.db.models.fields.TextField', [], {}),
-            'address_complement': ('django.db.models.fields.CharField', [], {'max_length': '128', 'blank': 'True'}),
-            'address_number': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
-            'cel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
-            'complement': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
-            'country': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'fax': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'state': ('django.db.models.fields.CharField', [], {'max_length': '32', 'blank': 'True'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'zip_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'})
-        },
-        'journalmanager.issue': {
-            'Meta': {'ordering': "('created', 'id')", 'object_name': 'Issue'},
-            'cover': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
-            'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_marked_up': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
-            'label': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '64', 'null': 'True', 'blank': 'True'}),
-            'number': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'blank': 'True'}),
-            'publication_end_month': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'publication_start_month': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'publication_year': ('django.db.models.fields.IntegerField', [], {}),
-            'section': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Section']", 'symmetrical': 'False', 'blank': 'True'}),
-            'spe_text': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
-            'suppl_text': ('django.db.models.fields.CharField', [], {'max_length': '15', 'null': 'True', 'blank': 'True'}),
-            'total_documents': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'type': ('django.db.models.fields.CharField', [], {'default': "'regular'", 'max_length': '15'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']", 'null': 'True'}),
-            'volume': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'})
-        },
-        'journalmanager.issuetitle': {
-            'Meta': {'object_name': 'IssueTitle'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Issue']"}),
-            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'journalmanager.journal': {
-            'Meta': {'ordering': "('title', 'id')", 'object_name': 'Journal'},
-            'abstract_keyword_languages': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'abstract_keyword_languages'", 'symmetrical': 'False', 'to': "orm['journalmanager.Language']"}),
-            'acronym': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
-            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'through': "orm['journalmanager.Membership']", 'symmetrical': 'False'}),
-            'copyrighter': ('django.db.models.fields.CharField', [], {'max_length': '254'}),
-            'cover': ('scielomanager.custom_fields.ContentTypeRestrictedFileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'enjoy_creator'", 'to': "orm['auth.User']"}),
-            'ctrl_vocabulary': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'current_ahead_documents': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '3', 'null': 'True', 'blank': 'True'}),
-            'editor': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'editor_journal'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'editor_address': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
-            'editor_address_city': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'editor_address_country': ('scielo_extensions.modelfields.CountryField', [], {'max_length': '2'}),
-            'editor_address_state': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'editor_address_zip': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'editor_email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'editor_name': ('django.db.models.fields.CharField', [], {'max_length': '512'}),
-            'editor_phone1': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'editor_phone2': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'}),
-            'editorial_standard': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'eletronic_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'db_index': 'True'}),
-            'final_num': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'final_vol': ('django.db.models.fields.CharField', [], {'max_length': '16', 'blank': 'True'}),
-            'final_year': ('django.db.models.fields.CharField', [], {'max_length': '4', 'null': 'True', 'blank': 'True'}),
-            'frequency': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'index_coverage': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'init_num': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
-            'init_vol': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
-            'init_year': ('django.db.models.fields.CharField', [], {'max_length': '4'}),
-            'is_indexed_aehci': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_indexed_scie': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_indexed_ssci': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'languages': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Language']", 'symmetrical': 'False'}),
-            'logo': ('scielomanager.custom_fields.ContentTypeRestrictedFileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'medline_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
-            'medline_title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
-            'national_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True', 'blank': 'True'}),
-            'notes': ('django.db.models.fields.TextField', [], {'max_length': '254', 'null': 'True', 'blank': 'True'}),
-            'other_previous_title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'previous_ahead_documents': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '3', 'null': 'True', 'blank': 'True'}),
-            'previous_title': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'prev_title'", 'null': 'True', 'to': "orm['journalmanager.Journal']"}),
-            'print_issn': ('django.db.models.fields.CharField', [], {'max_length': '9', 'db_index': 'True'}),
-            'pub_level': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'publication_city': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'publisher_country': ('scielo_extensions.modelfields.CountryField', [], {'max_length': '2'}),
-            'publisher_name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
-            'publisher_state': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
-            'scielo_issn': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
-            'secs_code': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
-            'short_title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'db_index': 'True'}),
-            'sponsor': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'journal_sponsor'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['journalmanager.Sponsor']"}),
-            'study_areas': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'journals_migration_tmp'", 'null': 'True', 'to': "orm['journalmanager.StudyArea']"}),
-            'subject_categories': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'journals'", 'null': 'True', 'to': "orm['journalmanager.SubjectCategory']"}),
-            'subject_descriptors': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
-            'title_iso': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'}),
-            'twitter_user': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'url_journal': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'url_online_submission': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'use_license': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.UseLicense']"})
-        },
-        'journalmanager.journalmission': {
-            'Meta': {'object_name': 'JournalMission'},
-            'description': ('django.db.models.fields.TextField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'missions'", 'to': "orm['journalmanager.Journal']"}),
-            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']", 'null': 'True'})
-        },
-        'journalmanager.journaltimeline': {
-            'Meta': {'object_name': 'JournalTimeline'},
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'statuses'", 'to': "orm['journalmanager.Journal']"}),
-            'reason': ('django.db.models.fields.TextField', [], {'default': "''"}),
-            'since': ('django.db.models.fields.DateTimeField', [], {}),
-            'status': ('django.db.models.fields.CharField', [], {'max_length': '16'})
-        },
-        'journalmanager.journaltitle': {
-            'Meta': {'object_name': 'JournalTitle'},
-            'category': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'other_titles'", 'to': "orm['journalmanager.Journal']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
-        },
-        'journalmanager.language': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Language'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'iso_code': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '64'})
-        },
-        'journalmanager.membership': {
-            'Meta': {'unique_together': "(('journal', 'collection'),)", 'object_name': 'Membership'},
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
-            'reason': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
-            'since': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'inprogress'", 'max_length': '16'})
-        },
-        'journalmanager.pendedform': {
-            'Meta': {'object_name': 'PendedForm'},
-            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'form_hash': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'pending_forms'", 'to': "orm['auth.User']"}),
-            'view_name': ('django.db.models.fields.CharField', [], {'max_length': '128'})
-        },
-        'journalmanager.pendedvalue': {
-            'Meta': {'object_name': 'PendedValue'},
-            'form': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'data'", 'to': "orm['journalmanager.PendedForm']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'value': ('django.db.models.fields.TextField', [], {})
-        },
-        'journalmanager.pressrelease': {
-            'Meta': {'object_name': 'PressRelease'},
-            'doi': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'journalmanager.pressreleasearticle': {
-            'Meta': {'object_name': 'PressReleaseArticle'},
-            'article_pid': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_index': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'articles'", 'to': "orm['journalmanager.PressRelease']"})
-        },
-        'journalmanager.pressreleasetranslation': {
-            'Meta': {'object_name': 'PressReleaseTranslation'},
-            'content': ('django.db.models.fields.TextField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
-            'press_release': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'to': "orm['journalmanager.PressRelease']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '128'})
-        },
-        'journalmanager.regularpressrelease': {
-            'Meta': {'object_name': 'RegularPressRelease', '_ormbases': ['journalmanager.PressRelease']},
-            'issue': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'press_releases'", 'to': "orm['journalmanager.Issue']"}),
-            'pressrelease_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.PressRelease']", 'unique': 'True', 'primary_key': 'True'})
-        },
-        'journalmanager.section': {
-            'Meta': {'ordering': "('id',)", 'object_name': 'Section'},
-            'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '21', 'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_trashed': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'journal': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Journal']"}),
-            'legacy_code': ('django.db.models.fields.CharField', [], {'max_length': '16', 'null': 'True', 'blank': 'True'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
-        },
-        'journalmanager.sectiontitle': {
-            'Meta': {'ordering': "['title']", 'object_name': 'SectionTitle'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Language']"}),
-            'section': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'titles'", 'to': "orm['journalmanager.Section']"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'journalmanager.sponsor': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Sponsor', '_ormbases': ['journalmanager.Institution']},
-            'collections': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['journalmanager.Collection']", 'symmetrical': 'False'}),
-            'institution_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['journalmanager.Institution']", 'unique': 'True', 'primary_key': 'True'})
-        },
-        'journalmanager.studyarea': {
-            'Meta': {'object_name': 'StudyArea'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'study_area': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'journalmanager.subjectcategory': {
-            'Meta': {'object_name': 'SubjectCategory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'term': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
-        },
-        'journalmanager.translateddata': {
-            'Meta': {'object_name': 'TranslatedData'},
-            'field': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'translation': ('django.db.models.fields.CharField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'})
-        },
-        'journalmanager.uselicense': {
-            'Meta': {'ordering': "['license_code']", 'object_name': 'UseLicense'},
-            'disclaimer': ('django.db.models.fields.TextField', [], {'max_length': '512', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_default': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'license_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
-            'reference_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
-        },
-        'journalmanager.usercollections': {
-            'Meta': {'unique_together': "(('user', 'collection'),)", 'object_name': 'UserCollections'},
-            'collection': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['journalmanager.Collection']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_default': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_manager': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        },
-        'journalmanager.userprofile': {
-            'Meta': {'object_name': 'UserProfile'},
-            'email_notifications': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'tz': ('django.db.models.fields.CharField', [], {'default': "'America/Sao_Paulo'", 'max_length': '150'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})
-        }
-    }
-
-    complete_apps = ['journalmanager']
+# Generated by Django 5.1.15 on 2026-03-03 14:45
+
+import django.db.models.deletion
+import django_countries.fields
+import journalmanager.models
+import scielomanager.custom_fields
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='PressRelease',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('doi', models.CharField(blank=True, max_length=128, null=True, verbose_name='Press release DOI number')),
+            ],
+            options={
+                'permissions': (('list_pressrelease', 'Can list PressReleases'),),
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='Article',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('aid', models.CharField(editable=False, max_length=32, unique=True)),
+                ('doi', models.CharField(db_index=True, default='', max_length=2048)),
+                ('domain_key', models.SlugField(db_index=False, editable=False, max_length=2048, unique=True)),
+                ('is_visible', models.BooleanField(default=True)),
+                ('is_aop', models.BooleanField(default=False)),
+                ('xml', scielomanager.custom_fields.XMLSPSField()),
+                ('xml_version', models.CharField(max_length=9)),
+                ('article_type', models.CharField(db_index=True, max_length=32)),
+                ('journal_title', models.CharField(db_index=True, max_length=512, verbose_name='Journal title')),
+                ('issn_ppub', models.CharField(db_index=True, max_length=9)),
+                ('issn_epub', models.CharField(db_index=True, max_length=9)),
+            ],
+            options={
+                'permissions': (('list_article', 'Can list Article'),),
+            },
+        ),
+        migrations.CreateModel(
+            name='Collection',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(db_index=True, max_length=128, verbose_name='Collection Name')),
+                ('name_slug', models.SlugField(blank=True, null=True, unique=True)),
+                ('url', models.URLField(verbose_name='Instance URL')),
+                ('logo', models.ImageField(blank=True, null=True, upload_to='img/collections_logos', verbose_name='Logo')),
+                ('acronym', models.CharField(blank=True, db_index=True, max_length=16, verbose_name='Sigla')),
+                ('country', models.CharField(max_length=32, verbose_name='Country')),
+                ('state', models.CharField(blank=True, max_length=32, verbose_name='State')),
+                ('city', models.CharField(blank=True, max_length=32, verbose_name='City')),
+                ('address', models.TextField(verbose_name='Address')),
+                ('address_number', models.CharField(max_length=8, verbose_name='Number')),
+                ('address_complement', models.CharField(blank=True, max_length=128, verbose_name='Complement')),
+                ('zip_code', models.CharField(blank=True, max_length=16, null=True, verbose_name='Zip Code')),
+                ('phone', models.CharField(blank=True, max_length=16, verbose_name='Phone Number')),
+                ('fax', models.CharField(blank=True, max_length=16, verbose_name='Fax Number')),
+                ('email', models.EmailField(max_length=254, verbose_name='Email')),
+            ],
+            options={
+                'ordering': ['name'],
+                'permissions': (('list_collection', 'Can list Collections'),),
+            },
+        ),
+        migrations.CreateModel(
+            name='Institution',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('updated', models.DateTimeField(auto_now=True)),
+                ('name', models.CharField(db_index=True, max_length=256, verbose_name='Institution Name')),
+                ('complement', models.TextField(blank=True, default='', verbose_name='Institution Complements')),
+                ('acronym', models.CharField(blank=True, db_index=True, max_length=16, verbose_name='Sigla')),
+                ('country', models.CharField(max_length=32, verbose_name='Country')),
+                ('state', models.CharField(blank=True, max_length=32, verbose_name='State')),
+                ('city', models.CharField(blank=True, max_length=32, verbose_name='City')),
+                ('address', models.TextField(verbose_name='Address')),
+                ('address_number', models.CharField(max_length=8, verbose_name='Number')),
+                ('address_complement', models.CharField(blank=True, max_length=128, verbose_name='Address Complement')),
+                ('zip_code', models.CharField(blank=True, max_length=16, null=True, verbose_name='Zip Code')),
+                ('phone', models.CharField(blank=True, max_length=16, verbose_name='Phone Number')),
+                ('fax', models.CharField(blank=True, max_length=16, verbose_name='Fax Number')),
+                ('cel', models.CharField(blank=True, max_length=16, verbose_name='Cel Number')),
+                ('email', models.EmailField(max_length=254, verbose_name='E-mail')),
+                ('is_trashed', models.BooleanField(db_index=True, default=False, verbose_name='Is trashed?')),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Issue',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('volume', models.CharField(blank=True, max_length=16, verbose_name='Volume')),
+                ('number', models.CharField(blank=True, max_length=16, verbose_name='Number')),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('updated', models.DateTimeField(auto_now=True)),
+                ('publication_start_month', models.IntegerField(blank=True, choices=[(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')], null=True, verbose_name='Start Month')),
+                ('publication_end_month', models.IntegerField(blank=True, choices=[(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')], null=True, verbose_name='End Month')),
+                ('publication_year', models.IntegerField(verbose_name='Year')),
+                ('is_marked_up', models.BooleanField(blank=True, default=False, verbose_name='Is Marked Up?')),
+                ('total_documents', models.IntegerField(default=0, verbose_name='Total of Documents')),
+                ('ctrl_vocabulary', models.CharField(blank=True, choices=[('decs', 'Health Sciences Descriptors'), ('nd', 'No Descriptor')], max_length=64, verbose_name='Controlled Vocabulary')),
+                ('editorial_standard', models.CharField(choices=[('apa', 'American Psychological Association'), ('iso690', 'iso 690/87 - international standard'), ('nbr6023', 'nbr 6023/89 - associação nacional'), ('other', 'other standard'), ('vancouv', 'the vancouver group - uniform')], max_length=64, verbose_name='Editorial Standard')),
+                ('cover', models.ImageField(blank=True, null=True, upload_to='img/issue_cover/', verbose_name='Issue Cover')),
+                ('is_trashed', models.BooleanField(db_index=True, default=False, verbose_name='Is trashed?')),
+                ('label', models.CharField(blank=True, db_index=True, max_length=64, null=True)),
+                ('order', models.IntegerField(blank=True, verbose_name='Issue Order')),
+                ('type', models.CharField(choices=[('regular', 'Regular'), ('special', 'Special'), ('supplement', 'Supplement')], default='regular', editable=False, max_length=15, verbose_name='Type')),
+                ('suppl_text', models.CharField(blank=True, max_length=15, null=True, verbose_name='Suppl Text')),
+                ('spe_text', models.CharField(blank=True, max_length=15, null=True, verbose_name='Special Text')),
+            ],
+            options={
+                'ordering': ('created', 'id'),
+                'permissions': (('list_issue', 'Can list Issues'),),
+            },
+        ),
+        migrations.CreateModel(
+            name='Language',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('iso_code', models.CharField(max_length=2, verbose_name='ISO 639-1 Language Code')),
+                ('name', models.CharField(max_length=64, verbose_name='Language Name (in English)')),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='StudyArea',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('study_area', models.CharField(choices=[('Agricultural Sciences', 'Agricultural Sciences'), ('Applied Social Sciences', 'Applied Social Sciences'), ('Biological Sciences', 'Biological Sciences'), ('Engineering', 'Engineering'), ('Exact and Earth Sciences', 'Exact and Earth Sciences'), ('Health Sciences', 'Health Sciences'), ('Human Sciences', 'Human Sciences'), ('Linguistics, Letters and Arts', 'Linguistics, Letters and Arts')], max_length=256, verbose_name='Study Area')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SubjectCategory',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('term', models.CharField(db_index=True, max_length=256, verbose_name='Term')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='TranslatedData',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('translation', models.CharField(blank=True, max_length=512, null=True, verbose_name='Translation')),
+                ('language', models.CharField(choices=[('es', 'espanhol'), ('en', 'inglês'), ('pt', 'português')], max_length=32, verbose_name='Language')),
+                ('model', models.CharField(max_length=32, verbose_name='Model')),
+                ('field', models.CharField(max_length=32, verbose_name='Field')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='UseLicense',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('license_code', models.CharField(max_length=64, unique=True, verbose_name='License Code')),
+                ('reference_url', models.URLField(blank=True, null=True, verbose_name='License Reference URL')),
+                ('disclaimer', models.TextField(blank=True, max_length=512, null=True, verbose_name='Disclaimer')),
+                ('is_default', models.BooleanField(default=False, verbose_name='Is Default?')),
+            ],
+            options={
+                'ordering': ['license_code'],
+            },
+        ),
+        migrations.CreateModel(
+            name='ArticleAsset',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('file', models.FileField(max_length=1024, upload_to=journalmanager.models.ArticleDirectoryPath('assets'))),
+                ('preferred_alt_file', models.FileField(default='', max_length=1024, upload_to=journalmanager.models.ArticleDirectoryPath('alt_assets'))),
+                ('owner', models.CharField(default='', max_length=1024)),
+                ('use_license', models.TextField(default='')),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assets', to='journalmanager.article')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='ArticleControlAttributes',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('es_updated_at', models.DateTimeField(blank=True, null=True)),
+                ('es_is_dirty', models.BooleanField(default=True)),
+                ('articles_linkage_is_pending', models.BooleanField(default=False)),
+                ('article', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='control_attributes', to='journalmanager.article')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='ArticlesLinkage',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('link_type', models.CharField(max_length=32)),
+                ('link_to', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='referrers', to='journalmanager.article')),
+                ('referrer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='links_to', to='journalmanager.article')),
+            ],
+        ),
+        migrations.AddField(
+            model_name='article',
+            name='related_articles',
+            field=models.ManyToManyField(blank=True, through='journalmanager.ArticlesLinkage', to='journalmanager.article'),
+        ),
+        migrations.AddField(
+            model_name='article',
+            name='issue',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='articles', to='journalmanager.issue'),
+        ),
+        migrations.CreateModel(
+            name='Journal',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('ccn_code', models.CharField(blank=True, default='', help_text='The code of the journal at the CCN database.', max_length=64, verbose_name='CCN Code')),
+                ('current_ahead_documents', models.IntegerField(blank=True, default=0, verbose_name='Total of ahead of print documents for the current year')),
+                ('previous_ahead_documents', models.IntegerField(blank=True, default=0, verbose_name='Total of ahead of print documents for the previous year')),
+                ('twitter_user', models.CharField(blank=True, default='', max_length=128, verbose_name='Twitter User')),
+                ('title', models.CharField(db_index=True, max_length=256, verbose_name='Journal Title')),
+                ('title_iso', models.CharField(db_index=True, max_length=256, verbose_name='ISO abbreviated title')),
+                ('short_title', models.CharField(db_index=True, default='', max_length=256, verbose_name='Short Title')),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('updated', models.DateTimeField(auto_now=True)),
+                ('acronym', models.CharField(max_length=16, verbose_name='Acronym')),
+                ('scielo_issn', models.CharField(choices=[('electronic', 'electronic'), ('print', 'print')], max_length=16, verbose_name='The ISSN used to build the Journal PID.')),
+                ('print_issn', models.CharField(db_index=True, max_length=9, verbose_name='Print ISSN')),
+                ('eletronic_issn', models.CharField(db_index=True, max_length=9, verbose_name='Electronic ISSN')),
+                ('subject_descriptors', models.CharField(max_length=1024, verbose_name='Subject / Descriptors')),
+                ('init_year', models.CharField(max_length=4, verbose_name='Initial Year')),
+                ('init_vol', models.CharField(blank=True, default='', max_length=16, verbose_name='Initial Volume')),
+                ('init_num', models.CharField(blank=True, default='', max_length=16, verbose_name='Initial Number')),
+                ('final_year', models.CharField(blank=True, default='', max_length=4, verbose_name='Final Year')),
+                ('final_vol', models.CharField(blank=True, default='', max_length=16, verbose_name='Final Volume')),
+                ('final_num', models.CharField(blank=True, default='', max_length=16, verbose_name='Final Number')),
+                ('medline_title', models.CharField(blank=True, default='', max_length=256, verbose_name='Medline Title')),
+                ('medline_code', models.CharField(blank=True, default='', max_length=64, verbose_name='Medline Code')),
+                ('frequency', models.CharField(choices=[('A', 'Annual'), ('B', 'Bimonthly (every two months)'), ('K', 'Irregular (know to be so)'), ('M', 'Monthly'), ('Q', 'Quaterly'), ('F', 'Semiannual (twice a year)'), ('T', 'Three times a year')], max_length=16, verbose_name='Frequency')),
+                ('editorial_standard', models.CharField(choices=[('apa', 'American Psychological Association'), ('iso690', 'iso 690/87 - international standard'), ('nbr6023', 'nbr 6023/89 - associação nacional'), ('other', 'other standard'), ('vancouv', 'the vancouver group - uniform')], max_length=64, verbose_name='Editorial Standard')),
+                ('ctrl_vocabulary', models.CharField(choices=[('decs', 'Health Sciences Descriptors'), ('nd', 'No Descriptor')], max_length=64, verbose_name='Controlled Vocabulary')),
+                ('pub_level', models.CharField(choices=[('DI', 'Divulgation'), ('CT', 'Scientific Technical')], max_length=64, verbose_name='Publication Level')),
+                ('secs_code', models.CharField(blank=True, default='', max_length=64, verbose_name='SECS Code')),
+                ('copyrighter', models.CharField(max_length=254, verbose_name='Copyrighter')),
+                ('url_online_submission', models.CharField(blank=True, default='', max_length=128, verbose_name='URL of online submission')),
+                ('url_journal', models.CharField(blank=True, default='', max_length=128, verbose_name='URL of the journal')),
+                ('notes', models.TextField(blank=True, default='', max_length=254, verbose_name='Notes')),
+                ('index_coverage', models.TextField(blank=True, default='', verbose_name='Index Coverage')),
+                ('cover', scielomanager.custom_fields.ContentTypeRestrictedFileField(blank=True, null=True, upload_to='img/journal_cover/', verbose_name='Journal Cover')),
+                ('logo', scielomanager.custom_fields.ContentTypeRestrictedFileField(blank=True, null=True, upload_to='img/journals_logos', verbose_name='Journal Logo')),
+                ('is_trashed', models.BooleanField(db_index=True, default=False, verbose_name='Is trashed?')),
+                ('other_previous_title', models.CharField(blank=True, default='', max_length=255, verbose_name='Other Previous Title')),
+                ('editor_name', models.CharField(max_length=512, verbose_name='Editor Names')),
+                ('editor_address', models.CharField(max_length=512, verbose_name='Editor Address')),
+                ('editor_address_city', models.CharField(max_length=256, verbose_name='Editor City')),
+                ('editor_address_state', models.CharField(max_length=128, verbose_name='Editor State/Province/Region')),
+                ('editor_address_zip', models.CharField(max_length=64, verbose_name='Editor Zip/Postal Code')),
+                ('editor_address_country', django_countries.fields.CountryField(max_length=2, verbose_name='Editor Country')),
+                ('editor_phone1', models.CharField(max_length=32, verbose_name='Editor Phone 1')),
+                ('editor_phone2', models.CharField(blank=True, max_length=32, null=True, verbose_name='Editor Phone 2')),
+                ('editor_email', models.EmailField(max_length=254, verbose_name='Editor E-mail')),
+                ('publisher_name', models.CharField(max_length=512, verbose_name='Publisher Name')),
+                ('publisher_country', django_countries.fields.CountryField(max_length=2, verbose_name='Publisher Country')),
+                ('publisher_state', models.CharField(max_length=64, verbose_name='Publisher State/Province/Region')),
+                ('publication_city', models.CharField(max_length=64, verbose_name='Publication City')),
+                ('is_indexed_scie', models.BooleanField(default=False, verbose_name='SCIE')),
+                ('is_indexed_ssci', models.BooleanField(default=False, verbose_name='SSCI')),
+                ('is_indexed_aehci', models.BooleanField(default=False, verbose_name='A&HCI')),
+                ('creator', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='enjoy_creator', to=settings.AUTH_USER_MODEL)),
+                ('editor', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='editor_journal', to=settings.AUTH_USER_MODEL, verbose_name='Editor')),
+                ('previous_title', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='prev_title', to='journalmanager.journal', verbose_name='Previous title')),
+                ('abstract_keyword_languages', models.ManyToManyField(related_name='abstract_keyword_languages', to='journalmanager.language')),
+                ('languages', models.ManyToManyField(to='journalmanager.language')),
+            ],
+            options={
+                'ordering': ('title', 'id'),
+                'permissions': (('list_journal', 'Can list Journals'), ('list_editor_journal', 'Can list editor Journal'), ('change_editor', 'Can change editor of the journal')),
+            },
+        ),
+        migrations.AddField(
+            model_name='issue',
+            name='journal',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.journal'),
+        ),
+        migrations.AddField(
+            model_name='article',
+            name='journal',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='articles', to='journalmanager.journal'),
+        ),
+        migrations.CreateModel(
+            name='JournalTimeline',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('status', models.CharField(choices=[('current', 'Current'), ('deceased', 'Deceased'), ('suspended', 'Suspended'), ('inprogress', 'In Progress')], max_length=16)),
+                ('since', models.DateTimeField()),
+                ('reason', models.TextField(default='', verbose_name='Reason')),
+                ('collection', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.collection')),
+                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('journal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='statuses', to='journalmanager.journal')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='JournalTitle',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=128, verbose_name='Title')),
+                ('category', models.CharField(choices=[('abbrev_nlm', 'National Library of Medicine (abbreviated)'), ('other', 'Other'), ('paralleltitle', 'Parallel Title'), ('abbrev_scopus', 'Scopus (abbreviated)'), ('abbrev_wos', 'Web of Science (abbreviated)')], max_length=128, verbose_name='Title Category')),
+                ('journal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='other_titles', to='journalmanager.journal')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='JournalMission',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('description', models.TextField(verbose_name='Mission')),
+                ('journal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='missions', to='journalmanager.journal')),
+                ('language', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='journalmanager.language')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='IssueTitle',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=256, verbose_name='Title')),
+                ('issue', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.issue')),
+                ('language', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.language')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Membership',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('status', models.CharField(choices=[('current', 'Current'), ('deceased', 'Deceased'), ('suspended', 'Suspended'), ('inprogress', 'In Progress')], default='inprogress', max_length=16)),
+                ('since', models.DateTimeField(auto_now=True)),
+                ('reason', models.TextField(blank=True, default='', verbose_name='Why are you changing the publication status?')),
+                ('collection', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.collection')),
+                ('created_by', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('journal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.journal')),
+            ],
+            options={
+                'unique_together': {('journal', 'collection')},
+            },
+        ),
+        migrations.AddField(
+            model_name='journal',
+            name='collections',
+            field=models.ManyToManyField(through='journalmanager.Membership', to='journalmanager.collection'),
+        ),
+        migrations.CreateModel(
+            name='PendedForm',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('view_name', models.CharField(max_length=128)),
+                ('form_hash', models.CharField(max_length=32)),
+                ('created_at', models.DateTimeField(auto_now=True)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pending_forms', to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='PendedValue',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=255)),
+                ('value', models.TextField()),
+                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='data', to='journalmanager.pendedform')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='PressReleaseArticle',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('article_pid', models.CharField(db_index=True, max_length=32, verbose_name='PID')),
+                ('press_release', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='articles', to='journalmanager.pressrelease')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='PressReleaseTranslation',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=128, verbose_name='Title')),
+                ('content', models.TextField(verbose_name='Content')),
+                ('language', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.language')),
+                ('press_release', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='translations', to='journalmanager.pressrelease')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Section',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code', models.CharField(blank=True, max_length=21, unique=True, verbose_name='Legacy code')),
+                ('legacy_code', models.CharField(blank=True, max_length=16, null=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('updated', models.DateTimeField(auto_now=True)),
+                ('is_trashed', models.BooleanField(db_index=True, default=False, verbose_name='Is trashed?')),
+                ('journal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.journal')),
+            ],
+            options={
+                'ordering': ('id',),
+                'permissions': (('list_section', 'Can list Sections'),),
+            },
+        ),
+        migrations.AddField(
+            model_name='issue',
+            name='section',
+            field=models.ManyToManyField(blank=True, to='journalmanager.section', verbose_name='Section'),
+        ),
+        migrations.CreateModel(
+            name='SectionTitle',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=256, verbose_name='Title')),
+                ('language', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.language')),
+                ('section', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='titles', to='journalmanager.section')),
+            ],
+            options={
+                'ordering': ['title'],
+            },
+        ),
+        migrations.AddField(
+            model_name='journal',
+            name='study_areas',
+            field=models.ManyToManyField(related_name='journals_migration_tmp', to='journalmanager.studyarea', verbose_name='Study Area'),
+        ),
+        migrations.AddField(
+            model_name='journal',
+            name='subject_categories',
+            field=models.ManyToManyField(related_name='journals', to='journalmanager.subjectcategory', verbose_name='Subject Categories'),
+        ),
+        migrations.AddField(
+            model_name='journal',
+            name='use_license',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='journalmanager.uselicense', verbose_name='Use license'),
+        ),
+        migrations.AddField(
+            model_name='issue',
+            name='use_license',
+            field=models.ForeignKey(help_text="If not defined, will be applied the related journal's use license. The SciELO default use license is BY-NC. Please visit: http://ref.scielo.org/jf5ndd (5.2.11. Política de direitos autorais) for more details.", null=True, on_delete=django.db.models.deletion.CASCADE, to='journalmanager.uselicense', verbose_name='Use License'),
+        ),
+        migrations.CreateModel(
+            name='UserCollections',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('is_default', models.BooleanField(default=False, verbose_name='Is default')),
+                ('is_manager', models.BooleanField(default=False, verbose_name='Is manager of the collection?')),
+                ('collection', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journalmanager.collection')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'unique_together': {('user', 'collection')},
+            },
+        ),
+        migrations.AddField(
+            model_name='collection',
+            name='collection',
+            field=models.ManyToManyField(blank=True, related_name='user_collection', through='journalmanager.UserCollections', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.CreateModel(
+            name='UserProfile',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('email_notifications', models.BooleanField(default=True, verbose_name='Want to receive email notifications?')),
+                ('tz', models.CharField(choices=[('Africa/Abidjan', 'Africa/Abidjan'), ('Africa/Accra', 'Africa/Accra'), ('Africa/Addis_Ababa', 'Africa/Addis_Ababa'), ('Africa/Algiers', 'Africa/Algiers'), ('Africa/Asmara', 'Africa/Asmara'), ('Africa/Asmera', 'Africa/Asmera'), ('Africa/Bamako', 'Africa/Bamako'), ('Africa/Bangui', 'Africa/Bangui'), ('Africa/Banjul', 'Africa/Banjul'), ('Africa/Bissau', 'Africa/Bissau'), ('Africa/Blantyre', 'Africa/Blantyre'), ('Africa/Brazzaville', 'Africa/Brazzaville'), ('Africa/Bujumbura', 'Africa/Bujumbura'), ('Africa/Cairo', 'Africa/Cairo'), ('Africa/Casablanca', 'Africa/Casablanca'), ('Africa/Ceuta', 'Africa/Ceuta'), ('Africa/Conakry', 'Africa/Conakry'), ('Africa/Dakar', 'Africa/Dakar'), ('Africa/Dar_es_Salaam', 'Africa/Dar_es_Salaam'), ('Africa/Djibouti', 'Africa/Djibouti'), ('Africa/Douala', 'Africa/Douala'), ('Africa/El_Aaiun', 'Africa/El_Aaiun'), ('Africa/Freetown', 'Africa/Freetown'), ('Africa/Gaborone', 'Africa/Gaborone'), ('Africa/Harare', 'Africa/Harare'), ('Africa/Johannesburg', 'Africa/Johannesburg'), ('Africa/Juba', 'Africa/Juba'), ('Africa/Kampala', 'Africa/Kampala'), ('Africa/Khartoum', 'Africa/Khartoum'), ('Africa/Kigali', 'Africa/Kigali'), ('Africa/Kinshasa', 'Africa/Kinshasa'), ('Africa/Lagos', 'Africa/Lagos'), ('Africa/Libreville', 'Africa/Libreville'), ('Africa/Lome', 'Africa/Lome'), ('Africa/Luanda', 'Africa/Luanda'), ('Africa/Lubumbashi', 'Africa/Lubumbashi'), ('Africa/Lusaka', 'Africa/Lusaka'), ('Africa/Malabo', 'Africa/Malabo'), ('Africa/Maputo', 'Africa/Maputo'), ('Africa/Maseru', 'Africa/Maseru'), ('Africa/Mbabane', 'Africa/Mbabane'), ('Africa/Mogadishu', 'Africa/Mogadishu'), ('Africa/Monrovia', 'Africa/Monrovia'), ('Africa/Nairobi', 'Africa/Nairobi'), ('Africa/Ndjamena', 'Africa/Ndjamena'), ('Africa/Niamey', 'Africa/Niamey'), ('Africa/Nouakchott', 'Africa/Nouakchott'), ('Africa/Ouagadougou', 'Africa/Ouagadougou'), ('Africa/Porto-Novo', 'Africa/Porto-Novo'), ('Africa/Sao_Tome', 'Africa/Sao_Tome'), ('Africa/Timbuktu', 'Africa/Timbuktu'), ('Africa/Tripoli', 'Africa/Tripoli'), ('Africa/Tunis', 'Africa/Tunis'), ('Africa/Windhoek', 'Africa/Windhoek'), ('America/Adak', 'America/Adak'), ('America/Anchorage', 'America/Anchorage'), ('America/Anguilla', 'America/Anguilla'), ('America/Antigua', 'America/Antigua'), ('America/Araguaina', 'America/Araguaina'), ('America/Argentina/Buenos_Aires', 'America/Argentina/Buenos_Aires'), ('America/Argentina/Catamarca', 'America/Argentina/Catamarca'), ('America/Argentina/ComodRivadavia', 'America/Argentina/ComodRivadavia'), ('America/Argentina/Cordoba', 'America/Argentina/Cordoba'), ('America/Argentina/Jujuy', 'America/Argentina/Jujuy'), ('America/Argentina/La_Rioja', 'America/Argentina/La_Rioja'), ('America/Argentina/Mendoza', 'America/Argentina/Mendoza'), ('America/Argentina/Rio_Gallegos', 'America/Argentina/Rio_Gallegos'), ('America/Argentina/Salta', 'America/Argentina/Salta'), ('America/Argentina/San_Juan', 'America/Argentina/San_Juan'), ('America/Argentina/San_Luis', 'America/Argentina/San_Luis'), ('America/Argentina/Tucuman', 'America/Argentina/Tucuman'), ('America/Argentina/Ushuaia', 'America/Argentina/Ushuaia'), ('America/Aruba', 'America/Aruba'), ('America/Asuncion', 'America/Asuncion'), ('America/Atikokan', 'America/Atikokan'), ('America/Atka', 'America/Atka'), ('America/Bahia', 'America/Bahia'), ('America/Bahia_Banderas', 'America/Bahia_Banderas'), ('America/Barbados', 'America/Barbados'), ('America/Belem', 'America/Belem'), ('America/Belize', 'America/Belize'), ('America/Blanc-Sablon', 'America/Blanc-Sablon'), ('America/Boa_Vista', 'America/Boa_Vista'), ('America/Bogota', 'America/Bogota'), ('America/Boise', 'America/Boise'), ('America/Buenos_Aires', 'America/Buenos_Aires'), ('America/Cambridge_Bay', 'America/Cambridge_Bay'), ('America/Campo_Grande', 'America/Campo_Grande'), ('America/Cancun', 'America/Cancun'), ('America/Caracas', 'America/Caracas'), ('America/Catamarca', 'America/Catamarca'), ('America/Cayenne', 'America/Cayenne'), ('America/Cayman', 'America/Cayman'), ('America/Chicago', 'America/Chicago'), ('America/Chihuahua', 'America/Chihuahua'), ('America/Ciudad_Juarez', 'America/Ciudad_Juarez'), ('America/Coral_Harbour', 'America/Coral_Harbour'), ('America/Cordoba', 'America/Cordoba'), ('America/Costa_Rica', 'America/Costa_Rica'), ('America/Coyhaique', 'America/Coyhaique'), ('America/Creston', 'America/Creston'), ('America/Cuiaba', 'America/Cuiaba'), ('America/Curacao', 'America/Curacao'), ('America/Danmarkshavn', 'America/Danmarkshavn'), ('America/Dawson', 'America/Dawson'), ('America/Dawson_Creek', 'America/Dawson_Creek'), ('America/Denver', 'America/Denver'), ('America/Detroit', 'America/Detroit'), ('America/Dominica', 'America/Dominica'), ('America/Edmonton', 'America/Edmonton'), ('America/Eirunepe', 'America/Eirunepe'), ('America/El_Salvador', 'America/El_Salvador'), ('America/Ensenada', 'America/Ensenada'), ('America/Fort_Nelson', 'America/Fort_Nelson'), ('America/Fort_Wayne', 'America/Fort_Wayne'), ('America/Fortaleza', 'America/Fortaleza'), ('America/Glace_Bay', 'America/Glace_Bay'), ('America/Godthab', 'America/Godthab'), ('America/Goose_Bay', 'America/Goose_Bay'), ('America/Grand_Turk', 'America/Grand_Turk'), ('America/Grenada', 'America/Grenada'), ('America/Guadeloupe', 'America/Guadeloupe'), ('America/Guatemala', 'America/Guatemala'), ('America/Guayaquil', 'America/Guayaquil'), ('America/Guyana', 'America/Guyana'), ('America/Halifax', 'America/Halifax'), ('America/Havana', 'America/Havana'), ('America/Hermosillo', 'America/Hermosillo'), ('America/Indiana/Indianapolis', 'America/Indiana/Indianapolis'), ('America/Indiana/Knox', 'America/Indiana/Knox'), ('America/Indiana/Marengo', 'America/Indiana/Marengo'), ('America/Indiana/Petersburg', 'America/Indiana/Petersburg'), ('America/Indiana/Tell_City', 'America/Indiana/Tell_City'), ('America/Indiana/Vevay', 'America/Indiana/Vevay'), ('America/Indiana/Vincennes', 'America/Indiana/Vincennes'), ('America/Indiana/Winamac', 'America/Indiana/Winamac'), ('America/Indianapolis', 'America/Indianapolis'), ('America/Inuvik', 'America/Inuvik'), ('America/Iqaluit', 'America/Iqaluit'), ('America/Jamaica', 'America/Jamaica'), ('America/Jujuy', 'America/Jujuy'), ('America/Juneau', 'America/Juneau'), ('America/Kentucky/Louisville', 'America/Kentucky/Louisville'), ('America/Kentucky/Monticello', 'America/Kentucky/Monticello'), ('America/Knox_IN', 'America/Knox_IN'), ('America/Kralendijk', 'America/Kralendijk'), ('America/La_Paz', 'America/La_Paz'), ('America/Lima', 'America/Lima'), ('America/Los_Angeles', 'America/Los_Angeles'), ('America/Louisville', 'America/Louisville'), ('America/Lower_Princes', 'America/Lower_Princes'), ('America/Maceio', 'America/Maceio'), ('America/Managua', 'America/Managua'), ('America/Manaus', 'America/Manaus'), ('America/Marigot', 'America/Marigot'), ('America/Martinique', 'America/Martinique'), ('America/Matamoros', 'America/Matamoros'), ('America/Mazatlan', 'America/Mazatlan'), ('America/Mendoza', 'America/Mendoza'), ('America/Menominee', 'America/Menominee'), ('America/Merida', 'America/Merida'), ('America/Metlakatla', 'America/Metlakatla'), ('America/Mexico_City', 'America/Mexico_City'), ('America/Miquelon', 'America/Miquelon'), ('America/Moncton', 'America/Moncton'), ('America/Monterrey', 'America/Monterrey'), ('America/Montevideo', 'America/Montevideo'), ('America/Montreal', 'America/Montreal'), ('America/Montserrat', 'America/Montserrat'), ('America/Nassau', 'America/Nassau'), ('America/New_York', 'America/New_York'), ('America/Nipigon', 'America/Nipigon'), ('America/Nome', 'America/Nome'), ('America/Noronha', 'America/Noronha'), ('America/North_Dakota/Beulah', 'America/North_Dakota/Beulah'), ('America/North_Dakota/Center', 'America/North_Dakota/Center'), ('America/North_Dakota/New_Salem', 'America/North_Dakota/New_Salem'), ('America/Nuuk', 'America/Nuuk'), ('America/Ojinaga', 'America/Ojinaga'), ('America/Panama', 'America/Panama'), ('America/Pangnirtung', 'America/Pangnirtung'), ('America/Paramaribo', 'America/Paramaribo'), ('America/Phoenix', 'America/Phoenix'), ('America/Port-au-Prince', 'America/Port-au-Prince'), ('America/Port_of_Spain', 'America/Port_of_Spain'), ('America/Porto_Acre', 'America/Porto_Acre'), ('America/Porto_Velho', 'America/Porto_Velho'), ('America/Puerto_Rico', 'America/Puerto_Rico'), ('America/Punta_Arenas', 'America/Punta_Arenas'), ('America/Rainy_River', 'America/Rainy_River'), ('America/Rankin_Inlet', 'America/Rankin_Inlet'), ('America/Recife', 'America/Recife'), ('America/Regina', 'America/Regina'), ('America/Resolute', 'America/Resolute'), ('America/Rio_Branco', 'America/Rio_Branco'), ('America/Rosario', 'America/Rosario'), ('America/Santa_Isabel', 'America/Santa_Isabel'), ('America/Santarem', 'America/Santarem'), ('America/Santiago', 'America/Santiago'), ('America/Santo_Domingo', 'America/Santo_Domingo'), ('America/Sao_Paulo', 'America/Sao_Paulo'), ('America/Scoresbysund', 'America/Scoresbysund'), ('America/Shiprock', 'America/Shiprock'), ('America/Sitka', 'America/Sitka'), ('America/St_Barthelemy', 'America/St_Barthelemy'), ('America/St_Johns', 'America/St_Johns'), ('America/St_Kitts', 'America/St_Kitts'), ('America/St_Lucia', 'America/St_Lucia'), ('America/St_Thomas', 'America/St_Thomas'), ('America/St_Vincent', 'America/St_Vincent'), ('America/Swift_Current', 'America/Swift_Current'), ('America/Tegucigalpa', 'America/Tegucigalpa'), ('America/Thule', 'America/Thule'), ('America/Thunder_Bay', 'America/Thunder_Bay'), ('America/Tijuana', 'America/Tijuana'), ('America/Toronto', 'America/Toronto'), ('America/Tortola', 'America/Tortola'), ('America/Vancouver', 'America/Vancouver'), ('America/Virgin', 'America/Virgin'), ('America/Whitehorse', 'America/Whitehorse'), ('America/Winnipeg', 'America/Winnipeg'), ('America/Yakutat', 'America/Yakutat'), ('America/Yellowknife', 'America/Yellowknife'), ('Antarctica/Casey', 'Antarctica/Casey'), ('Antarctica/Davis', 'Antarctica/Davis'), ('Antarctica/DumontDUrville', 'Antarctica/DumontDUrville'), ('Antarctica/Macquarie', 'Antarctica/Macquarie'), ('Antarctica/Mawson', 'Antarctica/Mawson'), ('Antarctica/McMurdo', 'Antarctica/McMurdo'), ('Antarctica/Palmer', 'Antarctica/Palmer'), ('Antarctica/Rothera', 'Antarctica/Rothera'), ('Antarctica/South_Pole', 'Antarctica/South_Pole'), ('Antarctica/Syowa', 'Antarctica/Syowa'), ('Antarctica/Troll', 'Antarctica/Troll'), ('Antarctica/Vostok', 'Antarctica/Vostok'), ('Arctic/Longyearbyen', 'Arctic/Longyearbyen'), ('Asia/Aden', 'Asia/Aden'), ('Asia/Almaty', 'Asia/Almaty'), ('Asia/Amman', 'Asia/Amman'), ('Asia/Anadyr', 'Asia/Anadyr'), ('Asia/Aqtau', 'Asia/Aqtau'), ('Asia/Aqtobe', 'Asia/Aqtobe'), ('Asia/Ashgabat', 'Asia/Ashgabat'), ('Asia/Ashkhabad', 'Asia/Ashkhabad'), ('Asia/Atyrau', 'Asia/Atyrau'), ('Asia/Baghdad', 'Asia/Baghdad'), ('Asia/Bahrain', 'Asia/Bahrain'), ('Asia/Baku', 'Asia/Baku'), ('Asia/Bangkok', 'Asia/Bangkok'), ('Asia/Barnaul', 'Asia/Barnaul'), ('Asia/Beirut', 'Asia/Beirut'), ('Asia/Bishkek', 'Asia/Bishkek'), ('Asia/Brunei', 'Asia/Brunei'), ('Asia/Calcutta', 'Asia/Calcutta'), ('Asia/Chita', 'Asia/Chita'), ('Asia/Choibalsan', 'Asia/Choibalsan'), ('Asia/Chongqing', 'Asia/Chongqing'), ('Asia/Chungking', 'Asia/Chungking'), ('Asia/Colombo', 'Asia/Colombo'), ('Asia/Dacca', 'Asia/Dacca'), ('Asia/Damascus', 'Asia/Damascus'), ('Asia/Dhaka', 'Asia/Dhaka'), ('Asia/Dili', 'Asia/Dili'), ('Asia/Dubai', 'Asia/Dubai'), ('Asia/Dushanbe', 'Asia/Dushanbe'), ('Asia/Famagusta', 'Asia/Famagusta'), ('Asia/Gaza', 'Asia/Gaza'), ('Asia/Harbin', 'Asia/Harbin'), ('Asia/Hebron', 'Asia/Hebron'), ('Asia/Ho_Chi_Minh', 'Asia/Ho_Chi_Minh'), ('Asia/Hong_Kong', 'Asia/Hong_Kong'), ('Asia/Hovd', 'Asia/Hovd'), ('Asia/Irkutsk', 'Asia/Irkutsk'), ('Asia/Istanbul', 'Asia/Istanbul'), ('Asia/Jakarta', 'Asia/Jakarta'), ('Asia/Jayapura', 'Asia/Jayapura'), ('Asia/Jerusalem', 'Asia/Jerusalem'), ('Asia/Kabul', 'Asia/Kabul'), ('Asia/Kamchatka', 'Asia/Kamchatka'), ('Asia/Karachi', 'Asia/Karachi'), ('Asia/Kashgar', 'Asia/Kashgar'), ('Asia/Kathmandu', 'Asia/Kathmandu'), ('Asia/Katmandu', 'Asia/Katmandu'), ('Asia/Khandyga', 'Asia/Khandyga'), ('Asia/Kolkata', 'Asia/Kolkata'), ('Asia/Krasnoyarsk', 'Asia/Krasnoyarsk'), ('Asia/Kuala_Lumpur', 'Asia/Kuala_Lumpur'), ('Asia/Kuching', 'Asia/Kuching'), ('Asia/Kuwait', 'Asia/Kuwait'), ('Asia/Macao', 'Asia/Macao'), ('Asia/Macau', 'Asia/Macau'), ('Asia/Magadan', 'Asia/Magadan'), ('Asia/Makassar', 'Asia/Makassar'), ('Asia/Manila', 'Asia/Manila'), ('Asia/Muscat', 'Asia/Muscat'), ('Asia/Nicosia', 'Asia/Nicosia'), ('Asia/Novokuznetsk', 'Asia/Novokuznetsk'), ('Asia/Novosibirsk', 'Asia/Novosibirsk'), ('Asia/Omsk', 'Asia/Omsk'), ('Asia/Oral', 'Asia/Oral'), ('Asia/Phnom_Penh', 'Asia/Phnom_Penh'), ('Asia/Pontianak', 'Asia/Pontianak'), ('Asia/Pyongyang', 'Asia/Pyongyang'), ('Asia/Qatar', 'Asia/Qatar'), ('Asia/Qostanay', 'Asia/Qostanay'), ('Asia/Qyzylorda', 'Asia/Qyzylorda'), ('Asia/Rangoon', 'Asia/Rangoon'), ('Asia/Riyadh', 'Asia/Riyadh'), ('Asia/Saigon', 'Asia/Saigon'), ('Asia/Sakhalin', 'Asia/Sakhalin'), ('Asia/Samarkand', 'Asia/Samarkand'), ('Asia/Seoul', 'Asia/Seoul'), ('Asia/Shanghai', 'Asia/Shanghai'), ('Asia/Singapore', 'Asia/Singapore'), ('Asia/Srednekolymsk', 'Asia/Srednekolymsk'), ('Asia/Taipei', 'Asia/Taipei'), ('Asia/Tashkent', 'Asia/Tashkent'), ('Asia/Tbilisi', 'Asia/Tbilisi'), ('Asia/Tehran', 'Asia/Tehran'), ('Asia/Tel_Aviv', 'Asia/Tel_Aviv'), ('Asia/Thimbu', 'Asia/Thimbu'), ('Asia/Thimphu', 'Asia/Thimphu'), ('Asia/Tokyo', 'Asia/Tokyo'), ('Asia/Tomsk', 'Asia/Tomsk'), ('Asia/Ujung_Pandang', 'Asia/Ujung_Pandang'), ('Asia/Ulaanbaatar', 'Asia/Ulaanbaatar'), ('Asia/Ulan_Bator', 'Asia/Ulan_Bator'), ('Asia/Urumqi', 'Asia/Urumqi'), ('Asia/Ust-Nera', 'Asia/Ust-Nera'), ('Asia/Vientiane', 'Asia/Vientiane'), ('Asia/Vladivostok', 'Asia/Vladivostok'), ('Asia/Yakutsk', 'Asia/Yakutsk'), ('Asia/Yangon', 'Asia/Yangon'), ('Asia/Yekaterinburg', 'Asia/Yekaterinburg'), ('Asia/Yerevan', 'Asia/Yerevan'), ('Atlantic/Azores', 'Atlantic/Azores'), ('Atlantic/Bermuda', 'Atlantic/Bermuda'), ('Atlantic/Canary', 'Atlantic/Canary'), ('Atlantic/Cape_Verde', 'Atlantic/Cape_Verde'), ('Atlantic/Faeroe', 'Atlantic/Faeroe'), ('Atlantic/Faroe', 'Atlantic/Faroe'), ('Atlantic/Jan_Mayen', 'Atlantic/Jan_Mayen'), ('Atlantic/Madeira', 'Atlantic/Madeira'), ('Atlantic/Reykjavik', 'Atlantic/Reykjavik'), ('Atlantic/South_Georgia', 'Atlantic/South_Georgia'), ('Atlantic/St_Helena', 'Atlantic/St_Helena'), ('Atlantic/Stanley', 'Atlantic/Stanley'), ('Australia/ACT', 'Australia/ACT'), ('Australia/Adelaide', 'Australia/Adelaide'), ('Australia/Brisbane', 'Australia/Brisbane'), ('Australia/Broken_Hill', 'Australia/Broken_Hill'), ('Australia/Canberra', 'Australia/Canberra'), ('Australia/Currie', 'Australia/Currie'), ('Australia/Darwin', 'Australia/Darwin'), ('Australia/Eucla', 'Australia/Eucla'), ('Australia/Hobart', 'Australia/Hobart'), ('Australia/LHI', 'Australia/LHI'), ('Australia/Lindeman', 'Australia/Lindeman'), ('Australia/Lord_Howe', 'Australia/Lord_Howe'), ('Australia/Melbourne', 'Australia/Melbourne'), ('Australia/NSW', 'Australia/NSW'), ('Australia/North', 'Australia/North'), ('Australia/Perth', 'Australia/Perth'), ('Australia/Queensland', 'Australia/Queensland'), ('Australia/South', 'Australia/South'), ('Australia/Sydney', 'Australia/Sydney'), ('Australia/Tasmania', 'Australia/Tasmania'), ('Australia/Victoria', 'Australia/Victoria'), ('Australia/West', 'Australia/West'), ('Australia/Yancowinna', 'Australia/Yancowinna'), ('Brazil/Acre', 'Brazil/Acre'), ('Brazil/DeNoronha', 'Brazil/DeNoronha'), ('Brazil/East', 'Brazil/East'), ('Brazil/West', 'Brazil/West'), ('CET', 'CET'), ('CST6CDT', 'CST6CDT'), ('Canada/Atlantic', 'Canada/Atlantic'), ('Canada/Central', 'Canada/Central'), ('Canada/Eastern', 'Canada/Eastern'), ('Canada/Mountain', 'Canada/Mountain'), ('Canada/Newfoundland', 'Canada/Newfoundland'), ('Canada/Pacific', 'Canada/Pacific'), ('Canada/Saskatchewan', 'Canada/Saskatchewan'), ('Canada/Yukon', 'Canada/Yukon'), ('Chile/Continental', 'Chile/Continental'), ('Chile/EasterIsland', 'Chile/EasterIsland'), ('Cuba', 'Cuba'), ('EET', 'EET'), ('EST', 'EST'), ('EST5EDT', 'EST5EDT'), ('Egypt', 'Egypt'), ('Eire', 'Eire'), ('Etc/GMT', 'Etc/GMT'), ('Etc/GMT+0', 'Etc/GMT+0'), ('Etc/GMT+1', 'Etc/GMT+1'), ('Etc/GMT+10', 'Etc/GMT+10'), ('Etc/GMT+11', 'Etc/GMT+11'), ('Etc/GMT+12', 'Etc/GMT+12'), ('Etc/GMT+2', 'Etc/GMT+2'), ('Etc/GMT+3', 'Etc/GMT+3'), ('Etc/GMT+4', 'Etc/GMT+4'), ('Etc/GMT+5', 'Etc/GMT+5'), ('Etc/GMT+6', 'Etc/GMT+6'), ('Etc/GMT+7', 'Etc/GMT+7'), ('Etc/GMT+8', 'Etc/GMT+8'), ('Etc/GMT+9', 'Etc/GMT+9'), ('Etc/GMT-0', 'Etc/GMT-0'), ('Etc/GMT-1', 'Etc/GMT-1'), ('Etc/GMT-10', 'Etc/GMT-10'), ('Etc/GMT-11', 'Etc/GMT-11'), ('Etc/GMT-12', 'Etc/GMT-12'), ('Etc/GMT-13', 'Etc/GMT-13'), ('Etc/GMT-14', 'Etc/GMT-14'), ('Etc/GMT-2', 'Etc/GMT-2'), ('Etc/GMT-3', 'Etc/GMT-3'), ('Etc/GMT-4', 'Etc/GMT-4'), ('Etc/GMT-5', 'Etc/GMT-5'), ('Etc/GMT-6', 'Etc/GMT-6'), ('Etc/GMT-7', 'Etc/GMT-7'), ('Etc/GMT-8', 'Etc/GMT-8'), ('Etc/GMT-9', 'Etc/GMT-9'), ('Etc/GMT0', 'Etc/GMT0'), ('Etc/Greenwich', 'Etc/Greenwich'), ('Etc/UCT', 'Etc/UCT'), ('Etc/UTC', 'Etc/UTC'), ('Etc/Universal', 'Etc/Universal'), ('Etc/Zulu', 'Etc/Zulu'), ('Europe/Amsterdam', 'Europe/Amsterdam'), ('Europe/Andorra', 'Europe/Andorra'), ('Europe/Astrakhan', 'Europe/Astrakhan'), ('Europe/Athens', 'Europe/Athens'), ('Europe/Belfast', 'Europe/Belfast'), ('Europe/Belgrade', 'Europe/Belgrade'), ('Europe/Berlin', 'Europe/Berlin'), ('Europe/Bratislava', 'Europe/Bratislava'), ('Europe/Brussels', 'Europe/Brussels'), ('Europe/Bucharest', 'Europe/Bucharest'), ('Europe/Budapest', 'Europe/Budapest'), ('Europe/Busingen', 'Europe/Busingen'), ('Europe/Chisinau', 'Europe/Chisinau'), ('Europe/Copenhagen', 'Europe/Copenhagen'), ('Europe/Dublin', 'Europe/Dublin'), ('Europe/Gibraltar', 'Europe/Gibraltar'), ('Europe/Guernsey', 'Europe/Guernsey'), ('Europe/Helsinki', 'Europe/Helsinki'), ('Europe/Isle_of_Man', 'Europe/Isle_of_Man'), ('Europe/Istanbul', 'Europe/Istanbul'), ('Europe/Jersey', 'Europe/Jersey'), ('Europe/Kaliningrad', 'Europe/Kaliningrad'), ('Europe/Kiev', 'Europe/Kiev'), ('Europe/Kirov', 'Europe/Kirov'), ('Europe/Kyiv', 'Europe/Kyiv'), ('Europe/Lisbon', 'Europe/Lisbon'), ('Europe/Ljubljana', 'Europe/Ljubljana'), ('Europe/London', 'Europe/London'), ('Europe/Luxembourg', 'Europe/Luxembourg'), ('Europe/Madrid', 'Europe/Madrid'), ('Europe/Malta', 'Europe/Malta'), ('Europe/Mariehamn', 'Europe/Mariehamn'), ('Europe/Minsk', 'Europe/Minsk'), ('Europe/Monaco', 'Europe/Monaco'), ('Europe/Moscow', 'Europe/Moscow'), ('Europe/Nicosia', 'Europe/Nicosia'), ('Europe/Oslo', 'Europe/Oslo'), ('Europe/Paris', 'Europe/Paris'), ('Europe/Podgorica', 'Europe/Podgorica'), ('Europe/Prague', 'Europe/Prague'), ('Europe/Riga', 'Europe/Riga'), ('Europe/Rome', 'Europe/Rome'), ('Europe/Samara', 'Europe/Samara'), ('Europe/San_Marino', 'Europe/San_Marino'), ('Europe/Sarajevo', 'Europe/Sarajevo'), ('Europe/Saratov', 'Europe/Saratov'), ('Europe/Simferopol', 'Europe/Simferopol'), ('Europe/Skopje', 'Europe/Skopje'), ('Europe/Sofia', 'Europe/Sofia'), ('Europe/Stockholm', 'Europe/Stockholm'), ('Europe/Tallinn', 'Europe/Tallinn'), ('Europe/Tirane', 'Europe/Tirane'), ('Europe/Tiraspol', 'Europe/Tiraspol'), ('Europe/Ulyanovsk', 'Europe/Ulyanovsk'), ('Europe/Uzhgorod', 'Europe/Uzhgorod'), ('Europe/Vaduz', 'Europe/Vaduz'), ('Europe/Vatican', 'Europe/Vatican'), ('Europe/Vienna', 'Europe/Vienna'), ('Europe/Vilnius', 'Europe/Vilnius'), ('Europe/Volgograd', 'Europe/Volgograd'), ('Europe/Warsaw', 'Europe/Warsaw'), ('Europe/Zagreb', 'Europe/Zagreb'), ('Europe/Zaporozhye', 'Europe/Zaporozhye'), ('Europe/Zurich', 'Europe/Zurich'), ('GB', 'GB'), ('GB-Eire', 'GB-Eire'), ('GMT', 'GMT'), ('GMT+0', 'GMT+0'), ('GMT-0', 'GMT-0'), ('GMT0', 'GMT0'), ('Greenwich', 'Greenwich'), ('HST', 'HST'), ('Hongkong', 'Hongkong'), ('Iceland', 'Iceland'), ('Indian/Antananarivo', 'Indian/Antananarivo'), ('Indian/Chagos', 'Indian/Chagos'), ('Indian/Christmas', 'Indian/Christmas'), ('Indian/Cocos', 'Indian/Cocos'), ('Indian/Comoro', 'Indian/Comoro'), ('Indian/Kerguelen', 'Indian/Kerguelen'), ('Indian/Mahe', 'Indian/Mahe'), ('Indian/Maldives', 'Indian/Maldives'), ('Indian/Mauritius', 'Indian/Mauritius'), ('Indian/Mayotte', 'Indian/Mayotte'), ('Indian/Reunion', 'Indian/Reunion'), ('Iran', 'Iran'), ('Israel', 'Israel'), ('Jamaica', 'Jamaica'), ('Japan', 'Japan'), ('Kwajalein', 'Kwajalein'), ('Libya', 'Libya'), ('MET', 'MET'), ('MST', 'MST'), ('MST7MDT', 'MST7MDT'), ('Mexico/BajaNorte', 'Mexico/BajaNorte'), ('Mexico/BajaSur', 'Mexico/BajaSur'), ('Mexico/General', 'Mexico/General'), ('NZ', 'NZ'), ('NZ-CHAT', 'NZ-CHAT'), ('Navajo', 'Navajo'), ('PRC', 'PRC'), ('PST8PDT', 'PST8PDT'), ('Pacific/Apia', 'Pacific/Apia'), ('Pacific/Auckland', 'Pacific/Auckland'), ('Pacific/Bougainville', 'Pacific/Bougainville'), ('Pacific/Chatham', 'Pacific/Chatham'), ('Pacific/Chuuk', 'Pacific/Chuuk'), ('Pacific/Easter', 'Pacific/Easter'), ('Pacific/Efate', 'Pacific/Efate'), ('Pacific/Enderbury', 'Pacific/Enderbury'), ('Pacific/Fakaofo', 'Pacific/Fakaofo'), ('Pacific/Fiji', 'Pacific/Fiji'), ('Pacific/Funafuti', 'Pacific/Funafuti'), ('Pacific/Galapagos', 'Pacific/Galapagos'), ('Pacific/Gambier', 'Pacific/Gambier'), ('Pacific/Guadalcanal', 'Pacific/Guadalcanal'), ('Pacific/Guam', 'Pacific/Guam'), ('Pacific/Honolulu', 'Pacific/Honolulu'), ('Pacific/Johnston', 'Pacific/Johnston'), ('Pacific/Kanton', 'Pacific/Kanton'), ('Pacific/Kiritimati', 'Pacific/Kiritimati'), ('Pacific/Kosrae', 'Pacific/Kosrae'), ('Pacific/Kwajalein', 'Pacific/Kwajalein'), ('Pacific/Majuro', 'Pacific/Majuro'), ('Pacific/Marquesas', 'Pacific/Marquesas'), ('Pacific/Midway', 'Pacific/Midway'), ('Pacific/Nauru', 'Pacific/Nauru'), ('Pacific/Niue', 'Pacific/Niue'), ('Pacific/Norfolk', 'Pacific/Norfolk'), ('Pacific/Noumea', 'Pacific/Noumea'), ('Pacific/Pago_Pago', 'Pacific/Pago_Pago'), ('Pacific/Palau', 'Pacific/Palau'), ('Pacific/Pitcairn', 'Pacific/Pitcairn'), ('Pacific/Pohnpei', 'Pacific/Pohnpei'), ('Pacific/Ponape', 'Pacific/Ponape'), ('Pacific/Port_Moresby', 'Pacific/Port_Moresby'), ('Pacific/Rarotonga', 'Pacific/Rarotonga'), ('Pacific/Saipan', 'Pacific/Saipan'), ('Pacific/Samoa', 'Pacific/Samoa'), ('Pacific/Tahiti', 'Pacific/Tahiti'), ('Pacific/Tarawa', 'Pacific/Tarawa'), ('Pacific/Tongatapu', 'Pacific/Tongatapu'), ('Pacific/Truk', 'Pacific/Truk'), ('Pacific/Wake', 'Pacific/Wake'), ('Pacific/Wallis', 'Pacific/Wallis'), ('Pacific/Yap', 'Pacific/Yap'), ('Poland', 'Poland'), ('Portugal', 'Portugal'), ('ROC', 'ROC'), ('ROK', 'ROK'), ('Singapore', 'Singapore'), ('Turkey', 'Turkey'), ('UCT', 'UCT'), ('US/Alaska', 'US/Alaska'), ('US/Aleutian', 'US/Aleutian'), ('US/Arizona', 'US/Arizona'), ('US/Central', 'US/Central'), ('US/East-Indiana', 'US/East-Indiana'), ('US/Eastern', 'US/Eastern'), ('US/Hawaii', 'US/Hawaii'), ('US/Indiana-Starke', 'US/Indiana-Starke'), ('US/Michigan', 'US/Michigan'), ('US/Mountain', 'US/Mountain'), ('US/Pacific', 'US/Pacific'), ('US/Samoa', 'US/Samoa'), ('UTC', 'UTC'), ('Universal', 'Universal'), ('W-SU', 'W-SU'), ('WET', 'WET'), ('Zulu', 'Zulu')], default='America/Sao_Paulo', max_length=150, verbose_name='Time Zone')),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='AheadPressRelease',
+            fields=[
+                ('pressrelease_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='journalmanager.pressrelease')),
+                ('journal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='press_releases', to='journalmanager.journal')),
+            ],
+            bases=('journalmanager.pressrelease',),
+        ),
+        migrations.CreateModel(
+            name='RegularPressRelease',
+            fields=[
+                ('pressrelease_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='journalmanager.pressrelease')),
+                ('issue', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='press_releases', to='journalmanager.issue')),
+            ],
+            bases=('journalmanager.pressrelease',),
+        ),
+        migrations.CreateModel(
+            name='ArticleHTMLRendition',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('file', models.FileField(max_length=1024, upload_to=journalmanager.models.ArticleDirectoryPath('htmls'))),
+                ('lang', models.CharField(max_length=2, verbose_name='ISO 639-1 Language Code')),
+                ('build_version', models.CharField(max_length=8)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('article', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='htmls', to='journalmanager.article')),
+            ],
+            options={
+                'unique_together': {('article', 'lang')},
+            },
+        ),
+        migrations.CreateModel(
+            name='Sponsor',
+            fields=[
+                ('institution_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='journalmanager.institution')),
+                ('collections', models.ManyToManyField(to='journalmanager.collection')),
+            ],
+            options={
+                'permissions': (('list_sponsor', 'Can list Sponsors'),),
+            },
+            bases=('journalmanager.institution',),
+        ),
+        migrations.AddField(
+            model_name='journal',
+            name='sponsor',
+            field=models.ManyToManyField(blank=True, related_name='journal_sponsor', to='journalmanager.sponsor', verbose_name='Sponsor'),
+        ),
+    ]
